@@ -1,0 +1,162 @@
+@0xaffe4498f275ee58;
+
+using Cxx = import "/capnp/c++.capnp";
+
+$Cxx.namespace("Nv::Blast::Serialization");
+
+struct Asset
+{
+	header @0 :NvBlastDataBlock;
+	
+	iD @1 :UUID;
+	
+	chunkCount @2 :UInt32;
+	
+	graph @3 :NvBlastSupportGraph;
+	
+	leafChunkCount @4 :UInt32;
+	
+	firstSubsupportChunkIndex @5 :UInt32;
+	
+	bondCount @6 :UInt32;
+	
+	chunks @7: List(NvBlastChunk);
+	
+	bonds @8: List(NvBlastBond);
+	
+	subtreeLeafChunkCounts @9: List(UInt32);
+	
+	chunkToGraphNodeMap @10: List(UInt32);
+}
+
+struct TkAsset
+{
+	assetLL @0 :Asset;
+	
+	jointDescs @1 :List(TkAssetJointDesc);
+	
+}
+
+struct ExtPxAsset
+{
+	asset @0 :TkAsset;
+	chunks @1 :List(ExtPxChunk);
+	subchunks @2 :List(ExtPxSubchunk);
+}
+
+struct ExtPxChunk
+{
+	firstSubchunkIndex @0 :UInt32;
+	subchunkCount @1 :UInt32;
+	isStatic @2 :Bool;
+}
+
+struct ExtPxSubchunk
+{
+	transform @0 :PxTransform;
+	geometry @1 :PxConvexMeshGeometry;
+}
+
+struct PxConvexMeshGeometry
+{
+	scale @0 :PxMeshScale;
+	convexMesh @1 :Data;
+	meshFlags @2 :UInt8;
+
+	enum Type
+	{
+		eSPHERE @0;
+		ePLANE @1;
+		eCAPSULE @2;
+		eBOX @3;
+		eCONVEXMESH @4;
+		eTRIANGLEMESH @5;
+		eHEIGHTFIELD @6;
+	}
+
+	type @3 :Type;
+}
+
+struct NvBlastDataBlock
+{
+	enum Type
+	{
+		assetDataBlock @0;
+		instanceDataBlock @1;
+	}
+	
+	dataType @0 :Type;
+	
+	formatVersion @1 :UInt32;
+	
+	size @2 :UInt32;
+}
+
+struct NvBlastChunk
+{
+	centroid @0 :List(Float32);
+	
+	volume @1 :Float32;
+	
+	parentChunkIndex @2 :UInt32;
+	firstChildIndex @3 :UInt32;
+	childIndexStop @4 :UInt32;
+	userData @5 :UInt32;
+}
+
+struct NvBlastBond
+{
+	normal @0 :List(Float32);
+	area @1 :Float32;
+	centroid @2 :List(Float32);
+	userData @3 :UInt32;
+}
+
+struct TkAssetJointDesc
+{
+	nodeIndices @0 :List(UInt32);
+	attachPositions @1 :List(PxVec3);
+}
+
+struct PxVec3
+{
+	x @0 :Float32;
+	y @1 :Float32;
+	z @2 :Float32;
+}
+
+struct PxQuat
+{
+	x @0 :Float32;
+	y @1 :Float32;
+	z @2 :Float32;
+	w @3 :Float32;
+}
+
+struct PxMeshScale
+{
+	scale @0 :PxVec3;
+	rotation @1 :PxQuat;
+}
+
+struct PxTransform
+{
+	q @0 :PxQuat;
+	p @1 :PxVec3;
+}
+
+struct NvBlastSupportGraph
+{
+	nodeCount @0 : UInt32;
+	
+	chunkIndices @1 : List(UInt32);
+	adjacencyPartition @2 : List(UInt32);
+	adjacentNodeIndices @3 : List(UInt32);
+	adjacentBondIndices @4 : List(UInt32);
+}
+
+struct UUID
+{
+	value @0 : Data;
+}
+

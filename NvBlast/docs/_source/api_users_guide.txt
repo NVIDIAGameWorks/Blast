@@ -1,0 +1,22 @@
+/*! \page pageusersguide User's Guide
+
+Blast&tm; User's Guide
+
+\subpage pageintroduction
+
+\subpage pagellapi
+
+\subpage pagehlapi
+
+\subpage pageextapi
+
+\subpage pagetools
+
+\subpage pagesamples
+
+\subpage pagedefinitions
+
+\subpage pagecopyrights
+
+<br>
+*/

@@ -1,0 +1,92 @@
+/*! \page pageauthoring AuthoringTool
+
+The application <b>AuthoringTool</b> is a command-line asset authoring utility.  It reads a file containing a single graphics mesh
+(currently .fbx and .obj format are supported in this tool), and fractures it according to the parameters given in the command line.
+User can configure output of tool. It can save render mesh geometry to .fbx or .obj file. 
+
+Additionally user can set how Blast data should be saved:
+
+	1) BPXA-asset which incorporates Blast data and collision geometry for physics engine. 
+
+	2) LL-asset which is Low Level asset data
+
+	3) Tk-asset which is Toolkit asset data
+
+BPXA and .obj files may be consumed by the \ref pagesampleassetviewer.
+
+
+\verbatim
+
+USAGE:
+
+   AuthoringTool  <infile> <output asset name> [--ovar <by default 0.0>] [--avar <by default 0.0>] [--slices <by default 1 1 1>] [--radius <by default 1.0>]
+                                      	       [--clusters <by default 5>][--cells <by default 5>] [--mode <v - voronoi, c - clustered voronoi, s - slicing.>] 
+											   [--block] [--proto]
+                                       	       [--fbx] [--obj] [--fbxascii]
+                                               [--ue4] [--ll] [--tk] [--bpxa]
+                                               [--outputDir <by default directory of the input file>] [--]
+                                               [--version] [-h]  
+
+
+Where:
+
+   Blast data output mode:
+
+  	 --bpxa output BPXA asset
+   	 --tk   output Toolkit asset
+  	 --ll   output Low Level asset
+
+   Blast data serialization mode:
+   
+	 --block - Serialize Blast asset as continuous block of memory	 
+	 --proto - Serialize Blast asset with CapnProto
+	 
+   Render mesh geometry output mode:
+
+	--fbx Output render mesh to .fbx file
+	--obj Output render mesh to .obj file
+	
+		   
+   --ue4 Enable output FBX with UE4 coordinate system	
+	
+   --ovar <by default 0.0>
+     Slicing offset variation
+
+   --avar <by default 0.0>
+     Slicing angle variation
+
+   --slices <by default 1 1 1>
+     Number of slices per direction
+
+   --clusters <by default 5>
+     Uniform Voronoi cluster count
+
+   --cells <by default 5>
+     Voronoi cells count
+
+   --mode <v - voronoi, c - clustered voronoi, s - slicing.>
+     Fracturing mode
+   
+   --radius <by default 0.5> 
+	 Cluster radius for clustered Voronoi fracturing mode.
+
+   --outputDir <output directory>
+	 Result output directory. If is not specified, result will be saved to folder with input file.
+
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+\endverbatim
+
+<br>
+See \ref pagecopyrights for license information regarding third-party software used by ApexImporter.
+
+<br>
+*/

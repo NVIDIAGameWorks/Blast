@@ -1,0 +1,24 @@
+/*! \page pageextapi Extensions (NvBlastExt)
+
+These are the current Blast extensions:
+<br>
+<br>
+\subpage pageextauthoring
+<br>
+\subpage pageextapeximport
+<br>
+\subpage pageextserialization
+<br>
+\subpage pageextconverterll
+<br>
+\subpage pageextshaders
+<br>
+\subpage pageextphysx
+<br>
+<br>
+To use them, include the appropriate headers in include/extensions (each extension will describe which headers are necessary),
+and link to the desired NvBlastExt*{config}{arch} library in the lib folder.  Here, config is the usual DEBUG/CHECKED/PROFILE (or nothing for release),
+and {arch} distinguishes achitecture, if needed (such as _x86 or _x64).
+
+<br>
+*/

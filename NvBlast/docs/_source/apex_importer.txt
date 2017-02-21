@@ -1,0 +1,78 @@
+/*! \page pageimporter ApexImporter
+
+ApexImporter is a tool for converting destructible assets from APEX Destruction format to Blast&tm; asset format.  Whereas APEX Destruction only needs a
+list of connected chunks, Blast&tm; has a Bond structure to describe chunk connections.  Each Bond describes the interface between two chunks, and needs
+the area, centroid, and average normal of this interface.  ApexImporter computes this data automatically.  Interface search can be done in several ways:
+- <b>Exact mode</b>: Importer tries to find triangles from two chunks which lay in common surface. If such triangles are found, their intersections are considered as the interface. Interface may not exist.
+- <b>Forced mode</b>: This mode based on search for midplane between two chunks and intersecting them with offsetted midplane to find interface parameters. Creates bonds even if chunks have no common surface.
+
+
+A bond is not created if area of interface is zero.  The interface centroid is computed as center of mass of all interface polygon points.  The interface normal is computed as an average of normals of all planes comprising the interface surface.
+
+Note - for Blast&tm; to operate with satisfactory fracturing behavior, it does not require exact area, centroid, and normal values for Bonds.
+
+Along with creating a Blast&tm; asset, ApexImporter creates an *.obj or *.fbx file with description of chunks render geometry.  Blast asset data can be saved to *.llasset, *.tkasset or *.bpxa format. BPXA asset contains collision geometry and can be used in \ref pagesampleassetviewer.
+
+\verbatim
+USAGE:
+
+		ApexImporter -f <infile> -n <output asset name>
+			     [--fbx] [--obj][--fbxascii] [--ue4] [--ll] [--tk]
+                             [--bpxa] [-d] [-m <0 - EXACT, 1 - FORCED>] 
+			     [-o <output directory>] [--] [--version] [-h]
+
+
+Where: 
+
+   -f <infile>,  --file <infile>
+     (required)  File to load
+
+   -n <output asset name>,  --outAssetName <output asset name>
+     (required)  Output asset name
+
+   --fbx
+     Output a FBX mesh to the output directory
+
+   --obj
+     Output a OBJ mesh to the output directory
+
+   --fbxascii
+     Output FBX as an ascii file (defaults to binary output)
+
+   --ue4
+     Output FBX with UE4 coordinate system
+
+   --ll
+     Output LL Blast asset to the output directory (ext: llasset)
+
+   --tk
+     Output TkAsset to the output directory (ext: tkasset)
+
+   --bpxa
+     Output ExtPxAsset to the output directory (ext: bpxa)
+
+   -d,  --debug
+     Print debug output
+
+   -m <0 - EXACT, 1 - FORCED>,  --mode <0 - EXACT, 1 - FORCED>,
+     Interface search mode
+
+   -o <output directory>,  --outputDir <output directory>
+     Result output directory. If is not specified, result will be saved to folder with input file.
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+\endverbatim
+
+<br>
+See \ref pagecopyrights for license information regarding third-party software used by ApexImporter.
+
+<br>
+*/

@@ -1,0 +1,95 @@
+# Copyright (c) 2017, NVIDIA CORPORATION.  All rights reserved.
+#
+# NVIDIA CORPORATION and its licensors retain all intellectual property
+# and proprietary rights in and to this software, related documentation
+# and any modifications thereto.  Any use, reproduction, disclosure or
+# distribution of this software and related documentation without an express
+# license agreement from NVIDIA CORPORATION is strictly prohibited.
+
+@0xaffe4498f275ee58;
+
+using Cxx = import "/capnp/c++.capnp";
+
+using LL = import "NvBlastExtSerializationLL.capn";
+
+$Cxx.namespace("Nv::Blast::Serialization");
+
+struct TkAsset
+{
+	assetLL @0 :LL.Asset;
+	
+	jointDescs @1 :List(TkAssetJointDesc);
+}
+
+struct ExtPxAsset
+{
+	asset @0 :TkAsset;
+	chunks @1 :List(ExtPxChunk);
+	subchunks @2 :List(ExtPxSubchunk);
+}
+
+struct ExtPxChunk
+{
+	firstSubchunkIndex @0 :UInt32;
+	subchunkCount @1 :UInt32;
+	isStatic @2 :Bool;
+}
+
+struct ExtPxSubchunk
+{
+	transform @0 :PxTransform;
+	geometry @1 :PxConvexMeshGeometry;
+}
+
+struct PxConvexMeshGeometry
+{
+	scale @0 :PxMeshScale;
+	convexMesh @1 :Data;
+	meshFlags @2 :UInt8;
+
+	enum Type
+	{
+		eSPHERE @0;
+		ePLANE @1;
+		eCAPSULE @2;
+		eBOX @3;
+		eCONVEXMESH @4;
+		eTRIANGLEMESH @5;
+		eHEIGHTFIELD @6;
+	}
+
+	type @3 :Type;
+}
+
+struct TkAssetJointDesc
+{
+	nodeIndices @0 :List(UInt32);
+	attachPositions @1 :List(PxVec3);
+}
+
+struct PxVec3
+{
+	x @0 :Float32;
+	y @1 :Float32;
+	z @2 :Float32;
+}
+
+struct PxQuat
+{
+	x @0 :Float32;
+	y @1 :Float32;
+	z @2 :Float32;
+	w @3 :Float32;
+}
+
+struct PxMeshScale
+{
+	scale @0 :PxVec3;
+	rotation @1 :PxQuat;
+}
+
+struct PxTransform
+{
+	q @0 :PxQuat;
+	p @1 :PxVec3;
+}

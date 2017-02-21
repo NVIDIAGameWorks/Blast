@@ -1,0 +1,41 @@
+/*! \page pageextshaders Damage Shaders (NvBlastExtShaders)
+
+Blast Extensions provide basic implementations of programs generating fracture commands, the first step in breaking a Blast&tm; Actor, see \ref splitting.
+These programs come as two shader functions (callbacks) for Actors with a support graph and Actors with just one chunk respectively.
+The NvBlastDamageProgram containing both shaders can be used for low-level directly (NvBlastActorGenerateFracture) or for TkActor's damage and fracture functions.
+
+\code
+	NvBlastDamageProgram damageProgram = { NvBlastExtShearGraphShader, NvBlastExtShearSubgraphShader };
+\endcode
+
+The appropriate shader will be called for an Actor being processed, along with the necessary Actor's geometry and program parameters. 
+The parameters (NvBlastProgramParams) are set to contain
+
+1. Material, something that describes an Actor properties (e.g. mass, stiffness, fragility) which are not expected to be changed often.
+	
+2. Damage description, something that describes a particular damage event (e.g. position, radius and force of explosion).
+
+\code
+	NvBlastExtMaterial material = { singleChunkThreshold, graphChunkThreshold, bondTangentialThreshold, bondNormalThreshold, damageAttenuation };
+	NvBlastExtRadialDamageDesc damageDesc = { compressive, posX, posY, posZ, minR, maxR };
+\endcode
+
+When used with TkActor::damage() functions, TkActor will cache the necessary data for deferred processing through TkGroup. This includes accumulating damage requests for
+the same material and program parameter combination. A default material can be set for a TkFamily that all its Actors uses.
+
+\code
+	tkGroup->addActor(*tkActor);
+	tkActor->damage(damageProgram, damageDesc0, sizeof(NvBlastExtRadialDamageDesc), &material);
+	tkActor->damage(damageProgram, damageDesc1, sizeof(NvBlastExtRadialDamageDesc), &material);
+	tkGroup->process();
+	tkGroup->sync();
+\endcode
+
+In contrast, the user is responsible for providing all the damage descriptions persisting through the low-level NvBlastActorGenerateFracture call when not using the Tk layer.
+
+\code
+	NvBlastProgramParams programParams = { damageDescs, 2, &material };
+	NvBlastActorGenerateFracture(commandBuffers, actor, damageProgram, &programParams, nullptr, nullptr);
+\endcode
+
+*/

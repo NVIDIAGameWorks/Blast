@@ -1,0 +1,38 @@
+/*! \page pageextconverterll Data Format Conversion Extension (NvBlastExtConverterLL)
+
+The low-level converter extension is a utility to convert NvBlastAsset and NvBlastFamily data from one format to another.
+
+The format version of an asset may be obtained using the function
+
+\code
+uint32_t assetVersion = NvBlastAssetGetFormatVersion(asset, logFn);
+\endcode
+
+and likewise the format version of a family may be obtained using the function
+
+\code
+uint32_t familyVersion = NvBlastAssetGetFormatVersion(family, logFn);
+\endcode
+
+If the format version does not match the SDK's current version for one of these objects, the data may not be used
+with the current SDK.  The NvBlastExtConverterLL extension will apply a chain of conversion functions to transform
+an asset or family from its stored version to any other version, provided that such a chain exists.
+
+To apply it, simply use the function convertDataBlock.  For example, given an asset pointer,
+
+\code
+vector<char> inBlock, outBlock;
+
+inBlock.resize( NvBlastAssetGetSize(asset), logFn );
+memcpy( inBlock.data(), asset, NvBlastAssetGetSize(asset) );
+
+if ( convertDataBlock(outBlock, inBlock) )
+{
+	NvBlastAsset* convertedAsset = outBlock.data();
+
+	// Use convertedAsset here
+}
+\endcode
+
+<br>
+*/

@@ -1,0 +1,31 @@
+# Doxyfile 1.8.7
+
+@INCLUDE               = Doxyfile
+
+PROJECT_NAME           = "NVIDIA(R) Blast(R) SDK 1.0 Source Reference"
+
+INPUT                  = ../../sdk
+FILE_PATTERNS		   = *.h
+RECURSIVE			   = YES
+EXCLUDE_PATTERNS	   = */waiting/* */ps4/* */xboxone/*
+CHM_FILE               = chm\Blast.chm
+TOC_EXPAND             = YES
+OUTPUT_DIRECTORY       = ../source_docs/
+HTML_OUTPUT            = files
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+GENERATE_TREEVIEW      = YES
+TREEVIEW_WIDTH         = 400
+HTML_STYLESHEET        = NVIDIA.css
+FULL_PATH_NAMES        = YES
+STRIP_FROM_PATH        = ../..
+HTML_TIMESTAMP         = NO
+PROJECT_LOGO           = blast_logo.png
+SEARCHENGINE           = NO
+HTML_FOOTER            = doxygen_html_footer.txt
+HTML_HEADER            = doxygen_html_header.txt
+LAYOUT_FILE            = DoxygenLayout.xml
+EXTRACT_ALL            = YES
+SORT_MEMBER_DOCS       = YES
+SORT_BRIEF_DOCS        = YES
+SORT_MEMBERS_CTORS_1ST = YES
