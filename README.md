@@ -27,7 +27,7 @@ Features of NvBlastTk:
 * Uses an event system to inform the user of actor splitting and chunk fracturing.
 * Introduces a joint representation which uses the event system to allow the user to update physical joints between actors.
 
-Notably missing from NvBlast and NvBlastTk:
+Notably absent in NvBlast and NvBlastTk:
 * There is no physics or collision representation.
 * There is no graphics representation.
 
@@ -70,7 +70,14 @@ low-level, toolkit, extensions, tools, tests, and sample.
 files with nontrivial graphics meshes.  Without these assets, only procedurally-generated box assets are available
 in the sample.
 
-For linux, PS4, and XBoxOne:
+For linux:
+* Run generate_projects_linux.sh.  This step will download all necessary dependencies that are not already
+downloaded into a folder NVIDIA/packman-repo at the root of your hard drive, so this might take some time the first
+time the script is run (or when a dependency version changes).
+* Makefiles will be generated in compiler/linux64-CONFIG-gcc, where CONFIG = debug or release.
+These will build all Blast linux projects, including the low-level, toolkit, extensions, and tests.
+
+For PS4 and XBoxOne:
 * Please visit developer.nvidia.com in order to contact NVIDIA for further information.
 
 Tools and Samples Binaries (Windows only)
