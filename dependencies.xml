@@ -1,0 +1,65 @@
+<project toolsVersion="3.5">
+	<platform name="windows-common">
+		<dependency name="cmake-x64" version="3.7.0" export-as="cmake"/>
+	</platform>
+	<platform name="win" inherit="windows-common">
+		<dependency name="DXUT" version="9.15.2016.1"/>
+		<dependency name="DirectXTex" version="10.5.2016.2"/>
+		<dependency name="imgui" version="1.49"/>
+		<dependency name="nvToolsExt" version="1.0"/>
+		<dependency name="FBXSDK" version="2017.0.1"/>
+		<dependency name="hbao_plus" version="3.0.20515708"/>
+		<dependency name="shadow_lib" version="2.1.20145239"/>
+		<dependency name="d3dcompiler" version="47"/>
+		<dependency name="tclap" version="1.2.1"/>
+		<dependency name="tinyObjLoader" version="1.0"/>
+		<dependency name="CapnProto" version="0.5.3.6"/>
+		<dependency name="CMakeModules" version="1.0.6"/>
+		<dependency name="googletest-win" version="1.4.0.2" export-as="googletest"/>
+	</platform>
+	<platform name="vc12win32" inherit="win">
+		<dependency name="PxShared-vc12win32" version="1.0.21652946" export-as="PxShared"/>
+		<dependency name="PhysX-vc12win32" version="3.4.21652946" export-as="PhysX"/>
+		<dependency name="Apex-vc12win32" version="1.4.21652946" export-as="Apex"/>
+	</platform>
+	<platform name="vc12win64" inherit="win">
+		<dependency name="PxShared-vc12win64" version="1.0.21652946" export-as="PxShared"/>
+		<dependency name="PhysX-vc12win64" version="3.4.21652946" export-as="PhysX"/>
+		<dependency name="Apex-vc12win64" version="1.4.21652946" export-as="Apex"/>
+	</platform>
+	<platform name="vc14win32" inherit="win">
+		<dependency name="PxShared-vc14win32" version="1.0.21652946" export-as="PxShared"/>
+		<dependency name="PhysX-vc14win32" version="3.4.21652946" export-as="PhysX"/>
+		<dependency name="Apex-vc14win32" version="1.4.21652946" export-as="Apex"/>
+	</platform>
+	<platform name="vc14win64" inherit="win">
+		<dependency name="PxShared-vc14win64" version="1.0.21652946" export-as="PxShared"/>
+		<dependency name="PhysX-vc14win64" version="3.4.21652946" export-as="PhysX"/>
+		<dependency name="Apex-vc14win64" version="1.4.21652946" export-as="Apex"/>
+	</platform>
+	<platform name="ps4" inherit="windows-common">
+		<dependency name="PxShared-vc14ps4" version="1.0.21652946" export-as="PxShared"/>
+		<dependency name="PhysX-vc14ps4" version="3.4.21652946" export-as="PhysX"/>
+		<dependency name="Apex-vc14ps4" version="1.4.21652946" export-as="Apex"/>
+		<dependency name="CapnProto-ps4" version="0.5.3.6" export-as="CapnProto"/>
+		<dependency name="CMakeModules-ps4" version="1.0.6" export-as="CMakeModules"/>
+		<dependency name="googletest-ps4" version="1.4.0.2" export-as="googletest"/>
+	</platform>
+	<platform name="xboxone" inherit="windows-common">
+		<dependency name="PxShared-vc14xboxone" version="1.0.21652946" export-as="PxShared"/>
+		<dependency name="PhysX-vc14xboxone" version="3.4.21652946" export-as="PhysX"/>
+		<dependency name="Apex-vc14xboxone" version="1.4.21652946" export-as="Apex"/>
+		<dependency name="CapnProto-xboxone" version="0.5.3.6" export-as="CapnProto"/>
+		<dependency name="CMakeModules-xboxone" version="1.0.6" export-as="CMakeModules"/>
+		<dependency name="googletest-xboxone" version="1.4.0.2" export-as="googletest"/>
+	</platform>
+	<platform name="linux">
+		<dependency name="PxShared-linux64" version="1.0.21652946" export-as="PxShared"/>
+		<dependency name="PhysX-linux64" version="3.4.21652946" export-as="PhysX"/>
+		<dependency name="Apex-linux64" version="1.4.21652946" export-as="Apex"/>
+		<dependency name="cmake-linux-x86_64" version="3.7.2" export-as="cmake"/>
+		<dependency name="CapnProto" version="0.5.3.6"/>
+		<dependency name="CMakeModules" version="1.0.6"/>
+		<dependency name="googletest-linux-x86_64" version="1.8.0.1" export-as="googletest"/>
+	</platform>
+</project>

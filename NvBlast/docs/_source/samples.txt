@@ -1,8 +1,0 @@
-/*! \page pagesamples Samples
-
-The samples folder contains:
-
-\subpage pagesampleassetviewer
-
-<br>
-*/

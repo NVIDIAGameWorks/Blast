@@ -1,0 +1,14 @@
+/*! \page pagedefinitions Definitions
+
+- <b>exact coverage</b>: the condition that a walk from any leaf chunk to its ancestor root chunk will always encounter exactly one support chunk
+- <b>family</b>: the memory allocated when an asset is instanced into its initial set of actors, and all descendent actors formed from fracturing the initial set, recursively
+- <b>root chunk</b>: a chunk with no parent
+- <b>leaf chunk</b>: a chunk with no children
+- <b>lower-support chunk</b>: a chunk that is either a support or subsupport chunk
+- <b>subsupport chunk</b>: a chunk that is descended from a support chunk
+- <b>supersupport chunk</b>: a chunk that is the ancestor of a support chunk
+- <b>support chunk</b>: a chunk that is represented in the support graph
+- <b>upper-support chunk</b>: a chunk that is either a support or supersupport chunk
+
+<br>
+*/

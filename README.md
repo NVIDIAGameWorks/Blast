@@ -50,23 +50,23 @@ Current blast extensions:
 Documentation
 -------------
 
-See NvBlast/docs/api_docs/index.html for api documentation.
+See docs/api_docs/index.html for api documentation.
 
-See NvBlast/docs/source_docs/index.html for full source doxygen pages.
+See docs/source_docs/index.html for full source doxygen pages.
 
-See NvBlast/docs/release_notes.txt for changes.
+See docs/release_notes.txt for changes.
 
 Compiling
 ---------
 
 For windows (VS2013 and VS2015):
-* Run NvBlast/generate_projects_vcNNwinBB.bat, where NN = 12 or 14, and BB = 32 or 64, depending on which compiler
+* Run generate_projects_vcNNwinBB.bat, where NN = 12 or 14, and BB = 32 or 64, depending on which compiler
 (vc12/vc14) you're using and which OS style (32 or 64 bit) you're targeting.  This step will download all necessary
 dependencies that are not already downloaded into a folder NVIDIA/packman-repo at the root of your hard drive, so
 this might take some time the first time one of these scripts is run (or when a dependency version changes).
-* Open NvBlast/compiler/vcNNwinBB-cmake/BlastAll.sln.  This contains all Blast windows projects, including the
+* Open compiler/vcNNwinBB-cmake/BlastAll.sln.  This contains all Blast windows projects, including the
 low-level, toolkit, extensions, tools, tests, and sample.
-* If you run the sample, you should first run NvBlast/download_sample_resources.bat.  This will load complex asset
+* If you run the sample, you should first run download_sample_resources.bat.  This will load complex asset
 files with nontrivial graphics meshes.  Without these assets, only procedurally-generated box assets are available
 in the sample.
 

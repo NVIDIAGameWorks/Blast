@@ -1,0 +1,6 @@
+<!-- start footer part -->
+<div class="footer">
+Copyright &copy; 2015-2017 NVIDIA Corporation, 2701 San Tomas Expressway, Santa Clara, CA 95050 U.S.A. All rights reserved. <a href="http://www.nvidia.com ">www.nvidia.com</a>
+</div>
+</body>
+</html>
