@@ -1,0 +1,47 @@
+#!/bin/sh
+
+PM_PACKMAN_VERSION=3.7
+
+# read source config to set PM_PACKAGE_SOURCE
+PM_PACKAGE_SOURCE=`cat $(dirname "$0")/../source.conf`
+export PM_PACKAGE_SOURCE
+echo "PM_PACKAGE_SOURCE: '$PM_PACKAGE_SOURCE'"
+
+# The pagackes root may already be configured by the user
+if [ -z "$PM_PACKAGES_ROOT" ]; then
+	export PM_PACKAGES_ROOT="${HOME}/packman-repo"
+fi
+
+# Ensure the packages root path exists:
+if [ ! -d "$PM_PACKAGES_ROOT" ]; then
+	echo "Creating packman packages repository at $PM_PACKAGES_ROOT"
+	mkdir "$PM_PACKAGES_ROOT"
+fi
+
+# The packman module may be externally configured
+if [ -z "$PM_MODULE_EXT" ]; then
+	PM_MODULE_DIR="$PM_PACKAGES_ROOT/packman/$PM_PACKMAN_VERSION-common"
+	export PM_MODULE="$PM_MODULE_DIR/packman.py"
+else
+	export PM_MODULE="$PM_MODULE_EXT"
+fi
+
+# Ensure the packman package exists:
+if [ ! -f "$PM_MODULE" ]; then
+	PM_MODULE_PACKAGE="packman@$PM_PACKMAN_VERSION-common"
+	TARGET="/tmp/$PM_MODULE_PACKAGE.zip"
+	if [ "$PM_PACKAGE_SOURCE" = "gtl" ]; then
+		PM_COMMON_GUID=24ED6205-CFE6-4A64-A4B3-4BD87B64279F
+		echo "Fetching $PM_MODULE_PACKAGE from NVGTL using GUID $PM_COMMON_GUID..."
+		wget --quiet --user=svcgtlautomate --password='@ut0M@t3GTL$cr1pt$' -O$TARGET http://nvgtl.nvidia.com/download/$PM_COMMON_GUID
+	else
+		echo "Fetching $PM_MODULE_PACKAGE.zip from S3..."
+		wget --quiet -O$TARGET "http://packman.s3.amazonaws.com/$PM_MODULE_PACKAGE.zip"
+	fi
+	echo "Unpacking ..."
+	mkdir -p "$PM_MODULE_DIR"
+	unzip -q $TARGET -d "$PM_MODULE_DIR"
+	rm $TARGET
+fi
+
+python $PM_MODULE $*
