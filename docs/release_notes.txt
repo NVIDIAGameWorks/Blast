@@ -3,6 +3,56 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Blast(tm) SDK 1.0 (24-Feb-2017)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Changes
+-------
+* tclap, imgui, moved to Packman package
+* Models and textures for the sample application have been moved to Packman
+* Packman packages with platform-specific sections have been split into platform-specific packages
+* Improvements to fracturing tools
+* TkJoint events no longer contain actor data
+* API cleanup:
+** NvBlastActorCreate -> NvBlastFamilyCreateFirstActor
+** NvBlastActorRelease -> NvBlastActorDeactivate
+** NvBlastActorDeserialize -> NvBlastFamilyDeserializeActor
+** Functions that operate on an object start with NvBlast[ObjectName]
+** Functions that create an object purely from a desc start with NvBlastCreate
+** Functions that get scratch start with NvBlast[Object]GetScratchFor[functionname], etc.
+** Object functions take the object as the first input parameter (non-optional output parameters always come first)
+** Removal of NvBlastCommon.h
+* More consistent parameter checking in low-level API
+* NvBlastAlloc and NvBlastFree functions have been removed.  Blast low-level no longer does (de)allocation.  All
+memory is passed in and managed by the user
+* All Blast low-level functions take a log (NvBlastLog) function pointer (which may still be NULL)
+* Authoring tool now handles FBX mesh format
+* Constructor for TkAssetDesc sets sane defaults
+* Sample uses skinning for the 38k tower, for perf improvement
+* Further optimzations to sample, including using 4 instead of 2 CPU cores and capping the actor count at 40k
+* Linux build (SDK and tests)
+* Renamed TkJointUpdateEvent::eventSubtype -> TkJointUpdateEvent::subtype
+* "LowLevel" extension renamed "ConvertLL"
+* Renamed TkEventReceiver -> TkEventListener
+
+New Features
+------------
+* Serialization enabled for XBoxOne
+
+Bug fixes
+---------
+* Can change worker thread count in CPU dispatcher
+* TkJoints created from the TkFramework::createJoint function are now released when the TkFramework is released
+* Various fixes to unit tests
+* Crash fix in CPU dispatcher
+* Returning enough buffer space to handle hierarchical fracturing cases
+
+Known Issues
+------------
+* Serialization requires documentation
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Blast(tm) SDK 1.0 beta (24-Jan-2017)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
