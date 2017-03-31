@@ -31,10 +31,10 @@ NvBlastAsset* BlastDataExporter::createLlBlastAsset(std::vector<NvBlastBondDesc>
 
 	NvBlastAssetDesc assetDesc;
 	assetDesc.bondCount = static_cast<uint32_t>(bondDescs.size());
-	assetDesc.bondDescs = &bondDescs[0];
+	assetDesc.bondDescs = bondDescs.data();
 
 	assetDesc.chunkCount = static_cast<uint32_t>(chunkDescs.size());
-	assetDesc.chunkDescs = &chunkDescs[0];
+	assetDesc.chunkDescs = chunkDescs.data();
 
 
 	std::vector<uint8_t> scratch(static_cast<unsigned int>(NvBlastGetRequiredScratchForCreateAsset(&assetDesc, m_log)));
