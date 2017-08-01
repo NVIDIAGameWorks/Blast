@@ -1,4 +1,4 @@
-compiler/
+/compiler/
 !compiler/cmake
 lib/
 sdk/extensions/serialization/source/generated/
