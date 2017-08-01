@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: NvBlastActorDesc Struct Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: NvBlastActorDesc Struct Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -94,7 +94,7 @@ Initial bond healths. If not NULL, this array must be of length NvBlastAssetGetC
 <div class="memdoc">
 
 <p>
-Initial health of all support chunks. If not NULL, this must be of length NvBlastAssetGetSupportGraph(asset, logFn).nodeCount. The elements in the initialSupportChunkHealth array will correspond to the chunk indices in the NvBlastAssetGetSupportGraph(asset, logFn).chunkIndices array. Every descendent of a support chunk will have its health initialized to its ancestor support chunk's health, so this initializes all lower-support chunk healths. If NULL, uniformInitialLowerSupportChunkHealth must be set. 
+Initial health of all support chunks. If not NULL, this must be of length NvBlastAssetGetSupportChunkCount(asset, logFn).nodeCount. The elements in the initialSupportChunkHealth array will correspond to the chunk indices in the NvBlastAssetGetSupportGraph(asset, logFn).chunkIndices array. Every descendent of a support chunk will have its health initialized to its ancestor support chunk's health, so this initializes all lower-support chunk healths. If NULL, uniformInitialLowerSupportChunkHealth must be set. 
 </div>
 </div><p>
 <a class="anchor" name="b9ce8fff059a17cfffd7e5965fa59ea1"></a><!-- doxytag: member="NvBlastActorDesc::uniformInitialBondHealth" ref="b9ce8fff059a17cfffd7e5965fa59ea1" args="" -->

@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/extensions/shaders/include/NvBlastExtDamageShaders.h File Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/extensions/shaders/include/NvBlastExtDamageShaders.h File Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -38,7 +38,6 @@
 </div>
 <div class="contents">
 <h1>sdk/extensions/shaders/include/NvBlastExtDamageShaders.h File Reference</h1><code>#include &quot;<a class="el" href="_nv_blast_types_8h-source.html">NvBlastTypes.h</a>&quot;</code><br>
-<code>#include &quot;<a class="el" href="_nv_blast_preprocessor_8h-source.html">NvBlastPreprocessor.h</a>&quot;</code><br>
 
 <p>
 <a href="_nv_blast_ext_damage_shaders_8h-source.html">Go to the source code of this file.</a><table border="0" cellpadding="0" cellspacing="0">
@@ -47,6 +46,8 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_material.html">NvBlastExtMaterial</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_radial_damage_desc.html">NvBlastExtRadialDamageDesc</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_segment_radial_damage_desc.html">NvBlastExtSegmentRadialDamageDesc</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_shear_damage_desc.html">NvBlastExtShearDamageDesc</a></td></tr>
 
@@ -60,6 +61,10 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_damage_shaders_8h.html#fe0164871371689c5ab44abb717477fb">NvBlastExtFalloffGraphShader</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a> *actor, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *params)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_damage_shaders_8h.html#97ec45968e92e40e4046209f94369cb9">NvBlastExtFalloffSubgraphShader</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a> *actor, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *params)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_damage_shaders_8h.html#1545b1180f56bc0425984c47a653d99c">NvBlastExtSegmentFalloffGraphShader</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a> *actor, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *params)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_damage_shaders_8h.html#dea94d3394afb7157dff0afa83a84d7f">NvBlastExtSegmentFalloffSubgraphShader</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a> *actor, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *params)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_damage_shaders_8h.html#2370e62e759e5784a8059081d3a0ba10">NvBlastExtShearGraphShader</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a> *actor, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *params)</td></tr>
 
@@ -253,6 +258,79 @@ NOTE: The signature of shader functions are equal to NvBlastGraphShaderFunction 
       <table class="memname">
         <tr>
           <td class="memname">NVBLAST_API void NvBlastExtFalloffSubgraphShader           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *&nbsp;</td>
+          <td class="paramname"> <em>commandBuffers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a> *&nbsp;</td>
+          <td class="paramname"> <em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *&nbsp;</td>
+          <td class="paramname"> <em>params</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="1545b1180f56bc0425984c47a653d99c"></a><!-- doxytag: member="NvBlastExtDamageShaders.h::NvBlastExtSegmentFalloffGraphShader" ref="1545b1180f56bc0425984c47a653d99c" args="(NvBlastFractureBuffers *commandBuffers, const NvBlastGraphShaderActor *actor, const NvBlastProgramParams *params)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NVBLAST_API void NvBlastExtSegmentFalloffGraphShader           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *&nbsp;</td>
+          <td class="paramname"> <em>commandBuffers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a> *&nbsp;</td>
+          <td class="paramname"> <em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *&nbsp;</td>
+          <td class="paramname"> <em>params</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Segment Radial Falloff damage for both graph and subgraph shaders.<p>
+For every bond/chunk damage is calculated from the distance to line segment AB described in <a class="el" href="struct_nv_blast_ext_segment_radial_damage_desc.html">NvBlastExtSegmentRadialDamageDesc</a>. If distance is smaller then minRadius, full compressive amount of damage is applied. From minRadius to maxRaidus it linearly falls off to zero.<p>
+NOTE: The signature of shader functions are equal to NvBlastGraphShaderFunction and NvBlastSubgraphShaderFunction respectively. They are not expected to be called directly. <dl class="see" compact><dt><b>See also:</b></dt><dd><a class="el" href="_nv_blast_types_8h.html#f1fde0d45c48f0575e67f1df5860f940">NvBlastGraphShaderFunction</a>, <a class="el" href="_nv_blast_types_8h.html#33a8ca70a1399b8b42a968c93f89ff50">NvBlastSubgraphShaderFunction</a> </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="dea94d3394afb7157dff0afa83a84d7f"></a><!-- doxytag: member="NvBlastExtDamageShaders.h::NvBlastExtSegmentFalloffSubgraphShader" ref="dea94d3394afb7157dff0afa83a84d7f" args="(NvBlastFractureBuffers *commandBuffers, const NvBlastSubgraphShaderActor *actor, const NvBlastProgramParams *params)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NVBLAST_API void NvBlastExtSegmentFalloffSubgraphShader           </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *&nbsp;</td>
           <td class="paramname"> <em>commandBuffers</em>, </td>

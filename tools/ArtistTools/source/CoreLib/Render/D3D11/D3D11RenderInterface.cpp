@@ -225,10 +225,25 @@ HRESULT UseGoodGPUDevice()
 	std::wstring adapterName = adapterDesc.Description;
 #endif
 
-	D3D_FEATURE_LEVEL fl;
-	HRESULT hr = D3D11CreateDevice(g_pAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr,
+	D3D_FEATURE_LEVEL fl = D3D_FEATURE_LEVEL_9_1;
+	HRESULT hr = 0;
+
+	hr = D3D11CreateDevice(g_pAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr,
 		createDeviceFlags, 0, 0,
 		D3D11_SDK_VERSION, &g_d3dDevice, &fl, &g_d3dDeviceContext);
+
+	if (g_d3dDevice == nullptr)
+	{
+		// here is the codes to make it run on a WARP device(Windows DirectX CPU - based emulation).
+		if (g_pAdapter)
+		{
+			g_pAdapter->Release();
+			g_pAdapter = nullptr;
+		}
+		hr = D3D11CreateDevice(g_pAdapter, D3D_DRIVER_TYPE_WARP, nullptr,
+			createDeviceFlags, 0, 0,
+			D3D11_SDK_VERSION, &g_d3dDevice, &fl, &g_d3dDeviceContext);
+	}
 
 	if(g_d3dDevice)
 	{
@@ -237,6 +252,11 @@ HRESULT UseGoodGPUDevice()
 		if (SUCCEEDED(hr))
 		{
 			g_dxgiDevice = dxgiDevice;
+			if (g_pAdapter == nullptr)
+			{
+				// when running on WARP device, need find out adapter.
+				hr = dxgiDevice->GetAdapter(&g_pAdapter);
+			}
 			return hr;
 		}
 		else

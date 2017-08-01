@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "SceneController.h"
 #include "RenderUtils.h"
@@ -35,8 +53,14 @@
 #include <imgui.h>
 #include <sstream>
 #include <tuple>
+#include <map>
 
-
+#include "BlastSceneTree.h"
+#include "SimpleScene.h"
+#include "SampleManager.h"
+// Add By Lixu Begin
+#include "ProjectParams.h"
+// Add By Lixu End
 
 //////// Simple hash function ////////
 static NvBlastID generateIDFromString(const char* str)
@@ -78,7 +102,7 @@ public:
 	virtual void load() = 0;
 	virtual void unload() = 0;
 	virtual bool isLoaded() const = 0;
-	virtual void spawn(PxVec3 shift) = 0;
+	virtual void spawn(PxTransform transform) = 0;
 
 	virtual ImVec4 getUIColor() const
 	{
@@ -94,6 +118,8 @@ protected:
 class SceneActor
 {
 public:
+	SceneActor() : removeOnReload(false) {}
+
 	virtual ~SceneActor() {}
 	virtual const char* getName() const = 0;
 	virtual const char* getSubname(int subindex) const { return nullptr; }
@@ -104,6 +130,8 @@ public:
 	virtual PxVec3 getSpawnShift() const { return PxVec3(PxZero); }
 	virtual void reload() {}
 	virtual void removeSubactor(int subindex) {}
+
+	bool	removeOnReload;
 };
 
 
@@ -116,7 +144,7 @@ public:
 		int		subindex;
 
 		ActorIndex() { reset(); }
-		ActorIndex(int i, int s) : index(i), subindex(s) {}
+		ActorIndex(int i, int s = -1) : index(i), subindex(s) {}
 
 		bool operator==(const ActorIndex& other) const
 		{
@@ -152,10 +180,27 @@ public:
 	{
 		m_assets.push_back(asset);
 		asset->initialize(this);
-		m_assetsByID[asset->getID()] = asset;
+		std::string id = asset->getID();
+		m_assetsByID[id] = asset;
 	}
 
 // Add By Lixu Begin
+	void removeAsset(SceneAsset* asset)
+	{
+		std::string id = asset->getID();
+		m_assetsByID.erase(m_assetsByID.find(id));
+
+		std::vector<SceneAsset*>::iterator it;
+		for (it = m_assets.begin(); it != m_assets.end(); it++)
+		{
+			if (*it == asset)
+			{
+				m_assets.erase(it);
+				break;
+			}
+		}		
+	}
+
 	std::vector<SceneAsset*>& getAssets()
 	{
 		return m_assets;
@@ -316,7 +361,7 @@ public:
 			return;
 		}
 
-		PxVec3 shift(PxZero);
+		PxTransform transform(PxIdentity);
 // Add By Lixu Begin
 		/*
 		for (SceneActor* a : m_sceneActors)
@@ -327,7 +372,7 @@ public:
 // Add By Lixu End
 
 		SceneAsset* asset = m_assets[m_lastSpawnedAsset];
-		asset->spawn(shift);
+		asset->spawn(transform);
 	}
 
 	void addSceneActor(SceneActor* actor)
@@ -338,6 +383,21 @@ public:
 			setSelectedActor((uint32_t)m_sceneActors.size() - 1);
 		}
 	}
+
+// Add By Lixu Begin
+	void removeSceneActor(SceneActor* actor)
+	{
+		std::vector<SceneActor*>::iterator itActors;
+		for (itActors = m_sceneActors.begin(); itActors != m_sceneActors.end(); itActors++)
+		{
+			if (*itActors == actor)
+			{
+				m_sceneActors.erase(itActors);
+				break;
+			}
+		}
+	}
+// Add By Lixu End
 
 	void removeSceneActor(ActorIndex actorIndex)
 	{
@@ -411,6 +471,7 @@ public:
 			m_assets[i]->unload();
 		}
 
+		m_assets.clear();
 		const int currentAsset = m_lastSpawnedAsset;
 		m_lastSpawnedAsset = -1;
 		return currentAsset;
@@ -418,10 +479,28 @@ public:
 
 	void reloadAllActors()
 	{
-		for (SceneActor* a : m_sceneActors)
+		SceneActor* selectedActor = getSelectedActor();
+		ActorIndex selectIndex(0);
+
+		for (uint32_t i = 0; i < m_sceneActors.size(); i++)
 		{
-			a->reload();
+			if (m_sceneActors[i]->removeOnReload)
+			{
+				removeSceneActor(ActorIndex(i));
+				i--;
+			}
 		}
+
+		for (uint32_t i = 0; i < m_sceneActors.size(); i++)
+		{
+			if (m_sceneActors[i] == selectedActor)
+			{
+				selectIndex.index = i;
+			}
+			m_sceneActors[i]->reload();
+		}
+
+		setSelectedActor(selectIndex.index, selectIndex.subindex);
 	}
 
 	void registerTkAsset(const TkAsset& tkAsset, SingleSceneAsset* asset)
@@ -496,18 +575,19 @@ class SingleSceneActor;
 class SingleSceneAsset : public SceneAsset
 {
 public:
-	SingleSceneAsset() : m_asset(nullptr) {}
+	SingleSceneAsset(BlastAsset* pBlastAsset) : m_asset(pBlastAsset) {}
 	virtual ~SingleSceneAsset() { unload(); }
 
-	virtual void spawn(PxVec3 shift) override;
+	virtual void spawn(PxTransform transform) override;
 
 	virtual void load() override
 	{
 		if (!m_asset)
 		{
 			m_asset = createAsset();
-			m_scene->registerTkAsset(m_asset->getPxAsset()->getTkAsset(), this);
 		}
+
+		m_scene->registerTkAsset(m_asset->getPxAsset()->getTkAsset(), this);
 	}
 
 	virtual void unload() override
@@ -543,7 +623,7 @@ private:
 class ModelSceneAsset : public SingleSceneAsset
 {
 public:
-	ModelSceneAsset() {}
+	ModelSceneAsset(BlastAsset* pBlastAsset) : SingleSceneAsset(pBlastAsset) {}
 
 	virtual const char* getID() const override{ return desc.id.c_str(); }
 	virtual const char* getName() const override { return desc.name.c_str(); }
@@ -557,10 +637,12 @@ public:
 class SimpleModelSceneAsset : public ModelSceneAsset
 {
 public:
+	SimpleModelSceneAsset(BlastAsset* pBlastAsset) : ModelSceneAsset(pBlastAsset) {}
+
 	virtual BlastAsset* createAsset() 
 	{ 
 		return new BlastAssetModelSimple(m_scene->getBlastController().getTkFramework(), m_scene->getPhysXController().getPhysics(),
-			m_scene->getPhysXController().getCooking(), m_scene->getRenderer(), desc.file.c_str());
+			m_scene->getPhysXController().getCooking(), *m_scene->getBlastController().getExtSerialization(), m_scene->getRenderer(), desc.file.c_str());
 	}
 
 	virtual ImVec4 getUIColor() const override
@@ -573,10 +655,12 @@ public:
 class SkinnedModelSceneAsset : public ModelSceneAsset
 {
 public:
+	SkinnedModelSceneAsset(BlastAsset* pBlastAsset) : ModelSceneAsset(pBlastAsset) {}
+
 	virtual BlastAsset* createAsset() 
 	{ 
 		return new BlastAssetModelSkinned(m_scene->getBlastController().getTkFramework(), m_scene->getPhysXController().getPhysics(),
-			m_scene->getPhysXController().getCooking(), m_scene->getRenderer(), desc.file.c_str());
+			m_scene->getPhysXController().getCooking(), *m_scene->getBlastController().getExtSerialization(), m_scene->getRenderer(), desc.file.c_str());
 	}
 
 	virtual ImVec4 getUIColor() const override
@@ -589,8 +673,10 @@ public:
 class BoxesSceneAsset : public SingleSceneAsset
 {
 public:
-	BoxesSceneAsset(const AssetList::BoxAsset& d) : desc(d)
+	BoxesSceneAsset(const AssetList::BoxAsset& d) : SingleSceneAsset(nullptr)
 	{
+		desc = d;
+
 		for (uint32_t lv = 0; lv < desc.levels.size(); ++lv)
 		{
 			const AssetList::BoxAsset::Level& level = desc.levels[lv];
@@ -600,6 +686,7 @@ public:
 		assetDesc.generatorSettings.extents = GeneratorAsset::Vec3(desc.extents.x, desc.extents.y, desc.extents.z);
 		assetDesc.staticHeight = desc.staticHeight;
 		assetDesc.jointAllBonds = desc.jointAllBonds;
+		assetDesc.generatorSettings.bondFlags = (CubeAssetGenerator::BondFlags)desc.bondFlags;
 	}
 
 	virtual ImVec4 getUIColor() const override
@@ -642,7 +729,7 @@ public:
 	virtual const char* getID() const override { return m_desc.id.c_str(); }
 	virtual const char* getName() const override { return m_desc.name.c_str(); }
 
-	virtual void spawn(PxVec3 shift) override;
+	virtual void spawn(PxTransform transform) override;
 
 	virtual void load() override
 	{
@@ -726,10 +813,10 @@ private:
 class SingleSceneActor : public SceneActor
 {
 public:
-	SingleSceneActor(Scene& scene, SingleSceneAsset* asset, PxVec3 shift)
+	SingleSceneActor(Scene& scene, SingleSceneAsset* asset, PxTransform transform)
 		: m_scene(scene)
 		, m_asset(asset)
-		, m_shift(shift)
+		, m_transform(transform)
 	{
 		m_index = m_asset->spawnCount++;
 		spawn();
@@ -739,6 +826,13 @@ public:
 	{
 		remove();
 	}
+
+// Add By Lixu Begin
+	SingleSceneAsset* getSceneAsset()
+	{
+		return m_asset;
+	}
+// Add By Lixu End
 
 	virtual const char* getName() const override
 	{
@@ -772,11 +866,25 @@ public:
 
 	virtual void reload() override
 	{
+		BlastFamilyPtr oldFamily = m_actor;
 		auto settings = m_actor->getSettings();
+
+		RenderMaterial* pRenderMaterial[2];
+		m_actor->getMaterial(&pRenderMaterial[0], true);
+		m_actor->getMaterial(&pRenderMaterial[1], false);
+
+		m_transform = settings.transform;
 		remove();
 		spawn();
+
+		m_actor->setMaterial(pRenderMaterial[0], true);
+		m_actor->setMaterial(pRenderMaterial[1], false);
+
 		m_actor->setSettings(settings);
+		SampleManager::ins()->updateFamily(oldFamily, m_actor);
 	}
+
+	BlastFamily* getFamily() { return m_actor; }
 
 private:
 	void remove()
@@ -793,8 +901,7 @@ private:
 			str << " (" << m_index << ")";
 		m_name = str.str();
 
-		PxTransform pose = m_asset->getInitialTransform();
-		pose.p += m_shift;
+		PxTransform pose = m_transform;
 
 		BlastAsset::ActorDesc actorDesc = {
 			actorDesc.id = generateIDFromString(m_name.c_str()),
@@ -803,12 +910,29 @@ private:
 		};
 
 		m_actor = m_scene.getBlastController().spawnFamily(m_asset->getAsset(), actorDesc);
+		// Add By Lixu Begin
+		BlastFamily::Settings settings = m_actor->getSettings();
+		std::map<BlastAsset*, AssetList::ModelAsset>& assetDescMap = SampleManager::ins()->getAssetDescMap();
+		AssetList::ModelAsset& assetDesc = assetDescMap[m_asset->getAsset()];
+		BPPAsset* bppAsset = BlastProject::ins().getAsset(assetDesc.name.c_str());
+		if (nullptr != bppAsset)
+		{
+			BPPStressSolver& stressSolver = bppAsset->stressSolver;
+			ExtStressSolverSettings & stressSolverSettings = settings.stressSolverSettings;
+			stressSolverSettings.hardness = stressSolver.hardness;
+			stressSolverSettings.stressLinearFactor = stressSolver.linearFactor;
+			stressSolverSettings.stressAngularFactor = stressSolver.angularFactor;
+			stressSolverSettings.bondIterationsPerFrame = stressSolver.bondIterationsPerFrame;
+			stressSolverSettings.graphReductionLevel = stressSolver.graphReductionLevel;
+			m_actor->setSettings(settings);
+		}
+		// Add By Lixu End
 	}
 
 	Scene&					m_scene;
 	BlastFamilyPtr			m_actor;
 	SingleSceneAsset*		m_asset;
-	PxVec3					m_shift;
+	PxTransform				m_transform;
 	uint32_t				m_index;
 	std::string				m_name;
 };
@@ -816,10 +940,10 @@ private:
 class CompositeSceneActor : public SceneActor
 {
 public:
-	CompositeSceneActor(Scene& scene, CompositeSceneAsset* asset, PxVec3 shift)
+	CompositeSceneActor(Scene& scene, CompositeSceneAsset* asset, PxTransform transform)
 		: m_scene(scene)
 		, m_asset(asset)
-		, m_shift(shift)
+		, m_transform(transform)
 	{
 		m_index = m_asset->spawnCount++;
 		spawn();
@@ -937,8 +1061,7 @@ private:
 		ExtPxManager& pxManager = m_scene.getBlastController().getExtPxManager();
 		for (uint32_t i = 0; i < actorCount; ++i)
 		{
-			PxTransform pose = m_asset->getInitialTransform();
-			pose.p += m_shift;
+			PxTransform pose = m_transform;
 			pose = assetDesc.assetRefs[i].transform.transform(pose);
 
 			BlastAsset::ActorDesc actorDesc = {
@@ -981,7 +1104,7 @@ private:
 	Scene&                             m_scene;
 	std::vector<Subactor>			   m_actors;
 	CompositeSceneAsset*               m_asset;
-	PxVec3                             m_shift;
+	PxTransform						   m_transform;
 	uint32_t                           m_index;
 	std::string                        m_name;
 };
@@ -1003,7 +1126,9 @@ public:
 
 	virtual const char* getName() const override
 	{
-		return m_name;
+		// Add By Lixu Begin
+		return m_name.c_str();
+		// Add By Lixu End
 	}
 
 	virtual ImVec4 getUIColor() const override
@@ -1011,11 +1136,16 @@ public:
 		return ImColor(255, 100, 100, 255);
 	}
 
+	// Add By Lixu Begin
+	PhysXController::Actor* getActor() { return m_actor; }
+	// Add By Lixu End
 
 private:
 	PhysXController& m_physXController;
 	PhysXController::Actor* m_actor;
-	const char* m_name;
+	// Add By Lixu Begin
+	std::string				m_name;
+	// Add By Lixu End
 	
 };
 
@@ -1024,19 +1154,19 @@ private:
 //												Assets Implementation
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void SingleSceneAsset::spawn(PxVec3 shift)
+void SingleSceneAsset::spawn(PxTransform transform)
 {
 	load();
-	SingleSceneActor* actor = new SingleSceneActor(*m_scene, this, shift);
+	SingleSceneActor* actor = new SingleSceneActor(*m_scene, this, transform);
 	m_scene->addSceneActor(actor);
 }
 
-void CompositeSceneAsset::spawn(PxVec3 shift)
+void CompositeSceneAsset::spawn(PxTransform transform)
 {
 	load();
 	if (isLoaded())
 	{
-		CompositeSceneActor* actor = new CompositeSceneActor(*m_scene, this, shift);
+		CompositeSceneActor* actor = new CompositeSceneActor(*m_scene, this, transform);
 		m_scene->addSceneActor(actor);
 	}
 }
@@ -1094,9 +1224,10 @@ protected:
 //													Controller
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SceneController::SceneController() : m_cubeScale(1.0f)
+SceneController::SceneController() : m_cubeScale(1.0f), m_cubeThrowDownTime(-1.f)
 {
 	m_scene = NULL;
+	BlastToSceneMap.clear();
 }
 
 SceneController::~SceneController()
@@ -1107,73 +1238,50 @@ void SceneController::onSampleStart()
 {
 	// setup camera
 	CFirstPersonCamera* camera = &getRenderer().getCamera();
-	DirectX::XMVECTORF32 lookAtPt = { 0, 10, 0, 0 };
-	DirectX::XMVECTORF32 eyePt = { 0, 20, 60, 0 };
+	Camera* pCamera = SimpleScene::Inst()->m_pCamera;
+	DirectX::XMVECTORF32 eyePt = { pCamera->_eye.x, pCamera->_eye.y, pCamera->_eye.z, 0 };
+	DirectX::XMVECTORF32 lookAtPt = { pCamera->_at.x, pCamera->_at.y, pCamera->_at.z, 0 };
 	camera->SetViewParams(eyePt, lookAtPt);
-	camera->SetRotateButtons(false, false, true, false);
+	camera->SetRotateButtons(false, false, false, false);
 	camera->SetEnablePositionMovement(true);
 
 	// setup scene
 	m_scene = new Scene(getRenderer(), getPhysXController(), getBlastController(), getCommonUIController());
 
-	const SampleConfig& config = getManager()->getConfig();
+	// commented by Jun Ma to prevent a crash. We do not need those demo resources. We only need shaders.
+	//// add packman repo to search dirs
+	//bool packmanResourcesAdded = false;
+	//if (const char* packmanPath = std::getenv("PM_PACKAGES_ROOT"))
+	//{
+	//	const char* RESOURCES_CONFIG_FILE = "resources.xml";
 
-	// add packman repo to search dirs
-	bool packmanResourcesAdded = false;
-	if (const char* packmanPath = std::getenv("PM_PACKAGES_ROOT"))
-	{
-		const char* RESOURCES_CONFIG_FILE = "resources.xml";
-
-		std::string path;
-		if (getRenderer().getResourceManager().findFile(RESOURCES_CONFIG_FILE, path))
-		{
-			physx::PsFileBuffer fileBuffer(path.c_str(), physx::general_PxIOStream2::PxFileBuf::OPEN_READ_ONLY);
-			if (fileBuffer.isOpen())
-			{
-				PxInputDataFromPxFileBuf inputData(fileBuffer);
-				PackmanConfigParser parser;
-				physx::shdfnd::FastXml* xml = physx::shdfnd::createFastXml(&parser);
-				xml->processXml(inputData, false);
-				xml->release();
-				for (auto& dep : parser.dependencies)
-				{
-					std::stringstream ss;
-					ss << packmanPath << "\\" << dep.first << "\\" << dep.second;
-					if (getRenderer().getResourceManager().addSearchDir(ss.str().c_str()))
-					{
-						packmanResourcesAdded = true;
-					}
-				}
-			}
-		}
-	}
-	if (!packmanResourcesAdded)
-	{
-		getManager()->getCommonUIController().addPopupMessage("Error", "BlastSampleResources package wasn't found. Consider running download_sample_resources.bat in root folder.", 5.0f);
-	}
-
-	// parse asset file
-	AssetList assetList;
-	if (!config.assetsFile.empty())
-	{
-		std::string path;
-		if (getRenderer().getResourceManager().findFile(config.assetsFile, path))
-		{
-			parseAssetList(assetList, path);
-		}
-	}
-
-	// add both asset file and asset list from config
-	addAssets(config.additionalAssetList, packmanResourcesAdded);
-	addAssets(assetList, packmanResourcesAdded);
-
-// Add By Lixu Begin
-	int size = m_scene->getAssets().size();
-	for (int i = 0; i < size; i++)
-	{
-		spawnAsset(i);
-	}
-// Add By Lixu End
+	//	std::string path;
+	//	if (getRenderer().getResourceManager().findFile(RESOURCES_CONFIG_FILE, path))
+	//	{
+	//		physx::PsFileBuffer fileBuffer(path.c_str(), physx::general_PxIOStream2::PxFileBuf::OPEN_READ_ONLY);
+	//		if (fileBuffer.isOpen())
+	//		{
+	//			PxInputDataFromPxFileBuf inputData(fileBuffer);
+	//			PackmanConfigParser parser;
+	//			physx::shdfnd::FastXml* xml = physx::shdfnd::createFastXml(&parser);
+	//			xml->processXml(inputData, false);
+	//			xml->release();
+	//			for (auto& dep : parser.dependencies)
+	//			{
+	//				std::stringstream ss;
+	//				ss << packmanPath << "\\" << dep.first << "\\" << dep.second;
+	//				if (getRenderer().getResourceManager().addSearchDir(ss.str().c_str()))
+	//				{
+	//					packmanResourcesAdded = true;
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+	//if (!packmanResourcesAdded)
+	//{
+	//	getManager()->getCommonUIController().addPopupMessage("Error", "BlastSampleResources package wasn't found. Consider running download_sample_resources.bat in root folder.", 5.0f);
+	//}
 }
 
 void SceneController::addAssets(const AssetList& assetList, bool loadModels)
@@ -1185,11 +1293,11 @@ void SceneController::addAssets(const AssetList& assetList, bool loadModels)
 			ModelSceneAsset* asset;
 			if (!model.isSkinned)
 			{
-				asset = new SimpleModelSceneAsset();
+				asset = new SimpleModelSceneAsset(nullptr);
 			}
 			else
 			{
-				asset = new SkinnedModelSceneAsset();
+				asset = new SkinnedModelSceneAsset(nullptr);
 			}
 			asset->desc = model;
 			m_scene->addAsset(asset);
@@ -1206,6 +1314,141 @@ void SceneController::addAssets(const AssetList& assetList, bool loadModels)
 		BoxesSceneAsset* asset = new BoxesSceneAsset(box);
 		m_scene->addAsset(asset);
 	}
+}
+
+void SceneController::addBlastAsset(BlastAssetModelSimple* pBlastAsset, AssetList::ModelAsset modelAsset)
+{
+	// 1
+	ModelSceneAsset* asset = new SimpleModelSceneAsset(pBlastAsset);
+	asset->desc = modelAsset;
+	BlastToSceneMap[pBlastAsset] = asset;
+
+	// 2
+	m_scene->addAsset(asset);
+
+	// 3
+	asset->load();
+}
+
+void deleteSceneActors(Scene* scene, SceneAsset* asset)
+{
+	std::vector<SceneActor*> deleteActors;
+
+	std::vector<SceneActor*>& Actors = scene->getActors();
+	std::vector<SceneActor*>::iterator itActors;
+	for (itActors = Actors.begin(); itActors != Actors.end(); )
+	{
+		SingleSceneActor* pSceneActor = (SingleSceneActor*)*itActors;
+		SingleSceneAsset* pSingleSceneAsset = pSceneActor->getSceneAsset();
+		if (pSingleSceneAsset == asset)
+		{
+			deleteActors.push_back(pSceneActor);
+			itActors = Actors.erase(itActors);
+		}
+		else
+		{
+			itActors++;
+		}
+	}
+
+	for (itActors = deleteActors.begin(); itActors != deleteActors.end(); itActors++)
+	{
+		delete *itActors;
+		*itActors = nullptr;
+	}
+	deleteActors.clear();
+}
+
+void SceneController::removeBlastAsset(BlastAssetModelSimple* pBlastAsset)
+{
+	std::vector<SceneAsset*>& Assets = m_scene->getAssets();
+	std::vector<SceneAsset*>::iterator itAssets;
+	for (itAssets = Assets.begin(); itAssets != Assets.end(); itAssets++)
+	{
+		ModelSceneAsset* pSceneAsset = (ModelSceneAsset*)*itAssets;
+		BlastAsset* pAsset = pSceneAsset->getAsset();
+		if (pAsset == pBlastAsset)
+		{
+			deleteSceneActors(m_scene, pSceneAsset);
+			
+			// 3
+			pSceneAsset->unload();
+
+			// 2
+			m_scene->removeAsset(pSceneAsset);
+
+			// 1
+			delete pSceneAsset;
+			std::map<BlastAsset*, ModelSceneAsset*>::iterator itBSM;
+			itBSM = BlastToSceneMap.find(pBlastAsset);
+			BlastToSceneMap.erase(itBSM);
+			break;
+		}
+	}
+}
+
+BlastFamily* SceneController::addBlastFamily(BlastAsset* pBlastAsset, physx::PxTransform transform)
+{
+	if (pBlastAsset == nullptr)
+	{
+		return nullptr;
+	}
+
+	std::map<BlastAsset*, ModelSceneAsset*>::iterator itBSM;
+	itBSM = BlastToSceneMap.find(pBlastAsset);
+	if (itBSM == BlastToSceneMap.end())
+	{
+		return nullptr;
+	}
+
+	ModelSceneAsset* asset = itBSM->second;
+	if (asset == nullptr)
+	{
+		return nullptr;
+	}
+
+	SingleSceneActor* actor = new SingleSceneActor(*m_scene, asset, transform);
+	m_scene->addSceneActor(actor);
+
+	BlastFamily* pBlastFamily = actor->getFamily();
+	if (pBlastFamily != nullptr)
+	{
+		pBlastFamily->updatePreSplit(0);
+		pBlastFamily->clearVisibleChangedChunks();
+	}
+	return pBlastFamily;
+}
+
+void SceneController::removeBlastFamily(BlastAsset* pBlastAsset, int nFamilyIndex)
+{
+	if (pBlastAsset == nullptr)
+	{
+		return;
+	}
+
+	std::map<BlastAsset*, ModelSceneAsset*>::iterator itBSM;
+	itBSM = BlastToSceneMap.find(pBlastAsset);
+	if (itBSM == BlastToSceneMap.end())
+	{
+		return;
+	}
+
+	ModelSceneAsset* asset = itBSM->second;
+	if (asset == nullptr)
+	{
+		return;
+	}
+
+	SceneActor* pSceneActor = m_scene->getActorByIndex(nFamilyIndex);
+	if (pSceneActor == nullptr)
+	{
+		return;
+	}
+
+	m_scene->removeSceneActor(pSceneActor);
+
+	delete pSceneActor;
+	pSceneActor = nullptr;
 }
 
 void SceneController::onInitialize()
@@ -1241,10 +1484,26 @@ LRESULT SceneController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			m_scene->reloadAllActors();
 			return 0;
 		case 'F':
-			throwCube();
+			if (m_cubeThrowDownTime == -1.f)
+			{
+				m_cubeThrowDownTime = ImGui::GetTime();
+			}
 			return 0;
 		default:
 			break; 
+		}
+	}
+	else if (uMsg == WM_KEYUP)
+	{
+		int iKeyPressed = static_cast<int>(wParam);
+		switch (iKeyPressed)
+		{
+		case 'F':
+			throwCube();
+			m_cubeThrowDownTime = -1.f;
+			return 0;
+		default:
+			break;
 		}
 	}
 
@@ -1346,6 +1605,7 @@ void SceneController::drawUI()
 	{
 		ImGui::Text("Thrown Cube Params (F)");
 		ImGui::DragFloat("Cube Size", &m_cubeScale, 1.0f, 0.0f, 100.0f);
+		ImGui::Text("Cube Speed (hold F): %1.f", getCubeSpeed());
 	}
 
 }
@@ -1355,14 +1615,21 @@ void SceneController::drawStatsUI()
 	m_scene->drawStatsUI();
 }
 
+float SceneController::getCubeSpeed()
+{
+	const float CUBE_VELOCITY_SPEED_MIN = 70;
+	const float CUBE_VELOCITY_CHARGE_PER_SECOND = 300;
+	return m_cubeThrowDownTime > 0 ? CUBE_VELOCITY_SPEED_MIN + (ImGui::GetTime() - m_cubeThrowDownTime) * CUBE_VELOCITY_CHARGE_PER_SECOND : 0.f;
+}
+
 void SceneController::throwCube()
 {
-	const float CUBE_VELOCITY = 100;
+	const float CUBE_VELOCITY = 400;
 	const float CUBE_DENSITY = 20000.0f;
 
 	CFirstPersonCamera* camera = &getRenderer().getCamera();
-	PxVec3 eyePos = XMVECTORToPxVec4(camera->GetEyePt()).getXYZ();
-	PxVec3 lookAtPos = XMVECTORToPxVec4(camera->GetLookAtPt()).getXYZ();
+	PxVec3 eyePos = XMVECTORToPxVec4(SimpleScene::Inst()->GetEyePt()).getXYZ();
+	PxVec3 lookAtPos = XMVECTORToPxVec4(SimpleScene::Inst()->GetLookAtPt()).getXYZ();
 	PhysXController::Actor* cube = getPhysXController().spawnPhysXPrimitiveBox(PxTransform(eyePos), PxVec3(m_cubeScale, m_cubeScale, m_cubeScale), CUBE_DENSITY);
 	PxRigidDynamic* rigidDynamic = cube->getActor()->is<PxRigidDynamic>();
 	cube->setColor(DirectX::XMFLOAT4(1, 0, 0, 1));
@@ -1390,7 +1657,8 @@ void SceneController::throwCube()
 	m_Projectiles.push_back(p);
 	m_scene->addSceneActor(p);
 
-	getManager()->m_bNeedRefreshTree = true;
+//	BlastSceneTree::ins()->addProjectile(p);
+	SampleManager::ins()->m_bNeedRefreshTree = true;
 // Add By Lixu End
 }
 
@@ -1428,82 +1696,41 @@ void SceneController::clearProjectile()
 	m_Projectiles.clear();
 	m_UsedNames.clear();
 	m_ReusedNames.clear();
+
+//	BlastSceneTree::ins()->clearProjectile();
+	SampleManager::ins()->m_bNeedRefreshTree = true;
+}
+
+std::string SceneController::getProjectileName(PhysXSceneActor* projectile)
+{
+	return projectile->getName();
+}
+
+bool SceneController::getProjectileVisible(PhysXSceneActor* projectile)
+{
+	return !(projectile->getActor()->isHidden());
+}
+
+void SceneController::setProjectileVisible(PhysXSceneActor* projectile, bool val)
+{
+	projectile->getActor()->setHidden(!val);
 }
 
 void SceneController::ResetScene()
 {
 	clearProjectile();
+//	BlastSceneTree::ins()->clearProjectile();
 	m_scene->reloadAllActors();
+	SampleManager::ins()->m_bNeedRefreshTree = true;
 }
 
 void SceneController::ClearScene()
 {
 	clearProjectile();
+//	BlastSceneTree::ins()->clearProjectile();
 	m_scene->releaseAll();
-// Add By Lixu Begin
 	PhysXController& pc = getPhysXController();
 	pc.ClearOldCOllisions();
-// Add By Lixu End
-}
-
-bool SceneController::GetAssetDesc(const BlastAsset* asset, AssetList::ModelAsset& desc)
-{
-	SampleManager* pSampleManager = getManager();
-	SampleConfig* config = (SampleConfig*)&(pSampleManager->getConfig());
-	std::vector<AssetList::ModelAsset>& modelAssets = config->additionalAssetList.models;
-	std::vector<AssetList::ModelAsset>::iterator itModelAssets;
-	std::vector<SceneAsset*>& sceneAssets = m_scene->getAssets();
-	std::vector<SceneAsset*>::iterator itSceneAssets;
-
-	bool find = false;
-	for (itSceneAssets = sceneAssets.begin(); itSceneAssets != sceneAssets.end(); itSceneAssets++)
-	{
-		SceneAsset* sceneAsset = *itSceneAssets;
-		std::string id = sceneAsset->getID();
-		for (itModelAssets = modelAssets.begin(); itModelAssets != modelAssets.end(); itModelAssets++)
-		{
-			AssetList::ModelAsset& modelAsset = *itModelAssets;
-			if (modelAsset.id == id)
-			{
-				if (!modelAsset.isSkinned)
-				{
-					SimpleModelSceneAsset* pSimpleModelSceneAsset = (SimpleModelSceneAsset*)sceneAsset;
-					if (pSimpleModelSceneAsset->getAsset() == asset)
-					{
-						desc = modelAsset;
-						find = true;
-						break;
-					}					
-				}
-				else
-				{
-					SkinnedModelSceneAsset* pSkinnedModelSceneAsset = (SkinnedModelSceneAsset*)sceneAsset;
-					if (pSkinnedModelSceneAsset->getAsset() == asset)
-					{
-						desc = modelAsset;
-						find = true;
-						break;
-					}
-				}
-			}
-		}
-
-		if (find)
-		{
-			break;
-		}
-	}
-
-	return find;
-}
-
-void SceneController::GetProjectilesNames(std::vector<std::string>& projectilesNames)
-{
-	projectilesNames.clear();
-	std::vector<std::string>::iterator it = m_UsedNames.begin();
-	for (; it != m_UsedNames.end(); it++)
-	{
-		projectilesNames.push_back(*it);
-	}
+	SampleManager::ins()->m_bNeedRefreshTree = true;
 }
 // Add By Lixu End

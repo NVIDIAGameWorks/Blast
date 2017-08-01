@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::BBoxBasedAccelerator Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::BBoxBasedAccelerator Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -57,27 +57,27 @@ Inheritance diagram for Nv::Blast::BBoxBasedAccelerator:</div>
 <a href="class_nv_1_1_blast_1_1_b_box_based_accelerator-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#418025be8734287f5db6863f254b8725">BBoxBasedAccelerator</a> (<a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *mesh, int32_t resolution)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#3ed9ee4f95e167190f9ad263a21494d3">BBoxBasedAccelerator</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *mesh, int32_t resolution)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#2b6aeb41c4d89f9aa94702c7e73337bc">getNextFacet</a> ()</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#fac607b42cdfb95555f5822c3e7d6af7">setState</a> (const physx::PxVec3 &amp;p)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#48ba76f12ddf7779fcc95d052dc0ecfc">setState</a> (<a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *pos, <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *ed, <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> &amp;fc)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#1528052be86f88831e4960f73d4dba64">setState</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *pos, const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *ed, const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> &amp;fc)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#b8af0589b8c79c37fa683137d44f2ee0">~BBoxBasedAccelerator</a> ()</td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Accelerator which builds map from 3d grid to initial mesh facets. To find all facets which possibly intersect given one, it return all facets which are pointed by grid cells, which intersects with bounding box of given facet. To find all facets which possibly cover given point, all facets which are pointed by cells in column which contains given point are returned. <hr><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" name="418025be8734287f5db6863f254b8725"></a><!-- doxytag: member="Nv::Blast::BBoxBasedAccelerator::BBoxBasedAccelerator" ref="418025be8734287f5db6863f254b8725" args="(Mesh *mesh, int32_t resolution)" -->
+<a class="anchor" name="3ed9ee4f95e167190f9ad263a21494d3"></a><!-- doxytag: member="Nv::Blast::BBoxBasedAccelerator::BBoxBasedAccelerator" ref="3ed9ee4f95e167190f9ad263a21494d3" args="(const Mesh *mesh, int32_t resolution)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">Nv::Blast::BBoxBasedAccelerator::BBoxBasedAccelerator           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td>
           <td class="paramname"> <em>mesh</em>, </td>
         </tr>
         <tr>
@@ -174,26 +174,26 @@ Set state of accelerator to return all facets which possibly can cover given poi
 
 </div>
 </div><p>
-<a class="anchor" name="48ba76f12ddf7779fcc95d052dc0ecfc"></a><!-- doxytag: member="Nv::Blast::BBoxBasedAccelerator::setState" ref="48ba76f12ddf7779fcc95d052dc0ecfc" args="(Vertex *pos, Edge *ed, Facet &amp;fc)" -->
+<a class="anchor" name="1528052be86f88831e4960f73d4dba64"></a><!-- doxytag: member="Nv::Blast::BBoxBasedAccelerator::setState" ref="1528052be86f88831e4960f73d4dba64" args="(const Vertex *pos, const Edge *ed, const Facet &amp;fc)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void Nv::Blast::BBoxBasedAccelerator::setState           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *&nbsp;</td>
           <td class="paramname"> <em>pos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *&nbsp;</td>
           <td class="paramname"> <em>ed</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>fc</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -214,7 +214,7 @@ Set state of accelerator to return all facets which possibly can intersect given
   </table>
 </dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#56f80e1b826cf9afe783ef5095709a35">Nv::Blast::SpatialAccelerator</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#406b30c6eecd98771493fb182275d831">Nv::Blast::SpatialAccelerator</a>.</p>
 
 </div>
 </div><p>

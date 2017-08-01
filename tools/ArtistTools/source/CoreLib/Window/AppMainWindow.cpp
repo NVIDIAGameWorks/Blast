@@ -151,6 +151,8 @@ AppMainWindow::AppMainWindow(QWidget *parent, Qt::WindowFlags flags)
 		,_bookmarkActionGroup(0)
 		,_actionAddBookmark(0)
 		,_actionEditBookmarks(0)
+		, _recentMenu(NV_NULL)
+		, _recentFileRecordFile("RecentFiles", "File")
 {
 	setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 	setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
@@ -178,6 +180,8 @@ AppMainWindow::AppMainWindow(QWidget *parent, Qt::WindowFlags flags)
 	_progressDialog.close();    // prevent show one empty progress dialog when it runs.
 
 	m_bGizmoWithLocal = false;
+	m_bGizmoWithDepthTest = false;
+	m_bShowPlane = false;
 }
 
 void AppMainWindow::InitUI()
@@ -279,6 +283,8 @@ void AppMainWindow::InitMenuItems()
 
 	if (_connectionMode != 1)
 	{
+		connect(ui.menuBar, SIGNAL(triggered(QAction*)), this, SLOT(menu_item_triggered(QAction*)));
+
 		act = new QAction("Clear scene", this);
 		act->setShortcut(QKeySequence::New);
 		connect(act, SIGNAL(triggered()), this, SLOT(menu_clearScene()));
@@ -291,6 +297,15 @@ void AppMainWindow::InitMenuItems()
 		fileMenu->addAction(act);
 
 		fileMenu->addSeparator();
+
+		act = new QAction("Recents", this);
+		fileMenu->addAction(act);
+		_recentMenu = new QMenu("Recents", this);
+		act->setMenu(_recentMenu);
+
+		fileMenu->addSeparator();
+
+		_loadRecentFile();
 
 #ifndef NV_ARTISTTOOLS
 		fileMenu->addSeparator();
@@ -559,6 +574,7 @@ void AppMainWindow::InitMainTab()
 		panel->AddContent(_displayMeshesPanel);
 		ui.displayScrollAreaLayout->insertWidget(idx++, panel);
 		panel->SetTitle("Display Meshes");
+		panel->setVisible(false);
 	}
 
 	if (_connectionMode != 1)
@@ -792,9 +808,10 @@ bool AppMainWindow::openProject(QString fileName)
 	return false;
 }
 
-void AppMainWindow::processDragAndDrop(QString fname)
+void AppMainWindow::processDragAndDrop(const QStringList& fileNames)
 {
-	openProject(fname);
+	CoreLib::Inst()->SimpleScene_OpenFilesByDrop(fileNames);
+	updateUI();
 }
 
 void AppMainWindow::removeBookmark(const QString& name)
@@ -861,6 +878,33 @@ void AppMainWindow::ShowCurveEditor(int paramId)
 }
 #endif
 
+void AppMainWindow::menu_item_triggered(QAction* action)
+{
+	qDebug("%s", __FUNCTION__);
+#ifdef NV_ARTISTTOOLS
+
+	bool clickRecent = false;
+	for (int i = 0; i < _recentFileActions.count(); ++i)
+	{
+		if (_recentFileActions.at(i) == action)
+		{
+			clickRecent = true;
+			break;
+		}
+	}
+
+	if (clickRecent)
+	{
+		QStringList recentFile;
+		recentFile.push_back(action->text());
+		CoreLib::Inst()->SimpleScene_OpenFilesByDrop(recentFile);
+		return;
+	}
+
+	CoreLib::Inst()->menu_item_triggered(action);
+#endif // NV_ARTISTTOOLS
+}
+
 void AppMainWindow::menu_clearScene()
 {
 	SimpleScene::Inst()->Clear();
@@ -905,7 +949,9 @@ bool AppMainWindow::menu_openfbx()
 	*/
 
 	// dir and file will get in blast open asset dialog
-	return SimpleScene::Inst()->LoadSceneFromFbx("", "");
+	bool res = SimpleScene::Inst()->LoadSceneFromFbx("", "");
+	updateUI();
+	return res;
 }
 
 void AppMainWindow::menu_addBookmark()
@@ -1146,7 +1192,8 @@ char AppMainWindow::TestMouseScheme( Qt::KeyboardModifiers modifiers, Qt::MouseB
 	if (op != 0)
 		return op;
 
-	if (modifiers == Qt::KeyboardModifier(Qt::ControlModifier))
+	bool isKeyL = (GetAsyncKeyState('L') && 0x8000);
+	if (isKeyL) //if(modifiers == Qt::KeyboardModifier(Qt::ControlModifier))    // ctrl is used by Selection Tool
 	{
 		if (buttons == Qt::MouseButton(Qt::LeftButton))
 			return 'L';
@@ -1174,14 +1221,112 @@ char AppMainWindow::TestDragCamera( Qt::KeyboardModifiers modifiers, Qt::MouseBu
 	if(scheme == MAYA_SCHEME)
 	{
 		auto itr = _mayaScheme.find(input);
-		if(itr != _mayaScheme.end()) return itr.value();
+		if(itr != _mayaScheme.end())
+			return itr.value();
 	}
 	else
 	{		
 		auto itr = _maxScheme.find(input);
-		if(itr != _maxScheme.end()) return itr.value();
+		if(itr != _maxScheme.end())
+			return itr.value();
 	}
 	return 0;
+}
+
+void AppMainWindow::addRecentFile(const QString filePath)
+{
+	if (filePath.isEmpty())
+		return;
+
+	if (_recentFileRecordFile.getItems().count() > 0 && _recentFileRecordFile.getItems().first() == filePath)
+		return;
+
+	if (_recentFileActions.count() == 8)
+	{
+		QAction* act = _recentFileActions.last();
+		_recentMenu->removeAction(act);
+
+		_recentFileRecordFile.getItems().pop_back();
+		_recentFileActions.pop_back();
+	}
+
+	if (_recentFileRecordFile.isItemExist(filePath))
+	{
+		_resetRecentFile(filePath);
+		return;
+	}
+
+	QAction* act = new QAction(filePath, _recentMenu);
+	if (_recentFileActions.count() > 0)
+		_recentMenu->insertAction(_recentFileActions.first(), act);
+	else
+		_recentMenu->addAction(act);
+
+	_recentFileActions.push_front(act);
+
+	_recentFileRecordFile.getItems().push_front(filePath);
+
+	_saveRecentFile();
+}
+
+void AppMainWindow::_resetRecentFile(const QString filePath)
+{
+	if (filePath.isEmpty())
+		return;
+
+	if (_recentFileRecordFile.getItems().count() > 0 && _recentFileRecordFile.getItems().first() == filePath)
+		return;
+
+	if (!_recentFileRecordFile.isItemExist(filePath))
+		return;
+
+	QList<QAction*> actions;
+	for (int i = 0; i < _recentFileActions.count(); ++i)
+	{
+		QAction* act = _recentFileActions.at(i);
+		if (act->text() == filePath)
+			actions.push_front(act);
+		else
+			actions.push_back(act);
+	}
+
+	_recentMenu->addActions(actions);
+	_recentFileActions = actions;
+
+	QList<QString> filesTMP;
+	QList<QString>& filesCurrent = _recentFileRecordFile.getItems();
+	for (int i = 0; i < filesCurrent.count(); ++i)
+	{
+		QString item = filesCurrent.at(i);
+		if (item == filePath)
+			filesTMP.push_front(item);
+		else
+			filesTMP.push_back(item);
+	}
+	filesCurrent.clear();
+	filesCurrent = filesTMP;
+
+	_saveRecentFile();
+}
+
+void AppMainWindow::_loadRecentFile()
+{
+	QString recentFileRecordFile = QCoreApplication::applicationDirPath() + "/RecentFiles.rfs";
+	_recentFileRecordFile.load(recentFileRecordFile);
+
+	QList<QString> recentFiles = _recentFileRecordFile.getItems();
+	_recentFileRecordFile.getItems().clear();
+
+	for (int i = recentFiles.count() - 1; i >= 0; --i)
+	{
+		addRecentFile(recentFiles.at(i));
+	}
+}
+
+void AppMainWindow::_saveRecentFile()
+{
+	QString recentFileRecordFile = QCoreApplication::applicationDirPath() + "/RecentFiles.rfs";
+	_recentFileRecordFile.save(recentFileRecordFile);
 }
 
 QString AppMainWindow::OpenTextureFile(QString title)
@@ -1268,7 +1413,7 @@ void AppMainWindow::updateMainToolbar()
 bool AppMainWindow::menu_openProject()
 {
 	QString lastDir = _lastFilePath;
-	QString fileName = QFileDialog::getOpenFileName(this, "Open Hair Project File", lastDir, "Hair Project File (*.furproj)");
+	QString fileName = QFileDialog::getOpenFileName(this, "Open Project File", lastDir, "Project File (*.blastProj)");
 
 	return openProject(fileName);
 }
@@ -1318,7 +1463,7 @@ bool AppMainWindow::menu_saveProjectAs()
 	char message[1024];
 
 	QString lastDir = _lastFilePath;
-	QString fileName = QFileDialog::getSaveFileName(this, "Save Hair Project File", lastDir, "Hair Project File (*.furproj)");
+	QString fileName = QFileDialog::getSaveFileName(this, "Save Project File", lastDir, "Project File (*.blastProj)");
 	if (!fileName.isEmpty())
 	{
 		QFileInfo fileInfo(fileName);

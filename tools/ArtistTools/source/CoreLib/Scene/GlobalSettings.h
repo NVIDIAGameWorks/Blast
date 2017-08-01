@@ -148,7 +148,11 @@ public:
 
 	bool isBindPose() { return m_animationIndex == 0; }
 	float getSceneUnitInCentimeters();
+	static float getSceneUnitInCentimeters(int unitIndex);
 	void setSceneUnitIndex(int i);
+	void setSceneUnitByUnitInCm(float fUnitInCm);
+	static int identifyUnitByUnitInCm(float fUnitInCm);
+	static bool isSupportedUnitByUnitInCm(float fUnitInCm);
 
 	void setTimeStep(float timeStep) { m_timeStep = timeStep; }
 

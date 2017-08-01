@@ -1,0 +1,99 @@
+# This code contains NVIDIA Confidential Information and is disclosed to you
+# under a form of NVIDIA software license agreement provided separately to you.
+#
+# Notice
+# NVIDIA Corporation and its licensors retain all intellectual property and
+# proprietary rights in and to this software and related documentation and
+# any modifications thereto. Any use, reproduction, disclosure, or
+# distribution of this software and related documentation without an express
+# license agreement from NVIDIA Corporation is strictly prohibited.
+#
+# ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+# NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+# THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+# MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+#
+# Information and code furnished is believed to be accurate and reliable.
+# However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+# information or for any infringement of patents or other rights of third parties that may
+# result from its use. No license is granted by implication or otherwise under any patent
+# or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+# This code supersedes and replaces all information previously supplied.
+# NVIDIA Corporation products are not authorized for use as critical
+# components in life support devices or systems without express written approval of
+# NVIDIA Corporation.
+#
+# Copyright (c) 2017 NVIDIA Corporation. All rights reserved.
+
+
+@0xf4df9a42d5842b01;
+
+using Cxx = import "/capnp/c++.capnp";
+
+using TK = import "NvBlastExtTkSerialization.capn";
+
+$Cxx.namespace("Nv::Blast::Serialization");
+
+struct ExtPxAsset
+{
+	asset @0 :TK.TkAsset;
+	chunks @1 :List(ExtPxChunk);
+	subchunks @2 :List(ExtPxSubchunk);
+	uniformInitialBondHealth @3 :Float32;
+	bondHealths @4 :List(Float32);
+	uniformInitialLowerSupportChunkHealth @5 :Float32;
+	supportChunkHealths @6 :List(Float32);
+}
+
+struct ExtPxChunk
+{
+	firstSubchunkIndex @0 :UInt32;
+	subchunkCount @1 :UInt32;
+	isStatic @2 :Bool;
+}
+
+struct ExtPxSubchunk
+{
+	transform @0 :PxTransform;
+	geometry @1 :PxConvexMeshGeometry;
+}
+
+struct PxConvexMeshGeometry
+{
+	scale @0 :PxMeshScale;
+	convexMesh @1 :Data;
+	meshFlags @2 :UInt8;
+
+	enum Type
+	{
+		eSPHERE @0;
+		ePLANE @1;
+		eCAPSULE @2;
+		eBOX @3;
+		eCONVEXMESH @4;
+		eTRIANGLEMESH @5;
+		eHEIGHTFIELD @6;
+	}
+
+	type @3 :Type;
+}
+
+struct PxQuat
+{
+	x @0 :Float32;
+	y @1 :Float32;
+	z @2 :Float32;
+	w @3 :Float32;
+}
+
+struct PxMeshScale
+{
+	scale @0 :TK.PxVec3;
+	rotation @1 :PxQuat;
+}
+
+struct PxTransform
+{
+	q @0 :PxQuat;
+	p @1 :TK.PxVec3;
+}

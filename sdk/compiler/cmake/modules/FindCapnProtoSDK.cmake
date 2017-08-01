@@ -1,5 +1,6 @@
 # - Try to find CapnProto SDK
 # - Sets CAPNPROTOSDK_LIBRARIES - list of the libraries found
+# - Sets CAPNPROTOSDK_SOURCE_FILES 
 # - Sets CAPNPROTOSDK_INCLUDE_DIRS 
 
 include(FindPackageHandleStandardArgs)
@@ -43,7 +44,11 @@ elseif(TARGET_BUILD_PLATFORM STREQUAL "XboxOne")
 	SET(CMAKE_FIND_LIBRARY_PREFIXES "lib")
 elseif(TARGET_BUILD_PLATFORM STREQUAL "linux")
 	SET(LIB_PATH ${CAPNPROTOSDK_PATH}/bin/ubuntu64)
-    SET(EXE_PATH ${CAPNPROTOSDK_PATH}/tools/ubuntu64)
+	if (UE4_LINUX_CROSSCOMPILE)
+		SET(EXE_PATH ${CAPNPROTOSDK_PATH}/tools/win32)
+	else()
+    	SET(EXE_PATH ${CAPNPROTOSDK_PATH}/tools/ubuntu64)
+    endif()
 	SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 	SET(CMAKE_FIND_LIBRARY_PREFIXES "lib")
 endif()
@@ -85,11 +90,11 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(CAPNPROTOSDK
 	CAPNP_EXECUTABLE
 	CAPNPC_CXX_EXECUTABLE
 	
-	CAPNPROTO_LIB
-	KJ_LIB
+	#CAPNPROTO_LIB
+	#KJ_LIB
 	
-	CAPNPROTO_LIB_DEBUG
-	KJ_LIB_DEBUG
+	#CAPNPROTO_LIB_DEBUG
+	#KJ_LIB_DEBUG
 )
 
 if (CAPNPROTOSDK_FOUND)
@@ -103,9 +108,30 @@ if (CAPNPROTOSDK_FOUND)
 	)
 	
 	SET(CAPNPROTOSDK_LIBRARIES "" CACHE STRING "")
+	SET(CAPNPROTOSDK_SOURCE_FILES "")
 	
-	LIST(APPEND CAPNPROTOSDK_LIBRARIES 
-		optimized ${CAPNPROTO_LIB} debug ${CAPNPROTO_LIB_DEBUG}
-		optimized ${KJ_LIB} debug ${KJ_LIB_DEBUG}
-	)
+	IF ((TARGET_BUILD_PLATFORM STREQUAL "PLATFROM_USING_PREBUILT_LIBS"))
+		LIST(APPEND CAPNPROTOSDK_LIBRARIES 
+			optimized ${CAPNPROTO_LIB} debug ${CAPNPROTO_LIB_DEBUG}
+			optimized ${KJ_LIB} debug ${KJ_LIB_DEBUG}
+			)
+	ELSE()
+		#Include source files for the "lite" version only, there aren't too many it avoids needing many permutations of static libs
+		LIST(APPEND CAPNPROTOSDK_SOURCE_FILES
+			${CAPNPROTOSDK_PATH}/src/capnp/arena.c++
+			${CAPNPROTOSDK_PATH}/src/capnp/blob.c++
+			${CAPNPROTOSDK_PATH}/src/capnp/layout.c++
+			${CAPNPROTOSDK_PATH}/src/capnp/message.c++
+			${CAPNPROTOSDK_PATH}/src/capnp/serialize.c++
+
+			${CAPNPROTOSDK_PATH}/src/kj/array.c++
+			${CAPNPROTOSDK_PATH}/src/kj/common.c++
+			${CAPNPROTOSDK_PATH}/src/kj/debug.c++
+			${CAPNPROTOSDK_PATH}/src/kj/exception.c++
+			${CAPNPROTOSDK_PATH}/src/kj/io.c++
+			${CAPNPROTOSDK_PATH}/src/kj/mutex.c++
+			${CAPNPROTOSDK_PATH}/src/kj/string.c++
+			${CAPNPROTOSDK_PATH}/src/kj/units.c++
+			)
+	ENDIF()
 endif()

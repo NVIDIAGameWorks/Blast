@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/extensions/authoring/include/NvBlastExtAuthoringMesh.h Source File</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/extensions/authoring/include/NvBlastExtAuthoringMesh.h Source File</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -35,83 +35,94 @@
       <li><a href="globals.html"><span>File&nbsp;Members</span></a></li>
     </ul>
   </div>
-<h1>sdk/extensions/authoring/include/NvBlastExtAuthoringMesh.h</h1><a href="_nv_blast_ext_authoring_mesh_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment">* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.</span>
-<a name="l00003"></a>00003 <span class="comment">*</span>
-<a name="l00004"></a>00004 <span class="comment">* NVIDIA CORPORATION and its licensors retain all intellectual property</span>
-<a name="l00005"></a>00005 <span class="comment">* and proprietary rights in and to this software, related documentation</span>
-<a name="l00006"></a>00006 <span class="comment">* and any modifications thereto.  Any use, reproduction, disclosure or</span>
-<a name="l00007"></a>00007 <span class="comment">* distribution of this software and related documentation without an express</span>
-<a name="l00008"></a>00008 <span class="comment">* license agreement from NVIDIA CORPORATION is strictly prohibited.</span>
-<a name="l00009"></a>00009 <span class="comment">*/</span>
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef NVBLASTAUTHORINGMESH_H</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTAUTHORINGMESH_H</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
-<a name="l00014"></a>00014 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_types_8h.html">NvBlastExtAuthoringTypes.h</a>"</span>
-<a name="l00015"></a>00015 <span class="preprocessor">#include &lt;vector&gt;</span>
-<a name="l00016"></a>00016 
-<a name="l00017"></a>00017 
-<a name="l00018"></a>00018 <span class="keyword">namespace </span>Nv
-<a name="l00019"></a>00019 {
-<a name="l00020"></a>00020 <span class="keyword">namespace </span>Blast
-<a name="l00021"></a>00021 {
-<a name="l00022"></a>00022 
-<a name="l00026"></a><a class="code" href="class_nv_1_1_blast_1_1_mesh.html">00026</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>
-<a name="l00027"></a>00027 {
-<a name="l00028"></a>00028 <span class="keyword">public</span>:
-<a name="l00029"></a>00029 
-<a name="l00039"></a>00039     <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#0201fbe5f71b595be110e26eda711882">Mesh</a>(physx::PxVec3* position, physx::PxVec3* normals, physx::PxVec2* uv, uint32_t verticesCount, uint32_t* indices, uint32_t indicesCount);
-<a name="l00040"></a>00040 
-<a name="l00050"></a>00050     <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#0201fbe5f71b595be110e26eda711882">Mesh</a>(<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* vertices, <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* edges, <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>* facets, uint32_t posCount, uint32_t edgesCount, uint32_t facetsCount);
+<h1>sdk/extensions/authoring/include/NvBlastExtAuthoringMesh.h</h1><a href="_nv_blast_ext_authoring_mesh_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">// This code contains NVIDIA Confidential Information and is disclosed to you</span>
+<a name="l00002"></a>00002 <span class="comment">// under a form of NVIDIA software license agreement provided separately to you.</span>
+<a name="l00003"></a>00003 <span class="comment">//</span>
+<a name="l00004"></a>00004 <span class="comment">// Notice</span>
+<a name="l00005"></a>00005 <span class="comment">// NVIDIA Corporation and its licensors retain all intellectual property and</span>
+<a name="l00006"></a>00006 <span class="comment">// proprietary rights in and to this software and related documentation and</span>
+<a name="l00007"></a>00007 <span class="comment">// any modifications thereto. Any use, reproduction, disclosure, or</span>
+<a name="l00008"></a>00008 <span class="comment">// distribution of this software and related documentation without an express</span>
+<a name="l00009"></a>00009 <span class="comment">// license agreement from NVIDIA Corporation is strictly prohibited.</span>
+<a name="l00010"></a>00010 <span class="comment">//</span>
+<a name="l00011"></a>00011 <span class="comment">// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES</span>
+<a name="l00012"></a>00012 <span class="comment">// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO</span>
+<a name="l00013"></a>00013 <span class="comment">// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,</span>
+<a name="l00014"></a>00014 <span class="comment">// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.</span>
+<a name="l00015"></a>00015 <span class="comment">//</span>
+<a name="l00016"></a>00016 <span class="comment">// Information and code furnished is believed to be accurate and reliable.</span>
+<a name="l00017"></a>00017 <span class="comment">// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such</span>
+<a name="l00018"></a>00018 <span class="comment">// information or for any infringement of patents or other rights of third parties that may</span>
+<a name="l00019"></a>00019 <span class="comment">// result from its use. No license is granted by implication or otherwise under any patent</span>
+<a name="l00020"></a>00020 <span class="comment">// or patent rights of NVIDIA Corporation. Details are subject to change without notice.</span>
+<a name="l00021"></a>00021 <span class="comment">// This code supersedes and replaces all information previously supplied.</span>
+<a name="l00022"></a>00022 <span class="comment">// NVIDIA Corporation products are not authorized for use as critical</span>
+<a name="l00023"></a>00023 <span class="comment">// components in life support devices or systems without express written approval of</span>
+<a name="l00024"></a>00024 <span class="comment">// NVIDIA Corporation.</span>
+<a name="l00025"></a>00025 <span class="comment">//</span>
+<a name="l00026"></a>00026 <span class="comment">// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.</span>
+<a name="l00027"></a>00027 
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 <span class="preprocessor">#ifndef NVBLASTAUTHORINGMESH_H</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTAUTHORINGMESH_H</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_types_8h.html">NvBlastExtAuthoringTypes.h</a>"</span>
+<a name="l00033"></a>00033 
+<a name="l00034"></a>00034 <span class="keyword">namespace </span>Nv
+<a name="l00035"></a>00035 {
+<a name="l00036"></a>00036 <span class="keyword">namespace </span>Blast
+<a name="l00037"></a>00037 {
+<a name="l00038"></a>00038 
+<a name="l00042"></a><a class="code" href="class_nv_1_1_blast_1_1_mesh.html">00042</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>
+<a name="l00043"></a>00043 {
+<a name="l00044"></a>00044 <span class="keyword">public</span>:
+<a name="l00045"></a><a class="code" href="class_nv_1_1_blast_1_1_mesh.html#9b5fbdd369ae324448c536ceabe82ad7">00045</a>     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#9b5fbdd369ae324448c536ceabe82ad7">~Mesh</a>() {}
+<a name="l00046"></a>00046 
+<a name="l00050"></a>00050     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#df6faa07b98b634b86a198ad4a6fcc14">release</a>() = 0;
 <a name="l00051"></a>00051 
-<a name="l00052"></a>00052     <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#fb8b13a1241cd92765f4323ba028dd54">~Mesh</a>();
-<a name="l00053"></a>00053 
-<a name="l00057"></a>00057     <span class="keywordtype">bool</span>                <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#b89e005dd566eef92a0bc8e3eee2f7b6">isValid</a>();
-<a name="l00058"></a>00058 
-<a name="l00062"></a>00062     <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>*             <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#921e7410a8d34c759d2f0be60a312cfe">getVertices</a>();
-<a name="l00063"></a>00063 
-<a name="l00067"></a>00067     <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>*               <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#efdd2c7000fbdfb573fdc88ba58a6156">getEdges</a>();
-<a name="l00068"></a>00068 
-<a name="l00072"></a>00072     <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>*              <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#5ddbe00d0d58011bcadf8fd1c3a15d44">getFacetsBuffer</a>();
-<a name="l00073"></a>00073 
-<a name="l00077"></a>00077     <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>*              <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#e881276cc0a6199342224c4a189d5f30">getFacet</a>(int32_t facet);
-<a name="l00078"></a>00078 
-<a name="l00082"></a>00082     uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#44ee539d298fdb52e756c278eb06a8fd">getEdgesCount</a>();
-<a name="l00083"></a>00083 
-<a name="l00087"></a>00087     uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#b3b4fc4130ba757b01d8a7736bd5087f">getVerticesCount</a>();
-<a name="l00088"></a>00088 
-<a name="l00092"></a>00092     uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#d87f429c566a65878b965aa36754654a">getFacetCount</a>();
-<a name="l00093"></a>00093 
-<a name="l00097"></a>00097     physx::PxBounds3&amp;   <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#44bd529fdb98f8f49a52117a7ffc769e">getBoundingBox</a>();
-<a name="l00098"></a>00098 
-<a name="l00102"></a>00102     <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#56b3d7927e8fe50993dc61e063d5c2cd">recalculateBoundingBox</a>();
-<a name="l00103"></a>00103 
-<a name="l00108"></a>00108     <span class="keywordtype">float</span>               <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#71ddc172ff2bb43df0944f07d2494c63">getMeshVolume</a>();
-<a name="l00109"></a>00109 
-<a name="l00110"></a>00110 <span class="keyword">private</span>:
-<a name="l00111"></a>00111     std::vector&lt;Vertex&gt; mVertices;
-<a name="l00112"></a>00112     std::vector&lt;Edge&gt;   mEdges;
-<a name="l00113"></a>00113     std::vector&lt;Facet&gt;  mFacets;
-<a name="l00114"></a>00114     physx::PxBounds3    mBounds;
-<a name="l00115"></a>00115 };
+<a name="l00055"></a>00055     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#cc7ba66081cfd2bd55c5eae7d6053c71">isValid</a>() <span class="keyword">const</span> = 0;
+<a name="l00056"></a>00056 
+<a name="l00060"></a>00060     <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>*             <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#55945b655bb1cb9fed0d481497942c71">getVerticesWritable</a>() = 0;
+<a name="l00061"></a>00061 
+<a name="l00065"></a>00065     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>*       <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#927148143ec2335c9ed6dd9c65215196">getVertices</a>() <span class="keyword">const</span> = 0;
+<a name="l00066"></a>00066 
+<a name="l00067"></a>00067 
+<a name="l00071"></a>00071     <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>*               <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#c3e5b150bd16d7f22b22fb571de9004f">getEdgesWritable</a>() = 0;
+<a name="l00072"></a>00072 
+<a name="l00076"></a>00076     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>*         <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#085ffcc67f9cd938f93d3aa43a0d0bf0">getEdges</a>() <span class="keyword">const</span> = 0;
+<a name="l00077"></a>00077 
+<a name="l00081"></a>00081     <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>*              <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#480c3919561789e75df950aea69fec4a">getFacetsBufferWritable</a>() = 0;
+<a name="l00082"></a>00082 
+<a name="l00086"></a>00086     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>*        <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#dcee600d1e263eedc13561b99c7ea762">getFacetsBuffer</a>() <span class="keyword">const</span> = 0;
+<a name="l00087"></a>00087 
+<a name="l00091"></a>00091     <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>*              <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#2f6a3389000c02e892d4514fd1322765">getFacetWritable</a>(int32_t facet) = 0;
+<a name="l00095"></a>00095     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>*        <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#1737163f2dc8fe4456f5df27ab5740b8">getFacet</a>(int32_t facet) <span class="keyword">const</span> = 0;
+<a name="l00096"></a>00096 
+<a name="l00100"></a>00100     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#fc8859fe20911e2ab593b9075223a36a">getEdgesCount</a>() <span class="keyword">const</span> = 0;
+<a name="l00101"></a>00101 
+<a name="l00105"></a>00105     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#b86107cfd02392fd2a49b79fe0367887">getVerticesCount</a>() <span class="keyword">const</span> = 0;
+<a name="l00106"></a>00106 
+<a name="l00110"></a>00110     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#5bb922c1dcb50c67e2105f84454019af">getFacetCount</a>() <span class="keyword">const</span> = 0;
+<a name="l00111"></a>00111 
+<a name="l00115"></a>00115     <span class="keyword">virtual</span> <span class="keyword">const</span> physx::PxBounds3&amp; <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#b14c86e03b94b1d2cb2bc691009f04b5">getBoundingBox</a>() <span class="keyword">const</span> = 0;
 <a name="l00116"></a>00116 
-<a name="l00117"></a>00117 
-<a name="l00130"></a>00130 <span class="keywordtype">void</span>    <a class="code" href="namespace_nv_1_1_blast.html#938541832c7842e011a5420b71919d71">setCuttingBox</a>(<span class="keyword">const</span> physx::PxVec3&amp; point, <span class="keyword">const</span> physx::PxVec3&amp; <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#1c8d1bbcf531b04e6ff52f5357987794">normal</a>, <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, <span class="keywordtype">float</span> size, int32_t <span class="keywordtype">id</span>);
-<a name="l00138"></a>00138 <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>*   <a class="code" href="namespace_nv_1_1_blast.html#c5ece1f5a36e237ea3220978ab7403df">getCuttingBox</a>(<span class="keyword">const</span> physx::PxVec3&amp; point, <span class="keyword">const</span> physx::PxVec3&amp; <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#1c8d1bbcf531b04e6ff52f5357987794">normal</a>, <span class="keywordtype">float</span> size, int32_t <span class="keywordtype">id</span>);
-<a name="l00139"></a>00139 
-<a name="l00145"></a>00145 <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>*   <a class="code" href="namespace_nv_1_1_blast.html#40cd745e56e5d458c5f706c0da2621c5">getBigBox</a>(<span class="keyword">const</span> physx::PxVec3&amp; point, <span class="keywordtype">float</span> size);
-<a name="l00146"></a>00146 
-<a name="l00160"></a>00160 <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* <a class="code" href="namespace_nv_1_1_blast.html#995e211b2f4fe08b316a096386bed658">getNoisyCuttingBoxPair</a>(<span class="keyword">const</span> physx::PxVec3&amp; point, <span class="keyword">const</span> physx::PxVec3&amp; <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#1c8d1bbcf531b04e6ff52f5357987794">normal</a>, <span class="keywordtype">float</span> size, <span class="keywordtype">float</span> jaggedPlaneSize, uint32_t resolution, int32_t <span class="keywordtype">id</span>, <span class="keywordtype">float</span> amplitude, <span class="keywordtype">float</span> frequency, int32_t octaves, int32_t seed);
-<a name="l00161"></a>00161 
-<a name="l00162"></a>00162 
-<a name="l00168"></a>00168 <span class="keywordtype">void</span> <a class="code" href="namespace_nv_1_1_blast.html#4b6d7dcb941bd80ac6b1487f87faff95">inverseNormalAndSetIndices</a>(<a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, int32_t <span class="keywordtype">id</span>);
-<a name="l00169"></a>00169 
-<a name="l00170"></a>00170 } <span class="comment">// namespace Blast</span>
-<a name="l00171"></a>00171 } <span class="comment">// namespace Nv</span>
-<a name="l00172"></a>00172 
-<a name="l00173"></a>00173 
-<a name="l00174"></a>00174 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORINGMESH_H</span>
+<a name="l00120"></a>00120     <span class="keyword">virtual</span> physx::PxBounds3&amp;   <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#29110bbb30c0de321bd0de1812750c30">getBoundingBoxWritable</a>() = 0;
+<a name="l00121"></a>00121 
+<a name="l00122"></a>00122 
+<a name="l00126"></a>00126     <span class="keyword">virtual</span> <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#9c512712bbe2a2e16bd957baeccd2f57">setMaterialId</a>(int32_t* materialIds) = 0;
+<a name="l00127"></a>00127 
+<a name="l00131"></a>00131     <span class="keyword">virtual</span> <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#52f8e09ebf69b53a5fd720165ab8629d">setSmoothingGroup</a>(int32_t* smoothingGroup) = 0;
+<a name="l00132"></a>00132 
+<a name="l00136"></a>00136     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#24544d5b6a315cee19d67da9ed0fd8dd">recalculateBoundingBox</a>() = 0;
+<a name="l00137"></a>00137 
+<a name="l00142"></a>00142     <span class="keyword">virtual</span> <span class="keywordtype">float</span>               <a class="code" href="class_nv_1_1_blast_1_1_mesh.html#220f3c64f6a192843ab44c3728960820">getMeshVolume</a>() = 0;
+<a name="l00143"></a>00143 };
+<a name="l00144"></a>00144 
+<a name="l00145"></a>00145 } <span class="comment">// namespace Blast</span>
+<a name="l00146"></a>00146 } <span class="comment">// namespace Nv</span>
+<a name="l00147"></a>00147 
+<a name="l00148"></a>00148 
+<a name="l00149"></a>00149 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORINGMESH_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

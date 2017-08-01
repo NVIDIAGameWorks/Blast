@@ -397,7 +397,7 @@ void DisplayPreferencesPanel::on_btnPlaylistAddProj_clicked()
 	{
 		lastPath = PlaylistsLoader::mediaPath;
 	}
-	QString fileNameInput = QFileDialog::getOpenFileName(this, "Open Hair Project File", lastPath, "Hair Project File (*.furproj)");
+	QString fileNameInput = QFileDialog::getOpenFileName(this, "Open Project File", lastPath, "Project File (*.blastProj)");
 	if (!QFile::exists(fileNameInput))
 		return;
 	std::string tmp = fileNameInput.toUtf8().data();
@@ -561,6 +561,7 @@ void PlaylistsLoader::ReleasePlaylistParamsContext()
 
 void PlaylistsLoader::loadPlaylistsFromMediaPath()
 {
+	std::string t1 = projectPath.toUtf8().data();
 	if (projectPath.isEmpty())
 	{
 		QString appDir = qApp->applicationDirPath();
@@ -579,7 +580,12 @@ void PlaylistsLoader::loadPlaylistsFromMediaPath()
 				projectPath = dirTmp.absolutePath();
 			}
 		}
-		if (!projectPath.isEmpty())
+		if (projectPath.isEmpty())
+		{
+			projectPath = qApp->applicationDirPath();
+			mediaPath = projectPath;
+		}
+		else
 		{
 			if (dirTmp.cd(".."))
 			{
@@ -688,30 +694,30 @@ bool PlaylistsLoader::saveProjectsInPlaylist(int idx, QList<QString>& projects)
 	objects[numObjects++] = params;
 	NvParameterized::Interface* iface = static_cast<NvParameterized::Interface*>(params);
 
+	std::vector<std::string> strArray;
+	std::vector<const char*> strOutput;
+
 	if (1)
 	{
 		nvidia::parameterized::PlaylistParams* params = static_cast<nvidia::parameterized::PlaylistParams*>(iface);
 		nvidia::parameterized::PlaylistParamsNS::ParametersStruct& targetDesc = params->parameters();
 
 		NvParameterized::Handle handle(iface);
-		if (iface->getParameterHandle("furprojFilePaths", handle) == NvParameterized::ERROR_NONE)
+		if (iface->getParameterHandle("blastProjFilePaths", handle) == NvParameterized::ERROR_NONE)
 		{
 			int num = projects.size();
-
-			std::vector<std::string> strArray;
-			const char** strOutput = new const char*[num];
+			strArray.resize(num);
+			strOutput.resize(num);
 
 			for (int i = 0; i < num; i++)
 			{
 				std::string proj = projects[i].toUtf8().data();
-				strArray.push_back(proj);
+				strArray[i] = proj;
 				strOutput[i] = strArray[i].c_str();
 			}
 
 			handle.resizeArray(num);
-			handle.setParamStringArray(strOutput, num);
-
-			delete[] strOutput;
+			handle.setParamStringArray(&strOutput[0], num);
 		}
 	}
 
@@ -762,6 +768,8 @@ QString PlaylistsLoader::convertToAbsoluteFilePath(QString& filePath)
 
 QString PlaylistsLoader::convertToSaveingFilePath(QString& filePath)
 {
+	std::string t1 = mediaPath.toUtf8().data();
+	std::string t2 = projectPath.toUtf8().data();
 	QString fname;
 	bool bCanBeRelativePath = false;
 	bool bAbsPath = (filePath.indexOf(':') >= 0);
@@ -771,7 +779,7 @@ QString PlaylistsLoader::convertToSaveingFilePath(QString& filePath)
 		{
 			QFileInfo fi(filePath);
 			int pos = fi.absoluteFilePath().indexOf(mediaPath, Qt::CaseInsensitive);
-			if (pos >= 0)
+			if (pos >= 0 && mediaPath.length())
 			{
 				// convert to relative path
 				fname = filePath.right(filePath.size() - (pos + mediaPath.size() + 1));
@@ -800,6 +808,7 @@ QString PlaylistsLoader::convertToSaveingFilePath(QString& filePath)
 	{
 		fname = filePath;
 	}
+	std::string tmp3 = fname.toUtf8().data();
 	QFileInfo fi(mediaPath + "/" + fname);
 	std::string tmp = fi.absoluteFilePath().toUtf8().data();
 	if (!QFile::exists(fi.absoluteFilePath()))
@@ -853,7 +862,7 @@ int PlaylistsLoader::getProjectsInPlaylist(int idx, QList<QString>& projects)
 			nvidia::parameterized::PlaylistParams* params = static_cast<nvidia::parameterized::PlaylistParams*>(iface);
 			nvidia::parameterized::PlaylistParamsNS::ParametersStruct& srcDesc = params->parameters();
 			NvParameterized::Handle handle(iface);
-			if (iface->getParameterHandle("furprojFilePaths", handle) == NvParameterized::ERROR_NONE)
+			if (iface->getParameterHandle("blastProjFilePaths", handle) == NvParameterized::ERROR_NONE)
 			{
 				int arraySize;
 				handle.getArraySize(arraySize);

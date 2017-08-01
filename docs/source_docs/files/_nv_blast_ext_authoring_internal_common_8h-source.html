@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/extensions/authoring/source/NvBlastExtAuthoringInternalCommon.h Source File</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/extensions/authoring/source/NvBlastExtAuthoringInternalCommon.h Source File</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -35,175 +35,237 @@
       <li><a href="globals.html"><span>File&nbsp;Members</span></a></li>
     </ul>
   </div>
-<h1>sdk/extensions/authoring/source/NvBlastExtAuthoringInternalCommon.h</h1><a href="_nv_blast_ext_authoring_internal_common_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment">* Copyright (c) 2017, NVIDIA CORPORATION.  All rights reserved.</span>
-<a name="l00003"></a>00003 <span class="comment">*</span>
-<a name="l00004"></a>00004 <span class="comment">* NVIDIA CORPORATION and its licensors retain all intellectual property</span>
-<a name="l00005"></a>00005 <span class="comment">* and proprietary rights in and to this software, related documentation</span>
-<a name="l00006"></a>00006 <span class="comment">* and any modifications thereto.  Any use, reproduction, disclosure or</span>
-<a name="l00007"></a>00007 <span class="comment">* distribution of this software and related documentation without an express</span>
-<a name="l00008"></a>00008 <span class="comment">* license agreement from NVIDIA CORPORATION is strictly prohibited.</span>
-<a name="l00009"></a>00009 <span class="comment">*/</span>
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef NVBLASTINTERNALCOMMON_H</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTINTERNALCOMMON_H</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span><span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_types_8h.html">NvBlastExtAuthoringTypes.h</a>"</span>
-<a name="l00014"></a>00014 
-<a name="l00015"></a>00015 <span class="keyword">using namespace </span>physx;
-<a name="l00016"></a>00016 
-<a name="l00017"></a>00017 <span class="keyword">namespace </span>Nv
-<a name="l00018"></a>00018 {
-<a name="l00019"></a>00019 <span class="keyword">namespace </span>Blast
-<a name="l00020"></a>00020 {
-<a name="l00021"></a>00021 
-<a name="l00025"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">00025</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">EdgeWithParent</a>
-<a name="l00026"></a>00026 {
-<a name="l00027"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">00027</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a>, <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#2861443c10d54373941fb00045ec3128">e</a>; <span class="comment">// Starting and ending vertices</span>
-<a name="l00028"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">00028</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a>; <span class="comment">// Parent facet index</span>
-<a name="l00029"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#a37d68282f0ac6ec2f5f1e277a10d04f">00029</a>     <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#a37d68282f0ac6ec2f5f1e277a10d04f">EdgeWithParent</a>() : <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a>(0), <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#2861443c10d54373941fb00045ec3128">e</a>(0), <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a>(0) {}
-<a name="l00030"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#4cc936f9767b4a0080329dea859f70c0">00030</a>     <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#4cc936f9767b4a0080329dea859f70c0">EdgeWithParent</a>(int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a>, int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#2861443c10d54373941fb00045ec3128">e</a>, int32_t p) : s(s), e(e), <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a>(p) {}
-<a name="l00031"></a>00031 };
-<a name="l00032"></a>00032 
+<h1>sdk/extensions/authoring/source/NvBlastExtAuthoringInternalCommon.h</h1><a href="_nv_blast_ext_authoring_internal_common_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">// This code contains NVIDIA Confidential Information and is disclosed to you</span>
+<a name="l00002"></a>00002 <span class="comment">// under a form of NVIDIA software license agreement provided separately to you.</span>
+<a name="l00003"></a>00003 <span class="comment">//</span>
+<a name="l00004"></a>00004 <span class="comment">// Notice</span>
+<a name="l00005"></a>00005 <span class="comment">// NVIDIA Corporation and its licensors retain all intellectual property and</span>
+<a name="l00006"></a>00006 <span class="comment">// proprietary rights in and to this software and related documentation and</span>
+<a name="l00007"></a>00007 <span class="comment">// any modifications thereto. Any use, reproduction, disclosure, or</span>
+<a name="l00008"></a>00008 <span class="comment">// distribution of this software and related documentation without an express</span>
+<a name="l00009"></a>00009 <span class="comment">// license agreement from NVIDIA Corporation is strictly prohibited.</span>
+<a name="l00010"></a>00010 <span class="comment">//</span>
+<a name="l00011"></a>00011 <span class="comment">// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES</span>
+<a name="l00012"></a>00012 <span class="comment">// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO</span>
+<a name="l00013"></a>00013 <span class="comment">// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,</span>
+<a name="l00014"></a>00014 <span class="comment">// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.</span>
+<a name="l00015"></a>00015 <span class="comment">//</span>
+<a name="l00016"></a>00016 <span class="comment">// Information and code furnished is believed to be accurate and reliable.</span>
+<a name="l00017"></a>00017 <span class="comment">// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such</span>
+<a name="l00018"></a>00018 <span class="comment">// information or for any infringement of patents or other rights of third parties that may</span>
+<a name="l00019"></a>00019 <span class="comment">// result from its use. No license is granted by implication or otherwise under any patent</span>
+<a name="l00020"></a>00020 <span class="comment">// or patent rights of NVIDIA Corporation. Details are subject to change without notice.</span>
+<a name="l00021"></a>00021 <span class="comment">// This code supersedes and replaces all information previously supplied.</span>
+<a name="l00022"></a>00022 <span class="comment">// NVIDIA Corporation products are not authorized for use as critical</span>
+<a name="l00023"></a>00023 <span class="comment">// components in life support devices or systems without express written approval of</span>
+<a name="l00024"></a>00024 <span class="comment">// NVIDIA Corporation.</span>
+<a name="l00025"></a>00025 <span class="comment">//</span>
+<a name="l00026"></a>00026 <span class="comment">// Copyright (c) 2017 NVIDIA Corporation. All rights reserved.</span>
+<a name="l00027"></a>00027 
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 <span class="preprocessor">#ifndef NVBLASTINTERNALCOMMON_H</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTINTERNALCOMMON_H</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span><span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_types_8h.html">NvBlastExtAuthoringTypes.h</a>"</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &lt;algorithm&gt;</span>
 <a name="l00033"></a>00033 
-<a name="l00037"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_comparator.html">00037</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_edge_comparator.html">EdgeComparator</a>
-<a name="l00038"></a>00038 {
-<a name="l00039"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_comparator.html#79747e77ddbaaf4fd6450bb90e37b7ea">00039</a>     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_comparator.html#79747e77ddbaaf4fd6450bb90e37b7ea">operator()</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">EdgeWithParent</a>&amp; a, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">EdgeWithParent</a>&amp; b)<span class="keyword"> const</span>
-<a name="l00040"></a>00040 <span class="keyword">    </span>{
-<a name="l00041"></a>00041         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a> == b.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a>)
-<a name="l00042"></a>00042         {
-<a name="l00043"></a>00043             <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a> == b.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a>)
-<a name="l00044"></a>00044             {
-<a name="l00045"></a>00045                 <span class="keywordflow">return</span> a.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#2861443c10d54373941fb00045ec3128">e</a> &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#2861443c10d54373941fb00045ec3128">e</a>;
-<a name="l00046"></a>00046             }
-<a name="l00047"></a>00047             <span class="keywordflow">else</span>
-<a name="l00048"></a>00048             {
-<a name="l00049"></a>00049                 <span class="keywordflow">return</span> a.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a> &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a>;
-<a name="l00050"></a>00050             }
-<a name="l00051"></a>00051         }
-<a name="l00052"></a>00052         <span class="keywordflow">else</span>
-<a name="l00053"></a>00053         {
-<a name="l00054"></a>00054             <span class="keywordflow">return</span> a.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a> &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a>;
-<a name="l00055"></a>00055         }
-<a name="l00056"></a>00056     }
-<a name="l00057"></a>00057 };
-<a name="l00058"></a>00058 
-<a name="l00059"></a>00059 
-<a name="l00063"></a><a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">00063</a> <span class="keyword">enum</span> <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a>
-<a name="l00064"></a>00064 {
-<a name="l00065"></a><a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7d1627b65f07422426fe4a478c7836a66">00065</a>     <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7d1627b65f07422426fe4a478c7836a66">YZ_PLANE</a> = 1 &lt;&lt; 1,
-<a name="l00066"></a><a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f785a6dd87b4024df1cddcd744fa2c0020">00066</a>     <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f785a6dd87b4024df1cddcd744fa2c0020">XY_PLANE</a> = 1 &lt;&lt; 2,
-<a name="l00067"></a><a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f734e384d7641d38d0e6f9e601f5d868ac">00067</a>     <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f734e384d7641d38d0e6f9e601f5d868ac">ZX_PLANE</a> = 1 &lt;&lt; 3,
-<a name="l00068"></a>00068 
-<a name="l00069"></a><a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">00069</a>     <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a> = 1 &lt;&lt; 4
-<a name="l00070"></a>00070 };
-<a name="l00071"></a>00071 
-<a name="l00075"></a><a class="code" href="namespace_nv_1_1_blast.html#b77f76686c61a4a62d1aabb5e7b9c20a">00075</a> <a class="code" href="group__foundation.html#ge9e06fb68b9ca307fa4377186da9052e">NV_FORCE_INLINE</a> <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> <a class="code" href="namespace_nv_1_1_blast.html#b77f76686c61a4a62d1aabb5e7b9c20a">getProjectionDirection</a>(<span class="keyword">const</span> physx::PxVec3&amp; <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#1c8d1bbcf531b04e6ff52f5357987794">normal</a>)
-<a name="l00076"></a>00076 {
-<a name="l00077"></a>00077     <span class="keywordtype">float</span> maxv = std::max(abs(normal.x), std::max(abs(normal.y), abs(normal.z)));
-<a name="l00078"></a>00078     <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> retVal;
-<a name="l00079"></a>00079     <span class="keywordflow">if</span> (maxv == abs(normal.x))
-<a name="l00080"></a>00080     {
-<a name="l00081"></a>00081         retVal = <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7d1627b65f07422426fe4a478c7836a66">YZ_PLANE</a>;
-<a name="l00082"></a>00082         <span class="keywordflow">if</span> (normal.x &lt; 0) retVal = (<a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a>)((<span class="keywordtype">int</span>)retVal | (int)<a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a>);
-<a name="l00083"></a>00083         <span class="keywordflow">return</span> retVal;
-<a name="l00084"></a>00084     }
-<a name="l00085"></a>00085     <span class="keywordflow">if</span> (maxv == abs(normal.y))
-<a name="l00086"></a>00086     {
-<a name="l00087"></a>00087         retVal = <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f734e384d7641d38d0e6f9e601f5d868ac">ZX_PLANE</a>;
-<a name="l00088"></a>00088         <span class="keywordflow">if</span> (normal.y &gt; 0) retVal = (<a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a>)((<span class="keywordtype">int</span>)retVal | (int)<a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a>);
-<a name="l00089"></a>00089         <span class="keywordflow">return</span> retVal;
-<a name="l00090"></a>00090     }
-<a name="l00091"></a>00091     retVal = <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f785a6dd87b4024df1cddcd744fa2c0020">XY_PLANE</a>;
-<a name="l00092"></a>00092     <span class="keywordflow">if</span> (normal.z &lt; 0) retVal = (<a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a>)((<span class="keywordtype">int</span>)retVal | (int)<a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a>);
-<a name="l00093"></a>00093     <span class="keywordflow">return</span> retVal;
-<a name="l00094"></a>00094 }
-<a name="l00095"></a>00095 
-<a name="l00096"></a>00096 
-<a name="l00100"></a><a class="code" href="namespace_nv_1_1_blast.html#44d0b01b83d001724a34646ec96d17f0">00100</a> <a class="code" href="group__foundation.html#ge9e06fb68b9ca307fa4377186da9052e">NV_FORCE_INLINE</a> physx::PxVec2 <a class="code" href="namespace_nv_1_1_blast.html#44d0b01b83d001724a34646ec96d17f0">getProjectedPoint</a>(<span class="keyword">const</span> physx::PxVec3&amp; point, <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> dir)
-<a name="l00101"></a>00101 {
-<a name="l00102"></a>00102     <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7d1627b65f07422426fe4a478c7836a66">YZ_PLANE</a>)
-<a name="l00103"></a>00103     {
-<a name="l00104"></a>00104         <span class="keywordflow">return</span> physx::PxVec2(point.y, point.z);
-<a name="l00105"></a>00105     }
-<a name="l00106"></a>00106     <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f734e384d7641d38d0e6f9e601f5d868ac">ZX_PLANE</a>)
-<a name="l00107"></a>00107     {
-<a name="l00108"></a>00108         <span class="keywordflow">return</span> physx::PxVec2(point.x, point.z);
+<a name="l00034"></a>00034 <span class="keyword">using namespace </span>physx;
+<a name="l00035"></a>00035 
+<a name="l00036"></a>00036 <span class="keyword">namespace </span>Nv
+<a name="l00037"></a>00037 {
+<a name="l00038"></a>00038 <span class="keyword">namespace </span>Blast
+<a name="l00039"></a>00039 {
+<a name="l00040"></a>00040 
+<a name="l00044"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">00044</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">EdgeWithParent</a>
+<a name="l00045"></a>00045 {
+<a name="l00046"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">00046</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a>, <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#2861443c10d54373941fb00045ec3128">e</a>; <span class="comment">// Starting and ending vertices</span>
+<a name="l00047"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">00047</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a>; <span class="comment">// Parent facet index</span>
+<a name="l00048"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#a37d68282f0ac6ec2f5f1e277a10d04f">00048</a>     <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#a37d68282f0ac6ec2f5f1e277a10d04f">EdgeWithParent</a>() : <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a>(0), <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#2861443c10d54373941fb00045ec3128">e</a>(0), <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a>(0) {}
+<a name="l00049"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#4cc936f9767b4a0080329dea859f70c0">00049</a>     <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#4cc936f9767b4a0080329dea859f70c0">EdgeWithParent</a>(int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a>, int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#2861443c10d54373941fb00045ec3128">e</a>, int32_t p) : s(s), e(e), <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a>(p) {}
+<a name="l00050"></a>00050 };
+<a name="l00051"></a>00051 
+<a name="l00052"></a>00052 
+<a name="l00056"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_comparator.html">00056</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_edge_comparator.html">EdgeComparator</a>
+<a name="l00057"></a>00057 {
+<a name="l00058"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_comparator.html#79747e77ddbaaf4fd6450bb90e37b7ea">00058</a>     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_comparator.html#79747e77ddbaaf4fd6450bb90e37b7ea">operator()</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">EdgeWithParent</a>&amp; a, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">EdgeWithParent</a>&amp; b)<span class="keyword"> const</span>
+<a name="l00059"></a>00059 <span class="keyword">    </span>{
+<a name="l00060"></a>00060         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a> == b.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a>)
+<a name="l00061"></a>00061         {
+<a name="l00062"></a>00062             <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a> == b.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a>)
+<a name="l00063"></a>00063             {
+<a name="l00064"></a>00064                 <span class="keywordflow">return</span> a.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#2861443c10d54373941fb00045ec3128">e</a> &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#2861443c10d54373941fb00045ec3128">e</a>;
+<a name="l00065"></a>00065             }
+<a name="l00066"></a>00066             <span class="keywordflow">else</span>
+<a name="l00067"></a>00067             {
+<a name="l00068"></a>00068                 <span class="keywordflow">return</span> a.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a> &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#c5f04b73b22214c41a4fde43b434888d">s</a>;
+<a name="l00069"></a>00069             }
+<a name="l00070"></a>00070         }
+<a name="l00071"></a>00071         <span class="keywordflow">else</span>
+<a name="l00072"></a>00072         {
+<a name="l00073"></a>00073             <span class="keywordflow">return</span> a.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a> &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html#9a4dd2c9d923708c85118f237343025d">parent</a>;
+<a name="l00074"></a>00074         }
+<a name="l00075"></a>00075     }
+<a name="l00076"></a>00076 };
+<a name="l00077"></a>00077 
+<a name="l00078"></a>00078 
+<a name="l00082"></a><a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">00082</a> <span class="keyword">enum</span> <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a>
+<a name="l00083"></a>00083 {
+<a name="l00084"></a><a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7d1627b65f07422426fe4a478c7836a66">00084</a>     <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7d1627b65f07422426fe4a478c7836a66">YZ_PLANE</a> = 1 &lt;&lt; 1,
+<a name="l00085"></a><a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f785a6dd87b4024df1cddcd744fa2c0020">00085</a>     <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f785a6dd87b4024df1cddcd744fa2c0020">XY_PLANE</a> = 1 &lt;&lt; 2,
+<a name="l00086"></a><a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f734e384d7641d38d0e6f9e601f5d868ac">00086</a>     <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f734e384d7641d38d0e6f9e601f5d868ac">ZX_PLANE</a> = 1 &lt;&lt; 3,
+<a name="l00087"></a>00087 
+<a name="l00088"></a><a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">00088</a>     <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a> = 1 &lt;&lt; 4
+<a name="l00089"></a>00089 };
+<a name="l00090"></a>00090 
+<a name="l00094"></a><a class="code" href="namespace_nv_1_1_blast.html#b77f76686c61a4a62d1aabb5e7b9c20a">00094</a> <a class="code" href="group__foundation.html#ge9e06fb68b9ca307fa4377186da9052e">NV_FORCE_INLINE</a> <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> <a class="code" href="namespace_nv_1_1_blast.html#b77f76686c61a4a62d1aabb5e7b9c20a">getProjectionDirection</a>(<span class="keyword">const</span> physx::PxVec3&amp; <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#1c8d1bbcf531b04e6ff52f5357987794">normal</a>)
+<a name="l00095"></a>00095 {
+<a name="l00096"></a>00096     <span class="keywordtype">float</span> maxv = std::max(std::abs(normal.x), std::max(std::abs(normal.y), std::abs(normal.z)));
+<a name="l00097"></a>00097     <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> retVal;
+<a name="l00098"></a>00098     <span class="keywordflow">if</span> (maxv == std::abs(normal.x))
+<a name="l00099"></a>00099     {
+<a name="l00100"></a>00100         retVal = <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7d1627b65f07422426fe4a478c7836a66">YZ_PLANE</a>;
+<a name="l00101"></a>00101         <span class="keywordflow">if</span> (normal.x &lt; 0) retVal = (<a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a>)((<span class="keywordtype">int</span>)retVal | (int)<a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a>);
+<a name="l00102"></a>00102         <span class="keywordflow">return</span> retVal;
+<a name="l00103"></a>00103     }
+<a name="l00104"></a>00104     <span class="keywordflow">if</span> (maxv == std::abs(normal.y))
+<a name="l00105"></a>00105     {
+<a name="l00106"></a>00106         retVal = <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f734e384d7641d38d0e6f9e601f5d868ac">ZX_PLANE</a>;
+<a name="l00107"></a>00107         <span class="keywordflow">if</span> (normal.y &gt; 0) retVal = (<a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a>)((<span class="keywordtype">int</span>)retVal | (int)<a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a>);
+<a name="l00108"></a>00108         <span class="keywordflow">return</span> retVal;
 <a name="l00109"></a>00109     }
-<a name="l00110"></a>00110     <span class="keywordflow">return</span> physx::PxVec2(point.x, point.y);
-<a name="l00111"></a>00111 }
-<a name="l00112"></a>00112 
-<a name="l00116"></a><a class="code" href="namespace_nv_1_1_blast.html#5f4aa5b6b2451711fccf09757bdd2e1e">00116</a> <a class="code" href="group__foundation.html#ge9e06fb68b9ca307fa4377186da9052e">NV_FORCE_INLINE</a> physx::PxVec2 <a class="code" href="namespace_nv_1_1_blast.html#5f4aa5b6b2451711fccf09757bdd2e1e">getProjectedPointWithWinding</a>(<span class="keyword">const</span> physx::PxVec3&amp; point, <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> dir)
-<a name="l00117"></a>00117 {
-<a name="l00118"></a>00118     <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7d1627b65f07422426fe4a478c7836a66">YZ_PLANE</a>)
-<a name="l00119"></a>00119     {
-<a name="l00120"></a>00120         <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a>)
-<a name="l00121"></a>00121         {
-<a name="l00122"></a>00122             <span class="keywordflow">return</span> physx::PxVec2(point.z, point.y);
-<a name="l00123"></a>00123         }
-<a name="l00124"></a>00124         <span class="keywordflow">else</span>
-<a name="l00125"></a>00125         <span class="keywordflow">return</span> physx::PxVec2(point.y, point.z);
-<a name="l00126"></a>00126     }
-<a name="l00127"></a>00127     <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f734e384d7641d38d0e6f9e601f5d868ac">ZX_PLANE</a>)
-<a name="l00128"></a>00128     {
-<a name="l00129"></a>00129         <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a>)
-<a name="l00130"></a>00130         {
-<a name="l00131"></a>00131             <span class="keywordflow">return</span> physx::PxVec2(point.z, point.x);
-<a name="l00132"></a>00132         }
-<a name="l00133"></a>00133         <span class="keywordflow">return</span> physx::PxVec2(point.x, point.z);
-<a name="l00134"></a>00134     }
-<a name="l00135"></a>00135     <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a>)
-<a name="l00136"></a>00136     {
-<a name="l00137"></a>00137         <span class="keywordflow">return</span> physx::PxVec2(point.y, point.x);
-<a name="l00138"></a>00138     }
-<a name="l00139"></a>00139     <span class="keywordflow">return</span> physx::PxVec2(point.x, point.y);
-<a name="l00140"></a>00140 }
-<a name="l00141"></a>00141 
-<a name="l00142"></a>00142 
-<a name="l00143"></a>00143 
-<a name="l00144"></a><a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#a8f38c265574616c9326504a5d9919f7">00144</a> <span class="preprocessor">#define MAXIMUM_EXTENT 1000 * 1000 * 1000</span>
-<a name="l00145"></a><a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#1278adb36f840dc5e957ce2b34b46322">00145</a> <span class="preprocessor"></span><span class="preprocessor">#define BBOX_TEST_EPS 1e-5f </span>
-<a name="l00146"></a>00146 <span class="preprocessor"></span>
-<a name="l00150"></a><a class="code" href="namespace_nv_1_1_blast.html#b18c3161481f8a05cd11866ef1afbd9e">00150</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">bool</span>  <a class="code" href="namespace_nv_1_1_blast.html#b18c3161481f8a05cd11866ef1afbd9e">weakBoundingBoxIntersection</a>(<span class="keyword">const</span> physx::PxBounds3&amp; aBox, <span class="keyword">const</span> physx::PxBounds3&amp; bBox)
-<a name="l00151"></a>00151 {
-<a name="l00152"></a>00152     <span class="keywordflow">if</span> (std::max(aBox.minimum.x, bBox.minimum.x) &gt; std::min(aBox.maximum.x, bBox.maximum.x) + <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#1278adb36f840dc5e957ce2b34b46322">BBOX_TEST_EPS</a>)
-<a name="l00153"></a>00153         <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00154"></a>00154     <span class="keywordflow">if</span> (std::max(aBox.minimum.y, bBox.minimum.y) &gt; std::min(aBox.maximum.y, bBox.maximum.y) + <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#1278adb36f840dc5e957ce2b34b46322">BBOX_TEST_EPS</a>)
-<a name="l00155"></a>00155         <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00156"></a>00156     <span class="keywordflow">if</span> (std::max(aBox.minimum.z, bBox.minimum.z) &gt; std::min(aBox.maximum.z, bBox.maximum.z) + <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#1278adb36f840dc5e957ce2b34b46322">BBOX_TEST_EPS</a>)
-<a name="l00157"></a>00157         <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00158"></a>00158     <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00110"></a>00110     retVal = <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f785a6dd87b4024df1cddcd744fa2c0020">XY_PLANE</a>;
+<a name="l00111"></a>00111     <span class="keywordflow">if</span> (normal.z &lt; 0) retVal = (<a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a>)((<span class="keywordtype">int</span>)retVal | (int)<a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a>);
+<a name="l00112"></a>00112     <span class="keywordflow">return</span> retVal;
+<a name="l00113"></a>00113 }
+<a name="l00114"></a>00114 
+<a name="l00115"></a>00115 
+<a name="l00119"></a><a class="code" href="namespace_nv_1_1_blast.html#44d0b01b83d001724a34646ec96d17f0">00119</a> <a class="code" href="group__foundation.html#ge9e06fb68b9ca307fa4377186da9052e">NV_FORCE_INLINE</a> physx::PxVec2 <a class="code" href="namespace_nv_1_1_blast.html#44d0b01b83d001724a34646ec96d17f0">getProjectedPoint</a>(<span class="keyword">const</span> physx::PxVec3&amp; point, <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> dir)
+<a name="l00120"></a>00120 {
+<a name="l00121"></a>00121     <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7d1627b65f07422426fe4a478c7836a66">YZ_PLANE</a>)
+<a name="l00122"></a>00122     {
+<a name="l00123"></a>00123         <span class="keywordflow">return</span> physx::PxVec2(point.y, point.z);
+<a name="l00124"></a>00124     }
+<a name="l00125"></a>00125     <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f734e384d7641d38d0e6f9e601f5d868ac">ZX_PLANE</a>)
+<a name="l00126"></a>00126     {
+<a name="l00127"></a>00127         <span class="keywordflow">return</span> physx::PxVec2(point.x, point.z);
+<a name="l00128"></a>00128     }
+<a name="l00129"></a>00129     <span class="keywordflow">return</span> physx::PxVec2(point.x, point.y);
+<a name="l00130"></a>00130 }
+<a name="l00131"></a>00131 
+<a name="l00135"></a><a class="code" href="namespace_nv_1_1_blast.html#5f4aa5b6b2451711fccf09757bdd2e1e">00135</a> <a class="code" href="group__foundation.html#ge9e06fb68b9ca307fa4377186da9052e">NV_FORCE_INLINE</a> physx::PxVec2 <a class="code" href="namespace_nv_1_1_blast.html#5f4aa5b6b2451711fccf09757bdd2e1e">getProjectedPointWithWinding</a>(<span class="keyword">const</span> physx::PxVec3&amp; point, <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> dir)
+<a name="l00136"></a>00136 {
+<a name="l00137"></a>00137     <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7d1627b65f07422426fe4a478c7836a66">YZ_PLANE</a>)
+<a name="l00138"></a>00138     {
+<a name="l00139"></a>00139         <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a>)
+<a name="l00140"></a>00140         {
+<a name="l00141"></a>00141             <span class="keywordflow">return</span> physx::PxVec2(point.z, point.y);
+<a name="l00142"></a>00142         }
+<a name="l00143"></a>00143         <span class="keywordflow">else</span>
+<a name="l00144"></a>00144         <span class="keywordflow">return</span> physx::PxVec2(point.y, point.z);
+<a name="l00145"></a>00145     }
+<a name="l00146"></a>00146     <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f734e384d7641d38d0e6f9e601f5d868ac">ZX_PLANE</a>)
+<a name="l00147"></a>00147     {
+<a name="l00148"></a>00148         <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a>)
+<a name="l00149"></a>00149         {
+<a name="l00150"></a>00150             <span class="keywordflow">return</span> physx::PxVec2(point.z, point.x);
+<a name="l00151"></a>00151         }
+<a name="l00152"></a>00152         <span class="keywordflow">return</span> physx::PxVec2(point.x, point.z);
+<a name="l00153"></a>00153     }
+<a name="l00154"></a>00154     <span class="keywordflow">if</span> (dir &amp; <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7f9063b45980bcdd587cd7b7be4444152">OPPOSITE_WINDING</a>)
+<a name="l00155"></a>00155     {
+<a name="l00156"></a>00156         <span class="keywordflow">return</span> physx::PxVec2(point.y, point.x);
+<a name="l00157"></a>00157     }
+<a name="l00158"></a>00158     <span class="keywordflow">return</span> physx::PxVec2(point.x, point.y);
 <a name="l00159"></a>00159 }
 <a name="l00160"></a>00160 
 <a name="l00161"></a>00161 
 <a name="l00162"></a>00162 
-<a name="l00166"></a><a class="code" href="namespace_nv_1_1_blast.html#a53d476b82810995adad43062322f649">00166</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">bool</span> <a class="code" href="namespace_nv_1_1_blast.html#a53d476b82810995adad43062322f649">getPlaneSegmentIntersection</a>(<span class="keyword">const</span> PxPlane&amp; pl, <span class="keyword">const</span> PxVec3&amp; a, <span class="keyword">const</span> PxVec3&amp; b, PxVec3&amp; result)
-<a name="l00167"></a>00167 {
-<a name="l00168"></a>00168     <span class="keywordtype">float</span> <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#171cbcf9510fa3804c56ecfcf78da929">div</a> = (b - a).<a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#91266f20b4a3e7658eedf69ec1f311f4">dot</a>(pl.n);
-<a name="l00169"></a>00169     <span class="keywordflow">if</span> (PxAbs(div) &lt; 0.0001f)
-<a name="l00170"></a>00170     {
-<a name="l00171"></a>00171         <span class="keywordflow">if</span> (pl.contains(a))
-<a name="l00172"></a>00172         {
-<a name="l00173"></a>00173             result = a;
-<a name="l00174"></a>00174             <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00175"></a>00175         }
-<a name="l00176"></a>00176         <span class="keywordflow">else</span>
-<a name="l00177"></a>00177         {
-<a name="l00178"></a>00178             <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00179"></a>00179         }
-<a name="l00180"></a>00180     }
-<a name="l00181"></a>00181     <span class="keywordtype">float</span> t = (-a.dot(pl.n) - pl.d) / div;
-<a name="l00182"></a>00182     <span class="keywordflow">if</span> (t &lt; 0.0f || t &gt; 1.0f)
-<a name="l00183"></a>00183     {
-<a name="l00184"></a>00184         <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00185"></a>00185     }
-<a name="l00186"></a>00186     result = (b - a) * t + a;
-<a name="l00187"></a>00187     <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00188"></a>00188 }
-<a name="l00189"></a>00189 
-<a name="l00190"></a>00190 }   <span class="comment">// namespace Blast</span>
-<a name="l00191"></a>00191 }   <span class="comment">// namespace Nv</span>
-<a name="l00192"></a>00192 
-<a name="l00193"></a>00193 <span class="preprocessor">#endif</span>
+<a name="l00163"></a><a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#a8f38c265574616c9326504a5d9919f7">00163</a> <span class="preprocessor">#define MAXIMUM_EXTENT 1000 * 1000 * 1000</span>
+<a name="l00164"></a><a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#1278adb36f840dc5e957ce2b34b46322">00164</a> <span class="preprocessor"></span><span class="preprocessor">#define BBOX_TEST_EPS 1e-5f </span>
+<a name="l00165"></a>00165 <span class="preprocessor"></span>
+<a name="l00169"></a><a class="code" href="namespace_nv_1_1_blast.html#b18c3161481f8a05cd11866ef1afbd9e">00169</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">bool</span>  <a class="code" href="namespace_nv_1_1_blast.html#b18c3161481f8a05cd11866ef1afbd9e">weakBoundingBoxIntersection</a>(<span class="keyword">const</span> physx::PxBounds3&amp; aBox, <span class="keyword">const</span> physx::PxBounds3&amp; bBox)
+<a name="l00170"></a>00170 {
+<a name="l00171"></a>00171     <span class="keywordflow">if</span> (std::max(aBox.minimum.x, bBox.minimum.x) &gt; std::min(aBox.maximum.x, bBox.maximum.x) + <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#1278adb36f840dc5e957ce2b34b46322">BBOX_TEST_EPS</a>)
+<a name="l00172"></a>00172         <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00173"></a>00173     <span class="keywordflow">if</span> (std::max(aBox.minimum.y, bBox.minimum.y) &gt; std::min(aBox.maximum.y, bBox.maximum.y) + <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#1278adb36f840dc5e957ce2b34b46322">BBOX_TEST_EPS</a>)
+<a name="l00174"></a>00174         <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00175"></a>00175     <span class="keywordflow">if</span> (std::max(aBox.minimum.z, bBox.minimum.z) &gt; std::min(aBox.maximum.z, bBox.maximum.z) + <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#1278adb36f840dc5e957ce2b34b46322">BBOX_TEST_EPS</a>)
+<a name="l00176"></a>00176         <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00177"></a>00177     <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00178"></a>00178 }
+<a name="l00179"></a>00179 
+<a name="l00180"></a>00180 
+<a name="l00181"></a>00181 
+<a name="l00185"></a><a class="code" href="namespace_nv_1_1_blast.html#a53d476b82810995adad43062322f649">00185</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">bool</span> <a class="code" href="namespace_nv_1_1_blast.html#a53d476b82810995adad43062322f649">getPlaneSegmentIntersection</a>(<span class="keyword">const</span> PxPlane&amp; pl, <span class="keyword">const</span> PxVec3&amp; a, <span class="keyword">const</span> PxVec3&amp; b, PxVec3&amp; result)
+<a name="l00186"></a>00186 {
+<a name="l00187"></a>00187     <span class="keywordtype">float</span> <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#171cbcf9510fa3804c56ecfcf78da929">div</a> = (b - a).<a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#91266f20b4a3e7658eedf69ec1f311f4">dot</a>(pl.n);
+<a name="l00188"></a>00188     <span class="keywordflow">if</span> (PxAbs(div) &lt; 0.0001f)
+<a name="l00189"></a>00189     {
+<a name="l00190"></a>00190         <span class="keywordflow">if</span> (pl.contains(a))
+<a name="l00191"></a>00191         {
+<a name="l00192"></a>00192             result = a;
+<a name="l00193"></a>00193             <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00194"></a>00194         }
+<a name="l00195"></a>00195         <span class="keywordflow">else</span>
+<a name="l00196"></a>00196         {
+<a name="l00197"></a>00197             <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00198"></a>00198         }
+<a name="l00199"></a>00199     }
+<a name="l00200"></a>00200     <span class="keywordtype">float</span> t = (-a.dot(pl.n) - pl.d) / div;
+<a name="l00201"></a>00201     <span class="keywordflow">if</span> (t &lt; 0.0f || t &gt; 1.0f)
+<a name="l00202"></a>00202     {
+<a name="l00203"></a>00203         <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00204"></a>00204     }
+<a name="l00205"></a>00205     result = (b - a) * t + a;
+<a name="l00206"></a>00206     <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00207"></a>00207 }
+<a name="l00208"></a>00208 
+<a name="l00209"></a>00209 
+<a name="l00210"></a><a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">00210</a> <span class="preprocessor">#define VEC_COMPARISON_OFFSET 1e-5f</span>
+<a name="l00211"></a>00211 <span class="preprocessor"></span>
+<a name="l00214"></a><a class="code" href="struct_nv_1_1_blast_1_1_vrt_comp.html">00214</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_vrt_comp.html">VrtComp</a>
+<a name="l00215"></a>00215 {
+<a name="l00216"></a><a class="code" href="struct_nv_1_1_blast_1_1_vrt_comp.html#be3e16832129cd98f0d5ad9cf08822ed">00216</a>     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_vrt_comp.html#be3e16832129cd98f0d5ad9cf08822ed">operator()</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; a, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; b)<span class="keyword"> const</span>
+<a name="l00217"></a>00217 <span class="keyword">    </span>{
+<a name="l00218"></a>00218         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#55e4c4ebbb67781cf7ce78881ab62ccb">p</a>.x + <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">VEC_COMPARISON_OFFSET</a> &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#55e4c4ebbb67781cf7ce78881ab62ccb">p</a>.x) <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00219"></a>00219         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#55e4c4ebbb67781cf7ce78881ab62ccb">p</a>.x - <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">VEC_COMPARISON_OFFSET</a> &gt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#55e4c4ebbb67781cf7ce78881ab62ccb">p</a>.x) <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00220"></a>00220         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#55e4c4ebbb67781cf7ce78881ab62ccb">p</a>.y + <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">VEC_COMPARISON_OFFSET</a> &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#55e4c4ebbb67781cf7ce78881ab62ccb">p</a>.y) <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00221"></a>00221         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#55e4c4ebbb67781cf7ce78881ab62ccb">p</a>.y - <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">VEC_COMPARISON_OFFSET</a> &gt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#55e4c4ebbb67781cf7ce78881ab62ccb">p</a>.y) <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00222"></a>00222         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#55e4c4ebbb67781cf7ce78881ab62ccb">p</a>.z + <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">VEC_COMPARISON_OFFSET</a> &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#55e4c4ebbb67781cf7ce78881ab62ccb">p</a>.z) <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00223"></a>00223         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#55e4c4ebbb67781cf7ce78881ab62ccb">p</a>.z - <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">VEC_COMPARISON_OFFSET</a> &gt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#55e4c4ebbb67781cf7ce78881ab62ccb">p</a>.z) <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00224"></a>00224 
+<a name="l00225"></a>00225         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#58ce53dd6b962f178236c15bca2f7560">n</a>.x + 1e-3 &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#58ce53dd6b962f178236c15bca2f7560">n</a>.x) <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00226"></a>00226         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#58ce53dd6b962f178236c15bca2f7560">n</a>.x - 1e-3 &gt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#58ce53dd6b962f178236c15bca2f7560">n</a>.x) <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00227"></a>00227         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#58ce53dd6b962f178236c15bca2f7560">n</a>.y + 1e-3 &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#58ce53dd6b962f178236c15bca2f7560">n</a>.y) <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00228"></a>00228         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#58ce53dd6b962f178236c15bca2f7560">n</a>.y - 1e-3 &gt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#58ce53dd6b962f178236c15bca2f7560">n</a>.y) <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00229"></a>00229         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#58ce53dd6b962f178236c15bca2f7560">n</a>.z + 1e-3 &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#58ce53dd6b962f178236c15bca2f7560">n</a>.z) <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00230"></a>00230         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#58ce53dd6b962f178236c15bca2f7560">n</a>.z - 1e-3 &gt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#58ce53dd6b962f178236c15bca2f7560">n</a>.z) <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00231"></a>00231 
+<a name="l00232"></a>00232 
+<a name="l00233"></a>00233         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#f9dd92717183ed2bda738d8d5afc845f">uv</a>[0].x + 1e-3 &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#f9dd92717183ed2bda738d8d5afc845f">uv</a>[0].x) <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00234"></a>00234         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#f9dd92717183ed2bda738d8d5afc845f">uv</a>[0].x - 1e-3 &gt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#f9dd92717183ed2bda738d8d5afc845f">uv</a>[0].x) <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00235"></a>00235         <span class="keywordflow">if</span> (a.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#f9dd92717183ed2bda738d8d5afc845f">uv</a>[0].y + 1e-3 &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html#f9dd92717183ed2bda738d8d5afc845f">uv</a>[0].y) <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00236"></a>00236         <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00237"></a>00237     };
+<a name="l00238"></a>00238 };
+<a name="l00239"></a>00239 
+<a name="l00243"></a><a class="code" href="struct_nv_1_1_blast_1_1_vrt_position_comparator.html">00243</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_vrt_position_comparator.html">VrtPositionComparator</a>
+<a name="l00244"></a>00244 {
+<a name="l00245"></a><a class="code" href="struct_nv_1_1_blast_1_1_vrt_position_comparator.html#3a1e523763ebadc92987220e64af6ed3">00245</a>     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_vrt_position_comparator.html#3a1e523763ebadc92987220e64af6ed3">operator()</a>(<span class="keyword">const</span> physx::PxVec3&amp; a, <span class="keyword">const</span> physx::PxVec3&amp; b)<span class="keyword"> const</span>
+<a name="l00246"></a>00246 <span class="keyword">    </span>{
+<a name="l00247"></a>00247         <span class="keywordflow">if</span> (a.x + <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">VEC_COMPARISON_OFFSET</a> &lt; b.x) <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00248"></a>00248         <span class="keywordflow">if</span> (a.x - <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">VEC_COMPARISON_OFFSET</a> &gt; b.x) <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00249"></a>00249         <span class="keywordflow">if</span> (a.y + <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">VEC_COMPARISON_OFFSET</a> &lt; b.y) <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00250"></a>00250         <span class="keywordflow">if</span> (a.y - <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">VEC_COMPARISON_OFFSET</a> &gt; b.y) <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00251"></a>00251         <span class="keywordflow">if</span> (a.z + <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">VEC_COMPARISON_OFFSET</a> &lt; b.z) <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00252"></a>00252         <span class="keywordflow">if</span> (a.z - <a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">VEC_COMPARISON_OFFSET</a> &gt; b.z) <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00253"></a>00253         <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00254"></a>00254     };
+<a name="l00255"></a>00255 };
+<a name="l00256"></a>00256 
+<a name="l00257"></a>00257 }   <span class="comment">// namespace Blast</span>
+<a name="l00258"></a>00258 }   <span class="comment">// namespace Nv</span>
+<a name="l00259"></a>00259 
+<a name="l00260"></a>00260 <span class="preprocessor">#endif</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

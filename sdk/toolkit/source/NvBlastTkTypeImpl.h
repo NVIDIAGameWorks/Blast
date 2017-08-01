@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTTKTYPEIMPL_H
 #define NVBLASTTKTYPEIMPL_H
@@ -17,28 +35,10 @@
 #include "NvBlastTkType.h"
 
 
-// Forward declarations
-namespace physx
-{
-namespace general_PxIOStream2
-{
-class PxFileBuf;
-}
-}
-
-
 namespace Nv
 {
 namespace Blast
 {
-
-// Forward declarations
-class TkSerializable;
-
-
-// Serialization function signature
-typedef TkSerializable* (*TkDeserializeFn)(physx::general_PxIOStream2::PxFileBuf&, const NvBlastID& id);
-
 
 /**
 Implementation of TkType, storing class information for TkIdentifiable-derived classes.
@@ -46,7 +46,7 @@ Implementation of TkType, storing class information for TkIdentifiable-derived c
 class TkTypeImpl : public TkType
 {
 public:
-	TkTypeImpl(const char* typeName, uint32_t typeID, uint32_t version, TkDeserializeFn deserializeFn);
+	TkTypeImpl(const char* typeName, uint32_t typeID, uint32_t version);
 
 	// Begin TkType
 	virtual const char*	getName() const override { return getNameInternal(); }
@@ -64,23 +64,18 @@ public:
 	const char*			getNameInternal() const;
 
 	/**
-	Access to the data format version for the class (used if it TkSerializable-derived).
+	Access to the data format version for the class.
 
 	\return the data format version.
 	*/
 	uint32_t			getVersionInternal() const;
 
 	/**
-	Access to a unique identifier for the class (set using the NVBLASTTK_IMPL_DEFINE_IDENTIFIABLE or NVBLASTTK_IMPL_DEFINE_SERIALIZABLE macro).
+	Access to a unique identifier for the class (set using the NVBLASTTK_IMPL_DEFINE_IDENTIFIABLE macro).
 
 	\return the class's unique identifier.
 	*/
 	uint32_t			getID() const;
-
-	/**
-	\return the class's deserialization function.
-	*/
-	TkDeserializeFn		getDeserializeFn() const;
 
 	/**
 	Access to a runtime-unique small index for the class.
@@ -107,7 +102,6 @@ private:
 	const char*		m_name;				//!<	The name of the class, set by the constructor.
 	uint32_t		m_ID;				//!<	The unique identifier for the class, set by the constructor. 
 	uint32_t		m_version;			//!<	The data format version for the class, set by the constructor.
-	TkDeserializeFn	m_deserializeFn;	//!<	The class deserialization function, set by the constructor.
 	uint32_t		m_index;			//!<	The index set for this class, set using setIndex().
 
 	friend class TkFrameworkImpl;
@@ -116,11 +110,10 @@ private:
 
 //////// TkTypeImpl inline methods ////////
 
-NV_INLINE TkTypeImpl::TkTypeImpl(const char* typeName, uint32_t typeID, uint32_t version, TkDeserializeFn deserializeFn)
+NV_INLINE TkTypeImpl::TkTypeImpl(const char* typeName, uint32_t typeID, uint32_t version)
 	: m_name(typeName)
 	, m_ID(typeID)
 	, m_version(version)
-	, m_deserializeFn(deserializeFn)
 	, m_index((uint32_t)InvalidIndex)
 {
 }
@@ -141,12 +134,6 @@ NV_INLINE uint32_t TkTypeImpl::getVersionInternal() const
 NV_INLINE uint32_t TkTypeImpl::getID() const
 {
 	return m_ID;
-}
-
-
-NV_INLINE TkDeserializeFn TkTypeImpl::getDeserializeFn() const
-{
-	return m_deserializeFn;
 }
 
 

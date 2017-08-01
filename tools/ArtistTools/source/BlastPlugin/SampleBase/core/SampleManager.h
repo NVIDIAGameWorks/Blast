@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef SAMPLE_MANAGER_H
 #define SAMPLE_MANAGER_H
@@ -14,21 +32,23 @@
 #include "Application.h"
 #include "Sample.h"
 #include <map>
-
+#include <functional>
+#include "ProjectParams.h"
+#include "RenderMaterial.h"
 class SampleManager;
 class BlastFractureTool;
 class BlastAsset;
 class BlastFamily;
-class RenderMaterial;
+
 namespace Nv
 {
-namespace Blast
-{
-	class Mesh;
-	class RandomGeneratorBase;
-	class VoronoiSitesGenerator;
-	struct SlicingConfiguration;
-}
+	namespace Blast
+	{
+		class Mesh;
+		class RandomGeneratorBase;
+		class VoronoiSitesGenerator;
+		struct SlicingConfiguration;
+	}
 }
 
 class ISampleController : public IApplicationController
@@ -56,59 +76,59 @@ class FractureExecutor
 public:
 	FractureExecutor()
 		: m_fractureTool(0)
-		, m_chunkId(-1)
 		, m_randomGenerator(nullptr)
-		, m_sourMesh(nullptr)
+		, m_pCurBlastAsset(nullptr)
 	{
+		m_chunkIds.clear();
 	}
 
 	virtual bool execute() = 0;
-	void setSourceMesh(Nv::Blast::Mesh* mesh);
-	void setSourceAsset(const BlastAsset* blastAsset);
-	void setTargetChunk(uint32_t chunkId)	{ m_chunkId = chunkId; }
+	void setSourceAsset(BlastAsset* blastAsset);
+	void setTargetChunk(uint32_t chunkId) 
+	{ 
+		m_chunkIds.clear();
+		m_chunkIds.push_back(chunkId); 
+	}
+	void setTargetChunks(std::vector<uint32_t>& chunkIds) 
+	{ 
+		m_chunkIds.clear();
+		std::vector<uint32_t>::iterator it;
+		for (it = chunkIds.begin(); it != chunkIds.end(); it++)
+		{
+			m_chunkIds.push_back(*it);
+		}
+		std::sort(m_chunkIds.begin(), m_chunkIds.end(), std::greater<uint32_t>());
+	}
 	void setRandomGenerator(Nv::Blast::RandomGeneratorBase* randomGenerator)	{ m_randomGenerator = randomGenerator; }
 protected:
 	BlastFractureTool*					m_fractureTool;
-	uint32_t							m_chunkId;
+	std::vector<uint32_t>				m_chunkIds;
 	Nv::Blast::RandomGeneratorBase*		m_randomGenerator;
-	Nv::Blast::Mesh*					m_sourMesh;
+	BlastAsset*							m_pCurBlastAsset;
 };
 
 class VoronoiFractureExecutor : public FractureExecutor
 {
 public:
 	VoronoiFractureExecutor();
-	void setCellsCount(uint32_t cellsCount);
+	void setBPPVoronoi(BPPVoronoi* voronoi) { m_voronoi = voronoi; }
 
 	virtual bool execute();
 
 private:
-	uint32_t	m_cellsCount;
+	BPPVoronoi* m_voronoi;
 };
 
 class SliceFractureExecutor : public FractureExecutor
 {
 public:
 	SliceFractureExecutor();
-	void applyNoise(float amplitude, float frequency, int32_t octaves, float falloff, int32_t relaxIterations, float relaxFactor, int32_t seed = 0);
-	void applyConfig(int32_t xSlices, int32_t ySlices, int32_t zSlices, float offsetVariations, float angleVariations);
+	void setBPPSlice(BPPSlice* slice) { m_slice = slice; }
 
 	virtual bool execute();
 
 private:
-	Nv::Blast::SlicingConfiguration* m_config;
-};
-
-enum BlastToolType
-{
-	BTT_Damage = 0,
-	BTT_Drag,
-	BTT_Select,
-	BTT_Translate,
-	BTT_Scale,
-	BTT_Rotation,
-	BTT_Edit,
-	BTT_Num
+	BPPSlice* m_slice;
 };
 
 enum SelectMode
@@ -125,12 +145,13 @@ class BlastController;
 class SceneController;
 class DamageToolController;
 class SelectionToolController;
+class ExplodeToolController;
 class GizmoToolController;
 class EditionToolController;
 class SampleController;
 class CommonUIController;
 class SimpleRandomGenerator;
-
+class BlastAssetModelSimple;
 /**
 */
 class SampleManager
@@ -146,27 +167,18 @@ class SampleManager
 	int run();
 	int free();
 
-	void addModelAsset(std::string path, std::string file, bool isSkinned, physx::PxTransform transform, bool clear = true);
-
 	bool createAsset(
-		std::string path,
-		std::string assetName,
-		std::vector<physx::PxVec3>& positions,
-		std::vector<physx::PxVec3>& normals,
-		std::vector<physx::PxVec2>& uv,
-		std::vector<unsigned int>&  indices,
-		bool fracture = false);
+		BlastAssetModelSimple** ppBlastAsset,
+		std::vector<Nv::Blast::Mesh*>& meshes,
+		std::vector<int32_t>& parentIds,
+		std::vector<bool>& supports,
+		std::vector<bool>& statics,
+		std::vector<uint8_t>& joints,
+		std::vector<uint32_t>& worlds);
 
-	bool createAsset(
-		const std::string& path,
-		const std::string& assetName,
-		const std::vector<Nv::Blast::Mesh* >& meshes,
-		bool fracture = false);
+	bool saveAsset(BlastAsset* pBlastAsset);
 
-	bool saveAsset();
-	bool fractureAsset(std::string& path, std::string& assetName, const BlastAsset* blastAsset, int32_t chunkId);
-
-	bool postProcessCurrentAsset();
+	bool exportAsset();
 
 	Renderer& getRenderer()
 	{
@@ -198,6 +210,10 @@ class SampleManager
 		return *m_selectionToolController;
 	}
 
+	ExplodeToolController& getExplodeToolController() const
+	{
+		return *m_explodeToolController;
+	}
 	GizmoToolController& getGizmoToolController() const
 	{
 		return *m_gizmoToolController;
@@ -218,11 +234,6 @@ class SampleManager
 		return *m_commonUIController;
 	}
 
-	const SampleConfig&	getConfig() const
-	{
-		return m_config;
-	}
-
 	std::vector<uint32_t> getCurrentSelectedChunks();
 	std::map<BlastAsset*, std::vector<uint32_t>> getSelectedChunks();
 	void clearChunksSelected();
@@ -230,8 +241,6 @@ class SampleManager
 	void setChunkVisible(std::vector<uint32_t> depths, bool bVisible);
 
 	void setFractureExecutor(FractureExecutor* executor);
-
-	void setBlastToolType(BlastToolType type);
 
 	void output(const char* str);
 	void output(float value);
@@ -249,26 +258,74 @@ class SampleManager
 		return m_AssetDescMap;
 	}
 
+	BlastFamily* getFamilyByInstance(BPPAssetInstance* instance);
+	BPPAssetInstance* getInstanceByFamily(BlastFamily* family);
+	void updateFamily(BlastFamily* oldFamily, BlastFamily* newFamily);
+
 	std::map<std::string, RenderMaterial*>& getRenderMaterials(){ return m_RenderMaterialMap; }
-	void addRenderMaterial(RenderMaterial* pRenderMaterial);
 	void removeRenderMaterial(std::string name);
-	void deleteRenderMaterial(std::string name);
 	void renameRenderMaterial(std::string oldName, std::string newName);
+	void reloadRenderMaterial(std::string name, float r, float g, float b, bool diffuse = true);
+	void reloadRenderMaterial(std::string name, std::string texture, RenderMaterial::TextureType tt = RenderMaterial::TT_Diffuse);
+	void reloadRenderMaterial(std::string name, float specularShininess);
+	RenderMaterial* getRenderMaterial(std::string name, bool create = true);
 	
 	bool m_bNeedRefreshTree;
 
 	void getCurrentSelectedInstance(BlastAsset** ppBlastAsset, int& index);
 	void setCurrentSelectedInstance(BlastAsset* pBlastAsset, int index);
-	void getMaterialForCurrentFamily(RenderMaterial** ppRenderMaterial, bool externalSurface);
-	void setMaterialForCurrentFamily(RenderMaterial* pRenderMaterial, bool externalSurface);
+	void getMaterialForCurrentFamily(std::string& name, bool externalSurface);
+	void setMaterialForCurrentFamily(std::string name, bool externalSurface);
+
+	void updateAssetFamilyStressSolver(BPPAsset* bppAsset, BPPStressSolver& stressSolver);
+	// only update unfractured mode mesh
+	void updateModelMeshToProjectParam(BlastAsset* pBlastAsset);
+
+	BlastAsset* loadBlastFile(std::string dir, std::string file, AssetList::ModelAsset modelAsset);
+	void addBlastAsset(BlastAssetModelSimple* pBlastAsset, AssetList::ModelAsset modelAsset, bool inProject = false);
+	void removeBlastAsset(BlastAssetModelSimple* pBlastAsset);
+	BlastFamily* addBlastFamily(BlastAsset* pBlastAsset, physx::PxTransform transform, bool inProject = false);
+	bool removeBlastFamily(BlastAsset* pBlastAsset, int nFamilyIndex);
+
+	BlastAsset* getCurBlastAsset() { return m_pCurBlastAsset; }
+
+	void refreshAsset(BlastAsset* pBlastAsset);
+
+	void UpdateCamera();
+
+	bool IsSimulating() { return m_simulating; }
+	void EnableSimulating(bool bSimulating);
+	bool IsStepforward() { return m_stepforward; }
+	void EnableStepforward(bool bStepforward);
+
+	physx::PxVec3 getAssetExtent() { return m_assetExtents; }
+
+	bool eventAlreadyHandled();
+
+	void ApplyAutoSelectNewChunks(BlastAsset* pNewBlastAsset, std::vector<uint32_t>& NewChunkIndexes);
+	void ApplySelectionDepthTest();
 
 private:
-	bool _createAsset(
-		const std::string& assetName,
-		const std::string& outDir,
-		const std::vector<Nv::Blast::Mesh* >& meshes);
+	void _createAsset(BlastAssetModelSimple** ppBlastAsset, 
+		std::vector<bool>& supports,
+		std::vector<bool>& statics,
+		std::vector<uint8_t>& joints,
+		std::vector<uint32_t>& worlds);
+
+	BlastAsset* _replaceAsset(BlastAsset* pBlastAsset,
+		std::vector<bool>& supports,
+		std::vector<bool>& statics,
+		std::vector<uint8_t>& joints,
+		std::vector<uint32_t>& worlds);
 
 	void _setSourceAsset();
+
+	void _addAssetToProjectParam(BlastAsset* pBlastAsset);
+	void _removeAssetFromProjectParam(BlastAsset* pBlastAsset);
+	void _addInstanceToProjectParam(BlastFamily* pBlastFamily);
+	void _removeInstanceFromProjectParam(BlastFamily* pBlastFamily);
+	void _removeInstancesFromProjectParam(BlastAsset* pBlastAsset);
+	void _refreshInstanceFamilyMap();
 
 private:
 	Renderer*             m_renderer;
@@ -277,15 +334,13 @@ private:
 	SceneController*      m_sceneController;
 	DamageToolController* m_damageToolController;
 	SelectionToolController* m_selectionToolController;
+	ExplodeToolController*   m_explodeToolController;
 	GizmoToolController*  m_gizmoToolController;
 	EditionToolController* m_editionToolController;
 	SampleController*     m_sampleController;
 	CommonUIController*   m_commonUIController;
-
-	SampleConfig	m_config;
-
+	
 	Application* m_pApplication;
-	BlastToolType m_ToolType;
 
 	BlastFractureTool*			m_fTool;
 	FractureExecutor*			m_fractureExecutor;
@@ -294,11 +349,13 @@ private:
 	std::map<BlastAsset*, AssetList::ModelAsset> m_AssetDescMap;
 	std::map<std::string, RenderMaterial*> m_RenderMaterialMap;
 	std::vector<std::string> m_NeedDeleteRenderMaterials;
+	std::map<BPPAssetInstance*, BlastFamily*> m_instanceFamilyMap;
 
 	BlastAsset* m_pCurBlastAsset;
 	int m_nCurFamilyIndex;
-
-	bool m_bNeedConfig;
+	physx::PxVec3 m_assetExtents;
+	bool m_simulating;
+	bool m_stepforward;
 };
 
 

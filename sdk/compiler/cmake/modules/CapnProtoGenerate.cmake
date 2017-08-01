@@ -46,10 +46,9 @@ function(CAPNP_GENERATE_CPP SOURCES HEADERS)
   endif()
 
   if(DEFINED CAPNPC_OUTPUT_DIR)
-    # Prepend a ':' to get the format for the '-o' flag right
-    set(output_dir ":${CAPNPC_OUTPUT_DIR}")
+    set(output_dir "${CAPNPC_OUTPUT_DIR}")
   else()
-    set(output_dir ":.")
+    set(output_dir ".")
   endif()
 
   if(NOT DEFINED CAPNPC_SRC_PREFIX)
@@ -79,17 +78,18 @@ function(CAPNP_GENERATE_CPP SOURCES HEADERS)
       set(output_base "${CAPNPC_OUTPUT_DIR}${output_path}")
     endif()
 
-	MESSAGE("Output base: " ${output_base})
-	MESSAGE("Output path: " ${output_path})
-	MESSAGE("Output dir: " ${output_dir})
-	MESSAGE("Src prefix: " ${CAPNPC_SRC_PREFIX})
-	
+    MESSAGE("Output base: " ${output_base})
+    MESSAGE("Output path: " ${output_path})
+    MESSAGE("Output dir: " ${output_dir})
+    MESSAGE("Src prefix: " ${CAPNPC_SRC_PREFIX})
+
     add_custom_command(
       OUTPUT "${output_base}.c++" "${output_base}.h"
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${output_dir}
       COMMAND "${CAPNP_EXECUTABLE}"
       ARGS compile 
-          -o ${CAPNPC_CXX_EXECUTABLE}${output_dir}
-		  --verbose
+          -o ${CAPNPC_CXX_EXECUTABLE}:${output_dir}
+          --verbose
           --src-prefix ${CAPNPC_SRC_PREFIX}
           ${include_path}
           ${CAPNPC_FLAGS}

@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::TkAsset Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::TkAsset Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -41,7 +41,7 @@
   </div>
 </div>
 <div class="contents">
-<h1>Nv::Blast::TkAsset Class Reference</h1><!-- doxytag: class="Nv::Blast::TkAsset" --><!-- doxytag: inherits="Nv::Blast::TkSerializable" --><code>#include &lt;<a class="el" href="_nv_blast_tk_asset_8h-source.html">NvBlastTkAsset.h</a>&gt;</code>
+<h1>Nv::Blast::TkAsset Class Reference</h1><!-- doxytag: class="Nv::Blast::TkAsset" --><!-- doxytag: inherits="Nv::Blast::TkIdentifiable" --><code>#include &lt;<a class="el" href="_nv_blast_tk_asset_8h-source.html">NvBlastTkAsset.h</a>&gt;</code>
 <p>
 <div class="dynheader">
 Inheritance diagram for Nv::Blast::TkAsset:</div>
@@ -49,9 +49,8 @@ Inheritance diagram for Nv::Blast::TkAsset:</div>
 
 <p><center><img src="class_nv_1_1_blast_1_1_tk_asset.png" usemap="#Nv::Blast::TkAsset_map" border="0" alt=""></center>
 <map name="Nv::Blast::TkAsset_map">
-<area href="class_nv_1_1_blast_1_1_tk_serializable.html" alt="Nv::Blast::TkSerializable" shape="rect" coords="0,112,146,136">
-<area href="class_nv_1_1_blast_1_1_tk_identifiable.html" alt="Nv::Blast::TkIdentifiable" shape="rect" coords="0,56,146,80">
-<area href="class_nv_1_1_blast_1_1_tk_object.html" alt="Nv::Blast::TkObject" shape="rect" coords="0,0,146,24">
+<area href="class_nv_1_1_blast_1_1_tk_identifiable.html" alt="Nv::Blast::TkIdentifiable" shape="rect" coords="0,56,141,80">
+<area href="class_nv_1_1_blast_1_1_tk_object.html" alt="Nv::Blast::TkObject" shape="rect" coords="0,0,141,24">
 </map>
 </div>
 
@@ -251,7 +250,7 @@ NOTE: Wrapper function over low-level function call, see NvBlastAssetGetSupportG
 <div class="memdoc">
 
 <p>
-The number of internal <a class="el" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a> objects that will be created when this asset is instanced into a <a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a> (see <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#30b4f2c95a00aa2cd98a3ba4001b0cb8">TkFramework::createActor</a>). These joints will not trigger <a class="el" href="struct_nv_1_1_blast_1_1_tk_joint_update_event.html">TkJointUpdateEvent</a> events until this actor is split into actors such that a joint connects two actors. At this time the actor's family will dispatch a <a class="el" href="struct_nv_1_1_blast_1_1_tk_joint_update_event.html#b7f4bb03fd3e37d487b6baa02104db7d0b71861440e6e4a16b3567c74cfca6d8" title="A joint that used to be internal to a single TkActor now joins two different TkActors...">TkJointUpdateEvent::External</a> event during a call to <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#d6e5795147da35529cd5473411cb11c5">TkGroup::sync()</a> (see <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>).<p>
+The number of internal <a class="el" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a> objects that will be created when this asset is instanced into a <a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a> (see <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#30b4f2c95a00aa2cd98a3ba4001b0cb8">TkFramework::createActor</a>). These joints will not trigger <a class="el" href="struct_nv_1_1_blast_1_1_tk_joint_update_event.html">TkJointUpdateEvent</a> events until this actor is split into actors such that a joint connects two actors. At this time the actor's family will dispatch a <a class="el" href="struct_nv_1_1_blast_1_1_tk_joint_update_event.html#b7f4bb03fd3e37d487b6baa02104db7d0b71861440e6e4a16b3567c74cfca6d8" title="A joint that used to be internal to a single TkActor now joins two different TkActors...">TkJointUpdateEvent::External</a> event during a call to <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#4d21bd8b0225ae57b81bb8fe09df39ff">TkGroup::endProcess()</a> (see <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>).<p>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>the number of descriptors for internal joints. </dd></dl>
 
 </div>

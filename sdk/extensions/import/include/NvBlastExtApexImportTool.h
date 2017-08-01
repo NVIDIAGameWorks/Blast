@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTEXTAPEXIMPORTTOOL_H
 #define NVBLASTEXTAPEXIMPORTTOOL_H
@@ -18,8 +36,6 @@
 
 namespace physx
 {
-class PxErrorCallback;
-class PxAllocatorCallback;
 namespace general_PxIOStream2
 {
 class PxFileBuf;
@@ -87,9 +103,8 @@ public:
 
 	/**	
 		Constructor should be provided with user defined allocator and massage function:
-		\param[in] logFn		User - supplied message function(see NvBlastLog definition).May be NULL.
 	*/
-	ApexImportTool(NvBlastLog logFn = NULL);
+	ApexImportTool();
 	~ApexImportTool();
 
 	//////////////////////////////////////////////////////////////////////////////
@@ -168,11 +183,12 @@ public:
 		\param[in]	apexChunkFlags			Chunk flags array
 		\param[out]	physicsChunks			Chunk physics info output array
 		\param[out]	physicsSubchunks		Chunk collision geometry and transformation data output array
+		\param[out]	hullsDescs				Chunk collision geometry descriptors, can be used to save to some third party format
 		\return								If true - success, output arrays are filled.
 	*/
 	bool								getCollisionGeometry(const nvidia::apex::DestructibleAsset* apexAsset, uint32_t chunkCount, std::vector<uint32_t>& chunkReorderInvMap,
 												const std::vector<uint32_t>& apexChunkFlags, std::vector<ExtPxAssetDesc::ChunkDesc>& physicsChunks,
-												std::vector<ExtPxAssetDesc::SubchunkDesc>& physicsSubchunks);
+												std::vector<ExtPxAssetDesc::SubchunkDesc>& physicsSubchunks, std::vector<std::vector<CollisionHull*> >& hullsDesc);
 
 	ApexDestruction*					m_apexDestruction;
 	//////////////////////////////////////////////////////////////////////////////
@@ -182,9 +198,6 @@ private:
 											std::vector<NvBlastChunkDesc>& chunkDescriptors, std::vector<NvBlastBondDesc>& bondDesc, std::vector<uint32_t>& flags,
 											const ApexImporterConfig& configDesc);
 	
-
-protected:
-	NvBlastLog	m_log;
 
 protected:
 	ApexImportTool(const ApexImportTool&);

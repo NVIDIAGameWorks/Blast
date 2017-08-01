@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "BlastFamilyModelSimple.h"
 #include "RenderUtils.h"
@@ -19,7 +37,118 @@
 #include "PxRigidDynamic.h"
 #include "MaterialLibraryPanel.h"
 
+// Add By Lixu Begin
+#include "NvBlastExtPxManager.h"
+#include "SceneController.h"
+#include "PhysXController.h"
+#include "SampleManager.h"
+#include "BlastModel.h"
+#include "PxPhysics.h"
+#include "PxScene.h"
+#include "GizmoToolController.h"
+// Add By Lixu End
+
 using namespace physx;
+
+#include "ViewerOutput.h"
+// print out all shapes for debug purpose. check actor/shape releasing.
+void PrintActors(PhysXController& physXController)
+{
+	PxPhysics& physx = physXController.getPhysics();
+	static int convexNum = 0, shapeNum = 0;
+	int convexNumNew = physx.getNbConvexMeshes();
+	int shapeNumNew = physx.getNbShapes();
+	if (shapeNum != shapeNumNew && shapeNumNew > 0)
+	{
+		// print shapes
+		std::vector<PxShape*> shapes(shapeNumNew);
+		physx.getShapes(shapes.data(), shapeNumNew);
+		shapeNum = shapeNumNew;
+		for (PxU32 u = 0; u < shapeNumNew; ++u)
+		{
+			PxShape& shape = *shapes[u];
+			PxRigidActor* pActor = shape.getActor();
+			const char* pName = pActor ? pActor->getName() : nullptr;
+			char buf[256];
+			if (pName)
+			{
+				sprintf(buf, "Actor %x shape %x %s", pActor, &shape, pName);
+			}
+			else
+			{
+				sprintf(buf, "Actor %x shape %x", pActor, &shape);
+			}
+			viewer_msg(buf);
+		}
+	}
+}
+
+// only modify unfractured mode mesh
+void modifyModelByLocalWay(BlastModel& model, PxTransform& gp_old, PxTransform& gp_new)
+{
+	BlastModel::Chunk& chunk = model.chunks[0];//unfracture model only has one chunk
+
+	std::vector<BlastModel::Chunk::Mesh>& meshes = chunk.meshes;
+	int meshSize = meshes.size();
+
+	if (meshSize == 0)
+	{
+		return;
+	}
+
+	PxTransform gp_newInv = gp_new.getInverse();
+	for (int ms = 0; ms < meshSize; ms++)
+	{
+		BlastModel::Chunk::Mesh& mesh = meshes[ms];
+		SimpleMesh& simpleMesh = mesh.mesh;
+		std::vector<SimpleMesh::Vertex>& vertices = simpleMesh.vertices;
+
+		int NumVertices = vertices.size();
+		for (uint32_t i = 0; i < NumVertices; ++i)
+		{
+			PxTransform v_old(vertices[i].position);
+			PxTransform v_new = gp_newInv * gp_old * v_old;
+			physx::PxVec3 pos = v_new.p;
+
+			SimpleMesh::Vertex& vertex = vertices[i];
+			vertex.position.x = pos.x;
+			vertex.position.y = pos.y;
+			vertex.position.z = pos.z;
+		}
+	}
+}
+
+
+void scaleModel(BlastModel& model, PxMat44& scale)
+{
+	BlastModel::Chunk& chunk = model.chunks[0];//unfracture model only has one chunk
+
+	std::vector<BlastModel::Chunk::Mesh>& meshes = chunk.meshes;
+	int meshSize = meshes.size();
+
+	if (meshSize == 0)
+	{
+		return;
+	}
+
+	for (int ms = 0; ms < meshSize; ms++)
+	{
+		BlastModel::Chunk::Mesh& mesh = meshes[ms];
+		SimpleMesh& simpleMesh = mesh.mesh;
+		std::vector<SimpleMesh::Vertex>& vertices = simpleMesh.vertices;
+
+		int NumVertices = vertices.size();
+		for (uint32_t i = 0; i < NumVertices; ++i)
+		{
+			SimpleMesh::Vertex& vertex = vertices[i];
+			physx::PxVec3 pos = scale.transform(vertices[i].position);
+
+			vertex.position.x = pos.x;
+			vertex.position.y = pos.y;
+			vertex.position.z = pos.z;
+		}
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //												SimpleRenderMesh
@@ -34,7 +163,8 @@ public:
 
 		m_inputDesc.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 });
 		m_inputDesc.push_back({ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 });
-		m_inputDesc.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+		m_inputDesc.push_back({ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+		m_inputDesc.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 });
 		m_inputDesc.push_back({ "TEXCOORD", 1, DXGI_FORMAT_R32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 });
 
 		m_numVertices = static_cast<uint32_t>(mesh->vertices.size());
@@ -200,10 +330,20 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //											BlastFamilyModelSimple
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 BlastFamilyModelSimple::BlastFamilyModelSimple(PhysXController& physXController, ExtPxManager& pxManager, Renderer& renderer, const BlastAssetModelSimple& blastAsset, const BlastAsset::ActorDesc& desc)
 	: BlastFamily(physXController, pxManager, blastAsset), m_renderer(renderer)
 {
+	// Add By Lixu Begin
+	SampleManager* pSampleManager = SampleManager::ins();
+	std::map<BlastAsset*, std::vector<BlastFamily*>>& AssetFamiliesMap = pSampleManager->getAssetFamiliesMap();
+	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = pSampleManager->getAssetDescMap();
+
+	BlastAsset* pBlastAsset = (BlastAsset*)&getBlastAsset();
+	AssetFamiliesMap[pBlastAsset].push_back(this);
+
+	AssetList::ModelAsset& m = AssetDescMap[pBlastAsset];
+	// Add By Lixu End
+
 	// materials
 	auto materials = blastAsset.getRenderMaterials();
 
@@ -223,6 +363,10 @@ BlastFamilyModelSimple::BlastFamilyModelSimple(PhysXController& physXController,
 		ex_Renderables.clear();
 		std::vector<Renderable*>& in_Renderables = m_chunks[chunkIndex].in_Renderables;
 		in_Renderables.clear();
+
+		PxActor* actor = pSampleManager->getPhysXController().createEditPhysXActor(meshes, desc.transform);
+		m_editActorChunkMap.insert(std::make_pair(actor, chunkIndex));
+		m_chunkEditActorMap.insert(std::make_pair(chunkIndex, actor));
 // Add By Lixu End
 		renderMeshes.resize(meshes.size());
 		renderables.resize(meshes.size());
@@ -231,8 +375,11 @@ BlastFamilyModelSimple::BlastFamilyModelSimple(PhysXController& physXController,
 			renderMeshes[i] = new SimpleRenderMesh(&meshes[i].mesh);
 
 			uint32_t materialIndex = model.chunks[chunkIndex].meshes[i].materialIndex;
-			Renderable* renderable = renderer.createRenderable(*renderMeshes[i], *materials[materialIndex]);
-			renderable->setHidden(true);
+
+			RenderMaterial* pRenderMaterial = pSampleManager->getRenderMaterial(materials[materialIndex]);
+
+			Renderable* renderable = renderer.createRenderable(*renderMeshes[i], *pRenderMaterial);
+			renderable->setHidden(!_getBPPChunkVisible(chunkIndex));
 			renderables[i] = renderable;
 // Add By Lixu Begin
 			if (materialIndex == 0)
@@ -247,6 +394,10 @@ BlastFamilyModelSimple::BlastFamilyModelSimple(PhysXController& physXController,
 		}
 	}
 
+// Add By Lixu Begin
+	initTransform(desc.transform);
+// Add By Lixu End
+
 	// initialize in position
 	initialize(desc);
 }
@@ -254,21 +405,63 @@ BlastFamilyModelSimple::BlastFamilyModelSimple(PhysXController& physXController,
 BlastFamilyModelSimple::~BlastFamilyModelSimple()
 {
 // Add By Lixu Begin
+	// remove from AssetFamiliesMap
+	SampleManager* pSampleManager = SampleManager::ins();
+	std::map<BlastAsset*, std::vector<BlastFamily*>>& AssetFamiliesMap = pSampleManager->getAssetFamiliesMap();
+	BlastAsset* pBlastAsset = (BlastAsset*)&getBlastAsset();
+	std::vector<BlastFamily*>& families = AssetFamiliesMap[pBlastAsset];
+	std::vector<BlastFamily*>::iterator itBF;
+	for (itBF = families.begin(); itBF != families.end(); itBF++)
+	{
+		if ((*itBF) == this)
+		{
+			families.erase(itBF);
+			break;
+		}
+	}
+	if (families.size() == 0)
+	{
+		AssetFamiliesMap.erase(AssetFamiliesMap.find(pBlastAsset));
+	}
+
 	// disconnect the material and relative renderable
 	const BlastAssetModelSimple& blastAsset = *(BlastAssetModelSimple*)&m_blastAsset;
-	const std::vector<RenderMaterial*>& materials = blastAsset.getRenderMaterials();
+	const std::vector<std::string>& materials = blastAsset.getRenderMaterials();
 	int materialSize = materials.size();
 	for (int ms = 0; ms < materialSize; ms++)
 	{
-		RenderMaterial* pRenderMaterial = materials[ms];
+		RenderMaterial* pRenderMaterial = pSampleManager->getRenderMaterial(materials[ms]);
 		pRenderMaterial->clearRelatedRenderables();
 	}
-	std::map<std::string, RenderMaterial*>& RenderMaterialMap = MaterialLibraryPanel::ins()->getRenderMaterials();
-	std::map<std::string, RenderMaterial*>::iterator it;
-	for (it = RenderMaterialMap.begin(); it != RenderMaterialMap.end(); it++)
+
+	// remove physx actor for edit mode
+	PxScene& editScene = pSampleManager->getPhysXController().getEditPhysXScene();
+
+	for (std::map<PxActor*, uint32_t>::iterator itr = m_editActorChunkMap.begin(); itr != m_editActorChunkMap.end(); ++itr)
 	{
-		RenderMaterial* pRenderMaterial = it->second;
-		pRenderMaterial->clearRelatedRenderables();
+		editScene.removeActor(*(itr->first));
+		PxRigidDynamic* rigidDynamic = (itr->first)->is<PxRigidDynamic>();
+		if (rigidDynamic == nullptr)
+		{
+			itr->first->release();
+			continue;
+		}
+		
+		PxU32 shapeCount = rigidDynamic->getNbShapes();
+		std::vector<PxShape*> shapes;
+		shapes.resize(shapeCount);
+		rigidDynamic->getShapes(shapes.data(), shapeCount);
+		for (PxU32 u = 0; u < shapeCount; ++u)
+		{
+			PxShape& shape = *shapes[u];
+			rigidDynamic->detachShape(shape);
+			PxConvexMeshGeometry geometry;
+			shape.getConvexMeshGeometry(geometry);
+			geometry.convexMesh->release();
+			shape.release();
+		}
+
+		rigidDynamic->release();
 	}
 // Add By Lixu End
 
@@ -282,6 +475,9 @@ BlastFamilyModelSimple::~BlastFamilyModelSimple()
 			SAFE_DELETE(m_chunks[chunkIndex].renderMeshes[i]);
 		}
 	}
+	// Add By Lixu Begin
+	//PrintActors(SampleManager::ins()->getPhysXController());
+	// Add By Lixu End
 }
 
 void BlastFamilyModelSimple::onActorCreated(const ExtPxActor& actor)
@@ -299,9 +495,15 @@ void BlastFamilyModelSimple::onActorCreated(const ExtPxActor& actor)
 		{
 			if (colors.size() <= r)
 				colors.push_back(getRandomPastelColor());
-
-			renderables[r]->setHidden(false);
-			renderables[r]->setColor(colors[r]);
+			if (SampleManager::ins()->IsSimulating())
+			{
+				renderables[r]->setHidden(false);
+			}
+			else
+			{
+				renderables[r]->setHidden(!_getBPPChunkVisible(chunkIndex));
+			}
+//			renderables[r]->setColor(colors[r]);
 
 			m_VisibleChangedChunks[chunkIndex] = true;
 		}
@@ -311,6 +513,9 @@ void BlastFamilyModelSimple::onActorCreated(const ExtPxActor& actor)
 void BlastFamilyModelSimple::onActorUpdate(const ExtPxActor& actor)
 {
 // Add By Lixu Begin
+	if (!SampleManager::ins()->IsSimulating())
+		return;
+
 	uint32_t shapesCount = actor.getPhysXActor().getNbShapes();
 	PxTransform lp;
 	if (shapesCount > 0)
@@ -336,6 +541,12 @@ void BlastFamilyModelSimple::onActorUpdate(const ExtPxActor& actor)
 			r->setTransform(actor.getPhysXActor().getGlobalPose() * lp * subChunks[chunks[chunkIndex].firstSubchunkIndex].transform);
 // Add By Lixu End
 		}
+
+		// Add By Lixu Begin
+		PxActor* editActor = m_chunkEditActorMap[chunkIndex];
+		PxRigidDynamic* rigidDynamic = editActor->is<PxRigidDynamic>();
+		rigidDynamic->setGlobalPose(actor.getPhysXActor().getGlobalPose() * lp * subChunks[chunks[chunkIndex].firstSubchunkIndex].transform);
+		// Add By Lixu End
 	}
 }
 
@@ -373,6 +584,7 @@ void BlastFamilyModelSimple::onActorHealthUpdate(const ExtPxActor& actor)
 	const NvBlastBond* bonds = tkAsset->getBonds();
 
 	const NvBlastSupportGraph graph = tkAsset->getGraph();
+	const float bondHealthMax = m_blastAsset.getBondHealthMax();
 
 	std::vector<float> healthBuffer;
 
@@ -405,7 +617,7 @@ void BlastFamilyModelSimple::onActorHealthUpdate(const ExtPxActor& actor)
 				{
 					uint32_t node1 = graph.adjacentNodeIndices[adjacencyIndex];
 					uint32_t bondIndex = graph.adjacentBondIndices[adjacencyIndex];
-					float bondHealth = PxClamp(bondHealths[bondIndex] / BOND_HEALTH_MAX, 0.0f, 1.0f);
+					float bondHealth = PxClamp(bondHealths[bondIndex] / bondHealthMax, 0.0f, 1.0f);
 					const NvBlastBond& solverBond = bonds[bondIndex];
 					const PxVec3& centroid = reinterpret_cast<const PxVec3&>(solverBond.centroid);
 					
@@ -424,19 +636,145 @@ void BlastFamilyModelSimple::onActorHealthUpdate(const ExtPxActor& actor)
 }
 
 // Add By Lixu Begin
-void BlastFamilyModelSimple::setActorSelected(const ExtPxActor& actor, bool selected)
+bool BlastFamilyModelSimple::find(const PxActor& actor)
 {
-	const uint32_t* chunkIndices = actor.getChunkIndices();
-	uint32_t chunkCount = actor.getChunkCount();
-	for (uint32_t i = 0; i < chunkCount; i++)
+	return -1 != getChunkIndexByPxActor(actor);
+}
+
+void BlastFamilyModelSimple::updateActorRenderableTransform(const PxActor& actor, PxTransform& pos, bool local)
+{
+	uint32_t chunkIndex = getChunkIndexByPxActor(actor);
+	if (-1 == chunkIndex)
+		return;
+
+	std::vector<Renderable*>& renderables = m_chunks[chunkIndex].renderables;
+	for (Renderable* r : renderables)
 	{
-		uint32_t chunkIndex = chunkIndices[i];
-		std::vector<Renderable*>& renderables = m_chunks[chunkIndex].renderables;
-		for (Renderable* r : renderables)
+		if (!local)
 		{
-			r->setSelected(selected);
+			r->setTransform(pos);
+
+			// in edit mode, if change root chunk's orientation in edit physx scene, also change root physx actor in blast physx scene
+			if (0 == chunkIndex && !SampleManager::ins()->IsSimulating())
+			{
+				(*m_actors.begin())->getPhysXActor().setGlobalPose(pos);
+			}
+		}
+		else
+		{
+			if (0 == chunkIndex)
+			{
+				PxActor& blastActor = (*m_actors.begin())->getPhysXActor();
+				PxRigidDynamic* rigidDynamic = blastActor.is<PxRigidDynamic>();
+				if (NULL != rigidDynamic)
+				{
+					PxTransform gp_new = pos;
+					PxTransform gp_old = rigidDynamic->getGlobalPose();
+					rigidDynamic->setGlobalPose(pos);
+					PxScene& pxScene = SampleManager::ins()->getPhysXController().getPhysXScene();
+					modifyPxActorByLocalWay(pxScene, *rigidDynamic, gp_old, gp_new);
+					const BlastModel& model = dynamic_cast<BlastAssetModelSimple*>(const_cast<BlastAsset*>(&m_blastAsset))->getModel();
+					// update model mesh
+					modifyModelByLocalWay(*(const_cast<BlastModel*>(&model)), gp_old, gp_new);
+					// update blast asset instance's transform
+					BPPAssetInstance* assetInstance = SampleManager::ins()->getInstanceByFamily(this);
+					assetInstance->transform.position = nvidia::NvVec3(gp_new.p.x, gp_new.p.y, gp_new.p.z);
+					assetInstance->transform.rotation = nvidia::NvVec4(gp_new.q.x, gp_new.q.y, gp_new.q.z, gp_new.q.w);
+				}
+			}
 		}
 	}
+}
+
+uint32_t BlastFamilyModelSimple::getChunkIndexByPxActor(const PxActor& actor)
+{
+	std::map<PxActor*, uint32_t>::iterator itr = m_editActorChunkMap.find(const_cast<PxActor*>(&actor));
+
+	if (itr != m_editActorChunkMap.end())
+	{
+		return itr->second;
+	}
+	else
+	{
+		for (ExtPxActor* extPxActor : m_actors)
+		{
+			if (&(extPxActor->getPhysXActor()) == (&actor)->is<physx::PxRigidDynamic>())
+			{
+				return extPxActor->getChunkIndices()[0];
+			}
+		}
+	}
+	return -1;
+}
+
+bool BlastFamilyModelSimple::getPxActorByChunkIndex(uint32_t chunkIndex, PxActor** ppActor)
+{
+	*ppActor = nullptr;
+	std::map<uint32_t, PxActor*>::iterator it =	m_chunkEditActorMap.find(chunkIndex);
+	if (it == m_chunkEditActorMap.end())
+	{
+		return false;
+	}
+
+	*ppActor = it->second;
+	return true;
+}
+
+void BlastFamilyModelSimple::setActorSelected(const PxActor& actor, bool selected)
+{
+	uint32_t chunkIndex = getChunkIndexByPxActor(actor);
+	if (-1 == chunkIndex)
+		return;
+
+	bool selectionDepthTest = BlastProject::ins().getParams().fracture.general.selectionDepthTest;
+
+	std::vector<Renderable*>& renderables = m_chunks[chunkIndex].renderables;
+	for (Renderable* r : renderables)
+	{
+		r->setSelected(selected);
+
+		if (!selectionDepthTest && selected)
+		{
+			r->setDepthTest(false);
+		}
+		else
+		{
+			r->setDepthTest(true);
+		}
+	}
+}
+
+bool BlastFamilyModelSimple::isActorSelected(const PxActor& actor)
+{
+	uint32_t chunkIndex = getChunkIndexByPxActor(actor);
+	if (-1 == chunkIndex)
+		return false;
+
+	std::vector<Renderable*>& renderables = m_chunks[chunkIndex].renderables;
+	return renderables[0]->isSelected();
+}
+
+void BlastFamilyModelSimple::setActorVisible(const PxActor& actor, bool visible)
+{
+	uint32_t chunkIndex = getChunkIndexByPxActor(actor);
+	if (-1 == chunkIndex)
+		return;
+
+	std::vector<Renderable*>& renderables = m_chunks[chunkIndex].renderables;
+	for (Renderable* r : renderables)
+	{
+		r->setHidden(!visible);
+	}
+}
+
+bool BlastFamilyModelSimple::isActorVisible(const PxActor& actor)
+{
+	uint32_t chunkIndex = getChunkIndexByPxActor(actor);
+	if (-1 == chunkIndex)
+		return false;
+
+	std::vector<Renderable*>& renderables = m_chunks[chunkIndex].renderables;
+	return !renderables[0]->isHidden();
 }
 
 void BlastFamilyModelSimple::setChunkSelected(uint32_t chunk, bool selected)
@@ -444,10 +782,21 @@ void BlastFamilyModelSimple::setChunkSelected(uint32_t chunk, bool selected)
 	if (chunk > m_chunks.size())
 		return;
 
+	bool selectionDepthTest = BlastProject::ins().getParams().fracture.general.selectionDepthTest;
+
 	std::vector<Renderable*>& renderables = m_chunks[chunk].renderables;
 	for (Renderable* r : renderables)
 	{
 		r->setSelected(select);
+
+		if (!selectionDepthTest && selected)
+		{
+			r->setDepthTest(false);
+		}
+		else
+		{
+			r->setDepthTest(true);
+		}
 	}
 }
 
@@ -472,11 +821,13 @@ void BlastFamilyModelSimple::clearChunksSelected()
 		for (Renderable* r : renderables)
 		{
 			r->setSelected(false);
+			r->setDepthTest(true);
+			r->setHighlight(false);
 		}
 	}
 }
 
-bool BlastFamilyModelSimple::getChunkSelected(uint32_t chunk)
+bool BlastFamilyModelSimple::isChunkSelected(uint32_t chunk)
 {
 	if (chunk > m_chunks.size())
 		return false;
@@ -515,17 +866,31 @@ std::vector<uint32_t> BlastFamilyModelSimple::getSelectedChunks()
 	return selectedChunks;
 }
 
-void BlastFamilyModelSimple::setActorScale(const ExtPxActor& actor, PxMat44& scale, bool replace)
+void BlastFamilyModelSimple::setActorScale(const PxActor& actor, PxMat44& scale, bool replace)
 {
-	const uint32_t* chunkIndices = actor.getChunkIndices();
-	uint32_t chunkCount = actor.getChunkCount();
-	for (uint32_t i = 0; i < chunkCount; i++)
+	uint32_t chunkIndex = getChunkIndexByPxActor(actor);
+	if (-1 == chunkIndex)
+		return;
+	std::vector<Renderable*>& renderables = m_chunks[chunkIndex].renderables;
+	for (Renderable* r : renderables)
 	{
-		uint32_t chunkIndex = chunkIndices[i];
-		std::vector<Renderable*>& renderables = m_chunks[chunkIndex].renderables;
-		for (Renderable* r : renderables)
+		r->setMeshScale(scale, replace);
+	}
+
+	if (0 == chunkIndex)
+	{
+		PxActor& blastActor = (*m_actors.begin())->getPhysXActor();
+		PxRigidDynamic* rigidDynamic = blastActor.is<PxRigidDynamic>();
+		if (NULL != rigidDynamic)
 		{
-			r->setMeshScale(scale, replace);
+			PxScene& pxScene = SampleManager::ins()->getPhysXController().getPhysXScene();
+			scalePxActor(pxScene, *rigidDynamic, scale);
+
+			if (replace)
+			{
+				const BlastModel& model = dynamic_cast<BlastAssetModelSimple*>(const_cast<BlastAsset*>(&m_blastAsset))->getModel();
+				scaleModel(*(const_cast<BlastModel*>(&model)), scale);
+			}
 		}
 	}
 }
@@ -574,6 +939,7 @@ void BlastFamilyModelSimple::setChunkVisible(std::vector<uint32_t> depths, bool 
 
 void BlastFamilyModelSimple::initTransform(physx::PxTransform t)
 {
+	BlastFamily::initTransform(t);
 	int chunkSize = m_chunks.size();
 	for (int i = 0; i < chunkSize; i++)
 	{
@@ -582,6 +948,12 @@ void BlastFamilyModelSimple::initTransform(physx::PxTransform t)
 		{
 			r->setTransform(t);
 		}
+	}
+
+	for (std::map<PxActor*, uint32_t>::iterator itr = m_editActorChunkMap.begin(); itr != m_editActorChunkMap.end(); ++itr)
+	{
+		PxRigidDynamic* rigidDynamic = itr->first->is<PxRigidDynamic>();
+		rigidDynamic->setGlobalPose(t);
 	}
 }
 
@@ -653,6 +1025,41 @@ void BlastFamilyModelSimple::setMaterial(RenderMaterial* pRenderMaterial, bool e
 				r->setMaterial(*p);
 			}
 		}
+	}
+}
+
+void BlastFamilyModelSimple::highlightChunks()
+{
+	bool selectionDepthTest = BlastProject::ins().getParams().fracture.general.selectionDepthTest;
+
+	for (Chunk chunk : m_chunks)
+	{
+		std::vector<Renderable*>& renderables = chunk.renderables;
+		for (Renderable* r : renderables)
+		{
+			r->setHighlight(true);
+			r->setDepthTest(selectionDepthTest);
+		}
+	}
+}
+
+bool BlastFamilyModelSimple::_getBPPChunkVisible(uint32_t chunkIndex)
+{
+	std::map<BlastAsset*, AssetList::ModelAsset>& assetDescMap = SampleManager::ins()->getAssetDescMap();
+	BlastAsset* blastAsset = (BlastAsset*)&getBlastAsset();
+	AssetList::ModelAsset& m = assetDescMap[blastAsset];
+
+	BlastProject& project = BlastProject::ins();
+	BPPAsset& bppAsset = *(project.getAsset(m.name.c_str()));
+
+	BPPChunk* bppChunk = project.getChunk(bppAsset, chunkIndex);
+	if (bppChunk)
+	{
+		return bppChunk->visible;
+	}
+	else
+	{
+		return true;
 	}
 }
 // Add By Lixu End

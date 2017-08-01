@@ -3,7 +3,6 @@
 #
 
 SET(TOOLKIT_DIR ${PROJECT_SOURCE_DIR}/toolkit)
-SET(PROFILER_SOURCE_DIR ${PROJECT_SOURCE_DIR}/profiler)
 SET(COMMON_SOURCE_DIR ${PROJECT_SOURCE_DIR}/common)
 
 FIND_PACKAGE(PxSharedSDK $ENV{PM_PxShared_VERSION} REQUIRED)
@@ -33,11 +32,9 @@ SET(COMMON_FILES
 	${COMMON_SOURCE_DIR}/NvBlastTime.cpp
 	${COMMON_SOURCE_DIR}/NvBlastTime.h
 	${COMMON_SOURCE_DIR}/NvBlastTimers.cpp
-)
-
-SET(PROFILER_FILES
-	${PROFILER_SOURCE_DIR}/NvBlastProfiler.cpp
-	${PROFILER_SOURCE_DIR}/NvBlastProfilerInternal.h
+	${COMMON_SOURCE_DIR}/NvBlastArray.h
+	${COMMON_SOURCE_DIR}/NvBlastHashMap.h
+	${COMMON_SOURCE_DIR}/NvBlastHashSet.h
 )
 
 SET(PUBLIC_FILES
@@ -51,16 +48,12 @@ SET(PUBLIC_FILES
 	${TOOLKIT_DIR}/include/NvBlastTkIdentifiable.h
 	${TOOLKIT_DIR}/include/NvBlastTkJoint.h
 	${TOOLKIT_DIR}/include/NvBlastTkObject.h
-	${TOOLKIT_DIR}/include/NvBlastTkSerializable.h
 	${TOOLKIT_DIR}/include/NvBlastTkType.h
 )
 
 SET(TOOLKIT_FILES
 	${TOOLKIT_DIR}/source/NvBlastTkActorImpl.cpp
 	${TOOLKIT_DIR}/source/NvBlastTkActorImpl.h
-	${TOOLKIT_DIR}/source/NvBlastTkAllocator.cpp
-	${TOOLKIT_DIR}/source/NvBlastTkAllocator.h
-	${TOOLKIT_DIR}/source/NvBlastTkArray.h
 	${TOOLKIT_DIR}/source/NvBlastTkAssetImpl.cpp
 	${TOOLKIT_DIR}/source/NvBlastTkAssetImpl.h
 	${TOOLKIT_DIR}/source/NvBlastTkCommon.h
@@ -72,8 +65,6 @@ SET(TOOLKIT_FILES
 	${TOOLKIT_DIR}/source/NvBlastTkGroupImpl.cpp
 	${TOOLKIT_DIR}/source/NvBlastTkGroupImpl.h
 	${TOOLKIT_DIR}/source/NvBlastTkGUID.h
-	${TOOLKIT_DIR}/source/NvBlastTkHashMap.h
-	${TOOLKIT_DIR}/source/NvBlastTkHashSet.h
 	${TOOLKIT_DIR}/source/NvBlastTkJointImpl.cpp
 	${TOOLKIT_DIR}/source/NvBlastTkJointImpl.h
 	${TOOLKIT_DIR}/source/NvBlastTkTaskImpl.cpp
@@ -83,13 +74,11 @@ SET(TOOLKIT_FILES
 
 ADD_LIBRARY(NvBlastTk ${BLASTTK_LIBTYPE} 
 	${COMMON_FILES}
-	${PROFILER_FILES}
 	${PUBLIC_FILES}
 	${TOOLKIT_FILES}
 )
 
 SOURCE_GROUP("common" FILES ${COMMON_FILES})
-SOURCE_GROUP("profiler" FILES ${PROFILER_FILES})
 SOURCE_GROUP("public" FILES ${PUBLIC_FILES})
 SOURCE_GROUP("toolkit" FILES ${TOOLKIT_FILES})
 
@@ -99,7 +88,6 @@ TARGET_INCLUDE_DIRECTORIES(NvBlastTk
 	PRIVATE ${BLASTTK_PLATFORM_INCLUDES}
 
 	PRIVATE ${PROJECT_SOURCE_DIR}/common
-	PRIVATE ${PROJECT_SOURCE_DIR}/profiler
 	PUBLIC ${PROJECT_SOURCE_DIR}/lowlevel/include
 	PUBLIC ${PROJECT_SOURCE_DIR}/toolkit/include
 	
@@ -108,6 +96,10 @@ TARGET_INCLUDE_DIRECTORIES(NvBlastTk
 
 TARGET_COMPILE_DEFINITIONS(NvBlastTk 
 	PRIVATE ${BLASTTK_COMPILE_DEFS}
+)
+
+TARGET_COMPILE_OPTIONS(NvBlastTk
+	PRIVATE ${BLASTTK_PLATFORM_COMPILE_OPTIONS}
 )
 
 SET_TARGET_PROPERTIES(NvBlastTk PROPERTIES 
@@ -119,7 +111,7 @@ SET_TARGET_PROPERTIES(NvBlastTk PROPERTIES
 
 # Do final direct sets after the target has been defined
 TARGET_LINK_LIBRARIES(NvBlastTk 
-	PRIVATE NvBlast 
+	PUBLIC NvBlast NvBlastGlobals
 
 	PUBLIC ${BLASTTK_PLATFORM_LINKED_LIBS}
 )

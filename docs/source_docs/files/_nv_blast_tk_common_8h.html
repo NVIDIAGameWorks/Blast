@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/toolkit/source/NvBlastTkCommon.h File Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/toolkit/source/NvBlastTkCommon.h File Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -37,24 +37,18 @@
   </div>
 </div>
 <div class="contents">
-<h1>sdk/toolkit/source/NvBlastTkCommon.h File Reference</h1><code>#include &quot;<a class="el" href="_nv_preprocessor_8h-source.html">NvPreprocessor.h</a>&quot;</code><br>
+<h1>sdk/toolkit/source/NvBlastTkCommon.h File Reference</h1><code>#include &quot;<a class="el" href="_nv_blast_globals_8h-source.html">NvBlastGlobals.h</a>&quot;</code><br>
 <code>#include &quot;<a class="el" href="_nv_blast_tk_g_u_i_d_8h-source.html">NvBlastTkGUID.h</a>&quot;</code><br>
 
 <p>
 <a href="_nv_blast_tk_common_8h-source.html">Go to the source code of this file.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Defines</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_tk_common_8h.html#d17fec1e0253ec1c78824c477ac8bc65">NVBLASTTK_DEFINE_TYPE_IDENTIFIABLE</a>(_name)&nbsp;&nbsp;&nbsp;TkTypeImpl Tk##_name##Type::s_type(&quot;Tk&quot; #_name, Tk##_name##Impl::ClassID, 0, nullptr)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_tk_common_8h.html#32aeee5c13d08715562ed62f4c24b534">NVBLASTTK_DEFINE_TYPE_SERIALIZABLE</a>(_name)&nbsp;&nbsp;&nbsp;TkTypeImpl Tk##_name##Type::s_type(&quot;Tk&quot; #_name, Tk##_name##Impl::ClassID, Tk##_name##Impl::Version::Current, Tk##_name##Impl::deserialize)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_tk_common_8h.html#56a79252d2fe479a4211d211d84c5320">NVBLASTTK_FOURCC</a>(_a, _b, _c, _d)&nbsp;&nbsp;&nbsp;( (uint32_t)(_a) | (uint32_t)(_b)&lt;&lt;8 | (uint32_t)(_c)&lt;&lt;16 | (uint32_t)(_d)&lt;&lt;24 )</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_tk_common_8h.html#d17fec1e0253ec1c78824c477ac8bc65">NVBLASTTK_DEFINE_TYPE_IDENTIFIABLE</a>(_name)&nbsp;&nbsp;&nbsp;TkTypeImpl Tk##_name##Type::s_type(&quot;Tk&quot; #_name, Tk##_name##Impl::ClassID, 0)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_tk_common_8h.html#6780b152c722066f67ab03eca09872dc">NVBLASTTK_IMPL_DECLARE</a>(_name)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_tk_common_8h.html#dc9deb5a641537a8c6dc144d6c8279b5">NVBLASTTK_IMPL_DEFINE_IDENTIFIABLE</a>(_id0, _id1, _id2, _id3)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_tk_common_8h.html#b6c0c5fa4b36a144778c8558ba97a6b2">NVBLASTTK_IMPL_DEFINE_SERIALIZABLE</a>(_id0, _id1, _id2, _id3)</td></tr>
 
 </table>
 <hr><h2>Define Documentation</h2>
@@ -68,56 +62,7 @@
           <td class="paramtype">_name&nbsp;</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td>&nbsp;&nbsp;&nbsp;TkTypeImpl Tk##_name##Type::s_type(&quot;Tk&quot; #_name, Tk##_name##Impl::ClassID, 0, nullptr)</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="32aeee5c13d08715562ed62f4c24b534"></a><!-- doxytag: member="NvBlastTkCommon.h::NVBLASTTK_DEFINE_TYPE_SERIALIZABLE" ref="32aeee5c13d08715562ed62f4c24b534" args="(_name)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define NVBLASTTK_DEFINE_TYPE_SERIALIZABLE          </td>
-          <td>(</td>
-          <td class="paramtype">_name&nbsp;</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td>&nbsp;&nbsp;&nbsp;TkTypeImpl Tk##_name##Type::s_type(&quot;Tk&quot; #_name, Tk##_name##Impl::ClassID, Tk##_name##Impl::Version::Current, Tk##_name##Impl::deserialize)</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="56a79252d2fe479a4211d211d84c5320"></a><!-- doxytag: member="NvBlastTkCommon.h::NVBLASTTK_FOURCC" ref="56a79252d2fe479a4211d211d84c5320" args="(_a, _b, _c, _d)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define NVBLASTTK_FOURCC          </td>
-          <td>(</td>
-          <td class="paramtype">_a,         <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">_b,         <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">_c,         <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">_d&nbsp;</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td>&nbsp;&nbsp;&nbsp;( (uint32_t)(_a) | (uint32_t)(_b)&lt;&lt;8 | (uint32_t)(_c)&lt;&lt;16 | (uint32_t)(_d)&lt;&lt;24 )</td>
+          <td>&nbsp;&nbsp;&nbsp;TkTypeImpl Tk##_name##Type::s_type(&quot;Tk&quot; #_name, Tk##_name##Impl::ClassID, 0)</td>
         </tr>
       </table>
 </div>
@@ -180,44 +125,7 @@
     <span class="comment">/* Enums */</span>                                                         \
                                                                         \
     <span class="comment">/* Generate a ClassID enum used to identify this TkIdentifiable. */</span> \
-    <span class="keyword">enum</span> { ClassID = <a class="code" href="_nv_blast_tk_common_8h.html#56a79252d2fe479a4211d211d84c5320">NVBLASTTK_FOURCC</a>(_id0, _id1, _id2, _id3) }
-</pre></div>
-</div>
-</div><p>
-<a class="anchor" name="b6c0c5fa4b36a144778c8558ba97a6b2"></a><!-- doxytag: member="NvBlastTkCommon.h::NVBLASTTK_IMPL_DEFINE_SERIALIZABLE" ref="b6c0c5fa4b36a144778c8558ba97a6b2" args="(_id0, _id1, _id2, _id3)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define NVBLASTTK_IMPL_DEFINE_SERIALIZABLE          </td>
-          <td>(</td>
-          <td class="paramtype">_id0,         <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">_id1,         <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">_id2,         <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">_id3&nbsp;</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-<b>Value:</b><div class="fragment"><pre class="fragment"><a class="code" href="_nv_blast_tk_common_8h.html#dc9deb5a641537a8c6dc144d6c8279b5">NVBLASTTK_IMPL_DEFINE_IDENTIFIABLE</a>(_id0, _id1, _id2, _id3);                                         \
-                                                                                                        \
-    <span class="comment">/* Begin TkSerializable */</span>                                                                          \
-    <span class="keyword">virtual</span> <span class="keywordtype">bool</span>            serialize(physx::general_PxIOStream2::PxFileBuf&amp; stream) <span class="keyword">const override</span>;    \
-    <span class="comment">/* End TkSerializable */</span>                                                                            \
-                                                                                                        \
-    <span class="comment">/* Static deserialization function, called by TkFrameworkImpl::deserialize after header data */</span>     \
-    <span class="keyword">static</span> TkSerializable*  deserialize(physx::general_PxIOStream2::PxFileBuf&amp; stream, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_i_d.html">NvBlastID</a>&amp; <span class="keywordtype">id</span>)
+    <span class="keyword">enum</span> { ClassID = <a class="code" href="_nv_blast_globals_8h.html#05d6e56bfb4bc7ffdaccd9e32ef1551e">NVBLAST_FOURCC</a>(_id0, _id1, _id2, _id3) }
 </pre></div>
 </div>
 </div><p>

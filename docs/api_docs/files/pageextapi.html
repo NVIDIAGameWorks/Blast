@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 API Reference: Extensions (NvBlastExt)</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 API Reference: Extensions (NvBlastExt)</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -22,15 +22,28 @@
 <div class="contents">
 <h1><a class="anchor" name="pageextapi">Extensions (NvBlastExt) </a></h1>These are the current Blast extensions: <br>
  <br>
- <a class="el" href="pageextauthoring.html">Asset Authoring (NvBlastExtAuthoring)</a> <br>
- <a class="el" href="pageextapeximport.html">Apex Import (NvBlastExtApexImport)</a> <br>
- <a class="el" href="pageextserialization.html">Serialization (NvBlastExtSerialization)</a> <br>
- <a class="el" href="pageextconverterll.html">Data Format Conversion Extension (NvBlastExtConverterLL)</a> <br>
- <a class="el" href="pageextshaders.html">Damage Shaders (NvBlastExtShaders)</a> <br>
- <a class="el" href="pageextphysx.html">PhysX Extensions</a> <br>
+ <a class="el" href="pageextshaders.html">Damage Shaders (NvBlastExtShaders)</a> - Standard damage shaders (radial, shear, line segment) which can be used in NvBlast and NvBlastTk damage functions. <br>
  <br>
- To use them, include the appropriate headers in include/extensions (each extension will describe which headers are necessary), and link to the desired NvBlastExt*{config}{arch} library in the lib folder. Here, config is the usual DEBUG/CHECKED/PROFILE (or nothing for release), and {arch} distinguishes achitecture, if needed (such as _x86 or _x64).<p>
-<br>
+ <a class="el" href="pageextstress.html">Stress Solver Extension (NvBlastExtStress)</a> - A toolkit for performing stress calculations on low-level Blast&trade; actors, using a minimal API to assign masses and apply forces. Does not use any external physics library. <br>
+ <br>
+ <a class="el" href="pageextassetutils.html">Asset Utilities (NvBlastExtAssetUtils)</a> - <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> utility functions. Add world bonds, merge assets, and transform geometric data. <br>
+ <br>
+ <a class="el" href="pageextauthoring.html">Asset Authoring (NvBlastExtAuthoring)</a> - Powerful tools for cleaning and fracturing meshes using voronoi, clustered voronoi, and slicing methods. <br>
+ <br>
+ <a class="el" href="pageextimport.html">Importer (NvBlastExtImport)</a> - Functions to import data from external formats and convert to a Blast&trade; asset. Currently handles APEX NvDestructibleAsset data. <br>
+ <br>
+ <a class="el" href="pageextexporter.html">Exporter (NvBlastExtExporter)</a> - Standard mesh and collision writer tools in fbx, obj, and json formats. <br>
+ <br>
+ <a class="el" href="pageextserialization.html">Serialization (NvBlastExtSerialization)</a> - Blast&trade; object serialization manager. With the ExtTkSerialization and ExtPxSerialization extensions, can serialize assets for low-level, Tk, and ExtPhysX libraries using a variety of encodings. This extension comes with low-level serializers built-in. <br>
+ <br>
+ <a class="el" href="pageexttkserialization.html">BlastTk Serialization (NvBlastExtTkSerialization)</a> - This module contains serializers for NvBlastTk objects. Use in conjunction with ExtSerialization. <br>
+ <br>
+ <a class="el" href="pageextpxserialization.html">ExtPhysX Serialization (NvBlastExtPxSerialization)</a> - This module contains serializers for ExtPhysX objects. Use in conjunction with ExtSerialization. <br>
+ <br>
+ <a class="el" href="pageextphysx.html">PhysX Extensions (NvBlastExtPhysX)</a> - A reference implementation of a physics manager, using the PhysX SDK. Creates and manages actors and joints, and handles impact damage and uses the stress solver (ExtStress) to handle stress calculations. <br>
+ <br>
+ To use them, include the appropriate headers in include/extensions (each extension will describe which headers are necessary), and link to the desired NvBlastExt*{config}{arch} library in the lib folder. Here, config is the usual DEBUG/CHECKED/PROFILE (or nothing for release), and {arch} distinguishes achitecture, if needed (such as _x86 or _x64). <br>
+ <br>
  </div>
 <!-- start footer part -->
 <div class="footer">

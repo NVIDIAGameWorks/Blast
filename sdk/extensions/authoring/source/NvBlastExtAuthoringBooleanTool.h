@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTEXTAUTHORINGBOOLEANTOOL_H
 #define NVBLASTEXTAUTHORINGBOOLEANTOOL_H
@@ -92,7 +110,7 @@ class BooleanEvaluator
 {
 
 public:
-	BooleanEvaluator(NvBlastLog logCallback = nullptr);
+	BooleanEvaluator();
 	~BooleanEvaluator();
 
 	/**
@@ -103,7 +121,7 @@ public:
 		\param[in] spAccelB Acceleration structure for mesh B
 		\param[in] mode		Boolean operation type
 	*/
-	void	performBoolean(Mesh* meshA, Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode);
+	void	performBoolean(const Mesh* meshA, const Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode);
 
 	/**
 		Perform boolean operation on two polygonal meshes (A and B).
@@ -111,7 +129,7 @@ public:
 		\param[in] meshB	Mesh B
 		\param[in] mode		Boolean operation type
 	*/
-	void	performBoolean(Mesh* meshA, Mesh* meshB, BooleanConf mode);
+	void	performBoolean(const Mesh* meshA, const Mesh* meshB, BooleanConf mode);
 
 	/**
 		Perform cutting of mesh with some large box, which represents cutting plane. This method skips part of intersetion computations, so
@@ -122,7 +140,7 @@ public:
 		\param[in] spAccelB Acceleration structure for cutting box
 		\param[in] mode		Boolean operation type
 	*/
-	void	performFastCutting(Mesh* meshA, Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode);
+	void	performFastCutting(const Mesh* meshA, const Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode);
 
 	/**
 		Perform cutting of mesh with some large box, which represents cutting plane. This method skips part of intersetion computations, so
@@ -131,7 +149,7 @@ public:
 		\param[in] meshB	Cutting box
 		\param[in] mode		Boolean operation type
 	*/
-	void	performFastCutting(Mesh* meshA, Mesh* meshB, BooleanConf mode);
+	void	performFastCutting(const Mesh* meshA, const Mesh* meshB, BooleanConf mode);
 
 	/**
 		Test whether point contained in mesh.
@@ -139,7 +157,7 @@ public:
 		\param[in] point	Point which should be tested
 		\return not 0 if point is inside of mesh
 	*/
-	int32_t	isPointContainedInMesh(Mesh* mesh, const physx::PxVec3& point);
+	int32_t	isPointContainedInMesh(const Mesh* mesh, const physx::PxVec3& point);
 	/**
 		Test whether point contained in mesh.
 		\param[in] mesh		Mesh geometry
@@ -147,7 +165,7 @@ public:
 		\param[in] point	Point which should be tested
 		\return not 0 if point is inside of mesh
 	*/
-	int32_t	isPointContainedInMesh(Mesh* mesh, SpatialAccelerator* spAccel, const physx::PxVec3& point);
+	int32_t	isPointContainedInMesh(const Mesh* mesh, SpatialAccelerator* spAccel, const physx::PxVec3& point);
 
 
 	/**
@@ -172,11 +190,11 @@ private:
 	void	addEdgeIfValid(EdgeWithParent& ed);
 private:
 
-	int32_t	vertexMeshStatus03(const physx::PxVec3& p, Mesh* mesh);
-	int32_t	vertexMeshStatus30(const physx::PxVec3& p, Mesh* mesh);
+	int32_t	vertexMeshStatus03(const physx::PxVec3& p, const Mesh* mesh);
+	int32_t	vertexMeshStatus30(const physx::PxVec3& p, const Mesh* mesh);
 
-	Mesh*													mMeshA;
-	Mesh*													mMeshB;
+	const Mesh*												mMeshA;
+	const Mesh*												mMeshB;
 
 	SpatialAccelerator*										mAcceleratorA;
 	SpatialAccelerator*										mAcceleratorB;
@@ -186,8 +204,6 @@ private:
 
 	std::vector<std::vector<EdgeFacetIntersectionData> >	mEdgeFacetIntersectionData12;
 	std::vector<std::vector<EdgeFacetIntersectionData> >	mEdgeFacetIntersectionData21;
-
-	NvBlastLog	mLoggingCallback;
 };
 
 } // namespace Blast

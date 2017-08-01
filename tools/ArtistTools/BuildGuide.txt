@@ -1,0 +1,28 @@
+Before building the viewer you should run the script that generates source code for serialization. This can be found here
+
+p4\sw\devrel\libdev\HairWorks\1.2\trunk\tools\FurViewer\source\App\Parameters
+
+Run the script go.bat
+
+You should now be able to build using one of the Visual Studio projects
+
+
+Is currently using Qt5.5. You may need to configure the variable QTDIR to point to the appropriate project. You will see errors in the post build step complaining about switches if you don't do this. 
+
+On my system the variable points to...
+
+p4\sw\sw\devrel\libdev\HairWorks\1.2\trunk\external\Qt5.5.0\vc2013
+
+Visual Studio 2013
+------------------
+
+The project is in project\vs2013
+
+Open the project FurViewer.sln
+
+Visual Studio 2015
+------------------
+
+The project is in project\vs2013
+
+There are two projects FurViewer.sln - builds the Dx11 viewer, FurViewerDx12.sln builds the Direct3D12 version of the viewer.

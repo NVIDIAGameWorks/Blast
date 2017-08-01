@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef RENDERER_H
 #define RENDERER_H
@@ -23,6 +41,7 @@
 #include "RendererShadow.h"
 #include "RendererHBAO.h"
 #include <unordered_set>
+#include "LightShaderParam.h"
 
 class CFirstPersonCamera;
 class PhysXPrimitive;
@@ -95,7 +114,12 @@ class Renderer : public ISampleController
 		m_queuedRenderBuffers.push_back(buffer);
 	}
 
-	ResourceManager& getResourceManager() 
+	void clearQueue()
+	{
+		m_queuedRenderBuffers.clear();
+	}
+
+	ResourceManager& getResourceManager()
 	{ 
 		return m_resourceManager; 
 	}
@@ -120,7 +144,7 @@ class Renderer : public ISampleController
 
 	// for internal usage (used by RenderShadows)
 	void renderDepthOnly(DirectX::XMMATRIX* viewProjectionSubstitute);
-
+	void UpdateCamera();
   protected:
 
 	//////// controller callbacks ////////
@@ -174,14 +198,18 @@ class Renderer : public ISampleController
 		float specularPower;
 		DirectX::XMFLOAT3 dirLightColor;
 		float specularIntensity; // TODO: actually it's per object property
+		LightShaderParam lightParam;
 	};
 	struct CBObject
 	{
-		DirectX::XMMATRIX world;
-		DirectX::XMFLOAT4 color;
-// Add By Lixu Begin
+		DirectX::XMMATRIX worldMatrix;
+		DirectX::XMFLOAT4 diffuseColor;
+		DirectX::XMFLOAT4 specularColor;
+		float useDiffuseTexture;
+		float useSpecularTexture;
+		float useNormalTexture;
+		float specularShininess;
 		float selected;
-// Add By Lixu End
 	};
 
 
@@ -210,6 +238,7 @@ class Renderer : public ISampleController
 	ID3D11RasterizerState*             m_RSState;
 	ID3D11DepthStencilState*           m_opaqueRenderDSState;
 	ID3D11DepthStencilState*           m_transparencyRenderDSState;
+	ID3D11DepthStencilState*           m_opaqueRenderNoDepthDSState;
 
 	// DX11 samplers
 	ID3D11SamplerState*                m_pointSampler;

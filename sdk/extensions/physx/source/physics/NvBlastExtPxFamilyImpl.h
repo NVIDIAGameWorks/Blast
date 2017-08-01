@@ -1,19 +1,37 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTEXTPXFAMILYIMPL_H
 #define NVBLASTEXTPXFAMILYIMPL_H
 
 #include "NvBlastExtPxFamily.h"
-#include "NvBlastExtArray.h"
-#include "NvBlastExtHashSet.h"
+#include "NvBlastArray.h"
+#include "NvBlastHashSet.h"
 #include "PxTransform.h"
 #include "NvBlastTkEvent.h"
 
@@ -150,15 +168,15 @@ private:
 	bool									m_isSpawned;
 	PxTransform								m_initialTransform;
 	PxVec3									m_initialScale;
-	ExtHashSet<ExtPxActor*>::type			m_actors;
-	ExtArray<TkActor*>::type				m_culledActors;
-	ExtInlineArray<ExtPxListener*, 4>::type	m_listeners;
-	ExtArray<PxShape*>::type				m_subchunkShapes;
-	ExtArray<TkActor*>::type				m_newActorsBuffer;
-	ExtArray<PxActorCreateInfo>::type		m_newActorCreateInfo;
-	ExtArray<PxActor*>::type				m_physXActorsBuffer;
-	ExtArray<ExtPxActor*>::type				m_actorsBuffer;
-	ExtArray<uint32_t>::type				m_indicesScratch;
+	HashSet<ExtPxActor*>::type			    m_actors;
+	Array<TkActor*>::type				    m_culledActors;
+	InlineArray<ExtPxListener*, 4>::type	m_listeners;
+	Array<PxShape*>::type				    m_subchunkShapes;
+	Array<TkActor*>::type				    m_newActorsBuffer;
+	Array<PxActorCreateInfo>::type		    m_newActorCreateInfo;
+	Array<PxActor*>::type				    m_physXActorsBuffer;
+	Array<ExtPxActor*>::type				m_actorsBuffer;
+	Array<uint32_t>::type				    m_indicesScratch;
 };
 
 } // namespace Blast

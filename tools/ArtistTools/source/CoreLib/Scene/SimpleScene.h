@@ -34,6 +34,7 @@
 #include <QtCore/QMap>
 #include "Camera.h"
 #include "Timer.h"
+#include <DirectXMath.h>
 class FurCharacter;
 
 class DeviceManager;
@@ -141,6 +142,34 @@ public:
 
 	Timer& GetTimer();
 
+	DirectX::XMMATRIX GetViewMatrix() const
+	{
+		atcore_float4x4& matrix = m_pCamera->_viewMatrix;
+		return DirectX::XMMATRIX(
+			matrix._11, matrix._12, matrix._13, matrix._14,
+			matrix._21, matrix._22, matrix._23, matrix._24,
+			matrix._31, matrix._32, matrix._33, matrix._34,
+			matrix._41, matrix._42, matrix._43, matrix._44);
+	}
+	DirectX::XMMATRIX GetProjMatrix() const
+	{
+		atcore_float4x4& matrix = m_pCamera->_projectionMatrix;
+		return DirectX::XMMATRIX(
+			matrix._11, matrix._12, matrix._13, matrix._14,
+			matrix._21, matrix._22, matrix._23, matrix._24,
+			matrix._31, matrix._32, matrix._33, matrix._34,
+			matrix._41, matrix._42, matrix._43, matrix._44);
+	}
+	DirectX::XMVECTOR GetEyePt() const 
+	{ 
+		return DirectX::XMLoadFloat3(
+			reinterpret_cast<const DirectX::XMFLOAT3*>(&m_pCamera->_eye));
+	}
+	DirectX::XMVECTOR GetLookAtPt() const 
+	{ 
+		return DirectX::XMLoadFloat3(
+			reinterpret_cast<const DirectX::XMFLOAT3*>(&m_pCamera->_at));
+	}
 private:
 	// initialize scene components
 	bool InitCameraMouse(HWND hAppWnd);

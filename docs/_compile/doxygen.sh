@@ -21,7 +21,7 @@ fi
 
 DOXYGEN_VERSION=1.8.13-linux-x86_64
 echo "Using packman to get doxygen: $DOXYGEN_VERSION" 
-$(dirname "$0")/../../buildtools/packman/linux/packman $PM_OPTIONS_EXT install doxygen $DOXYGEN_VERSION
+$(dirname "$0")/../../buildtools/packman/packman install doxygen $DOXYGEN_VERSION
 
 DOXYGEN=$PM_PACKAGES_ROOT/doxygen/$DOXYGEN_VERSION/bin/doxygen
 

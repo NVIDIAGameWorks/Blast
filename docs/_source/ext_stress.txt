@@ -1,0 +1,119 @@
+/*! \page pageextstress Stress Solver Extension (NvBlastExtStress)
+
+
+The Blast&tm; stress solver extension provides implementation of quite fast and easy to use stress solver which works directly with bond graph. It simulates more
+complex damage model on support graph by allowing to apply forces on nodes of support graph (on chunks). The most common usage is just applying gravity force on a static construction
+so that it will fall apart at some point when carcass can't hold anymore. Dynamic actors are also supported, you could for example add centrifugal force so that rotating object fast enough will break bonds.
+
+It is also can be used as an another way to apply impact damage, which can give visually pleasant result of breaking actor in a weak place instead of the place of contact.
+
+<br>
+\section stresssolverfeatures Features
+
+- Requires only core \a NvBlast
+- Supports both static and dynamic actors
+- Propagates both linear and angular momentum
+- Graph complexity selection (reduces support graph to smaller size trade off speed and quality)
+- Apply stress damage on Blast Actor
+- Debug Render
+
+<br>
+\section stresssolvertunning Settings Tuning
+
+Computational time is linearly proprtional to \a bondIterationsPerFrame setting. To fine tune look for balance 
+between \a bondIterationsPerFrame and \a graphReductionLevel . The more bond iterations
+are set the more precise computation will be. The smaller graph allows to make higher fidelity computations witihing 
+the same bond iterations per frame (same time spent), but actual cracks (damaged bonds) will be more sparsed as the result.
+
+Debug render could help a lot with that, consider using \a stressSolver->fillDebugRender(...) for that.
+
+<br>
+\section stresssolverusage Usage 
+
+In order to use it create an instance with \a ExtStressSolver::create(...).
+
+\code
+ExtStressSolver* stressSolver = ExtStressSolver::create(family, settings);
+\endcode
+
+\a ExtStressSolverSettings are passed in create function, but also can be changed at any time with \a stressSolver->setSettings(...).
+
+It fully utilizes the fact that it knows initial support graph structure and does maximum of processing 
+in \a create(...) method calls. After that all actors split calls are synced internally quite fast and only the actual
+stress propagation takes most of computational time. 
+
+Then you need to provide physics specific information (mass, volume, position, static) for every node in support graph since Blast itself is physics agnostic. There are two ways to do it, you can call \a stressSolver->setNodeInfo(...) for every graph node. Another was is to call stressSolver->setAllNodesInfoFromLL() once all the data will be populated using NvBlastAsset chunk's data, in particular
+\a volume and \a centroid are used. All nodes connected to 'world' chunk are marked as static.
+
+\code
+stressSolver->setAllNodesInfoFromLL();
+\endcode
+
+Stress solver needs to keep track for actor create/destroy events in order to update it's internal stress graph accordingly. So you need to call \a stressSolver->notifyActorCreated(actor) and \a stressSolver->notifyActorDestroyed(actor) every time actor is created or destroyed including the initial actor family had when stress solver were created. There is no need to track actors which contain only one or lesser graph nodes in that case \a notifyActorCreated(actor) returns 'false' as a hint, it means that stress solver will ignore them. For those actors applying forces is also doesn't make any sense.
+
+Typical update loop would can look like this:
+
+-# If split happend call relevant stressSolver->notifyActorCreated(actor) and stressSolver->notifyActorDestroyed(actor)
+-# Apply all forces, use \a stressSolver->addForce(...), stressSolver->addGravityForce(...), \a stressSolver->addAngularVelocity(...)
+-# Call \a stressSolver->update(). This is where all expensive computation happens.
+-# If \a stressSolver->getOverstressedBondCount() > 0 use one of \a stressSolver->generateFractureCommands() methods to get bond fracture commands and apply on them actors.
+
+Example code from ExtPxStressSolverImpl:
+
+\code
+void ExtPxStressSolverImpl::onActorCreated(ExtPxFamily& /*family*/, ExtPxActor& actor)
+{
+	if (m_solver->notifyActorCreated(*actor.getTkActor().getActorLL()))
+	{
+		m_actors.insert(&actor);
+	}
+}
+
+void ExtPxStressSolverImpl::onActorDestroyed(ExtPxFamily& /*family*/, ExtPxActor& actor)
+{
+	m_solver->notifyActorDestroyed(*actor.getTkActor().getActorLL());
+	m_actors.erase(&actor);
+}
+
+void ExtPxStressSolverImpl::update(bool doDamage)
+{
+	for (auto it = m_actors.getIterator(); !it.done(); ++it)
+	{
+		const ExtPxActor* actor = *it;
+
+		PxRigidDynamic& rigidDynamic = actor->getPhysXActor();
+		const bool isStatic = rigidDynamic.getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC;
+		if (isStatic)
+		{
+			PxVec3 gravity = rigidDynamic.getScene()->getGravity();
+			PxVec3 localGravity = rigidDynamic.getGlobalPose().rotateInv(gravity);
+
+			m_solver->addGravityForce(*actor->getTkActor().getActorLL(), localGravity);
+		}
+		else
+		{
+			PxVec3 localCenterMass = rigidDynamic.getCMassLocalPose().p;
+			PxVec3 localAngularVelocity = rigidDynamic.getGlobalPose().rotateInv(rigidDynamic.getAngularVelocity());
+			m_solver->addAngularVelocity(*actor->getTkActor().getActorLL(), localCenterMass, localAngularVelocity);
+		}
+	}
+
+	m_solver->update();
+
+	if (doDamage && m_solver->getOverstressedBondCount() > 0)
+	{
+		NvBlastFractureBuffers commands;
+		m_solver->generateFractureCommands(commands);
+		if (commands.bondFractureCount > 0)
+		{
+			m_family.getTkFamily().applyFracture(&commands);
+		}
+	}
+}
+\endcode
+
+Have a look at \a ExtPxStressSolver implementation code, which is basically high level wrapper on \a NvBlastExtStress to couple it with PhysX&tm; and \a NvBlatExtPx extension (see \ref extpxstresssolver).
+
+<br>
+
+*/

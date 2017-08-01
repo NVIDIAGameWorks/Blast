@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/lowlevel/include/NvBlastProfiler.h File Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/globals/include/NvBlastProfiler.h File Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -37,54 +37,36 @@
   </div>
 </div>
 <div class="contents">
-<h1>sdk/lowlevel/include/NvBlastProfiler.h File Reference</h1><code>#include &quot;<a class="el" href="_nv_blast_preprocessor_8h-source.html">NvBlastPreprocessor.h</a>&quot;</code><br>
+<h1>sdk/globals/include/NvBlastProfiler.h File Reference</h1><code>#include &quot;<a class="el" href="_nv_blast_preprocessor_8h-source.html">NvBlastPreprocessor.h</a>&quot;</code><br>
 
 <p>
 <a href="_nv_blast_profiler_8h-source.html">Go to the source code of this file.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Classes</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_profiler_detail.html">NvBlastProfilerDetail</a></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_profiler_callback.html">Nv::Blast::ProfilerCallback</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_profiler_detail.html">Nv::Blast::ProfilerDetail</a></td></tr>
 
 <tr><td colspan="2"><br><h2>Namespaces</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacephysx.html">physx</a></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv.html">Nv</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html">Nv::Blast</a></td></tr>
 
 <tr><td colspan="2"><br><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_profiler_8h.html#bd0d1e04cd5a1353bddfa13a4a4cf395">NvBlastProfilerEnablePlatform</a> (bool)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_profiler_8h.html#3c2afe6552b0023fd98b7ce957afd3ab">NvBlastProfilerSetCallback</a> (<a class="el" href="class_nv_1_1_blast_1_1_profiler_callback.html">Nv::Blast::ProfilerCallback</a> *pcb)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_profiler_8h.html#3c0fbd1ad1f74c9454f96c007b909a04">NvBlastProfilerSetCallback</a> (physx::PxProfilerCallback *pcb)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_profiler_8h.html#5389d71b12216023537bd1e06c84dae7">NvBlastProfilerSetDetail</a> (<a class="el" href="struct_nv_blast_profiler_detail.html#8ccdb1b6e95b4859a78f88051dde3db4">NvBlastProfilerDetail::Level</a>)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_profiler_8h.html#ba122faf07ce7b740efb6a9d7fb60893">NvBlastProfilerSetDetail</a> (<a class="el" href="struct_nv_1_1_blast_1_1_profiler_detail.html#06be79d41391dfde43f6aa02866a3c1f">Nv::Blast::ProfilerDetail::Level</a>)</td></tr>
 
 </table>
 <hr><h2>Function Documentation</h2>
-<a class="anchor" name="bd0d1e04cd5a1353bddfa13a4a4cf395"></a><!-- doxytag: member="NvBlastProfiler.h::NvBlastProfilerEnablePlatform" ref="bd0d1e04cd5a1353bddfa13a4a4cf395" args="(bool)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">NVBLAST_API void NvBlastProfilerEnablePlatform           </td>
-          <td>(</td>
-          <td class="paramtype">bool&nbsp;</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Enable events for platform specific profiler tools. Currently supported: Nsight, PS4, Xbox One 
-</div>
-</div><p>
-<a class="anchor" name="3c0fbd1ad1f74c9454f96c007b909a04"></a><!-- doxytag: member="NvBlastProfiler.h::NvBlastProfilerSetCallback" ref="3c0fbd1ad1f74c9454f96c007b909a04" args="(physx::PxProfilerCallback *pcb)" -->
+<a class="anchor" name="3c2afe6552b0023fd98b7ce957afd3ab"></a><!-- doxytag: member="NvBlastProfiler.h::NvBlastProfilerSetCallback" ref="3c2afe6552b0023fd98b7ce957afd3ab" args="(Nv::Blast::ProfilerCallback *pcb)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">NVBLAST_API void NvBlastProfilerSetCallback           </td>
           <td>(</td>
-          <td class="paramtype">physx::PxProfilerCallback *&nbsp;</td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_profiler_callback.html">Nv::Blast::ProfilerCallback</a> *&nbsp;</td>
           <td class="paramname"> <em>pcb</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td></td>
@@ -94,17 +76,17 @@ Enable events for platform specific profiler tools. Currently supported: Nsight,
 <div class="memdoc">
 
 <p>
-Profiler features are only active in checked, debug and profile builds. Set a callback to PVD or another PxProfilerCallback based profiler. 
+Profiler features are only active in checked, debug and profile builds. Set a custom profiler callback. May be nullptr (the default). 
 </div>
 </div><p>
-<a class="anchor" name="5389d71b12216023537bd1e06c84dae7"></a><!-- doxytag: member="NvBlastProfiler.h::NvBlastProfilerSetDetail" ref="5389d71b12216023537bd1e06c84dae7" args="(NvBlastProfilerDetail::Level)" -->
+<a class="anchor" name="ba122faf07ce7b740efb6a9d7fb60893"></a><!-- doxytag: member="NvBlastProfiler.h::NvBlastProfilerSetDetail" ref="ba122faf07ce7b740efb6a9d7fb60893" args="(Nv::Blast::ProfilerDetail::Level)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">NVBLAST_API void NvBlastProfilerSetDetail           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="struct_nv_blast_profiler_detail.html#8ccdb1b6e95b4859a78f88051dde3db4">NvBlastProfilerDetail::Level</a>&nbsp;</td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_profiler_detail.html#06be79d41391dfde43f6aa02866a3c1f">Nv::Blast::ProfilerDetail::Level</a>&nbsp;</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
           <td></td>
@@ -114,7 +96,7 @@ Profiler features are only active in checked, debug and profile builds. Set a ca
 <div class="memdoc">
 
 <p>
-Sets the depth of reported profile zones. Higher levels (more nesting) of instrumentation can have a significant impact. Defaults to NvBlastProfilerDetail::Level::LOW. 
+Sets the depth of reported profile zones. Higher levels (more nesting) of instrumentation can have a significant impact. Defaults to Nv::Blast::ProfilerDetail::Level::LOW. 
 </div>
 </div><p>
 </div>

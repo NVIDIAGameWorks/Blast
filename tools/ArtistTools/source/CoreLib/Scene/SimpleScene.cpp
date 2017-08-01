@@ -171,8 +171,8 @@ bool SimpleScene::Initialize( HWND hWnd, int backdoor)
 	if(!InitCameraMouse(hWnd)) 
 		return false;
 
-//	if (!SimpleRenderable::Initialize())
-//		return false;
+	if (!SimpleRenderable::Initialize())
+		return false;
 
 	Light::Initialize();
 
@@ -189,30 +189,7 @@ bool SimpleScene::Initialize( HWND hWnd, int backdoor)
 	SetFurModified(false);
 	SetProjectModified(false);
 
-#ifndef NV_ARTISTTOOLS
-	if (!InitializeBlastSDK(&g_logHandler, backdoor))
-		return false;
-
-	g_projectParamsContext = CreateProjectParamsContext();
-	if (!g_projectParamsContext) return false;
-
-	{
-		NvHair::Sdk* hairSdk = GetHairSDK();
-		if (hairSdk)
-		{
-			const NvHair::BuildInfo& buildInfo = GetHairSDK()->getBuildInfo();
-
-			viewer_info(GetHairSDK()->getBuildInfo().m_buildString);
-
-			char releaseVersion[100] = "Blast Release:";
-			buildInfo.m_versionToStringFunc(buildInfo.m_releaseVersion, releaseVersion + strlen(releaseVersion));
-
-			viewer_info(releaseVersion);
-		}
-	}
-#else
 	CoreLib::Inst()->SimpleScene_Initialize(backdoor);
-#endif // NV_ARTISTTOOLS
 
 	AppMainWindow::Inst().updateUI();
 
@@ -324,22 +301,6 @@ Timer& SimpleScene::GetTimer()
 ///////////////////////////////////////////////////////////////////////////////
 void SimpleScene::Draw()
 {
-	CoreLib* pCore = CoreLib::Inst();
-	pCore->D3DWidget_paintEvent(NULL);
-#ifndef NV_ARTISTTOOLS
-#else
-	//pCore->SimpleScene_Draw_DX12();
-
-	//RenderInterface::SwitchToDX11();
-
-	//pCore->SimpleScene_Draw_DX11();
-
-	//RenderInterface::FlushDX11();
-#endif
-	// present current window
-	//RenderInterface::PresentRenderWindow();
-	return;
-
 	if (IsSceneLoading())
 		return;
 
@@ -364,9 +325,6 @@ void SimpleScene::Draw()
 	// update camera 
 	UpdateCamera();
 
-	// draw lights
-	Light::DrawLights(m_pCamera);
-
 	// show ground grid
 	if (globalSettings.m_showGrid)
 		DrawGround();
@@ -386,23 +344,6 @@ void SimpleScene::Draw()
 	if (GlobalSettings::Inst().m_visualizeShadowMap)
 		Light::RenderShadowMap();
 
-#ifndef NV_ARTISTTOOLS
-	// init profiler stats
-	FurRenderer::ResetFrameTimer();
-	// the main loop to simulate and render hairs and meshes
-	FurRenderer::UpdateFrame();
-	FurRenderer::Render(m_pCamera);
-
-	RenderInterface::SwitchToDX11();
-	// draw bone name for first hair (hacky, needs to go into SDK)
-	HairInstance* pInstance = GetFurCharacter().GetFirstSelectedHairInstance();
-	if (pInstance && globalSettings.m_visualizeBoneNames)
-		pInstance->DrawBoneNames(m_pCamera);
-
-	// draw HUD.
-	FurRenderer::DrawHUD();
-	RenderInterface::FlushDX11();
-#else
 	CoreLib::Inst()->SimpleScene_Draw_DX12();
 
 	RenderInterface::SwitchToDX11();
@@ -411,7 +352,8 @@ void SimpleScene::Draw()
 
 	RenderInterface::FlushDX11();
 
-#endif // NV_ARTISTTOOLS
+	// draw lights
+	Light::DrawLights(m_pCamera);
 
 	// present current window
 	RenderInterface::PresentRenderWindow();
@@ -512,18 +454,13 @@ SimpleScene::LoadSceneFromFbx(const char* dir, const char* fbxName)
 ///////////////////////////////////////////////////////////////////////////////
 bool SimpleScene::LoadProject(const char* dir, const char* file)
 {
-	GlobalSettings& globalSettings = GlobalSettings::Inst();
+	Clear();
 
+	GlobalSettings& globalSettings = GlobalSettings::Inst();
 	globalSettings.m_projectFileDir = dir;
 	globalSettings.m_projectFileName = file;
 
-#ifndef NV_ARTISTTOOLS
-	nvidia::parameterized::HairProjectParametersNS::ParametersStruct params;
-	if (!ProjectParamsLoad(g_projectParamsContext, globalSettings.getAbsoluteFilePath().c_str(), this))
-		return false;
-#else
 	CoreLib::Inst()->SimpleScene_LoadProject(dir, file);
-#endif // NV_ARTISTTOOLS
 
 	SetProjectModified(false);
 	
@@ -950,18 +887,20 @@ void SimpleScene::UpdateCamera()
 
 	float minZ = 1.0f;
 	float maxZ = 10000.0f;	// should calculate dynamically
-
+/*
 	if (sceneUnit != 0.0f)
 	{
 		minZ /= sceneUnit;
 		maxZ /= sceneUnit;
 	}
-
+*/
 	m_pCamera->SetAspetRatio(aspect);
 	m_pCamera->SetZFar(maxZ);
 	m_pCamera->SetZNear(minZ);
 
 	m_pCamera->Perspective();
+
+	CoreLib::Inst()->SimpleScene_UpdateCamera();
 }
 
 void SimpleScene::FitCamera()
@@ -975,7 +914,11 @@ void SimpleScene::FitCamera()
 	if (m_pFurCharacter)
 		m_pFurCharacter->ComputeBounds(center, extents, false);
 #else
-	CoreLib::Inst()->SimpleScene_FitCamera(center, extents);
+	bool valid = CoreLib::Inst()->SimpleScene_FitCamera(center, extents);
+	if (!valid)
+	{
+		return;
+	}
 #endif // NV_ARTISTTOOLS
 
 	m_pCamera->FitBounds(center, extents);

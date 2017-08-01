@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/toolkit/source/NvBlastTkActorImpl.h Source File</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/toolkit/source/NvBlastTkActorImpl.h Source File</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -35,302 +35,322 @@
       <li><a href="globals.html"><span>File&nbsp;Members</span></a></li>
     </ul>
   </div>
-<h1>sdk/toolkit/source/NvBlastTkActorImpl.h</h1><a href="_nv_blast_tk_actor_impl_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment">* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.</span>
-<a name="l00003"></a>00003 <span class="comment">*</span>
-<a name="l00004"></a>00004 <span class="comment">* NVIDIA CORPORATION and its licensors retain all intellectual property</span>
-<a name="l00005"></a>00005 <span class="comment">* and proprietary rights in and to this software, related documentation</span>
-<a name="l00006"></a>00006 <span class="comment">* and any modifications thereto.  Any use, reproduction, disclosure or</span>
-<a name="l00007"></a>00007 <span class="comment">* distribution of this software and related documentation without an express</span>
-<a name="l00008"></a>00008 <span class="comment">* license agreement from NVIDIA CORPORATION is strictly prohibited.</span>
-<a name="l00009"></a>00009 <span class="comment">*/</span>
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef NVBLASTTKACTORIMPL_H</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTTKACTORIMPL_H</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
-<a name="l00014"></a>00014 
-<a name="l00015"></a>00015 <span class="preprocessor">#include "<a class="code" href="_nv_blast_tk_common_8h.html">NvBlastTkCommon.h</a>"</span>
-<a name="l00016"></a>00016 
-<a name="l00017"></a>00017 <span class="preprocessor">#include "<a class="code" href="_nv_blast_assert_8h.html">NvBlastAssert.h</a>"</span>
-<a name="l00018"></a>00018 <span class="preprocessor">#include "<a class="code" href="_nv_blast_d_link_8h.html">NvBlastDLink.h</a>"</span>
-<a name="l00019"></a>00019 <span class="preprocessor">#include "<a class="code" href="_nv_blast_iterator_base_8h.html">NvBlastIteratorBase.h</a>"</span>
-<a name="l00020"></a>00020 
-<a name="l00021"></a>00021 <span class="preprocessor">#include "<a class="code" href="_nv_blast_tk_joint_impl_8h.html">NvBlastTkJointImpl.h</a>"</span>
-<a name="l00022"></a>00022 
-<a name="l00023"></a>00023 <span class="preprocessor">#include "<a class="code" href="_nv_blast_8h.html">NvBlast.h</a>"</span>
-<a name="l00024"></a>00024 
-<a name="l00025"></a>00025 <span class="preprocessor">#include "<a class="code" href="_nv_blast_tk_actor_8h.html">NvBlastTkActor.h</a>"</span>
-<a name="l00026"></a>00026 
-<a name="l00027"></a>00027 <span class="preprocessor">#include "PxFlags.h"</span>
+<h1>sdk/toolkit/source/NvBlastTkActorImpl.h</h1><a href="_nv_blast_tk_actor_impl_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">// This code contains NVIDIA Confidential Information and is disclosed to you</span>
+<a name="l00002"></a>00002 <span class="comment">// under a form of NVIDIA software license agreement provided separately to you.</span>
+<a name="l00003"></a>00003 <span class="comment">//</span>
+<a name="l00004"></a>00004 <span class="comment">// Notice</span>
+<a name="l00005"></a>00005 <span class="comment">// NVIDIA Corporation and its licensors retain all intellectual property and</span>
+<a name="l00006"></a>00006 <span class="comment">// proprietary rights in and to this software and related documentation and</span>
+<a name="l00007"></a>00007 <span class="comment">// any modifications thereto. Any use, reproduction, disclosure, or</span>
+<a name="l00008"></a>00008 <span class="comment">// distribution of this software and related documentation without an express</span>
+<a name="l00009"></a>00009 <span class="comment">// license agreement from NVIDIA Corporation is strictly prohibited.</span>
+<a name="l00010"></a>00010 <span class="comment">//</span>
+<a name="l00011"></a>00011 <span class="comment">// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES</span>
+<a name="l00012"></a>00012 <span class="comment">// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO</span>
+<a name="l00013"></a>00013 <span class="comment">// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,</span>
+<a name="l00014"></a>00014 <span class="comment">// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.</span>
+<a name="l00015"></a>00015 <span class="comment">//</span>
+<a name="l00016"></a>00016 <span class="comment">// Information and code furnished is believed to be accurate and reliable.</span>
+<a name="l00017"></a>00017 <span class="comment">// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such</span>
+<a name="l00018"></a>00018 <span class="comment">// information or for any infringement of patents or other rights of third parties that may</span>
+<a name="l00019"></a>00019 <span class="comment">// result from its use. No license is granted by implication or otherwise under any patent</span>
+<a name="l00020"></a>00020 <span class="comment">// or patent rights of NVIDIA Corporation. Details are subject to change without notice.</span>
+<a name="l00021"></a>00021 <span class="comment">// This code supersedes and replaces all information previously supplied.</span>
+<a name="l00022"></a>00022 <span class="comment">// NVIDIA Corporation products are not authorized for use as critical</span>
+<a name="l00023"></a>00023 <span class="comment">// components in life support devices or systems without express written approval of</span>
+<a name="l00024"></a>00024 <span class="comment">// NVIDIA Corporation.</span>
+<a name="l00025"></a>00025 <span class="comment">//</span>
+<a name="l00026"></a>00026 <span class="comment">// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.</span>
+<a name="l00027"></a>00027 
 <a name="l00028"></a>00028 
-<a name="l00029"></a>00029 <span class="keyword">namespace </span>Nv
-<a name="l00030"></a>00030 {
-<a name="l00031"></a>00031 <span class="keyword">namespace </span>Blast
-<a name="l00032"></a>00032 {
-<a name="l00033"></a>00033 
-<a name="l00034"></a>00034 <span class="comment">// Forward declarations:</span>
-<a name="l00035"></a>00035 <span class="keyword">class </span>TkGroupImpl;
-<a name="l00036"></a>00036 <span class="keyword">class </span>TkFamilyImpl;
-<a name="l00037"></a>00037 <span class="keyword">class </span>TkAssetImpl;
-<a name="l00038"></a>00038 <span class="keyword">class </span>TkJointImpl;
-<a name="l00039"></a>00039 
+<a name="l00029"></a>00029 <span class="preprocessor">#ifndef NVBLASTTKACTORIMPL_H</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTTKACTORIMPL_H</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span>
+<a name="l00032"></a>00032 
+<a name="l00033"></a>00033 <span class="preprocessor">#include "<a class="code" href="_nv_blast_tk_common_8h.html">NvBlastTkCommon.h</a>"</span>
+<a name="l00034"></a>00034 
+<a name="l00035"></a>00035 <span class="preprocessor">#include "<a class="code" href="_nv_blast_assert_8h.html">NvBlastAssert.h</a>"</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include "<a class="code" href="_nv_blast_d_link_8h.html">NvBlastDLink.h</a>"</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include "<a class="code" href="_nv_blast_iterator_base_8h.html">NvBlastIteratorBase.h</a>"</span>
+<a name="l00038"></a>00038 
+<a name="l00039"></a>00039 <span class="preprocessor">#include "<a class="code" href="_nv_blast_tk_joint_impl_8h.html">NvBlastTkJointImpl.h</a>"</span>
 <a name="l00040"></a>00040 
-<a name="l00044"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html">00044</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html">TkActorFlag</a>
-<a name="l00045"></a>00045 {
-<a name="l00046"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a54">00046</a>     <span class="keyword">enum</span> <a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a54">Enum</a>
-<a name="l00047"></a>00047     {
-<a name="l00048"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a540b11a8f1c57865af0f03cdfc7df62f52">00048</a>         <a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a540b11a8f1c57865af0f03cdfc7df62f52" title="The actor had fractures applied successfully and will take the split step.">DAMAGED</a> = (1 &lt;&lt; 0), 
-<a name="l00049"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a54ebc6b3040a521ce237c9c6c030127ca4">00049</a>         <a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a54ebc6b3040a521ce237c9c6c030127ca4" title="The actor will be processed when its group executes, used to update job queues when...">PENDING</a> = (1 &lt;&lt; 1), 
-<a name="l00050"></a>00050     };
-<a name="l00051"></a>00051 };
-<a name="l00052"></a>00052 
-<a name="l00053"></a>00053 
-<a name="l00057"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">00057</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">TkActorImpl</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a>
-<a name="l00058"></a>00058 {
-<a name="l00059"></a>00059 <span class="keyword">public</span>:
-<a name="l00060"></a>00060     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#5eb93f38a4c304c600361b6198e12f5e">TkActorImpl</a>();
-<a name="l00061"></a>00061     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#5593fab9f6c430669ef2a65d31652172">~TkActorImpl</a>();
-<a name="l00062"></a>00062 
-<a name="l00063"></a>00063     <span class="comment">// Begin TkActor</span>
-<a name="l00064"></a>00064     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>* <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#98cd946a41feb1afc9d70c8b7ad52e4a">getActorLL</a>() <span class="keyword">const override</span>;
-<a name="l00065"></a>00065 
-<a name="l00066"></a>00066     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a>&amp;           <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#6f12bf9c3bc267e7de364bb1b065e958">getFamily</a>() <span class="keyword">const override</span>;
-<a name="l00067"></a>00067 
-<a name="l00068"></a>00068     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2aa65115057efa08ed852c7361e3e5f0">getIndex</a>() <span class="keyword">const override</span>;
-<a name="l00069"></a>00069 
-<a name="l00070"></a>00070     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>*            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#ebc128298c60d3405c7ffbf5e1005a87">getGroup</a>() <span class="keyword">const override</span>;
+<a name="l00041"></a>00041 <span class="preprocessor">#include "<a class="code" href="_nv_blast_8h.html">NvBlast.h</a>"</span>
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043 <span class="preprocessor">#include "<a class="code" href="_nv_blast_tk_actor_8h.html">NvBlastTkActor.h</a>"</span>
+<a name="l00044"></a>00044 
+<a name="l00045"></a>00045 <span class="preprocessor">#include "PxFlags.h"</span>
+<a name="l00046"></a>00046 
+<a name="l00047"></a>00047 <span class="keyword">namespace </span>Nv
+<a name="l00048"></a>00048 {
+<a name="l00049"></a>00049 <span class="keyword">namespace </span>Blast
+<a name="l00050"></a>00050 {
+<a name="l00051"></a>00051 
+<a name="l00052"></a>00052 <span class="comment">// Forward declarations:</span>
+<a name="l00053"></a>00053 <span class="keyword">class </span>TkGroupImpl;
+<a name="l00054"></a>00054 <span class="keyword">class </span>TkFamilyImpl;
+<a name="l00055"></a>00055 <span class="keyword">class </span>TkAssetImpl;
+<a name="l00056"></a>00056 <span class="keyword">class </span>TkJointImpl;
+<a name="l00057"></a>00057 
+<a name="l00058"></a>00058 
+<a name="l00062"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html">00062</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html">TkActorFlag</a>
+<a name="l00063"></a>00063 {
+<a name="l00064"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a54">00064</a>     <span class="keyword">enum</span> <a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a54">Enum</a>
+<a name="l00065"></a>00065     {
+<a name="l00066"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a540b11a8f1c57865af0f03cdfc7df62f52">00066</a>         <a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a540b11a8f1c57865af0f03cdfc7df62f52" title="The actor had fractures applied successfully and will take the split step.">DAMAGED</a> = (1 &lt;&lt; 0), 
+<a name="l00067"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a54ebc6b3040a521ce237c9c6c030127ca4">00067</a>         <a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a54ebc6b3040a521ce237c9c6c030127ca4" title="The actor will be processed when its group executes, used to update job queues when...">PENDING</a> = (1 &lt;&lt; 1), 
+<a name="l00068"></a>00068     };
+<a name="l00069"></a>00069 };
+<a name="l00070"></a>00070 
 <a name="l00071"></a>00071 
-<a name="l00072"></a>00072     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>*            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#f7207df8d0734ce6f84157d85b76fe64">removeFromGroup</a>() <span class="keyword">override</span>;
-<a name="l00073"></a>00073 
-<a name="l00074"></a>00074     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a>*      <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#602d8535023e0091207d84422cbd06ce">getAsset</a>() <span class="keyword">const override</span>;
-<a name="l00075"></a>00075 
-<a name="l00076"></a>00076     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#1eff6122c468bce01899a8861d805f32">getVisibleChunkCount</a>() <span class="keyword">const override</span>;
-<a name="l00077"></a>00077 
-<a name="l00078"></a>00078     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#7e196969fe9f3b8d6cf664b5ab0862bf">getVisibleChunkIndices</a>(uint32_t* visibleChunkIndices, uint32_t visibleChunkIndicesSize) <span class="keyword">const override</span>;
-<a name="l00079"></a>00079 
-<a name="l00080"></a>00080     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#102d5411b437dfc8e8247e2d225fc74b">getGraphNodeCount</a>() <span class="keyword">const override</span>;
-<a name="l00081"></a>00081 
-<a name="l00082"></a>00082     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#c06439c887da81cdffd7f24cd1760a36">getGraphNodeIndices</a>(uint32_t* graphNodeIndices, uint32_t graphNodeIndicesSize) <span class="keyword">const override</span>;
+<a name="l00075"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">00075</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">TkActorImpl</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a>
+<a name="l00076"></a>00076 {
+<a name="l00077"></a>00077 <span class="keyword">public</span>:
+<a name="l00078"></a>00078     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#5eb93f38a4c304c600361b6198e12f5e">TkActorImpl</a>();
+<a name="l00079"></a>00079     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#5593fab9f6c430669ef2a65d31652172">~TkActorImpl</a>();
+<a name="l00080"></a>00080 
+<a name="l00081"></a>00081     <span class="comment">// Begin TkActor</span>
+<a name="l00082"></a>00082     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>* <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#98cd946a41feb1afc9d70c8b7ad52e4a">getActorLL</a>() <span class="keyword">const override</span>;
 <a name="l00083"></a>00083 
-<a name="l00084"></a>00084     <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">float</span>*        <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#4df883297efe5321507d71496eeabebb">getBondHealths</a>() <span class="keyword">const override</span>;
+<a name="l00084"></a>00084     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a>&amp;           <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#6f12bf9c3bc267e7de364bb1b065e958">getFamily</a>() <span class="keyword">const override</span>;
 <a name="l00085"></a>00085 
-<a name="l00086"></a>00086     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2a1f770cbe80081daadd4b518afda6d1">getSplitMaxActorCount</a>() <span class="keyword">const override</span>;
+<a name="l00086"></a>00086     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2aa65115057efa08ed852c7361e3e5f0">getIndex</a>() <span class="keyword">const override</span>;
 <a name="l00087"></a>00087 
-<a name="l00088"></a>00088     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3646bdcfc06059418696658bd4b9b881">damage</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* programParams) <span class="keyword">override</span>;
-<a name="l00089"></a>00089     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3646bdcfc06059418696658bd4b9b881">damage</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <span class="keywordtype">void</span>* damageDesc, uint32_t descSize) <span class="keyword">override</span>;
-<a name="l00090"></a>00090     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3646bdcfc06059418696658bd4b9b881">damage</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <span class="keywordtype">void</span>* damageDesc, uint32_t descSize, <span class="keyword">const</span> <span class="keywordtype">void</span>* material) <span class="keyword">override</span>;
+<a name="l00088"></a>00088     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>*            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#ebc128298c60d3405c7ffbf5e1005a87">getGroup</a>() <span class="keyword">const override</span>;
+<a name="l00089"></a>00089 
+<a name="l00090"></a>00090     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>*            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#f7207df8d0734ce6f84157d85b76fe64">removeFromGroup</a>() <span class="keyword">override</span>;
 <a name="l00091"></a>00091 
-<a name="l00092"></a>00092     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#562fd902c527b43e8e37add9d391aeb8">isPending</a>() <span class="keyword">const override</span>;
+<a name="l00092"></a>00092     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a>*      <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#602d8535023e0091207d84422cbd06ce">getAsset</a>() <span class="keyword">const override</span>;
 <a name="l00093"></a>00093 
-<a name="l00094"></a>00094     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#4c2bbedb04b44c81462abf93534dca2d">generateFracture</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commands, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* programParams) <span class="keyword">const override</span>;
+<a name="l00094"></a>00094     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#1eff6122c468bce01899a8861d805f32">getVisibleChunkCount</a>() <span class="keyword">const override</span>;
 <a name="l00095"></a>00095 
-<a name="l00096"></a>00096     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#05ec1c435c25ecbdef8aed715fe8ef42">applyFracture</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* eventBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commands) <span class="keyword">override</span>;
+<a name="l00096"></a>00096     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#7e196969fe9f3b8d6cf664b5ab0862bf">getVisibleChunkIndices</a>(uint32_t* visibleChunkIndices, uint32_t visibleChunkIndicesSize) <span class="keyword">const override</span>;
 <a name="l00097"></a>00097 
-<a name="l00098"></a>00098     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#dc6193a8116fdd1bfb94ad5e15e0703e">getJointCount</a>() <span class="keyword">const override</span>;
+<a name="l00098"></a>00098     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#102d5411b437dfc8e8247e2d225fc74b">getGraphNodeCount</a>() <span class="keyword">const override</span>;
 <a name="l00099"></a>00099 
-<a name="l00100"></a>00100     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2daad92b5249c89bf7a92465edd79622">getJoints</a>(<a class="code" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a>** joints, uint32_t jointsSize) <span class="keyword">const override</span>;
-<a name="l00101"></a>00101     <span class="comment">// End TkActor</span>
-<a name="l00102"></a>00102 
-<a name="l00103"></a>00103     <span class="comment">// Begin TkObject</span>
-<a name="l00104"></a>00104     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#21daed2eec66a54a56a316089fe8d422">release</a>() <span class="keyword">override</span>;
-<a name="l00105"></a>00105     <span class="comment">// End TkObject</span>
-<a name="l00106"></a>00106 
-<a name="l00107"></a>00107 
-<a name="l00108"></a>00108     <span class="comment">// Public methods</span>
-<a name="l00109"></a>00109     
-<a name="l00117"></a>00117     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">TkActorImpl</a>*         <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#a3d3393b56c95907eb4288f0ecb9beb1">create</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_desc.html">TkActorDesc</a>&amp; desc);
-<a name="l00118"></a>00118 
-<a name="l00126"></a>00126     <span class="keywordtype">bool</span>                        <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#814c222f8963b514f58efe1b559d359f">isActive</a>() <span class="keyword">const</span>;
+<a name="l00100"></a>00100     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#c06439c887da81cdffd7f24cd1760a36">getGraphNodeIndices</a>(uint32_t* graphNodeIndices, uint32_t graphNodeIndicesSize) <span class="keyword">const override</span>;
+<a name="l00101"></a>00101 
+<a name="l00102"></a>00102     <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">float</span>*        <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#4df883297efe5321507d71496eeabebb">getBondHealths</a>() <span class="keyword">const override</span>;
+<a name="l00103"></a>00103 
+<a name="l00104"></a>00104     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2a1f770cbe80081daadd4b518afda6d1">getSplitMaxActorCount</a>() <span class="keyword">const override</span>;
+<a name="l00105"></a>00105 
+<a name="l00106"></a>00106     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3646bdcfc06059418696658bd4b9b881">damage</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* programParams) <span class="keyword">override</span>;
+<a name="l00107"></a>00107     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3646bdcfc06059418696658bd4b9b881">damage</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <span class="keywordtype">void</span>* damageDesc, uint32_t descSize) <span class="keyword">override</span>;
+<a name="l00108"></a>00108     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3646bdcfc06059418696658bd4b9b881">damage</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <span class="keywordtype">void</span>* damageDesc, uint32_t descSize, <span class="keyword">const</span> <span class="keywordtype">void</span>* material) <span class="keyword">override</span>;
+<a name="l00109"></a>00109 
+<a name="l00110"></a>00110     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#562fd902c527b43e8e37add9d391aeb8">isPending</a>() <span class="keyword">const override</span>;
+<a name="l00111"></a>00111 
+<a name="l00112"></a>00112     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#4c2bbedb04b44c81462abf93534dca2d">generateFracture</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commands, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* programParams) <span class="keyword">const override</span>;
+<a name="l00113"></a>00113 
+<a name="l00114"></a>00114     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#05ec1c435c25ecbdef8aed715fe8ef42">applyFracture</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* eventBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commands) <span class="keyword">override</span>;
+<a name="l00115"></a>00115 
+<a name="l00116"></a>00116     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#dc6193a8116fdd1bfb94ad5e15e0703e">getJointCount</a>() <span class="keyword">const override</span>;
+<a name="l00117"></a>00117 
+<a name="l00118"></a>00118     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2daad92b5249c89bf7a92465edd79622">getJoints</a>(<a class="code" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a>** joints, uint32_t jointsSize) <span class="keyword">const override</span>;
+<a name="l00119"></a>00119 
+<a name="l00120"></a>00120     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#cc0b93e58b5a5d1c115ed1cd30615b9f">isBoundToWorld</a>() <span class="keyword">const override</span>;
+<a name="l00121"></a>00121     <span class="comment">// End TkActor</span>
+<a name="l00122"></a>00122 
+<a name="l00123"></a>00123     <span class="comment">// Begin TkObject</span>
+<a name="l00124"></a>00124     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#21daed2eec66a54a56a316089fe8d422">release</a>() <span class="keyword">override</span>;
+<a name="l00125"></a>00125     <span class="comment">// End TkObject</span>
+<a name="l00126"></a>00126 
 <a name="l00127"></a>00127 
-<a name="l00133"></a>00133     <a class="code" href="struct_nv_blast_family.html">NvBlastFamily</a>*              <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#b42ac724830664f413433365fc718a30">getFamilyLL</a>() <span class="keyword">const</span>;
-<a name="l00134"></a>00134 
-<a name="l00140"></a>00140     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2e913a71937c6b28e28abab3012c69f1">TkFamilyImpl</a>&amp;               <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#5336367ca715ad8057113c5954fbe839">getFamilyImpl</a>() <span class="keyword">const</span>;
-<a name="l00141"></a>00141 
-<a name="l00145"></a>00145     uint32_t                    <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#202e43ab89338f722db08654db5236ba">getIndexInternal</a>() <span class="keyword">const</span>;
-<a name="l00146"></a>00146 
-<a name="l00152"></a>00152     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3872e8351ad812baad59a5f0fc357a05">TkGroupImpl</a>*                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#9573471e75d40076998243f3e840947c">getGroupImpl</a>() <span class="keyword">const</span>;
-<a name="l00153"></a>00153 
-<a name="l00159"></a>00159     <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>*               <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#bc8fd45378887f62560c01e320b20235">getActorLLInternal</a>() <span class="keyword">const</span>;
-<a name="l00160"></a>00160 
-<a name="l00164"></a>00164     uint32_t                    <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#def2cde06761f195fd39a54c8b11d174">getJointCountInternal</a>() <span class="keyword">const</span>;
-<a name="l00165"></a>00165 
-<a name="l00177"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html">00177</a>     <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html">JointIt</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_d_list.html">DList</a>::It
-<a name="l00178"></a>00178     {
-<a name="l00179"></a>00179     <span class="keyword">public</span>:
-<a name="l00181"></a>00181         <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html#9c8b779ff08c5565eeadc5cc7bcd8494">JointIt</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">TkActorImpl</a>&amp; actor, <a class="code" href="class_nv_1_1_blast_1_1_d_list_1_1_it.html#d6a58c8c96853bac4d82880eade9e12c">Direction</a> dir = <a class="code" href="class_nv_1_1_blast_1_1_d_list_1_1_it.html#d6a58c8c96853bac4d82880eade9e12c8adc79a77f8ec2d5d011128741cfd96a">Forward</a>);
-<a name="l00182"></a>00182 
-<a name="l00184"></a>00184         <a class="code" href="class_nv_1_1_blast_1_1_tk_joint_impl.html">TkJointImpl</a>* <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html#83cd146d2acc4a0863e1ef3fa2c5bce1">operator * </a>() <span class="keyword">const</span>;
-<a name="l00185"></a>00185     };
-<a name="l00186"></a>00186 
-<a name="l00190"></a>00190     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#c601157f6a173d4e469f004ffd7aa09f">operator Nv::Blast::TkActorData</a>() <span class="keyword">const</span>;
-<a name="l00191"></a>00191 
-<a name="l00192"></a>00192 <span class="keyword">private</span>:
-<a name="l00196"></a>00196     <span class="keyword">struct </span>DamageData
-<a name="l00197"></a>00197     {
-<a name="l00198"></a>00198         DamageData(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
-<a name="l00199"></a>00199         DamageData(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <span class="keywordtype">void</span>* material, <span class="keyword">const</span> <span class="keywordtype">void</span>* desc, uint32_t descSize);
-<a name="l00200"></a>00200 
-<a name="l00201"></a>00201         <span class="keywordtype">bool</span> tryAppend(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <span class="keywordtype">void</span>* material, <span class="keyword">const</span> <span class="keywordtype">void</span>* desc, uint32_t descSize);
-<a name="l00202"></a>00202         <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#4c2bbedb04b44c81462abf93534dca2d">generateFracture</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>* actorLL, <a class="code" href="struct_nv_blast_timers.html">NvBlastTimers</a>* timers) <span class="keyword">const</span>;
-<a name="l00203"></a>00203 
-<a name="l00204"></a>00204         <span class="keyword">enum</span> Type
-<a name="l00205"></a>00205         {
-<a name="l00206"></a>00206             Plain,
-<a name="l00207"></a>00207             Buffered
-<a name="l00208"></a>00208         };
-<a name="l00209"></a>00209 
-<a name="l00210"></a>00210         Type getType() <span class="keyword">const</span>;
+<a name="l00128"></a>00128     <span class="comment">// Public methods</span>
+<a name="l00129"></a>00129     
+<a name="l00137"></a>00137     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">TkActorImpl</a>*         <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#a3d3393b56c95907eb4288f0ecb9beb1">create</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_desc.html">TkActorDesc</a>&amp; desc);
+<a name="l00138"></a>00138 
+<a name="l00146"></a>00146     <span class="keywordtype">bool</span>                        <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#814c222f8963b514f58efe1b559d359f">isActive</a>() <span class="keyword">const</span>;
+<a name="l00147"></a>00147 
+<a name="l00153"></a>00153     <a class="code" href="struct_nv_blast_family.html">NvBlastFamily</a>*              <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#b42ac724830664f413433365fc718a30">getFamilyLL</a>() <span class="keyword">const</span>;
+<a name="l00154"></a>00154 
+<a name="l00160"></a>00160     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2e913a71937c6b28e28abab3012c69f1">TkFamilyImpl</a>&amp;               <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#5336367ca715ad8057113c5954fbe839">getFamilyImpl</a>() <span class="keyword">const</span>;
+<a name="l00161"></a>00161 
+<a name="l00165"></a>00165     uint32_t                    <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#202e43ab89338f722db08654db5236ba">getIndexInternal</a>() <span class="keyword">const</span>;
+<a name="l00166"></a>00166 
+<a name="l00172"></a>00172     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3872e8351ad812baad59a5f0fc357a05">TkGroupImpl</a>*                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#9573471e75d40076998243f3e840947c">getGroupImpl</a>() <span class="keyword">const</span>;
+<a name="l00173"></a>00173 
+<a name="l00179"></a>00179     <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>*               <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#bc8fd45378887f62560c01e320b20235">getActorLLInternal</a>() <span class="keyword">const</span>;
+<a name="l00180"></a>00180 
+<a name="l00184"></a>00184     uint32_t                    <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#def2cde06761f195fd39a54c8b11d174">getJointCountInternal</a>() <span class="keyword">const</span>;
+<a name="l00185"></a>00185 
+<a name="l00197"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html">00197</a>     <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html">JointIt</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_d_list.html">DList</a>::It
+<a name="l00198"></a>00198     {
+<a name="l00199"></a>00199     <span class="keyword">public</span>:
+<a name="l00201"></a>00201         <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html#9c8b779ff08c5565eeadc5cc7bcd8494">JointIt</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">TkActorImpl</a>&amp; actor, <a class="code" href="class_nv_1_1_blast_1_1_d_list_1_1_it.html#d6a58c8c96853bac4d82880eade9e12c">Direction</a> dir = <a class="code" href="class_nv_1_1_blast_1_1_d_list_1_1_it.html#d6a58c8c96853bac4d82880eade9e12c8adc79a77f8ec2d5d011128741cfd96a">Forward</a>);
+<a name="l00202"></a>00202 
+<a name="l00204"></a>00204         <a class="code" href="class_nv_1_1_blast_1_1_tk_joint_impl.html">TkJointImpl</a>* <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html#83cd146d2acc4a0863e1ef3fa2c5bce1">operator * </a>() <span class="keyword">const</span>;
+<a name="l00205"></a>00205     };
+<a name="l00206"></a>00206 
+<a name="l00210"></a>00210     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#c601157f6a173d4e469f004ffd7aa09f">operator Nv::Blast::TkActorData</a>() <span class="keyword">const</span>;
 <a name="l00211"></a>00211 
-<a name="l00212"></a>00212         <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>  m_program;
-<a name="l00213"></a>00213         <span class="keyword">union</span>
-<a name="l00214"></a>00214         {
-<a name="l00215"></a>00215             <span class="keyword">const</span> <span class="keywordtype">void</span>*                 m_material;         
-<a name="l00216"></a>00216             <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* m_programParams;    
-<a name="l00217"></a>00217         };
-<a name="l00218"></a>00218         <a class="code" href="struct_nv_1_1_blast_1_1_tk_array.html#bf181c77113b352fb017e03b816d06a9">TkArray&lt;char&gt;::type</a> m_damageDescs;
-<a name="l00219"></a>00219         uint32_t            m_damageDescCount;
-<a name="l00220"></a>00220     };
-<a name="l00221"></a>00221 
-<a name="l00222"></a>00222 
-<a name="l00227"></a>00227     <span class="keywordtype">void</span>                        markAsDamaged();
-<a name="l00228"></a>00228     <span class="keywordtype">bool</span>                        isDamaged() <span class="keyword">const</span>;
+<a name="l00212"></a>00212 <span class="keyword">private</span>:
+<a name="l00216"></a>00216     <span class="keyword">struct </span>DamageData
+<a name="l00217"></a>00217     {
+<a name="l00218"></a>00218         DamageData(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
+<a name="l00219"></a>00219         DamageData(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <span class="keywordtype">void</span>* material, <span class="keyword">const</span> <span class="keywordtype">void</span>* desc, uint32_t descSize);
+<a name="l00220"></a>00220 
+<a name="l00221"></a>00221         <span class="keywordtype">bool</span> tryAppend(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <span class="keywordtype">void</span>* material, <span class="keyword">const</span> <span class="keywordtype">void</span>* desc, uint32_t descSize);
+<a name="l00222"></a>00222         <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#4c2bbedb04b44c81462abf93534dca2d">generateFracture</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>* actorLL, <a class="code" href="struct_nv_blast_timers.html">NvBlastTimers</a>* timers) <span class="keyword">const</span>;
+<a name="l00223"></a>00223 
+<a name="l00224"></a>00224         <span class="keyword">enum</span> Type
+<a name="l00225"></a>00225         {
+<a name="l00226"></a>00226             Plain,
+<a name="l00227"></a>00227             Buffered
+<a name="l00228"></a>00228         };
 <a name="l00229"></a>00229 
-<a name="l00234"></a>00234     <span class="keywordtype">void</span>                        makePending();
-<a name="l00235"></a>00235 
-<a name="l00239"></a>00239     <span class="keywordtype">void</span>                        addJoint(TkJointLink&amp; jointLink);
-<a name="l00240"></a>00240     <span class="keywordtype">void</span>                        removeJoint(TkJointLink&amp; jointLink);
+<a name="l00230"></a>00230         Type getType() <span class="keyword">const</span>;
+<a name="l00231"></a>00231 
+<a name="l00232"></a>00232         <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>  m_program;
+<a name="l00233"></a>00233         <span class="keyword">union</span>
+<a name="l00234"></a>00234         {
+<a name="l00235"></a>00235             <span class="keyword">const</span> <span class="keywordtype">void</span>*                 m_material;         
+<a name="l00236"></a>00236             <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* m_programParams;    
+<a name="l00237"></a>00237         };
+<a name="l00238"></a>00238         <a class="code" href="struct_nv_1_1_blast_1_1_array.html#94fd490890f7c6e45784fd43eb14e260">Array&lt;char&gt;::type</a>   m_damageDescs;
+<a name="l00239"></a>00239         uint32_t            m_damageDescCount;
+<a name="l00240"></a>00240     };
 <a name="l00241"></a>00241 
 <a name="l00242"></a>00242 
-<a name="l00243"></a>00243     <span class="comment">// Data</span>
-<a name="l00244"></a>00244 
-<a name="l00245"></a>00245     <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>*                           m_actorLL;          
-<a name="l00246"></a>00246     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2e913a71937c6b28e28abab3012c69f1">TkFamilyImpl</a>*                           m_family;           
-<a name="l00247"></a>00247     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3872e8351ad812baad59a5f0fc357a05">TkGroupImpl</a>*                            m_group;            
-<a name="l00248"></a>00248     uint32_t                                m_groupJobIndex;    
-<a name="l00249"></a>00249     physx::PxFlags&lt;TkActorFlag::Enum, char&gt; m_flags;            
-<a name="l00250"></a>00250     <a class="code" href="struct_nv_1_1_blast_1_1_tk_array.html#bf181c77113b352fb017e03b816d06a9">TkArray&lt;DamageData&gt;::type</a>               m_damageBuffer;     
-<a name="l00251"></a>00251     uint32_t                                m_jointCount;       
-<a name="l00252"></a>00252     DList                                   m_jointList;        
-<a name="l00253"></a>00253 
-<a name="l00254"></a>00254 <span class="comment">//#if NV_PROFILE</span>
-<a name="l00255"></a>00255     <a class="code" href="struct_nv_blast_timers.html">NvBlastTimers</a>                           m_timers;           
-<a name="l00256"></a>00256 <span class="comment">//#endif</span>
-<a name="l00257"></a>00257 
-<a name="l00258"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3f42f80da05c9925611c297ebfd6a594">00258</a>     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html">TkWorker</a>;                  <span class="comment">// m_damageBuffer and m_flags </span>
-<a name="l00259"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3872e8351ad812baad59a5f0fc357a05">00259</a>     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3872e8351ad812baad59a5f0fc357a05">TkGroupImpl</a>;
-<a name="l00260"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2e913a71937c6b28e28abab3012c69f1">00260</a>     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2e913a71937c6b28e28abab3012c69f1">TkFamilyImpl</a>;
-<a name="l00261"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#f2403d51a28475e3c6c362f0fbdc8c53">00261</a>     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_joint_impl.html">TkJointImpl</a>;
-<a name="l00262"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#b3dc3d8e38a1518e1215c39f55db6851">00262</a>     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_framework_impl.html">TkFrameworkImpl</a>;
-<a name="l00263"></a>00263 };
+<a name="l00247"></a>00247     <span class="keywordtype">void</span>                        markAsDamaged();
+<a name="l00248"></a>00248     <span class="keywordtype">bool</span>                        isDamaged() <span class="keyword">const</span>;
+<a name="l00249"></a>00249 
+<a name="l00254"></a>00254     <span class="keywordtype">void</span>                        makePending();
+<a name="l00255"></a>00255 
+<a name="l00259"></a>00259     <span class="keywordtype">void</span>                        addJoint(TkJointLink&amp; jointLink);
+<a name="l00260"></a>00260     <span class="keywordtype">void</span>                        removeJoint(TkJointLink&amp; jointLink);
+<a name="l00261"></a>00261 
+<a name="l00262"></a>00262 
+<a name="l00263"></a>00263     <span class="comment">// Data</span>
 <a name="l00264"></a>00264 
-<a name="l00265"></a>00265 
-<a name="l00267"></a>00267 
-<a name="l00268"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#5336367ca715ad8057113c5954fbe839">00268</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> TkFamilyImpl&amp; <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#5336367ca715ad8057113c5954fbe839">TkActorImpl::getFamilyImpl</a>()<span class="keyword"> const</span>
-<a name="l00269"></a>00269 <span class="keyword"></span>{
-<a name="l00270"></a>00270     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(m_family != <span class="keyword">nullptr</span>);
-<a name="l00271"></a>00271 
-<a name="l00272"></a>00272     <span class="keywordflow">return</span> *m_family;
-<a name="l00273"></a>00273 }
-<a name="l00274"></a>00274 
-<a name="l00275"></a>00275 
-<a name="l00276"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#202e43ab89338f722db08654db5236ba">00276</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#202e43ab89338f722db08654db5236ba">TkActorImpl::getIndexInternal</a>()<span class="keyword"> const</span>
-<a name="l00277"></a>00277 <span class="keyword"></span>{
-<a name="l00278"></a>00278     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(<a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#814c222f8963b514f58efe1b559d359f">isActive</a>());
-<a name="l00279"></a>00279     <span class="keywordflow">return</span> <a class="code" href="_nv_blast_8h.html#0b985e47f17306b7457a995fb1fc77cc">NvBlastActorGetIndex</a>(m_actorLL, <a class="code" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#0c7167f8fd55e170e52cd194c597ad18">TkFrameworkImpl::get</a>()-&gt;log);
-<a name="l00280"></a>00280 }
-<a name="l00281"></a>00281 
-<a name="l00282"></a>00282 
-<a name="l00283"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#bc8fd45378887f62560c01e320b20235">00283</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>* <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#bc8fd45378887f62560c01e320b20235">TkActorImpl::getActorLLInternal</a>()<span class="keyword"> const</span>
-<a name="l00284"></a>00284 <span class="keyword"></span>{
-<a name="l00285"></a>00285     <span class="keywordflow">return</span> m_actorLL;
-<a name="l00286"></a>00286 }
+<a name="l00265"></a>00265     <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>*                           m_actorLL;          
+<a name="l00266"></a>00266     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2e913a71937c6b28e28abab3012c69f1">TkFamilyImpl</a>*                           m_family;           
+<a name="l00267"></a>00267     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3872e8351ad812baad59a5f0fc357a05">TkGroupImpl</a>*                            m_group;            
+<a name="l00268"></a>00268     uint32_t                                m_groupJobIndex;    
+<a name="l00269"></a>00269     physx::PxFlags&lt;TkActorFlag::Enum, char&gt; m_flags;            
+<a name="l00270"></a>00270     <a class="code" href="struct_nv_1_1_blast_1_1_array.html#94fd490890f7c6e45784fd43eb14e260">Array&lt;DamageData&gt;::type</a>                 m_damageBuffer;     
+<a name="l00271"></a>00271     uint32_t                                m_jointCount;       
+<a name="l00272"></a>00272     DList                                   m_jointList;        
+<a name="l00273"></a>00273 
+<a name="l00274"></a>00274 <span class="comment">//#if NV_PROFILE</span>
+<a name="l00275"></a>00275     <a class="code" href="struct_nv_blast_timers.html">NvBlastTimers</a>                           m_timers;           
+<a name="l00276"></a>00276 <span class="comment">//#endif</span>
+<a name="l00277"></a>00277 
+<a name="l00278"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3f42f80da05c9925611c297ebfd6a594">00278</a>     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3f42f80da05c9925611c297ebfd6a594">TkWorker</a>;                  <span class="comment">// m_damageBuffer and m_flags </span>
+<a name="l00279"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3872e8351ad812baad59a5f0fc357a05">00279</a>     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3872e8351ad812baad59a5f0fc357a05">TkGroupImpl</a>;
+<a name="l00280"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2e913a71937c6b28e28abab3012c69f1">00280</a>     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#2e913a71937c6b28e28abab3012c69f1">TkFamilyImpl</a>;
+<a name="l00281"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#f2403d51a28475e3c6c362f0fbdc8c53">00281</a>     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_joint_impl.html">TkJointImpl</a>;
+<a name="l00282"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#b3dc3d8e38a1518e1215c39f55db6851">00282</a>     <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_framework_impl.html">TkFrameworkImpl</a>;
+<a name="l00283"></a>00283 };
+<a name="l00284"></a>00284 
+<a name="l00285"></a>00285 
 <a name="l00287"></a>00287 
-<a name="l00288"></a>00288 
-<a name="l00289"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#def2cde06761f195fd39a54c8b11d174">00289</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#def2cde06761f195fd39a54c8b11d174">TkActorImpl::getJointCountInternal</a>()<span class="keyword"> const</span>
-<a name="l00290"></a>00290 <span class="keyword"></span>{
-<a name="l00291"></a>00291     <span class="keywordflow">return</span> m_jointCount;
-<a name="l00292"></a>00292 }
-<a name="l00293"></a>00293 
+<a name="l00288"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#5336367ca715ad8057113c5954fbe839">00288</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> TkFamilyImpl&amp; <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#5336367ca715ad8057113c5954fbe839">TkActorImpl::getFamilyImpl</a>()<span class="keyword"> const</span>
+<a name="l00289"></a>00289 <span class="keyword"></span>{
+<a name="l00290"></a>00290     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(m_family != <span class="keyword">nullptr</span>);
+<a name="l00291"></a>00291 
+<a name="l00292"></a>00292     <span class="keywordflow">return</span> *m_family;
+<a name="l00293"></a>00293 }
 <a name="l00294"></a>00294 
-<a name="l00295"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#9573471e75d40076998243f3e840947c">00295</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> TkGroupImpl* <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#9573471e75d40076998243f3e840947c">TkActorImpl::getGroupImpl</a>()<span class="keyword"> const</span>
-<a name="l00296"></a>00296 <span class="keyword"></span>{
-<a name="l00297"></a>00297     <span class="keywordflow">return</span> m_group;
-<a name="l00298"></a>00298 }
-<a name="l00299"></a>00299 
-<a name="l00300"></a>00300 
-<a name="l00301"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#814c222f8963b514f58efe1b559d359f">00301</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#814c222f8963b514f58efe1b559d359f">TkActorImpl::isActive</a>()<span class="keyword"> const</span>
-<a name="l00302"></a>00302 <span class="keyword"></span>{
-<a name="l00303"></a>00303     <span class="keywordflow">return</span> m_actorLL != <span class="keyword">nullptr</span>;
-<a name="l00304"></a>00304 }
-<a name="l00305"></a>00305 
-<a name="l00306"></a>00306 
-<a name="l00307"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#562fd902c527b43e8e37add9d391aeb8">00307</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#562fd902c527b43e8e37add9d391aeb8">TkActorImpl::isPending</a>()<span class="keyword"> const</span>
-<a name="l00308"></a>00308 <span class="keyword"></span>{
-<a name="l00309"></a>00309     <span class="keywordflow">return</span> m_flags.isSet(<a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a54ebc6b3040a521ce237c9c6c030127ca4" title="The actor will be processed when its group executes, used to update job queues when...">TkActorFlag::PENDING</a>);
-<a name="l00310"></a>00310 }
-<a name="l00311"></a>00311 
-<a name="l00312"></a>00312 
-<a name="l00313"></a>00313 <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">void</span> TkActorImpl::addJoint(<a class="code" href="struct_nv_1_1_blast_1_1_tk_joint_link.html">TkJointLink</a>&amp; jointLink)
-<a name="l00314"></a>00314 {
-<a name="l00315"></a>00315     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(m_jointList.<a class="code" href="class_nv_1_1_blast_1_1_d_list.html#e1bd96c83408ecb47ff9d02972b745ae">isSolitary</a>(jointLink));
-<a name="l00316"></a>00316 
-<a name="l00317"></a>00317     m_jointList.<a class="code" href="class_nv_1_1_blast_1_1_d_list.html#bc2b63f21760aea5f27e3ced326c5c6a">insertHead</a>(jointLink);
-<a name="l00318"></a>00318     ++m_jointCount;
-<a name="l00319"></a>00319 }
+<a name="l00295"></a>00295 
+<a name="l00296"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#202e43ab89338f722db08654db5236ba">00296</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#202e43ab89338f722db08654db5236ba">TkActorImpl::getIndexInternal</a>()<span class="keyword"> const</span>
+<a name="l00297"></a>00297 <span class="keyword"></span>{
+<a name="l00298"></a>00298     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(<a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#814c222f8963b514f58efe1b559d359f">isActive</a>());
+<a name="l00299"></a>00299     <span class="keywordflow">return</span> <a class="code" href="_nv_blast_8h.html#0b985e47f17306b7457a995fb1fc77cc">NvBlastActorGetIndex</a>(m_actorLL, <a class="code" href="namespace_nv_1_1_blast.html#1152c58af94417b6861e5bb3695b9ddf">logLL</a>);
+<a name="l00300"></a>00300 }
+<a name="l00301"></a>00301 
+<a name="l00302"></a>00302 
+<a name="l00303"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#bc8fd45378887f62560c01e320b20235">00303</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>* <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#bc8fd45378887f62560c01e320b20235">TkActorImpl::getActorLLInternal</a>()<span class="keyword"> const</span>
+<a name="l00304"></a>00304 <span class="keyword"></span>{
+<a name="l00305"></a>00305     <span class="keywordflow">return</span> m_actorLL;
+<a name="l00306"></a>00306 }
+<a name="l00307"></a>00307 
+<a name="l00308"></a>00308 
+<a name="l00309"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#def2cde06761f195fd39a54c8b11d174">00309</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#def2cde06761f195fd39a54c8b11d174">TkActorImpl::getJointCountInternal</a>()<span class="keyword"> const</span>
+<a name="l00310"></a>00310 <span class="keyword"></span>{
+<a name="l00311"></a>00311     <span class="keywordflow">return</span> m_jointCount;
+<a name="l00312"></a>00312 }
+<a name="l00313"></a>00313 
+<a name="l00314"></a>00314 
+<a name="l00315"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#9573471e75d40076998243f3e840947c">00315</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> TkGroupImpl* <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#9573471e75d40076998243f3e840947c">TkActorImpl::getGroupImpl</a>()<span class="keyword"> const</span>
+<a name="l00316"></a>00316 <span class="keyword"></span>{
+<a name="l00317"></a>00317     <span class="keywordflow">return</span> m_group;
+<a name="l00318"></a>00318 }
+<a name="l00319"></a>00319 
 <a name="l00320"></a>00320 
-<a name="l00321"></a>00321 
-<a name="l00322"></a>00322 <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">void</span> TkActorImpl::removeJoint(TkJointLink&amp; jointLink)
-<a name="l00323"></a>00323 {
-<a name="l00324"></a>00324     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(!m_jointList.isSolitary(jointLink));
-<a name="l00325"></a>00325     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(m_jointCount &gt; 0);
-<a name="l00326"></a>00326     <span class="keywordflow">if</span> (m_jointCount &gt; 0)
-<a name="l00327"></a>00327     {
-<a name="l00328"></a>00328         --m_jointCount;
-<a name="l00329"></a>00329         m_jointList.remove(jointLink);
-<a name="l00330"></a>00330     }
-<a name="l00331"></a>00331 }
+<a name="l00321"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#814c222f8963b514f58efe1b559d359f">00321</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#814c222f8963b514f58efe1b559d359f">TkActorImpl::isActive</a>()<span class="keyword"> const</span>
+<a name="l00322"></a>00322 <span class="keyword"></span>{
+<a name="l00323"></a>00323     <span class="keywordflow">return</span> m_actorLL != <span class="keyword">nullptr</span>;
+<a name="l00324"></a>00324 }
+<a name="l00325"></a>00325 
+<a name="l00326"></a>00326 
+<a name="l00327"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#562fd902c527b43e8e37add9d391aeb8">00327</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#562fd902c527b43e8e37add9d391aeb8">TkActorImpl::isPending</a>()<span class="keyword"> const</span>
+<a name="l00328"></a>00328 <span class="keyword"></span>{
+<a name="l00329"></a>00329     <span class="keywordflow">return</span> m_flags.isSet(<a class="code" href="struct_nv_1_1_blast_1_1_tk_actor_flag.html#6018d53594950eb9dd51a23538df0a54ebc6b3040a521ce237c9c6c030127ca4" title="The actor will be processed when its group executes, used to update job queues when...">TkActorFlag::PENDING</a>);
+<a name="l00330"></a>00330 }
+<a name="l00331"></a>00331 
 <a name="l00332"></a>00332 
-<a name="l00333"></a>00333 
-<a name="l00335"></a>00335 
-<a name="l00336"></a>00336 <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> TkActorImpl::DamageData::Type TkActorImpl::DamageData::getType()<span class="keyword"> const</span>
-<a name="l00337"></a>00337 <span class="keyword"></span>{
-<a name="l00338"></a>00338     <span class="keywordflow">return</span> m_damageDescCount &gt; 0 ? Buffered : Plain;
+<a name="l00333"></a>00333 <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">void</span> TkActorImpl::addJoint(<a class="code" href="struct_nv_1_1_blast_1_1_tk_joint_link.html">TkJointLink</a>&amp; jointLink)
+<a name="l00334"></a>00334 {
+<a name="l00335"></a>00335     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(m_jointList.<a class="code" href="class_nv_1_1_blast_1_1_d_list.html#e1bd96c83408ecb47ff9d02972b745ae">isSolitary</a>(jointLink));
+<a name="l00336"></a>00336 
+<a name="l00337"></a>00337     m_jointList.<a class="code" href="class_nv_1_1_blast_1_1_d_list.html#bc2b63f21760aea5f27e3ced326c5c6a">insertHead</a>(jointLink);
+<a name="l00338"></a>00338     ++m_jointCount;
 <a name="l00339"></a>00339 }
 <a name="l00340"></a>00340 
 <a name="l00341"></a>00341 
-<a name="l00342"></a>00342 <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#4c2bbedb04b44c81462abf93534dca2d">TkActorImpl::DamageData::generateFracture</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>* actorLL, <a class="code" href="struct_nv_blast_timers.html">NvBlastTimers</a>* timers)<span class="keyword"> const</span>
-<a name="l00343"></a>00343 <span class="keyword"></span>{
-<a name="l00344"></a>00344     <span class="keywordflow">if</span> (getType() == Plain)
-<a name="l00345"></a>00345     {
-<a name="l00346"></a>00346         <a class="code" href="_nv_blast_8h.html#90905cf877bade454668e46621478840">NvBlastActorGenerateFracture</a>(commandBuffers, actorLL, m_program, m_programParams, <a class="code" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#0c7167f8fd55e170e52cd194c597ad18">TkFrameworkImpl::get</a>()-&gt;log, timers);
-<a name="l00347"></a>00347     }
-<a name="l00348"></a>00348     <span class="keywordflow">else</span>
-<a name="l00349"></a>00349     {
-<a name="l00350"></a>00350         <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> programParams = {
-<a name="l00351"></a>00351             m_damageDescs.begin(),
-<a name="l00352"></a>00352             m_damageDescCount,
-<a name="l00353"></a>00353             m_material,
-<a name="l00354"></a>00354         };
-<a name="l00355"></a>00355         <a class="code" href="_nv_blast_8h.html#90905cf877bade454668e46621478840">NvBlastActorGenerateFracture</a>(commandBuffers, actorLL, m_program, &amp;programParams, <a class="code" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#0c7167f8fd55e170e52cd194c597ad18">TkFrameworkImpl::get</a>()-&gt;log, timers);
-<a name="l00356"></a>00356     }
-<a name="l00357"></a>00357 }
-<a name="l00358"></a>00358 
-<a name="l00359"></a>00359 
+<a name="l00342"></a>00342 <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">void</span> TkActorImpl::removeJoint(TkJointLink&amp; jointLink)
+<a name="l00343"></a>00343 {
+<a name="l00344"></a>00344     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(!m_jointList.isSolitary(jointLink));
+<a name="l00345"></a>00345     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(m_jointCount &gt; 0);
+<a name="l00346"></a>00346     <span class="keywordflow">if</span> (m_jointCount &gt; 0)
+<a name="l00347"></a>00347     {
+<a name="l00348"></a>00348         --m_jointCount;
+<a name="l00349"></a>00349         m_jointList.remove(jointLink);
+<a name="l00350"></a>00350     }
+<a name="l00351"></a>00351 }
+<a name="l00352"></a>00352 
+<a name="l00353"></a>00353 
+<a name="l00355"></a>00355 
+<a name="l00356"></a>00356 <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> TkActorImpl::DamageData::Type TkActorImpl::DamageData::getType()<span class="keyword"> const</span>
+<a name="l00357"></a>00357 <span class="keyword"></span>{
+<a name="l00358"></a>00358     <span class="keywordflow">return</span> m_damageDescCount &gt; 0 ? Buffered : Plain;
+<a name="l00359"></a>00359 }
+<a name="l00360"></a>00360 
 <a name="l00361"></a>00361 
-<a name="l00362"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html#9c8b779ff08c5565eeadc5cc7bcd8494">00362</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html#9c8b779ff08c5565eeadc5cc7bcd8494">TkActorImpl::JointIt::JointIt</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">TkActorImpl</a>&amp; actor, <a class="code" href="class_nv_1_1_blast_1_1_d_list_1_1_it.html#d6a58c8c96853bac4d82880eade9e12c">Direction</a> dir) : <a class="code" href="class_nv_1_1_blast_1_1_d_list.html">DList</a>::It(actor.m_jointList, dir) {}
-<a name="l00363"></a>00363 
-<a name="l00364"></a>00364 
-<a name="l00365"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html#83cd146d2acc4a0863e1ef3fa2c5bce1">00365</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <a class="code" href="class_nv_1_1_blast_1_1_tk_joint_impl.html">TkJointImpl</a>* <a class="code" href="namespace_nv_1_1_blast_1_1_v_s_a.html#207654189a89fba3d6256779afcd41d1">TkActorImpl::JointIt::operator * </a>()<span class="keyword"> const</span>
-<a name="l00366"></a>00366 <span class="keyword"></span>{
-<a name="l00367"></a>00367     <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_d_link.html">DLink</a>* link = (<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_d_link.html">DLink</a>*)(*<span class="keyword">this</span>);
-<a name="l00368"></a>00368     <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><a class="code" href="struct_nv_1_1_blast_1_1_tk_joint_link.html">TkJointLink</a>*<span class="keyword">&gt;</span>(link)-&gt;m_joint;
-<a name="l00369"></a>00369 }
-<a name="l00370"></a>00370 
-<a name="l00371"></a>00371 } <span class="comment">// namespace Blast</span>
-<a name="l00372"></a>00372 } <span class="comment">// namespace Nv</span>
-<a name="l00373"></a>00373 
-<a name="l00374"></a>00374 
-<a name="l00375"></a>00375 <span class="preprocessor">#endif // ifndef NVBLASTTKACTORIMPL_H</span>
+<a name="l00362"></a>00362 <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#4c2bbedb04b44c81462abf93534dca2d">TkActorImpl::DamageData::generateFracture</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>* actorLL, <a class="code" href="struct_nv_blast_timers.html">NvBlastTimers</a>* timers)<span class="keyword"> const</span>
+<a name="l00363"></a>00363 <span class="keyword"></span>{
+<a name="l00364"></a>00364     <span class="keywordflow">if</span> (getType() == Plain)
+<a name="l00365"></a>00365     {
+<a name="l00366"></a>00366         <a class="code" href="_nv_blast_8h.html#90905cf877bade454668e46621478840">NvBlastActorGenerateFracture</a>(commandBuffers, actorLL, m_program, m_programParams, <a class="code" href="namespace_nv_1_1_blast.html#1152c58af94417b6861e5bb3695b9ddf">logLL</a>, timers);
+<a name="l00367"></a>00367     }
+<a name="l00368"></a>00368     <span class="keywordflow">else</span>
+<a name="l00369"></a>00369     {
+<a name="l00370"></a>00370         <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> programParams = {
+<a name="l00371"></a>00371             m_damageDescs.begin(),
+<a name="l00372"></a>00372             m_damageDescCount,
+<a name="l00373"></a>00373             m_material,
+<a name="l00374"></a>00374         };
+<a name="l00375"></a>00375         <a class="code" href="_nv_blast_8h.html#90905cf877bade454668e46621478840">NvBlastActorGenerateFracture</a>(commandBuffers, actorLL, m_program, &amp;programParams, <a class="code" href="namespace_nv_1_1_blast.html#1152c58af94417b6861e5bb3695b9ddf">logLL</a>, timers);
+<a name="l00376"></a>00376     }
+<a name="l00377"></a>00377 }
+<a name="l00378"></a>00378 
+<a name="l00379"></a>00379 
+<a name="l00381"></a>00381 
+<a name="l00382"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html#9c8b779ff08c5565eeadc5cc7bcd8494">00382</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html#9c8b779ff08c5565eeadc5cc7bcd8494">TkActorImpl::JointIt::JointIt</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">TkActorImpl</a>&amp; actor, <a class="code" href="class_nv_1_1_blast_1_1_d_list_1_1_it.html#d6a58c8c96853bac4d82880eade9e12c">Direction</a> dir) : <a class="code" href="class_nv_1_1_blast_1_1_d_list.html">DList</a>::It(actor.m_jointList, dir) {}
+<a name="l00383"></a>00383 
+<a name="l00384"></a>00384 
+<a name="l00385"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl_1_1_joint_it.html#83cd146d2acc4a0863e1ef3fa2c5bce1">00385</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <a class="code" href="class_nv_1_1_blast_1_1_tk_joint_impl.html">TkJointImpl</a>* <a class="code" href="namespace_nv_1_1_blast_1_1_v_s_a.html#207654189a89fba3d6256779afcd41d1">TkActorImpl::JointIt::operator * </a>()<span class="keyword"> const</span>
+<a name="l00386"></a>00386 <span class="keyword"></span>{
+<a name="l00387"></a>00387     <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_d_link.html">DLink</a>* link = (<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_d_link.html">DLink</a>*)(*<span class="keyword">this</span>);
+<a name="l00388"></a>00388     <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><a class="code" href="struct_nv_1_1_blast_1_1_tk_joint_link.html">TkJointLink</a>*<span class="keyword">&gt;</span>(link)-&gt;m_joint;
+<a name="l00389"></a>00389 }
+<a name="l00390"></a>00390 
+<a name="l00391"></a>00391 } <span class="comment">// namespace Blast</span>
+<a name="l00392"></a>00392 } <span class="comment">// namespace Nv</span>
+<a name="l00393"></a>00393 
+<a name="l00394"></a>00394 
+<a name="l00395"></a>00395 <span class="preprocessor">#endif // ifndef NVBLASTTKACTORIMPL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

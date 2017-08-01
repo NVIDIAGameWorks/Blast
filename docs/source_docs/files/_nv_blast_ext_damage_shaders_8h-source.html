@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/extensions/shaders/include/NvBlastExtDamageShaders.h Source File</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/extensions/shaders/include/NvBlastExtDamageShaders.h Source File</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -35,67 +35,111 @@
       <li><a href="globals.html"><span>File&nbsp;Members</span></a></li>
     </ul>
   </div>
-<h1>sdk/extensions/shaders/include/NvBlastExtDamageShaders.h</h1><a href="_nv_blast_ext_damage_shaders_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment">* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.</span>
-<a name="l00003"></a>00003 <span class="comment">*</span>
-<a name="l00004"></a>00004 <span class="comment">* NVIDIA CORPORATION and its licensors retain all intellectual property</span>
-<a name="l00005"></a>00005 <span class="comment">* and proprietary rights in and to this software, related documentation</span>
-<a name="l00006"></a>00006 <span class="comment">* and any modifications thereto.  Any use, reproduction, disclosure or</span>
-<a name="l00007"></a>00007 <span class="comment">* distribution of this software and related documentation without an express</span>
-<a name="l00008"></a>00008 <span class="comment">* license agreement from NVIDIA CORPORATION is strictly prohibited.</span>
-<a name="l00009"></a>00009 <span class="comment">*/</span>
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef NVBLASTEXTDAMAGESHADERS_H</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTEXTDAMAGESHADERS_H</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
-<a name="l00014"></a>00014 <span class="preprocessor">#include "<a class="code" href="_nv_blast_types_8h.html">NvBlastTypes.h</a>"</span>
-<a name="l00015"></a>00015 <span class="preprocessor">#include "<a class="code" href="_nv_blast_preprocessor_8h.html">NvBlastPreprocessor.h</a>"</span>
-<a name="l00016"></a>00016 
-<a name="l00022"></a>00022 
-<a name="l00023"></a>00023 <span class="comment">//  Common Material </span>
-<a name="l00025"></a>00025 <span class="comment"></span>
-<a name="l00031"></a><a class="code" href="struct_nv_blast_ext_material.html">00031</a> <span class="keyword">struct </span><a class="code" href="struct_nv_blast_ext_material.html">NvBlastExtMaterial</a>
-<a name="l00032"></a>00032 {
-<a name="l00033"></a><a class="code" href="struct_nv_blast_ext_material.html#c20e146450a01a2fb7b6f9317daf2310">00033</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_material.html#c20e146450a01a2fb7b6f9317daf2310" title="subsupport chunks only take damage surpassing this value">singleChunkThreshold</a>;       
-<a name="l00034"></a><a class="code" href="struct_nv_blast_ext_material.html#15ac1d672ba3f6768c4f8183ab4679b4">00034</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_material.html#15ac1d672ba3f6768c4f8183ab4679b4" title="support chunks only take damage surpassing this value">graphChunkThreshold</a>;        
-<a name="l00035"></a><a class="code" href="struct_nv_blast_ext_material.html#c66cb5d188df4fd2bfccd3eb5e9e7895">00035</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_material.html#c66cb5d188df4fd2bfccd3eb5e9e7895" title="bond only take damage surpassing this value">bondTangentialThreshold</a>;    
-<a name="l00036"></a><a class="code" href="struct_nv_blast_ext_material.html#7027ef6f2963d55c85ec751052f5dd2e">00036</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_material.html#7027ef6f2963d55c85ec751052f5dd2e" title="currently unused - forward damage propagation">bondNormalThreshold</a>;        
-<a name="l00037"></a><a class="code" href="struct_nv_blast_ext_material.html#e42a0a1024a166739b3d81888acf236a">00037</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_material.html#e42a0a1024a166739b3d81888acf236a" title="factor of damage attenuation while forwarding">damageAttenuation</a>;          
-<a name="l00038"></a>00038 };
-<a name="l00039"></a>00039 
+<h1>sdk/extensions/shaders/include/NvBlastExtDamageShaders.h</h1><a href="_nv_blast_ext_damage_shaders_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">// This code contains NVIDIA Confidential Information and is disclosed to you</span>
+<a name="l00002"></a>00002 <span class="comment">// under a form of NVIDIA software license agreement provided separately to you.</span>
+<a name="l00003"></a>00003 <span class="comment">//</span>
+<a name="l00004"></a>00004 <span class="comment">// Notice</span>
+<a name="l00005"></a>00005 <span class="comment">// NVIDIA Corporation and its licensors retain all intellectual property and</span>
+<a name="l00006"></a>00006 <span class="comment">// proprietary rights in and to this software and related documentation and</span>
+<a name="l00007"></a>00007 <span class="comment">// any modifications thereto. Any use, reproduction, disclosure, or</span>
+<a name="l00008"></a>00008 <span class="comment">// distribution of this software and related documentation without an express</span>
+<a name="l00009"></a>00009 <span class="comment">// license agreement from NVIDIA Corporation is strictly prohibited.</span>
+<a name="l00010"></a>00010 <span class="comment">//</span>
+<a name="l00011"></a>00011 <span class="comment">// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES</span>
+<a name="l00012"></a>00012 <span class="comment">// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO</span>
+<a name="l00013"></a>00013 <span class="comment">// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,</span>
+<a name="l00014"></a>00014 <span class="comment">// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.</span>
+<a name="l00015"></a>00015 <span class="comment">//</span>
+<a name="l00016"></a>00016 <span class="comment">// Information and code furnished is believed to be accurate and reliable.</span>
+<a name="l00017"></a>00017 <span class="comment">// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such</span>
+<a name="l00018"></a>00018 <span class="comment">// information or for any infringement of patents or other rights of third parties that may</span>
+<a name="l00019"></a>00019 <span class="comment">// result from its use. No license is granted by implication or otherwise under any patent</span>
+<a name="l00020"></a>00020 <span class="comment">// or patent rights of NVIDIA Corporation. Details are subject to change without notice.</span>
+<a name="l00021"></a>00021 <span class="comment">// This code supersedes and replaces all information previously supplied.</span>
+<a name="l00022"></a>00022 <span class="comment">// NVIDIA Corporation products are not authorized for use as critical</span>
+<a name="l00023"></a>00023 <span class="comment">// components in life support devices or systems without express written approval of</span>
+<a name="l00024"></a>00024 <span class="comment">// NVIDIA Corporation.</span>
+<a name="l00025"></a>00025 <span class="comment">//</span>
+<a name="l00026"></a>00026 <span class="comment">// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.</span>
+<a name="l00027"></a>00027 
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 <span class="preprocessor">#ifndef NVBLASTEXTDAMAGESHADERS_H</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTEXTDAMAGESHADERS_H</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include "<a class="code" href="_nv_blast_types_8h.html">NvBlastTypes.h</a>"</span>
+<a name="l00033"></a>00033 
+<a name="l00034"></a>00034 
 <a name="l00040"></a>00040 
-<a name="l00042"></a>00042 <span class="comment">//  Radial Damage</span>
-<a name="l00044"></a>00044 <span class="comment"></span>
-<a name="l00048"></a><a class="code" href="struct_nv_blast_ext_radial_damage_desc.html">00048</a> <span class="keyword">struct </span><a class="code" href="struct_nv_blast_ext_radial_damage_desc.html">NvBlastExtRadialDamageDesc</a>
-<a name="l00049"></a>00049 {
-<a name="l00050"></a><a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#76e5d610339c62acfdd4bddfb4cd467e">00050</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#76e5d610339c62acfdd4bddfb4cd467e" title="compressive (radial) damage component">compressive</a>;    
-<a name="l00051"></a><a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#fd4c995f6402ebf1feaff268c7ca849b">00051</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#fd4c995f6402ebf1feaff268c7ca849b" title="origin of damage action">position</a>[3];    
-<a name="l00052"></a><a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#f3546b34798c8d8f97facb157f44a35d">00052</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#f3546b34798c8d8f97facb157f44a35d" title="inner radius of damage action">minRadius</a>;      
-<a name="l00053"></a><a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#4cc2f97bb0d5288196c18bc85985f3bc">00053</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#4cc2f97bb0d5288196c18bc85985f3bc" title="outer radius of damage action">maxRadius</a>;      
-<a name="l00054"></a>00054 };
-<a name="l00055"></a>00055 
-<a name="l00063"></a>00063 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#fe0164871371689c5ab44abb717477fb">NvBlastExtFalloffGraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
-<a name="l00064"></a>00064 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#97ec45968e92e40e4046209f94369cb9">NvBlastExtFalloffSubgraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
-<a name="l00065"></a>00065 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#92b46604a0448a80f7664a8e7ef39e22">NvBlastExtCutterGraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
-<a name="l00066"></a>00066 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#28f0347a46fe04f1ecca0e75868efd70">NvBlastExtCutterSubgraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
-<a name="l00067"></a>00067 
-<a name="l00068"></a>00068 
-<a name="l00084"></a>00084 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">bool</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#ffc03bdfb6ca47f1e7a29ab795558d84">NvBlastExtDamageActorRadialFalloff</a>(<a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>* actor, <a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* buffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_ext_radial_damage_desc.html">NvBlastExtRadialDamageDesc</a>* damageDescBuffer, uint32_t damageDescCount, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_ext_material.html">NvBlastExtMaterial</a>* material, <a class="code" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn, <a class="code" href="struct_nv_blast_timers.html">NvBlastTimers</a>* timers);
-<a name="l00085"></a>00085 
-<a name="l00086"></a>00086 
-<a name="l00088"></a>00088 <span class="comment">//  Shear Damage</span>
-<a name="l00090"></a>00090 <span class="comment"></span>
-<a name="l00094"></a><a class="code" href="struct_nv_blast_ext_shear_damage_desc.html">00094</a> <span class="keyword">struct </span><a class="code" href="struct_nv_blast_ext_shear_damage_desc.html">NvBlastExtShearDamageDesc</a>
-<a name="l00095"></a>00095 {
-<a name="l00096"></a><a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#7b9cee59bfc970fda2582675cf3c6214">00096</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#7b9cee59bfc970fda2582675cf3c6214" title="directional damage component">shear</a>[3];       
-<a name="l00097"></a><a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#e214121c1283b6e661db615a0512f0a2">00097</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#e214121c1283b6e661db615a0512f0a2" title="origin of damage action">position</a>[3];    
-<a name="l00098"></a>00098 };
-<a name="l00099"></a>00099 
-<a name="l00107"></a>00107 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#2370e62e759e5784a8059081d3a0ba10">NvBlastExtShearGraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
-<a name="l00108"></a>00108 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#f35957a5ab12f1836d3e6e044e0b8100">NvBlastExtShearSubgraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
-<a name="l00109"></a>00109 
-<a name="l00110"></a>00110 
-<a name="l00111"></a>00111 <span class="preprocessor">#endif // NVBLASTEXTDAMAGESHADERS_H</span>
+<a name="l00041"></a>00041 <span class="comment">//  Common Material </span>
+<a name="l00043"></a>00043 <span class="comment"></span>
+<a name="l00050"></a><a class="code" href="struct_nv_blast_ext_material.html">00050</a> <span class="keyword">struct </span><a class="code" href="struct_nv_blast_ext_material.html">NvBlastExtMaterial</a>
+<a name="l00051"></a>00051 {
+<a name="l00052"></a><a class="code" href="struct_nv_blast_ext_material.html#89d74e66909810438be664da3f42e2d5">00052</a>     <a class="code" href="struct_nv_blast_ext_material.html#89d74e66909810438be664da3f42e2d5">NvBlastExtMaterial</a>() : <a class="code" href="struct_nv_blast_ext_material.html#1d1922ed27c3012efa2e9c3418636cb2" title="health">health</a>(100.f), <a class="code" href="struct_nv_blast_ext_material.html#eeb4e2d2b81e234e12b9e627eb6cb1b4" title="min damage fraction threshold to be applied. Range [0, 1]. For example 0.1 filters...">minDamageThreshold</a>(0.0f), <a class="code" href="struct_nv_blast_ext_material.html#de63b21c45e8705b20e65c202891762b" title="max damage fraction threshold to be applied. Range [0, 1]. For example 0.8 won&amp;#39;t...">maxDamageThreshold</a>(1.0f) {}
+<a name="l00053"></a>00053 
+<a name="l00054"></a><a class="code" href="struct_nv_blast_ext_material.html#1d1922ed27c3012efa2e9c3418636cb2">00054</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_material.html#1d1922ed27c3012efa2e9c3418636cb2" title="health">health</a>;                 
+<a name="l00055"></a><a class="code" href="struct_nv_blast_ext_material.html#eeb4e2d2b81e234e12b9e627eb6cb1b4">00055</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_material.html#eeb4e2d2b81e234e12b9e627eb6cb1b4" title="min damage fraction threshold to be applied. Range [0, 1]. For example 0.1 filters...">minDamageThreshold</a>;     
+<a name="l00056"></a><a class="code" href="struct_nv_blast_ext_material.html#de63b21c45e8705b20e65c202891762b">00056</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_material.html#de63b21c45e8705b20e65c202891762b" title="max damage fraction threshold to be applied. Range [0, 1]. For example 0.8 won&amp;#39;t...">maxDamageThreshold</a>;     
+<a name="l00057"></a>00057 
+<a name="l00068"></a><a class="code" href="struct_nv_blast_ext_material.html#7dfea97ed502a26acd63d1c3ed750557">00068</a>     <span class="keywordtype">float</span> <a class="code" href="struct_nv_blast_ext_material.html#7dfea97ed502a26acd63d1c3ed750557">getNormalizedDamage</a>(<span class="keywordtype">float</span> damageInHealth)<span class="keyword"> const</span>
+<a name="l00069"></a>00069 <span class="keyword">    </span>{
+<a name="l00070"></a>00070         <span class="keyword">const</span> <span class="keywordtype">float</span> damage = <a class="code" href="struct_nv_blast_ext_material.html#1d1922ed27c3012efa2e9c3418636cb2" title="health">health</a> &gt; 0.f ? damageInHealth / <a class="code" href="struct_nv_blast_ext_material.html#1d1922ed27c3012efa2e9c3418636cb2" title="health">health</a> : 1.0f;
+<a name="l00071"></a>00071         <span class="keywordflow">return</span> damage &gt; <a class="code" href="struct_nv_blast_ext_material.html#eeb4e2d2b81e234e12b9e627eb6cb1b4" title="min damage fraction threshold to be applied. Range [0, 1]. For example 0.1 filters...">minDamageThreshold</a> ? (damage &lt; <a class="code" href="struct_nv_blast_ext_material.html#de63b21c45e8705b20e65c202891762b" title="max damage fraction threshold to be applied. Range [0, 1]. For example 0.8 won&amp;#39;t...">maxDamageThreshold</a> ? damage : <a class="code" href="struct_nv_blast_ext_material.html#de63b21c45e8705b20e65c202891762b" title="max damage fraction threshold to be applied. Range [0, 1]. For example 0.8 won&amp;#39;t...">maxDamageThreshold</a>) : 0.f;
+<a name="l00072"></a>00072     }
+<a name="l00073"></a>00073 };
+<a name="l00074"></a>00074 
+<a name="l00075"></a>00075 
+<a name="l00077"></a>00077 <span class="comment">//  Point Radial Damage</span>
+<a name="l00079"></a>00079 <span class="comment"></span>
+<a name="l00083"></a><a class="code" href="struct_nv_blast_ext_radial_damage_desc.html">00083</a> <span class="keyword">struct </span><a class="code" href="struct_nv_blast_ext_radial_damage_desc.html">NvBlastExtRadialDamageDesc</a>
+<a name="l00084"></a>00084 {
+<a name="l00085"></a><a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#2b8469219b6615b208b5022a6fe27379">00085</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#2b8469219b6615b208b5022a6fe27379" title="normalized damage amount, range: [0, 1] (maximum health value to be reduced)">damage</a>;         
+<a name="l00086"></a><a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#fd4c995f6402ebf1feaff268c7ca849b">00086</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#fd4c995f6402ebf1feaff268c7ca849b" title="origin of damage action">position</a>[3];    
+<a name="l00087"></a><a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#f3546b34798c8d8f97facb157f44a35d">00087</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#f3546b34798c8d8f97facb157f44a35d" title="inner radius of damage action">minRadius</a>;      
+<a name="l00088"></a><a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#4cc2f97bb0d5288196c18bc85985f3bc">00088</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_radial_damage_desc.html#4cc2f97bb0d5288196c18bc85985f3bc" title="outer radius of damage action">maxRadius</a>;      
+<a name="l00089"></a>00089 };
+<a name="l00090"></a>00090 
+<a name="l00098"></a>00098 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#fe0164871371689c5ab44abb717477fb">NvBlastExtFalloffGraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
+<a name="l00099"></a>00099 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#97ec45968e92e40e4046209f94369cb9">NvBlastExtFalloffSubgraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
+<a name="l00100"></a>00100 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#92b46604a0448a80f7664a8e7ef39e22">NvBlastExtCutterGraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
+<a name="l00101"></a>00101 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#28f0347a46fe04f1ecca0e75868efd70">NvBlastExtCutterSubgraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
+<a name="l00102"></a>00102 
+<a name="l00103"></a>00103 
+<a name="l00119"></a>00119 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">bool</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#ffc03bdfb6ca47f1e7a29ab795558d84">NvBlastExtDamageActorRadialFalloff</a>(<a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>* actor, <a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* buffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_ext_radial_damage_desc.html">NvBlastExtRadialDamageDesc</a>* damageDescBuffer, uint32_t damageDescCount, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_ext_material.html">NvBlastExtMaterial</a>* material, <a class="code" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn, <a class="code" href="struct_nv_blast_timers.html">NvBlastTimers</a>* timers);
+<a name="l00120"></a>00120 
+<a name="l00121"></a>00121 
+<a name="l00123"></a>00123 <span class="comment">//  Segment Radial Damage</span>
+<a name="l00125"></a>00125 <span class="comment"></span>
+<a name="l00129"></a><a class="code" href="struct_nv_blast_ext_segment_radial_damage_desc.html">00129</a> <span class="keyword">struct </span><a class="code" href="struct_nv_blast_ext_segment_radial_damage_desc.html">NvBlastExtSegmentRadialDamageDesc</a>
+<a name="l00130"></a>00130 {
+<a name="l00131"></a><a class="code" href="struct_nv_blast_ext_segment_radial_damage_desc.html#ecb20666ae1c7832eee90d970a7e1e73">00131</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_segment_radial_damage_desc.html#ecb20666ae1c7832eee90d970a7e1e73" title="normalized damage amount, range: [0, 1] (maximum health value to be reduced)">damage</a>;         
+<a name="l00132"></a><a class="code" href="struct_nv_blast_ext_segment_radial_damage_desc.html#a9b67c86c84d1c7bfe30eabfa714da1d">00132</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_segment_radial_damage_desc.html#a9b67c86c84d1c7bfe30eabfa714da1d" title="damage segment point A position">position0</a>[3];   
+<a name="l00133"></a><a class="code" href="struct_nv_blast_ext_segment_radial_damage_desc.html#cb0027abb64f7a1cc799493462a223ce">00133</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_segment_radial_damage_desc.html#cb0027abb64f7a1cc799493462a223ce" title="damage segment point B position">position1</a>[3];   
+<a name="l00134"></a><a class="code" href="struct_nv_blast_ext_segment_radial_damage_desc.html#a478418357484b87454f8722fa35a882">00134</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_segment_radial_damage_desc.html#a478418357484b87454f8722fa35a882" title="inner radius of damage action">minRadius</a>;      
+<a name="l00135"></a><a class="code" href="struct_nv_blast_ext_segment_radial_damage_desc.html#149a75836276b77983f3eeee620edd12">00135</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_segment_radial_damage_desc.html#149a75836276b77983f3eeee620edd12" title="outer radius of damage action">maxRadius</a>;      
+<a name="l00136"></a>00136 };
+<a name="l00137"></a>00137 
+<a name="l00148"></a>00148 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#1545b1180f56bc0425984c47a653d99c">NvBlastExtSegmentFalloffGraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
+<a name="l00149"></a>00149 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#dea94d3394afb7157dff0afa83a84d7f">NvBlastExtSegmentFalloffSubgraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
+<a name="l00150"></a>00150 
+<a name="l00151"></a>00151 
+<a name="l00153"></a>00153 <span class="comment">//  Shear Damage</span>
+<a name="l00155"></a>00155 <span class="comment"></span>
+<a name="l00159"></a><a class="code" href="struct_nv_blast_ext_shear_damage_desc.html">00159</a> <span class="keyword">struct </span><a class="code" href="struct_nv_blast_ext_shear_damage_desc.html">NvBlastExtShearDamageDesc</a>
+<a name="l00160"></a>00160 {
+<a name="l00161"></a><a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#72f2f98168be1a777197eefefe49aef2">00161</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#72f2f98168be1a777197eefefe49aef2" title="normalized damage amount, range: [0, 1] (maximum health value to be reduced)">damage</a>;         
+<a name="l00162"></a>00162 
+<a name="l00163"></a><a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#257c42d51ea53fc4e14b6dad2968cf0c">00163</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#257c42d51ea53fc4e14b6dad2968cf0c" title="directional damage component">normal</a>[3];      
+<a name="l00164"></a><a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#e214121c1283b6e661db615a0512f0a2">00164</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#e214121c1283b6e661db615a0512f0a2" title="origin of damage action">position</a>[3];    
+<a name="l00165"></a>00165 
+<a name="l00166"></a><a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#5a5b8cbdce8ee01e223ac81bf11ff35a">00166</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#5a5b8cbdce8ee01e223ac81bf11ff35a" title="inner radius of damage action">minRadius</a>;      
+<a name="l00167"></a><a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#7c5a12680fd2f8eae33a45b2a6e57946">00167</a>     <span class="keywordtype">float</span>   <a class="code" href="struct_nv_blast_ext_shear_damage_desc.html#7c5a12680fd2f8eae33a45b2a6e57946" title="outer radius of damage action">maxRadius</a>;      
+<a name="l00168"></a>00168 };
+<a name="l00169"></a>00169 
+<a name="l00177"></a>00177 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#2370e62e759e5784a8059081d3a0ba10">NvBlastExtShearGraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
+<a name="l00178"></a>00178 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#f35957a5ab12f1836d3e6e044e0b8100">NvBlastExtShearSubgraphShader</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
+<a name="l00179"></a>00179 
+<a name="l00180"></a>00180 
+<a name="l00181"></a>00181 <span class="preprocessor">#endif // NVBLASTEXTDAMAGESHADERS_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

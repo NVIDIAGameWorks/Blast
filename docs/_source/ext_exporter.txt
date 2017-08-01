@@ -1,0 +1,35 @@
+/*! \page pageextexporter Exporter (NvBlastExtExporter)
+
+This extension provides both reader and writer tools for FBX and OBJ mesh formats.  The file writers (IMeshFileWriter writer) use
+NvBlastMesh data to create a mesh hierarchy in the output file format that matches the Blast&tm; chunk hierarchy.  The FBX writer
+is also capable of embedding collision data within the mesh.  This data is stored in a second layer in the FBX scene, with node
+names that match the graphics mesh node names.
+
+From NvBlastExtExporter.h:
+
+\code
+/**
+	Creates an instance of IMeshFileReader for reading obj file.
+*/
+NVBLAST_API Nv::Blast::IMeshFileReader* NvBlastExtExporterCreateObjFileReader();
+
+/**
+	Creates an instance of IFbxFileReader for reading fbx file.
+*/
+NVBLAST_API Nv::Blast::IFbxFileReader* NvBlastExtExporterCreateFbxFileReader();
+
+/**
+	Creates an instance of IMeshFileWriter for writing obj file.
+*/
+NVBLAST_API Nv::Blast::IMeshFileWriter* NvBlastExtExporterCreateObjFileWriter();
+
+/**
+	Creates an instance of IMeshFileWriter for writing fbx file.
+
+	\param[in] outputFBXAscii	If true writes fbx in ascii format otherwise write in binary.
+*/
+NVBLAST_API Nv::Blast::IMeshFileWriter* NvBlastExtExporterCreateFbxFileWriter(bool outputFBXAscii = false);
+\endcode
+
+<br>
+*/

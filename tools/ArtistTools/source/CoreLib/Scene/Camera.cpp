@@ -136,9 +136,9 @@ D3DXMATRIX * D3DXMatrixLookAtLH(
 	D3DXVECTOR3 yaxis = gfsdk_cross(zaxis, xaxis);
 
 	gfsdk_makeIdentity(*pOut);
-	pOut->_11 = zaxis.x;
-	pOut->_21 = zaxis.y;
-	pOut->_31 = zaxis.z;
+	pOut->_11 = xaxis.x;
+	pOut->_21 = xaxis.y;
+	pOut->_31 = xaxis.z;
 	pOut->_12 = yaxis.x;
 	pOut->_22 = yaxis.y;
 	pOut->_32 = yaxis.z;

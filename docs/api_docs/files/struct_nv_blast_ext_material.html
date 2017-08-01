@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 API Reference: NvBlastExtMaterial Struct Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 API Reference: NvBlastExtMaterial Struct Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -26,107 +26,121 @@
 <p>
 <a href="struct_nv_blast_ext_material-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
+<tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_material.html#7dfea97ed502a26acd63d1c3ed750557">getNormalizedDamage</a> (float damageInHealth) const </td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_material.html#89d74e66909810438be664da3f42e2d5">NvBlastExtMaterial</a> ()</td></tr>
+
 <tr><td colspan="2"><br><h2>Public Attributes</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_material.html#7027ef6f2963d55c85ec751052f5dd2e">bondNormalThreshold</a></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_material.html#1d1922ed27c3012efa2e9c3418636cb2">health</a></td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">currently unused - forward damage propagation  <a href="#7027ef6f2963d55c85ec751052f5dd2e"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_material.html#c66cb5d188df4fd2bfccd3eb5e9e7895">bondTangentialThreshold</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">health  <a href="#1d1922ed27c3012efa2e9c3418636cb2"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_material.html#de63b21c45e8705b20e65c202891762b">maxDamageThreshold</a></td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">bond only take damage surpassing this value  <a href="#c66cb5d188df4fd2bfccd3eb5e9e7895"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_material.html#e42a0a1024a166739b3d81888acf236a">damageAttenuation</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">max damage fraction threshold to be applied. Range [0, 1]. For example 0.8 won't allow more then 80% of health damage to be applied.  <a href="#de63b21c45e8705b20e65c202891762b"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_material.html#eeb4e2d2b81e234e12b9e627eb6cb1b4">minDamageThreshold</a></td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">factor of damage attenuation while forwarding  <a href="#e42a0a1024a166739b3d81888acf236a"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_material.html#15ac1d672ba3f6768c4f8183ab4679b4">graphChunkThreshold</a></td></tr>
-
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">support chunks only take damage surpassing this value  <a href="#15ac1d672ba3f6768c4f8183ab4679b4"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_ext_material.html#c20e146450a01a2fb7b6f9317daf2310">singleChunkThreshold</a></td></tr>
-
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">subsupport chunks only take damage surpassing this value  <a href="#c20e146450a01a2fb7b6f9317daf2310"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">min damage fraction threshold to be applied. Range [0, 1]. For example 0.1 filters all damage below 10% of health.  <a href="#eeb4e2d2b81e234e12b9e627eb6cb1b4"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
-A few example damage shader implementations. Specific parameters for the material functions here present.<p>
-Material function implementers may choose their own set. <hr><h2>Member Data Documentation</h2>
-<a class="anchor" name="7027ef6f2963d55c85ec751052f5dd2e"></a><!-- doxytag: member="NvBlastExtMaterial::bondNormalThreshold" ref="7027ef6f2963d55c85ec751052f5dd2e" args="" -->
+A few example damage shader implementations. Example of simple material. It is passed into damage shader, thus it is not used currently in any of them. The user can use it to filter and normalize before applying.<p>
+Material function implementers may choose their own set. <hr><h2>Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" name="89d74e66909810438be664da3f42e2d5"></a><!-- doxytag: member="NvBlastExtMaterial::NvBlastExtMaterial" ref="89d74e66909810438be664da3f42e2d5" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">float <a class="el" href="struct_nv_blast_ext_material.html#7027ef6f2963d55c85ec751052f5dd2e">NvBlastExtMaterial::bondNormalThreshold</a>          </td>
+          <td class="memname">NvBlastExtMaterial::NvBlastExtMaterial           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [inline]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>
-currently unused - forward damage propagation 
 <p>
 
 </div>
 </div><p>
-<a class="anchor" name="c66cb5d188df4fd2bfccd3eb5e9e7895"></a><!-- doxytag: member="NvBlastExtMaterial::bondTangentialThreshold" ref="c66cb5d188df4fd2bfccd3eb5e9e7895" args="" -->
+<hr><h2>Member Function Documentation</h2>
+<a class="anchor" name="7dfea97ed502a26acd63d1c3ed750557"></a><!-- doxytag: member="NvBlastExtMaterial::getNormalizedDamage" ref="7dfea97ed502a26acd63d1c3ed750557" args="(float damageInHealth) const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">float <a class="el" href="struct_nv_blast_ext_material.html#c66cb5d188df4fd2bfccd3eb5e9e7895">NvBlastExtMaterial::bondTangentialThreshold</a>          </td>
+          <td class="memname">float NvBlastExtMaterial::getNormalizedDamage           </td>
+          <td>(</td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>damageInHealth</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [inline]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-bond only take damage surpassing this value 
+Helper to normalize damage.<p>
+Pass damage defined in health, damage in range [0, 1] is returned, where 0 basically indicates that the threshold wasn't reached and there is no point in applying it.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>damageInHealth</em>&nbsp;</td><td>Damage defined in terms of health amount to be reduced.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>normalized damage </dd></dl>
+
+</div>
+</div><p>
+<hr><h2>Member Data Documentation</h2>
+<a class="anchor" name="1d1922ed27c3012efa2e9c3418636cb2"></a><!-- doxytag: member="NvBlastExtMaterial::health" ref="1d1922ed27c3012efa2e9c3418636cb2" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float <a class="el" href="struct_nv_blast_ext_material.html#1d1922ed27c3012efa2e9c3418636cb2">NvBlastExtMaterial::health</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+health 
 <p>
 
 </div>
 </div><p>
-<a class="anchor" name="e42a0a1024a166739b3d81888acf236a"></a><!-- doxytag: member="NvBlastExtMaterial::damageAttenuation" ref="e42a0a1024a166739b3d81888acf236a" args="" -->
+<a class="anchor" name="de63b21c45e8705b20e65c202891762b"></a><!-- doxytag: member="NvBlastExtMaterial::maxDamageThreshold" ref="de63b21c45e8705b20e65c202891762b" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">float <a class="el" href="struct_nv_blast_ext_material.html#e42a0a1024a166739b3d81888acf236a">NvBlastExtMaterial::damageAttenuation</a>          </td>
+          <td class="memname">float <a class="el" href="struct_nv_blast_ext_material.html#de63b21c45e8705b20e65c202891762b">NvBlastExtMaterial::maxDamageThreshold</a>          </td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-factor of damage attenuation while forwarding 
+max damage fraction threshold to be applied. Range [0, 1]. For example 0.8 won't allow more then 80% of health damage to be applied. 
 <p>
 
 </div>
 </div><p>
-<a class="anchor" name="15ac1d672ba3f6768c4f8183ab4679b4"></a><!-- doxytag: member="NvBlastExtMaterial::graphChunkThreshold" ref="15ac1d672ba3f6768c4f8183ab4679b4" args="" -->
+<a class="anchor" name="eeb4e2d2b81e234e12b9e627eb6cb1b4"></a><!-- doxytag: member="NvBlastExtMaterial::minDamageThreshold" ref="eeb4e2d2b81e234e12b9e627eb6cb1b4" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">float <a class="el" href="struct_nv_blast_ext_material.html#15ac1d672ba3f6768c4f8183ab4679b4">NvBlastExtMaterial::graphChunkThreshold</a>          </td>
+          <td class="memname">float <a class="el" href="struct_nv_blast_ext_material.html#eeb4e2d2b81e234e12b9e627eb6cb1b4">NvBlastExtMaterial::minDamageThreshold</a>          </td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-support chunks only take damage surpassing this value 
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="c20e146450a01a2fb7b6f9317daf2310"></a><!-- doxytag: member="NvBlastExtMaterial::singleChunkThreshold" ref="c20e146450a01a2fb7b6f9317daf2310" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">float <a class="el" href="struct_nv_blast_ext_material.html#c20e146450a01a2fb7b6f9317daf2310">NvBlastExtMaterial::singleChunkThreshold</a>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-subsupport chunks only take damage surpassing this value 
+min damage fraction threshold to be applied. Range [0, 1]. For example 0.1 filters all damage below 10% of health. 
 <p>
 
 </div>

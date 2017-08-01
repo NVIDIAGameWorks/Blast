@@ -18,6 +18,11 @@ SET(BLASTEXT_COMPILE_DEFS
 	$<$<CONFIG:release>:${BLAST_SLN_RELEASE_COMPILE_DEFS}>
 )
 
-SET(BLASTEXT_PHYSX_LIBTYPE STATIC)
+SET(BLASTEXT_PHYSX_LIBTYPE SHARED)
 
-SET(BLASTEXT_PLATFORM_COMPILE_OPTIONS "-Wno-unknown-pragmas" "-Wno-maybe-uninitialized")
+#-Wno-maybe-uninitialized doesn't work on Clang
+IF (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	SET(BLASTEXT_PLATFORM_COMPILE_OPTIONS "-Wno-unknown-pragmas" "-Wno-maybe-uninitialized")
+ELSE()
+	SET(BLASTEXT_PLATFORM_COMPILE_OPTIONS "-Wno-unknown-pragmas" "-Wno-return-type-c-linkage")
+ENDIF()

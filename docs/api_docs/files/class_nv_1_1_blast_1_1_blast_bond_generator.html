@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 API Reference: Nv::Blast::BlastBondGenerator Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 API Reference: Nv::Blast::BlastBondGenerator Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -29,39 +29,31 @@
 <a href="class_nv_1_1_blast_1_1_blast_bond_generator-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#18094e7101b721adad64f444269b9525">BlastBondGenerator</a> (physx::PxCooking *cooking, physx::PxPhysicsInsertionCallback *insertionCallback)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#7779c52ba27636aa313704b5a650d220">bondsFromPrefractured</a> (uint32_t meshCount, const uint32_t *geometryOffset, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *geometry, const bool *&amp;chunkIsSupport, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;resultBondDescs, <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf=<a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>())=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#10df368d3d81ff9a1fe283a5332c4675">bondsFromPrefractured</a> (const std::vector&lt; std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> &gt;&gt; &amp;geometry, const std::vector&lt; bool &gt; &amp;chunkIsSupport, std::vector&lt; <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> &gt; &amp;resultBondDescs, <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf=<a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>())</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#fbf304132c5600fbe6b4f423ac2e2452">buildDescFromInternalFracture</a> (<a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> *tool, const bool *chunkIsSupport, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;resultBondDescs, <a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *&amp;resultChunkDescriptors)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#17e475f512295c265a139ea9310d8935">buildDescFromInternalFracture</a> (<a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> *tool, const std::vector&lt; bool &gt; &amp;chunkIsSupport, std::vector&lt; <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> &gt; &amp;resultBondDescs, std::vector&lt; <a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> &gt; &amp;resultChunkDescriptors)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#e2f6a1a14917cac480eef0110ecc5af5">createBondBetweenMeshes</a> (uint32_t meshCount, const uint32_t *geometryOffset, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *geometry, uint32_t overlapsCount, const uint32_t *overlapsA, const uint32_t *overlapsB, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;resultBond, <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> cfg)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#e180cba7fa1733504101bf2674f2b190">createBondBetweenMeshes</a> (const std::vector&lt; std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> &gt; &gt; &amp;geometry, std::vector&lt; <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> &gt; &amp;resultBond, const std::vector&lt; std::pair&lt; uint32_t, uint32_t &gt; &gt; &amp;overlaps, <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> cfg)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#0a562f5a63aba0efbc7df017e77d5c8e">createBondBetweenMeshes</a> (uint32_t meshACount, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *meshA, uint32_t meshBCount, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *meshB, <a class="el" href="struct_nv_blast_bond.html">NvBlastBond</a> &amp;resultBond, <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf=<a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>())=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#c715c5ea40936ab224aea968906ffbcf">createBondBetweenMeshes</a> (const std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> &gt; &amp;meshA, const std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> &gt; &amp;meshB, <a class="el" href="struct_nv_blast_bond.html">NvBlastBond</a> &amp;resultBond, <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf=<a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>())</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#f9a062b2696ecd7764eb5e196b959f64">release</a> ()=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#922132c5bfe713b12cf061147106e00f">~BlastBondGenerator</a> ()</td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Tool for gathering bond information from provided mesh geometry <hr><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" name="18094e7101b721adad64f444269b9525"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::BlastBondGenerator" ref="18094e7101b721adad64f444269b9525" args="(physx::PxCooking *cooking, physx::PxPhysicsInsertionCallback *insertionCallback)" -->
+<a class="anchor" name="922132c5bfe713b12cf061147106e00f"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::~BlastBondGenerator" ref="922132c5bfe713b12cf061147106e00f" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Nv::Blast::BlastBondGenerator::BlastBondGenerator           </td>
+          <td class="memname">virtual Nv::Blast::BlastBondGenerator::~BlastBondGenerator           </td>
           <td>(</td>
-          <td class="paramtype">physx::PxCooking *&nbsp;</td>
-          <td class="paramname"> <em>cooking</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">physx::PxPhysicsInsertionCallback *&nbsp;</td>
-          <td class="paramname"> <em>insertionCallback</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [inline]</code></td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [inline, virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -72,26 +64,38 @@ Tool for gathering bond information from provided mesh geometry <hr><h2>Construc
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="10df368d3d81ff9a1fe283a5332c4675"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::bondsFromPrefractured" ref="10df368d3d81ff9a1fe283a5332c4675" args="(const std::vector&lt; std::vector&lt; Triangle &gt;&gt; &amp;geometry, const std::vector&lt; bool &gt; &amp;chunkIsSupport, std::vector&lt; NvBlastBondDesc &gt; &amp;resultBondDescs, BondGenerationConfig conf=BondGenerationConfig())" -->
+<a class="anchor" name="7779c52ba27636aa313704b5a650d220"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::bondsFromPrefractured" ref="7779c52ba27636aa313704b5a650d220" args="(uint32_t meshCount, const uint32_t *geometryOffset, const Triangle *geometry, const bool *&amp;chunkIsSupport, NvBlastBondDesc *&amp;resultBondDescs, BondGenerationConfig conf=BondGenerationConfig())=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t Nv::Blast::BlastBondGenerator::bondsFromPrefractured           </td>
+          <td class="memname">virtual int32_t Nv::Blast::BlastBondGenerator::bondsFromPrefractured           </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> &gt;&gt; &amp;&nbsp;</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>meshCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>geometryOffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *&nbsp;</td>
           <td class="paramname"> <em>geometry</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; bool &gt; &amp;&nbsp;</td>
+          <td class="paramtype">const bool *&amp;&nbsp;</td>
           <td class="paramname"> <em>chunkIsSupport</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> &gt; &amp;&nbsp;</td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;&nbsp;</td>
           <td class="paramname"> <em>resultBondDescs</em>, </td>
         </tr>
         <tr>
@@ -103,31 +107,34 @@ Tool for gathering bond information from provided mesh geometry <hr><h2>Construc
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-Creates bond description for prefractured meshes, when there is no info about which chunks should be connected with bond. <dl compact><dt><b>Parameters:</b></dt><dd>
+Creates bond description for prefractured meshes, when there is no info about which chunks should be connected with bond. <dl class="note" compact><dt><b>Note:</b></dt><dd>User should call NVBLAST_FREE for resultBondDescs when it not needed anymore </dd></dl>
+<dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>geometry</em>&nbsp;</td><td>Array of arrays of triangles for each chunk. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIsSupport</em>&nbsp;</td><td>Array of flags, if true - chunk is support. Array size should be equal to chunk count in tool. </td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>resultBondDescs</em>&nbsp;</td><td>Array of result bonds. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>meshCount</em>&nbsp;</td><td>Number of meshes </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>geometryOffset</em>&nbsp;</td><td>Pointer to array of triangle offsets for each mesh. Containts meshCount + 1 element, last one is total number of triangles in geometry </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>geometry</em>&nbsp;</td><td>Pointer to array of triangles. Triangles from geometryOffset[i] to geometryOffset[i+1] correspond to i-th mesh. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIsSupport</em>&nbsp;</td><td>Pointer to array of flags, if true - chunk is support. <a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> size should be equal to chunk count in tool. </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>resultBondDescs</em>&nbsp;</td><td>Pointer to array of result bonds. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>conf</em>&nbsp;</td><td>Bond creation mode. </td></tr>
   </table>
 </dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>0 if success </dd></dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>Number of created bonds </dd></dl>
 
 </div>
 </div><p>
-<a class="anchor" name="17e475f512295c265a139ea9310d8935"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::buildDescFromInternalFracture" ref="17e475f512295c265a139ea9310d8935" args="(FractureTool *tool, const std::vector&lt; bool &gt; &amp;chunkIsSupport, std::vector&lt; NvBlastBondDesc &gt; &amp;resultBondDescs, std::vector&lt; NvBlastChunkDesc &gt; &amp;resultChunkDescriptors)" -->
+<a class="anchor" name="fbf304132c5600fbe6b4f423ac2e2452"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::buildDescFromInternalFracture" ref="fbf304132c5600fbe6b4f423ac2e2452" args="(FractureTool *tool, const bool *chunkIsSupport, NvBlastBondDesc *&amp;resultBondDescs, NvBlastChunkDesc *&amp;resultChunkDescriptors)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t Nv::Blast::BlastBondGenerator::buildDescFromInternalFracture           </td>
+          <td class="memname">virtual int32_t Nv::Blast::BlastBondGenerator::buildDescFromInternalFracture           </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> *&nbsp;</td>
           <td class="paramname"> <em>tool</em>, </td>
@@ -135,64 +142,89 @@ Creates bond description for prefractured meshes, when there is no info about wh
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; bool &gt; &amp;&nbsp;</td>
+          <td class="paramtype">const bool *&nbsp;</td>
           <td class="paramname"> <em>chunkIsSupport</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> &gt; &amp;&nbsp;</td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;&nbsp;</td>
           <td class="paramname"> <em>resultBondDescs</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> &gt; &amp;&nbsp;</td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *&amp;&nbsp;</td>
           <td class="paramname"> <em>resultChunkDescriptors</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-This method based on marking triangles during fracture process, so can be used only with internally fractured meshes. <dl compact><dt><b>Parameters:</b></dt><dd>
+This method based on marking triangles during fracture process, so can be used only with internally fractured meshes. <dl class="note" compact><dt><b>Note:</b></dt><dd>User should call NVBLAST_FREE for resultBondDescs when it not needed anymore </dd></dl>
+<dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>tool</em>&nbsp;</td><td><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> which contains chunks representation, tool-&gt;finalizeFracturing() should be called before. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIsSupport</em>&nbsp;</td><td>Array of flags, if true - chunk is support. Array size should be equal to chunk count in tool. </td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>resultBondDescs</em>&nbsp;</td><td>Array of created bond descriptors. </td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>resultChunkDescriptors</em>&nbsp;</td><td>Array of created chunk descriptors. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIsSupport</em>&nbsp;</td><td>Pointer to array of flags, if true - chunk is support. <a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> size should be equal to chunk count in tool. </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>resultBondDescs</em>&nbsp;</td><td>Pointer to array of created bond descriptors. </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>resultChunkDescriptors</em>&nbsp;</td><td>Pointer to array of created chunk descriptors. </td></tr>
   </table>
 </dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>0 if success </dd></dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>Number of created bonds </dd></dl>
 
 </div>
 </div><p>
-<a class="anchor" name="e180cba7fa1733504101bf2674f2b190"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::createBondBetweenMeshes" ref="e180cba7fa1733504101bf2674f2b190" args="(const std::vector&lt; std::vector&lt; Triangle &gt; &gt; &amp;geometry, std::vector&lt; NvBlastBondDesc &gt; &amp;resultBond, const std::vector&lt; std::pair&lt; uint32_t, uint32_t &gt; &gt; &amp;overlaps, BondGenerationConfig cfg)" -->
+<a class="anchor" name="e2f6a1a14917cac480eef0110ecc5af5"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::createBondBetweenMeshes" ref="e2f6a1a14917cac480eef0110ecc5af5" args="(uint32_t meshCount, const uint32_t *geometryOffset, const Triangle *geometry, uint32_t overlapsCount, const uint32_t *overlapsA, const uint32_t *overlapsB, NvBlastBondDesc *&amp;resultBond, BondGenerationConfig cfg)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t Nv::Blast::BlastBondGenerator::createBondBetweenMeshes           </td>
+          <td class="memname">virtual int32_t Nv::Blast::BlastBondGenerator::createBondBetweenMeshes           </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> &gt; &gt; &amp;&nbsp;</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>meshCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>geometryOffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *&nbsp;</td>
           <td class="paramname"> <em>geometry</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> &gt; &amp;&nbsp;</td>
-          <td class="paramname"> <em>resultBond</em>, </td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>overlapsCount</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::pair&lt; uint32_t, uint32_t &gt; &gt; &amp;&nbsp;</td>
-          <td class="paramname"> <em>overlaps</em>, </td>
+          <td class="paramtype">const uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>overlapsA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>overlapsB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;&nbsp;</td>
+          <td class="paramname"> <em>resultBond</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -203,39 +235,55 @@ This method based on marking triangles during fracture process, so can be used o
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-Creates bond description between number of meshes <dl compact><dt><b>Parameters:</b></dt><dd>
+Creates bond description between number of meshes <dl class="note" compact><dt><b>Note:</b></dt><dd>User should call NVBLAST_FREE for resultBondDescs when it not needed anymore </dd></dl>
+<dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>geometry</em>&nbsp;</td><td>Array of arrays of triangles for each chunk. </td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>resultBond</em>&nbsp;</td><td>Array of result bonds. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>overlaps</em>&nbsp;</td><td>Array of pairs - indexes of chunks, for which bond should be created. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>meshCount</em>&nbsp;</td><td>Number of meshes </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>geometryOffset</em>&nbsp;</td><td>Pointer to array of triangle offsets for each mesh. Containts meshCount + 1 element, last one is total number of triangles in geometry </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>geometry</em>&nbsp;</td><td>Pointer to array of triangles. Triangles from geometryOffset[i] to geometryOffset[i+1] correspond to i-th mesh. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>overlapsCount</em>&nbsp;</td><td>Number of overlaps </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>overlaps</em>&nbsp;</td><td>Pointer to array of pairs - indexes of chunks, for which bond should be created. </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>resultBond</em>&nbsp;</td><td>Pointer to array of result bonds. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>cfg</em>&nbsp;</td><td>Bond creation mode. </td></tr>
   </table>
 </dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>0 if success </dd></dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>Number of created bonds </dd></dl>
 
 </div>
 </div><p>
-<a class="anchor" name="c715c5ea40936ab224aea968906ffbcf"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::createBondBetweenMeshes" ref="c715c5ea40936ab224aea968906ffbcf" args="(const std::vector&lt; Triangle &gt; &amp;meshA, const std::vector&lt; Triangle &gt; &amp;meshB, NvBlastBond &amp;resultBond, BondGenerationConfig conf=BondGenerationConfig())" -->
+<a class="anchor" name="0a562f5a63aba0efbc7df017e77d5c8e"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::createBondBetweenMeshes" ref="0a562f5a63aba0efbc7df017e77d5c8e" args="(uint32_t meshACount, const Triangle *meshA, uint32_t meshBCount, const Triangle *meshB, NvBlastBond &amp;resultBond, BondGenerationConfig conf=BondGenerationConfig())=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t Nv::Blast::BlastBondGenerator::createBondBetweenMeshes           </td>
+          <td class="memname">virtual int32_t Nv::Blast::BlastBondGenerator::createBondBetweenMeshes           </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> &gt; &amp;&nbsp;</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>meshACount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *&nbsp;</td>
           <td class="paramname"> <em>meshA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> &gt; &amp;&nbsp;</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>meshBCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *&nbsp;</td>
           <td class="paramname"> <em>meshB</em>, </td>
         </tr>
         <tr>
@@ -253,7 +301,7 @@ Creates bond description between number of meshes <dl compact><dt><b>Parameters:
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -262,14 +310,35 @@ Creates bond description between number of meshes <dl compact><dt><b>Parameters:
 <p>
 Creates bond description between two meshes <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>meshA</em>&nbsp;</td><td>Array of triangles of mesh A. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>meshB</em>&nbsp;</td><td>Array of triangles of mesh B. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>meshACount</em>&nbsp;</td><td>Number of triangles in mesh A </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>meshA</em>&nbsp;</td><td>Pointer to array of triangles of mesh A. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>meshBCount</em>&nbsp;</td><td>Number of triangles in mesh B </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>meshB</em>&nbsp;</td><td>Pointer to array of triangles of mesh B. </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>resultBond</em>&nbsp;</td><td>Result bond description. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>conf</em>&nbsp;</td><td>Bond creation mode. </td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>0 if success </dd></dl>
 
+</div>
+</div><p>
+<a class="anchor" name="f9a062b2696ecd7764eb5e196b959f64"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::release" ref="f9a062b2696ecd7764eb5e196b959f64" args="()=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::BlastBondGenerator::release           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Release <a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">BlastBondGenerator</a> memory 
 </div>
 </div><p>
 <hr>The documentation for this class was generated from the following file:<ul>

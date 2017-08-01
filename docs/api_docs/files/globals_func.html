@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 API Reference: Class Members</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 API Reference: Class Members</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -29,28 +29,13 @@
   </div>
   <div class="tabs">
     <ul>
-      <li><a href="#index_d"><span>d</span></a></li>
       <li><a href="#index_n"><span>n</span></a></li>
-      <li><a href="#index_s"><span>s</span></a></li>
+      <li><a href="#index_p"><span>p</span></a></li>
     </ul>
   </div>
 <div class="contents">
 &nbsp;
 <p>
-<h3><a class="anchor" name="index_d">- d -</a></h3><ul>
-<li>deserializeAsset()
-: <a class="el" href="_nv_blast_ext_serialization_l_l_interface_8h.html#16049dab7176e59489e8c03072b85605">NvBlastExtSerializationLLInterface.h</a>
-<li>deserializeAssetFromStream()
-: <a class="el" href="_nv_blast_ext_serialization_l_l_interface_8h.html#bebc8f28122a06f39598bb552ea94195">NvBlastExtSerializationLLInterface.h</a>
-<li>deserializeExtPxAsset()
-: <a class="el" href="_nv_blast_ext_serialization_interface_8h.html#8dd1e2f82516464ef3814ba646878cb8">NvBlastExtSerializationInterface.h</a>
-<li>deserializeExtPxAssetFromStream()
-: <a class="el" href="_nv_blast_ext_serialization_interface_8h.html#7ad9b9b5613607d72691ca12ae1598fc">NvBlastExtSerializationInterface.h</a>
-<li>deserializeTkAsset()
-: <a class="el" href="_nv_blast_ext_serialization_interface_8h.html#326b2505a43716746be570d0e949503a">NvBlastExtSerializationInterface.h</a>
-<li>deserializeTkAssetFromStream()
-: <a class="el" href="_nv_blast_ext_serialization_interface_8h.html#0c00ba9c5c4349070b2144097cae1374">NvBlastExtSerializationInterface.h</a>
-</ul>
 <h3><a class="anchor" name="index_n">- n -</a></h3><ul>
 <li>NvBlastActorApplyFracture()
 : <a class="el" href="_nv_blast_8h.html#6a3d0ae6f5c5efb65699140897adb8c0">NvBlast.h</a>
@@ -80,14 +65,18 @@
 : <a class="el" href="_nv_blast_8h.html#e3fbeb19c609c388c92ee173cc04b334">NvBlast.h</a>
 <li>NvBlastActorGetVisibleChunkIndices()
 : <a class="el" href="_nv_blast_8h.html#ac805c5bcc48f209925d938acbc2f17e">NvBlast.h</a>
+<li>NvBlastActorIsBoundToWorld()
+: <a class="el" href="_nv_blast_8h.html#fd4fbf5c7be23baba91f5c5b1a8b91f3">NvBlast.h</a>
+<li>NvBlastActorIsSplitRequired()
+: <a class="el" href="_nv_blast_8h.html#9199afeefb94662e609d85a79be31a31">NvBlast.h</a>
 <li>NvBlastActorSerialize()
 : <a class="el" href="_nv_blast_8h.html#cab7d192ec7ac6d3a095a6b0646375fe">NvBlast.h</a>
 <li>NvBlastActorSplit()
 : <a class="el" href="_nv_blast_8h.html#dc280b2a624d76981c87fb5f068d5106">NvBlast.h</a>
 <li>NvBlastApplyAssetDescChunkReorderMap()
-: <a class="el" href="_nv_blast_8h.html#bddff2d2e2502d48baa90b3fe64a40a2">NvBlast.h</a>
-<li>NvBlastApplyAssetDescChunkReorderMapInplace()
-: <a class="el" href="_nv_blast_8h.html#1f9cce66f78c5cce0bfda117a43ad4a3">NvBlast.h</a>
+: <a class="el" href="_nv_blast_8h.html#3204e6077b424c4e10f605af0fa119d5">NvBlast.h</a>
+<li>NvBlastApplyAssetDescChunkReorderMapInPlace()
+: <a class="el" href="_nv_blast_8h.html#9eea9e02fc7f81cdc0399e7196bddf58">NvBlast.h</a>
 <li>NvBlastAssertHandler()
 : <a class="el" href="_nv_blast_assert_8h.html#e2b4b5a38870c3570a79a7c7f23d5d5a">NvBlastAssert.h</a>
 <li>NvBlastAssetCreateFamily()
@@ -116,6 +105,8 @@
 : <a class="el" href="_nv_blast_8h.html#cc0eed6bfaa3b56d472c41388c269625">NvBlast.h</a>
 <li>NvBlastAssetGetSize()
 : <a class="el" href="_nv_blast_8h.html#d7ee1d97ad6e4f048eab694249fa2594">NvBlast.h</a>
+<li>NvBlastAssetGetSupportChunkCount()
+: <a class="el" href="_nv_blast_8h.html#3b2193da26679967e526001578327d41">NvBlast.h</a>
 <li>NvBlastAssetGetSupportGraph()
 : <a class="el" href="_nv_blast_8h.html#c2307bd41ba85f2d69df0f229105fd09">NvBlast.h</a>
 <li>NvBlastAssetSetID()
@@ -126,20 +117,68 @@
 : <a class="el" href="_nv_blast_8h.html#8455859eec0e23e95aa5bbf7c4fd1e14">NvBlast.h</a>
 <li>NvBlastEnsureAssetExactSupportCoverage()
 : <a class="el" href="_nv_blast_8h.html#fd09f53fb71a1fb33053eebf1610367b">NvBlast.h</a>
+<li>NvBlastExtAssetTransformInPlace()
+: <a class="el" href="_nv_blast_ext_asset_utils_8h.html#c37d2686e8dc06a250d84e5d58ae5f6e">NvBlastExtAssetUtils.h</a>
+<li>NvBlastExtAssetUtilsAddWorldBonds()
+: <a class="el" href="_nv_blast_ext_asset_utils_8h.html#df802362e469fcaa8a40cb9f787b9e60">NvBlastExtAssetUtils.h</a>
+<li>NvBlastExtAssetUtilsMergeAssets()
+: <a class="el" href="_nv_blast_ext_asset_utils_8h.html#1486283b3fce176c10246113da3a7633">NvBlastExtAssetUtils.h</a>
+<li>NvBlastExtAuthoringCreateBondGenerator()
+: <a class="el" href="_nv_blast_ext_authoring_8h.html#0e9daceee5c631d803b9ff999c4e84b4">NvBlastExtAuthoring.h</a>
+<li>NvBlastExtAuthoringCreateConvexMeshBuilder()
+: <a class="el" href="_nv_blast_ext_authoring_8h.html#7ac1a0488fafd1305bcb8fc5b0b6b6d5">NvBlastExtAuthoring.h</a>
+<li>NvBlastExtAuthoringCreateFractureTool()
+: <a class="el" href="_nv_blast_ext_authoring_8h.html#41aee44d57db3e410d5d9dd5b07632d5">NvBlastExtAuthoring.h</a>
+<li>NvBlastExtAuthoringCreateMesh()
+: <a class="el" href="_nv_blast_ext_authoring_8h.html#a0d4d4a998dca04ba49d0ea7a7525cd5">NvBlastExtAuthoring.h</a>
+<li>NvBlastExtAuthoringCreateMeshCleaner()
+: <a class="el" href="_nv_blast_ext_authoring_8h.html#a763b10260b7d2a495fb106601977422">NvBlastExtAuthoring.h</a>
+<li>NvBlastExtAuthoringCreateVoronoiSitesGenerator()
+: <a class="el" href="_nv_blast_ext_authoring_8h.html#cd91ba6bf9cb55758bd477fe114e318b">NvBlastExtAuthoring.h</a>
+<li>NvBlastExtAuthoringProcessFracture()
+: <a class="el" href="_nv_blast_ext_authoring_8h.html#fc4ad1bb81e743f4937ac98fb5702241">NvBlastExtAuthoring.h</a>
 <li>NvBlastExtCutterGraphShader()
 : <a class="el" href="_nv_blast_ext_damage_shaders_8h.html#358d8f51dac48fd39df298debf547b09">NvBlastExtDamageShaders.h</a>
 <li>NvBlastExtCutterSubgraphShader()
 : <a class="el" href="_nv_blast_ext_damage_shaders_8h.html#133b5fb8f8486ee97bc0a8dfac365b2c">NvBlastExtDamageShaders.h</a>
 <li>NvBlastExtDamageActorRadialFalloff()
 : <a class="el" href="_nv_blast_ext_damage_shaders_8h.html#c64410bcbe81ef977c85b7edc4cee649">NvBlastExtDamageShaders.h</a>
+<li>NvBlastExtExporterCreateFbxFileReader()
+: <a class="el" href="_nv_blast_ext_exporter_8h.html#4f54418e6a96cd79a707cedf9e9e51d1">NvBlastExtExporter.h</a>
+<li>NvBlastExtExporterCreateFbxFileWriter()
+: <a class="el" href="_nv_blast_ext_exporter_8h.html#d05e784043601c6705cd2bdd95d4bc76">NvBlastExtExporter.h</a>
+<li>NvBlastExtExporterCreateObjFileReader()
+: <a class="el" href="_nv_blast_ext_exporter_8h.html#4bf77a02044f3bef0399bfc47f650a8d">NvBlastExtExporter.h</a>
+<li>NvBlastExtExporterCreateObjFileWriter()
+: <a class="el" href="_nv_blast_ext_exporter_8h.html#890017dceafc8196df1900780e760e24">NvBlastExtExporter.h</a>
 <li>NvBlastExtFalloffGraphShader()
 : <a class="el" href="_nv_blast_ext_damage_shaders_8h.html#70bdb4b6532cf43b402cfe49abb641a6">NvBlastExtDamageShaders.h</a>
 <li>NvBlastExtFalloffSubgraphShader()
 : <a class="el" href="_nv_blast_ext_damage_shaders_8h.html#debcb664cbbdbd4b87810492a194ebd3">NvBlastExtDamageShaders.h</a>
+<li>NvBlastExtLlSerializerLoadSet()
+: <a class="el" href="_nv_blast_ext_ll_serialization_8h.html#2485243df6083c79489c6289ea8491bf">NvBlastExtLlSerialization.h</a>
+<li>NvBlastExtPxSerializerLoadSet()
+: <a class="el" href="_nv_blast_ext_px_serialization_8h.html#8c896467357e07261de122d4006c9bef">NvBlastExtPxSerialization.h</a>
+<li>NvBlastExtSegmentFalloffGraphShader()
+: <a class="el" href="_nv_blast_ext_damage_shaders_8h.html#dcb2e6f85cdd241600d5c5074edb37dd">NvBlastExtDamageShaders.h</a>
+<li>NvBlastExtSegmentFalloffSubgraphShader()
+: <a class="el" href="_nv_blast_ext_damage_shaders_8h.html#c33031e27fc54103ac802f1f451f22f3">NvBlastExtDamageShaders.h</a>
+<li>NvBlastExtSerializationCreate()
+: <a class="el" href="_nv_blast_ext_serialization_8h.html#9dad7f69d7a72d402c99238ed3c34bfc">NvBlastExtSerialization.h</a>
+<li>NvBlastExtSerializationSerializeAssetIntoBuffer()
+: <a class="el" href="_nv_blast_ext_ll_serialization_8h.html#51eaff0f60a0dd3f1ee29618549ae635">NvBlastExtLlSerialization.h</a>
+<li>NvBlastExtSerializationSerializeExtPxAssetIntoBuffer()
+: <a class="el" href="_nv_blast_ext_px_serialization_8h.html#023b377cc39c27e2ae2fc3237a0aec1e">NvBlastExtPxSerialization.h</a>
+<li>NvBlastExtSerializationSerializeFamilyIntoBuffer()
+: <a class="el" href="_nv_blast_ext_ll_serialization_8h.html#d4d8b950f06b6301279e6102a6d568d6">NvBlastExtLlSerialization.h</a>
+<li>NvBlastExtSerializationSerializeTkAssetIntoBuffer()
+: <a class="el" href="_nv_blast_ext_tk_serialization_8h.html#c41dafd2d5ffd5a6131426755c477793">NvBlastExtTkSerialization.h</a>
 <li>NvBlastExtShearGraphShader()
 : <a class="el" href="_nv_blast_ext_damage_shaders_8h.html#4c050e75d4b9ddfcd3e85a620d21e029">NvBlastExtDamageShaders.h</a>
 <li>NvBlastExtShearSubgraphShader()
 : <a class="el" href="_nv_blast_ext_damage_shaders_8h.html#1dd2944861a3adaccd62165b952f3440">NvBlastExtDamageShaders.h</a>
+<li>NvBlastExtTkSerializerLoadSet()
+: <a class="el" href="_nv_blast_ext_tk_serialization_8h.html#3b56ccefec36904aed01309194c012c0">NvBlastExtTkSerialization.h</a>
 <li>NvBlastFamilyCreateFirstActor()
 : <a class="el" href="_nv_blast_8h.html#6d774be820fc1ff7df4d2241df1db220">NvBlast.h</a>
 <li>NvBlastFamilyDeserializeActor()
@@ -148,6 +187,8 @@
 : <a class="el" href="_nv_blast_8h.html#88fd777ba36d4ad6c6d7a7913810c24d">NvBlast.h</a>
 <li>NvBlastFamilyGetActors()
 : <a class="el" href="_nv_blast_8h.html#eb9144660cd1dbdb4dc23720a3e542de">NvBlast.h</a>
+<li>NvBlastFamilyGetAsset()
+: <a class="el" href="_nv_blast_8h.html#dca8ba4a5449c530cfdb9a39e50215dd">NvBlast.h</a>
 <li>NvBlastFamilyGetAssetID()
 : <a class="el" href="_nv_blast_8h.html#fa406b4fc35520001060b529ec95e820">NvBlast.h</a>
 <li>NvBlastFamilyGetChunkActor()
@@ -164,50 +205,40 @@
 : <a class="el" href="_nv_blast_8h.html#fa4b1c5e96650587b8daabb5ab86d2f1">NvBlast.h</a>
 <li>NvBlastGetAssetMemorySize()
 : <a class="el" href="_nv_blast_8h.html#6b27b9cc240bef3481cbfa23f7051060">NvBlast.h</a>
+<li>NvBlastGetPxAllocatorCallback()
+: <a class="el" href="_nv_blast_px_callbacks_8h.html#c5c506d1e1b09d6d295420e53a56f74c">NvBlastPxCallbacks.h</a>
+<li>NvBlastGetPxErrorCallback()
+: <a class="el" href="_nv_blast_px_callbacks_8h.html#0bbd9bd6f4dfff2d8fad6fe854912cce">NvBlastPxCallbacks.h</a>
 <li>NvBlastGetRequiredScratchForCreateAsset()
 : <a class="el" href="_nv_blast_8h.html#7517e528d4862b5e09853140bd4a2e46">NvBlast.h</a>
-<li>NvBlastProfilerEnablePlatform()
-: <a class="el" href="_nv_blast_profiler_8h.html#c42296f671897bb34f9640b5ecba704f">NvBlastProfiler.h</a>
+<li>NvBlastGlobalGetAllocatorCallback()
+: <a class="el" href="_nv_blast_globals_8h.html#6960a904cca030a87f4a569d0cd6a4fa">NvBlastGlobals.h</a>
+<li>NvBlastGlobalGetErrorCallback()
+: <a class="el" href="_nv_blast_globals_8h.html#dfce9f2ac7e3acfdd5c82cdbc9db0f36">NvBlastGlobals.h</a>
+<li>NvBlastGlobalSetAllocatorCallback()
+: <a class="el" href="_nv_blast_globals_8h.html#593586b9c9276aecb5a8f552f526f73b">NvBlastGlobals.h</a>
+<li>NvBlastGlobalSetErrorCallback()
+: <a class="el" href="_nv_blast_globals_8h.html#67996f009abbedc2d6c769f4af11f95f">NvBlastGlobals.h</a>
 <li>NvBlastProfilerSetCallback()
-: <a class="el" href="_nv_blast_profiler_8h.html#9d34cc962ae552ab64792b8ecb8aced1">NvBlastProfiler.h</a>
+: <a class="el" href="_nv_blast_profiler_8h.html#fba345e0f5a9689ded425622ea9a659b">NvBlastProfiler.h</a>
 <li>NvBlastProfilerSetDetail()
-: <a class="el" href="_nv_blast_profiler_8h.html#46ec9d0666d5a7277ecf65d01a3dac45">NvBlastProfiler.h</a>
+: <a class="el" href="_nv_blast_profiler_8h.html#13f57e40a8f414e4004336f0ed82c540">NvBlastProfiler.h</a>
 <li>NvBlastReorderAssetDescChunks()
-: <a class="el" href="_nv_blast_8h.html#c61d3b9346765324a627b73803290373">NvBlast.h</a>
+: <a class="el" href="_nv_blast_8h.html#773ddce30d6fdeebf0a770dcc5fc1305">NvBlast.h</a>
 <li>NvBlastTicksToSeconds()
 : <a class="el" href="_nv_blast_8h.html#749f932dc54fa2d3f413bd6fcc1ba6e9">NvBlast.h</a>
 <li>NvBlastTimersReset()
 : <a class="el" href="_nv_blast_8h.html#b3059b35f2c62b8110d90336f5cecefc">NvBlast.h</a>
 <li>NvBlastTkFrameworkCreate()
-: <a class="el" href="_nv_blast_tk_framework_8h.html#b7a2038459b3735da68e60ddef615099">NvBlastTkFramework.h</a>
+: <a class="el" href="_nv_blast_tk_framework_8h.html#bffad36b5cbe769ac6d119bfb58d3523">NvBlastTkFramework.h</a>
 <li>NvBlastTkFrameworkGet()
 : <a class="el" href="_nv_blast_tk_framework_8h.html#c9ef4ab9d817890d7a0f456cc6f07907">NvBlastTkFramework.h</a>
 </ul>
-<h3><a class="anchor" name="index_s">- s -</a></h3><ul>
-<li>serializeAssetIntoExistingBuffer()
-: <a class="el" href="_nv_blast_ext_serialization_l_l_interface_8h.html#2b17cb7cde4180fcd0cb717edd5b26b3">NvBlastExtSerializationLLInterface.h</a>
-<li>serializeAssetIntoNewBuffer()
-: <a class="el" href="_nv_blast_ext_serialization_l_l_interface_8h.html#1e2831d66a2ede91a4d0d9e1faa2da6c">NvBlastExtSerializationLLInterface.h</a>
-<li>serializeAssetIntoStream()
-: <a class="el" href="_nv_blast_ext_serialization_l_l_interface_8h.html#7470172129320d1c828023ded5985b83">NvBlastExtSerializationLLInterface.h</a>
-<li>serializeExtPxAssetIntoExistingBuffer()
-: <a class="el" href="_nv_blast_ext_serialization_interface_8h.html#4903be6f661afeea1bc26abe528978f2">NvBlastExtSerializationInterface.h</a>
-<li>serializeExtPxAssetIntoNewBuffer()
-: <a class="el" href="_nv_blast_ext_serialization_interface_8h.html#987bb2be950908f6b29090eec19faf9b">NvBlastExtSerializationInterface.h</a>
-<li>serializeExtPxAssetIntoStream()
-: <a class="el" href="_nv_blast_ext_serialization_interface_8h.html#01b8f8fe2c1d1a12faf77280fae3e390">NvBlastExtSerializationInterface.h</a>
-<li>serializeTkAssetIntoExistingBuffer()
-: <a class="el" href="_nv_blast_ext_serialization_interface_8h.html#e543cb15c9a97fba8e6b1d04222b57e6">NvBlastExtSerializationInterface.h</a>
-<li>serializeTkAssetIntoNewBuffer()
-: <a class="el" href="_nv_blast_ext_serialization_interface_8h.html#9104defb895e2a91007a765f920f1a2b">NvBlastExtSerializationInterface.h</a>
-<li>serializeTkAssetIntoStream()
-: <a class="el" href="_nv_blast_ext_serialization_interface_8h.html#8ca9c700a2f6b67a909ee76c09193ac0">NvBlastExtSerializationInterface.h</a>
-<li>setAllocator()
-: <a class="el" href="_nv_blast_ext_serialization_l_l_interface_8h.html#bf84339929e448906e11c431781b1b73">NvBlastExtSerializationLLInterface.h</a>
-<li>setLog()
-: <a class="el" href="_nv_blast_ext_serialization_l_l_interface_8h.html#04f451ad3815dd548860a2cf10b662ea">NvBlastExtSerializationLLInterface.h</a>
-<li>setPhysXSDK()
-: <a class="el" href="_nv_blast_ext_serialization_interface_8h.html#a7bf11dbf5cfe143126955534220d210">NvBlastExtSerializationInterface.h</a>
+<h3><a class="anchor" name="index_p">- p -</a></h3><ul>
+<li>platformZoneEnd()
+: <a class="el" href="_nv_blast_ext_custom_profiler_8h.html#a1585207662452977fb8b6593e71f40c">NvBlastExtCustomProfiler.h</a>
+<li>platformZoneStart()
+: <a class="el" href="_nv_blast_ext_custom_profiler_8h.html#a73cff190baa0fe10aa4b5d21dd5a7ef">NvBlastExtCustomProfiler.h</a>
 </ul>
 </div>
 <!-- start footer part -->

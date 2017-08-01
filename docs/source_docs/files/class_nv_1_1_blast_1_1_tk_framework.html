@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::TkFramework Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::TkFramework Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -67,18 +67,9 @@ Inheritance diagram for Nv::Blast::TkFramework:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#40b557778256cd6589a3b174015c3029">createJoint</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_tk_joint_desc.html">TkJointDesc</a> &amp;desc)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_tk_serializable.html">TkSerializable</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#902537856fc43e0d4dd04f9d1ba47bbf">deserialize</a> (physx::general_PxIOStream2::PxFileBuf &amp;stream)=0</td></tr>
-
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#80df575e224678953bd5ae33ac7ab22d">ensureAssetExactSupportCoverage</a> (<a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount) const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_tk_identifiable.html">TkIdentifiable</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#d6f25c2fa686ebe78a612ad657b6745f">findObjectByID</a> (const <a class="el" href="struct_nv_blast_i_d.html">NvBlastID</a> &amp;id) const =0</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <br class="typebreak">
-physx::PxAllocatorCallback &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#10c01b13eb802dc0262a93d248729055">getAllocatorCallback</a> () const =0</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual physx::PxErrorCallback &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#d2155df8d8391e7682f3c93cf74db9ef">getErrorCallback</a> () const =0</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#033e4c2f304ee859140a9c972ef12e75">getLogFn</a> () const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#58225ad807e6aa4c2b54a7ede92fcabf">getObjectCount</a> (const <a class="el" href="class_nv_1_1_blast_1_1_tk_type.html">TkType</a> &amp;type) const =0</td></tr>
 
@@ -88,7 +79,7 @@ physx::PxAllocatorCallback &amp;&nbsp;</td><td class="memItemRight" valign="bott
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#c98d733dfdddbbcfa806b4c282e17aa0">release</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#58b670d4e37ebb15894d00ed3abfe648">reorderAssetDescChunks</a> (<a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *bondDescs, uint32_t bondCount, uint32_t *chunkReorderMap=nullptr) const =0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#5a0817a19d4f4c0f715d3a54fe25eadf">reorderAssetDescChunks</a> (<a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *bondDescs, uint32_t bondCount, uint32_t *chunkReorderMap=nullptr, bool keepBondNormalChunkOrder=false) const =0</td></tr>
 
 <tr><td colspan="2"><br><h2>Protected Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#64d7cfa0510f159444d37408dd1fdf05">~TkFramework</a> ()</td></tr>
@@ -288,38 +279,6 @@ A joint cannot be created between chunks within the same actor using this method
 
 </div>
 </div><p>
-<a class="anchor" name="902537856fc43e0d4dd04f9d1ba47bbf"></a><!-- doxytag: member="Nv::Blast::TkFramework::deserialize" ref="902537856fc43e0d4dd04f9d1ba47bbf" args="(physx::general_PxIOStream2::PxFileBuf &amp;stream)=0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="class_nv_1_1_blast_1_1_tk_serializable.html">TkSerializable</a>* Nv::Blast::TkFramework::deserialize           </td>
-          <td>(</td>
-          <td class="paramtype">physx::general_PxIOStream2::PxFileBuf &amp;&nbsp;</td>
-          <td class="paramname"> <em>stream</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Deserialize an object from the given stream. Only objects derived from <a class="el" href="class_nv_1_1_blast_1_1_tk_serializable.html">TkSerializable</a> may be serialized and deserialized. Use the parent class method <a class="el" href="class_nv_1_1_blast_1_1_tk_identifiable.html#d156c3e85ee665c251e26ac86d3cf03b">TkIdentifiable::getType()</a> to know the type to which to cast the object.<p>
-Notes for different classes:<p>
-<a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a>: deserializing a serialized <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> will recreate the asset in memory with the same <a class="el" href="struct_nv_blast_i_d.html">NvBlastID</a> (see <a class="el" href="class_nv_1_1_blast_1_1_tk_identifiable.html#610a75ccff6579e5e54a59f2840f6630">TkIdentifiable::getID()</a>) as the original asset.<p>
-<a class="el" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a>: deserializing a serialized <a class="el" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a> will generate all <a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a> and <a class="el" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a> objects that were originally contained in the family. The <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> which generated the family must exist at the time the family is deserialized.<p>
-<dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>stream</em>&nbsp;</td><td>User-defined stream object.</td></tr>
-  </table>
-</dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>pointer the deserialized object if successful, or NULL if unsuccessful. </dd></dl>
-
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#38b505f3e84a26e516ac99c5aea19761">Nv::Blast::TkFrameworkImpl</a>.</p>
-
-</div>
-</div><p>
 <a class="anchor" name="80df575e224678953bd5ae33ac7ab22d"></a><!-- doxytag: member="Nv::Blast::TkFramework::ensureAssetExactSupportCoverage" ref="80df575e224678953bd5ae33ac7ab22d" args="(NvBlastChunkDesc *chunkDescs, uint32_t chunkCount) const =0" -->
 <div class="memitem">
 <div class="memproto">
@@ -387,69 +346,6 @@ Look up an object derived from <a class="el" href="class_nv_1_1_blast_1_1_tk_ide
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>pointer the object if it exists, NULL otherwise. </dd></dl>
 
 <p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#30c107f6e6a83b7eba0de851bc67af73">Nv::Blast::TkFrameworkImpl</a>.</p>
-
-</div>
-</div><p>
-<a class="anchor" name="10c01b13eb802dc0262a93d248729055"></a><!-- doxytag: member="Nv::Blast::TkFramework::getAllocatorCallback" ref="10c01b13eb802dc0262a93d248729055" args="() const =0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual physx::PxAllocatorCallback&amp; Nv::Blast::TkFramework::getAllocatorCallback           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td> const<code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Access to the allocator callback set by the user. 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#f1b9ce36da7494909359b1ec4656d604">Nv::Blast::TkFrameworkImpl</a>.</p>
-
-</div>
-</div><p>
-<a class="anchor" name="d2155df8d8391e7682f3c93cf74db9ef"></a><!-- doxytag: member="Nv::Blast::TkFramework::getErrorCallback" ref="d2155df8d8391e7682f3c93cf74db9ef" args="() const =0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual physx::PxErrorCallback&amp; Nv::Blast::TkFramework::getErrorCallback           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td> const<code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Access to the error callback set by the user. 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#51a2ec81f3dbb75b170319602e2cb5c4">Nv::Blast::TkFrameworkImpl</a>.</p>
-
-</div>
-</div><p>
-<a class="anchor" name="033e4c2f304ee859140a9c972ef12e75"></a><!-- doxytag: member="Nv::Blast::TkFramework::getLogFn" ref="033e4c2f304ee859140a9c972ef12e75" args="() const =0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> Nv::Blast::TkFramework::getLogFn           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td> const<code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Access to a log function which can be used in <a class="el" href="namespace_nv_1_1_blast.html">Blast</a> low-level calls. This function uses the user-supplied PxErrorCallback (see <a class="el" href="struct_nv_1_1_blast_1_1_tk_framework_desc.html">TkFrameworkDesc</a>). 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#496780a06857ea9f04b456c51d655d40">Nv::Blast::TkFrameworkImpl</a>.</p>
 
 </div>
 </div><p>
@@ -585,7 +481,7 @@ Release this framework and all contained objects. Global singleton is set to NUL
 
 </div>
 </div><p>
-<a class="anchor" name="58b670d4e37ebb15894d00ed3abfe648"></a><!-- doxytag: member="Nv::Blast::TkFramework::reorderAssetDescChunks" ref="58b670d4e37ebb15894d00ed3abfe648" args="(NvBlastChunkDesc *chunkDescs, uint32_t chunkCount, NvBlastBondDesc *bondDescs, uint32_t bondCount, uint32_t *chunkReorderMap=nullptr) const =0" -->
+<a class="anchor" name="5a0817a19d4f4c0f715d3a54fe25eadf"></a><!-- doxytag: member="Nv::Blast::TkFramework::reorderAssetDescChunks" ref="5a0817a19d4f4c0f715d3a54fe25eadf" args="(NvBlastChunkDesc *chunkDescs, uint32_t chunkCount, NvBlastBondDesc *bondDescs, uint32_t bondCount, uint32_t *chunkReorderMap=nullptr, bool keepBondNormalChunkOrder=false) const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -617,7 +513,13 @@ Release this framework and all contained objects. Global singleton is set to NUL
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t *&nbsp;</td>
-          <td class="paramname"> <em>chunkReorderMap</em> = <code>nullptr</code></td><td>&nbsp;</td>
+          <td class="paramname"> <em>chunkReorderMap</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>keepBondNormalChunkOrder</em> = <code>false</code></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -634,16 +536,17 @@ This is a convenience wrapper for the low-level NvBlastReorderAssetDescChunks fu
 This function may modify both the chunkDescs and bondDescs array, since rearranging chunk descriptors requires re-indexing within the bond descriptors.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkDescs</em>&nbsp;</td><td>Array of chunk descriptors of size chunkCount. It will be updated accordingly. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkDescs</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of chunk descriptors of size chunkCount. It will be updated accordingly. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkCount</em>&nbsp;</td><td>The number of chunk descriptors. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondDescs</em>&nbsp;</td><td>Array of bond descriptors of size chunkCount. It will be updated accordingly. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondDescs</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of bond descriptors of size chunkCount. It will be updated accordingly. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondCount</em>&nbsp;</td><td>The number of bond descriptors. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkReorderMap</em>&nbsp;</td><td>If not NULL, must be a pointer to a uint32_t array of size desc.chunkCount. Maps old chunk indices to the reordered chunk indices.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkReorderMap</em>&nbsp;</td><td>If not NULL, must be a pointer to a uint32_t array of size desc.chunkCount. Maps old chunk indices to the reordered chunk indices. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>keepBondNormalChunkOrder</em>&nbsp;</td><td>If true, bond normals will be flipped if their chunk index order was reveresed by the reorder map.</td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>true iff the chunks did not require reordering (chunkReorderMap is the identity map). </dd></dl>
 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#e9676d87343ea45be3dd1e83ad937f54">Nv::Blast::TkFrameworkImpl</a>.</p>
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#d7a2e15a8ebca7995a5653d5efdd82a7">Nv::Blast::TkFrameworkImpl</a>.</p>
 
 </div>
 </div><p>

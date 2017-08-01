@@ -24,6 +24,7 @@ FIND_PACKAGE(tclap $ENV{PM_tclap_VERSION} REQUIRED)
 FIND_PACKAGE(hbao_plus $ENV{PM_hbao_plus_VERSION} REQUIRED)
 FIND_PACKAGE(shadow_lib $ENV{PM_shadow_lib_VERSION} REQUIRED)
 FIND_PACKAGE(d3dcompiler $ENV{PM_d3dcompiler_VERSION} REQUIRED)
+FIND_PACKAGE(FBXSDK $ENV{PM_FBXSDK_VERSION} REQUIRED)
 
 # Include here after the directories are defined so that the platform specific file can use the variables.
 include(${PROJECT_CMAKE_FILES_DIR}/${TARGET_BUILD_PLATFORM}/SampleBase.cmake)
@@ -184,7 +185,7 @@ TARGET_INCLUDE_DIRECTORIES(SampleBase
 	
 	PRIVATE ${PHYSXSDK_INCLUDE_DIRS}
 	PRIVATE ${PXSHAREDSDK_INCLUDE_DIRS}
-	
+	PRIVATE ${FBXSDK_INCLUDE_DIRS}	
 )
 
 TARGET_COMPILE_DEFINITIONS(SampleBase
@@ -202,11 +203,13 @@ TARGET_COMPILE_OPTIONS(SampleBase PRIVATE /wd4005 /wd4244)
 
 # Do final direct sets after the target has been defined
 TARGET_LINK_LIBRARIES(SampleBase 
-	PUBLIC NvBlast NvBlastExtShaders NvBlastExtPhysX NvBlastTk d3dcompiler.lib d3d11.lib dxgi.lib comctl32.lib 
+	PUBLIC NvBlast NvBlastExtShaders NvBlastExtPhysX NvBlastExtExporter NvBlastExtAssetUtils NvBlastExtSerialization NvBlastExtTkSerialization NvBlastExtPxSerialization NvBlastTk d3dcompiler.lib d3d11.lib dxgi.lib comctl32.lib 
 	PUBLIC $<$<CONFIG:debug>:${PXPVDSDK_LIB_DEBUG}> $<$<CONFIG:debug>:${PXFOUNDATION_LIB_DEBUG}> $<$<CONFIG:debug>:${PXTASK_LIB_DEBUG}> $<$<CONFIG:debug>:${PSFASTXML_LIB_DEBUG}> $<$<CONFIG:debug>:${PHYSX3COMMON_LIB_DEBUG}>
 	PUBLIC $<$<CONFIG:checked>:${PXPVDSDK_LIB_CHECKED}> $<$<CONFIG:checked>:${PXFOUNDATION_LIB_CHECKED}> $<$<CONFIG:checked>:${PXTASK_LIB_CHECKED}> $<$<CONFIG:checked>:${PSFASTXML_LIB_CHECKED}> $<$<CONFIG:checked>:${PHYSX3COMMON_LIB_CHECKED}>
 	PUBLIC $<$<CONFIG:profile>:${PXPVDSDK_LIB_PROFILE}> $<$<CONFIG:profile>:${PXFOUNDATION_LIB_PROFILE}> $<$<CONFIG:profile>:${PXTASK_LIB_PROFILE}> $<$<CONFIG:profile>:${PSFASTXML_LIB_PROFILE}> $<$<CONFIG:profile>:${PHYSX3COMMON_LIB_PROFILE}>
 	PUBLIC $<$<CONFIG:release>:${PXPVDSDK_LIB}> $<$<CONFIG:release>:${PXFOUNDATION_LIB}> $<$<CONFIG:release>:${PXTASK_LIB}> $<$<CONFIG:release>:${PSFASTXML_LIB}> $<$<CONFIG:release>:${PHYSX3COMMON_LIB}>
-	PUBLIC ${HBAO_PLUS_LIB} ${SHADOW_LIB_LIB} ${DXUT_LIBRARIES} ${DIRECTXTEX_LIBRARIES} )
+	PUBLIC ${HBAO_PLUS_LIB} ${SHADOW_LIB_LIB} ${DXUT_LIBRARIES} ${DIRECTXTEX_LIBRARIES}
+	PUBLIC ${FBXSDK_LIBRARIES}
+	)
 
 include(${PROJECT_CMAKE_FILES_DIR}/${TARGET_BUILD_PLATFORM}/SampleBase-AT.cmake OPTIONAL)

@@ -1,12 +1,29 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
 
 
 #include "RendererShadow.h"
@@ -16,7 +33,7 @@
 #include "DXUTCamera.h"
 #include "Renderer.h"
 #include "UIHelpers.h"
-
+#include "SimpleScene.h"
 #define CASCADES 1
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,7 +185,10 @@ void RendererShadow::changeShadowSettings(UINT Width, UINT Height, UINT uSampleC
 void RendererShadow::reloadBuffers()
 {
 	{
-		m_shadowLibContext->RemoveMap(&m_shadowMapHandle);
+		if(m_shadowMapHandle != nullptr)
+		{
+			m_shadowLibContext->RemoveMap(&m_shadowMapHandle);
+		}
 
 		if (m_SMDesc.eMapType == GFSDK_ShadowLib_MapType_Texture &&
 			m_SMDesc.eViewType == GFSDK_ShadowLib_ViewType_Single && 
@@ -192,7 +212,10 @@ void RendererShadow::reloadBuffers()
 		m_shadowLibContext->DevModeCreateTexture2D(&m_downsampledShadowMap);
 	}
 
-	m_shadowLibContext->RemoveBuffer(&m_shadowBufferHandle);
+	if (m_shadowBufferHandle != nullptr)
+	{
+		m_shadowLibContext->RemoveBuffer(&m_shadowBufferHandle);
+	}
 	m_shadowLibContext->AddBuffer(&m_SBDesc, &m_shadowBufferHandle);
 }
 
@@ -220,7 +243,7 @@ static void ShadowMapRenderFunction(void* pParams, gfsdk_float4x4* pViewProj)
 	pRP->renderer->renderDepthOnly(&viewProjection);
 }
 
-void RendererShadow::renderShadowMaps(Renderer* renderer)
+void RendererShadow::renderShadowMaps(Renderer* renderer, atcore_float3& lightPos, atcore_float3& lightLookAt)
 {
 	// select technique
 	GFSDK_ShadowLib_TechniqueType technique = m_SBRenderParams.eTechniqueType;
@@ -240,8 +263,8 @@ void RendererShadow::renderShadowMaps(Renderer* renderer)
 	m_SMRenderParams.v3WorldSpaceBBox[1] = m_worldSpaceBBox1;
 
 	m_SMRenderParams.LightDesc.eLightType = GFSDK_ShadowLib_LightType_Directional;
-	memcpy(&m_SMRenderParams.LightDesc.v3LightPos, &m_lightPos.x, sizeof(gfsdk_float3));
-	memcpy(&m_SMRenderParams.LightDesc.v3LightLookAt, &m_lightLookAt.x, sizeof(gfsdk_float3));
+	memcpy(&m_SMRenderParams.LightDesc.v3LightPos, &lightPos, sizeof(gfsdk_float3));
+	memcpy(&m_SMRenderParams.LightDesc.v3LightLookAt, &lightLookAt, sizeof(gfsdk_float3));
 	m_SMRenderParams.LightDesc.fLightSize = m_lightSize;
 	m_SMRenderParams.LightDesc.bLightFalloff = false;
 
@@ -268,13 +291,9 @@ void RendererShadow::renderShadowBuffer(ID3D11ShaderResourceView* pDepthStencilS
 	m_SBRenderParams.PCSSPenumbraParams = m_PCSSParams;
 	m_SBRenderParams.fSoftShadowTestScale = m_softShadowTestScale;
 
-	m_shadowLibContext->ClearBuffer(m_shadowBufferHandle);
-
 	m_SBRenderParams.DepthBufferDesc.DepthStencilSRV.pSRV = pDepthStencilSRV;
 
 	m_shadowLibContext->RenderBuffer(m_shadowMapHandle, m_shadowBufferHandle, &m_SBRenderParams);
-
-	m_shadowLibContext->FinalizeBuffer(m_shadowBufferHandle, &m_shadowBufferSRV);
 }
 
 
@@ -414,4 +433,14 @@ void RendererShadow::drawUI()
 		ImGui::DragFloat("PCSS: fBlockerSearchDitherPercent", &(m_PCSSParams.fBlockerSearchDitherPercent), 0.001f, 0.0f, 100.0f);
 		ImGui::DragFloat("PCSS: fFilterDitherPercent", &(m_PCSSParams.fFilterDitherPercent), 0.001f, 0.0f, 100.0f);
 	}
+}
+
+void RendererShadow::clearBuffer()
+{
+	m_shadowLibContext->ClearBuffer(m_shadowBufferHandle);
+}
+
+void RendererShadow::finalizeBuffer()
+{
+	m_shadowLibContext->FinalizeBuffer(m_shadowBufferHandle, &m_shadowBufferSRV);
 }

@@ -6,12 +6,10 @@
 #include <QtWidgets/QMessageBox>
 #include "QtUtil.h"
 #include "AppMainWindow.h"
-#include "SimpleScene.h"
-#include "RenderMaterial.h"
-#include "ResourceManager.h"
 #include "SampleManager.h"
 #include "MaterialAssignmentsPanel.h"
-#include "Renderable.h"
+#include "FractureGeneralPanel.h"
+#include "ResourceManager.h"
 enum ETextureType
 {
 	eDiffuseTexture,
@@ -45,7 +43,6 @@ void OnTextureButtonClicked(BPPGraphicsMaterial& material, ETextureType t, QPush
 	else
 		pButton->setIcon(QIcon(":/AppMainWindow/images/TextureIsUsed_icon.png"));
 
-	SimpleScene::Inst()->SetFurModified(true);
 }
 
 void OnTextureReload(BPPGraphicsMaterial& material, ETextureType t, QPushButton* pButton)
@@ -72,7 +69,6 @@ void OnTextureReload(BPPGraphicsMaterial& material, ETextureType t, QPushButton*
 	else
 		pButton->setIcon(QIcon(":/AppMainWindow/images/TextureIsUsed_icon.png"));
 
-	SimpleScene::Inst()->SetFurModified(true);
 }
 
 void OnTextureClear(BPPGraphicsMaterial& material, ETextureType t, QPushButton* pButton)
@@ -95,72 +91,12 @@ void OnTextureClear(BPPGraphicsMaterial& material, ETextureType t, QPushButton* 
 
 	pButton->setIcon(QIcon(":/AppMainWindow/images/TextureEnabled_icon.png"));
 
-	SimpleScene::Inst()->SetFurModified(true);
 }
 
 MaterialLibraryPanel* pMaterialLibraryPanel = nullptr;
 MaterialLibraryPanel* MaterialLibraryPanel::ins()
 {
 	return pMaterialLibraryPanel;
-}
-
-void MaterialLibraryPanel::addMaterial(std::string materialName, std::string diffuseTexture)
-{
-	if (!BlastProject::ins().isGraphicsMaterialNameExist(materialName.c_str()))
-	{
-		BlastProject::ins().addGraphicsMaterial(materialName.c_str(), diffuseTexture.c_str());
-		updateValues();
-		ui->listWidget->setCurrentRow(ui->listWidget->count() - 1);
-	}
-}
-
-void MaterialLibraryPanel::removeMaterial(std::string name)
-{
-	BlastProject::ins().removeGraphicsMaterial(name.c_str());
-	updateValues();
-	ui->listWidget->setCurrentRow(ui->listWidget->count() - 1);
-}
-
-void MaterialLibraryPanel::deleteMaterials()
-{
-	std::vector<std::string>::iterator itStr;
-	std::vector<Renderable*>::iterator itRenderable;
-
-	for (itStr = m_NeedDeleteRenderMaterials.begin(); itStr != m_NeedDeleteRenderMaterials.end(); itStr++)
-	{
-		std::string materialName = *itStr;
-		RenderMaterial* pRenderMaterial = m_RenderMaterialMap[materialName];
-		std::vector<Renderable*>& renderables = pRenderMaterial->getRelatedRenderables();
-		for (itRenderable = renderables.begin(); itRenderable != renderables.end(); itRenderable++)
-		{
-			Renderable* pRenderable = *itRenderable;
-			pRenderable->setMaterial(*RenderMaterial::getDefaultRenderMaterial());
-		}
-
-		std::map<std::string, RenderMaterial*>::iterator it = m_RenderMaterialMap.find(materialName);
-		if (it != m_RenderMaterialMap.end())
-		{
-			m_RenderMaterialMap.erase(it);
-			delete it->second;
-			MaterialLibraryPanel::ins()->removeMaterial(materialName);
-		}
-	}
-
-	m_NeedDeleteRenderMaterials.clear();
-}
-
-void MaterialLibraryPanel::deleteMaterialMap()
-{
-	std::map<std::string, RenderMaterial*>::iterator itRMM;
-	for (itRMM = m_RenderMaterialMap.begin(); itRMM != m_RenderMaterialMap.end(); itRMM++)
-	{
-		RenderMaterial* pRenderMaterial = itRMM->second;
-		std::string materialName = pRenderMaterial->getMaterialName();
-		MaterialLibraryPanel::ins()->removeMaterial(materialName);
-		delete pRenderMaterial;
-	}
-	m_RenderMaterialMap.clear();
-	m_NeedDeleteRenderMaterials.clear();
 }
 
 MaterialLibraryPanel::MaterialLibraryPanel(QWidget *parent) :
@@ -203,6 +139,7 @@ void MaterialLibraryPanel::updateValues()
 	}
 
 	MaterialAssignmentsPanel::ins()->updateValues();
+	FractureGeneralPanel::ins()->updateValues();
 }
 
 void MaterialLibraryPanel::on_btnAddMat_clicked()
@@ -217,10 +154,13 @@ void MaterialLibraryPanel::on_btnAddMat_clicked()
 	bool nameExist = BlastProject::ins().isGraphicsMaterialNameExist(name.toUtf8().data());
 	if (ok && !name.isEmpty() && !nameExist)
 	{
-		ResourceManager* pResourceManager = ResourceManager::ins();
 		std::string strName = name.toUtf8().data();
-		RenderMaterial* pRenderMaterial = new RenderMaterial(strName.c_str(), *pResourceManager, "model_simple_textured_ex");
-		m_RenderMaterialMap[strName] = pRenderMaterial;
+		if (!BlastProject::ins().isGraphicsMaterialNameExist(strName.c_str()))
+		{
+			BlastProject::ins().addGraphicsMaterial(strName.c_str());
+			updateValues();
+			ui->listWidget->setCurrentRow(ui->listWidget->count() - 1);
+		}
 	}
 	else if (ok && nameExist)
 	{
@@ -256,15 +196,6 @@ void MaterialLibraryPanel::on_btnModifyMat_clicked()
 		std::string strOldName = oldName;
 		std::string strNewName = newName.toUtf8().data();
 
-		std::map<std::string, RenderMaterial*>::iterator it = m_RenderMaterialMap.find(strOldName);
-		if (it != m_RenderMaterialMap.end())
-		{
-			RenderMaterial* pRenderMaterial = it->second;
-			m_RenderMaterialMap.erase(it);
-			pRenderMaterial->setMaterialName(strNewName);
-			m_RenderMaterialMap[strNewName] = pRenderMaterial;
-		}
-
 		SampleManager::ins()->renameRenderMaterial(strOldName, strNewName);
 
 		BlastProject::ins().renameGraphicsMaterial(oldName, newName.toUtf8().data());
@@ -291,15 +222,12 @@ void MaterialLibraryPanel::on_btnRemoveMat_clicked()
 	QByteArray tem = items.at(0)->text().toUtf8();
 
 	std::string strName = tem.data();
-	std::map<std::string, RenderMaterial*>::iterator it = m_RenderMaterialMap.find(strName);
-	if (it != m_RenderMaterialMap.end())
-	{
-		m_NeedDeleteRenderMaterials.push_back(it->second->getMaterialName());
-	}
-	else
-	{
-		SampleManager::ins()->deleteRenderMaterial(strName);
-	}
+
+	SampleManager::ins()->removeRenderMaterial(strName);
+
+	BlastProject::ins().removeGraphicsMaterial(strName.c_str());
+	updateValues();
+	ui->listWidget->setCurrentRow(ui->listWidget->count() - 1);
 }
 
 void MaterialLibraryPanel::on_listWidget_currentRowChanged(int currentRow)
@@ -315,6 +243,13 @@ void MaterialLibraryPanel::on_btnDiffuseColor_clicked()
 		atcore_float4* color = (atcore_float4*)&(material->diffuseColor);
 		pickColor(*color);
 		setButtonColor(ui->btnDiffuseColor, color->x, color->y, color->z);
+
+		QString qName = material->name.buf;
+		std::string strName = qName.toUtf8().data();
+
+		BlastProject::ins().reloadDiffuseColor(strName.c_str(), color->x, color->y, color->z);
+
+		SampleManager::ins()->reloadRenderMaterial(strName, color->x, color->y, color->z);
 	}
 }
 
@@ -324,6 +259,15 @@ void MaterialLibraryPanel::on_btnDiffuseColorTex_clicked()
 	if (material)
 	{
 		OnTextureButtonClicked(*material, eDiffuseTexture, ui->btnDiffuseColorTex);
+
+		QString qName = material->name.buf;
+		std::string strName = qName.toUtf8().data();
+		QString qTexture = material->diffuseTextureFilePath.buf;
+		std::string strTexture = qTexture.toUtf8().data();
+
+		BlastProject::ins().reloadDiffuseTexture(strName.c_str(), strTexture.c_str());
+
+		SampleManager::ins()->reloadRenderMaterial(strName, strTexture);
 	}
 }
 
@@ -338,13 +282,10 @@ void MaterialLibraryPanel::on_btnDiffuseColorTexReload_clicked()
 		std::string strName = qName.toUtf8().data();
 		QString qTexture = material->diffuseTextureFilePath.buf;
 		std::string strTexture = qTexture.toUtf8().data();
-
-		std::map<std::string, RenderMaterial*>& renderMaterials = SampleManager::ins()->getRenderMaterials();
-		std::map<std::string, RenderMaterial*>::iterator it = renderMaterials.find(strName);
-		if (it != renderMaterials.end())
-		{
-			it->second->setTextureFileName(strTexture);
-		}
+		
+		SampleManager::ins()->reloadRenderMaterial(strName, "");
+		ResourceManager::ins()->releaseTexture(strTexture.c_str());
+		SampleManager::ins()->reloadRenderMaterial(strName, strTexture);
 	}
 }
 
@@ -357,15 +298,10 @@ void MaterialLibraryPanel::on_btnDiffuseColorTexClear_clicked()
 
 		QString qName = material->name.buf;
 		std::string strName = qName.toUtf8().data();
-		QString qTexture = material->diffuseTextureFilePath.buf;
-		std::string strTexture = qTexture.toUtf8().data();
 
-		std::map<std::string, RenderMaterial*>& renderMaterials = SampleManager::ins()->getRenderMaterials();
-		std::map<std::string, RenderMaterial*>::iterator it = renderMaterials.find(strName);
-		if (it != renderMaterials.end())
-		{
-			it->second->setTextureFileName(strTexture);
-		}
+		BlastProject::ins().reloadDiffuseTexture(strName.c_str(), "");
+		
+		SampleManager::ins()->reloadRenderMaterial(strName, "");
 	}
 }
 
@@ -377,6 +313,13 @@ void MaterialLibraryPanel::on_btnSpecularColor_clicked()
 		atcore_float4* color = (atcore_float4*)&(material->specularColor);
 		pickColor(*color);
 		setButtonColor(ui->btnSpecularColor, color->x, color->y, color->z);
+
+		QString qName = material->name.buf;
+		std::string strName = qName.toUtf8().data();
+
+		BlastProject::ins().reloadSpecularColor(strName.c_str(), color->x, color->y, color->z);
+
+		SampleManager::ins()->reloadRenderMaterial(strName, color->x, color->y, color->z, false);
 	}
 }
 
@@ -386,6 +329,15 @@ void MaterialLibraryPanel::on_btnSpecularColorTex_clicked()
 	if (material)
 	{
 		OnTextureButtonClicked(*material, eSpecularTexture, ui->btnSpecularColorTex);
+
+		QString qName = material->name.buf;
+		std::string strName = qName.toUtf8().data();
+		QString qTexture = material->specularTextureFilePath.buf;
+		std::string strTexture = qTexture.toUtf8().data();
+
+		BlastProject::ins().reloadSpecularTexture(strName.c_str(), strTexture.c_str());
+
+		SampleManager::ins()->reloadRenderMaterial(strName, strTexture, RenderMaterial::TT_Specular);
 	}
 }
 
@@ -395,6 +347,15 @@ void MaterialLibraryPanel::on_btnSpecularColorTexReload_clicked()
 	if (material)
 	{
 		OnTextureReload(*material, eSpecularTexture, ui->btnSpecularColorTex);
+
+		QString qName = material->name.buf;
+		std::string strName = qName.toUtf8().data();
+		QString qTexture = material->specularTextureFilePath.buf;
+		std::string strTexture = qTexture.toUtf8().data();
+
+		SampleManager::ins()->reloadRenderMaterial(strName, "", RenderMaterial::TT_Specular);
+		ResourceManager::ins()->releaseTexture(strTexture.c_str());
+		SampleManager::ins()->reloadRenderMaterial(strName, strTexture, RenderMaterial::TT_Specular);
 	}
 }
 
@@ -404,6 +365,13 @@ void MaterialLibraryPanel::on_btnSpecularColorTexClear_clicked()
 	if (material)
 	{
 		OnTextureClear(*material, eSpecularTexture, ui->btnSpecularColorTex);
+
+		QString qName = material->name.buf;
+		std::string strName = qName.toUtf8().data();
+
+		BlastProject::ins().reloadSpecularTexture(strName.c_str(), "");
+
+		SampleManager::ins()->reloadRenderMaterial(strName, "", RenderMaterial::TT_Specular);
 	}
 }
 
@@ -412,7 +380,13 @@ void MaterialLibraryPanel::on_spinSpecularShin_valueChanged(double arg1)
 	BPPGraphicsMaterial* material = _getSelectedMaterial();
 	if (material)
 	{
-		material->specularShininess = (float)arg1;
+		float specularShininess = (float)arg1;
+
+		material->specularShininess = specularShininess;
+
+		QString qName = material->name.buf;
+		std::string strName = qName.toUtf8().data();
+		SampleManager::ins()->reloadRenderMaterial(strName, specularShininess);
 	}
 }
 
@@ -422,6 +396,15 @@ void MaterialLibraryPanel::on_btnNormalColorTex_clicked()
 	if (material)
 	{
 		OnTextureButtonClicked(*material, eNormalTexture, ui->btnNormalColorTex);
+
+		QString qName = material->name.buf;
+		std::string strName = qName.toUtf8().data();
+		QString qTexture = material->normalTextureFilePath.buf;
+		std::string strTexture = qTexture.toUtf8().data();
+
+		BlastProject::ins().reloadNormalTexture(strName.c_str(), strTexture.c_str());
+
+		SampleManager::ins()->reloadRenderMaterial(strName, strTexture, RenderMaterial::TT_Normal);
 	}
 }
 
@@ -431,6 +414,15 @@ void MaterialLibraryPanel::on_btnNormalColorTexReload_clicked()
 	if (material)
 	{
 		OnTextureReload(*material, eNormalTexture, ui->btnNormalColorTex);
+
+		QString qName = material->name.buf;
+		std::string strName = qName.toUtf8().data();
+		QString qTexture = material->normalTextureFilePath.buf;
+		std::string strTexture = qTexture.toUtf8().data();
+
+		SampleManager::ins()->reloadRenderMaterial(strName, "", RenderMaterial::TT_Normal);
+		ResourceManager::ins()->releaseTexture(strTexture.c_str());
+		SampleManager::ins()->reloadRenderMaterial(strName, strTexture, RenderMaterial::TT_Normal);
 	}
 }
 
@@ -440,6 +432,13 @@ void MaterialLibraryPanel::on_btnNormalColorTexClear_clicked()
 	if (material)
 	{
 		OnTextureClear(*material, eNormalTexture, ui->btnNormalColorTex);
+
+		QString qName = material->name.buf;
+		std::string strName = qName.toUtf8().data();
+
+		BlastProject::ins().reloadNormalTexture(strName.c_str(), "");
+
+		SampleManager::ins()->reloadRenderMaterial(strName, "", RenderMaterial::TT_Normal);
 	}
 }
 

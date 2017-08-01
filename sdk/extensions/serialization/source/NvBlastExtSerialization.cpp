@@ -1,146 +1,401 @@
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2017 NVIDIA Corporation. All rights reserved.
+
+
 #include "NvBlastExtSerialization.h"
-#include "BlastSerialization.h"
-#include <memory>
-#include "PxPhysicsVersion.h"
-#include "PxConvexMeshGeometryDTO.h"
-#include "NvBlastExtDefs.h"
+#include "NvBlastExtLlSerialization.h"
+#include "NvBlastHashMap.h"
+#include "NvBlastExtSerializationInternal.h"
 
 
-// This is terrible.
-physx::PxPhysics* g_Physics = nullptr;
-
-
-std::shared_ptr<physx::PxCooking> getCooking()
+namespace Nv
 {
-	physx::PxCookingParams cookingParams(g_Physics->getTolerancesScale());
-	cookingParams.buildGPUData = true;
+namespace Blast
+{
 
-	std::shared_ptr<physx::PxCooking> m_Cooking = std::shared_ptr<physx::PxCooking>(PxCreateCooking(PX_PHYSICS_VERSION, g_Physics->getFoundation(), cookingParams), [=](physx::PxCooking* cooking)
+class ExtSerializationImpl : public ExtSerializationInternal
+{
+public:
+	// Default buffer provider
+	class AllocBufferProvider : public ExtSerialization::BufferProvider
 	{
-		cooking->release();
-	});
+	public:
+		virtual void*	requestBuffer(size_t size) override;
+	};
 
-	NVBLASTEXT_CHECK_ERROR(m_Cooking, "Error: failed to create PhysX Cooking\n", return nullptr);
 
-	return m_Cooking;
+	ExtSerializationImpl();
+	~ExtSerializationImpl();
+
+	// ExtSerialization interface begin
+	virtual bool			setSerializationEncoding(uint32_t encodingID) override;
+	virtual uint32_t		getSerializationEncoding() const override;
+
+	virtual void			setBufferProvider(BufferProvider* bufferProvider) override;
+
+	virtual bool			peekHeader(uint32_t* objectTypeID, uint32_t* encodingID, uint64_t* dataSize, const void* buffer, uint64_t bufferSize) override;
+	virtual const void*		skipObject(uint64_t& bufferSize, const void* buffer) override;
+
+	virtual void*			deserializeFromBuffer(const void* buffer, uint64_t size, uint32_t* objectTypeIDPtr = nullptr) override;
+	virtual uint64_t		serializeIntoBuffer(void*& buffer, const void* object, uint32_t objectTypeID) override;
+
+	virtual void			release() override;
+	// ExtSerialization interface end
+
+	// ExtSerializationInternal interface begin
+	virtual bool			registerSerializer(ExtSerializer& serializer) override;
+	virtual bool			unregisterSerializer(ExtSerializer& serializer) override;
+
+	virtual ExtSerializer*	findSerializer(uint32_t objectTypeID, uint32_t encodingID) override;
+	// ExtSerializationInternal interface end
+
+private:
+	char*					writeHeaderIntoBuffer(char* buffer, uint64_t bufferSize, uint32_t objectTypeID, uint32_t encodingID, uint64_t dataSize) const;
+	const char*				readHeaderFromBuffer(uint32_t* objectTypeID, uint32_t* encodingID, uint64_t* dataSize, const char* buffer, uint64_t bufferSize) const;
+
+	//// Static data ////
+	static const char*						s_identifier;
+	static const char*						s_version;
+	static AllocBufferProvider				s_defaultBufferProvider;
+
+	//// Member data ////
+	HashMap<uint64_t, ExtSerializer*>::type	m_serializers;
+	uint32_t								m_serializationEncoding;
+	BufferProvider*							m_bufferProvider;
+};
+
+
+//////// ExtSerializationImpl static member variables ////////
+
+/** Module identifying header.  This should never change. */
+const char* ExtSerializationImpl::s_identifier = "NVidia(r) GameWorks Blast(tm) v.";
+
+const char* ExtSerializationImpl::s_version = "1";
+
+ExtSerializationImpl::AllocBufferProvider	ExtSerializationImpl::s_defaultBufferProvider;
+
+
+//////// Local utility functions ////////
+
+static NV_INLINE uint64_t generateKey(uint32_t objectTypeID, uint32_t encodingID)
+{
+	return static_cast<uint64_t>(encodingID) << 32 | static_cast<uint64_t>(objectTypeID);
 }
 
 
-extern "C"
+static NV_INLINE uint64_t generateKey(const ExtSerializer& serializer)
 {
-	NVBLAST_API void setPhysXSDK(physx::PxPhysics* physXSDK)
-	{
-		g_Physics = physXSDK;
-	}
-
-	NVBLAST_API NvBlastAsset* deserializeAsset(const unsigned char* input, uint32_t size)
-	{
-		return Nv::Blast::BlastSerialization<Nv::Blast::Asset, Nv::Blast::Serialization::Asset::Reader, Nv::Blast::Serialization::Asset::Builder>::deserialize(input, size);
-	}
-
-	NVBLAST_API NvBlastAsset* deserializeAssetFromStream(std::istream &inputStream)
-	{
-		return Nv::Blast::BlastSerialization<Nv::Blast::Asset, Nv::Blast::Serialization::Asset::Reader, Nv::Blast::Serialization::Asset::Builder>::deserializeFromStream(inputStream);
-	}
-	
-	NVBLAST_API bool serializeAssetIntoStream(const NvBlastAsset *asset, std::ostream &outputStream)
-	{
-		return Nv::Blast::BlastSerialization<Nv::Blast::Asset, Nv::Blast::Serialization::Asset::Reader, Nv::Blast::Serialization::Asset::Builder>::serializeIntoStream(reinterpret_cast<const Nv::Blast::Asset *>(asset), outputStream);
-	}
-
-	NVBLAST_API bool serializeAssetIntoNewBuffer(const NvBlastAsset *asset, unsigned char **outBuffer, uint32_t &outSize)
-	{
-		return Nv::Blast::BlastSerialization<Nv::Blast::Asset, Nv::Blast::Serialization::Asset::Reader, Nv::Blast::Serialization::Asset::Builder>::serializeIntoNewBuffer(reinterpret_cast<const Nv::Blast::Asset *>(asset), outBuffer, outSize);
-	}
-
-	NVBLAST_API bool serializeAssetIntoExistingBuffer(const NvBlastAsset *asset, unsigned char *buffer, uint32_t maxSize, uint32_t &usedSize)
-	{
-		return Nv::Blast::BlastSerialization<Nv::Blast::Asset, Nv::Blast::Serialization::Asset::Reader, Nv::Blast::Serialization::Asset::Builder>::serializeIntoExistingBuffer(reinterpret_cast<const Nv::Blast::Asset *>(asset), buffer, maxSize, usedSize);
-	}
-
-	//////////////////////////////////////////////////////////////////////////
-	// TkAsset
-	//////////////////////////////////////////////////////////////////////////
-
-	NVBLAST_API Nv::Blast::TkAsset* deserializeTkAsset(const unsigned char* input, uint32_t size)
-	{
-		return Nv::Blast::BlastSerialization<Nv::Blast::TkAsset, Nv::Blast::Serialization::TkAsset::Reader, Nv::Blast::Serialization::TkAsset::Builder>::deserialize(input, size);
-	}
-
-	NVBLAST_API Nv::Blast::TkAsset* deserializeTkAssetFromStream(std::istream &inputStream)
-	{
-		return Nv::Blast::BlastSerialization<Nv::Blast::TkAsset, Nv::Blast::Serialization::TkAsset::Reader, Nv::Blast::Serialization::TkAsset::Builder>::deserializeFromStream(inputStream);
-	}
-
-	NVBLAST_API bool serializeTkAssetIntoStream(const Nv::Blast::TkAsset *asset, std::ostream &outputStream)
-	{
-		return Nv::Blast::BlastSerialization<Nv::Blast::TkAsset, Nv::Blast::Serialization::TkAsset::Reader, Nv::Blast::Serialization::TkAsset::Builder>::serializeIntoStream(reinterpret_cast<const Nv::Blast::TkAsset *>(asset), outputStream);
-	}
-
-	NVBLAST_API bool serializeTkAssetIntoNewBuffer(const Nv::Blast::TkAsset *asset, unsigned char **outBuffer, uint32_t &outSize)
-	{
-		return Nv::Blast::BlastSerialization<Nv::Blast::TkAsset, Nv::Blast::Serialization::TkAsset::Reader, Nv::Blast::Serialization::TkAsset::Builder>::serializeIntoNewBuffer(reinterpret_cast<const Nv::Blast::TkAsset *>(asset), outBuffer, outSize);
-	}
-
-	NVBLAST_API bool serializeTkAssetIntoExistingBuffer(const Nv::Blast::TkAsset *asset, unsigned char *buffer, uint32_t maxSize, uint32_t &usedSize)
-	{
-		return Nv::Blast::BlastSerialization<Nv::Blast::TkAsset, Nv::Blast::Serialization::TkAsset::Reader, Nv::Blast::Serialization::TkAsset::Builder>::serializeIntoExistingBuffer(reinterpret_cast<const Nv::Blast::TkAsset *>(asset), buffer, maxSize, usedSize);
-	}
-
-	//////////////////////////////////////////////////////////////////////////
-	// ExtPxAsset
-	//////////////////////////////////////////////////////////////////////////
-
-	NVBLAST_API Nv::Blast::ExtPxAsset* deserializeExtPxAsset(const unsigned char* input, uint32_t size)
-	{
-		NVBLAST_ASSERT(g_Physics != nullptr);
-
-		return Nv::Blast::BlastSerialization<Nv::Blast::ExtPxAsset, Nv::Blast::Serialization::ExtPxAsset::Reader, Nv::Blast::Serialization::ExtPxAsset::Builder>::deserialize(input, size);
-	}
-
-	NVBLAST_API Nv::Blast::ExtPxAsset* deserializeExtPxAssetFromStream(std::istream &inputStream)
-	{
-		NVBLAST_ASSERT(g_Physics != nullptr);
-
-		return Nv::Blast::BlastSerialization<Nv::Blast::ExtPxAsset, Nv::Blast::Serialization::ExtPxAsset::Reader, Nv::Blast::Serialization::ExtPxAsset::Builder>::deserializeFromStream(inputStream);
-	}
-
-	NVBLAST_API bool serializeExtPxAssetIntoStream(const Nv::Blast::ExtPxAsset *asset, std::ostream &outputStream)
-	{
-		NVBLAST_ASSERT(g_Physics != nullptr);
-
-		auto cooking = getCooking();
-
-		PxConvexMeshGeometryDTO::Cooking = cooking.get();
-		PxConvexMeshGeometryDTO::Physics = g_Physics;
-
-		return Nv::Blast::BlastSerialization<Nv::Blast::ExtPxAsset, Nv::Blast::Serialization::ExtPxAsset::Reader, Nv::Blast::Serialization::ExtPxAsset::Builder>::serializeIntoStream(reinterpret_cast<const Nv::Blast::ExtPxAsset *>(asset), outputStream);
-	}
-
-	NVBLAST_API bool serializeExtPxAssetIntoNewBuffer(const Nv::Blast::ExtPxAsset *asset, unsigned char **outBuffer, uint32_t &outSize)
-	{
-		NVBLAST_ASSERT(g_Physics != nullptr);
-
-		auto cooking = getCooking();
-
-		PxConvexMeshGeometryDTO::Cooking = cooking.get();
-		PxConvexMeshGeometryDTO::Physics = g_Physics;
-
-		return Nv::Blast::BlastSerialization<Nv::Blast::ExtPxAsset, Nv::Blast::Serialization::ExtPxAsset::Reader, Nv::Blast::Serialization::ExtPxAsset::Builder>::serializeIntoNewBuffer(reinterpret_cast<const Nv::Blast::ExtPxAsset *>(asset), outBuffer, outSize);
-	}
-
-	NVBLAST_API bool serializeExtPxAssetIntoExistingBuffer(const Nv::Blast::ExtPxAsset *asset, unsigned char *buffer, uint32_t maxSize, uint32_t &usedSize)
-	{
-		NVBLAST_ASSERT(g_Physics != nullptr);
-
-		auto cooking = getCooking();
-
-		PxConvexMeshGeometryDTO::Cooking = cooking.get();
-		PxConvexMeshGeometryDTO::Physics = g_Physics;
-
-		return Nv::Blast::BlastSerialization<Nv::Blast::ExtPxAsset, Nv::Blast::Serialization::ExtPxAsset::Reader, Nv::Blast::Serialization::ExtPxAsset::Builder>::serializeIntoExistingBuffer(reinterpret_cast<const Nv::Blast::ExtPxAsset *>(asset), buffer, maxSize, usedSize);
-	}
-
-
+	return generateKey(serializer.getObjectTypeID(), serializer.getEncodingID());
 }
 
+
+static NV_INLINE void writeIDToBuffer(char* buffer, uint32_t id)
+{
+	for (int i = 0; i < 4; ++i, id >>= 8)
+	{
+		*buffer++ = static_cast<char>(id & 0xFF);
+	}
+}
+
+
+static NV_INLINE uint32_t readIDFromBuffer(const char* buffer)
+{
+	return NVBLAST_FOURCC(buffer[0], buffer[1], buffer[2], buffer[3]);
+}
+
+
+static NV_INLINE void writeU64InHexToBuffer(char* buffer, uint64_t val)
+{
+	for (char* curr = buffer + 16; curr-- > buffer; val >>= 4)
+	{
+		*curr = "0123456789ABCDEF"[val & 0xF];
+	}
+}
+
+
+static NV_INLINE uint64_t readU64InHexFromBuffer(const char* buffer)
+{
+	uint64_t val = 0;
+	for (const char* curr = buffer; curr < buffer + 16; ++curr)
+	{
+		const char c = *curr;
+		const char msn = c >> 4;
+		const char mask = ((88 >> msn) & 1) - 1;
+		const unsigned char digit = "\x0\x1\x2\x3\x4\x5\x6\x7\x8\x9\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xA\xB\xC\xD\xE\xF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"[((msn - 3) & 1) << 4 | (c & 0xF)] | mask;
+		if (digit == 0xFF)
+		{
+			return 0;	//	Not a hexidecimal digit
+		}
+		val = val << 4 | digit;
+	}
+	return val;
+}
+
+
+//////// ExtSerialization member functions ////////
+
+ExtSerializationImpl::ExtSerializationImpl() : m_serializationEncoding(EncodingID::CapnProtoBinary), m_bufferProvider(&s_defaultBufferProvider)
+{
+}
+
+
+ExtSerializationImpl::~ExtSerializationImpl()
+{
+	// Release and remove all registered serializers
+	auto it = m_serializers.getEraseIterator();
+	while (auto entry = it.eraseCurrentGetNext(true))
+	{
+		entry->second->release();
+	}
+}
+
+
+char* ExtSerializationImpl::writeHeaderIntoBuffer(char* buffer, uint64_t bufferSize, uint32_t objectTypeID, uint32_t encodingID, uint64_t dataSize) const
+{
+	if (bufferSize < HeaderSize)
+	{
+		return nullptr;
+	}
+
+	char* stop = buffer + HeaderSize;
+
+	size_t versionLen = strlen(s_version);
+	if (versionLen > 63)
+	{
+		versionLen = 63;
+	}
+
+	memset(buffer, ' ', HeaderSize);
+	memcpy(buffer, s_identifier, 32);			buffer += 32;
+	memcpy(buffer, s_version, versionLen);		buffer += 64;
+	writeIDToBuffer(buffer, objectTypeID);		buffer += 5;
+	writeIDToBuffer(buffer, encodingID);		buffer += 5;
+	writeU64InHexToBuffer(buffer, dataSize);	buffer += 16;
+	*(stop - 1) = '\n';
+
+	return stop;
+}
+
+
+const char* ExtSerializationImpl::readHeaderFromBuffer(uint32_t* objectTypeID, uint32_t* encodingID, uint64_t* dataSize, const char* buffer, uint64_t bufferSize) const
+{
+	if (bufferSize < HeaderSize)
+	{
+		NVBLAST_LOG_ERROR("ExtSerializationImpl::readHeaderFromBuffer: header terminator not found.");
+		return nullptr;
+	}
+
+	const char* stop = buffer + HeaderSize;
+
+	if (memcmp(buffer, s_identifier, 32))
+	{
+		NVBLAST_LOG_ERROR("ExtSerializationImpl::readHeaderFromBuffer: file identifier does not match expected value.");
+		return nullptr;
+	}
+	buffer += 32;
+
+	const char* s = strchr(buffer, ' ');
+	if (s == nullptr)
+	{
+		NVBLAST_LOG_ERROR("ExtSerializationImpl::readHeaderFromBuffer: file format error reading serializer library version.");
+	}
+	if (memcmp(buffer, s_version, s - buffer))
+	{
+		NVBLAST_LOG_ERROR("ExtSerializationImpl::readHeaderFromBuffer: file version does not match serializer library version.");
+		return nullptr;
+	}
+	buffer += 64;
+
+	if (objectTypeID != nullptr)
+	{
+		*objectTypeID = readIDFromBuffer(buffer);
+	}
+	buffer += 5;
+
+	if (encodingID != nullptr)
+	{
+		*encodingID = readIDFromBuffer(buffer);
+	}
+	buffer += 5;
+
+	if (dataSize != nullptr)
+	{
+		*dataSize = readU64InHexFromBuffer(buffer);
+	}
+	buffer += 16;
+
+	return stop;
+}
+
+
+bool ExtSerializationImpl::registerSerializer(ExtSerializer& serializer)
+{
+	return m_serializers.insert(generateKey(serializer), &serializer);
+}
+
+
+bool ExtSerializationImpl::unregisterSerializer(ExtSerializer& serializer)
+{
+	const uint64_t key = generateKey(serializer);
+	const auto entry = m_serializers.find(key);
+	if (entry == nullptr)
+	{
+		return false;
+	}
+	entry->second->release();
+	return m_serializers.erase(key);
+}
+
+
+ExtSerializer* ExtSerializationImpl::findSerializer(uint32_t objectTypeID, uint32_t encodingID)
+{
+	auto entry = m_serializers.find(generateKey(objectTypeID, encodingID));
+	return entry != nullptr ? entry->second : nullptr;
+}
+
+
+bool ExtSerializationImpl::setSerializationEncoding(uint32_t encodingID)
+{
+	m_serializationEncoding = encodingID;
+
+	return true;
+}
+
+
+uint32_t ExtSerializationImpl::getSerializationEncoding() const
+{
+	return m_serializationEncoding;
+}
+
+
+void ExtSerializationImpl::setBufferProvider(BufferProvider* bufferProvider)
+{
+	m_bufferProvider = bufferProvider != nullptr ? bufferProvider : &s_defaultBufferProvider;
+}
+
+
+bool ExtSerializationImpl::peekHeader(uint32_t* objectTypeID, uint32_t* encodingID, uint64_t* dataSize, const void* buffer, uint64_t bufferSize)
+{
+	return nullptr != readHeaderFromBuffer(objectTypeID, encodingID, dataSize, reinterpret_cast<const char*>(buffer), bufferSize);
+}
+
+
+const void* ExtSerializationImpl::skipObject(uint64_t& bufferSize, const void* buffer)
+{
+	uint64_t dataSize;
+	const char* next = readHeaderFromBuffer(nullptr, nullptr, &dataSize, static_cast<const char*>(buffer), bufferSize);
+	if (next == nullptr)
+	{
+		return nullptr;
+	}
+	next += dataSize;
+	const uint64_t skipSize = next - static_cast<const char*>(buffer);
+	NVBLAST_CHECK_ERROR(skipSize <= bufferSize, "Object size in buffer is too large for given buffer size.", return nullptr);
+	bufferSize -= skipSize;
+	return next;
+}
+
+
+void* ExtSerializationImpl::deserializeFromBuffer(const void* buffer, uint64_t bufferSize, uint32_t* objectTypeIDPtr)
+{
+	uint32_t objectTypeID;
+	uint32_t encodingID;
+	uint64_t dataSize;
+	void* result = nullptr;
+
+	buffer = readHeaderFromBuffer(&objectTypeID, &encodingID, &dataSize, reinterpret_cast<const char*>(buffer), bufferSize);
+	if (buffer != nullptr)
+	{
+		auto entry = m_serializers.find(generateKey(objectTypeID, encodingID));
+		if (entry != nullptr && entry->second != nullptr)
+		{
+			result = entry->second->deserializeFromBuffer(buffer, dataSize);
+		}
+	}
+
+	if (objectTypeIDPtr != nullptr)
+	{
+		*objectTypeIDPtr = result != nullptr ? objectTypeID : 0;
+	}
+
+	return result;
+}
+
+
+uint64_t ExtSerializationImpl::serializeIntoBuffer(void*& buffer, const void* object, uint32_t objectTypeID)
+{
+	if (!m_serializationEncoding)
+	{
+		NVBLAST_LOG_ERROR("ExtSerializationImpl::serializeIntoBuffer: no serialization encoding has been set.");
+		return false;	// No encoding available
+	}
+
+	auto entry = m_serializers.find(generateKey(objectTypeID, m_serializationEncoding));
+	if (entry == nullptr || entry->second == nullptr)
+	{
+		return false;
+	}
+
+	const uint64_t size = entry->second->serializeIntoBuffer(buffer, *m_bufferProvider, object, HeaderSize);
+	if (size < HeaderSize)
+	{
+		NVBLAST_LOG_ERROR("ExtSerializationImpl::serializeIntoBuffer: failed to write data to buffer.");
+		return 0;
+	}
+
+	writeHeaderIntoBuffer(reinterpret_cast<char*>(buffer), HeaderSize, objectTypeID, m_serializationEncoding, size - HeaderSize);
+
+	return size;
+}
+
+
+void ExtSerializationImpl::release()
+{
+	NVBLAST_DELETE(this, ExtSerializationImpl);
+}
+
+
+//////// ExtSerializationImpl::AllocBufferProvider member functions ////////
+
+void* ExtSerializationImpl::AllocBufferProvider::requestBuffer(size_t size)
+{
+	return NVBLAST_ALLOC(size);
+}
+
+}	// namespace Blast
+}	// namespace Nv
+
+
+Nv::Blast::ExtSerialization* NvBlastExtSerializationCreate()
+{
+	Nv::Blast::ExtSerializationImpl* serialization = NVBLAST_NEW(Nv::Blast::ExtSerializationImpl) ();
+
+	// Automatically load LL serializers
+	NvBlastExtLlSerializerLoadSet(*serialization);
+
+	return serialization;
+}

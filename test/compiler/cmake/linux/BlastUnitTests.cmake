@@ -22,3 +22,8 @@ SET(BLASTUNITTESTS_PLATFORM_LINKED_LIBS
     -lpthread
     -lm
 )
+
+IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	#Required to link against the Google Test binaries in pacman
+	SET(BLASTUNITTESTS_PLATFORM_COMPILE_OPTIONS "-D_GLIBCXX_USE_CXX11_ABI=0")
+ENDIF()

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XPJ version="4">
+
+<template name="commonBase">
+	<FloatingPointModel>Fast</FloatingPointModel>
+	<ExceptionHandling>Async</ExceptionHandling>
+	<WarningLevel>3</WarningLevel>
+	<DebugInformationFormat>Zi</DebugInformationFormat>
+	<GenerateDebugInformation>true</GenerateDebugInformation>
+	<CFlags>
+	</CFlags>
+	<LFlags>
+		/SUBSYSTEM:WINDOWS
+		/NOLOGO
+	</LFlags>
+	<Preprocessor type="define">
+		UNICODE
+		QT_DLL
+		QT_CORE_LIB
+		QT_GUI_LIB
+		QT_XML_LIB
+	</Preprocessor>
+	<SearchPaths root="" type="header">		
+		..\..\source
+		${env:QTDIR}/../include
+		.\GeneratedFiles
+		.\GeneratedFiles\$(ConfigurationName)
+	</SearchPaths>
+
+	<SearchPaths root="" type="library">
+		$(OutDir)
+	</SearchPaths>
+	<Libraries>
+	</Libraries>
+</template>
+
+<template name="debugBase">
+	<Preprocessor type="define">
+		DEBUG
+		_DEBUG
+	</Preprocessor>
+	<RuntimeLibrary>3</RuntimeLibrary>
+	<Optimization>0</Optimization>
+	<!--Optimization 0=disable, 1=MinSpace, 2=MaxSpeed, 3=full -->
+	<WholeProgramOptimization>NoWholeProgramOptimization</WholeProgramOptimization>
+	<LFlags>
+	</LFlags>
+	<Libraries>
+		qtmaind.lib
+		Qt5Cored.lib
+		Qt5Guid.lib
+		Qt5Widgetsd.lib
+		Qt5Xmld.lib
+	</Libraries>
+</template>
+
+<template name="releaseBase">
+	<Preprocessor type="define">
+		QT_NO_DEBUG
+		NDEBUG
+	</Preprocessor>
+	<RuntimeLibrary>2</RuntimeLibrary>
+	<Optimization>2</Optimization>
+	<!--Optimization 0=disable, 1=MinSpace, 2=MaxSpeed, 3=full -->
+	<WholeProgramOptimization>UseLinkTimeCodeGeneration</WholeProgramOptimization>
+	<LFlags>
+	</LFlags>
+	<Libraries>
+		qtmain.lib
+		Qt5Core.lib
+		Qt5Gui.lib
+		Qt5Widgets.lib
+		Qt5Xml.lib
+	</Libraries>
+</template>
+
+<template name="win32Base">
+	<apply-template name="commonBase"/>
+	<Preprocessor type="define">
+		WIN32
+	</Preprocessor>
+	<SearchPaths root="" type="library">
+		$(OutDir)
+		${env:QTDIR}/x86/lib
+	</SearchPaths>
+</template>
+
+<template name="win64Base">
+	<apply-template name="commonBase"/>
+	<Preprocessor type="define">
+		_WIN64
+		WIN64
+	</Preprocessor>
+	<SearchPaths root="" type="library">
+		$(OutDir)
+		${env:QTDIR}/x64/lib
+	</SearchPaths>
+</template>
+	
+<Project name="CurveEditor">
+<Export platform="multiple">..\${env:VS_STRING}</Export>
+
+<Target name="CurveEditorTestApp">
+	<Dependencies type="link">
+		CurveEditor
+	</Dependencies>
+	<Preprocessor type="define">
+	</Preprocessor>
+	<Configuration name="default" type="exe" show="false">
+		<OutDir>..\..\..\..\bin\${env:VC_VERSION}win$(PlatformArchitecture)</OutDir>
+	    <INTDIR>..\..\..\..\obj\${env:VC_VERSION}win$(PlatformArchitecture)\$(Configuration)</INTDIR>
+	</Configuration>
+
+	<Configuration name="Debug" platform="Win32">
+		<apply-template name="win32Base"/>
+		<apply-template name="debugBase"/>
+	    <OutFile>$(ProjectName).win32.d.exe</OutFile>
+		<SearchPaths root="" type="library">
+		</SearchPaths>
+		<Libraries>
+			CurveEditor.win32.d.lib
+		</Libraries>
+	</Configuration>
+
+	<Configuration name="Debug" platform="win64">
+		<apply-template name="win64Base"/>
+		<apply-template name="debugBase"/>
+	    <OutFile>$(ProjectName).win64.d.exe</OutFile>
+		<SearchPaths root="" type="library">
+		</SearchPaths>
+		<Libraries>
+			CurveEditor.win64.d.lib
+		</Libraries>
+	</Configuration>
+
+	<Configuration name="Release" platform="Win32">
+		<apply-template name="win32Base"/>
+		<apply-template name="releaseBase"/>
+	    <OutFile>$(ProjectName).win32.exe</OutFile>
+		<SearchPaths root="" type="library">
+		</SearchPaths>
+		<Libraries>
+			CurveEditor.win32.lib
+		</Libraries>
+	</Configuration>
+
+	<Configuration name="Release" platform="win64">
+		<apply-template name="win64Base"/>
+		<apply-template name="releaseBase"/>
+	    <OutFile>$(ProjectName).win64.exe</OutFile>
+		<SearchPaths root="" type="library">
+		</SearchPaths>
+		<Libraries>
+			CurveEditor.win64.lib
+		</Libraries>
+	</Configuration>
+
+	<SearchPaths root="" type="header">
+		..\Generated\CurveEditorTestApp\ui
+		..\Generated\CurveEditorTestApp\$(PlatformName)
+	</SearchPaths>
+	
+	<Files name="App\Form Files" root="..\..\source\GraphEditorTestApp">
+		CurveEditorTestApp.ui
+	</Files>
+	
+	<Files name="App\Window" root="..\..\source\GraphEditorTestApp">
+		CurveEditorTestApp.cpp
+		CurveEditorTestApp.h
+	</Files>
+	
+	<Files name="App" root="..\..\source\GraphEditorTestApp">
+		main.cpp
+	</Files>
+	
+	<Files name="Generated" root="..\Generated\CurveEditorTestApp">
+		ui/*.h
+		moc/*.cpp
+		qrc/*.cpp
+	</Files>
+	
+	<Files name="Resource Files" root="..\..\source\GraphEditorTestApp">
+		CurveEditorTestApp.qrc
+	</Files>
+	
+	<PostBuildEvent>
+		CALL ..\script\CurveEditor-PostBuild.bat $(OutDir) $(Platform) $(Configuration) ${env:QTDIR}
+	</PostBuildEvent>
+</Target>
+
+<Target name="CurveEditor">
+	<Libraries>
+	</Libraries>
+	<Configuration name="default" type="dll" show="false">
+		<OutDir>..\..\..\..\bin\${env:VC_VERSION}win$(PlatformArchitecture)</OutDir>
+	    <INTDIR>..\..\..\..\obj\${env:VC_VERSION}win$(PlatformArchitecture)\$(Configuration)</INTDIR>
+		<Preprocessor type="define">
+			CURVEEDITOR_LIB
+		</Preprocessor>
+	</Configuration>
+
+	<Configuration name="Debug" platform="Win32">
+		<apply-template name="win32Base"/>
+		<apply-template name="debugBase"/>
+	    <OutFile>$(ProjectName).win32.d.dll</OutFile>
+		<SearchPaths root="" type="library">
+		</SearchPaths>
+	</Configuration>
+
+	<Configuration name="Debug" platform="win64">
+		<apply-template name="win64Base"/>
+		<apply-template name="debugBase"/>
+	    <OutFile>$(ProjectName).win64.d.dll</OutFile>
+		<SearchPaths root="" type="library">
+		</SearchPaths>
+	</Configuration>
+
+	<Configuration name="Release" platform="Win32">
+		<apply-template name="win32Base"/>
+		<apply-template name="releaseBase"/>
+	    <OutFile>$(ProjectName).win32.dll</OutFile>
+		<SearchPaths root="" type="library">
+		</SearchPaths>
+	</Configuration>
+
+	<Configuration name="Release" platform="win64">
+		<apply-template name="win64Base"/>
+		<apply-template name="releaseBase"/>
+	    <OutFile>$(ProjectName).win64.dll</OutFile>
+		<SearchPaths root="" type="library">
+		</SearchPaths>
+	</Configuration>
+
+	<SearchPaths root="" type="header">
+		..\Generated\CurveEditor\UI
+		..\Generated\CurveEditor\$(PlatformName)
+	</SearchPaths>
+	
+	<Files name="Internal" root="..\..\source\Internal">
+		Curve/*.h
+		Curve/*.cpp
+		UI/*.ui
+		UI/Resources/CurveEditor.qrc
+		Window/*.h
+		Window/*.cpp
+	</Files>
+	
+	<Files name="Public" root="..\..\source">
+		*.h
+	</Files>
+	
+	<Files name="Generated" root="..\Generated\CurveEditor">
+		ui/*.h
+		moc/*.cpp
+		qrc/*.cpp
+	</Files>
+	
+</Target>
+
+</Project>
+
+</XPJ>

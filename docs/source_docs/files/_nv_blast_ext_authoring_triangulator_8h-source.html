@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/extensions/authoring/source/NvBlastExtAuthoringTriangulator.h Source File</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/extensions/authoring/source/NvBlastExtAuthoringTriangulator.h Source File</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -35,201 +35,112 @@
       <li><a href="globals.html"><span>File&nbsp;Members</span></a></li>
     </ul>
   </div>
-<h1>sdk/extensions/authoring/source/NvBlastExtAuthoringTriangulator.h</h1><a href="_nv_blast_ext_authoring_triangulator_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment">* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.</span>
-<a name="l00003"></a>00003 <span class="comment">*</span>
-<a name="l00004"></a>00004 <span class="comment">* NVIDIA CORPORATION and its licensors retain all intellectual property</span>
-<a name="l00005"></a>00005 <span class="comment">* and proprietary rights in and to this software, related documentation</span>
-<a name="l00006"></a>00006 <span class="comment">* and any modifications thereto.  Any use, reproduction, disclosure or</span>
-<a name="l00007"></a>00007 <span class="comment">* distribution of this software and related documentation without an express</span>
-<a name="l00008"></a>00008 <span class="comment">* license agreement from NVIDIA CORPORATION is strictly prohibited.</span>
-<a name="l00009"></a>00009 <span class="comment">*/</span>
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef NVBLASTEXTAUTHORINGTRIANGULATOR_H</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTEXTAUTHORINGTRIANGULATOR_H</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
-<a name="l00014"></a>00014 
-<a name="l00015"></a>00015 <span class="preprocessor">#include &lt;vector&gt;</span>
-<a name="l00016"></a>00016 <span class="preprocessor">#include &lt;map&gt;</span>
-<a name="l00017"></a>00017 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_types_8h.html">NvBlastExtAuthoringTypes.h</a>"</span>
-<a name="l00018"></a>00018 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_mesh_8h.html">NvBlastExtAuthoringMesh.h</a>"</span>
-<a name="l00019"></a>00019 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html">NvBlastExtAuthoringInternalCommon.h</a>"</span>
-<a name="l00020"></a>00020 
-<a name="l00021"></a>00021 <span class="keyword">namespace </span>Nv
-<a name="l00022"></a>00022 {
-<a name="l00023"></a>00023 <span class="keyword">namespace </span>Blast
-<a name="l00024"></a>00024 {
-<a name="l00025"></a>00025 <span class="keyword">class </span>SimplexNoise;
-<a name="l00026"></a>00026 
-<a name="l00030"></a><a class="code" href="struct_nv_1_1_blast_1_1_vrt_comp.html">00030</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_vrt_comp.html">VrtComp</a>
-<a name="l00031"></a>00031 {
-<a name="l00032"></a>00032     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_vrt_comp.html#be3e16832129cd98f0d5ad9cf08822ed">operator()</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; a, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; b) <span class="keyword">const</span>;
-<a name="l00033"></a>00033 };
-<a name="l00034"></a>00034 
-<a name="l00038"></a><a class="code" href="struct_nv_1_1_blast_1_1_vrt_position_comparator.html">00038</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_vrt_position_comparator.html">VrtPositionComparator</a>
-<a name="l00039"></a>00039 {
-<a name="l00040"></a>00040     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_vrt_position_comparator.html#3a1e523763ebadc92987220e64af6ed3">operator()</a>(<span class="keyword">const</span> physx::PxVec3&amp; a, <span class="keyword">const</span> physx::PxVec3&amp; b) <span class="keyword">const</span>;
-<a name="l00041"></a>00041 };
-<a name="l00042"></a>00042 
-<a name="l00046"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html">00046</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html">EdgeToTriangles</a>
-<a name="l00047"></a>00047 {
-<a name="l00048"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#8352a92eb1d63043f23353a142dfeaf0">00048</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#8352a92eb1d63043f23353a142dfeaf0">tr</a>[2];
-<a name="l00049"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#c789134fae1cf431cf298dc71a7dc4c3">00049</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#c789134fae1cf431cf298dc71a7dc4c3">c</a>;
-<a name="l00050"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#f8461a7114523bdc114624d99e76daa7">00050</a>     <a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#f8461a7114523bdc114624d99e76daa7">EdgeToTriangles</a>()
-<a name="l00051"></a>00051     {
-<a name="l00052"></a>00052         <a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#c789134fae1cf431cf298dc71a7dc4c3">c</a> = 0;
-<a name="l00053"></a>00053     }
-<a name="l00057"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#70cb4d757a5e60e392ed88043c08664b">00057</a>     <span class="keywordtype">void</span>    <span class="keyword">add</span>(int32_t t)
-<a name="l00058"></a>00058     {
-<a name="l00059"></a>00059         <a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#8352a92eb1d63043f23353a142dfeaf0">tr</a>[<a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#c789134fae1cf431cf298dc71a7dc4c3">c</a>] = t;
-<a name="l00060"></a>00060         ++<a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#c789134fae1cf431cf298dc71a7dc4c3">c</a>;
-<a name="l00061"></a>00061     }
-<a name="l00065"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#66a5922811f503f3259cb15f92f17bd5">00065</a>     <span class="keywordtype">void</span>    <a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#66a5922811f503f3259cb15f92f17bd5">replace</a>(int32_t from, int32_t to)
-<a name="l00066"></a>00066     {
-<a name="l00067"></a>00067         <span class="keywordflow">if</span> (<a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#8352a92eb1d63043f23353a142dfeaf0">tr</a>[0] == from)
-<a name="l00068"></a>00068         {
-<a name="l00069"></a>00069             <a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#8352a92eb1d63043f23353a142dfeaf0">tr</a>[0] = to;
-<a name="l00070"></a>00070         }
-<a name="l00071"></a>00071         <span class="keywordflow">else</span>
-<a name="l00072"></a>00072         {
-<a name="l00073"></a>00073             <span class="keywordflow">if</span> (<a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#c789134fae1cf431cf298dc71a7dc4c3">c</a> == 2 &amp;&amp; <a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#8352a92eb1d63043f23353a142dfeaf0">tr</a>[1] == from)
-<a name="l00074"></a>00074             {
-<a name="l00075"></a>00075                 <a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#8352a92eb1d63043f23353a142dfeaf0">tr</a>[1] = to;
-<a name="l00076"></a>00076             }
-<a name="l00077"></a>00077         }
-<a name="l00078"></a>00078     }
-<a name="l00082"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#9089977b271562c9c59a8c164bea593b">00082</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#9089977b271562c9c59a8c164bea593b">getNot</a>(int32_t <span class="keywordtype">id</span>)
+<h1>sdk/extensions/authoring/source/NvBlastExtAuthoringTriangulator.h</h1><a href="_nv_blast_ext_authoring_triangulator_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">// This code contains NVIDIA Confidential Information and is disclosed to you</span>
+<a name="l00002"></a>00002 <span class="comment">// under a form of NVIDIA software license agreement provided separately to you.</span>
+<a name="l00003"></a>00003 <span class="comment">//</span>
+<a name="l00004"></a>00004 <span class="comment">// Notice</span>
+<a name="l00005"></a>00005 <span class="comment">// NVIDIA Corporation and its licensors retain all intellectual property and</span>
+<a name="l00006"></a>00006 <span class="comment">// proprietary rights in and to this software and related documentation and</span>
+<a name="l00007"></a>00007 <span class="comment">// any modifications thereto. Any use, reproduction, disclosure, or</span>
+<a name="l00008"></a>00008 <span class="comment">// distribution of this software and related documentation without an express</span>
+<a name="l00009"></a>00009 <span class="comment">// license agreement from NVIDIA Corporation is strictly prohibited.</span>
+<a name="l00010"></a>00010 <span class="comment">//</span>
+<a name="l00011"></a>00011 <span class="comment">// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES</span>
+<a name="l00012"></a>00012 <span class="comment">// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO</span>
+<a name="l00013"></a>00013 <span class="comment">// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,</span>
+<a name="l00014"></a>00014 <span class="comment">// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.</span>
+<a name="l00015"></a>00015 <span class="comment">//</span>
+<a name="l00016"></a>00016 <span class="comment">// Information and code furnished is believed to be accurate and reliable.</span>
+<a name="l00017"></a>00017 <span class="comment">// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such</span>
+<a name="l00018"></a>00018 <span class="comment">// information or for any infringement of patents or other rights of third parties that may</span>
+<a name="l00019"></a>00019 <span class="comment">// result from its use. No license is granted by implication or otherwise under any patent</span>
+<a name="l00020"></a>00020 <span class="comment">// or patent rights of NVIDIA Corporation. Details are subject to change without notice.</span>
+<a name="l00021"></a>00021 <span class="comment">// This code supersedes and replaces all information previously supplied.</span>
+<a name="l00022"></a>00022 <span class="comment">// NVIDIA Corporation products are not authorized for use as critical</span>
+<a name="l00023"></a>00023 <span class="comment">// components in life support devices or systems without express written approval of</span>
+<a name="l00024"></a>00024 <span class="comment">// NVIDIA Corporation.</span>
+<a name="l00025"></a>00025 <span class="comment">//</span>
+<a name="l00026"></a>00026 <span class="comment">// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.</span>
+<a name="l00027"></a>00027 
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 <span class="preprocessor">#ifndef NVBLASTEXTAUTHORINGTRIANGULATOR_H</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTEXTAUTHORINGTRIANGULATOR_H</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span>
+<a name="l00032"></a>00032 
+<a name="l00033"></a>00033 <span class="preprocessor">#include &lt;vector&gt;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &lt;map&gt;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_types_8h.html">NvBlastExtAuthoringTypes.h</a>"</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_mesh_8h.html">NvBlastExtAuthoringMesh.h</a>"</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html">NvBlastExtAuthoringInternalCommon.h</a>"</span>
+<a name="l00038"></a>00038 
+<a name="l00039"></a>00039 <span class="keyword">namespace </span>Nv
+<a name="l00040"></a>00040 {
+<a name="l00041"></a>00041 <span class="keyword">namespace </span>Blast
+<a name="l00042"></a>00042 {
+<a name="l00043"></a>00043 
+<a name="l00044"></a>00044 
+<a name="l00048"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html">00048</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html">Triangulator</a>
+<a name="l00049"></a>00049 {
+<a name="l00050"></a>00050 <span class="keyword">public</span>:
+<a name="l00055"></a>00055     <span class="keywordtype">void</span>                            <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#b7cf6608fd71c417262feec54f3ccf75">triangulate</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
+<a name="l00056"></a>00056 
+<a name="l00060"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#76e1c257449e53049c62984e1e95b44d">00060</a>     std::vector&lt;Triangle&gt;&amp;          <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#76e1c257449e53049c62984e1e95b44d">getBaseMesh</a>()
+<a name="l00061"></a>00061     {
+<a name="l00062"></a>00062         <span class="keywordflow">return</span> mBaseMeshResultTriangles;
+<a name="l00063"></a>00063     }
+<a name="l00064"></a>00064 
+<a name="l00068"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#fa48ddb045fffaded4b1ad09302a34c7">00068</a>     std::vector&lt;TriangleIndexed&gt;&amp;   <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#fa48ddb045fffaded4b1ad09302a34c7">getBaseMeshIndexed</a>()
+<a name="l00069"></a>00069     {
+<a name="l00070"></a>00070         <span class="keywordflow">return</span> mBaseMeshTriangles;
+<a name="l00071"></a>00071     }
+<a name="l00075"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#2138ec663adee80577dae6cc275b7ece">00075</a>     std::vector&lt;uint32_t&gt;&amp;          <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#2138ec663adee80577dae6cc275b7ece">getBaseMapping</a>()
+<a name="l00076"></a>00076     {
+<a name="l00077"></a>00077         <span class="keywordflow">return</span> mBaseMapping;
+<a name="l00078"></a>00078     };
+<a name="l00082"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#7de0951574f73e310626823228c0f005">00082</a>     std::vector&lt;int32_t&gt;&amp;           <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#7de0951574f73e310626823228c0f005">getPositionedMapping</a>()
 <a name="l00083"></a>00083     {
-<a name="l00084"></a>00084         <span class="keywordflow">if</span> (<a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#8352a92eb1d63043f23353a142dfeaf0">tr</a>[0] != <span class="keywordtype">id</span>)
-<a name="l00085"></a>00085         {
-<a name="l00086"></a>00086             <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#8352a92eb1d63043f23353a142dfeaf0">tr</a>[0];
-<a name="l00087"></a>00087         }
-<a name="l00088"></a>00088         <span class="keywordflow">if</span> (<a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#c789134fae1cf431cf298dc71a7dc4c3">c</a> == 2 &amp;&amp; <a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#8352a92eb1d63043f23353a142dfeaf0">tr</a>[1] != <span class="keywordtype">id</span>)
-<a name="l00089"></a>00089         {
-<a name="l00090"></a>00090             <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_to_triangles.html#8352a92eb1d63043f23353a142dfeaf0">tr</a>[1];
-<a name="l00091"></a>00091         }
-<a name="l00092"></a>00092         <span class="keywordflow">return</span> -1;
-<a name="l00093"></a>00093     }
-<a name="l00094"></a>00094 
-<a name="l00095"></a>00095 };
-<a name="l00096"></a>00096 
-<a name="l00097"></a>00097 
-<a name="l00101"></a><a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html">00101</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html">ChunkPostProcessor</a>
-<a name="l00102"></a>00102 {
-<a name="l00103"></a>00103 <span class="keyword">public</span>:
-<a name="l00107"></a><a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#0af3871e19dce2d2e575c6d9b82da8eebcf5b96a0955b1950b5500c1a5b73200">00107</a>     <span class="keyword">enum</span> <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#0af3871e19dce2d2e575c6d9b82da8ee">EdgeFlag</a>{ <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#0af3871e19dce2d2e575c6d9b82da8ee59d48d18fb4311aa710456df0e498755">INTERNAL_EDGE</a>, <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#0af3871e19dce2d2e575c6d9b82da8ee74b92bb66d88e3f2eb7b8caf9b53cd10">EXTERNAL_BORDER_EDGE</a>, <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#0af3871e19dce2d2e575c6d9b82da8ee8e763718145d3d1c65d192a0484d4073">INTERNAL_BORDER_EDGE</a>, <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#0af3871e19dce2d2e575c6d9b82da8eee78ace326038e2a93ea4371e33a94080">EXTERNAL_EDGE</a>, <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#0af3871e19dce2d2e575c6d9b82da8eebcf5b96a0955b1950b5500c1a5b73200">NONE</a> };
-<a name="l00108"></a>00108 
-<a name="l00113"></a>00113     <span class="keywordtype">void</span>                            <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#f91f2f1407e4d4c0e4af7ea361bf1762">triangulate</a>(<a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
+<a name="l00084"></a>00084         <span class="keywordflow">return</span> mPositionMappedVrt;
+<a name="l00085"></a>00085     };
+<a name="l00089"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#d99ae2011c5aee476fffd79ff9ac4672">00089</a>     uint32_t                        <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#d99ae2011c5aee476fffd79ff9ac4672">getWeldedVerticesCount</a>()
+<a name="l00090"></a>00090     {
+<a name="l00091"></a>00091         <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(mVertices.size());
+<a name="l00092"></a>00092     }   
+<a name="l00093"></a>00093 
+<a name="l00097"></a>00097     <span class="keywordtype">void</span>                            <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#a76275caaab7c2212cca640722d91ca6">reset</a>();
+<a name="l00098"></a>00098 
+<a name="l00099"></a>00099 <span class="keyword">private</span>:
+<a name="l00100"></a>00100 
+<a name="l00101"></a>00101     int32_t                         addVerticeIfNotExist(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; p);
+<a name="l00102"></a>00102     <span class="keywordtype">void</span>                            addEdgeIfValid(<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">EdgeWithParent</a>&amp; ed);
+<a name="l00103"></a>00103     
+<a name="l00104"></a>00104     <span class="comment">/* Data used before triangulation to build polygon loops*/</span>
+<a name="l00105"></a>00105 
+<a name="l00106"></a>00106     std::vector&lt;Vertex&gt;                                 mVertices;
+<a name="l00107"></a>00107     std::vector&lt;EdgeWithParent&gt;                         mBaseMeshEdges;
+<a name="l00108"></a>00108     std::map&lt;Vertex, int32_t, VrtComp&gt;                  mVertMap;
+<a name="l00109"></a>00109     std::map&lt;EdgeWithParent, int32_t, EdgeComparator&gt;   mEdgeMap;
+<a name="l00110"></a>00110     std::vector&lt;uint32_t&gt;                               mBaseMapping;
+<a name="l00111"></a>00111     std::vector&lt;int32_t&gt;                                mPositionMappedVrt;
+<a name="l00112"></a>00112     <span class="comment">/* ------------------------------------------------------------ */</span>
+<a name="l00113"></a>00113 
 <a name="l00114"></a>00114 
-<a name="l00118"></a><a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#cbb5431578ad805d94b61730dd648b43">00118</a>     std::vector&lt;Triangle&gt;&amp;          <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#cbb5431578ad805d94b61730dd648b43">getBaseMesh</a>()
-<a name="l00119"></a>00119     {
-<a name="l00120"></a>00120         <span class="keywordflow">return</span> mBaseMeshResultTriangles;
-<a name="l00121"></a>00121     }
-<a name="l00122"></a>00122 
-<a name="l00126"></a><a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#be98e222cfe331c5c6cd63d2e8ae8f4a">00126</a>     std::vector&lt;TriangleIndexed&gt;&amp;   <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#be98e222cfe331c5c6cd63d2e8ae8f4a">getBaseMeshIndexed</a>()
-<a name="l00127"></a>00127     {
-<a name="l00128"></a>00128         <span class="keywordflow">return</span> mBaseMeshTriangles;
-<a name="l00129"></a>00129     }
-<a name="l00130"></a>00130 
-<a name="l00131"></a>00131 
-<a name="l00135"></a><a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#e59f71ccb00b63eeec61f0a5cc755fd9">00135</a>     std::vector&lt;uint32_t&gt;&amp;          <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#e59f71ccb00b63eeec61f0a5cc755fd9">getBaseMapping</a>()
-<a name="l00136"></a>00136     {
-<a name="l00137"></a>00137         <span class="keywordflow">return</span> mBaseMapping;
-<a name="l00138"></a>00138     };
-<a name="l00142"></a><a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#905078333f107a5e7fe2030d4837878a">00142</a>     std::vector&lt;int32_t&gt;&amp;           <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#905078333f107a5e7fe2030d4837878a">getPositionedMapping</a>()
-<a name="l00143"></a>00143     {
-<a name="l00144"></a>00144         <span class="keywordflow">return</span> mPositionMappedVrt;
-<a name="l00145"></a>00145     };
-<a name="l00146"></a>00146 
-<a name="l00150"></a><a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#a7aee5c24068c63864086fb1485b4523">00150</a>     uint32_t                        <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#a7aee5c24068c63864086fb1485b4523">getWeldedVerticesCount</a>()
-<a name="l00151"></a>00151     {
-<a name="l00152"></a>00152         <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(mVertices.size());
-<a name="l00153"></a>00153     }   
-<a name="l00158"></a>00158     <span class="keywordtype">void</span>                            <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#244109e7846264904a58f733cdea935a">tesselateInternalSurface</a>(<span class="keywordtype">float</span> maxLen);
-<a name="l00159"></a>00159 
-<a name="l00167"></a>00167     <span class="keywordtype">void</span>                            <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#dda724526b874c4cccc5ac0786fdb19e">applyNoise</a>(<a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html">SimplexNoise</a>&amp; noise, <span class="keywordtype">float</span> falloff, int32_t relaxIterations, <span class="keywordtype">float</span> relaxFactor);
-<a name="l00168"></a>00168 
-<a name="l00172"></a><a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#09b200ae6e84b0787086e7d2c3757896">00172</a>     std::vector&lt;Triangle&gt;&amp;          <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#09b200ae6e84b0787086e7d2c3757896">getNoisyMesh</a>()
-<a name="l00173"></a>00173     {
-<a name="l00174"></a>00174         <span class="keywordflow">return</span> mTesselatedMeshResultTriangles;
-<a name="l00175"></a>00175     };
-<a name="l00176"></a>00176 
-<a name="l00180"></a>00180     <span class="keywordtype">void</span>                            <a class="code" href="class_nv_1_1_blast_1_1_chunk_post_processor.html#e0e3d01b37220b3a5e8bd8e7f7c1d707">reset</a>();
-<a name="l00181"></a>00181 
-<a name="l00182"></a>00182 <span class="keyword">private</span>:
-<a name="l00183"></a>00183 
-<a name="l00184"></a>00184     
-<a name="l00185"></a>00185 
-<a name="l00186"></a>00186     <span class="keywordtype">void</span>                            collapseEdge(int32_t <span class="keywordtype">id</span>);
-<a name="l00187"></a>00187     <span class="keywordtype">void</span>                            divideEdge(int32_t <span class="keywordtype">id</span>);
-<a name="l00188"></a>00188     <span class="keywordtype">void</span>                            updateVertEdgeInfo();
-<a name="l00189"></a>00189     <span class="keywordtype">void</span>                            updateEdgeTriangleInfo();
-<a name="l00190"></a>00190 
-<a name="l00191"></a>00191     int32_t                         addVerticeIfNotExist(<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; p);
-<a name="l00192"></a>00192     <span class="keywordtype">void</span>                            addEdgeIfValid(<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">EdgeWithParent</a>&amp; ed);
-<a name="l00193"></a>00193     
-<a name="l00194"></a>00194     <span class="comment">/* Data used before triangulation to build polygon loops*/</span>
-<a name="l00195"></a>00195 
-<a name="l00196"></a>00196     std::vector&lt;Vertex&gt;                                 mVertices;
-<a name="l00197"></a>00197     std::vector&lt;EdgeWithParent&gt;                         mBaseMeshEdges;
-<a name="l00198"></a>00198     std::map&lt;Vertex, int32_t, VrtComp&gt;                  mVertMap;
-<a name="l00199"></a>00199     std::map&lt;EdgeWithParent, int32_t, EdgeComparator&gt;   mEdgeMap;
-<a name="l00200"></a>00200     std::vector&lt;uint32_t&gt;                               mBaseMapping;
-<a name="l00201"></a>00201     
-<a name="l00202"></a>00202 
-<a name="l00203"></a>00203 
-<a name="l00207"></a>00207     <span class="keywordtype">void</span>                            prepare(<a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
-<a name="l00208"></a>00208 
-<a name="l00209"></a>00209     <span class="comment">/* ------------------------------------------------------------ */</span>
-<a name="l00210"></a>00210 
-<a name="l00211"></a>00211     <span class="comment">/* Triangulation and tesselation stage data */</span>
-<a name="l00212"></a>00212     <span class="keywordtype">bool</span>                                                isTesselated;
-<a name="l00213"></a>00213 
-<a name="l00214"></a>00214     std::map&lt;Edge,  int32_t&gt;                            mTrMeshEdgeMap;
-<a name="l00215"></a>00215     std::vector&lt;Edge&gt;                                   mTrMeshEdges;
-<a name="l00216"></a>00216     std::vector&lt;EdgeToTriangles&gt;                        mTrMeshEdToTr;
-<a name="l00217"></a>00217     std::vector&lt;int32_t&gt;                                mVertexValence;
-<a name="l00218"></a>00218     std::vector&lt;std::vector&lt;int32_t&gt; &gt;                  mVertexToTriangleMap;
-<a name="l00219"></a>00219 
-<a name="l00220"></a>00220     std::vector&lt;bool&gt;                                   mRestrictionFlag;
-<a name="l00221"></a>00221     std::vector&lt;EdgeFlag&gt;                               mEdgeFlag;
-<a name="l00222"></a>00222 
-<a name="l00223"></a>00223     std::vector&lt;float&gt;                                  mVerticesDistances;
-<a name="l00224"></a>00224     std::vector&lt;physx::PxVec3&gt;                          mVerticesNormalsSmoothed;
-<a name="l00225"></a>00225     std::vector&lt;int32_t&gt;                                mPositionMappedVrt;
-<a name="l00226"></a>00226     std::vector&lt;std::vector&lt;int32_t&gt; &gt;                  mGeometryGraph;
-<a name="l00227"></a>00227 
-<a name="l00228"></a>00228 
-<a name="l00229"></a>00229     int32_t                         addEdgeTr(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>&amp; ed);
-<a name="l00230"></a>00230     int32_t                         findEdge(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>&amp; e);
-<a name="l00231"></a>00231 
-<a name="l00232"></a>00232     <span class="keywordtype">void</span>                            prebuildEdgeFlagArray();
-<a name="l00233"></a>00233     <span class="keywordtype">void</span>                            computePositionedMapping();
-<a name="l00234"></a>00234     
-<a name="l00235"></a>00235     <span class="keywordtype">void</span>                            computeFalloffAndNormals();
-<a name="l00236"></a>00236 
-<a name="l00237"></a>00237 
-<a name="l00238"></a>00238         
-<a name="l00239"></a>00239     <span class="keywordtype">void</span>                            triangulatePolygonWithEarClipping(std::vector&lt;uint32_t&gt;&amp; inputPolygon, <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* vert, <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> dir);
-<a name="l00240"></a>00240     <span class="keywordtype">void</span>                            buildPolygonAndTriangulate(std::vector&lt;Edge&gt;&amp; edges, <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* vertices, int32_t userData);
-<a name="l00241"></a>00241     
-<a name="l00242"></a>00242     <span class="keywordtype">void</span>                            relax(int32_t iterations, <span class="keywordtype">float</span> factor, std::vector&lt;Vertex&gt;&amp; vertices);
-<a name="l00243"></a>00243     <span class="keywordtype">void</span>                            recalcNoiseDirs();
-<a name="l00244"></a>00244 
-<a name="l00245"></a>00245     std::vector&lt;TriangleIndexed&gt;                        mBaseMeshTriangles;
-<a name="l00246"></a>00246     std::vector&lt;TriangleIndexed&gt;                        mTesselatedMeshTriangles;
-<a name="l00247"></a>00247 
-<a name="l00251"></a>00251     <span class="keywordtype">void</span> prebuildTesselatedTriangles();
-<a name="l00252"></a>00252 
-<a name="l00253"></a>00253     std::vector&lt;Triangle&gt;                               mBaseMeshResultTriangles;
-<a name="l00254"></a>00254     std::vector&lt;Triangle&gt;                               mTesselatedMeshResultTriangles;
-<a name="l00255"></a>00255 };
-<a name="l00256"></a>00256 
-<a name="l00257"></a>00257 } <span class="comment">// namespace Blast</span>
-<a name="l00258"></a>00258 } <span class="comment">// namespace Nv</span>
-<a name="l00259"></a>00259 
-<a name="l00260"></a>00260 
-<a name="l00261"></a>00261 <span class="preprocessor">#endif  // ifndef NVBLASTEXTAUTHORINGTRIANGULATOR_H</span>
+<a name="l00118"></a>00118     <span class="keywordtype">void</span>                            prepare(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
+<a name="l00119"></a>00119 
+<a name="l00120"></a>00120         
+<a name="l00121"></a>00121             
+<a name="l00122"></a>00122     <span class="keywordtype">void</span>                            triangulatePolygonWithEarClipping(std::vector&lt;uint32_t&gt;&amp; inputPolygon, <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* vert, <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> dir);
+<a name="l00123"></a>00123     <span class="keywordtype">void</span>                            buildPolygonAndTriangulate(std::vector&lt;Edge&gt;&amp; edges, <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* vertices, int32_t userData, int32_t materialId, int32_t smoothingGroup);
+<a name="l00124"></a>00124     <span class="keywordtype">void</span>                            computePositionedMapping();
+<a name="l00125"></a>00125     
+<a name="l00126"></a>00126     std::vector&lt;TriangleIndexed&gt;                        mBaseMeshTriangles; 
+<a name="l00130"></a>00130     std::vector&lt;Triangle&gt;                               mBaseMeshResultTriangles;
+<a name="l00131"></a>00131 };
+<a name="l00132"></a>00132 
+<a name="l00133"></a>00133 } <span class="comment">// namespace Blast</span>
+<a name="l00134"></a>00134 } <span class="comment">// namespace Nv</span>
+<a name="l00135"></a>00135 
+<a name="l00136"></a>00136 
+<a name="l00137"></a>00137 <span class="preprocessor">#endif  // ifndef NVBLASTEXTAUTHORINGTRIANGULATOR_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

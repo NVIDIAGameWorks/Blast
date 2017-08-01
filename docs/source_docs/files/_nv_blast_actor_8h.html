@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/lowlevel/source/NvBlastActor.h File Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/lowlevel/source/NvBlastActor.h File Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -41,6 +41,8 @@
 <code>#include &quot;<a class="el" href="_nv_blast_d_link_8h-source.html">NvBlastDLink.h</a>&quot;</code><br>
 <code>#include &quot;<a class="el" href="_nv_blast_iterator_base_8h-source.html">NvBlastIteratorBase.h</a>&quot;</code><br>
 <code>#include &quot;<a class="el" href="_nv_blast_support_graph_8h-source.html">NvBlastSupportGraph.h</a>&quot;</code><br>
+<code>#include &quot;<a class="el" href="_nv_blast_family_graph_8h-source.html">NvBlastFamilyGraph.h</a>&quot;</code><br>
+<code>#include &quot;<a class="el" href="_nv_blast_preprocessor_internal_8h-source.html">NvBlastPreprocessorInternal.h</a>&quot;</code><br>
 <code>#include &lt;cstring&gt;</code><br>
 <code>#include &quot;<a class="el" href="_nv_blast_family_8h-source.html">NvBlastFamily.h</a>&quot;</code><br>
 
@@ -59,46 +61,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html">Nv::Blast</a></td></tr>
 
-<tr><td colspan="2"><br><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_actor_8h.html#a9f4338c3d15433197585f9a9c2f9d19">NvBlastActorClosestChunk</a> (const float point[4], const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
-
 </table>
-<hr><h2>Function Documentation</h2>
-<a class="anchor" name="a9f4338c3d15433197585f9a9c2f9d19"></a><!-- doxytag: member="NvBlastActor.h::NvBlastActorClosestChunk" ref="a9f4338c3d15433197585f9a9c2f9d19" args="(const float point[4], const NvBlastActor *actor, NvBlastLog logFn)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t NvBlastActorClosestChunk           </td>
-          <td>(</td>
-          <td class="paramtype">const float&nbsp;</td>
-          <td class="paramname"> <em>point</em>[4], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *&nbsp;</td>
-          <td class="paramname"> <em>actor</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td>
-          <td class="paramname"> <em>logFn</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Returns the closest chunk asset index for a supported actor. Helper functions still used in tests. Has become obsolete with introduction of chunkMap and its inverse. 
-</div>
-</div><p>
 </div>
 <!-- start footer part -->
 <div class="footer">

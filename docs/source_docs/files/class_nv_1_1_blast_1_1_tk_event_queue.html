@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::TkEventQueue Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::TkEventQueue Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -56,11 +56,11 @@
 <tr><td class="memTemplParams" nowrap colspan="2">template&lt;typename T &gt; </td></tr>
 <tr><td class="memTemplItemLeft" nowrap align="right" valign="top">T *&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_event_queue.html#191fe4b8d752f67f58db2165d7cf6672">allocData</a> ()</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_event_queue.html#34663129851c459ce867894eeef32543">dispatch</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_tk_array.html">TkArray</a>&lt; <a class="el" href="struct_nv_1_1_blast_1_1_tk_event.html">TkEvent</a> &gt;::type &amp;events) const </td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_event_queue.html#b89c263855e29dca7a660d8d3fdc83da">dispatch</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a>&lt; <a class="el" href="struct_nv_1_1_blast_1_1_tk_event.html">TkEvent</a> &gt;::type &amp;events) const </td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_event_queue.html#624660738275022a9653ccc1e823b7f1">dispatch</a> ()</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_event_queue.html#87d5232e2264fb943b0d55ccdae994fb">operator const TkArray&lt; TkEvent &gt;::type &amp;</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_event_queue.html#821d0efa74abb1d3f9b7c90e8650b81c">operator const Array&lt; TkEvent &gt;::type &amp;</a> ()</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_event_queue.html#72bcf50b0fc99b074cb23daeb3d56593">protect</a> (bool enable)</td></tr>
 
@@ -174,14 +174,14 @@ template&lt;typename T &gt; </div>
 Request storage for payload. 
 </div>
 </div><p>
-<a class="anchor" name="34663129851c459ce867894eeef32543"></a><!-- doxytag: member="Nv::Blast::TkEventQueue::dispatch" ref="34663129851c459ce867894eeef32543" args="(const TkArray&lt; TkEvent &gt;::type &amp;events) const " -->
+<a class="anchor" name="b89c263855e29dca7a660d8d3fdc83da"></a><!-- doxytag: member="Nv::Blast::TkEventQueue::dispatch" ref="b89c263855e29dca7a660d8d3fdc83da" args="(const Array&lt; TkEvent &gt;::type &amp;events) const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void Nv::Blast::TkEventQueue::dispatch           </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_tk_array.html">TkArray</a>&lt; <a class="el" href="struct_nv_1_1_blast_1_1_tk_event.html">TkEvent</a> &gt;::type &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a>&lt; <a class="el" href="struct_nv_1_1_blast_1_1_tk_event.html">TkEvent</a> &gt;::type &amp;&nbsp;</td>
           <td class="paramname"> <em>events</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td> const<code> [inline]</code></td>
@@ -213,12 +213,12 @@ Proxy function to dispatch events to this queue's listeners.
 Dispatch the stored events to the registered listeners. After dispatch, all data is invalidated. 
 </div>
 </div><p>
-<a class="anchor" name="87d5232e2264fb943b0d55ccdae994fb"></a><!-- doxytag: member="Nv::Blast::TkEventQueue::operator const TkArray&lt; TkEvent &gt;::type &amp;" ref="87d5232e2264fb943b0d55ccdae994fb" args="()" -->
+<a class="anchor" name="821d0efa74abb1d3f9b7c90e8650b81c"></a><!-- doxytag: member="Nv::Blast::TkEventQueue::operator const Array&lt; TkEvent &gt;::type &amp;" ref="821d0efa74abb1d3f9b7c90e8650b81c" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Nv::Blast::TkEventQueue::operator const <a class="el" href="struct_nv_1_1_blast_1_1_tk_array.html">TkArray</a>&lt; <a class="el" href="struct_nv_1_1_blast_1_1_tk_event.html">TkEvent</a> &gt;::type &amp;           </td>
+          <td class="memname">Nv::Blast::TkEventQueue::operator const <a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a>&lt; <a class="el" href="struct_nv_1_1_blast_1_1_tk_event.html">TkEvent</a> &gt;::type &amp;           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>

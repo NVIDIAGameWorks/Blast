@@ -1,12 +1,29 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
 
 
 #include "NvBlastTkFrameworkImpl.h"
@@ -17,11 +34,6 @@
 #include "NvBlastMemory.h"
 
 #include "Px.h"
-#include "PxFileBuf.h"
-#include "PxAllocatorCallback.h"
-
-
-using namespace physx::general_PxIOStream2;
 
 
 namespace Nv
@@ -31,7 +43,7 @@ namespace Blast
 
 //////// Static data ////////
 
-NVBLASTTK_DEFINE_TYPE_SERIALIZABLE(Asset);
+NVBLASTTK_DEFINE_TYPE_IDENTIFIABLE(Asset);
 
 
 //////// Member functions ////////
@@ -52,7 +64,7 @@ TkAssetImpl::~TkAssetImpl()
 {
 	if (m_assetLL != nullptr && m_ownsAsset)
 	{
-		TkFrameworkImpl::get()->free(m_assetLL);
+		NVBLAST_FREE(m_assetLL);
 	}
 }
 
@@ -65,43 +77,43 @@ const NvBlastAsset* TkAssetImpl::getAssetLL() const
 
 uint32_t TkAssetImpl::getChunkCount() const
 {
-	return NvBlastAssetGetChunkCount(m_assetLL, TkFrameworkImpl::get()->log);
+	return NvBlastAssetGetChunkCount(m_assetLL, logLL);
 }
 
 
 uint32_t TkAssetImpl::getLeafChunkCount() const
 {
-	return NvBlastAssetGetLeafChunkCount(m_assetLL, TkFrameworkImpl::get()->log);
+	return NvBlastAssetGetLeafChunkCount(m_assetLL, logLL);
 }
 
 
 uint32_t TkAssetImpl::getBondCount() const
 {
-	return NvBlastAssetGetBondCount(m_assetLL, TkFrameworkImpl::get()->log);
+	return NvBlastAssetGetBondCount(m_assetLL, logLL);
 }
 
 
 const NvBlastChunk* TkAssetImpl::getChunks() const
 {
-	return NvBlastAssetGetChunks(m_assetLL, TkFrameworkImpl::get()->log);
+	return NvBlastAssetGetChunks(m_assetLL, logLL);
 }
 
 
 const NvBlastBond* TkAssetImpl::getBonds() const
 {
-	return NvBlastAssetGetBonds(m_assetLL, TkFrameworkImpl::get()->log);
+	return NvBlastAssetGetBonds(m_assetLL, logLL);
 }
 
 
 const NvBlastSupportGraph TkAssetImpl::getGraph() const
 {
-	return NvBlastAssetGetSupportGraph(m_assetLL, TkFrameworkImpl::get()->log);
+	return NvBlastAssetGetSupportGraph(m_assetLL, logLL);
 }
 
 
 uint32_t TkAssetImpl::getDataSize() const
 {
-	return NvBlastAssetGetSize(m_assetLL, TkFrameworkImpl::get()->log);
+	return NvBlastAssetGetSize(m_assetLL, logLL);
 }
 
 
@@ -124,7 +136,7 @@ void TkAssetImpl::release()
 
 	if (num)
 	{
-		TkArray<TkIdentifiable*>::type dependents(num);
+		Array<TkIdentifiable*>::type dependents(num);
 		TkFrameworkImpl::get()->getObjects(dependents.begin(), dependents.size(), tkType);
 
 		for (TkObject* o : dependents)
@@ -137,93 +149,22 @@ void TkAssetImpl::release()
 		}
 	}
 
-	NVBLASTTK_DELETE(this, TkAssetImpl);
-}
-
-
-bool TkAssetImpl::serialize(PxFileBuf& stream) const
-{
-	TkFrameworkImpl::get()->serializeHeader(*this, stream);
-
-	// Asset data
-	const uint32_t assetSize = NvBlastAssetGetSize(m_assetLL, TkFrameworkImpl::get()->log);
-	stream.storeDword(assetSize);
-	stream.write(m_assetLL, assetSize);
-
-	// Joint descs
-	stream.storeDword((uint32_t)m_jointDescs.size());
-	for (uint32_t i = 0; i < m_jointDescs.size(); ++i)
-	{
-		const TkAssetJointDesc& jointDesc = m_jointDescs[i];
-		stream.storeDword(jointDesc.nodeIndices[0]);
-		stream.storeDword(jointDesc.nodeIndices[1]);
-		stream.storeFloat(jointDesc.attachPositions[0].x);
-		stream.storeFloat(jointDesc.attachPositions[0].y);
-		stream.storeFloat(jointDesc.attachPositions[0].z);
-		stream.storeFloat(jointDesc.attachPositions[1].x);
-		stream.storeFloat(jointDesc.attachPositions[1].y);
-		stream.storeFloat(jointDesc.attachPositions[1].z);
-	}
-
-	return true;
+	NVBLAST_DELETE(this, TkAssetImpl);
 }
 
 
 //////// Static functions ////////
 
-TkSerializable* TkAssetImpl::deserialize(PxFileBuf& stream, const NvBlastID& id)
-{
-	// Allocate
-	TkAssetImpl* asset = NVBLASTTK_NEW(TkAssetImpl)(id);
-	if (asset == nullptr)
-	{
-		NVBLASTTK_LOG_ERROR("TkAssetImpl::deserialize: asset allocation failed.");
-		return nullptr;
-	}
-
-	// Asset data
- 	const uint32_t assetSize = stream.readDword();
-	asset->m_assetLL = static_cast<NvBlastAsset*>(TkFrameworkImpl::get()->alloc(assetSize));
-	asset->m_ownsAsset = true;
-	stream.read(asset->m_assetLL, assetSize);
-
-	// Joint descs
-	const uint32_t jointDescCount = stream.readDword();
-	asset->m_jointDescs.resize(jointDescCount);
-	for (uint32_t i = 0; i < asset->m_jointDescs.size(); ++i)
-	{
-		TkAssetJointDesc& jointDesc = asset->m_jointDescs[i];
-		jointDesc.nodeIndices[0] = stream.readDword();
-		jointDesc.nodeIndices[1] = stream.readDword();
-		jointDesc.attachPositions[0].x = stream.readFloat();
-		jointDesc.attachPositions[0].y = stream.readFloat();
-		jointDesc.attachPositions[0].z = stream.readFloat();
-		jointDesc.attachPositions[1].x = stream.readFloat();
-		jointDesc.attachPositions[1].y = stream.readFloat();
-		jointDesc.attachPositions[1].z = stream.readFloat();
-	}
-
-
-	if (asset->m_assetLL == nullptr)
-	{
-		asset->release();
-		asset = nullptr;
-	}
-
-	return asset;
-}
-
-
 TkAssetImpl* TkAssetImpl::create(const TkAssetDesc& desc)
 {
-	TkAssetImpl* asset = NVBLASTTK_NEW(TkAssetImpl);
+	TkAssetImpl* asset = NVBLAST_NEW(TkAssetImpl);
 
-	TkArray<char>::type scratch((uint32_t)NvBlastGetRequiredScratchForCreateAsset(&desc, TkFrameworkImpl::get()->log));
-	void* mem = TkFrameworkImpl::get()->alloc(NvBlastGetAssetMemorySize(&desc, TkFrameworkImpl::get()->log));
-	asset->m_assetLL = NvBlastCreateAsset(mem, &desc, scratch.begin(), TkFrameworkImpl::get()->log);
+	Array<char>::type scratch((uint32_t)NvBlastGetRequiredScratchForCreateAsset(&desc, logLL));
+	void* mem = NVBLAST_ALLOC_NAMED(NvBlastGetAssetMemorySize(&desc, logLL), "TkAssetImpl::create");
+	asset->m_assetLL = NvBlastCreateAsset(mem, &desc, scratch.begin(), logLL);
 	if (asset->m_assetLL == nullptr)
 	{
-		NVBLASTTK_LOG_ERROR("TkAssetImpl::create: low-level asset could not be created.");
+		NVBLAST_LOG_ERROR("TkAssetImpl::create: low-level asset could not be created.");
 		asset->release();
 		return nullptr;
 	}
@@ -239,20 +180,20 @@ TkAssetImpl* TkAssetImpl::create(const TkAssetDesc& desc)
 				const uint32_t c1 = bondDesc.chunkIndices[1];
 				if (c0 >= desc.chunkCount || c1 >= desc.chunkCount)
 				{
-					NVBLASTTK_LOG_WARNING("TkAssetImpl::create: joint flag set for badly described bond.  No joint descriptor created.");
+					NVBLAST_LOG_WARNING("TkAssetImpl::create: joint flag set for badly described bond.  No joint descriptor created.");
 					continue;
 				}
 
 				if (!asset->addJointDesc(c0, c1))
 				{
-					NVBLASTTK_LOG_WARNING("TkAssetImpl::create: no bond corresponds to the user-described bond indices.  No joint descriptor created.");
+					NVBLAST_LOG_WARNING("TkAssetImpl::create: no bond corresponds to the user-described bond indices.  No joint descriptor created.");
 				}
 			}
 		}
 	}
 
 	asset->m_ownsAsset = true;
-//	asset->setID(NvBlastAssetGetID(asset->m_assetLL, TkFrameworkImpl::get()->log));	// Keeping LL and Tk IDs distinct
+//	asset->setID(NvBlastAssetGetID(asset->m_assetLL, logLL));	// Keeping LL and Tk IDs distinct
 
 	return asset;
 }
@@ -260,19 +201,19 @@ TkAssetImpl* TkAssetImpl::create(const TkAssetDesc& desc)
 
 TkAssetImpl* TkAssetImpl::create(const NvBlastAsset* assetLL, Nv::Blast::TkAssetJointDesc* jointDescs, uint32_t jointDescCount, bool ownsAsset)
 {
-	TkAssetImpl* asset = NVBLASTTK_NEW(TkAssetImpl);
+	TkAssetImpl* asset = NVBLAST_NEW(TkAssetImpl);
 
 	//NOTE: Why are we passing in a const NvBlastAsset* and then discarding the const?
 	asset->m_assetLL = const_cast<NvBlastAsset*>(assetLL);
 	if (asset->m_assetLL == nullptr)
 	{
-		NVBLASTTK_LOG_ERROR("TkAssetImpl::create: low-level asset could not be created.");
+		NVBLAST_LOG_ERROR("TkAssetImpl::create: low-level asset could not be created.");
 		asset->release();
 		return nullptr;
 	}
 
 	asset->m_ownsAsset = ownsAsset;
-	asset->setID(NvBlastAssetGetID(asset->m_assetLL, TkFrameworkImpl::get()->log));
+	asset->setID(NvBlastAssetGetID(asset->m_assetLL, logLL));
 
 	asset->m_jointDescs.resize(jointDescCount);
 	for (uint32_t i = 0; i < asset->m_jointDescs.size(); ++i)
@@ -290,16 +231,16 @@ bool TkAssetImpl::addJointDesc(uint32_t chunkIndex0, uint32_t chunkIndex1)
 		return false;
 	}
 
-	const uint32_t upperSupportChunkCount = NvBlastAssetGetFirstSubsupportChunkIndex(m_assetLL, TkFrameworkImpl::get()->log);
+	const uint32_t upperSupportChunkCount = NvBlastAssetGetFirstSubsupportChunkIndex(m_assetLL, logLL);
 	if (chunkIndex0 >= upperSupportChunkCount || chunkIndex1 >= upperSupportChunkCount)
 	{
 		return false;
 	}
 
-	const uint32_t* chunkToGraphNodeMap = NvBlastAssetGetChunkToGraphNodeMap(m_assetLL, TkFrameworkImpl::get()->log);
+	const uint32_t* chunkToGraphNodeMap = NvBlastAssetGetChunkToGraphNodeMap(m_assetLL, logLL);
 	const uint32_t node0 = chunkToGraphNodeMap[chunkIndex0];
 	const uint32_t node1 = chunkToGraphNodeMap[chunkIndex1];
-	const NvBlastSupportGraph graph = NvBlastAssetGetSupportGraph(m_assetLL, TkFrameworkImpl::get()->log);
+	const NvBlastSupportGraph graph = NvBlastAssetGetSupportGraph(m_assetLL, logLL);
 	if (node0 >= graph.nodeCount && node1 >= graph.nodeCount)
 	{
 		return false;
@@ -317,12 +258,12 @@ bool TkAssetImpl::addJointDesc(uint32_t chunkIndex0, uint32_t chunkIndex1)
 		}
 	}
 
-	if (bondIndex >= NvBlastAssetGetBondCount(m_assetLL, TkFrameworkImpl::get()->log))
+	if (bondIndex >= NvBlastAssetGetBondCount(m_assetLL, logLL))
 	{
 		return false;
 	}
 
-	const NvBlastBond& bond = NvBlastAssetGetBonds(m_assetLL, TkFrameworkImpl::get()->log)[bondIndex];
+	const NvBlastBond& bond = NvBlastAssetGetBonds(m_assetLL, logLL)[bondIndex];
 
 	TkAssetJointDesc jointDesc;
 	jointDesc.attachPositions[0] = jointDesc.attachPositions[1] = physx::PxVec3(bond.centroid[0], bond.centroid[1], bond.centroid[2]);

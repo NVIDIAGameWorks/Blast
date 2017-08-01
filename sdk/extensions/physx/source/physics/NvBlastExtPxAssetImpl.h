@@ -1,19 +1,36 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTEXTPXASSETIMPL_H
 #define NVBLASTEXTPXASSETIMPL_H
 
 #include "NvBlastExtPxAsset.h"
-#include "NvBlastExtArray.h"
-#include "NvBlastExtDefs.h"
+#include "NvBlastArray.h"
 
 
 namespace Nv
@@ -26,6 +43,10 @@ using namespace physx;
 using namespace general_PxIOStream2;
 
 
+// Macro to load a uint32_t (or larger) with four characters (move it in some shared header if it's used anywhere else in Ext)
+#define NVBLASTEXT_FOURCC(_a, _b, _c, _d)	( (uint32_t)(_a) | (uint32_t)(_b)<<8 | (uint32_t)(_c)<<16 | (uint32_t)(_d)<<24 )
+
+
 class ExtPxAssetImpl final : public ExtPxAsset
 {
 	NV_NOCOPY(ExtPxAssetImpl)
@@ -33,27 +54,12 @@ class ExtPxAssetImpl final : public ExtPxAsset
 public:
 	friend class ExtPxAsset;
 
-	/**
-	Enum which keeps track of the serialized data format.
-	*/
-	enum Version
-	{
-		/** Initial version */
-		Initial,
-
-		//	New formats must come before Count.  They should be given descriptive names with more information in comments.
-
-		/** The number of serialized formats. */
-		Count,
-
-		/** The current version.  This should always be Count-1 */
-		Current = Count - 1
-	};
-
 	//////// ctor ////////
 
 	ExtPxAssetImpl(const ExtPxAssetDesc& desc, TkFramework& framework);
-	ExtPxAssetImpl(TkAsset* tkAsset);
+	ExtPxAssetImpl(const TkAssetDesc& desc, ExtPxChunk* pxChunks, ExtPxSubchunk* pxSubchunks, TkFramework& framework);
+	ExtPxAssetImpl(TkAsset* asset, ExtPxAssetDesc::ChunkDesc* chunks, uint32_t chunkCount);
+	ExtPxAssetImpl(TkAsset* asset);
 
 	~ExtPxAssetImpl();
 
@@ -87,36 +93,56 @@ public:
 		return m_subchunks.begin();
 	}
 
-	virtual bool					serialize(PxFileBuf& stream, PxCooking& cooking) const override;
+	virtual NvBlastActorDesc&		getDefaultActorDesc() override
+	{
+		return m_defaultActorDesc;
+	}
 
+	virtual const NvBlastActorDesc&	getDefaultActorDesc() const override
+	{
+		return m_defaultActorDesc;
+	}
+
+	virtual void					setUniformHealth(bool enabled) override;
+
+
+	//////// internal public methods ////////
 
 	/*
 		Get the underlying array for the chunks. Used for serialization.
 	*/
-	ExtArray<ExtPxChunk>::type&		getChunksArray() { return m_chunks; }
+	Array<ExtPxChunk>::type&		getChunksArray() { return m_chunks; }
 
 	/*
 	Get the underlying array for the subchunks. Used for serialization.
 	*/
-	ExtArray<ExtPxSubchunk>::type&	getSubchunksArray() { return m_subchunks; }
+	Array<ExtPxSubchunk>::type&		getSubchunksArray() { return m_subchunks; }
+
+	/*
+	Get the underlying array for the bond healths. Used for serialization.
+	*/
+	Array<float>::type&				getBondHealthsArray() { return m_bondHealths; }
+
+	/*
+	Get the underlying array for the support chunk healths. Used for serialization.
+	*/
+	Array<float>::type&				getSupportChunkHealthsArray() { return m_supportChunkHealths; }
 
 private:
-	//////// serialization data ////////
 
-	struct DataHeader
-	{
-		uint32_t dataType;
-		uint32_t version;
-	};
-
-	enum { ClassID = NVBLASTEXT_FOURCC('B', 'P', 'X', 'A') }; // Blast PhysX Asset
+	////////   initialization   /////////
+	void fillPhysicsChunks(ExtPxChunk* pxChunks, ExtPxSubchunk* pxSuchunk, uint32_t chunkCount);
+	void fillPhysicsChunks(ExtPxAssetDesc::ChunkDesc* desc, uint32_t count);
 
 
 	 //////// data ////////
 
-	TkAsset*						m_tkAsset;
-	ExtArray<ExtPxChunk>::type		m_chunks;
-	ExtArray<ExtPxSubchunk>::type	m_subchunks;
+	TkAsset*					m_tkAsset;
+	Array<ExtPxChunk>::type		m_chunks;
+	Array<ExtPxSubchunk>::type	m_subchunks;
+	Array<float>::type			m_bondHealths;
+	Array<float>::type			m_supportChunkHealths;
+	NvBlastActorDesc			m_defaultActorDesc;
 };
 
 } // namespace Blast

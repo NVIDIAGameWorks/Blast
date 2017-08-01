@@ -18,6 +18,12 @@ SET(BLASTEXT_COMPILE_DEFS
 	$<$<CONFIG:release>:${BLAST_SLN_RELEASE_COMPILE_DEFS}>
 )
 
-SET(BLAST_EXT_SHARED_LIB_TYPE STATIC)
+SET(BLAST_EXT_SHARED_LIB_TYPE SHARED)
 
-SET(BLASTEXT_PLATFORM_COMPILE_OPTIONS "-Wno-maybe-uninitialized")
+#Exceptions are needed by boost
+#This option doesn't work on Clang
+IF (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	SET(BLASTEXT_PLATFORM_COMPILE_OPTIONS "-Wno-maybe-uninitialized" "-fexceptions" "-Wno-unused-parameter")
+ELSE ()
+	SET(BLASTEXT_PLATFORM_COMPILE_OPTIONS "-Wno-return-type-c-linkage" "-pedantic" "-fexceptions" "-Wno-unused-parameter")
+ENDIF()

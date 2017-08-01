@@ -1,23 +1,37 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTTKCOMMON_H
 #define NVBLASTTKCOMMON_H
 
 
-#include "NvPreprocessor.h"
+#include "NvBlastGlobals.h"
 #include "NvBlastTkGUID.h"
-
-
-// Macro to load a uint32_t (or larger) with four characters
-#define NVBLASTTK_FOURCC(_a, _b, _c, _d)	( (uint32_t)(_a) | (uint32_t)(_b)<<8 | (uint32_t)(_c)<<16 | (uint32_t)(_d)<<24 )
 
 
 // Macro to define standard object classes.  An intermediate class is defined which holds common implementations.
@@ -82,29 +96,12 @@ class Tk##_name##Impl final : public Tk##_name##Type
 	/* Enums */															\
 																		\
 	/* Generate a ClassID enum used to identify this TkIdentifiable. */	\
-	enum { ClassID = NVBLASTTK_FOURCC(_id0, _id1, _id2, _id3) }
-
-
-// Macro to declare standard object interfaces, enums, etc (serializable version)
-#define NVBLASTTK_IMPL_DEFINE_SERIALIZABLE(_id0, _id1, _id2, _id3)										\
-	NVBLASTTK_IMPL_DEFINE_IDENTIFIABLE(_id0, _id1, _id2, _id3);											\
-																										\
-	/* Begin TkSerializable */																			\
-	virtual bool			serialize(physx::general_PxIOStream2::PxFileBuf& stream) const override;	\
-	/* End TkSerializable */																			\
-																										\
-	/* Static deserialization function, called by TkFrameworkImpl::deserialize after header data */		\
-	static TkSerializable*	deserialize(physx::general_PxIOStream2::PxFileBuf& stream, const NvBlastID& id)
+	enum { ClassID = NVBLAST_FOURCC(_id0, _id1, _id2, _id3) }
 
 
 // Macro to define class type data
 #define NVBLASTTK_DEFINE_TYPE_IDENTIFIABLE(_name) \
-	TkTypeImpl Tk##_name##Type::s_type("Tk" #_name, Tk##_name##Impl::ClassID, 0, nullptr)
-
-
-// Macro to define class type data (serializable version)
-#define NVBLASTTK_DEFINE_TYPE_SERIALIZABLE(_name) \
-	TkTypeImpl Tk##_name##Type::s_type("Tk" #_name, Tk##_name##Impl::ClassID, Tk##_name##Impl::Version::Current, Tk##_name##Impl::deserialize)
+	TkTypeImpl Tk##_name##Type::s_type("Tk" #_name, Tk##_name##Impl::ClassID, 0)
 
 
 #endif // ifndef NVBLASTTKCOMMON_H

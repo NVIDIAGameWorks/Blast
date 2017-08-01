@@ -51,12 +51,13 @@ public:
 	bool Gamepad_ToggleSimulation();
 	bool Gamepad_LoadSamples(QString fn);
 	bool Gamepad_ResetScene();
-	bool Gamepad_StartAnimation();
+	bool Gamepad_PlaySample();
 	bool GamepadHandler_ShowHair();
 	bool GamepadHandler_SpinWindStrength(float windStrength);
 	bool Gamepad_ResetAnimation();
 	bool Gamepad_PlayPauseAnimation();
-	
+
+	void SimpleScene_OpenFilesByDrop(const QStringList& fileNames);
 	bool SimpleScene_SimpleScene();
 	bool SimpleScene_Initialize(int backdoor);
 	bool SimpleScene_Shutdown();
@@ -64,6 +65,7 @@ public:
 	bool SimpleScene_Draw_DX12();
 	bool SimpleScene_Draw_DX11();
 	bool SimpleScene_FitCamera(atcore_float3& center, atcore_float3& extents);
+	bool SimpleScene_UpdateCamera();
 	bool SimpleScene_DrawGround();
 	bool SimpleScene_DrawWind();
 	bool SimpleScene_DrawAxis();
@@ -104,6 +106,7 @@ public:
 	bool AppMainWindow_shortcut_expert(bool mode);
 	bool AppMainWindow_updateMainToolbar();
 
+	bool menu_item_triggered(QAction* action);
 	bool AppMainWindow_menu_about();
 	bool AppMainWindow_menu_opendoc();
 #if USE_CURVE_EDITOR

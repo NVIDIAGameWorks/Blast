@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "SceneController.h"
 #include "RenderUtils.h"
@@ -94,6 +112,8 @@ protected:
 class SceneActor
 {
 public:
+	SceneActor() : removeOnReload(false) {}
+
 	virtual ~SceneActor() {}
 	virtual const char* getName() const = 0;
 	virtual const char* getSubname(int subindex) const { return nullptr; }
@@ -104,6 +124,8 @@ public:
 	virtual PxVec3 getSpawnShift() const { return PxVec3(PxZero); }
 	virtual void reload() {}
 	virtual void removeSubactor(int subindex) {}
+
+	bool	removeOnReload;
 };
 
 
@@ -116,7 +138,7 @@ public:
 		int		subindex;
 
 		ActorIndex() { reset(); }
-		ActorIndex(int i, int s) : index(i), subindex(s) {}
+		ActorIndex(int i, int s = -1) : index(i), subindex(s) {}
 
 		bool operator==(const ActorIndex& other) const
 		{
@@ -402,10 +424,28 @@ public:
 
 	void reloadAllActors()
 	{
-		for (SceneActor* a : m_sceneActors)
+		SceneActor* selectedActor = getSelectedActor();
+		ActorIndex selectIndex(0);
+
+		for (uint32_t i = 0; i < m_sceneActors.size(); i++)
 		{
-			a->reload();
+			if (m_sceneActors[i]->removeOnReload)
+			{
+				removeSceneActor(ActorIndex(i));
+				i--;
+			}
 		}
+
+		for (uint32_t i = 0; i < m_sceneActors.size(); i++)
+		{
+			if (m_sceneActors[i] == selectedActor)
+			{
+				selectIndex.index = i;
+			}
+			m_sceneActors[i]->reload();
+		}
+
+		setSelectedActor(selectIndex.index, selectIndex.subindex);
 	}
 
 	void registerTkAsset(const TkAsset& tkAsset, SingleSceneAsset* asset)
@@ -544,7 +584,7 @@ public:
 	virtual BlastAsset* createAsset() 
 	{ 
 		return new BlastAssetModelSimple(m_scene->getBlastController().getTkFramework(), m_scene->getPhysXController().getPhysics(),
-			m_scene->getPhysXController().getCooking(), m_scene->getRenderer(), desc.file.c_str());
+			m_scene->getPhysXController().getCooking(), *m_scene->getBlastController().getExtSerialization(), m_scene->getRenderer(), desc.file.c_str());
 	}
 
 	virtual ImVec4 getUIColor() const override
@@ -557,10 +597,10 @@ public:
 class SkinnedModelSceneAsset : public ModelSceneAsset
 {
 public:
-	virtual BlastAsset* createAsset() 
+	virtual BlastAsset* createAsset()
 	{ 
 		return new BlastAssetModelSkinned(m_scene->getBlastController().getTkFramework(), m_scene->getPhysXController().getPhysics(),
-			m_scene->getPhysXController().getCooking(), m_scene->getRenderer(), desc.file.c_str());
+			m_scene->getPhysXController().getCooking(), *m_scene->getBlastController().getExtSerialization(), m_scene->getRenderer(), desc.file.c_str());
 	}
 
 	virtual ImVec4 getUIColor() const override
@@ -584,6 +624,7 @@ public:
 		assetDesc.generatorSettings.extents = GeneratorAsset::Vec3(desc.extents.x, desc.extents.y, desc.extents.z);
 		assetDesc.staticHeight = desc.staticHeight;
 		assetDesc.jointAllBonds = desc.jointAllBonds;
+		assetDesc.generatorSettings.bondFlags = (CubeAssetGenerator::BondFlags)desc.bondFlags;
 	}
 
 	virtual ImVec4 getUIColor() const override
@@ -1078,7 +1119,7 @@ protected:
 //													Controller
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SceneController::SceneController() : m_cubeScale(1.0f)
+SceneController::SceneController() : m_cubeScale(1.0f), m_cubeThrowDownTime(-1.f)
 {
 	m_scene = NULL;
 }
@@ -1220,10 +1261,26 @@ LRESULT SceneController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			m_scene->reloadAllActors();
 			return 0;
 		case 'F':
-			throwCube();
+			if (m_cubeThrowDownTime == -1.f)
+			{
+				m_cubeThrowDownTime = ImGui::GetTime();
+			}
 			return 0;
 		default:
 			break; 
+		}
+	}
+	else if (uMsg == WM_KEYUP)
+	{
+		int iKeyPressed = static_cast<int>(wParam);
+		switch (iKeyPressed)
+		{
+		case 'F':
+			throwCube();
+			m_cubeThrowDownTime = -1.f;
+			return 0;
+		default:
+			break;
 		}
 	}
 
@@ -1325,6 +1382,7 @@ void SceneController::drawUI()
 	{
 		ImGui::Text("Thrown Cube Params (F)");
 		ImGui::DragFloat("Cube Size", &m_cubeScale, 1.0f, 0.0f, 100.0f);
+		ImGui::Text("Cube Speed (hold F): %1.f", getCubeSpeed());
 	}
 
 }
@@ -1334,9 +1392,15 @@ void SceneController::drawStatsUI()
 	m_scene->drawStatsUI();
 }
 
+float SceneController::getCubeSpeed()
+{
+	const float CUBE_VELOCITY_SPEED_MIN = 70;
+	const float CUBE_VELOCITY_CHARGE_PER_SECOND = 300;
+	return m_cubeThrowDownTime > 0 ? CUBE_VELOCITY_SPEED_MIN + (ImGui::GetTime() - m_cubeThrowDownTime) * CUBE_VELOCITY_CHARGE_PER_SECOND : 0.f;
+}
+
 void SceneController::throwCube()
 {
-	const float CUBE_VELOCITY = 100;
 	const float CUBE_DENSITY = 20000.0f;
 
 	CFirstPersonCamera* camera = &getRenderer().getCamera();
@@ -1347,9 +1411,11 @@ void SceneController::throwCube()
 	cube->setColor(DirectX::XMFLOAT4(1, 0, 0, 1));
 
 	PxVec3 dir = (lookAtPos - eyePos).getNormalized();
-	rigidDynamic->setLinearVelocity(dir * CUBE_VELOCITY);
+	rigidDynamic->setLinearVelocity(dir * getCubeSpeed());
 
-	m_scene->addSceneActor(new PhysXSceneActor(getPhysXController(), cube, "Cube"));
+	PhysXSceneActor* actor = new PhysXSceneActor(getPhysXController(), cube, "Cube");
+	actor->removeOnReload = true;
+	m_scene->addSceneActor(actor);
 }
 
 void SceneController::spawnAsset(int32_t num)

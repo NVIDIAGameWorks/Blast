@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "BlastFamily.h"
 #include "SampleProfiler.h"
@@ -32,8 +50,6 @@
 
 const float RIGIDBODY_DENSITY = 2000.0f;
 
-const float BlastFamily::BOND_HEALTH_MAX = 1.0f;
-
 BlastFamily::BlastFamily(PhysXController& physXController, ExtPxManager& pxManager, const BlastAsset& blastAsset) 
 	: m_physXController(physXController)
 	, m_pxManager(pxManager)
@@ -41,11 +57,10 @@ BlastFamily::BlastFamily(PhysXController& physXController, ExtPxManager& pxManag
 	, m_listener(this)
 	, m_totalVisibleChunkCount(0)
 	, m_stressSolver(nullptr)
+	, m_spawned(false)
 {
 	m_settings.stressSolverEnabled = false;
 	m_settings.stressDamageEnabled = false;
-
-	m_settings.material = { 3.0f, 0.1f, 0.2f, 1.5f + 1e-5f, 0.95f };;
 }
 
 BlastFamily::~BlastFamily()
@@ -63,10 +78,7 @@ BlastFamily::~BlastFamily()
 void BlastFamily::initialize(const BlastAsset::ActorDesc& desc)
 {
 	ExtPxFamilyDesc familyDesc;
-	familyDesc.actorDesc.initialBondHealths = nullptr;
-	familyDesc.actorDesc.initialSupportChunkHealths = nullptr;
-	familyDesc.actorDesc.uniformInitialBondHealth = BOND_HEALTH_MAX;
-	familyDesc.actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
+	familyDesc.actorDesc = nullptr; // if you use it one day, consider changing code which needs getBondHealthMax() from BlastAsset.
 	familyDesc.group = desc.group;
 	familyDesc.pxAsset = m_blastAsset.getPxAsset();
 	m_pxFamily = m_pxManager.createFamily(familyDesc);
@@ -79,28 +91,24 @@ void BlastFamily::initialize(const BlastAsset::ActorDesc& desc)
 
 	m_pxFamily->subscribe(m_listener);
 
-	ExtPxSpawnSettings spawnSettings = {
-		&m_physXController.getPhysXScene(),
-		m_physXController.getDefaultMaterial(),
-		RIGIDBODY_DENSITY
-	};
-	m_pxFamily->spawn(desc.transform, PxVec3(1.0f), spawnSettings);
-
-	reloadStressSolver();
+	m_initialTransform = desc.transform;
 }
 
 void BlastFamily::updatePreSplit(float dt)
 {
-	PROFILER_BEGIN("Stress Solver");
-	// update stress
-	m_stressSolveTime = 0;
-	if (m_stressSolver)
+	if (!m_spawned)
 	{
-		Time t;
-		m_stressSolver->update(m_settings.stressDamageEnabled);
-		m_stressSolveTime += t.getElapsedSeconds();
+		ExtPxSpawnSettings spawnSettings = {
+			&m_physXController.getPhysXScene(),
+			m_physXController.getDefaultMaterial(),
+			RIGIDBODY_DENSITY
+		};
+
+		m_pxFamily->spawn(m_initialTransform, PxVec3(1.0f), spawnSettings);
+		reloadStressSolver();
+
+		m_spawned = true;
 	}
-	PROFILER_END();
 
 	// collect potential actors to health update
 	m_actorsToUpdateHealth.clear();
@@ -125,6 +133,17 @@ void BlastFamily::updateAfterSplit(float dt)
 		{
 			onActorHealthUpdate(*actor);
 		}
+	}
+	PROFILER_END();
+
+	PROFILER_BEGIN("Stress Solver");
+	// update stress
+	m_stressSolveTime = 0;
+	if (m_stressSolver)
+	{
+		Time t;
+		m_stressSolver->update(m_settings.stressDamageEnabled);
+		m_stressSolveTime += t.getElapsedSeconds();
 	}
 	PROFILER_END();
 
@@ -173,11 +192,9 @@ void BlastFamily::drawUI()
 	// Blast Material
 	ImGui::Spacing();
 	ImGui::Text("Blast Material:");
-	ImGui::DragFloat("singleChunkThreshold", &m_settings.material.singleChunkThreshold);
-	ImGui::DragFloat("graphChunkThreshold", &m_settings.material.graphChunkThreshold);
-	ImGui::DragFloat("bondNormalThreshold", &m_settings.material.bondNormalThreshold);
-	ImGui::DragFloat("bondTangentialThreshold", &m_settings.material.bondTangentialThreshold);
-	ImGui::DragFloat("damageAttenuation", &m_settings.material.damageAttenuation);
+	ImGui::DragFloat("Health", &m_settings.material.health);
+	ImGui::DragFloat("Min Damage Threshold", &m_settings.material.minDamageThreshold, 0.01f, 0.f, m_settings.material.maxDamageThreshold);
+	ImGui::DragFloat("Max Damage Threshold", &m_settings.material.maxDamageThreshold, 0.01f, m_settings.material.minDamageThreshold, 1.f);
 
 	ImGui::Spacing();
 
@@ -193,8 +210,9 @@ void BlastFamily::drawUI()
 		bool changed = false;
 		
 		changed |= ImGui::DragInt("Bond Iterations Per Frame", (int*)&m_settings.stressSolverSettings.bondIterationsPerFrame, 100, 0, 500000);
-		changed |= ImGui::DragFloat("Stress Linear Factor", &m_settings.stressSolverSettings.stressLinearFactor, 0.00001f, 0.0f, 10.0f, "%.6f");
-		changed |= ImGui::DragFloat("Stress Angular Factor", &m_settings.stressSolverSettings.stressAngularFactor, 0.00001f, 0.0f, 10.0f, "%.6f");
+		changed |= ImGui::DragFloat("Material Hardness", &m_settings.stressSolverSettings.hardness, 10.0f, 0.01f, 100000.0f, "%.2f");
+		changed |= ImGui::DragFloat("Stress Linear Factor", &m_settings.stressSolverSettings.stressLinearFactor, 0.01f, 0.0f, 100.0f, "%.2f");
+		changed |= ImGui::DragFloat("Stress Angular Factor", &m_settings.stressSolverSettings.stressAngularFactor, 0.01f, 0.0f, 100.0f, "%.2f");
 		changed |= ImGui::SliderInt("Graph Reduction Level", (int*)&m_settings.stressSolverSettings.graphReductionLevel, 0, 32);
 		if (changed)
 		{
@@ -213,22 +231,22 @@ void BlastFamily::drawUI()
 void BlastFamily::drawStatsUI()
 {
 	ImGui::PushStyleColor(ImGuiCol_Text, ImColor(10, 255, 10, 255));
-	const ExtStressSolver* stressSolver = m_stressSolver;
-	if (stressSolver)
+	if (m_stressSolver)
 	{
-		const float errorLinear = stressSolver->getStressErrorLinear();
-		const float errorAngular = stressSolver->getStressErrorAngular();
+		const ExtStressSolver& stressSolver = m_stressSolver->getSolver();
+		const float errorLinear = stressSolver.getStressErrorLinear();
+		const float errorAngular = stressSolver.getStressErrorAngular();
 
-		ImGui::Text("Stress Bond Count:               %d", stressSolver->getBondCount());
-		ImGui::Text("Stress Iterations:	           %d (+%d)", stressSolver->getIterationCount(), stressSolver->getIterationsPerFrame());
-		ImGui::Text("Stress Frames:                   %d", stressSolver->getFrameCount());
+		ImGui::Text("Stress Bond Count:               %d", stressSolver.getBondCount());
+		ImGui::Text("Stress Frame Iter:               %d", stressSolver.getIterationsPerFrame());
+		ImGui::Text("Stress Frames:                   %d", stressSolver.getFrameCount());
 		ImGui::Text("Stress Error Lin / Ang:          %.4f / %.4f", errorLinear, errorAngular);
 		ImGui::Text("Stress Solve Time:               %.3f ms", m_stressSolveTime * 1000);
 
 		// plot errors
 		{
 			static float scale = 1.0f;
-			scale = stressSolver->getFrameCount() <= 1 ? 1.0f : scale;
+			scale = stressSolver.getFrameCount() <= 1 ? 1.0f : scale;
 			scale = std::max<float>(scale, errorLinear);
 			scale = std::max<float>(scale, errorAngular);
 
@@ -269,13 +287,16 @@ void BlastFamily::refreshStressSolverSettings()
 {
 	if (m_stressSolver)
 	{
-		m_stressSolver->setSettings(m_settings.stressSolverSettings);
+		m_stressSolver->getSolver().setSettings(m_settings.stressSolverSettings);
 	}
 }
 
 void BlastFamily::resetStress()
 {
-	m_stressSolver->reset();
+	if (m_stressSolver)
+	{
+		m_stressSolver->getSolver().reset();
+	}
 }
 
 void BlastFamily::reloadStressSolver()
@@ -288,7 +309,7 @@ void BlastFamily::reloadStressSolver()
 
 	if (m_settings.stressSolverEnabled)
 	{
-		m_stressSolver = ExtStressSolver::create(*m_pxFamily, m_settings.stressSolverSettings);
+		m_stressSolver = ExtPxStressSolver::create(*m_pxFamily, m_settings.stressSolverSettings);
 		m_pxFamily->userData = m_stressSolver;
 	}
 }
@@ -351,6 +372,8 @@ void BlastFamily::fillDebugRender(DebugRenderBuffer& debugRenderBuffer, DebugRen
 	const NvBlastChunk* chunks = m_tkFamily->getAsset()->getChunks();
 	const NvBlastBond* bonds = m_tkFamily->getAsset()->getBonds();
 	const NvBlastSupportGraph graph = m_tkFamily->getAsset()->getGraph();
+	const float bondHealthMax = m_blastAsset.getBondHealthMax();
+	const uint32_t chunkCount = m_tkFamily->getAsset()->getChunkCount();
 
 	for (const ExtPxActor* pxActor : m_actors)
 	{
@@ -361,7 +384,7 @@ void BlastFamily::fillDebugRender(DebugRenderBuffer& debugRenderBuffer, DebugRen
 		if (nodeCount == 0) // subsupport chunks don't have graph nodes
 			continue;
 
-		std::vector<uint32_t> nodes(actor.getGraphNodeCount());
+		std::vector<uint32_t> nodes(nodeCount);
 		actor.getGraphNodeIndices(nodes.data(), static_cast<uint32_t>(nodes.size()));
 
 		if (DEBUG_RENDER_HEALTH_GRAPH <= mode && mode <= DEBUG_RENDER_HEALTH_GRAPH_CENTROIDS)
@@ -385,11 +408,11 @@ void BlastFamily::fillDebugRender(DebugRenderBuffer& debugRenderBuffer, DebugRen
 					if (node0 > node1)
 						continue;
 
-					bool invisibleBond = assetChunk0.subchunkCount == 0 || assetChunk1.subchunkCount == 0;
+					bool invisibleBond = chunkIndex0 >= chunkCount || chunkIndex1 >= chunkCount || assetChunk0.subchunkCount == 0 || assetChunk1.subchunkCount == 0;
 
 					// health
 					uint32_t bondIndex = graph.adjacentBondIndices[adjacencyIndex];
-					float healthVal = PxClamp(bondHealths[bondIndex] / BOND_HEALTH_MAX, 0.0f, 1.0f);
+					float healthVal = PxClamp(bondHealths[bondIndex] / bondHealthMax, 0.0f, 1.0f);
 
 					DirectX::XMFLOAT4 color = bondHealthColor(healthVal);
 
@@ -419,7 +442,12 @@ void BlastFamily::fillDebugRender(DebugRenderBuffer& debugRenderBuffer, DebugRen
 		{
 			if (m_stressSolver)
 			{
-				m_stressSolver->fillDebugRender(nodes, debugRenderBuffer.m_lines, (ExtStressSolver::DebugRenderMode)(mode - DEBUG_RENDER_STRESS_GRAPH), renderScale);
+				const auto buffer = m_stressSolver->getSolver().fillDebugRender(nodes.data(), (uint32_t)nodes.size(), (ExtStressSolver::DebugRenderMode)(mode - DEBUG_RENDER_STRESS_GRAPH), renderScale);
+				if (buffer.lineCount)
+				{
+					const auto lines = reinterpret_cast<const PxDebugLine*>(buffer.lines);
+					debugRenderBuffer.m_lines.insert(debugRenderBuffer.m_lines.end(), lines, lines + buffer.lineCount);
+				}
 			}
 		}
 
@@ -497,12 +525,12 @@ private:
 	PxOverlapHit						m_hitBuffer[1000];
 };
 
-void BlastFamily::blast(PxVec3 worldPos, float damageRadius, float explosiveImpulse, std::function<void(ExtPxActor*)> damageFunction)
+bool BlastFamily::overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*)> hitCall)
 {
 	std::set<ExtPxActor*> actorsToDamage;
 #if 1
 	BlastOverlapCallback overlapCallback(m_pxManager, actorsToDamage);
-	m_physXController.getPhysXScene().overlap(PxSphereGeometry(damageRadius), PxTransform(worldPos), overlapCallback);
+	m_physXController.getPhysXScene().overlap(geometry, pose, overlapCallback);
 #else
 	for (std::map<NvBlastActor*, PhysXController::Actor*>::iterator it = m_actorsMap.begin(); it != m_actorsMap.end(); it++)
 	{
@@ -512,59 +540,9 @@ void BlastFamily::blast(PxVec3 worldPos, float damageRadius, float explosiveImpu
 
 	for (auto actor : actorsToDamage)
 	{
-		damageFunction(actor);
+		hitCall(actor);
 	}
 
-	if (explosiveImpulse > 0.0f)
-	{
-		explode(worldPos, damageRadius, explosiveImpulse);
-	}
+	return !actorsToDamage.empty();
 }
 
-
-class ExplodeOverlapCallback : public PxOverlapCallback
-{
-public:
-	ExplodeOverlapCallback(PxVec3 worldPos, float radius, float explosiveImpulse)
-		: m_worldPos(worldPos)
-		, m_radius(radius)
-		, m_explosiveImpulse(explosiveImpulse)
-		, PxOverlapCallback(m_hitBuffer, sizeof(m_hitBuffer) / sizeof(m_hitBuffer[0])) {}
-
-	PxAgain processTouches(const PxOverlapHit* buffer, PxU32 nbHits)
-	{
-		for (PxU32 i = 0; i < nbHits; ++i)
-		{
-			PxRigidActor* actor = buffer[i].actor;
-			PxRigidDynamic* rigidDynamic = actor->is<PxRigidDynamic>();
-			if (rigidDynamic && !(rigidDynamic->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC))
-			{
-				if (m_actorBuffer.find(rigidDynamic) == m_actorBuffer.end())
-				{
-					m_actorBuffer.insert(rigidDynamic);
-					PxVec3 dr = rigidDynamic->getGlobalPose().transform(rigidDynamic->getCMassLocalPose()).p - m_worldPos;
-					float distance = dr.magnitude();
-					float factor = PxClamp(1.0f - (distance * distance) / (m_radius * m_radius), 0.0f, 1.0f);
-					float impulse = factor * m_explosiveImpulse * RIGIDBODY_DENSITY;
-					PxVec3 vel = dr.getNormalized() * impulse / rigidDynamic->getMass();
-					rigidDynamic->setLinearVelocity(rigidDynamic->getLinearVelocity() + vel);
-				}
-			}
-		}
-		return true;
-	}
-
-private:
-	PxOverlapHit					m_hitBuffer[1000];
-	float							m_explosiveImpulse;
-	std::set<PxRigidDynamic*>		m_actorBuffer;
-	PxVec3							m_worldPos;
-	float							m_radius;
-};
-
-void BlastFamily::explode(PxVec3 worldPos, float damageRadius, float explosiveImpulse)
-{
-	ExplodeOverlapCallback overlapCallback(worldPos, damageRadius, explosiveImpulse);
-	m_physXController.getPhysXScene().overlap(PxSphereGeometry(damageRadius), PxTransform(worldPos), overlapCallback);
-
-}

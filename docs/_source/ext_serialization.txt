@@ -1,6 +1,193 @@
 /*! \page pageextserialization Serialization (NvBlastExtSerialization)
 
-TBD
+\section serialization_intro Introduction
+
+This extension defines the Nv::Blast::ExtSerialization class, a modular serialization manager which can be extended to handle data types from different Blast&tm; modules
+(such as low-level, Tk, and ExtPhysX).
+
+An ExtSerialization manager is created using the global function NvBlastExtSerializationCreate:
+
+(From now on we'll assume we are using the Nv::Blast namespace.)
+
+\code
+ExtSerialization* ser = NvBlastExtSerializationCreate();
+\endcode
+
+ExtSerialization is capable of loading sets of serializers for different data types and encodings.  The NvBlastExtSerialization extension comes with a set of low-level data serializers,
+with types enumerated in the header <b>NvBlastExtLlSerialization.h</b>.
+
+<b>The low-level serializers are automatically loaded into an ExtSerialization when it is created.</b>
+
+To load serializers for Tk and ExtPhysX assets, you must also load the extensions \ref pageexttkserialization and \ref pageextpxserialization, respectively.  See the documentation for
+those modules.
+
+Each serializer is capable of reading (and writing, if it is not read-only) a single data type in a single encoding (format).  Some serializers are read-only, in order to read legacy
+formats.
+
+The encodings available are enumerated in ExtSerialization::EncodingID.  They are currently:
+
+- CapnProtoBinary - Uses Cap'n Proto's binary serialization format
+- Raw - For low-level NvBlastAsset and NvBlastFamily types, this is simply a memory copy.  For Tk and ExtPx assets, this is the deprecated serialization format from Blast&tm; 1.0.
+
+<br>
+\section serialization_ser Serialization (writing)
+
+To serialize an object, the serialization manager's write encoding ID must be set to the desired value.  By default it is set to EncodingID::CapnProtoBinary, as this is the only
+encoding which supports writing for all object types (at the present time).  When other encodings become available, use ExtSerialization::setSerializationEncoding to set the write
+encoding to the desired type.
+
+Each serialization module defines the object types it can serialize.  ExtSerialization defines the low-level types in <b>NvBlastExtLlSerialization.h</b>:
+
+- LlObjectTypeID::Asset - An NvBlastAsset
+- LlObjectTypeID::Family - An NvBlastFamily
+
+To serialize an object, for example an NvBlastAsset, use ExtSerialization::serializeIntoBuffer as follows:
+
+/code
+const NvBlastAsset* asset = ... // Given pointer to an NvBlastAsset
+
+void* buffer;
+uint64_t size = ser->serializeIntoBuffer(buffer, asset, LlObjectTypeID::Asset);
+/endcode
+
+If successful, the data is written into a buffer allocated using the NvBlastGlobals allocator, written to the "buffer" parameter, and the size of the buffer
+written is the return value of the function.  If the function returns 0, then serialization was unsuccessful.  Notice that the second function parameter is actually a void*,
+so it requires the last parameter to tell it what object it's serializing.  A utility wrapper function is given in <b>NvBlastExtLlSerialization.h</b> which performs the
+same operation with an NvBlastAsset, so one could equivalently use
+
+/code
+void* buffer;
+uint64_t size = NvBlastExtSerializationSerializeAssetIntoBuffer(buffer, *ser, asset);
+/endcode
+
+A corresponding function also exists for NvBlastFamily, as well as other data types supported by other serialization extensions.
+
+This buffer may be written to disk, memory, networked, etc.  Since the memory for the buffer is allocated using the allocator
+in NvBlastGlobals, it may be freed using the same allocator:
+
+\code
+NVBLAST_FREE(buffer)
+\endcode
+
+<br>
+\subsection bufferproviders Using a Buffer Provider
+
+If you wish to provide the serialization buffer by some means other than the NvBlastGlobals allocator, you may set a "buffer provider"
+in the serialization manager.  A buffer provider is simply a callback that requests a buffer from the user of the necessary size.
+The user implements the interface ExtSerialization::BufferProvider, and passes a pointer to an instance of one to the serialization
+manager using ExtSerialization::setBufferProvider.
+
+For example:
+
+\code
+std::vector<char> growableBuffer;
+
+class MyBufferProvider : public Nv::Blast::ExtSerialization::BufferProvider
+{
+public:
+	MyBufferProvider(std::vector<char>& growableBuffer) : m_growableBuffer(growableBuffer) {}
+
+	virtual void*   requestBuffer(size_t size) override
+	{
+		if (m_growableBuffer.size() < size)
+		{
+			m_growableBuffer.resize(size);
+		}
+		return m_growableBuffer.data();
+	}
+
+private:
+	std::vector<char>&	m_growableBuffer;
+} myBufferProvider(growableBuffer);
+
+ser->setBufferProvider(&myBufferProvider);
+\endcode
+
+Passing NULL to setBufferProvider returns the serialization to its default behavior of using the NvBlastGlobals allocator.
+
+<br>
+\section serialization_deser Deserialization (reading)
+
+To deserialize an object, use the ExtSerialization::deserializeFromBuffer method.  If you know the type of object in the buffer,
+you may directly cast the returned pointer to one of that type.  For example, if the buffer contains an NvBlastAsset, use:
+
+\code
+const void* buffer = ... // A given buffer, may be read from disk, memory, etc.
+const uint64_t size = ... // The buffer's size in bytes
+
+NvBlastAsset* asset = static_cast<NvBlastAsset*>(ser->deserializeFromBuffer(buffer, size));
+\endcode
+
+This returns a valid pointer if deserialization was successful, or NULL otherwise.  If no serializer is loaded which can handle
+the object type in the stream in its given encoding, it will fail and return NULL.
+
+Again, the memory for the asset is allocated using NvBlastGlobals, so that the asset may be released using
+
+\code
+NVBLAST_FREE(asset);
+\endcode
+
+<br>
+\section detecting_object_type Detecting the Object Type in a Buffer
+
+If you don't know the object type in the buffer, you may use the last (optional) argument in deserializeFromBuffer to return the type:
+
+\code
+uint32_t objTypeID;
+void* obj = ser->deserializeFromBuffer(buffer, size, &objTypeID);
+
+NVBLAST_CHECK_ERROR(obj != nullptr, "Object could not be read from buffer.", return);
+
+switch (objTypeID)
+{
+case LlObjectTypeID::Asset:
+	handleAssetLoad(static_cast<NvBlastAsset*>(obj));
+	break;
+case LlObjectTypeID::Family:
+	handleFamilyLoad(static_cast<NvBlastFamily*>(obj));
+	break;
+default:
+	NVBLAST_LOG_ERROR("Unknown object type ");
+}
+\endcode
+
+<br>
+\subsection peeking_and_skipping Peeking at and Skipping Buffer Data
+
+If a buffer contains multiple objects, you may peek at the buffer to get object information including object type, encoding, and data size, and skip to
+the next object in the buffer (whether or not you've chosen to read the current object).  For example:
+
+\code
+const void* buffer = ... // The input buffer
+uint64_t size = ... // The input buffer size
+
+while (size)
+{
+	uint64_t objTypeID;
+	if (!ser->peekHeader(&objTypeID, NULL, NULL, buffer, size))	// Only reading the object type ID; may pass in NULL for the other header value pointers
+	{
+		break;	// Read error, stop
+	}
+
+	if (objectShouldBeLoaded(objTypeID))	// Some function to determine whether or not we want this object
+	{
+		void* obj = ser->deserializeFromBuffer(buffer, size);
+		// Handle loaded object ...
+	}
+
+	// Jump to next object:
+	buffer = ser->skipObject(size, buffer);	// Updates size as well
+}
+\endcode
+
+<br>
+\section serialization_term Cleaning Up
+
+When finished with the serialization manager, it may be released using its release() method:
+
+\code
+ser->release();
+\endcode
 
 <br>
 */

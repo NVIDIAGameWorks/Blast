@@ -9,7 +9,7 @@
 :: Run packman to ensure dependencies are present and run cmake generation script afterwards
 @echo Running packman in preparation for cmake ...
 @echo.
-@call "%~dp0buildtools\packman\windows\packman.cmd" %PM_OPTIONS_EXT% pull "%~dp0dependencies.xml" --platform vc14win64 --postscript "%~dp0buildtools\cmake_projects_vc14win64.bat"
+@call "%~dp0buildtools\packman\packman.cmd" pull "%~dp0dependencies.xml" --platform vc14win64 --postscript "%~dp0buildtools\cmake_projects_vc14win64.bat"
 @if %ERRORLEVEL% neq 0 (
     @exit /b %errorlevel%
 ) else (

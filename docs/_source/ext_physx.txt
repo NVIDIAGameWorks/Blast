@@ -1,10 +1,10 @@
-/*! \page pageextphysx PhysX Extensions
+/*! \page pageextphysx PhysX Extensions (NvBlastExtPhysX)
 
-NvBlastExtPhysX contains extensions for easier use of Blast Toolkit with the PhysX SDK.
+NvBlastExtPhysX contains classes for easier use of Blast Toolkit with the PhysX SDK.
 There are 3 of them:
 - <b>ExtPxManager</b>: Manager to keep Blast Actors in sync with PhysX actors.
 - <b>ExtImpactDamageManager</b>: Manager to collect and apply impact damage caused by collision in PhysX Scene.
-- <b>ExtStressSolver</b>: Stress Solver to propagate stress through support graph and apply it as damage to Blast actors.
+- <b>ExtPxStressSolver</b>: Stress Solver to propagate stress through support graph and apply it as damage to Blast actors.
 
 This library also contains an extension for synchronizing Blast state:
 - <b>ExtSync</b> - Utility for writing Blast state to a buffer, to be read by a client.  This may be used for networking, for example.
@@ -16,7 +16,7 @@ This library also contains an extension for synchronizing Blast state:
 <b>Physics Manager</b> - is a reference implementation for keeping Blast Actors synced with PhysX actors. It's main job is to listen
 for TkFamily events and update \a PxScene (by adding and removing PxActors) accordingly.
 
-In order to use it create ExtPxManager:
+In order to use it create an ExtPxManager.  If we have a physx::PxPhysics object m_physics and a TkFramework m_tkFramework, use
 
 \code
 ExtPxManager* pxManager = ExtPxManager::create(m_physics, m_tkFramework);
@@ -47,7 +47,7 @@ You can subscribe to family events in order to sync graphics (or anything else) 
 family->subscribe(listener);
 \endcode
 
-Listener will be notified with all physics actors added and removed.
+The listener will be notified with all physics actors added and removed.
 
 And finally spawn the family in some world position (the first actor/actors will be created and event will be fired to the listener):
 
@@ -59,7 +59,7 @@ ExtPxSpawnSettings spawnSettings = {
 	RIGIDBODY_DENSITY
 };
 
-family->spawn(PxTransform(0, 0, 0), spawnSettings);
+family->spawn(PxTransform(0, 0, 0), PxVec3(1, 1, 1), spawnSettings);
 \endcode
 
 You can get families actor's either from listening to events or by calling getActors(). 
@@ -70,21 +70,21 @@ ExtPxActor* actor = ....;
 physx::PxRigidDynamic rigidDynamic = actor->getPxActor(); // 
 \endcode
 
-ExtPxActor remains internally unchanged through it's life time.
-Use \a ExtPxActor \a getChunkIndices() and  \a getPxActor() to update graphics representation. Sample code:
+An ExtPxActor remains internally unchanged through its lifetime.
+Use \a ExtPxActor \a getChunkIndices() and  \a getPxActor() to update your graphics representation. Sample code:
 
 \code
-	const uint32_t* chunkIndices;
-	size_t chunkIndexCount;
-	actor.getChunkIndices(chunkIndices, chunkIndexCount);
-	for (uint32_t i = 0; i < chunkIndexCount; i++)
+const uint32_t* chunkIndices;
+size_t chunkIndexCount;
+actor.getChunkIndices(chunkIndices, chunkIndexCount);
+for (uint32_t i = 0; i < chunkIndexCount; i++)
+{
+	uint32_t chunkIndex = chunkIndices[i];
+	for (Renderable* r : m_chunks[chunkIndex].renderables)
 	{
-		uint32_t chunkIndex = chunkIndices[i];
-		for (Renderable* r : m_chunks[chunkIndex].renderables)
-		{
-			r->setTransform(actor.getPxActor()->getGlobalPose() * pxAsset.chunks[chunkIndex].convexes[0].transform);
-		}
+		r->setTransform(actor.getPxActor()->getGlobalPose() * pxAsset.chunks[chunkIndex].convexes[0].transform);
 	}
+}
 \endcode
 
 In order to use joints set joint create function with \a ExtPxManager::setCreateJointFunction(...). It will be called when new TkJoint's are
@@ -101,22 +101,22 @@ In order to use it create it:
 ExtImpactDamageManager* impactManager = ExtImpactDamageManager::create(pxManager);
 \endcode
 
-Call it's onContact method on every \a PxSimulationEventCallback \a onContact()
+Call its onContact method on every \a PxSimulationEventCallback \a onContact()
 
 \code
-	class EventCallback : public PxSimulationEventCallback
+class EventCallback : public PxSimulationEventCallback
+{
+public:
+	EventCallback(ExtImpactDamageManager* manager) : m_manager(manager) {}
+
+	virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, uint32_t nbPairs)
 	{
-	public:
-		EventCallback(ExtImpactDamageManager* manager) : m_manager(manager) {}
+		m_manager->onContact(pairHeader, pairs, nbPairs);
+	}
 
-		virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, uint32_t nbPairs)
-		{
-			m_manager->onContact(pairHeader, pairs, nbPairs);
-		}
-
-	private:
-		ExtImpactDamageManager*		m_manager;
-	};
+private:
+	ExtImpactDamageManager*		m_manager;
+};
 \endcode
 
 Call \a applyDamage() when you want the buffered damage to be applied:
@@ -125,7 +125,7 @@ Call \a applyDamage() when you want the buffered damage to be applied:
 impactManager->applyDamage();
 \endcode
 
-Also important to enable contact notification with custom filter shader for PxScene. \a ImpactDamageManager has a reference filter shader 
+<b>N.B.</b> for impact damage to work, you must enable contact notification with custom the filter shader for PxScene. \a ExtImpactDamageManager has a reference filter shader 
 implementation which can be used for that:
 
 \code
@@ -134,23 +134,17 @@ sceneDesc.filterShader = ExtImpactDamageManager::FilterShader;
 \endcode
 
 <br>
-\section ExtStressSolver
+\section extpxstresssolver ExtPxStressSolver
 
-<b>Stress Solver</b> - is a reference implementation of stress propagation using Blast support graph. 
+<b>Stress Solver</b> - this wrapper class uses \ref pageextstress to apply stress calculations to an ExtPxFamily.  See \ref pageextstress for
+the details of the underlying stress solver.
 
-\subsection Features Features
-- Supports both static and dynamic actors
-- Propagates both linear and angular momentum
-- Graph complexity selection (reduces support graph to smaller size trade off speed and quality)
-- Apply stress damage on Blast Actor
-- Debug Render
+\subsection pxstresssolverusage Usage
 
-\subsection Usage Usage
-
-In order to use it instance stress solver by providing \a ExtPxFamily:
+In order to use it, instance an ExtPxStressSolver by providing \a ExtPxFamily:
 
 \code
-ExtStressSolver* stressSolver = ExtStressSolver::create(family);
+ExtPxStressSolver* stressSolver = ExtPxStressSolver::create(family);
 \endcode
 
 And then call update() every frame:
@@ -161,20 +155,19 @@ stressSolver->update(doDamage);
 \endcode
 
 By default it will apply scene gravity on static actors and centrifugal force on dynamic actors.
-Also applyImpulse(...) can be called for additional stress to apply:
+
+The underlying ExtStressSolver can be accessed using ExtPxStressSolver::getSolver().  For example, to apply impulse to
+a particular actor, use applyImpulse(...) can be called for additional stress to apply:
 
 \code
-stressSolver->applyImpulse(actor, position, force);
+stressSolver->getSolver().addForce(actor, position, impulse);
 \endcode
 
-It fully utilizes the fact that it knows initial support graph structure and does maximum of processing 
-in \a create(...) method calls. After that all actors split calls are synced internally quite fast and only the actual
-stress propagation takes most of computational time. 
-Computational time is linearly proprtional to \a bondIterationsPerFrame setting. To fine tune look for balance 
-between \a bondIterationsPerFrame and \a graphReductionLevel . The more bond iterations
-are set the more precise computation will be. The smaller graph allows to make higher fidelity computations witihing 
-the same bond iterations per frame (same time spent), but actual cracks (damaged bonds) will be more sparsed as the result.
+Finally, the stress solver (and its underlying ExtStressSolver) may be released using
 
+\code
+stressSolver->release();
+\endcode
 
 <br>
 \section ExtSync

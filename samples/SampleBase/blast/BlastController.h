@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef BLAST_CONTROLLER_H
 #define BLAST_CONTROLLER_H
@@ -31,6 +49,8 @@ namespace Nv
 namespace Blast
 {
 class TkFramework;
+class ExtGroupTaskManager;
+class ExtSerialization;
 }
 }
 
@@ -68,18 +88,13 @@ public:
 
 	//////// public API ////////
 
-	void blast(PxVec3 worldPos, float damageRadius, float explosiveImpulse, std::function<void(ExtPxActor*)> damageFunction);
+	bool overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*)> hitCall);
 
 	bool stressDamage(ExtPxActor *actor, PxVec3 position, PxVec3 force);
 
 	BlastFamilyPtr spawnFamily(BlastAsset* blastAsset, const BlastAsset::ActorDesc& desc);
 	void removeFamily(BlastFamilyPtr actor);
 	void removeAllFamilies();
-
-
-	//////// public static ////////
-
-	static void blastLog(int type, const char* msg, const char* file, int line);
 
 
 	//////// public getters/setters ////////
@@ -139,6 +154,13 @@ public:
 
 	float getLastStressDelta() const;
 
+	void notifyPhysXControllerRelease();
+
+	ExtSerialization*	getExtSerialization() const
+	{
+		return m_extSerialization;
+	}
+
 	//////// public variables for UI ////////
 
 	BlastFamily::DebugRenderMode debugRenderMode;
@@ -183,6 +205,8 @@ private:
 
 	void updateDraggingStress();
 
+	void updateImpactDamage();
+
 	void refreshImpactDamageSettings();
 
 	void fillDebugRender();
@@ -215,11 +239,14 @@ private:
 	ExtImpactSettings				   m_extImpactDamageManagerSettings;
 	EventCallback*					   m_eventCallback;
 	ExtStressSolverSettings			   m_extStressSolverSettings;
+	ExtGroupTaskManager*			   m_extGroupTaskManager;
+	ExtSerialization*				   m_extSerialization;
 
 	std::vector<BlastFamilyPtr>		   m_families;
 	DebugRenderBuffer                  m_debugRenderBuffer;
 
 	bool                               m_impactDamageEnabled;
+	bool                               m_impactDamageUpdatePending;
 	bool							   m_impactDamageToStressEnabled;
 
 	float							   m_impactDamageToStressFactor;

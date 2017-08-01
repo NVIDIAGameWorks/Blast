@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 API Reference: Class Members - Variables</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 API Reference: Class Members - Variables</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -24,6 +24,7 @@
       <li><a href="functions.html"><span>All</span></a></li>
       <li><a href="functions_func.html"><span>Functions</span></a></li>
       <li class="current"><a href="functions_vars.html"><span>Variables</span></a></li>
+      <li><a href="functions_type.html"><span>Typedefs</span></a></li>
       <li><a href="functions_enum.html"><span>Enumerations</span></a></li>
       <li><a href="functions_eval.html"><span>Enumerator</span></a></li>
       <li><a href="functions_rela.html"><span>Related&nbsp;Functions</span></a></li>
@@ -41,6 +42,7 @@
       <li><a href="functions_vars_0x68.html#index_h"><span>h</span></a></li>
       <li><a href="functions_vars_0x69.html#index_i"><span>i</span></a></li>
       <li><a href="functions_vars_0x6a.html#index_j"><span>j</span></a></li>
+      <li><a href="functions_vars_0x6c.html#index_l"><span>l</span></a></li>
       <li class="current"><a href="functions_vars_0x6d.html#index_m"><span>m</span></a></li>
       <li><a href="functions_vars_0x6e.html#index_n"><span>n</span></a></li>
       <li><a href="functions_vars_0x6f.html#index_o"><span>o</span></a></li>
@@ -70,40 +72,44 @@
 <li>m_links
 : <a class="el" href="class_nv_1_1_blast_1_1_l_list_it.html#69636ed35620c0e9183cbf365672116d">Nv::Blast::LListIt&lt; IndexType &gt;</a>
 , <a class="el" href="class_nv_1_1_blast_1_1_d_list_it.html#a453f366251c68ef44755eab19c47cd4">Nv::Blast::DListIt&lt; IndexType &gt;</a>
-<li>m_log
-: <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#67eb696c6512a668b449e2902e74d8c4">Nv::Blast::ApexImporter::ApexImportTool</a>
 <li>material
-: <a class="el" href="struct_nv_blast_timers.html#c416f56479c812f9b35a655326cb57ef">NvBlastTimers</a>
-, <a class="el" href="struct_nv_blast_program_params.html#c1f01f891ced7e44de751b4e398f6bca">NvBlastProgramParams</a>
+: <a class="el" href="struct_nv_blast_program_params.html#c1f01f891ced7e44de751b4e398f6bca">NvBlastProgramParams</a>
 , <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_spawn_settings.html#d62c55d45b9e5f7447eb607174e49dc5">Nv::Blast::ExtPxSpawnSettings</a>
+, <a class="el" href="struct_nv_blast_timers.html#c416f56479c812f9b35a655326cb57ef">NvBlastTimers</a>
+<li>materialCount
+: <a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#03cfe2eeeb05de8d8257f1de9befb956">Nv::Blast::AuthoringResult</a>
+<li>materialId
+: <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html#df3a66bdd94f5cd516a4a5b15d23b6b3">Nv::Blast::Triangle</a>
+, <a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#2e593b5effb784c464672c949efcb08a">Nv::Blast::TriangleIndexed</a>
+, <a class="el" href="struct_nv_1_1_blast_1_1_facet.html#85004b9d37b2b0cadb3143f295c3ae61">Nv::Blast::Facet</a>
+<li>materialNames
+: <a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#56e8058f3b84da94e6b515503b33341d">Nv::Blast::AuthoringResult</a>
+<li>maxDamageThreshold
+: <a class="el" href="struct_nv_blast_ext_material.html#de63b21c45e8705b20e65c202891762b">NvBlastExtMaterial</a>
+<li>maximum
+: <a class="el" href="struct_nvc_bounds3.html#c4d86b4cae3f0209c18d2ece7bb8cc23">NvcBounds3</a>
 <li>maxRadius
 : <a class="el" href="struct_nv_blast_ext_radial_damage_desc.html#4cc2f97bb0d5288196c18bc85985f3bc">NvBlastExtRadialDamageDesc</a>
-<li>mChunkData
-: <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#8134b25e19315f97d272d3f5235a7a9f">Nv::Blast::FractureTool</a>
-<li>mChunkIdCounter
-: <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#ca889aa8a47d15e70a9fa6d785c43abd">Nv::Blast::FractureTool</a>
-<li>mChunkPostprocessors
-: <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#a639bb0f468e28f81db056498d48c744">Nv::Blast::FractureTool</a>
+, <a class="el" href="struct_nv_blast_ext_segment_radial_damage_desc.html#149a75836276b77983f3eeee620edd12">NvBlastExtSegmentRadialDamageDesc</a>
+, <a class="el" href="struct_nv_blast_ext_shear_damage_desc.html#7c5a12680fd2f8eae33a45b2a6e57946">NvBlastExtShearDamageDesc</a>
+<li>meshCount
+: <a class="el" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#be4f127b644d544d86d7d91039e008cc">Nv::Blast::ExporterMeshData</a>
 <li>meshData
 : <a class="el" href="struct_nv_1_1_blast_1_1_chunk_info.html#864945bf41b9ab726c8df191e9acae35">Nv::Blast::ChunkInfo</a>
+<li>minDamageThreshold
+: <a class="el" href="struct_nv_blast_ext_material.html#eeb4e2d2b81e234e12b9e627eb6cb1b4">NvBlastExtMaterial</a>
 <li>mIndexBase
 : <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull_1_1_hull_polygon.html#cf1c7b3cf0d7fc76b63e9adf4d5b21d4">Nv::Blast::CollisionHull::CollisionHull::HullPolygon</a>
+<li>minimum
+: <a class="el" href="struct_nvc_bounds3.html#f5ee79e127b719b80d93278d9f5fa859">NvcBounds3</a>
 <li>minRadius
-: <a class="el" href="struct_nv_blast_ext_radial_damage_desc.html#f3546b34798c8d8f97facb157f44a35d">NvBlastExtRadialDamageDesc</a>
-<li>mLoggingCallback
-: <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#d62ff06b71e4cd76f8786b97b7352c99">Nv::Blast::FractureTool</a>
+: <a class="el" href="struct_nv_blast_ext_segment_radial_damage_desc.html#a478418357484b87454f8722fa35a882">NvBlastExtSegmentRadialDamageDesc</a>
+, <a class="el" href="struct_nv_blast_ext_shear_damage_desc.html#5a5b8cbdce8ee01e223ac81bf11ff35a">NvBlastExtShearDamageDesc</a>
+, <a class="el" href="struct_nv_blast_ext_radial_damage_desc.html#f3546b34798c8d8f97facb157f44a35d">NvBlastExtRadialDamageDesc</a>
 <li>mNbVerts
 : <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull_1_1_hull_polygon.html#b218f5e1323f57f49c344225d17ed094">Nv::Blast::CollisionHull::CollisionHull::HullPolygon</a>
-<li>mOffset
-: <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#e173a14dc0bcc66f1bfff39a790f0474">Nv::Blast::FractureTool</a>
 <li>mPlane
 : <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull_1_1_hull_polygon.html#7d18ed0463dcea26cb48cb15ee0b0abb">Nv::Blast::CollisionHull::CollisionHull::HullPolygon</a>
-<li>mPlaneIndexerOffset
-: <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#6a930f1347b0ce7d307efaac5feaf4b5">Nv::Blast::FractureTool</a>
-<li>mRemoveIslands
-: <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#bfe913470d8e1a879e076195fd71878d">Nv::Blast::FractureTool</a>
-<li>mScaleFactor
-: <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#59e25b8094a7896f3d071dd8de49a58e">Nv::Blast::FractureTool</a>
 </ul>
 </div>
 <!-- start footer part -->

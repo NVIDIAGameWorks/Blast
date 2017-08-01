@@ -1,18 +1,37 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "SampleAssetListParser.h"
 #include <PsFastXml.h>
 #include "Sample.h"
 #include "PxVec4.h"
 #include "PxInputDataFromPxFileBuf.h"
+#include <bitset>
 
 
 using namespace physx;
@@ -104,11 +123,6 @@ protected:
 				{
 					m_boxTemp.name = std::string(attr.getValue(i));
 				}
-				else if (::strcmp(attr.getKey(i), "staticHeight") == 0)
-				{
-					std::string str = attr.getValue(i);
-					sscanf(&str[0], "%f", &m_boxTemp.staticHeight);
-				}
 				else if (::strcmp(attr.getKey(i), "jointAllBonds") == 0)
 				{
 					std::string str = attr.getValue(i);
@@ -121,6 +135,12 @@ protected:
 				{
 					std::string str = attr.getValue(i);
 					sscanf(&str[0], "%f %f %f", &m_boxTemp.extents.x, &m_boxTemp.extents.y, &m_boxTemp.extents.z);
+				}
+				else if (::strcmp(attr.getKey(i), "bondFlagsMask") == 0)
+				{
+					std::string str = attr.getValue(i);
+					std::bitset<8> bondFlags(str);
+					m_boxTemp.bondFlags = static_cast<uint32_t>(bondFlags.to_ulong());
 				}
 			}
 

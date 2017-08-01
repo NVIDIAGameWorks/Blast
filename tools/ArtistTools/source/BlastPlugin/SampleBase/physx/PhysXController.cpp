@@ -1,12 +1,30 @@
-/*
- * Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
- *
- * NVIDIA CORPORATION and its licensors retain all intellectual property
- * and proprietary rights in and to this software, related documentation
- * and any modifications thereto.  Any use, reproduction, disclosure or
- * distribution of this software and related documentation without an express
- * license agreement from NVIDIA CORPORATION is strictly prohibited.
- */
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "PhysXController.h"
 #include "RenderMaterial.h"
@@ -19,7 +37,11 @@
 #include "ConvexRenderMesh.h"
 #include "RenderUtils.h"
 #include "SampleProfiler.h"
-#include "NvBlastProfiler.h"
+#include "NvBlastExtCustomProfiler.h"
+#include "NvBlastPxCallbacks.h"
+// Add By Lixu Begin
+#include "Mesh.h"
+// Add By Lixu End
 
 #include "PxPhysicsVersion.h"
 #include "PxPvdTransport.h"
@@ -35,6 +57,10 @@
 #include "PxMaterial.h"
 #include "PxFoundationVersion.h"
 #include "PxMath.h"
+// Add By Lixu Begin
+#include "PxRigidActorExt.h"
+#include "SimpleScene.h"
+// Add By Lixu End
 
 #include <imgui.h>
 #include <chrono>
@@ -47,14 +73,17 @@ const DirectX::XMFLOAT4 PLANE_COLOR(1.0f, 1.0f, 1.0f, 1.0f);
 const DirectX::XMFLOAT4 HOOK_LINE_COLOR(1.0f, 1.0f, 1.0f, 1.0f);
 const float DEFAULT_FIXED_TIMESTEP = 1.0f / 60.0f;
 
+static Nv::Blast::ExtCustomProfiler gBlastProfiler;
+
 PhysXController::PhysXController(PxSimulationFilterShader filterShader)
 : m_filterShader(filterShader)
 , m_gpuPhysicsAvailable(true)
+, m_isSimulating(false)
 , m_useGPUPhysics(true)
 , m_lastSimulationTime(0)
 , m_paused(false)
 , m_draggingActor(nullptr)
-, m_draggingEnabled(true)
+, m_draggingEnabled(false)
 , m_draggingTryReconnect(false)
 , m_perfWriter(NULL)
 , m_fixedTimeStep(DEFAULT_FIXED_TIMESTEP)
@@ -65,7 +94,7 @@ PhysXController::PhysXController(PxSimulationFilterShader filterShader)
 	QueryPerformanceFrequency(&m_performanceFreq);
 
 // Add By Lixu Begin
-	m_bForce = true;
+	m_bFirstTime = true;
 // Add By Lixu End
 }
 
@@ -81,6 +110,7 @@ void PhysXController::onInitialize()
 
 void PhysXController::onTerminate()
 {
+	simualtionSyncEnd();
 	releasePhysXPrimitives();
 	releasePhysX();
 }
@@ -92,13 +122,13 @@ void PhysXController::onTerminate()
 
 void PhysXController::initPhysX()
 {
-	m_foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, m_allocator, m_errorCallback);
+	m_foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
 
 	m_pvd = PxCreatePvd(*m_foundation);
 
-	NvBlastProfilerSetCallback(m_pvd);
-	NvBlastProfilerEnablePlatform(false);
-	NvBlastProfilerSetDetail(NvBlastProfilerDetail::LOW);
+	NvBlastProfilerSetCallback(&gBlastProfiler);
+	NvBlastProfilerSetDetail(Nv::Blast::ProfilerDetail::LOW);
+	gBlastProfiler.setPlatformEnabled(false);
 
 	PxTolerancesScale scale;
 
@@ -144,6 +174,7 @@ void PhysXController::initPhysX()
 
 	}
 	m_physicsScene = m_physics->createScene(sceneDesc);
+	m_editPhysicsScene = m_physics->createScene(sceneDesc);
 
 	m_defaultMaterial = m_physics->createMaterial(0.8f, 0.7f, 0.1f);
 
@@ -176,6 +207,7 @@ void PhysXController::releasePhysX()
 {
 	m_defaultMaterial->release();
 	m_physicsScene->release();
+	m_editPhysicsScene->release();
 	if (m_cudaContext)
 		m_cudaContext->release();
 	m_dispatcher->release();
@@ -241,61 +273,92 @@ void PhysXController::notifyRigidDynamicDestroyed(PxRigidDynamic* rigidDynamic)
 }
 
 
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//												Controller events
+//												Simulation control
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void PhysXController::Animate(double dt)
+void PhysXController::simulationBegin(float dt)
 {
 	PROFILER_SCOPED_FUNCTION();
 
 // Add By Lixu Begin
-	if (m_paused && !m_bForce)
+	if (m_paused && !m_bFirstTime)
 		return;
-	if (m_bForce)
+	if (m_bFirstTime)
 	{
 		m_paused = true;
-		m_bForce = false;
+		m_bFirstTime = false;
 	}
 // Add By Lixu End
 
-	// slower physics if fps is too low
-	dt = PxClamp(dt, 0.0, 0.033333);
-
 	updateDragging(dt);
+	processExplosionQueue();
+
+	// slower physics if fps is too low
+	dt = PxClamp(dt, 0.0f, 0.0333f);
 
 	{
-		PROFILER_SCOPED("PhysX simulate");
-		steady_clock::time_point start = steady_clock::now();
+		PROFILER_SCOPED("PhysX simulate call");
 		if (m_useFixedTimeStep)
 		{
 			m_timeAccumulator += dt;
 			m_substepCount = (uint32_t)std::floor(m_timeAccumulator / m_fixedTimeStep);
 			m_timeAccumulator -= m_fixedTimeStep * m_substepCount;
 			m_substepCount = m_maxSubstepCount > 0 ? physx::PxClamp<uint32_t>(m_substepCount, 0, m_maxSubstepCount) : m_substepCount;
-			for (uint32_t i = 0; i < m_substepCount; ++i)
+			if (m_substepCount > 0)
 			{
-				PROFILER_SCOPED("PhysX simulate (substep)");
 				m_physicsScene->simulate(m_fixedTimeStep);
-				m_physicsScene->fetchResults(true);
+				m_isSimulating = true;
 			}
 		}
 		else
 		{
 			m_substepCount = 1;
+			PX_ASSERT(!m_isSimulating);
 			m_physicsScene->simulate(dt);
-			m_physicsScene->fetchResults(true);
+			m_isSimulating = true;
+
 		}
-		m_lastSimulationTime = duration_cast<microseconds>(steady_clock::now() - start).count() * 0.000001;
 	}
 
-	PROFILER_BEGIN("Debug Render Buffer");
-	getRenderer().queueRenderBuffer(&m_physicsScene->getRenderBuffer());
-	PROFILER_END();
+// Add By Lixu Begin	
+	if (getManager()->IsStepforward())
+	{
+		m_paused = true;
+		getManager()->EnableStepforward(false);
+	}
+// Add By Lixu End
+}
 
-	updateActorTransforms();
+void PhysXController::simualtionSyncEnd()
+{
+	PROFILER_SCOPED_FUNCTION();
+
+	if (m_isSimulating)
+	{
+		steady_clock::time_point start = steady_clock::now();
+		m_physicsScene->fetchResults(true);
+
+		// For fixed time step case it could be that we need more then one step (m_maxSubstepCount > 1). We will run leftover steps synchronously right there.
+		// Ideally is to make them overlap with other logic too, but it's much harder and requires more synchronization logic. Don't want to obfuscate sample code.
+		if (m_useFixedTimeStep && m_substepCount > 1)
+		{
+			for (uint32_t i = 0; i < m_substepCount - 1; i++)
+			{
+				m_physicsScene->simulate(m_fixedTimeStep);
+				m_physicsScene->fetchResults(true);
+			}
+		}
+		m_lastSimulationTime = duration_cast<microseconds>(steady_clock::now() - start).count() * 0.000001;
+
+		m_isSimulating = false;
+
+		updateActorTransforms();
+
+		PROFILER_BEGIN("Debug Render Buffer");
+		getRenderer().queueRenderBuffer(&m_physicsScene->getRenderBuffer());
+		PROFILER_END();
+	}
 }
 
 
@@ -363,8 +426,11 @@ void PhysXController::updateDragging(double dt)
 		PxVec3 hookPoint = m_draggingActor->getGlobalPose().transform(m_draggingActorHookLocalPoint);
 		m_draggingActorLastHookWorldPoint = hookPoint;
 		m_dragVector = (m_dragAttractionPoint - hookPoint);
-		PxVec3 dragVeloctiy = (m_dragVector * DRAGGING_FORCE_FACTOR - DRAGGING_VELOCITY_FACTOR * m_draggingActor->getLinearVelocity()) * dt;
-		PxRigidBodyExt::addForceAtLocalPos(*m_draggingActor, dragVeloctiy * m_draggingActor->getMass(), m_draggingActorHookLocalPoint, PxForceMode::eIMPULSE, true);
+		if (!m_draggingActor->getRigidBodyFlags().isSet(PxRigidBodyFlag::eKINEMATIC))
+		{
+			PxVec3 dragVeloctiy = (m_dragVector * DRAGGING_FORCE_FACTOR - DRAGGING_VELOCITY_FACTOR * m_draggingActor->getLinearVelocity()) * dt;
+			PxRigidBodyExt::addForceAtLocalPos(*m_draggingActor, dragVeloctiy * m_draggingActor->getMass(), m_draggingActorHookLocalPoint, PxForceMode::eIMPULSE, true);
+		}
 
 		// debug render line
 		m_dragDebugRenderBuffer.clear();
@@ -404,9 +470,12 @@ LRESULT PhysXController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 					m_dragDistance = (eyePos - hit.position).magnitude();
 					m_draggingActor = hit.actor->is<PxRigidDynamic>();
 					m_draggingActorHookLocalPoint = m_draggingActor->getGlobalPose().getInverse().transform(hit.position);
-					m_draggingActor->setLinearVelocity(PxVec3(0, 0, 0));
-					m_draggingActor->setAngularVelocity(PxVec3(0, 0, 0));
 					m_dragAttractionPoint = hit.position;
+					if (!m_draggingActor->getRigidBodyFlags().isSet(PxRigidBodyFlag::eKINEMATIC))
+					{
+						m_draggingActor->setLinearVelocity(PxVec3(0, 0, 0));
+						m_draggingActor->setAngularVelocity(PxVec3(0, 0, 0));
+					}
 				}
 			}
 		}
@@ -433,6 +502,71 @@ LRESULT PhysXController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//													Explosion
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class ExplodeOverlapCallback : public PxOverlapCallback
+{
+public:
+	ExplodeOverlapCallback(PxVec3 worldPos, float radius, float explosiveImpulse)
+		: m_worldPos(worldPos)
+		, m_radius(radius)
+		, m_explosiveImpulse(explosiveImpulse)
+		, PxOverlapCallback(m_hitBuffer, sizeof(m_hitBuffer) / sizeof(m_hitBuffer[0])) {}
+
+	PxAgain processTouches(const PxOverlapHit* buffer, PxU32 nbHits)
+	{
+		for (PxU32 i = 0; i < nbHits; ++i)
+		{
+			PxRigidActor* actor = buffer[i].actor;
+			PxRigidDynamic* rigidDynamic = actor->is<PxRigidDynamic>();
+			if (rigidDynamic && !(rigidDynamic->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC))
+			{
+				if (m_actorBuffer.find(rigidDynamic) == m_actorBuffer.end())
+				{
+					m_actorBuffer.insert(rigidDynamic);
+					PxVec3 dr = rigidDynamic->getGlobalPose().transform(rigidDynamic->getCMassLocalPose()).p - m_worldPos;
+					float distance = dr.magnitude();
+					float factor = PxClamp(1.0f - (distance * distance) / (m_radius * m_radius), 0.0f, 1.0f);
+					float impulse = factor * m_explosiveImpulse * 1000.0f;
+					PxVec3 vel = dr.getNormalized() * impulse / rigidDynamic->getMass();
+					rigidDynamic->setLinearVelocity(rigidDynamic->getLinearVelocity() + vel);
+				}
+			}
+		}
+		return true;
+	}
+
+private:
+	PxOverlapHit					m_hitBuffer[1000];
+	float							m_explosiveImpulse;
+	std::set<PxRigidDynamic*>		m_actorBuffer;
+	PxVec3							m_worldPos;
+	float							m_radius;
+};
+
+void PhysXController::explode(PxVec3 worldPos, float damageRadius, float explosiveImpulse)
+{
+	ExplodeOverlapCallback overlapCallback(worldPos, damageRadius, explosiveImpulse);
+	m_physicsScene->overlap(PxSphereGeometry(damageRadius), PxTransform(worldPos), overlapCallback);
+}
+
+void PhysXController::explodeDelayed(PxVec3 worldPos, float damageRadius, float explosiveImpulse)
+{
+	m_explosionQueue.push_back({ worldPos, damageRadius, explosiveImpulse });
+}
+
+void PhysXController::processExplosionQueue()
+{
+	for (auto& e : m_explosionQueue)
+	{
+		explode(e.worldPos, e.damageRadius, e.explosiveImpulse);
+	}
+	m_explosionQueue.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //														UI
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -446,8 +580,7 @@ void PhysXController::drawUI()
 	}
 
 	ImGui::Text("Substep Count:     %d", m_substepCount);
-	ImGui::Text("Simulation Time (total):        %4.2f ms", getLastSimulationTime() * 1000);
-	ImGui::Text("Simulation Time (substep):      %4.2f ms", m_substepCount > 0 ? (getLastSimulationTime() / m_substepCount) * 1000 : 0.0);
+	ImGui::Text("Sync Simulation Time (total):        %4.2f ms", getLastSimulationTime() * 1000);
 }
 
 
@@ -455,6 +588,10 @@ void PhysXController::drawUI()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //												  PhysX Primitive
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Add By Lixu Begin
+PhysXController::Actor* planeActor_Pri = nullptr;
+// Add By Lixu End
 
 void PhysXController::initPhysXPrimitives()
 {
@@ -470,6 +607,11 @@ void PhysXController::initPhysXPrimitives()
 	// create plane
 	Actor* plane = spawnPhysXPrimitivePlane(PxPlane(PxVec3(0, 1, 0).getNormalized(), 0));
 	plane->setColor(PLANE_COLOR);
+
+// Add By Lixu Begin
+	planeActor_Pri = plane;
+	planeActor_Pri->setHidden(true);
+// Add By Lixu End
 }
 
 void PhysXController::releasePhysXPrimitives()
@@ -557,7 +699,7 @@ void PhysXController::removeUnownedPhysXActors()
 {
 	if (m_physXActorsToRemove.size())
 	{
-		m_physicsScene->removeActors(&m_physXActorsToRemove[0], (PxU32)m_physXActorsToRemove.size());
+		m_physicsScene->removeActors(m_physXActorsToRemove.data(), (PxU32)m_physXActorsToRemove.size());
 		for (size_t i = 0; i < m_physXActorsToRemove.size(); ++i)
 		{
 			m_physXActorsToRemove[i]->release();
@@ -580,7 +722,7 @@ PhysXController::Actor::Actor(PhysXController* controller, PxRigidActor* actor, 
 
 	uint32_t shapesCount = actor->getNbShapes();
 	m_shapes.resize(shapesCount);
-	actor->getShapes(&m_shapes[0], shapesCount);
+	actor->getShapes(m_shapes.data(), shapesCount);
 
 	m_renderables.resize(m_shapes.size());
 	for (uint32_t i = 0; i < m_shapes.size(); i++)
@@ -724,8 +866,23 @@ PxVec3 unproject(PxMat44& proj, PxMat44& view, float x, float y)
 
 void PhysXController::getEyePoseAndPickDir(float mouseX, float mouseY, PxVec3& eyePos, PxVec3& pickDir)
 {
-	PxMat44 view = XMMATRIXToPxMat44(getRenderer().getCamera().GetViewMatrix());
-	PxMat44 proj = XMMATRIXToPxMat44(getRenderer().getCamera().GetProjMatrix());
+	// Add By Lixu Begin
+	PxMat44 view, proj;
+	SimpleScene* simpleScene = SimpleScene::Inst();
+	Camera* pSceneCamera = simpleScene->GetCamera();
+	if (pSceneCamera->UseLHS())
+	{
+		DirectX::XMMATRIX viewMatrix = SimpleScene::Inst()->GetViewMatrix();
+		DirectX::XMMATRIX projMatrix = SimpleScene::Inst()->GetProjMatrix();
+		view = XMMATRIXToPxMat44(viewMatrix);
+		proj = XMMATRIXToPxMat44(projMatrix);
+	}
+	else
+	{
+		view = XMMATRIXToPxMat44(getRenderer().getCamera().GetViewMatrix());
+		proj = XMMATRIXToPxMat44(getRenderer().getCamera().GetProjMatrix());
+	}
+	// Add By Lixu End
 
 	PxMat44 eyeTransform = view.inverseRT();
 	eyePos = eyeTransform.getPosition();
@@ -750,7 +907,6 @@ bool PhysXController::ExportCollisionRepX(const char* fname, physx::PxPhysics* p
 		return false;
 
 	int count = pSDK->getNbScenes();
-	assert(count == 1);
 
 	physx::PxSerializationRegistry* psr = physx::PxSerialization::createSerializationRegistry(*pSDK);
 
@@ -822,4 +978,77 @@ void PhysXController::ClearOldCOllisions()
 		size = m_physics->getNbConvexMeshes();
 	}
 }
-// Add By Lixu Begin
+
+bool PhysXController::isPlaneVisible()
+{
+	return !planeActor_Pri->isHidden();
+}
+
+void PhysXController::setPlaneVisible(bool bVisible)
+{
+	planeActor_Pri->setHidden(!bVisible);
+}
+
+PxRigidDynamic* PhysXController::createEditPhysXActor(const std::vector<BlastModel::Chunk::Mesh>& meshes, const PxTransform& pos)
+{
+	PxRigidDynamic *actor = m_physics->createRigidDynamic(PxTransform(pos));
+
+	for (size_t i = 0; i < meshes.size(); ++i)
+	{
+		const SimpleMesh& mesh = meshes[i].mesh;
+
+		size_t vertexCount = mesh.vertices.size();
+		if (vertexCount == 0)
+		{
+			continue;
+		}
+		PxVec3* verts = new PxVec3[vertexCount];
+		for (size_t i = 0; i < vertexCount; ++i)
+		{
+			verts[i] = mesh.vertices[i].position;
+		}
+
+		PxConvexMeshDesc convexDesc;
+		convexDesc.points.count = vertexCount;
+		convexDesc.points.stride = sizeof(PxVec3);
+		convexDesc.points.data = verts;
+		convexDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
+
+		{
+			PxCookingParams params = m_cooking->getParams();
+			params.convexMeshCookingType = PxConvexMeshCookingType::eQUICKHULL;
+			m_cooking->setParams(params);
+
+			PxDefaultMemoryOutputStream outStream;
+			bool bCooking = m_cooking->cookConvexMesh(convexDesc, outStream);
+			PxU8* outStreamData = outStream.getData();
+			PxU32 outStreamSize = outStream.getSize();
+			if (!bCooking || outStreamData == nullptr || outStreamSize == 0)
+			{
+				delete[] verts;
+				continue;
+			}
+
+			PxDefaultMemoryInputData input(outStreamData, outStreamSize);
+			PxConvexMesh* convexMesh = m_physics->createConvexMesh(input);
+			if (convexMesh == nullptr)
+			{
+				delete[] verts;
+				continue;
+			}
+			PxShape* shape = m_physics->createShape(PxConvexMeshGeometry(convexMesh), *m_defaultMaterial);
+			if (shape)
+			{
+				actor->attachShape(*shape);
+			}
+
+		}
+
+		delete[] verts;
+	}
+
+	actor->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+	m_editPhysicsScene->addActor(*actor);
+	return actor;
+}
+// Add By Lixu End

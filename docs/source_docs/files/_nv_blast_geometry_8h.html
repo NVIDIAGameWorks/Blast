@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/common/NvBlastGeometry.h File Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/common/NvBlastGeometry.h File Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -39,6 +39,7 @@
 <div class="contents">
 <h1>sdk/common/NvBlastGeometry.h File Reference</h1><code>#include &quot;<a class="el" href="_nv_blast_types_8h-source.html">NvBlastTypes.h</a>&quot;</code><br>
 <code>#include &quot;<a class="el" href="_nv_blast_math_8h-source.html">NvBlastMath.h</a>&quot;</code><br>
+<code>#include &quot;<a class="el" href="_nv_blast_assert_8h-source.html">NvBlastAssert.h</a>&quot;</code><br>
 <code>#include &lt;limits&gt;</code><br>
 
 <p>
@@ -50,11 +51,9 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html">Nv::Blast</a></td></tr>
 
 <tr><td colspan="2"><br><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NV_FORCE_INLINE uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#74e71c68b1350f7ecd0e36d590329d0c">Nv::Blast::findNodeByPosition</a> (const float point[4], const uint32_t graphNodesCount, const uint32_t *graphNodeIndices, const <a class="el" href="struct_nv_blast_support_graph.html">NvBlastSupportGraph</a> &amp;graph, const <a class="el" href="struct_nv_blast_bond.html">NvBlastBond</a> *bonds, const float *bondHealths)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NV_FORCE_INLINE uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#0ce4dc5d3f1f248d05a6b699ccaa68b9">Nv::Blast::findClosestNode</a> (const float point[4], const uint32_t firstGraphNodeIndex, const uint32_t *familyGraphNodeIndexLinks, const uint32_t *adjacencyPartition, const uint32_t *adjacentNodeIndices, const uint32_t *adjacentBondIndices, const <a class="el" href="struct_nv_blast_bond.html">NvBlastBond</a> *bonds, const float *bondHealths, const uint32_t *chunkIndices)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NV_FORCE_INLINE uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#d147758076877d6b9f2bd713d76eee22">Nv::Blast::findNodeByPosition</a> (const float point[4], const uint32_t graphNodesCount, const uint32_t *graphNodeIndices, const uint32_t *adjacencyPartition, const uint32_t *adjacentNodeIndices, const uint32_t *adjacentBondIndices, const <a class="el" href="struct_nv_blast_bond.html">NvBlastBond</a> *bonds, const float *bondHealths)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NV_FORCE_INLINE uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#ff16e2f6e8844b472e4a2a006e9cc586">Nv::Blast::findNodeByPositionLinked</a> (const float point[4], const uint32_t firstGraphNodeIndex, const uint32_t *familyGraphNodeIndexLinks, const uint32_t *adjacencyPartition, const uint32_t *adjacentNodeIndices, const uint32_t *adjacentBondIndices, const <a class="el" href="struct_nv_blast_bond.html">NvBlastBond</a> *bonds, const float *bondHealths)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NV_FORCE_INLINE uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#174a03926806454cd726b130462606b0">Nv::Blast::findClosestNode</a> (const float point[4], const uint32_t firstGraphNodeIndex, const uint32_t *familyGraphNodeIndexLinks, const uint32_t *adjacencyPartition, const uint32_t *adjacentNodeIndices, const uint32_t *adjacentBondIndices, const <a class="el" href="struct_nv_blast_bond.html">NvBlastBond</a> *assetBonds, const float *bondHealths, const <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a> *assetChunks, const float *supportChunkHealths, const uint32_t *chunkIndices)</td></tr>
 
 </table>
 </div>

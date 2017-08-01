@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTEXTIMPACTDAMAGEMANAGER_H
 #define NVBLASTEXTIMPACTDAMAGEMANAGER_H
@@ -43,16 +61,27 @@ Impact Damage Manager Settings.
 */
 struct ExtImpactSettings
 {
-	bool					isSelfCollissionEnabled;	//!<	family's self collision enabled
-	float					fragility;					//!<	global fragility factor
+	bool					isSelfCollissionEnabled;	//!<	family's self collision enabled.
+	bool					shearDamage;				//!<	use shear damage program (otherwise simple radial damage is used)
+	float					impulseMinThreshold;		//!<	min impulse value to apply impact damage.
+	float					impulseMaxThreshold;		//!<	max impulse value, damage is interpolated value between min and max impulses.
+	float					damageMax;					//!<	max damage to be applied (if impulse is >= impulseMaxThreshold).
+	float					damageRadiusMax;			//!<	max penetration depth (if impulse is >= impulseMaxThreshold).
+	float					damageAttenuation;			//!<	penetration attenuation ([0..1], where 1 means damage attenuates linearly from 0 to max penetration depth).
 	ExtImpactDamageFunction damageFunction;				//!<	custom damage function, can be nullptr, default internal one will be used in that case.
-	void*					damageFunctionData;			//!<	data to be passed in custom damage function
+	void*					damageFunctionData;			//!<	data to be passed in custom damage function.
 
 
 	ExtImpactSettings() :
 		isSelfCollissionEnabled(false),
-		fragility(1.0f),
-		damageFunction(nullptr)
+		shearDamage(true),
+		impulseMinThreshold(0.0f),
+		impulseMaxThreshold(1000000.0f),
+		damageMax(100.f),
+		damageRadiusMax(5.0f),
+		damageAttenuation(1.f),
+		damageFunction(nullptr),
+		damageFunctionData(nullptr)
 	{}
 };
 

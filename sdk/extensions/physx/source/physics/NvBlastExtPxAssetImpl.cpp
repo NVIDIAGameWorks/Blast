@@ -1,15 +1,33 @@
-﻿/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+﻿// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "NvBlastExtPxAssetImpl.h"
-#include "NvBlastExtHashMap.h"
+#include "NvBlastHashMap.h"
 
 #include "NvBlastAssert.h"
 #include "NvBlastIndexFns.h"
@@ -30,65 +48,106 @@ namespace Blast
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//											Helpers/Wrappers
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class FileBufToPxInputStream final : public PxInputStream
-{
-public:
-	FileBufToPxInputStream(PxFileBuf& filebuf) : m_filebuf(filebuf) {}
-
-	virtual uint32_t read(void* dest, uint32_t count)
-	{
-		return m_filebuf.read(dest, count);
-	}
-
-private:
-	FileBufToPxInputStream& operator=(const FileBufToPxInputStream&);
-
-	PxFileBuf& m_filebuf;
-};
-
-
-class FileBufToPxOutputStream final : public PxOutputStream
-{
-public:
-	FileBufToPxOutputStream(PxFileBuf& filebuf) : m_filebuf(filebuf) {}
-
-	virtual uint32_t write(const void* src, uint32_t count) override
-	{
-		return m_filebuf.write(src, count);
-	}
-
-private:
-	FileBufToPxOutputStream& operator=(const FileBufToPxOutputStream&);
-
-	PxFileBuf& m_filebuf;
-};
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //										ExtPxAssetImpl Implementation
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ExtPxAssetImpl::ExtPxAssetImpl(const ExtPxAssetDesc& desc, TkFramework& framework)
+#if !defined(NV_VC) || NV_VC >= 14
+	: m_defaultActorDesc { 1.0f, nullptr, 1.0f, nullptr }
 {
+#else
+{
+	m_defaultActorDesc.uniformInitialBondHealth = m_defaultActorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
+	m_defaultActorDesc.initialBondHealths = m_defaultActorDesc.initialSupportChunkHealths = nullptr;
+#endif
 	m_tkAsset = framework.createAsset(desc);
+	fillPhysicsChunks(desc.pxChunks, desc.chunkCount);
+}
 
+ExtPxAssetImpl::ExtPxAssetImpl(const TkAssetDesc& desc, ExtPxChunk* pxChunks, ExtPxSubchunk* pxSubchunks, TkFramework& framework)
+#if !defined(NV_VC) || NV_VC >= 14
+	: m_defaultActorDesc{ 1.0f, nullptr, 1.0f, nullptr }
+{
+#else
+{
+	m_defaultActorDesc.uniformInitialBondHealth = m_defaultActorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
+	m_defaultActorDesc.initialBondHealths = m_defaultActorDesc.initialSupportChunkHealths = nullptr;
+#endif
+	m_tkAsset = framework.createAsset(desc);
+	fillPhysicsChunks(pxChunks, pxSubchunks, desc.chunkCount);
+}
+
+ExtPxAssetImpl::ExtPxAssetImpl(TkAsset* asset, ExtPxAssetDesc::ChunkDesc* chunks, uint32_t chunkCount)
+	: m_tkAsset(asset)
+#if !defined(NV_VC) || NV_VC >= 14
+	, m_defaultActorDesc{ 1.0f, nullptr, 1.0f, nullptr }
+{
+#else
+{
+	m_defaultActorDesc.uniformInitialBondHealth = m_defaultActorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
+	m_defaultActorDesc.initialBondHealths = m_defaultActorDesc.initialSupportChunkHealths = nullptr;
+#endif
+	m_tkAsset = asset;		
+	fillPhysicsChunks(chunks, chunkCount);
+}
+
+
+ExtPxAssetImpl::ExtPxAssetImpl(TkAsset* asset)
+	: m_tkAsset(asset)
+#if !defined(NV_VC) || NV_VC >= 14
+	, m_defaultActorDesc { 1.0f, nullptr, 1.0f, nullptr }
+{
+#else
+{
+	m_defaultActorDesc.uniformInitialBondHealth = m_defaultActorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
+	m_defaultActorDesc.initialBondHealths = m_defaultActorDesc.initialSupportChunkHealths = nullptr;
+#endif
+}
+
+ExtPxAssetImpl::~ExtPxAssetImpl()
+{
+	if (m_tkAsset)
+	{
+		m_tkAsset->release();
+	}
+}
+
+void ExtPxAssetImpl::release()
+{
+	NVBLAST_DELETE(this, ExtPxAssetImpl);
+}
+
+void ExtPxAssetImpl::fillPhysicsChunks(ExtPxChunk* pxChunks, ExtPxSubchunk* pxSuchunks, uint32_t chunkCount)
+{
 	// count subchunks and reserve memory
 	uint32_t subchunkCount = 0;
-	for (uint32_t i = 0; i < desc.chunkCount; ++i)
+	for (uint32_t i = 0; i < chunkCount; ++i)
 	{
-		const auto& chunk = desc.pxChunks[i];
+		const auto& chunk = pxChunks[i];
+		subchunkCount += static_cast<uint32_t>(chunk.subchunkCount);
+	}
+	m_subchunks.resize(subchunkCount);
+	m_chunks.resize(chunkCount);
+	memcpy(&m_subchunks.front(), pxSuchunks, sizeof(ExtPxSubchunk) * subchunkCount);
+	memcpy(&m_chunks.front(), pxChunks, sizeof(ExtPxChunk) * chunkCount);
+}
+
+void ExtPxAssetImpl::fillPhysicsChunks(ExtPxAssetDesc::ChunkDesc* pxChunks, uint32_t chunkCount)
+{
+	// count subchunks and reserve memory
+	uint32_t subchunkCount = 0;
+	for (uint32_t i = 0; i < chunkCount; ++i)
+	{
+		const auto& chunk = pxChunks[i];
 		subchunkCount += static_cast<uint32_t>(chunk.subchunkCount);
 	}
 	m_subchunks.reserve(subchunkCount);
 
 	// fill chunks and subchunks
-	m_chunks.resize(desc.chunkCount);
-	for (uint32_t i = 0; i < desc.chunkCount; ++i)
+	m_chunks.resize(chunkCount);
+	for (uint32_t i = 0; i < chunkCount; ++i)
 	{
-		const auto& chunk = desc.pxChunks[i];
+		const auto& chunk = pxChunks[i];
 		m_chunks[i].isStatic = chunk.isStatic;
 		m_chunks[i].firstSubchunkIndex = m_subchunks.size();
 		m_chunks[i].subchunkCount = chunk.subchunkCount;
@@ -104,27 +163,9 @@ ExtPxAssetImpl::ExtPxAssetImpl(const ExtPxAssetDesc& desc, TkFramework& framewor
 	}
 }
 
-ExtPxAssetImpl::ExtPxAssetImpl(TkAsset* tkAsset):
-	m_tkAsset(tkAsset)
-{
 
-}
-
-ExtPxAssetImpl::~ExtPxAssetImpl()
-{
-	if (m_tkAsset)
-	{
-		m_tkAsset->release();
-	}
-}
-
-void ExtPxAssetImpl::release()
-{
-	NVBLASTEXT_DELETE(this, ExtPxAssetImpl);
-}
-
-NV_INLINE bool serializeConvexMesh(const PxConvexMesh& convexMesh, PxCooking& cooking, ExtArray<uint32_t>::type& indicesScratch, 
-	ExtArray<PxHullPolygon>::type hullPolygonsScratch, PxOutputStream& stream)
+NV_INLINE bool serializeConvexMesh(const PxConvexMesh& convexMesh, PxCooking& cooking, Array<uint32_t>::type& indicesScratch, 
+	Array<PxHullPolygon>::type hullPolygonsScratch, PxOutputStream& stream)
 {
 	PxConvexMeshDesc desc;
 	desc.points.data = convexMesh.getVertices();
@@ -168,64 +209,25 @@ NV_INLINE bool serializeConvexMesh(const PxConvexMesh& convexMesh, PxCooking& co
 	return cooking.cookConvexMesh(desc, stream);
 }
 
-bool ExtPxAssetImpl::serialize(PxFileBuf& stream, PxCooking& cooking) const
+
+void ExtPxAssetImpl::setUniformHealth(bool enabled)
 {
-	// Header data
-	stream.storeDword(ClassID);
-	stream.storeDword(Version::Current);
-
-	m_tkAsset->serialize(stream);
-
-	// Chunks
-	const uint32_t chunkCount = m_tkAsset->getChunkCount();
-	for (uint32_t i = 0; i < chunkCount; ++i)
+	if (m_bondHealths.empty() != enabled)
 	{
-		const ExtPxChunk& chunk = m_chunks[i];
-		stream.storeDword(chunk.firstSubchunkIndex);
-		stream.storeDword(chunk.subchunkCount);
-		stream.storeDword(chunk.isStatic ? 1 : 0);
-	}
-
-	stream.storeDword(m_subchunks.size());
-
-	ExtArray<uint32_t>::type indicesScratch(512);
-	ExtArray<PxHullPolygon>::type hullPolygonsScratch(512);
-	ExtHashMap<PxConvexMesh*, uint32_t>::type convexReuseMap;
-
-	FileBufToPxOutputStream outputStream(stream);
-	for (uint32_t i = 0; i < m_subchunks.size(); ++i)
-	{
-		auto& subchunk = m_subchunks[i];
-
-		// Subchunk transform
-		stream.storeFloat(subchunk.transform.q.x);	stream.storeFloat(subchunk.transform.q.y);	stream.storeFloat(subchunk.transform.q.z);	stream.storeFloat(subchunk.transform.q.w);
-		stream.storeFloat(subchunk.transform.p.x);	stream.storeFloat(subchunk.transform.p.y);	stream.storeFloat(subchunk.transform.p.z);
-
-		// Subchunk scale
-		stream.storeFloat(subchunk.geometry.scale.scale.x);	stream.storeFloat(subchunk.geometry.scale.scale.y);	stream.storeFloat(subchunk.geometry.scale.scale.z);
-		stream.storeFloat(subchunk.geometry.scale.rotation.x);	stream.storeFloat(subchunk.geometry.scale.rotation.y);	stream.storeFloat(subchunk.geometry.scale.rotation.z);	stream.storeFloat(subchunk.geometry.scale.rotation.w);
-
-		auto convexMesh = subchunk.geometry.convexMesh;
-		NVBLASTEXT_CHECK_ERROR(convexMesh != nullptr, "ExtPxAssetImpl::serialize: subchunk convexMesh is nullptr.", return false);
-
-		auto entry = convexReuseMap.find(convexMesh);
-		if (entry)
+		if (enabled)
 		{
-			stream.storeDword(entry->second);
+			m_bondHealths.resizeUninitialized(0);
+			m_supportChunkHealths.resizeUninitialized(0);
 		}
 		else
 		{
-			stream.storeDword(invalidIndex<uint32_t>());
-			if (!serializeConvexMesh(*convexMesh, cooking, indicesScratch, hullPolygonsScratch, outputStream))
-			{
-				NVBLASTEXT_LOG_ERROR("ExtPxAssetImpl::serialize: subchunk convexMesh cooking/serialization failed.");
-				return false;
-			}
-			convexReuseMap[convexMesh] = i;
+			m_bondHealths.resize(m_tkAsset->getBondCount());
+			m_supportChunkHealths.resize(m_tkAsset->getGraph().nodeCount);
 		}
 	}
 
-	return true;
+	m_defaultActorDesc.initialBondHealths = enabled ? nullptr : m_bondHealths.begin();
+	m_defaultActorDesc.initialSupportChunkHealths = enabled ? nullptr : m_supportChunkHealths.begin();
 }
 
 
@@ -235,81 +237,30 @@ bool ExtPxAssetImpl::serialize(PxFileBuf& stream, PxCooking& cooking) const
 
 ExtPxAsset*	ExtPxAsset::create(const ExtPxAssetDesc& desc, TkFramework& framework)
 {
-	ExtPxAssetImpl* asset = NVBLASTEXT_NEW(ExtPxAssetImpl)(desc, framework);
+	ExtPxAssetImpl* asset = NVBLAST_NEW(ExtPxAssetImpl)(desc, framework);
 	return asset;
 }
 
+ExtPxAsset*	ExtPxAsset::create(const TkAssetDesc& desc, ExtPxChunk* pxChunks, ExtPxSubchunk* pxSubchunks, TkFramework& framework)
+{
+	ExtPxAssetImpl* asset = NVBLAST_NEW(ExtPxAssetImpl)(desc, pxChunks, pxSubchunks, framework);
+	return asset;
+}
 
 Nv::Blast::ExtPxAsset* ExtPxAsset::create(TkAsset* tkAsset)
 {
-	ExtPxAssetImpl* asset = NVBLASTEXT_NEW(ExtPxAssetImpl)(tkAsset);
+	ExtPxAssetImpl* asset = NVBLAST_NEW(ExtPxAssetImpl)(tkAsset);
 
 	// Don't populate the chunks or subchunks!
 
 	return asset;
 }
 
-ExtPxAsset* ExtPxAsset::deserialize(PxFileBuf& stream, TkFramework& framework, PxPhysics& physics)
+Nv::Blast::ExtPxAsset* ExtPxAsset::create(TkAsset* tkAsset, ExtPxAssetDesc::ChunkDesc* chunks, uint32_t chunkCount)
 {
-	ExtPxAssetImpl::DataHeader header;
-	header.dataType = stream.readDword();
-	header.version = stream.readDword();
-	NVBLASTEXT_CHECK_ERROR(header.dataType == ExtPxAssetImpl::ClassID,	"ExtPxAsset::deserialize: wrong data type in filebuf stream.",	return nullptr);
-	NVBLASTEXT_CHECK_ERROR(header.version == ExtPxAssetImpl::Version::Current, "ExtPxAsset::deserialize: wrong data version in filebuf stream.", return nullptr);
-
-	TkAsset* tkAsset = static_cast<TkAsset*>(framework.deserialize(stream));
-	NVBLASTEXT_CHECK_ERROR(tkAsset != nullptr, "ExtPxAsset::deserialize: failed to deserialize TkAsset.", return nullptr);
-
-	ExtPxAssetImpl* asset = NVBLASTEXT_NEW(ExtPxAssetImpl)(tkAsset);
-
-	asset->m_chunks.resize(asset->m_tkAsset->getChunkCount());
-
-	const uint32_t chunkCount = asset->m_chunks.size();
-	for (uint32_t i = 0; i < chunkCount; ++i)
-	{
-		ExtPxChunk& chunk = asset->m_chunks[i];
-		chunk.firstSubchunkIndex = stream.readDword();
-		chunk.subchunkCount = stream.readDword();
-		chunk.isStatic = 0 != stream.readDword();
-	}
-
-	const uint32_t subchunkCount = stream.readDword();
-	asset->m_subchunks.resize(subchunkCount);
-
-	FileBufToPxInputStream inputStream(stream);
-	for (uint32_t i = 0; i < asset->m_subchunks.size(); ++i)
-	{
-		ExtPxSubchunk& subChunk = asset->m_subchunks[i];
-
-		// Subchunk transform
-		subChunk.transform.q.x = stream.readFloat();	subChunk.transform.q.y = stream.readFloat();	subChunk.transform.q.z = stream.readFloat();	subChunk.transform.q.w = stream.readFloat();
-		subChunk.transform.p.x = stream.readFloat();	subChunk.transform.p.y = stream.readFloat();	subChunk.transform.p.z = stream.readFloat();
-
-		// Subchunk scale
-		subChunk.geometry.scale.scale.x = stream.readFloat();	subChunk.geometry.scale.scale.y = stream.readFloat();	subChunk.geometry.scale.scale.z = stream.readFloat();
-		subChunk.geometry.scale.rotation.x = stream.readFloat();	subChunk.geometry.scale.rotation.y = stream.readFloat();	subChunk.geometry.scale.rotation.z = stream.readFloat();	subChunk.geometry.scale.rotation.w = stream.readFloat();
-
-		const uint32_t convexReuseIndex = stream.readDword();
-		if (isInvalidIndex(convexReuseIndex))
-		{
-			subChunk.geometry.convexMesh = physics.createConvexMesh(inputStream);
-		}
-		else
-		{
-			NVBLAST_ASSERT_WITH_MESSAGE(convexReuseIndex < i, "ExtPxAsset::deserialize: wrong convexReuseIndex.");
-			subChunk.geometry.convexMesh = asset->m_subchunks[convexReuseIndex].geometry.convexMesh;
-		}
-		if (!subChunk.geometry.convexMesh)
-		{
-			NVBLASTEXT_LOG_ERROR("ExtPxAsset::deserialize: failed to deserialize convex mesh.");
-			asset->release();
-			return nullptr;
-		}
-	}
-
+	ExtPxAssetImpl* asset = NVBLAST_NEW(ExtPxAssetImpl)(tkAsset, chunks, chunkCount);
 	return asset;
 }
-
 
 } // namespace Blast
 } // namespace Nv

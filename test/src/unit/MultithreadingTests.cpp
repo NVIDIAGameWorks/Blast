@@ -1,3 +1,31 @@
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
+
 #include "BlastBaseTest.h"
 #include "AssetGenerator.h"
 
@@ -107,12 +135,12 @@ public:
 
 	static void* alloc(size_t size)
 	{
-		return BlastBaseTest<FailLevel, Verbosity>::alloc(size);
+		return BlastBaseTest<FailLevel, Verbosity>::alignedZeroedAlloc(size);
 	}
 
 	static void free(void* mem)
 	{
-		BlastBaseTest<FailLevel, Verbosity>::free(mem);
+		BlastBaseTest<FailLevel, Verbosity>::alignedFree(mem);
 	}
 
 	static void testActorVisibleChunks(const Nv::Blast::Actor& actor, NvBlastLog)
@@ -297,13 +325,13 @@ public:
 			NvBlastAssetDesc desc;
 			desc.chunkDescs = &testAsset.solverChunks[0];
 			desc.chunkCount = (uint32_t)testAsset.solverChunks.size();
-			desc.bondDescs = &testAsset.solverBonds[0];
+			desc.bondDescs = testAsset.solverBonds.data();
 			desc.bondCount = (uint32_t)testAsset.solverBonds.size();
 
 			std::vector<char> scratch;
 			scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(&desc, messageLog));
 			void* mem = alloc(NvBlastGetAssetMemorySize(&desc, messageLog));
-			NvBlastAsset* asset = NvBlastCreateAsset(mem, &desc, &scratch[0], messageLog);
+			NvBlastAsset* asset = NvBlastCreateAsset(mem, &desc, scratch.data(), messageLog);
 			EXPECT_TRUE(asset != nullptr);
 
 			NvBlastActorDesc actorDesc;
@@ -312,7 +340,7 @@ public:
 			void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
 			NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, nullptr);	// Using zeroingAlloc in case actorTest compares memory blocks
 			scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, messageLog));
-			NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, &scratch[0], messageLog);
+			NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), messageLog);
 			EXPECT_TRUE(actor != nullptr);
 
 			// Run parallelized damage through TaskDispatcher

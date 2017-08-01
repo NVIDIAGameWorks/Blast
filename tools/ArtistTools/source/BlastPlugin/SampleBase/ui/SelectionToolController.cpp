@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "SelectionToolController.h"
 #include "RenderUtils.h"
@@ -14,6 +32,7 @@
 #include "Renderer.h"
 #include "PhysXController.h"
 #include "SampleProfiler.h"
+#include "GizmoToolController.h"
 
 #include <imgui.h>
 
@@ -23,7 +42,7 @@
 #include "PxRigidDynamic.h"
 #include "PxScene.h"
 #include "BlastSceneTree.h"
-
+#include "SimpleScene.h"
 using namespace Nv::Blast;
 using namespace physx;
 
@@ -39,6 +58,9 @@ using namespace physx;
 SelectionToolController::SelectionToolController()
 {
 	m_bRectSelecting = false;
+	m_bSelecting = false;
+
+	BlastSceneTree::ins()->addObserver(this);
 }
 
 SelectionToolController::~SelectionToolController()
@@ -56,6 +78,29 @@ void SelectionToolController::onInitialize()
 
 void SelectionToolController::onSampleStop() 
 {
+}
+
+void SelectionToolController::dataSelected(std::vector<BlastNode*> selections)
+{
+	m_actorsSelected.clear();
+
+	BlastController& blastController = getBlastController();
+	std::vector<BlastFamilyPtr>& families = blastController.getFamilies();
+
+	for (BlastFamily* family : families)
+	{
+		std::vector<uint32_t> selectedChunks = family->getSelectedChunks();
+		for (uint32_t chunkIndex : selectedChunks)
+		{
+			PxActor* actor = nullptr;
+			family->getPxActorByChunkIndex(chunkIndex, &actor);
+
+			if (actor)
+			{
+				m_actorsSelected.emplace(actor);
+			}
+		}
+	}
 }
 
 void SelectionToolController::Animate(double dt)
@@ -76,6 +121,10 @@ LRESULT SelectionToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 	if (uMsg == WM_LBUTTONDOWN || uMsg == WM_RBUTTONDOWN || uMsg == WM_MOUSEMOVE || uMsg == WM_LBUTTONUP || uMsg == WM_RBUTTONUP)
 	{
 		float mouseX = (short)LOWORD(lParam) / getRenderer().getScreenWidth();
+		if (!SimpleScene::Inst()->m_pCamera->_lhs)
+		{
+			mouseX = 1 - mouseX;
+		}
 		float mouseY = (short)HIWORD(lParam) / getRenderer().getScreenHeight();
 		bool press = uMsg == WM_LBUTTONDOWN;
 
@@ -89,7 +138,18 @@ LRESULT SelectionToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			m_RectSelectSpaceDir = pickDir.getNormalized();
 
 			m_RectRenderBuffer.clear();
-			m_bRectSelecting = true;
+			bool isCtrl = (GetAsyncKeyState(VK_CONTROL) && 0x8000);
+			bool isAlt = (GetAsyncKeyState(VK_MENU) && 0x8000);
+			bool isLight = (GetAsyncKeyState('L') && 0x8000);
+			// ctrl+leftbutton is used for light changing
+			// alt+leftbutton is used for camera rotate movement in AppMainWindow.cpp
+			// so, we use rect select when ctrl and alt off
+			m_bRectSelecting = !(isAlt || isLight);// !(isCtrl || isAlt);
+			if (isAlt || isLight)
+			{
+				m_RectRenderBuffer.clear();
+			}
+			m_bSelecting = true;
 		}
 		else if (uMsg == WM_MOUSEMOVE)
 		{
@@ -161,8 +221,9 @@ LRESULT SelectionToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 			{
 				return 1;
 			}
-
-			if (m_bRectSelecting)
+			bool isAlt = (GetAsyncKeyState(VK_MENU) && 0x8000);
+			bool isLight = (GetAsyncKeyState('L') && 0x8000);
+			if (m_bSelecting && !(isAlt || isLight))
 			{
 				bool isShift = (GetAsyncKeyState(VK_SHIFT) && 0x8000);
 				bool isCtrl = (GetAsyncKeyState(VK_CONTROL) && 0x8000);
@@ -180,15 +241,18 @@ LRESULT SelectionToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 				{
 					selectMode = SM_SUB;
 				}
-
 				int width = getRenderer().getScreenWidth();
 				int height = getRenderer().getScreenHeight();
 				int deltaX = (mouseX - m_RectSelectScreenPos.x) * width;
 				int deltaY = (mouseY - m_RectSelectScreenPos.y) * height;
 				float distance = deltaX * deltaX + deltaY * deltaY;
-				// rect select mode
-				if (distance > 1)
+				if (distance < 1)
 				{
+					m_bRectSelecting = false;
+				}
+				if (m_bRectSelecting)
+				{
+					// rect select mode
 					PxVec3 eyePos, pickDir[3];
 					getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir[0]);
 					getPhysXController().getEyePoseAndPickDir(m_RectSelectScreenPos.x, mouseY, eyePos, pickDir[1]);
@@ -243,23 +307,35 @@ LRESULT SelectionToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 					getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
 					pickDir = pickDir.getNormalized();
 
-					PxRaycastHit hit; hit.shape = NULL;
-					PxRaycastBuffer hit1;
-					getPhysXController().getPhysXScene().raycast(eyePos, pickDir, PX_MAX_F32, hit1, PxHitFlag::ePOSITION | PxHitFlag::eNORMAL);
-					hit = hit1.block;
+					PxRaycastBufferN<32> hits;
+
+					GetPhysXScene().raycast(eyePos, pickDir, PX_MAX_F32, hits, PxHitFlag::eDEFAULT | PxHitFlag::eMESH_MULTIPLE);
+
+					PxU32 nbThouches = hits.getNbTouches();
+					const PxRaycastHit* touches = hits.getTouches();
 
 					PxRigidActor* actor = NULL;
-					if (hit.shape)
+					float fDistance = PX_MAX_F32;
+					for (PxU32 u = 0; u < nbThouches; ++u)
 					{
-						actor = hit.actor;
+						const PxRaycastHit& t = touches[u];
+						if (t.shape && getBlastController().isActorVisible(*(t.actor)))
+						{
+							if (fDistance > t.distance)
+							{
+								fDistance = t.distance;
+								actor = t.actor;
+							}
+						}
 					}
+
 					pointSelect(actor, selectMode);
 				}
 			}
 
-			BlastSceneTree::ins()->updateChunkItemSelection();
 			m_RectRenderBuffer.clear();
 			m_bRectSelecting = false;
+			m_bSelecting = false;
 		}
 	}
 
@@ -272,42 +348,35 @@ void SelectionToolController::drawUI()
 
 void SelectionToolController::pointSelect(PxActor* actor, SelectMode selectMode)
 {
-	ExtPxActor* extActor = NULL;
-	if (NULL != actor)
-	{
-		PxRigidDynamic* rigidDynamic = actor->is<PxRigidDynamic>();
-		if (NULL != rigidDynamic)
-		{
-			extActor = getBlastController().getExtPxManager().getActorFromPhysXActor(*rigidDynamic);
-		}
-	}
-
 	if (selectMode == SM_RESET)
 	{
 		clearSelect();
 
-		if (NULL != extActor)
+		if (NULL != actor)
 		{
-			setActorSelected(*extActor, true);
-			m_actorsSelected.emplace(extActor);
+			setActorSelected(*actor, true);
+			m_actorsSelected.emplace(actor);
 		}
 	}
 	else if (selectMode == SM_ADD)
 	{
-		if (NULL != extActor)
+		if (NULL != actor)
 		{
-			setActorSelected(*extActor, true);
-			m_actorsSelected.emplace(extActor);
+			setActorSelected(*actor, true);
+			m_actorsSelected.emplace(actor);
 		}
 	}
 	else if (selectMode == SM_SUB)
 	{
-		if (NULL != extActor)
+		if (NULL != actor)
 		{
-			setActorSelected(*extActor, false);
-			m_actorsSelected.erase(extActor);
+			setActorSelected(*actor, false);
+			m_actorsSelected.erase(actor);
 		}
 	}
+
+	BlastSceneTree::ins()->updateChunkItemSelection();
+	trySelectAssetInstanceNode(m_actorsSelected);
 }
 
 #include "PxPhysics.h"
@@ -316,8 +385,8 @@ void SelectionToolController::pointSelect(PxActor* actor, SelectMode selectMode)
 class RectSelectionCallback : public PxOverlapCallback
 {
 public:
-	RectSelectionCallback(ExtPxManager& physicsManager, std::set<ExtPxActor*>& actorBuffer)
-		: m_physicsManager(physicsManager), m_actorBuffer(actorBuffer), PxOverlapCallback(m_hitBuffer, sizeof(m_hitBuffer) / sizeof(m_hitBuffer[0])) {}
+	RectSelectionCallback(std::set<PxActor*>& actorBuffer)
+		:m_actorBuffer(actorBuffer), PxOverlapCallback(m_hitBuffer, sizeof(m_hitBuffer) / sizeof(m_hitBuffer[0])) {}
 
 	PxAgain processTouches(const PxOverlapHit* buffer, PxU32 nbHits)
 	{
@@ -326,25 +395,20 @@ public:
 			PxRigidDynamic* rigidDynamic = buffer[i].actor->is<PxRigidDynamic>();
 			if (rigidDynamic)
 			{
-				ExtPxActor* actor = m_physicsManager.getActorFromPhysXActor(*rigidDynamic);
-				if (actor != nullptr)
-				{
-					m_actorBuffer.insert(actor);
-				}
+				m_actorBuffer.insert(rigidDynamic);
 			}
 		}
 		return true;
 	}
 
 private:
-	ExtPxManager&						m_physicsManager;
-	std::set<ExtPxActor*>&				m_actorBuffer;
-	PxOverlapHit						m_hitBuffer[1000];
+	std::set<PxActor*>&				m_actorBuffer;
+	PxOverlapHit					m_hitBuffer[1000];
 };
 
 void SelectionToolController::rectSelect(PxVec3 eyePos, PxVec3 lefttop, PxVec3 leftbottom, PxVec3 righttop, PxVec3 rightbottom, SelectMode selectMode)
 {
-	std::set<ExtPxActor*> actorsToSelect;
+	std::set<PxActor*> actorsToSelect;
 
 	float nearClip = 1;
 	PxVec3 nearlefttop = lefttop * nearClip;
@@ -373,8 +437,8 @@ void SelectionToolController::rectSelect(PxVec3 eyePos, PxVec3 lefttop, PxVec3 l
 	PxConvexMesh* convexMesh = cooking.createConvexMesh(convexMeshDesc, physics.getPhysicsInsertionCallback());
 	if (NULL != convexMesh)
 	{
-		RectSelectionCallback overlapCallback(getBlastController().getExtPxManager(), actorsToSelect);
-		getManager()->getPhysXController().getPhysXScene().overlap(PxConvexMeshGeometry(convexMesh), PxTransform(eyePos), overlapCallback);
+		RectSelectionCallback overlapCallback(actorsToSelect);
+		GetPhysXScene().overlap(PxConvexMeshGeometry(convexMesh), PxTransform(eyePos), overlapCallback);
 		convexMesh->release();
 	}
 
@@ -382,33 +446,42 @@ void SelectionToolController::rectSelect(PxVec3 eyePos, PxVec3 lefttop, PxVec3 l
 	{
 		clearSelect();
 
-		for (ExtPxActor* actor : actorsToSelect)
+		for (PxActor* actor : actorsToSelect)
 		{
-			setActorSelected(*actor, true);
-			m_actorsSelected.emplace(actor);
+			if (getBlastController().isActorVisible(*actor))
+			{
+				setActorSelected(*actor, true);
+				m_actorsSelected.emplace(actor);
+			}
 		}
 	}
 	else if (selectMode == SM_ADD)
 	{
-		for (ExtPxActor* actor : actorsToSelect)
+		for (PxActor* actor : actorsToSelect)
 		{
-			setActorSelected(*actor, true);
-			m_actorsSelected.emplace(actor);
+			if (getBlastController().isActorVisible(*actor))
+			{
+				setActorSelected(*actor, true);
+				m_actorsSelected.emplace(actor);
+			}
 		}
 	}
 	else if (selectMode == SM_SUB)
 	{
-		for (ExtPxActor* actor : actorsToSelect)
+		for (PxActor* actor : actorsToSelect)
 		{
 			setActorSelected(*actor, false);
 			m_actorsSelected.erase(actor);
 		}
 	}
+
+	BlastSceneTree::ins()->updateChunkItemSelection();
+	trySelectAssetInstanceNode(m_actorsSelected);
 }
 
 void SelectionToolController::clearSelect()
 {
-	for (ExtPxActor* actor : m_actorsSelected)
+	for (PxActor* actor : m_actorsSelected)
 	{
 		setActorSelected(*actor, false);
 	}
@@ -417,7 +490,75 @@ void SelectionToolController::clearSelect()
 	SampleManager::ins()->clearChunksSelected();
 }
 
-void SelectionToolController::setActorSelected(const ExtPxActor& actor, bool selected)
+void SelectionToolController::setTargetActor(PxActor* actor)
+{
+	if (actor == nullptr)
+	{
+		return;
+	}
+
+	setActorSelected(*actor, true);
+	m_actorsSelected.emplace(actor);
+
+	BlastSceneTree::ins()->updateChunkItemSelection();
+	trySelectAssetInstanceNode(m_actorsSelected);
+}
+
+PxActor* SelectionToolController::getTargetActor()
+{
+	PxActor* targetActor = nullptr;
+	if (m_actorsSelected.size() > 0)
+	{
+		targetActor = *m_actorsSelected.begin();
+	}
+	return targetActor;
+}
+
+void SelectionToolController::setTargetActors(std::set<PxActor*>& actors)
+{
+	for (PxActor* actor : actors)
+	{
+		setActorSelected(*actor, true);
+		m_actorsSelected.emplace(actor);
+	}
+
+	BlastSceneTree::ins()->updateChunkItemSelection();
+	trySelectAssetInstanceNode(m_actorsSelected);
+}
+
+std::set<PxActor*> SelectionToolController::getTargetActors()
+{
+	return m_actorsSelected;
+}
+
+void SelectionToolController::trySelectAssetInstanceNode(std::set<PxActor*>& selectedActors)
+{
+	BlastController& blastController = getBlastController();
+	GizmoToolController& gizmoToolController = getManager()->getGizmoToolController();
+
+	for (PxActor* actor : selectedActors)
+	{
+		if (gizmoToolController.CanMapToRootChunk(actor))
+		{
+			BlastFamily* family = getBlastController().getFamilyByPxActor(*actor);
+			BlastSceneTree::ins()->selectTreeItem(family);
+		}
+	}
+}
+
+physx::PxScene& SelectionToolController::GetPhysXScene()
+{
+	if (getManager()->IsSimulating())
+	{
+		return getPhysXController().getPhysXScene();
+	}
+	else
+	{
+		return getPhysXController().getEditPhysXScene();
+	}
+}
+
+void SelectionToolController::setActorSelected(const PxActor& actor, bool selected)
 {
 	std::vector<BlastFamilyPtr>& families = getBlastController().getFamilies();
 	if (families.size() == 0)
@@ -430,7 +571,7 @@ void SelectionToolController::setActorSelected(const ExtPxActor& actor, bool sel
 	for (; it != families.end(); it++)
 	{
 		BlastFamilyPtr f = *it;
-		if (f->find((ExtPxActor*)&actor))
+		if (f->find(actor))
 		{
 			pBlastFamily = f;
 			break;

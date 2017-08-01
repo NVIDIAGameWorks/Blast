@@ -1,20 +1,38 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "RenderMaterial.h"
 #include <DirectXMath.h>
 #include "ShaderUtils.h"
 #include "Renderer.h"
 #include "SampleManager.h"
-
-
+#include "Light.h"
+#include "D3D11TextureResource.h"
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //												RenderMaterial
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,13 +40,18 @@
 RenderMaterial::RenderMaterial(const char* materialName, ResourceManager& resourceCallback, const char* shaderFileName,
 	const char* textureFileName, BlendMode blendMode)
 {
-// Add By Lixu Begin
 	mMaterialName = materialName;
-	mTextureFileName = textureFileName;
-	SampleManager::ins()->addRenderMaterial(this);
-// Add By Lixu End
+	setDiffuseColor(0.5, 0.5, 0.5, 1.0);
+	mTextureFileNames[TT_Diffuse] = textureFileName;
 
 	this->initialize(resourceCallback, shaderFileName, textureFileName, blendMode);
+}
+
+RenderMaterial::RenderMaterial(const char* materialName, ResourceManager& resourceCallback, const char* shaderFileName, float r, float g, float b, float a, BlendMode blendMode)
+{
+	mMaterialName = materialName;
+	setDiffuseColor(r, g, b, a);
+	this->initialize(resourceCallback, shaderFileName, "", blendMode);
 }
 
 void RenderMaterial::initialize(ResourceManager& resourceCallback, const char* shaderFileName, const char* textureFileName, BlendMode blendMode)
@@ -40,9 +63,15 @@ void RenderMaterial::initialize(ResourceManager& resourceCallback, const char* s
 
 void RenderMaterial::initialize(ResourceManager& resourceCallback, std::vector<std::string> shaderFileNames, const char* textureFileName, BlendMode blendMode)
 {
-	mTextureSRV = nullptr;
-	mTexture = nullptr;
+	for (int i = 0; i < TT_Num; i++)
+	{
+		m_TextureSRVs[i] = nullptr;
+		mTextureResources[i] = nullptr;
+	}
 	mBlendState = nullptr;
+
+	memset(mSpecularColor, 0, sizeof(float) * 4);
+	mSpecularShininess = 20;
 
 	for (uint32_t i = 0; i < shaderFileNames.size(); i++)
 	{
@@ -55,9 +84,9 @@ void RenderMaterial::initialize(ResourceManager& resourceCallback, std::vector<s
 	}
 	mShaderGroups.reserve(mShaderFilePathes.size());
 
-	if (!mTextureFileName.empty())
+	if (!mTextureFileNames[TT_Diffuse].empty())
 	{
-		mTexture = resourceCallback.requestTexture(mTextureFileName.c_str());
+		mTextureResources[TT_Diffuse] = resourceCallback.requestTexture(mTextureFileNames[TT_Diffuse].c_str());
 	}
 
 	setBlending(blendMode);
@@ -82,15 +111,14 @@ void RenderMaterial::releaseReloadableResources()
 	mRenderMeshToInstanceMap.clear();
 // Add By Lixu End
 
-	SAFE_RELEASE(mTextureSRV);
+	for (int i = 0; i < TT_Num; i++)
+	{
+		SAFE_RELEASE(m_TextureSRVs[i]);
+	}	
 }
 
 RenderMaterial::~RenderMaterial()
 {
-// Add By Lixu Begin
-	SampleManager::ins()->removeRenderMaterial(mMaterialName);
-// Add By Lixu End
-
 	releaseReloadableResources();
 	SAFE_RELEASE(mBlendState);
 }
@@ -160,10 +188,15 @@ void RenderMaterial::reload()
 	}
 
 	// load texture
-	if (mTexture)
+	for (int i = 0; i < TT_Num; i++)
 	{
-		V(DirectX::CreateShaderResourceView(device, mTexture->image.GetImages(), mTexture->image.GetImageCount(),
-		                                    mTexture->metaData, &mTextureSRV));
+		if (mTextureResources[i])
+		{
+			V(DirectX::CreateShaderResourceView(device,
+				mTextureResources[i]->image.GetImages(),
+				mTextureResources[i]->image.GetImageCount(),
+				mTextureResources[i]->metaData, &m_TextureSRVs[i]));
+		}
 	}
 }
 
@@ -219,8 +252,12 @@ void RenderMaterial::Instance::bind(ID3D11DeviceContext& context, uint32_t slot,
 {
 	mMaterial.mShaderGroups[mShaderNum]->Set(&context, !depthStencilOnly);
 
+	GPUShaderResource* pResource = Light::GetEnvTextureSRV();
+	ID3D11ShaderResourceView* pEnvTextureSRV = D3D11TextureResource::GetResource(pResource);
+
 	context.OMSetBlendState(mMaterial.mBlendState, nullptr, 0xFFFFFFFF);
-	context.PSSetShaderResources(slot, 1, &(mMaterial.mTextureSRV));
+	context.PSSetShaderResources(slot, TT_Num, mMaterial.m_TextureSRVs);
+	context.PSSetShaderResources(TT_Num, 1, &pEnvTextureSRV);
 	context.IASetInputLayout(mInputLayout);
 }
 
@@ -230,38 +267,72 @@ bool RenderMaterial::Instance::isValid()
 }
 
 // Add By Lixu Begin
-void RenderMaterial::setTextureFileName(std::string textureFileName)
+void RenderMaterial::setTextureFileName(std::string textureFileName, TextureType tt)
 { 
-	if (mTextureFileName == textureFileName)
+	if (mTextureFileNames[tt] == textureFileName)
+	{
+		return;
+	}
+	mTextureFileNames[tt] = textureFileName;
+
+	mTextureResources[tt] = nullptr;
+	SAFE_RELEASE(m_TextureSRVs[tt]);
+
+	if (mTextureFileNames[tt].empty())
 	{
 		return;
 	}
 
-	mTextureFileName = textureFileName;
-	mTexture = nullptr;
-	SAFE_RELEASE(mTextureSRV);
-
-	if (mTextureFileName.empty())
-	{
-		return;
-	}
-
-	std::string searchDir = mTextureFileName;
+	std::string searchDir = mTextureFileNames[tt];
 	size_t ind = searchDir.find_last_of('/');
 	if (ind > 0)
 		searchDir = searchDir.substr(0, ind);
 
 	ResourceManager* pResourceManager = ResourceManager::ins();
 	pResourceManager->addSearchDir(searchDir.c_str());
-	mTexture = pResourceManager->requestTexture(mTextureFileName.c_str());
-	if (mTexture == nullptr)
+	mTextureResources[tt] = pResourceManager->requestTexture(mTextureFileNames[tt].c_str());
+	if (mTextureResources[tt] == nullptr)
 	{
 		return;
 	}
 
 	ID3D11Device* device = GetDeviceManager()->GetDevice();
-	DirectX::CreateShaderResourceView(device, mTexture->image.GetImages(), mTexture->image.GetImageCount(),
-		mTexture->metaData, &mTextureSRV);
+	DirectX::CreateShaderResourceView(device, 
+		mTextureResources[tt]->image.GetImages(), 
+		mTextureResources[tt]->image.GetImageCount(),
+		mTextureResources[tt]->metaData, &m_TextureSRVs[tt]);
+}
+
+void RenderMaterial::setDiffuseColor(float r, float g, float b, float a)
+{
+	mDiffuseColor[0] = r;
+	mDiffuseColor[1] = g;
+	mDiffuseColor[2] = b;
+	mDiffuseColor[3] = a;
+}
+
+void RenderMaterial::getDiffuseColor(float& r, float& g, float& b, float& a)
+{
+	r = mDiffuseColor[0];
+	g = mDiffuseColor[1];
+	b = mDiffuseColor[2];
+	a = mDiffuseColor[3];
+}
+
+void RenderMaterial::setSpecularColor(float r, float g, float b, float a)
+{
+	mSpecularColor[0] = r;
+	mSpecularColor[1] = g;
+	mSpecularColor[2] = b;
+	mSpecularColor[3] = a;
+}
+
+void RenderMaterial::getSpecularColor(float& r, float& g, float& b, float& a)
+{
+	r = mSpecularColor[0];
+	g = mSpecularColor[1];
+	b = mSpecularColor[2];
+	a = mSpecularColor[3];
 }
 
 RenderMaterial* g_DefaultRenderMaterial = nullptr;
@@ -270,8 +341,13 @@ RenderMaterial* RenderMaterial::getDefaultRenderMaterial()
 	if (g_DefaultRenderMaterial == nullptr)
 	{
 		ResourceManager* pResourceManager = ResourceManager::ins();
-		g_DefaultRenderMaterial = new RenderMaterial("", *pResourceManager, "model_simple_ex");
+		g_DefaultRenderMaterial = new RenderMaterial("", *pResourceManager, "model_simple_textured_ex", 0.5, 0.5, 0.5);
 	}
 	return g_DefaultRenderMaterial;
+}
+
+bool RenderMaterial::isBadTexture(TextureType tt)
+{
+	return (nullptr == m_TextureSRVs[tt]);
 }
 // Add By Lixu End

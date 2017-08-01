@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/toolkit/source/NvBlastTkTaskImpl.h Source File</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/toolkit/source/NvBlastTkTaskImpl.h Source File</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -35,332 +35,288 @@
       <li><a href="globals.html"><span>File&nbsp;Members</span></a></li>
     </ul>
   </div>
-<h1>sdk/toolkit/source/NvBlastTkTaskImpl.h</h1><a href="_nv_blast_tk_task_impl_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment">* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.</span>
-<a name="l00003"></a>00003 <span class="comment">*</span>
-<a name="l00004"></a>00004 <span class="comment">* NVIDIA CORPORATION and its licensors retain all intellectual property</span>
-<a name="l00005"></a>00005 <span class="comment">* and proprietary rights in and to this software, related documentation</span>
-<a name="l00006"></a>00006 <span class="comment">* and any modifications thereto.  Any use, reproduction, disclosure or</span>
-<a name="l00007"></a>00007 <span class="comment">* distribution of this software and related documentation without an express</span>
-<a name="l00008"></a>00008 <span class="comment">* license agreement from NVIDIA CORPORATION is strictly prohibited.</span>
-<a name="l00009"></a>00009 <span class="comment">*/</span>
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef NVBLASTTKTASKIMPL_H</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTTKTASKIMPL_H</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
-<a name="l00014"></a>00014 <span class="preprocessor">#include "<a class="code" href="_nv_blast_8h.html">NvBlast.h</a>"</span>
-<a name="l00015"></a>00015 
-<a name="l00016"></a>00016 <span class="preprocessor">#include "<a class="code" href="_nv_blast_tk_framework_impl_8h.html">NvBlastTkFrameworkImpl.h</a>"</span>
-<a name="l00017"></a>00017 <span class="preprocessor">#include "<a class="code" href="_nv_blast_tk_event_queue_8h.html">NvBlastTkEventQueue.h</a>"</span>
-<a name="l00018"></a>00018 <span class="preprocessor">#include "<a class="code" href="_nv_blast_tk_array_8h.html">NvBlastTkArray.h</a>"</span>
-<a name="l00019"></a>00019 
-<a name="l00020"></a>00020 <span class="preprocessor">#include &lt;atomic&gt;</span>
-<a name="l00021"></a>00021 <span class="preprocessor">#include &lt;mutex&gt;</span>
-<a name="l00022"></a>00022 <span class="preprocessor">#include &lt;condition_variable&gt;</span>
-<a name="l00023"></a>00023 
-<a name="l00024"></a>00024 <span class="preprocessor">#include "task/PxTask.h"</span>
-<a name="l00025"></a>00025 <span class="preprocessor">#include "<a class="code" href="_nv_blast_assert_8h.html">NvBlastAssert.h</a>"</span>
-<a name="l00026"></a>00026 
-<a name="l00027"></a>00027 <span class="preprocessor">#include "<a class="code" href="_nv_blast_tk_group_8h.html">NvBlastTkGroup.h</a>"</span> <span class="comment">// TkGroupStats</span>
+<h1>sdk/toolkit/source/NvBlastTkTaskImpl.h</h1><a href="_nv_blast_tk_task_impl_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">// This code contains NVIDIA Confidential Information and is disclosed to you</span>
+<a name="l00002"></a>00002 <span class="comment">// under a form of NVIDIA software license agreement provided separately to you.</span>
+<a name="l00003"></a>00003 <span class="comment">//</span>
+<a name="l00004"></a>00004 <span class="comment">// Notice</span>
+<a name="l00005"></a>00005 <span class="comment">// NVIDIA Corporation and its licensors retain all intellectual property and</span>
+<a name="l00006"></a>00006 <span class="comment">// proprietary rights in and to this software and related documentation and</span>
+<a name="l00007"></a>00007 <span class="comment">// any modifications thereto. Any use, reproduction, disclosure, or</span>
+<a name="l00008"></a>00008 <span class="comment">// distribution of this software and related documentation without an express</span>
+<a name="l00009"></a>00009 <span class="comment">// license agreement from NVIDIA Corporation is strictly prohibited.</span>
+<a name="l00010"></a>00010 <span class="comment">//</span>
+<a name="l00011"></a>00011 <span class="comment">// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES</span>
+<a name="l00012"></a>00012 <span class="comment">// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO</span>
+<a name="l00013"></a>00013 <span class="comment">// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,</span>
+<a name="l00014"></a>00014 <span class="comment">// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.</span>
+<a name="l00015"></a>00015 <span class="comment">//</span>
+<a name="l00016"></a>00016 <span class="comment">// Information and code furnished is believed to be accurate and reliable.</span>
+<a name="l00017"></a>00017 <span class="comment">// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such</span>
+<a name="l00018"></a>00018 <span class="comment">// information or for any infringement of patents or other rights of third parties that may</span>
+<a name="l00019"></a>00019 <span class="comment">// result from its use. No license is granted by implication or otherwise under any patent</span>
+<a name="l00020"></a>00020 <span class="comment">// or patent rights of NVIDIA Corporation. Details are subject to change without notice.</span>
+<a name="l00021"></a>00021 <span class="comment">// This code supersedes and replaces all information previously supplied.</span>
+<a name="l00022"></a>00022 <span class="comment">// NVIDIA Corporation products are not authorized for use as critical</span>
+<a name="l00023"></a>00023 <span class="comment">// components in life support devices or systems without express written approval of</span>
+<a name="l00024"></a>00024 <span class="comment">// NVIDIA Corporation.</span>
+<a name="l00025"></a>00025 <span class="comment">//</span>
+<a name="l00026"></a>00026 <span class="comment">// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.</span>
+<a name="l00027"></a>00027 
 <a name="l00028"></a>00028 
-<a name="l00029"></a>00029 
-<a name="l00030"></a>00030 <span class="keyword">namespace </span>Nv
-<a name="l00031"></a>00031 {
-<a name="l00032"></a>00032 <span class="keyword">namespace </span>Blast
-<a name="l00033"></a>00033 {
-<a name="l00034"></a>00034 
-<a name="l00035"></a>00035 <span class="keyword">class </span>TkGroupImpl;
-<a name="l00036"></a>00036 <span class="keyword">class </span>TkActorImpl;
-<a name="l00037"></a>00037 <span class="keyword">class </span>TkFamilyImpl;
-<a name="l00038"></a>00038 
-<a name="l00039"></a>00039 
-<a name="l00043"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html">00043</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html">TkWorkerJob</a>
-<a name="l00044"></a>00044 {
-<a name="l00045"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html#52754f8fd3ce679380fb13a3549fd8d1">00045</a>     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">TkActorImpl</a>*    <a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html#52754f8fd3ce679380fb13a3549fd8d1" title="the actor to process">m_tkActor</a>;          
-<a name="l00046"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html#fbf6999089abcfac1871f151217f1f91">00046</a>     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">TkActorImpl</a>**   <a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html#fbf6999089abcfac1871f151217f1f91" title="list of child actors created by splitting">m_newActors</a>;        
-<a name="l00047"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html#e3881de93a5f5224791f6f87f94f3f96">00047</a>     uint32_t        <a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html#e3881de93a5f5224791f6f87f94f3f96" title="the number of child actors created">m_newActorsCount</a>;   
-<a name="l00048"></a>00048 };
-<a name="l00049"></a>00049 
-<a name="l00050"></a>00050 
-<a name="l00054"></a><a class="code" href="class_nv_1_1_blast_1_1_task_sync.html">00054</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_task_sync.html">TaskSync</a>
-<a name="l00055"></a>00055 {
-<a name="l00056"></a>00056 <span class="keyword">public</span>:
-<a name="l00060"></a><a class="code" href="class_nv_1_1_blast_1_1_task_sync.html#714c0f1dc9c8a9a25385ed4228cb9a1b">00060</a>     <a class="code" href="class_nv_1_1_blast_1_1_task_sync.html#714c0f1dc9c8a9a25385ed4228cb9a1b">TaskSync</a>(uint32_t count) : m_count(count) {}
-<a name="l00061"></a>00061 
-<a name="l00065"></a><a class="code" href="class_nv_1_1_blast_1_1_task_sync.html#e41e12f26c4885336a21bcc5e76d1e17">00065</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_task_sync.html#e41e12f26c4885336a21bcc5e76d1e17">wait</a>()
-<a name="l00066"></a>00066     {
-<a name="l00067"></a>00067         std::unique_lock&lt;std::mutex&gt; lk(m_mutex);
-<a name="l00068"></a>00068         m_cv.wait(lk, [&amp;]{ <span class="keywordflow">return</span> m_count == 0; });
-<a name="l00069"></a>00069     }
+<a name="l00029"></a>00029 <span class="preprocessor">#ifndef NVBLASTTKTASKIMPL_H</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTTKTASKIMPL_H</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include "<a class="code" href="_nv_blast_8h.html">NvBlast.h</a>"</span>
+<a name="l00033"></a>00033 
+<a name="l00034"></a>00034 <span class="preprocessor">#include "<a class="code" href="_nv_blast_tk_framework_impl_8h.html">NvBlastTkFrameworkImpl.h</a>"</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include "<a class="code" href="_nv_blast_tk_event_queue_8h.html">NvBlastTkEventQueue.h</a>"</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include "<a class="code" href="_nv_blast_array_8h.html">NvBlastArray.h</a>"</span>
+<a name="l00037"></a>00037 
+<a name="l00038"></a>00038 <span class="preprocessor">#include &lt;atomic&gt;</span>
+<a name="l00039"></a>00039 <span class="preprocessor">#include &lt;mutex&gt;</span>
+<a name="l00040"></a>00040 <span class="preprocessor">#include &lt;condition_variable&gt;</span>
+<a name="l00041"></a>00041 
+<a name="l00042"></a>00042 <span class="preprocessor">#include "<a class="code" href="_nv_blast_assert_8h.html">NvBlastAssert.h</a>"</span>
+<a name="l00043"></a>00043 
+<a name="l00044"></a>00044 <span class="preprocessor">#include "<a class="code" href="_nv_blast_tk_group_8h.html">NvBlastTkGroup.h</a>"</span> <span class="comment">// TkGroupStats</span>
+<a name="l00045"></a>00045 
+<a name="l00046"></a>00046 
+<a name="l00047"></a>00047 <span class="keyword">namespace </span>Nv
+<a name="l00048"></a>00048 {
+<a name="l00049"></a>00049 <span class="keyword">namespace </span>Blast
+<a name="l00050"></a>00050 {
+<a name="l00051"></a>00051 
+<a name="l00052"></a>00052 <span class="keyword">class </span>TkGroupImpl;
+<a name="l00053"></a>00053 <span class="keyword">class </span>TkActorImpl;
+<a name="l00054"></a>00054 <span class="keyword">class </span>TkFamilyImpl;
+<a name="l00055"></a>00055 
+<a name="l00056"></a>00056 
+<a name="l00060"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html">00060</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html">TkWorkerJob</a>
+<a name="l00061"></a>00061 {
+<a name="l00062"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html#52754f8fd3ce679380fb13a3549fd8d1">00062</a>     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">TkActorImpl</a>*    <a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html#52754f8fd3ce679380fb13a3549fd8d1" title="the actor to process">m_tkActor</a>;          
+<a name="l00063"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html#fbf6999089abcfac1871f151217f1f91">00063</a>     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor_impl.html">TkActorImpl</a>**   <a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html#fbf6999089abcfac1871f151217f1f91" title="list of child actors created by splitting">m_newActors</a>;        
+<a name="l00064"></a><a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html#e3881de93a5f5224791f6f87f94f3f96">00064</a>     uint32_t        <a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html#e3881de93a5f5224791f6f87f94f3f96" title="the number of child actors created">m_newActorsCount</a>;   
+<a name="l00065"></a>00065 };
+<a name="l00066"></a>00066 
+<a name="l00067"></a>00067 
+<a name="l00068"></a>00068 
+<a name="l00069"></a>00069 
 <a name="l00070"></a>00070 
-<a name="l00074"></a><a class="code" href="class_nv_1_1_blast_1_1_task_sync.html#b830c6369edcddf645f7daa1fba88b92">00074</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_task_sync.html#b830c6369edcddf645f7daa1fba88b92">notify</a>()
-<a name="l00075"></a>00075     {
-<a name="l00076"></a>00076         <a class="code" href="_nv_blast_profiler_internal_8h.html#36bd7d2c65e61bf80322c51c41f42fa7">PERF_SCOPE_H</a>(<span class="stringliteral">"TaskSync::notify"</span>);
-<a name="l00077"></a>00077         std::unique_lock&lt;std::mutex&gt; lk(m_mutex);
-<a name="l00078"></a>00078         m_count--;
-<a name="l00079"></a>00079         <span class="keywordflow">if</span> (m_count == 0)
-<a name="l00080"></a>00080         {
-<a name="l00081"></a>00081             lk.unlock();
-<a name="l00082"></a>00082             m_cv.notify_one();
-<a name="l00083"></a>00083         }
-<a name="l00084"></a>00084     }
-<a name="l00085"></a>00085 
-<a name="l00089"></a><a class="code" href="class_nv_1_1_blast_1_1_task_sync.html#828d4439e97b39b891142aa28e6666ed">00089</a>     <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_task_sync.html#828d4439e97b39b891142aa28e6666ed">isDone</a>()
-<a name="l00090"></a>00090     {
-<a name="l00091"></a>00091         std::unique_lock&lt;std::mutex&gt; lk(m_mutex);
-<a name="l00092"></a>00092         <span class="keywordflow">return</span> m_count == 0;
-<a name="l00093"></a>00093     }
-<a name="l00094"></a>00094 
-<a name="l00098"></a><a class="code" href="class_nv_1_1_blast_1_1_task_sync.html#8112ef18fffcb64b2a0301ee1182668a">00098</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_task_sync.html#8112ef18fffcb64b2a0301ee1182668a">setCount</a>(uint32_t count)
-<a name="l00099"></a>00099     {
-<a name="l00100"></a>00100         m_count = count;
-<a name="l00101"></a>00101     }
-<a name="l00102"></a>00102 
-<a name="l00103"></a>00103 <span class="keyword">private</span>:
-<a name="l00104"></a>00104     std::mutex              m_mutex;
-<a name="l00105"></a>00105     std::condition_variable m_cv;
-<a name="l00106"></a>00106     uint32_t                m_count;
-<a name="l00107"></a>00107 };
-<a name="l00108"></a>00108 
+<a name="l00074"></a>00074 <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;
+<a name="l00075"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html">00075</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html">SharedBlock</a>
+<a name="l00076"></a>00076 {
+<a name="l00077"></a>00077 <span class="keyword">public</span>:
+<a name="l00078"></a>00078 
+<a name="l00079"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#f891a9a802158ef8119000edd6ab7e61">00079</a>     <a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#f891a9a802158ef8119000edd6ab7e61">SharedBlock</a>() : m_numElementsPerBlock(0), m_numBlocks(0), m_buffer(nullptr) {}
+<a name="l00080"></a>00080 
+<a name="l00084"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#f83d17680afb4c8b03eb3fa81f79255d">00084</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#f83d17680afb4c8b03eb3fa81f79255d">allocate</a>(uint32_t elementsPerBlock, uint32_t numBlocks)
+<a name="l00085"></a>00085     {
+<a name="l00086"></a>00086         <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(elementsPerBlock &gt; 0 &amp;&amp; numBlocks &gt; 0);
+<a name="l00087"></a>00087 
+<a name="l00088"></a>00088         m_buffer = <span class="keyword">reinterpret_cast&lt;</span>T*<span class="keyword">&gt;</span>(<a class="code" href="_nv_blast_globals_8h.html#8b44c099b2f3dd78e4887065cbd3844d">NVBLAST_ALLOC_NAMED</a>(elementsPerBlock*numBlocks*<span class="keyword">sizeof</span>(T), <span class="stringliteral">"SharedBlock"</span>));
+<a name="l00089"></a>00089         m_numElementsPerBlock = elementsPerBlock;
+<a name="l00090"></a>00090         m_numBlocks = numBlocks;
+<a name="l00091"></a>00091     }
+<a name="l00092"></a>00092 
+<a name="l00096"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#c4a8aaca694b9a5a4c9264c471b76fd9">00096</a>     T* <a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#c4a8aaca694b9a5a4c9264c471b76fd9">getBlock</a>(uint32_t <span class="keywordtype">id</span>)
+<a name="l00097"></a>00097     {
+<a name="l00098"></a>00098         <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(<span class="keywordtype">id</span> &lt; m_numBlocks || 0 == m_numElementsPerBlock);
+<a name="l00099"></a>00099         <span class="keywordflow">return</span> &amp;m_buffer[<span class="keywordtype">id</span>*m_numElementsPerBlock];
+<a name="l00100"></a>00100     }
+<a name="l00101"></a>00101 
+<a name="l00105"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#d87d95440dde3029eafad96bffb38953">00105</a>     uint32_t <a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#d87d95440dde3029eafad96bffb38953">numElementsPerBlock</a>()<span class="keyword"> const </span>
+<a name="l00106"></a>00106 <span class="keyword">    </span>{
+<a name="l00107"></a>00107         <span class="keywordflow">return</span> m_numElementsPerBlock; 
+<a name="l00108"></a>00108     }
 <a name="l00109"></a>00109 
-<a name="l00113"></a>00113 <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;
-<a name="l00114"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html">00114</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html">SharedBlock</a>
-<a name="l00115"></a>00115 {
-<a name="l00116"></a>00116 <span class="keyword">public</span>:
-<a name="l00117"></a>00117 
-<a name="l00118"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#f891a9a802158ef8119000edd6ab7e61">00118</a>     <a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#f891a9a802158ef8119000edd6ab7e61">SharedBlock</a>() : m_numElementsPerBlock(0), m_numBlocks(0), m_buffer(nullptr) {}
-<a name="l00119"></a>00119 
-<a name="l00123"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#f83d17680afb4c8b03eb3fa81f79255d">00123</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#f83d17680afb4c8b03eb3fa81f79255d">allocate</a>(uint32_t elementsPerBlock, uint32_t numBlocks)
-<a name="l00124"></a>00124     {
-<a name="l00125"></a>00125         <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(elementsPerBlock &gt; 0 &amp;&amp; numBlocks &gt; 0);
+<a name="l00113"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#cbd14a848ce470167c84416571c9689b">00113</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#cbd14a848ce470167c84416571c9689b">release</a>()
+<a name="l00114"></a>00114     {
+<a name="l00115"></a>00115         m_numBlocks = 0;
+<a name="l00116"></a>00116         m_numElementsPerBlock = 0;
+<a name="l00117"></a>00117         <a class="code" href="_nv_blast_globals_8h.html#f968d9c2dc2aaeb87f55bbd85488f741">NVBLAST_FREE</a>(m_buffer);
+<a name="l00118"></a>00118         m_buffer = <span class="keyword">nullptr</span>;
+<a name="l00119"></a>00119     }
+<a name="l00120"></a>00120 
+<a name="l00121"></a>00121 <span class="keyword">private</span>:
+<a name="l00122"></a>00122     uint32_t    m_numElementsPerBlock;  
+<a name="l00123"></a>00123     uint32_t    m_numBlocks;            
+<a name="l00124"></a>00124     T*          m_buffer;               
+<a name="l00125"></a>00125 };
 <a name="l00126"></a>00126 
-<a name="l00127"></a>00127         m_buffer = <span class="keyword">reinterpret_cast&lt;</span>T*<span class="keyword">&gt;</span>(<a class="code" href="_nv_blast_tk_framework_impl_8h.html#71a709af654f803a130303d951ec433a">NVBLASTTK_ALLOC</a>(elementsPerBlock*numBlocks*<span class="keyword">sizeof</span>(T), <span class="stringliteral">"SharedBlock"</span>));
-<a name="l00128"></a>00128         m_numElementsPerBlock = elementsPerBlock;
-<a name="l00129"></a>00129         m_numBlocks = numBlocks;
-<a name="l00130"></a>00130     }
-<a name="l00131"></a>00131 
-<a name="l00135"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#c4a8aaca694b9a5a4c9264c471b76fd9">00135</a>     T* <a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#c4a8aaca694b9a5a4c9264c471b76fd9">getBlock</a>(uint32_t <span class="keywordtype">id</span>)
-<a name="l00136"></a>00136     {
-<a name="l00137"></a>00137         <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(<span class="keywordtype">id</span> &lt; m_numBlocks || 0 == m_numElementsPerBlock);
-<a name="l00138"></a>00138         <span class="keywordflow">return</span> &amp;m_buffer[<span class="keywordtype">id</span>*m_numElementsPerBlock];
-<a name="l00139"></a>00139     }
-<a name="l00140"></a>00140 
-<a name="l00144"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#d87d95440dde3029eafad96bffb38953">00144</a>     uint32_t <a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#d87d95440dde3029eafad96bffb38953">numElementsPerBlock</a>()<span class="keyword"> const </span>
-<a name="l00145"></a>00145 <span class="keyword">    </span>{
-<a name="l00146"></a>00146         <span class="keywordflow">return</span> m_numElementsPerBlock; 
-<a name="l00147"></a>00147     }
-<a name="l00148"></a>00148 
-<a name="l00152"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#cbd14a848ce470167c84416571c9689b">00152</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_block.html#cbd14a848ce470167c84416571c9689b">release</a>()
-<a name="l00153"></a>00153     {
-<a name="l00154"></a>00154         m_numBlocks = 0;
-<a name="l00155"></a>00155         m_numElementsPerBlock = 0;
-<a name="l00156"></a>00156         <a class="code" href="_nv_blast_tk_framework_impl_8h.html#3d477aa748a54a9334ccf76127c3d7df">NVBLASTTK_FREE</a>(m_buffer);
-<a name="l00157"></a>00157         m_buffer = <span class="keyword">nullptr</span>;
+<a name="l00127"></a>00127 
+<a name="l00134"></a>00134 <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;
+<a name="l00135"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html">00135</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html">SharedBuffer</a>
+<a name="l00136"></a>00136 {
+<a name="l00137"></a>00137 <span class="keyword">public</span>:
+<a name="l00138"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#195ce955812bc778caf44c6211f004ca">00138</a>     <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#195ce955812bc778caf44c6211f004ca">SharedBuffer</a>() : m_capacity(0), m_used(0), m_buffer(nullptr) {}
+<a name="l00139"></a>00139 
+<a name="l00143"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#88ffb1cd3b27fdce82b96073efe261c3">00143</a>     T* <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#88ffb1cd3b27fdce82b96073efe261c3">reserve</a>(<span class="keywordtype">size_t</span> n)
+<a name="l00144"></a>00144     {
+<a name="l00145"></a>00145         <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(m_used + n &lt;= m_capacity);
+<a name="l00146"></a>00146         <span class="keywordtype">size_t</span> start = m_used.fetch_add(n);
+<a name="l00147"></a>00147         <span class="keywordflow">return</span> &amp;m_buffer[start];
+<a name="l00148"></a>00148     }
+<a name="l00149"></a>00149 
+<a name="l00153"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#7ee955ac7695f8167d74aa060bfe6492">00153</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#7ee955ac7695f8167d74aa060bfe6492">allocate</a>(<span class="keywordtype">size_t</span> capacity)
+<a name="l00154"></a>00154     {
+<a name="l00155"></a>00155         <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(m_buffer == <span class="keyword">nullptr</span>);
+<a name="l00156"></a>00156         m_buffer = <span class="keyword">reinterpret_cast&lt;</span>T*<span class="keyword">&gt;</span>(<a class="code" href="_nv_blast_globals_8h.html#8b44c099b2f3dd78e4887065cbd3844d">NVBLAST_ALLOC_NAMED</a>(capacity*<span class="keyword">sizeof</span>(T), <span class="stringliteral">"SplitMemory"</span>));
+<a name="l00157"></a>00157         m_capacity = capacity;
 <a name="l00158"></a>00158     }
 <a name="l00159"></a>00159 
-<a name="l00160"></a>00160 <span class="keyword">private</span>:
-<a name="l00161"></a>00161     uint32_t    m_numElementsPerBlock;  
-<a name="l00162"></a>00162     uint32_t    m_numBlocks;            
-<a name="l00163"></a>00163     T*          m_buffer;               
-<a name="l00164"></a>00164 };
-<a name="l00165"></a>00165 
-<a name="l00166"></a>00166 
-<a name="l00173"></a>00173 <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;
-<a name="l00174"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html">00174</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html">SharedBuffer</a>
-<a name="l00175"></a>00175 {
-<a name="l00176"></a>00176 <span class="keyword">public</span>:
-<a name="l00177"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#195ce955812bc778caf44c6211f004ca">00177</a>     <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#195ce955812bc778caf44c6211f004ca">SharedBuffer</a>() : m_capacity(0), m_used(0), m_buffer(nullptr) {}
+<a name="l00163"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#712ca47f2a2fc95f769951994ca66ecc">00163</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#712ca47f2a2fc95f769951994ca66ecc">reset</a>()
+<a name="l00164"></a>00164     {
+<a name="l00165"></a>00165         m_used = 0;
+<a name="l00166"></a>00166     }
+<a name="l00167"></a>00167 
+<a name="l00171"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#7be2a8e72803a3ea16afefb7d8b0bde5">00171</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#7be2a8e72803a3ea16afefb7d8b0bde5">release</a>()
+<a name="l00172"></a>00172     {
+<a name="l00173"></a>00173         <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(m_buffer != <span class="keyword">nullptr</span>);
+<a name="l00174"></a>00174         <a class="code" href="_nv_blast_globals_8h.html#f968d9c2dc2aaeb87f55bbd85488f741">NVBLAST_FREE</a>(m_buffer);
+<a name="l00175"></a>00175         m_buffer = <span class="keyword">nullptr</span>;
+<a name="l00176"></a>00176         m_capacity = m_used = 0;
+<a name="l00177"></a>00177     }
 <a name="l00178"></a>00178 
-<a name="l00182"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#88ffb1cd3b27fdce82b96073efe261c3">00182</a>     T* <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#88ffb1cd3b27fdce82b96073efe261c3">reserve</a>(<span class="keywordtype">size_t</span> n)
-<a name="l00183"></a>00183     {
-<a name="l00184"></a>00184         <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(m_used + n &lt;= m_capacity);
-<a name="l00185"></a>00185         <span class="keywordtype">size_t</span> start = m_used.fetch_add(n);
-<a name="l00186"></a>00186         <span class="keywordflow">return</span> &amp;m_buffer[start];
-<a name="l00187"></a>00187     }
-<a name="l00188"></a>00188 
-<a name="l00192"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#7ee955ac7695f8167d74aa060bfe6492">00192</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#7ee955ac7695f8167d74aa060bfe6492">allocate</a>(<span class="keywordtype">size_t</span> capacity)
-<a name="l00193"></a>00193     {
-<a name="l00194"></a>00194         <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(m_buffer == <span class="keyword">nullptr</span>);
-<a name="l00195"></a>00195         m_buffer = <span class="keyword">reinterpret_cast&lt;</span>T*<span class="keyword">&gt;</span>(<a class="code" href="_nv_blast_tk_framework_impl_8h.html#71a709af654f803a130303d951ec433a">NVBLASTTK_ALLOC</a>(capacity*<span class="keyword">sizeof</span>(T), <span class="stringliteral">"SplitMemory"</span>));
-<a name="l00196"></a>00196         m_capacity = capacity;
-<a name="l00197"></a>00197     }
-<a name="l00198"></a>00198 
-<a name="l00202"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#712ca47f2a2fc95f769951994ca66ecc">00202</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#712ca47f2a2fc95f769951994ca66ecc">reset</a>()
-<a name="l00203"></a>00203     {
-<a name="l00204"></a>00204         m_used = 0;
-<a name="l00205"></a>00205     }
-<a name="l00206"></a>00206 
-<a name="l00210"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#7be2a8e72803a3ea16afefb7d8b0bde5">00210</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#7be2a8e72803a3ea16afefb7d8b0bde5">release</a>()
-<a name="l00211"></a>00211     {
-<a name="l00212"></a>00212         <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(m_buffer != <span class="keyword">nullptr</span>);
-<a name="l00213"></a>00213         <a class="code" href="_nv_blast_tk_framework_impl_8h.html#3d477aa748a54a9334ccf76127c3d7df">NVBLASTTK_FREE</a>(m_buffer);
-<a name="l00214"></a>00214         m_buffer = <span class="keyword">nullptr</span>;
-<a name="l00215"></a>00215         m_capacity = m_used = 0;
-<a name="l00216"></a>00216     }
-<a name="l00217"></a>00217 
-<a name="l00218"></a>00218 <span class="keyword">private</span>:
-<a name="l00219"></a>00219     <span class="keywordtype">size_t</span>              m_capacity; 
-<a name="l00220"></a>00220     std::atomic&lt;size_t&gt; m_used;     
-<a name="l00221"></a>00221     T*                  m_buffer;   
-<a name="l00222"></a>00222 };
-<a name="l00223"></a>00223 
-<a name="l00224"></a>00224 
-<a name="l00229"></a>00229 <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;
-<a name="l00230"></a><a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html">00230</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html">LocalBuffer</a>
-<a name="l00231"></a>00231 {
-<a name="l00232"></a>00232 <span class="keyword">public</span>:
-<a name="l00237"></a><a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html#dcd31b00a02dfa4df22a5191ec1bc208">00237</a>     T* <a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html#dcd31b00a02dfa4df22a5191ec1bc208">allocate</a>(<span class="keywordtype">size_t</span> n)
-<a name="l00238"></a>00238     {
-<a name="l00239"></a>00239         <span class="keywordflow">if</span> (m_used + n &gt; m_capacity)
-<a name="l00240"></a>00240         {
-<a name="l00241"></a>00241             allocateNewBlock(n &gt; m_capacity ? n : m_capacity);
-<a name="l00242"></a>00242         }
-<a name="l00243"></a>00243 
-<a name="l00244"></a>00244         <span class="keywordtype">size_t</span> index = m_used;
-<a name="l00245"></a>00245         m_used += n;
-<a name="l00246"></a>00246         <span class="keywordflow">return</span> &amp;m_currentBlock[index];
-<a name="l00247"></a>00247     }
-<a name="l00248"></a>00248 
-<a name="l00253"></a><a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html#75ddcb70c161b0744d9ec8e1b5a91ff4">00253</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html#75ddcb70c161b0744d9ec8e1b5a91ff4">clear</a>()
-<a name="l00254"></a>00254     {
-<a name="l00255"></a>00255         <span class="keywordflow">for</span> (<span class="keywordtype">void</span>* block : m_memoryBlocks)
-<a name="l00256"></a>00256         {
-<a name="l00257"></a>00257             <a class="code" href="_nv_blast_tk_framework_impl_8h.html#3d477aa748a54a9334ccf76127c3d7df">NVBLASTTK_FREE</a>(block);
-<a name="l00258"></a>00258         }
-<a name="l00259"></a>00259         m_memoryBlocks.clear();
-<a name="l00260"></a>00260     }
+<a name="l00179"></a>00179 <span class="keyword">private</span>:
+<a name="l00180"></a>00180     <span class="keywordtype">size_t</span>              m_capacity; 
+<a name="l00181"></a>00181     std::atomic&lt;size_t&gt; m_used;     
+<a name="l00182"></a>00182     T*                  m_buffer;   
+<a name="l00183"></a>00183 };
+<a name="l00184"></a>00184 
+<a name="l00185"></a>00185 
+<a name="l00190"></a>00190 <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;
+<a name="l00191"></a><a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html">00191</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html">LocalBuffer</a>
+<a name="l00192"></a>00192 {
+<a name="l00193"></a>00193 <span class="keyword">public</span>:
+<a name="l00198"></a><a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html#dcd31b00a02dfa4df22a5191ec1bc208">00198</a>     T* <a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html#dcd31b00a02dfa4df22a5191ec1bc208">allocate</a>(<span class="keywordtype">size_t</span> n)
+<a name="l00199"></a>00199     {
+<a name="l00200"></a>00200         <span class="keywordflow">if</span> (m_used + n &gt; m_capacity)
+<a name="l00201"></a>00201         {
+<a name="l00202"></a>00202             allocateNewBlock(n &gt; m_capacity ? n : m_capacity);
+<a name="l00203"></a>00203         }
+<a name="l00204"></a>00204 
+<a name="l00205"></a>00205         <span class="keywordtype">size_t</span> index = m_used;
+<a name="l00206"></a>00206         m_used += n;
+<a name="l00207"></a>00207         <span class="keywordflow">return</span> &amp;m_currentBlock[index];
+<a name="l00208"></a>00208     }
+<a name="l00209"></a>00209 
+<a name="l00214"></a><a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html#75ddcb70c161b0744d9ec8e1b5a91ff4">00214</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html#75ddcb70c161b0744d9ec8e1b5a91ff4">clear</a>()
+<a name="l00215"></a>00215     {
+<a name="l00216"></a>00216         <span class="keywordflow">for</span> (<span class="keywordtype">void</span>* block : m_memoryBlocks)
+<a name="l00217"></a>00217         {
+<a name="l00218"></a>00218             <a class="code" href="_nv_blast_globals_8h.html#f968d9c2dc2aaeb87f55bbd85488f741">NVBLAST_FREE</a>(block);
+<a name="l00219"></a>00219         }
+<a name="l00220"></a>00220         m_memoryBlocks.clear();
+<a name="l00221"></a>00221     }
+<a name="l00222"></a>00222 
+<a name="l00227"></a><a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html#5e9d8e27765fd724569ce06d4b1cc617">00227</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html#5e9d8e27765fd724569ce06d4b1cc617">initialize</a>(T* block, <span class="keywordtype">size_t</span> capacity)
+<a name="l00228"></a>00228     {
+<a name="l00229"></a>00229         m_currentBlock = block;
+<a name="l00230"></a>00230         m_capacity = capacity;
+<a name="l00231"></a>00231         m_used = 0;
+<a name="l00232"></a>00232     }
+<a name="l00233"></a>00233 
+<a name="l00234"></a>00234 <span class="keyword">private</span>:
+<a name="l00238"></a>00238     <span class="keywordtype">void</span> allocateNewBlock(<span class="keywordtype">size_t</span> capacity)
+<a name="l00239"></a>00239     {
+<a name="l00240"></a>00240         <a class="code" href="_nv_blast_profiler_internal_8h.html#aba578d5cd160859cd514c33ac6171a5">BLAST_PROFILE_SCOPE_L</a>(<span class="stringliteral">"Local Buffer allocation"</span>);
+<a name="l00241"></a>00241         m_capacity = capacity;
+<a name="l00242"></a>00242         m_currentBlock = <span class="keyword">static_cast&lt;</span>T*<span class="keyword">&gt;</span>(<a class="code" href="_nv_blast_globals_8h.html#8b44c099b2f3dd78e4887065cbd3844d">NVBLAST_ALLOC_NAMED</a>(capacity*<span class="keyword">sizeof</span>(T), <span class="stringliteral">"Blast LocalBuffer"</span>));
+<a name="l00243"></a>00243         m_memoryBlocks.pushBack(m_currentBlock);
+<a name="l00244"></a>00244         m_used = 0;
+<a name="l00245"></a>00245     }
+<a name="l00246"></a>00246 
+<a name="l00247"></a>00247     <a class="code" href="struct_nv_1_1_blast_1_1_inline_array.html#47c4d515e65129789d1b58bf02481057">InlineArray&lt;void*, 4&gt;::type</a>     m_memoryBlocks; 
+<a name="l00248"></a>00248     T*                              m_currentBlock; 
+<a name="l00249"></a>00249     <span class="keywordtype">size_t</span>                          m_used;         
+<a name="l00250"></a>00250     <span class="keywordtype">size_t</span>                          m_capacity;     
+<a name="l00251"></a>00251 };
+<a name="l00252"></a>00252 
+<a name="l00253"></a>00253 
+<a name="l00257"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html">00257</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html">SharedMemory</a>
+<a name="l00258"></a>00258 {
+<a name="l00259"></a>00259 <span class="keyword">public</span>:
+<a name="l00260"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#399aac38cf540e274ba36ca20358d182">00260</a>     <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#399aac38cf540e274ba36ca20358d182">SharedMemory</a>() : <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#e8651b026da2fc7ce41f4f9711d5f4dd" title="expected memory size for event data">m_eventsMemory</a>(0), <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#3fcf06b114621282a264aa4b8bef66a9" title="expected number of events">m_eventsCount</a>(0), m_refCount(0) {}
 <a name="l00261"></a>00261 
-<a name="l00266"></a><a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html#5e9d8e27765fd724569ce06d4b1cc617">00266</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html#5e9d8e27765fd724569ce06d4b1cc617">initialize</a>(T* block, <span class="keywordtype">size_t</span> capacity)
-<a name="l00267"></a>00267     {
-<a name="l00268"></a>00268         m_currentBlock = block;
-<a name="l00269"></a>00269         m_capacity = capacity;
-<a name="l00270"></a>00270         m_used = 0;
-<a name="l00271"></a>00271     }
-<a name="l00272"></a>00272 
-<a name="l00273"></a>00273 <span class="keyword">private</span>:
-<a name="l00277"></a>00277     <span class="keywordtype">void</span> allocateNewBlock(<span class="keywordtype">size_t</span> capacity)
-<a name="l00278"></a>00278     {
-<a name="l00279"></a>00279         <a class="code" href="_nv_blast_profiler_internal_8h.html#6bbed1ba2f0b98c11b2629ca4910e4bf">PERF_SCOPE_L</a>(<span class="stringliteral">"Local Buffer allocation"</span>);
-<a name="l00280"></a>00280         m_capacity = capacity;
-<a name="l00281"></a>00281         m_currentBlock = <span class="keyword">static_cast&lt;</span>T*<span class="keyword">&gt;</span>(<a class="code" href="_nv_blast_tk_framework_impl_8h.html#71a709af654f803a130303d951ec433a">NVBLASTTK_ALLOC</a>(capacity*<span class="keyword">sizeof</span>(T), <span class="stringliteral">"Blast LocalBuffer"</span>));
-<a name="l00282"></a>00282         m_memoryBlocks.pushBack(m_currentBlock);
-<a name="l00283"></a>00283         m_used = 0;
-<a name="l00284"></a>00284     }
-<a name="l00285"></a>00285 
-<a name="l00286"></a>00286     <a class="code" href="struct_nv_1_1_blast_1_1_tk_inline_array.html#222e7333eee1123e37a646152b06d0e8">TkInlineArray&lt;void*, 4&gt;::type</a>   m_memoryBlocks; 
-<a name="l00287"></a>00287     T*                              m_currentBlock; 
-<a name="l00288"></a>00288     <span class="keywordtype">size_t</span>                          m_used;         
-<a name="l00289"></a>00289     <span class="keywordtype">size_t</span>                          m_capacity;     
-<a name="l00290"></a>00290 };
-<a name="l00291"></a>00291 
+<a name="l00265"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#325448e388c46c916953cfe95b51f567">00265</a>     <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>** <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#325448e388c46c916953cfe95b51f567">reserveNewActors</a>(<span class="keywordtype">size_t</span> n)
+<a name="l00266"></a>00266     {
+<a name="l00267"></a>00267         <span class="keywordflow">return</span> m_newActorBuffers.<a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#88ffb1cd3b27fdce82b96073efe261c3">reserve</a>(n);
+<a name="l00268"></a>00268     }
+<a name="l00269"></a>00269 
+<a name="l00273"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#6cdea8e6eeb26aa1fff1ba5ef8d48c98">00273</a>     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a>** <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#6cdea8e6eeb26aa1fff1ba5ef8d48c98">reserveNewTkActors</a>(<span class="keywordtype">size_t</span> n)
+<a name="l00274"></a>00274     {
+<a name="l00275"></a>00275         <span class="keywordflow">return</span> m_newTkActorBuffers.<a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#88ffb1cd3b27fdce82b96073efe261c3">reserve</a>(n);
+<a name="l00276"></a>00276     }
+<a name="l00277"></a>00277 
+<a name="l00281"></a>00281     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#95a84da830eadbe23b5cfc1ff8abb6bb">allocate</a>(TkFamilyImpl&amp;);
+<a name="l00282"></a>00282 
+<a name="l00287"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#69e13453e62cdaf8b2e8c5b9743f9b56">00287</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#69e13453e62cdaf8b2e8c5b9743f9b56">reset</a>()
+<a name="l00288"></a>00288     {
+<a name="l00289"></a>00289         m_newActorBuffers.<a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#712ca47f2a2fc95f769951994ca66ecc">reset</a>();
+<a name="l00290"></a>00290         m_newTkActorBuffers.<a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#712ca47f2a2fc95f769951994ca66ecc">reset</a>();
+<a name="l00291"></a>00291     }
 <a name="l00292"></a>00292 
-<a name="l00296"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html">00296</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html">SharedMemory</a>
-<a name="l00297"></a>00297 {
-<a name="l00298"></a>00298 <span class="keyword">public</span>:
-<a name="l00299"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#399aac38cf540e274ba36ca20358d182">00299</a>     <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#399aac38cf540e274ba36ca20358d182">SharedMemory</a>() : <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#e8651b026da2fc7ce41f4f9711d5f4dd" title="expected memory size for event data">m_eventsMemory</a>(0), <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#3fcf06b114621282a264aa4b8bef66a9" title="expected number of events">m_eventsCount</a>(0), m_refCount(0) {}
-<a name="l00300"></a>00300 
-<a name="l00304"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#325448e388c46c916953cfe95b51f567">00304</a>     <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>** <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#325448e388c46c916953cfe95b51f567">reserveNewActors</a>(<span class="keywordtype">size_t</span> n)
-<a name="l00305"></a>00305     {
-<a name="l00306"></a>00306         <span class="keywordflow">return</span> m_newActorBuffers.<a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#88ffb1cd3b27fdce82b96073efe261c3">reserve</a>(n);
-<a name="l00307"></a>00307     }
-<a name="l00308"></a>00308 
-<a name="l00312"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#6cdea8e6eeb26aa1fff1ba5ef8d48c98">00312</a>     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a>** <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#6cdea8e6eeb26aa1fff1ba5ef8d48c98">reserveNewTkActors</a>(<span class="keywordtype">size_t</span> n)
-<a name="l00313"></a>00313     {
-<a name="l00314"></a>00314         <span class="keywordflow">return</span> m_newTkActorBuffers.<a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#88ffb1cd3b27fdce82b96073efe261c3">reserve</a>(n);
-<a name="l00315"></a>00315     }
-<a name="l00316"></a>00316 
-<a name="l00320"></a>00320     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#95a84da830eadbe23b5cfc1ff8abb6bb">allocate</a>(TkFamilyImpl&amp;);
-<a name="l00321"></a>00321 
-<a name="l00326"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#69e13453e62cdaf8b2e8c5b9743f9b56">00326</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#69e13453e62cdaf8b2e8c5b9743f9b56">reset</a>()
-<a name="l00327"></a>00327     {
-<a name="l00328"></a>00328         m_newActorBuffers.<a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#712ca47f2a2fc95f769951994ca66ecc">reset</a>();
-<a name="l00329"></a>00329         m_newTkActorBuffers.<a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#712ca47f2a2fc95f769951994ca66ecc">reset</a>();
-<a name="l00330"></a>00330     }
-<a name="l00331"></a>00331 
-<a name="l00335"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#75c598b9405193ab7c8ad2553aacae39">00335</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#75c598b9405193ab7c8ad2553aacae39">addReference</a>()         { m_refCount++; }
+<a name="l00296"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#75c598b9405193ab7c8ad2553aacae39">00296</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#75c598b9405193ab7c8ad2553aacae39">addReference</a>()         { m_refCount++; }
+<a name="l00297"></a>00297 
+<a name="l00301"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#18714f82b39e9a17c94541c31dc1b0bd">00301</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#18714f82b39e9a17c94541c31dc1b0bd">addReference</a>(<span class="keywordtype">size_t</span> n) { m_refCount += n; }
+<a name="l00302"></a>00302 
+<a name="l00307"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#795a2be3de022efc1bac6559db0baafe">00307</a>     <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#795a2be3de022efc1bac6559db0baafe">removeReference</a>()
+<a name="l00308"></a>00308     {
+<a name="l00309"></a>00309         m_refCount--;
+<a name="l00310"></a>00310         <span class="keywordflow">return</span> !<a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#18a846a728fd84375fdc87198e2cdda0">isUsed</a>();
+<a name="l00311"></a>00311     }
+<a name="l00312"></a>00312 
+<a name="l00316"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#18a846a728fd84375fdc87198e2cdda0">00316</a>     <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#18a846a728fd84375fdc87198e2cdda0">isUsed</a>()
+<a name="l00317"></a>00317     {
+<a name="l00318"></a>00318         <span class="keywordflow">return</span> m_refCount &gt; 0;
+<a name="l00319"></a>00319     }
+<a name="l00320"></a>00320 
+<a name="l00324"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#769339a919c9709708ea28b7dcac1e64">00324</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#769339a919c9709708ea28b7dcac1e64">release</a>()
+<a name="l00325"></a>00325     {
+<a name="l00326"></a>00326         m_newActorBuffers.<a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#7be2a8e72803a3ea16afefb7d8b0bde5">release</a>();
+<a name="l00327"></a>00327         m_newTkActorBuffers.<a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#7be2a8e72803a3ea16afefb7d8b0bde5">release</a>();
+<a name="l00328"></a>00328     }
+<a name="l00329"></a>00329 
+<a name="l00330"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#a0cbd70359cd6c1e09e6acaa103bdecf">00330</a>     <a class="code" href="class_nv_1_1_blast_1_1_tk_event_queue.html">TkEventQueue</a>                <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#a0cbd70359cd6c1e09e6acaa103bdecf" title="event queue shared across a group&amp;#39;s actors of the same family">m_events</a>;               
+<a name="l00331"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#e8651b026da2fc7ce41f4f9711d5f4dd">00331</a>     uint32_t                    <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#e8651b026da2fc7ce41f4f9711d5f4dd" title="expected memory size for event data">m_eventsMemory</a>;         
+<a name="l00332"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#3fcf06b114621282a264aa4b8bef66a9">00332</a>     uint32_t                    <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#3fcf06b114621282a264aa4b8bef66a9" title="expected number of events">m_eventsCount</a>;          
+<a name="l00333"></a>00333 
+<a name="l00334"></a>00334 <span class="keyword">private</span>:
+<a name="l00335"></a>00335     <span class="keywordtype">size_t</span>                      m_refCount;             
 <a name="l00336"></a>00336 
-<a name="l00340"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#18714f82b39e9a17c94541c31dc1b0bd">00340</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#18714f82b39e9a17c94541c31dc1b0bd">addReference</a>(<span class="keywordtype">size_t</span> n) { m_refCount += n; }
+<a name="l00337"></a>00337     <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html">SharedBuffer&lt;NvBlastActor*&gt;</a> m_newActorBuffers;      
+<a name="l00338"></a>00338     <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html">SharedBuffer&lt;TkActor*&gt;</a>      m_newTkActorBuffers;    
+<a name="l00339"></a>00339 };
+<a name="l00340"></a>00340 
 <a name="l00341"></a>00341 
-<a name="l00346"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#795a2be3de022efc1bac6559db0baafe">00346</a>     <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#795a2be3de022efc1bac6559db0baafe">removeReference</a>()
-<a name="l00347"></a>00347     {
-<a name="l00348"></a>00348         m_refCount--;
-<a name="l00349"></a>00349         <span class="keywordflow">return</span> !<a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#18a846a728fd84375fdc87198e2cdda0">isUsed</a>();
-<a name="l00350"></a>00350     }
-<a name="l00351"></a>00351 
-<a name="l00355"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#18a846a728fd84375fdc87198e2cdda0">00355</a>     <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#18a846a728fd84375fdc87198e2cdda0">isUsed</a>()
-<a name="l00356"></a>00356     {
-<a name="l00357"></a>00357         <span class="keywordflow">return</span> m_refCount &gt; 0;
-<a name="l00358"></a>00358     }
-<a name="l00359"></a>00359 
-<a name="l00363"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#769339a919c9709708ea28b7dcac1e64">00363</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#769339a919c9709708ea28b7dcac1e64">release</a>()
-<a name="l00364"></a>00364     {
-<a name="l00365"></a>00365         m_newActorBuffers.<a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#7be2a8e72803a3ea16afefb7d8b0bde5">release</a>();
-<a name="l00366"></a>00366         m_newTkActorBuffers.<a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html#7be2a8e72803a3ea16afefb7d8b0bde5">release</a>();
-<a name="l00367"></a>00367     }
-<a name="l00368"></a>00368 
-<a name="l00369"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#a0cbd70359cd6c1e09e6acaa103bdecf">00369</a>     <a class="code" href="class_nv_1_1_blast_1_1_tk_event_queue.html">TkEventQueue</a>                <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#a0cbd70359cd6c1e09e6acaa103bdecf" title="event queue shared across a group&amp;#39;s actors of the same family">m_events</a>;               
-<a name="l00370"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#e8651b026da2fc7ce41f4f9711d5f4dd">00370</a>     uint32_t                    <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#e8651b026da2fc7ce41f4f9711d5f4dd" title="expected memory size for event data">m_eventsMemory</a>;         
-<a name="l00371"></a><a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#3fcf06b114621282a264aa4b8bef66a9">00371</a>     uint32_t                    <a class="code" href="class_nv_1_1_blast_1_1_shared_memory.html#3fcf06b114621282a264aa4b8bef66a9" title="expected number of events">m_eventsCount</a>;          
+<a name="l00346"></a>00346 <span class="keyword">class </span>TkWorker <a class="code" href="class_nv_1_1_blast_1_1final.html">final</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_group_worker.html">TkGroupWorker</a>
+<a name="l00347"></a>00347 {
+<a name="l00348"></a>00348 <span class="keyword">public</span>:
+<a name="l00349"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#4f2f434b0570d2a462816075b9757d37">00349</a>     <a class="code" href="class_nv_1_1_blast_1_1final.html#4f2f434b0570d2a462816075b9757d37">TkWorker</a>() : m_id(~(uint32_t)0), m_group(nullptr), m_isBusy(false) {}
+<a name="l00350"></a>00350 
+<a name="l00351"></a>00351     <span class="keywordtype">void</span>        process(uint32_t jobID);
+<a name="l00352"></a>00352     <span class="keywordtype">void</span>        initialize();
+<a name="l00353"></a>00353 
+<a name="l00354"></a>00354     <span class="keywordtype">void</span>        process(<a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html">TkWorkerJob</a>&amp; job);
+<a name="l00355"></a>00355 
+<a name="l00356"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#fefef0946765efd7f615cb687ecca7cd">00356</a>     uint32_t                                m_id;           
+<a name="l00357"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#dccf51f5d4d1f35a7979d8166244aac9">00357</a>     TkGroupImpl*                            m_group;        
+<a name="l00358"></a>00358 
+<a name="l00359"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#c5bc74f1c610ec765fbd3cd8bdd215a2">00359</a>     <a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html">LocalBuffer&lt;NvBlastChunkFractureData&gt;</a>   m_chunkBuffer;  
+<a name="l00360"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#ed650bb8ed3ff0788a4a0ef0b7108acb">00360</a>     <a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html">LocalBuffer&lt;NvBlastBondFractureData&gt;</a>    m_bondBuffer;   
+<a name="l00361"></a>00361 
+<a name="l00362"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#8c772466830154096e0a4e0ead3e2692">00362</a>     <span class="keywordtype">void</span>*                                   m_splitScratch;
+<a name="l00363"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#775c06cd2fe8bc2731fb77683a03ef2d">00363</a>     <a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>                  m_tempBuffer;
+<a name="l00364"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#2b0b1bc32a739e84cc00afd177bf4cce">00364</a>     <span class="keywordtype">bool</span>                                    m_isBusy;
+<a name="l00365"></a>00365 
+<a name="l00366"></a>00366 <span class="preprocessor">#if NV_PROFILE</span>
+<a name="l00367"></a>00367 <span class="preprocessor"></span>    <a class="code" href="struct_nv_1_1_blast_1_1_tk_group_stats.html">TkGroupStats</a>    m_stats;
+<a name="l00368"></a>00368 <span class="preprocessor">#endif</span>
+<a name="l00369"></a>00369 <span class="preprocessor"></span>};
+<a name="l00370"></a>00370 }
+<a name="l00371"></a>00371 }
 <a name="l00372"></a>00372 
-<a name="l00373"></a>00373 <span class="keyword">private</span>:
-<a name="l00374"></a>00374     <span class="keywordtype">size_t</span>                      m_refCount;             
-<a name="l00375"></a>00375 
-<a name="l00376"></a>00376     <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html">SharedBuffer&lt;NvBlastActor*&gt;</a> m_newActorBuffers;      
-<a name="l00377"></a>00377     <a class="code" href="class_nv_1_1_blast_1_1_shared_buffer.html">SharedBuffer&lt;TkActor*&gt;</a>      m_newTkActorBuffers;    
-<a name="l00378"></a>00378 };
-<a name="l00379"></a>00379 
-<a name="l00380"></a>00380 
-<a name="l00384"></a>00384 <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;
-<a name="l00385"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_atomic_queue.html">00385</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_atomic_queue.html">TkAtomicQueue</a>
-<a name="l00386"></a>00386 {
-<a name="l00387"></a>00387 <span class="keyword">public</span>:
-<a name="l00391"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_atomic_queue.html#180bfd95510a930ad259a634593d3bef">00391</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_atomic_queue.html#180bfd95510a930ad259a634593d3bef">init</a>(<a class="code" href="struct_nv_1_1_blast_1_1_tk_worker_job.html">TkWorkerJob</a>* jobs, uint32_t numJobs)
-<a name="l00392"></a>00392     {
-<a name="l00393"></a>00393         m_jobs = jobs;
-<a name="l00394"></a>00394         m_maxCount = numJobs;
-<a name="l00395"></a>00395         m_current = 0;
-<a name="l00396"></a>00396     }
-<a name="l00397"></a>00397 
-<a name="l00401"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_atomic_queue.html#95d33ebfa7e95c4df95d7e1ae0322f84">00401</a>     T* <a class="code" href="class_nv_1_1_blast_1_1_tk_atomic_queue.html#95d33ebfa7e95c4df95d7e1ae0322f84">next</a>()
-<a name="l00402"></a>00402     {
-<a name="l00403"></a>00403         <span class="keywordtype">size_t</span> index = m_current.fetch_add(1, std::memory_order_relaxed);
-<a name="l00404"></a>00404         <span class="keywordflow">if</span> (index &lt; m_maxCount)
-<a name="l00405"></a>00405         {
-<a name="l00406"></a>00406             <span class="keywordflow">return</span> &amp;m_jobs[index];
-<a name="l00407"></a>00407         }
-<a name="l00408"></a>00408         <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;
-<a name="l00409"></a>00409     }
-<a name="l00410"></a>00410 
-<a name="l00411"></a>00411 <span class="keyword">private</span>:
-<a name="l00412"></a>00412     T*                  m_jobs;         
-<a name="l00413"></a>00413     <span class="keywordtype">size_t</span>              m_maxCount;     
-<a name="l00414"></a>00414     std::atomic&lt;size_t&gt; m_current;      
-<a name="l00415"></a>00415 };
-<a name="l00416"></a>00416 
-<a name="l00417"></a><a class="code" href="namespace_nv_1_1_blast.html#7110958e335a81b5acfc144e4adf80f3">00417</a> <span class="keyword">typedef</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_atomic_queue.html">TkAtomicQueue&lt;TkWorkerJob&gt;</a> <a class="code" href="class_nv_1_1_blast_1_1_tk_atomic_queue.html">TkAtomicJobQueue</a>;
-<a name="l00418"></a>00418 
-<a name="l00419"></a>00419 
-<a name="l00424"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html">00424</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html">TkWorker</a> : <span class="keyword">public</span> physx::PxLightCpuTask
-<a name="l00425"></a>00425 {
-<a name="l00426"></a>00426 <span class="keyword">public</span>:
-<a name="l00427"></a>00427     <span class="keywordtype">void</span>        <a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html#55776a6a95c1461a6aa3ab453d1e3784">run</a>();
-<a name="l00428"></a>00428     <span class="keywordtype">void</span>        <a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html#a29d119e8c513659de975d7dfbe685cc">release</a>();
-<a name="l00429"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html#b66318b208c245af0c504ac453190d3a">00429</a>     <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html#b66318b208c245af0c504ac453190d3a">getName</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="stringliteral">"TkWorker"</span>; }
-<a name="l00430"></a>00430 
-<a name="l00431"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html#545667052e4dd46e956baa23cb0f8855">00431</a>     uint32_t                                <a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html#545667052e4dd46e956baa23cb0f8855" title="this worker&amp;#39;s id">m_id</a>;           
-<a name="l00432"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html#b396e794061650eccbaa634ababc3816">00432</a>     TkGroupImpl*                            <a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html#b396e794061650eccbaa634ababc3816" title="the group owning this worker">m_group</a>;        
-<a name="l00433"></a>00433 
-<a name="l00434"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html#9dc101fae5893caffb7648363f9c3c87">00434</a>     <a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html">LocalBuffer&lt;NvBlastChunkFractureData&gt;</a>   <a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html#9dc101fae5893caffb7648363f9c3c87" title="memory manager for chunk event data">m_chunkBuffer</a>;  
-<a name="l00435"></a><a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html#06ada63884aa02d48fe7242d87b8f720">00435</a>     <a class="code" href="class_nv_1_1_blast_1_1_local_buffer.html">LocalBuffer&lt;NvBlastBondFractureData&gt;</a>    <a class="code" href="class_nv_1_1_blast_1_1_tk_worker.html#06ada63884aa02d48fe7242d87b8f720" title="memory manager for bonds event data">m_bondBuffer</a>;   
-<a name="l00436"></a>00436 
-<a name="l00437"></a>00437 <span class="preprocessor">#if NV_PROFILE</span>
-<a name="l00438"></a>00438 <span class="preprocessor"></span>    <a class="code" href="struct_nv_1_1_blast_1_1_tk_group_stats.html">TkGroupStats</a>    m_stats;
-<a name="l00439"></a>00439 <span class="preprocessor">#endif</span>
-<a name="l00440"></a>00440 <span class="preprocessor"></span>};
-<a name="l00441"></a>00441 }
-<a name="l00442"></a>00442 }
-<a name="l00443"></a>00443 
-<a name="l00444"></a>00444 <span class="preprocessor">#endif // NVBLASTTKTASKIMPL_H</span>
+<a name="l00373"></a>00373 <span class="preprocessor">#endif // NVBLASTTKTASKIMPL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

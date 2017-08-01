@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLAST_H
 #define NVBLAST_H
@@ -155,6 +173,21 @@ NVBLAST_API uint32_t NvBlastAssetGetChunkCount(const NvBlastAsset* asset, NvBlas
 
 
 /**
+Get the number of support chunks in the given asset.  This will equal the number of
+graph nodes in NvBlastSupportGraph::nodeCount returned by NvBlastAssetGetSupportGraph only
+if no extra "world" node was created due to bonds defined between support chunks and the world.
+If such bonds were created, then there is an extra graph node representing the world, and this
+function will return NvBlastSupportGraph::nodeCount - 1.
+
+\param[in] asset	The asset.
+\param[in] logFn	User-supplied message function (see NvBlastLog definition).  May be NULL.
+
+\return	the number of chunks in the asset.
+*/
+NVBLAST_API uint32_t NvBlastAssetGetSupportChunkCount(const NvBlastAsset* asset, NvBlastLog logFn);
+
+
+/**
 Get the number of leaf chunks in the given asset.
 
 \param[in] asset	The asset.
@@ -280,8 +313,8 @@ Build chunk reorder map.
 NvBlastCreateAsset function requires NvBlastChunkDesc array to be in correct oder:
 
 1. Root chunks (chunks with invalid parent index) must be first in the asset's chunk list.
-2. Chunks in the asset should be arranged such that sibling chunks (chunks with the same parent) are contiguous.
-3. Chunks are also should be arranged such that upper-support chunks (support chunks and their parent chunks) should go first in 
+2. Chunks in the asset must be arranged such that sibling chunks (chunks with the same parent) are contiguous.
+3. Chunks must be arranged such that upper-support chunks (support chunks and their parent chunks) go first in 
 chunk list.
 
 This function builds chunk reorder map which can be used to order chunk descs. Reordering chunk's descriptors 
@@ -308,13 +341,14 @@ with new indices. Bonds are kept in the same order, but their 'chunkIndices' fie
 
 @see NvBlastBuildAssetDescChunkReorderMap
 
-\param[out] reorderedChunkDescs	User-supplied array of size chunkCount to fill with new reordered NvBlastChunkDesc's.
-\param[in]  chunkDescs			Array of chunk descriptors of size chunkCount.
-\param[in]  chunkCount			The number of chunk descriptors.
-\param[in]  bondDescs			Array of bond descriptors of size chunkCount. It will be updated accordingly.
-\param[in]  bondCount			The number of bond descriptors.
-\param[in]  chunkReorderMap		Chunk reorder map to use, must be of size chunkCount.
-\param[in]	logFn				User-supplied message function (see NvBlastLog definition).  May be NULL.
+\param[out] reorderedChunkDescs			User-supplied array of size chunkCount to fill with new reordered NvBlastChunkDesc's.
+\param[in]  chunkDescs					Array of chunk descriptors of size chunkCount.
+\param[in]  chunkCount					The number of chunk descriptors.
+\param[in]  bondDescs					Array of bond descriptors of size chunkCount. It will be updated accordingly.
+\param[in]  bondCount					The number of bond descriptors.
+\param[in]  chunkReorderMap				Chunk reorder map to use, must be of size chunkCount.
+\param[in]	keepBondNormalChunkOrder	If true, bond normals will be flipped if their chunk index order was reveresed by the reorder map.
+\param[in]	logFn						User-supplied message function (see NvBlastLog definition).  May be NULL.
 */
 NVBLAST_API void NvBlastApplyAssetDescChunkReorderMap
 (
@@ -324,6 +358,7 @@ NVBLAST_API void NvBlastApplyAssetDescChunkReorderMap
 	NvBlastBondDesc* bondDescs,
 	uint32_t bondCount,
 	const uint32_t* chunkReorderMap,
+	bool keepBondNormalChunkOrder,
 	NvBlastLog logFn
 );
 
@@ -338,15 +373,26 @@ This overload of function reorders chunks in place.
 
 @see NvBlastBuildAssetDescChunkReorderMap
 
-\param[in]  chunkDescs			Array of chunk descriptors of size chunkCount. It will be updated accordingly.
-\param[in]  chunkCount			The number of chunk descriptors.
-\param[in]  bondDescs			Array of bond descriptors of size chunkCount. It will be updated accordingly.
-\param[in]  bondCount			The number of bond descriptors.
-\param[in]  chunkReorderMap		Chunk reorder map to use, must be of size chunkCount.
-\param[in]	scratch				User-supplied scratch storage, must point to chunkCount * sizeof(NvBlastChunkDesc) valid bytes of memory.
-\param[in]	logFn				User-supplied message function (see NvBlastLog definition).  May be NULL.
+\param[in]  chunkDescs					Array of chunk descriptors of size chunkCount. It will be updated accordingly.
+\param[in]  chunkCount					The number of chunk descriptors.
+\param[in]  bondDescs					Array of bond descriptors of size chunkCount. It will be updated accordingly.
+\param[in]  bondCount					The number of bond descriptors.
+\param[in]  chunkReorderMap				Chunk reorder map to use, must be of size chunkCount.
+\param[in]	keepBondNormalChunkOrder	If true, bond normals will be flipped if their chunk index order was reveresed by the reorder map.
+\param[in]	scratch						User-supplied scratch storage, must point to chunkCount * sizeof(NvBlastChunkDesc) valid bytes of memory.
+\param[in]	logFn						User-supplied message function (see NvBlastLog definition).  May be NULL.
 */
-NVBLAST_API void NvBlastApplyAssetDescChunkReorderMapInplace(NvBlastChunkDesc* chunkDescs, uint32_t chunkCount, NvBlastBondDesc* bondDescs, uint32_t bondCount, const uint32_t* chunkReorderMap, void* scratch, NvBlastLog logFn);
+NVBLAST_API void NvBlastApplyAssetDescChunkReorderMapInPlace
+(
+	NvBlastChunkDesc* chunkDescs,
+	uint32_t chunkCount,
+	NvBlastBondDesc* bondDescs,
+	uint32_t bondCount,
+	const uint32_t* chunkReorderMap,
+	bool keepBondNormalChunkOrder,
+	void* scratch,
+	NvBlastLog logFn
+);
 
 
 /**
@@ -354,17 +400,28 @@ Build and apply chunk reorder map.
 
 Function basically calls NvBlastBuildAssetDescChunkReorderMap and NvBlastApplyAssetDescChunkReorderMap. Used for Convenience.
 
-\param[in]  chunkDescs			Array of chunk descriptors of size chunkCount. It will be updated accordingly.
-\param[in]  chunkCount			The number of chunk descriptors.
-\param[in]  bondDescs			Array of bond descriptors of size chunkCount. It will be updated accordingly.
-\param[in]  bondCount			The number of bond descriptors.
-\param[in]  chunkReorderMap		Chunk reorder map to fill, must be of size chunkCount.
-\param[in]	scratch				User-supplied scratch storage, must point to chunkCount * sizeof(NvBlastChunkDesc) valid bytes of memory.
-\param[in]  logFn				User-supplied message function (see NvBlastLog definition).  May be NULL.
+\param[in]  chunkDescs					Array of chunk descriptors of size chunkCount. It will be updated accordingly.
+\param[in]  chunkCount					The number of chunk descriptors.
+\param[in]  bondDescs					Array of bond descriptors of size chunkCount. It will be updated accordingly.
+\param[in]  bondCount					The number of bond descriptors.
+\param[in]  chunkReorderMap				Chunk reorder map to fill, must be of size chunkCount.
+\param[in]	keepBondNormalChunkOrder	If true, bond normals will be flipped if their chunk index order was reveresed by the reorder map.
+\param[in]	scratch						User-supplied scratch storage, must point to chunkCount * sizeof(NvBlastChunkDesc) valid bytes of memory.
+\param[in]  logFn						User-supplied message function (see NvBlastLog definition).  May be NULL.
 
 \return	true iff the chunks did not require reordering (chunkReorderMap is the identity map).
 */
-NVBLAST_API bool NvBlastReorderAssetDescChunks(NvBlastChunkDesc* chunkDescs, uint32_t chunkCount, NvBlastBondDesc* bondDescs, uint32_t bondCount, uint32_t* chunkReorderMap, void* scratch, NvBlastLog logFn);
+NVBLAST_API bool NvBlastReorderAssetDescChunks
+(
+	NvBlastChunkDesc* chunkDescs,
+	uint32_t chunkCount,
+	NvBlastBondDesc* bondDescs,
+	uint32_t bondCount,
+	uint32_t* chunkReorderMap,
+	bool keepBondNormalChunkOrder,
+	void* scratch,
+	NvBlastLog logFn
+);
 
 ///@} End NvBlastAsset helper functions
 
@@ -383,6 +440,17 @@ Retrieve the data format version for the given family.
 \return the family format version.
 */
 NVBLAST_API uint32_t NvBlastFamilyGetFormatVersion(const NvBlastFamily* family, NvBlastLog logFn);
+
+
+/**
+Retrieve the asset of the given family.
+
+\param[in] family	The family.
+\param[in] logFn	User-supplied message function (see NvBlastLog definition).  May be NULL.
+
+\return pointer to the asset associated with the family.
+*/
+NVBLAST_API const NvBlastAsset* NvBlastFamilyGetAsset(const NvBlastFamily* family, NvBlastLog logFn);
 
 
 /**
@@ -775,6 +843,24 @@ Determines if the actor can fracture further.
 \return true if any result can be expected from fracturing the actor. false if no further change to the actor is possible.
 */
 NVBLAST_API bool NvBlastActorCanFracture(const NvBlastActor* actor, NvBlastLog logFn);
+
+
+/**
+Determines if the actor is damaged (was fractured) and split call is required.
+
+The actor could be damaged by calling NvBlastActorApplyFracture or NvBlastFamilyApplyFracture and NvBlastActorSplit is expected after.
+This function gives a hint that NvBlastActorSplit will have some work to be done and actor could potentially be split.
+If actor is not damaged calling NvBlastActorSplit will make no effect.
+
+\return true iff split call is required for this actor.
+*/
+NVBLAST_API bool NvBlastActorIsSplitRequired(const NvBlastActor* actor, NvBlastLog logFn);
+
+
+/**
+\return true iff this actor contains the "world" support graph node, created when a bond contains the UINT32_MAX value for one of their chunkIndices.
+*/
+NVBLAST_API bool NvBlastActorIsBoundToWorld(const NvBlastActor* actor, NvBlastLog logFn);
 
 ///@} End NvBlastActor damage and fracturing functions
 

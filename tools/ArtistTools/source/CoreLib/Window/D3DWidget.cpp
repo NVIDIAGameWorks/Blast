@@ -58,21 +58,18 @@ void D3DWidget::dropEvent(QDropEvent *e)
 		return;
 
 	QList<QUrl> urlList = data->urls();
-    QString text;
+    QStringList fileNames;
     for (int i = 0; i < urlList.size() && i < 32; ++i) {
-		QString url = urlList.at(i).toLocalFile();
-         text += url;
+		fileNames.append(urlList.at(i).toLocalFile());
     }
 	
 	e->acceptProposedAction();
 
-	AppMainWindow::Inst().processDragAndDrop(text);
+	AppMainWindow::Inst().processDragAndDrop(fileNames);
 }
 
 void D3DWidget::paintEvent( QPaintEvent* e )
 {
-	CoreLib::Inst()->D3DWidget_paintEvent(e);
-
 	SimpleScene::Inst()->Draw();
 }
 
@@ -98,40 +95,42 @@ void D3DWidget::resizeEvent( QResizeEvent* e )
 
 void D3DWidget::mouseMoveEvent( QMouseEvent* e )
 {
-	CoreLib::Inst()->D3DWidget_mouseMoveEvent(e);
-
 	atcore_float2 pos = gfsdk_makeFloat2(e->x(), e->y());
 	SimpleScene::Inst()->onMouseMove(pos);
 
 	Q_ASSERT(_appWindow != NV_NULL);
 	char mode = _appWindow->TestMouseScheme(e->modifiers(), e->buttons());
-
+	CoreLib::Inst()->D3DWidget_mouseMoveEvent(e);
+	if (!e->isAccepted())
+	{
+		return;
+	}
 	if(mode == 0) return;
 	SimpleScene::Inst()->Drag(mode);
 }
 
 void D3DWidget::wheelEvent(QWheelEvent* e)
 {
-	CoreLib::Inst()->D3DWidget_wheelEvent(e);
-
 	SimpleScene::Inst()->onMouseWheel(e->delta());
 	SimpleScene::Inst()->WheelZoom();
+
+	CoreLib::Inst()->D3DWidget_wheelEvent(e);
 }
 
 void D3DWidget::mousePressEvent( QMouseEvent* e )
 {
-	CoreLib::Inst()->D3DWidget_mousePressEvent(e);
-
 	atcore_float2 pos = gfsdk_makeFloat2(e->x(), e->y());
 	SimpleScene::Inst()->onMouseDown(pos);
+
+	CoreLib::Inst()->D3DWidget_mousePressEvent(e);
 }
 
 void D3DWidget::mouseReleaseEvent( QMouseEvent* e )
 {
-	CoreLib::Inst()->D3DWidget_mouseReleaseEvent(e);
-
 	atcore_float2 pos = gfsdk_makeFloat2(e->x(), e->y());
 	SimpleScene::Inst()->onMouseUp(pos);
+
+	CoreLib::Inst()->D3DWidget_mouseReleaseEvent(e);
 }
 
 void D3DWidget::keyPressEvent( QKeyEvent* e )

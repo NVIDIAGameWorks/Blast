@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::TriangleIndexed Struct Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::TriangleIndexed Struct Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -48,6 +48,8 @@
 <a href="struct_nv_1_1_blast_1_1_triangle_indexed-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#adc1efaf4d0f77ab8f092cd14fb82a00">convertToTriangle</a> (<a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *vertices)</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#446e31b797cbe07774e80a81c5fbe05c">getOpposite</a> (uint32_t a, uint32_t b)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#e8501aa397ccc049b5a7927f32c04c72">isContainEdge</a> (uint32_t a, uint32_t b)</td></tr>
@@ -63,7 +65,11 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#6a3ccd2a6daec7b15916e4c83c97d116">ec</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#b84c68a81d43125c41317cf4f6391218">userInfo</a></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#2e593b5effb784c464672c949efcb08a">materialId</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#d3aebc12ff4423d9c7dcaaadf77e7104">smoothingGroup</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#a6a1711ab535f45d870c194a8e346a69">userData</a></td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
@@ -123,6 +129,26 @@ Index based triangle <hr><h2>Constructor &amp; Destructor Documentation</h2>
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
+<a class="anchor" name="adc1efaf4d0f77ab8f092cd14fb82a00"></a><!-- doxytag: member="Nv::Blast::TriangleIndexed::convertToTriangle" ref="adc1efaf4d0f77ab8f092cd14fb82a00" args="(Vertex *vertices)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> Nv::Blast::TriangleIndexed::convertToTriangle           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *&nbsp;</td>
+          <td class="paramname"> <em>vertices</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="446e31b797cbe07774e80a81c5fbe05c"></a><!-- doxytag: member="Nv::Blast::TriangleIndexed::getOpposite" ref="446e31b797cbe07774e80a81c5fbe05c" args="(uint32_t a, uint32_t b)" -->
 <div class="memitem">
 <div class="memproto">
@@ -227,12 +253,42 @@ Index based triangle <hr><h2>Constructor &amp; Destructor Documentation</h2>
 
 </div>
 </div><p>
-<a class="anchor" name="b84c68a81d43125c41317cf4f6391218"></a><!-- doxytag: member="Nv::Blast::TriangleIndexed::userInfo" ref="b84c68a81d43125c41317cf4f6391218" args="" -->
+<a class="anchor" name="2e593b5effb784c464672c949efcb08a"></a><!-- doxytag: member="Nv::Blast::TriangleIndexed::materialId" ref="2e593b5effb784c464672c949efcb08a" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t <a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#b84c68a81d43125c41317cf4f6391218">Nv::Blast::TriangleIndexed::userInfo</a>          </td>
+          <td class="memname">int32_t <a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#2e593b5effb784c464672c949efcb08a">Nv::Blast::TriangleIndexed::materialId</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="d3aebc12ff4423d9c7dcaaadf77e7104"></a><!-- doxytag: member="Nv::Blast::TriangleIndexed::smoothingGroup" ref="d3aebc12ff4423d9c7dcaaadf77e7104" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t <a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#d3aebc12ff4423d9c7dcaaadf77e7104">Nv::Blast::TriangleIndexed::smoothingGroup</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="a6a1711ab535f45d870c194a8e346a69"></a><!-- doxytag: member="Nv::Blast::TriangleIndexed::userData" ref="a6a1711ab535f45d870c194a8e346a69" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t <a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#a6a1711ab535f45d870c194a8e346a69">Nv::Blast::TriangleIndexed::userData</a>          </td>
         </tr>
       </table>
 </div>

@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "NvBlastExtApexSharedParts.h"
 
@@ -906,14 +924,14 @@ static void _arrayVec3ToVec4(const PxVec3* src, const Vec3V& scale, Vec4V* dst, 
 }
 
 
-bool importerHullsInProximityApexFree(const std::vector<PxVec3>& hull0, PxBounds3& hull0Bounds, const physx::PxTransform& localToWorldRT0In, const physx::PxVec3& scale0In,
-	const std::vector<PxVec3>& hull1, PxBounds3& hull1Bounds, const physx::PxTransform& localToWorldRT1In, const physx::PxVec3& scale1In,
+bool importerHullsInProximityApexFree(uint32_t hull0Count, const PxVec3* hull0, PxBounds3& hull0Bounds, const physx::PxTransform& localToWorldRT0In, const physx::PxVec3& scale0In,
+	uint32_t hull1Count, const PxVec3* hull1, PxBounds3& hull1Bounds, const physx::PxTransform& localToWorldRT1In, const physx::PxVec3& scale1In,
 	physx::PxF32 maxDistance, Separation* separation)
 {
 
 
-	const PxU32 numVerts0 = static_cast<PxU32>(hull0.size());
-	const PxU32 numVerts1 = static_cast<PxU32>(hull1.size());
+	const PxU32 numVerts0 = static_cast<PxU32>(hull0Count);
+	const PxU32 numVerts1 = static_cast<PxU32>(hull1Count);
 	const PxU32 numAov0 = (numVerts0 + 3) >> 2;
 	const PxU32 numAov1 = (numVerts1 + 3) >> 2;
 	Vec4V* verts0 = (Vec4V*)alloca((numAov0 + numAov1) * sizeof(Vec4V) * 3);
@@ -936,8 +954,8 @@ bool importerHullsInProximityApexFree(const std::vector<PxVec3>& hull0, PxBounds
 		vert1[i] = hull1[i];
 	}
 
-	_arrayVec3ToVec4(&vert0[0], scale0, verts0, numVerts0);
-	_arrayVec3ToVec4(&vert1[0], scale1, verts1, numVerts1);
+	_arrayVec3ToVec4(vert0.data(), scale0, verts0, numVerts0);
+	_arrayVec3ToVec4(vert1.data(), scale1, verts1, numVerts1);
 
 	const PxTransform trans1To0 = localToWorldRT0In.transformInv(localToWorldRT1In);
 

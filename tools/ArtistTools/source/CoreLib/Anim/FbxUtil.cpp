@@ -35,8 +35,7 @@
 
 #include "FbxUtil.h"
 #include "MathUtil.h"
-
-//#include <Nv/Blast/NvHairSdk.h>
+#include "GlobalSettings.h"
 
 // local functions used only in this file
 namespace {
@@ -138,7 +137,8 @@ FbxUtil::Release(void)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool FbxUtil::Initialize(const char* fbxFileName, float sceneUnit)
+//// if fbx uses one unit which is not supported, we will also convert its unit.
+bool FbxUtil::Initialize(const char* fbxFileName, nvidia::Float& fbxSceneUnit, nvidia::Float toScneUnit, bool bConvertUnit)
 {
 	if (fbxFileName)
 	{
@@ -162,12 +162,15 @@ bool FbxUtil::Initialize(const char* fbxFileName, float sceneUnit)
 		FbxGlobalSettings& settings = s_FbxScene->GetGlobalSettings();
 
 		FbxSystemUnit fbxUnit = settings.GetSystemUnit();
-
-		if ((sceneUnit > 0.0f) && (sceneUnit != fbxUnit.GetScaleFactor()))
-		 {
-	 		 FbxSystemUnit convertUnit(sceneUnit);
-			 convertUnit.ConvertScene(s_FbxScene);
-		 }
+		fbxSceneUnit = fbxUnit.GetScaleFactor();
+		bool bSupported = GlobalSettings::Inst().isSupportedUnitByUnitInCm(fbxSceneUnit);
+		bool bNeedConvert = ((toScneUnit > 0.0f) && bConvertUnit && (fabs(toScneUnit - fbxSceneUnit) > 0.001f));
+		if (bNeedConvert || !bSupported)
+		{
+			// if FBX has a non-supported unit, we still convert its unit
+			FbxSystemUnit convertUnit(toScneUnit);
+			convertUnit.ConvertScene(s_FbxScene);
+		}
 
 		s_FbxImporter->Destroy();
 
@@ -186,9 +189,6 @@ bool FbxUtil::Initialize(const char* fbxFileName, float sceneUnit)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool FbxUtil::GetGlobalSettings(float* pStartFrame, float* pEndFrame, float *pFps, int *upAxis, char* rootBoneName)
 {
-	return false;
-
-	/*
 	if ( !s_FbxScene)
 		return false;
 
@@ -237,7 +237,6 @@ bool FbxUtil::GetGlobalSettings(float* pStartFrame, float* pEndFrame, float *pFp
 	}
 
 	return true;
-	*/
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -245,9 +244,6 @@ bool FbxUtil::GetGlobalSettings(float* pStartFrame, float* pEndFrame, float *pFp
 bool
 FbxUtil::InitializeAnimationCache(AnimationCache& animCache)
 {
-	return false;
-
-	/*
 	if (!s_FbxScene)
 		return false;
 
@@ -284,7 +280,6 @@ FbxUtil::InitializeAnimationCache(AnimationCache& animCache)
 	}
 
 	return true;
-	*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -326,9 +321,6 @@ static int GetNumMeshPoints( FbxNode* pFbxNode)
 ////////////////////////////////////////////////////////////////////////////////////////
 static bool GetBoneData(FbxSkin *pFbxSkin, FbxNode* pFbxNode, NvChar* pBoneNames, atcore_float4x4 *pBindPoses)
 {
-	return false;
-
-	/*
 	if (!pFbxSkin || !pFbxNode)
 		return false;
 
@@ -361,7 +353,6 @@ static bool GetBoneData(FbxSkin *pFbxSkin, FbxNode* pFbxNode, NvChar* pBoneNames
 		}
 	}
 	return true;
-	*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -455,9 +446,6 @@ static bool GetSkinningWeights(FbxSkin* pFbxSkin, atcore_float4* boneIndices, at
 ////////////////////////////////////////////////////////////////////////////////////////
 bool FbxUtil::InitializeSkinData( const char* meshName, SkinData& skinData)
 {
-	return false;
-
-	/*
 	FbxNode* pFbxNode = FindNodeByName(s_FbxScene, meshName);
 	if (!pFbxNode)
 		return false;
@@ -506,11 +494,10 @@ bool FbxUtil::InitializeSkinData( const char* meshName, SkinData& skinData)
 	}
 
 	return true;
-	*/
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool FbxUtil::GetMeshInfo(int* numMeshes, char** meshNames, char** skinned)
+bool FbxUtil::GetMeshInfo(int* numMeshes, char** meshNames, char** parents, char** skinned)
 {
 	int cnt = 0;
 
@@ -524,6 +511,9 @@ bool FbxUtil::GetMeshInfo(int* numMeshes, char** meshNames, char** skinned)
 	char *pNameBuffer = new char[cnt * 128];
 	char *pSkinnedBuffer = new char[cnt];
 
+	char *pParentBuffer = new char[cnt * 128];
+	memset(pParentBuffer, 0, cnt * 128);
+
 	cnt = 0;
 	for (int i = 0; i < s_FbxScene->GetNodeCount(); i++)
 	{
@@ -533,6 +523,12 @@ bool FbxUtil::GetMeshInfo(int* numMeshes, char** meshNames, char** skinned)
 			continue;
 
 		strcpy(pNameBuffer + cnt * 128, pNode->GetName());
+
+		FbxNode* pParentNode = pNode->GetParent();
+		if (pParentNode != nullptr)
+		{
+			strcpy(pParentBuffer + cnt * 128, pParentNode->GetName());
+		}
 
 		pSkinnedBuffer[cnt] = checkSkinned(pNode);
 
@@ -548,6 +544,7 @@ bool FbxUtil::GetMeshInfo(int* numMeshes, char** meshNames, char** skinned)
 		delete []pSkinnedBuffer;
 
 	*meshNames = pNameBuffer;
+	*parents = pParentBuffer;
 
 	return true;
 }
@@ -563,6 +560,8 @@ bool FbxUtil::GetMeshMaterials( const NvChar* meshName, int *numMaterials, MeshM
 		return false;
 
 	int numMats = pNode->GetMaterialCount();
+	if (numMats == 0)
+		return false;
 
 	*materials = new MeshMaterial[numMats];
 
@@ -663,6 +662,9 @@ bool FbxUtil::CreateMeshDescriptor(const char* meshName, MeshDesc &desc)
 	if (!pMesh)
 		return false;
 
+	FbxDouble3 meshColor = pMesh->Color.Get();
+	desc.m_ColorRGB = gfsdk_makeFloat3(meshColor[0], meshColor[1], meshColor[2]);
+
 	int cpCount = pMesh->GetControlPointsCount();
 
 	int triCount = 0;
@@ -677,8 +679,12 @@ bool FbxUtil::CreateMeshDescriptor(const char* meshName, MeshDesc &desc)
 
 	// read positions
 	FbxVector4* points = pMesh->GetControlPoints();
+	FbxAMatrix matrixGeo = pNode->EvaluateGlobalTransform();
 	for (int i = 0; i < desc.m_NumVertices; i++)
-		desc.m_pVertices[i] = gfsdk_makeFloat3(float(points[i].mData[0]), float(points[i].mData[1]), float(points[i].mData[2]));
+	{		
+		FbxVector4 v = matrixGeo.MultT(points[i]);
+		desc.m_pVertices[i] = gfsdk_makeFloat3(v.mData[0], v.mData[1], v.mData[2]);
+	}
 
 	memset(desc.m_pTexCoords, 0, sizeof(atcore_float2) * desc.m_NumTriangles * 3);
 	

@@ -29,7 +29,6 @@
 
 #include "AnimUtil.h"
 
-//#include <Nv/Blast/NvHairSdk.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Helper for fbx file load
@@ -38,7 +37,7 @@ class CORELIB_EXPORT FbxUtil
 public:
 
 	/// initialize fbx loader.  
-	static bool Initialize(const nvidia::Char* fbxFileName, nvidia::Float sceneUnit = 0.0f);
+	static bool Initialize(const nvidia::Char* fbxFileName, nvidia::Float& fbxSceneUnit, float toScneUnit = 0.0f, bool bConvertUnit = true);
 	static bool Release(void);
 
 	static bool InitializeAnimationCache(AnimationCache& cache);
@@ -53,7 +52,7 @@ public:
 	static bool CreateMeshDescriptor(const nvidia::Char* meshName, MeshDesc &meshDesc);
 
 	/// get all the renderable meshes from the fbx scene
-	static bool GetMeshInfo(int* numMeshes, char** meshNames, char** skinned = 0);
+	static bool GetMeshInfo(int* numMeshes, char** meshNames, char** parents, char** skinned);
 
 	/// get mesh material info from fbx scene
 	static bool GetMeshMaterials(const nvidia::Char* meshName, int *numMaterials, MeshMaterial** materials);

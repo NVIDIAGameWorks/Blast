@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::final Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::final Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -41,7 +41,7 @@
   </div>
 </div>
 <div class="contents">
-<h1>Nv::Blast::final Class Reference</h1><!-- doxytag: class="Nv::Blast::final" --><!-- doxytag: inherits="Nv::Blast::ExtPxManager,Nv::Blast::ExtPxFamily,Nv::Blast::TkEventListener,Nv::Blast::ExtPxAsset,Nv::Blast::ExtPxActor" --><code>#include &lt;<a class="el" href="_nv_blast_ext_px_actor_impl_8h-source.html">NvBlastExtPxActorImpl.h</a>&gt;</code>
+<h1>Nv::Blast::final Class Reference</h1><!-- doxytag: class="Nv::Blast::final" --><!-- doxytag: inherits="Nv::Blast::TkGroupWorker,Nv::Blast::ExtPxStressSolver,Nv::Blast::ExtPxListener,Nv::Blast::ExtPxManager,Nv::Blast::ExtPxFamily,Nv::Blast::TkEventListener,Nv::Blast::ExtPxAsset,Nv::Blast::ExtPxActor" --><code>#include &lt;<a class="el" href="_nv_blast_ext_px_actor_impl_8h-source.html">NvBlastExtPxActorImpl.h</a>&gt;</code>
 <p>
 <div class="dynheader">
 Inheritance diagram for Nv::Blast::final:</div>
@@ -49,21 +49,20 @@ Inheritance diagram for Nv::Blast::final:</div>
 
 <p><center><img src="class_nv_1_1_blast_1_1final.png" usemap="#Nv::Blast::final_map" border="0" alt=""></center>
 <map name="Nv::Blast::final_map">
-<area href="class_nv_1_1_blast_1_1_ext_px_manager.html" alt="Nv::Blast::ExtPxManager" shape="rect" coords="0,0,157,24">
-<area href="class_nv_1_1_blast_1_1_ext_px_family.html" alt="Nv::Blast::ExtPxFamily" shape="rect" coords="167,0,324,24">
-<area href="class_nv_1_1_blast_1_1_tk_event_listener.html" alt="Nv::Blast::TkEventListener" shape="rect" coords="334,0,491,24">
-<area href="class_nv_1_1_blast_1_1_ext_px_asset.html" alt="Nv::Blast::ExtPxAsset" shape="rect" coords="501,0,658,24">
-<area href="class_nv_1_1_blast_1_1_ext_px_actor.html" alt="Nv::Blast::ExtPxActor" shape="rect" coords="668,0,825,24">
+<area href="class_nv_1_1_blast_1_1_ext_px_actor.html" alt="Nv::Blast::ExtPxActor" shape="rect" coords="180,392,350,416">
+<area href="class_nv_1_1_blast_1_1_ext_px_asset.html" alt="Nv::Blast::ExtPxAsset" shape="rect" coords="180,336,350,360">
+<area href="class_nv_1_1_blast_1_1_tk_event_listener.html" alt="Nv::Blast::TkEventListener" shape="rect" coords="180,280,350,304">
+<area href="class_nv_1_1_blast_1_1_ext_px_family.html" alt="Nv::Blast::ExtPxFamily" shape="rect" coords="180,224,350,248">
+<area href="class_nv_1_1_blast_1_1_ext_px_manager.html" alt="Nv::Blast::ExtPxManager" shape="rect" coords="180,168,350,192">
+<area href="class_nv_1_1_blast_1_1_ext_px_listener.html" alt="Nv::Blast::ExtPxListener" shape="rect" coords="180,112,350,136">
+<area href="class_nv_1_1_blast_1_1_ext_px_stress_solver.html" alt="Nv::Blast::ExtPxStressSolver" shape="rect" coords="180,56,350,80">
+<area href="class_nv_1_1_blast_1_1_tk_group_worker.html" alt="Nv::Blast::TkGroupWorker" shape="rect" coords="180,0,350,24">
 </map>
 </div>
 
 <p>
 <a href="class_nv_1_1_blast_1_1final-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
-<tr><td colspan="2"><br><h2>Classes</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><b>DataHeader</b></td></tr>
-
-<tr><td colspan="2"><br><h2>Public Types</h2></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#55bc408e0ebd0ca9f6adf523ace899a0">createFamily</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html">ExtPxFamilyDesc</a> &amp;desc) override</td></tr>
 
@@ -83,13 +82,19 @@ Inheritance diagram for Nv::Blast::final:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#89470f7f2abd6c9067e682ebb68652f2">ExtPxActorImpl</a> (ExtPxFamilyImpl *family, <a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a> *tkActor, const <a class="el" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html">PxActorCreateInfo</a> &amp;pxActorInfo)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#8db10d849ec732702a7787750a64c367">ExtPxAssetImpl</a> (<a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> *tkAsset)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#ad48eb7e3e1b898ec0fca814cca2a139">ExtPxAssetImpl</a> (<a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> *asset)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#2e8f7e72102f7a64faa8e201d5988c71">ExtPxAssetImpl</a> (<a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> *asset, <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">ExtPxAssetDesc::ChunkDesc</a> *chunks, uint32_t chunkCount)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#19ede4b4bd2f4c0e2d5480f05ff7d7dc">ExtPxAssetImpl</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_tk_asset_desc.html">TkAssetDesc</a> &amp;desc, <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a> *pxChunks, <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a> *pxSubchunks, <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> &amp;framework)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#315dca51275c98b2b80bd35d8c1f385e">ExtPxAssetImpl</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html">ExtPxAssetDesc</a> &amp;desc, <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> &amp;framework)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#738b1edc6c33636d43859410b077156f">ExtPxFamilyImpl</a> (<a class="el" href="class_nv_1_1_blast_1_1final.html#01ea0c2730c4bedfacf00327930428ff">ExtPxManagerImpl</a> &amp;manager, <a class="el" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a> &amp;tkFamily, const <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a> &amp;pxAsset)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#3d95484c32767c462e129690a95c002d">ExtPxManagerImpl</a> (PxPhysics &amp;physics, <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> &amp;framework, <a class="el" href="namespace_nv_1_1_blast.html#6a12664dba0567a600473d48d62a7e86">ExtPxCreateJointFunction</a> createFn, bool usePxUserData)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#89254733f53d00141569816ac6550f5c">ExtPxStressSolverImpl</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a> &amp;family, <a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a> settings)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#ccf06074b8a883d23108645fddabc822">getActorCount</a> () const override</td></tr>
 
@@ -99,6 +104,8 @@ Inheritance diagram for Nv::Blast::final:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#d81939fffea17179aa0fc702b7beb0b1">getActors</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a> **buffer, uint32_t bufferSize) const override</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a>&lt; float &gt;::type &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#bec69e67cb20b86344e1eaf901e2b768">getBondHealthsArray</a> ()</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#409d4b1a96fa30e0167c41cdb6a9a3f4">getChunkCount</a> () const override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#409d4b1a96fa30e0167c41cdb6a9a3f4">getChunkCount</a> () const override</td></tr>
@@ -107,7 +114,11 @@ Inheritance diagram for Nv::Blast::final:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#381dfd7ed53b85b4ebfd73a147261897">getChunks</a> () const override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_ext_array.html">ExtArray</a>&lt; <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a> &gt;::type &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#9b65727294847c5d5b4c508a54409dd7">getChunksArray</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a>&lt; <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a> &gt;::type &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#ed0054b63bff34a0aa01b9e9650cfa8a">getChunksArray</a> ()</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#10ad54a69cbd96b970d05bed279965a8">getDefaultActorDesc</a> () const override</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#addabe119a177bd7de72c6506893e630">getDefaultActorDesc</a> () override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#d63ff5ff398f6769d06c12bba0223496">getFamilies</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a> **buffer, uint32_t bufferSize) const override</td></tr>
 
@@ -133,14 +144,18 @@ Inheritance diagram for Nv::Blast::final:</div>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <br class="typebreak">
 <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_shape_desc_template.html">ExtPxShapeDescTemplate</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#3864591a148cf9a3c955b884ea99ec39">getPxShapeDescTemplate</a> () const override</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">ExtStressSolver</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#bcc1ebee1f569d03adab96a87d68432a">getSolver</a> () const override</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#c2c0d53307df34a39a771dafe3560e17">getSubchunkCount</a> () const override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#335e87a42085e9e2015c7dec0bc576eb">getSubchunks</a> () const override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_ext_array.html">ExtArray</a>&lt; <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a> &gt;::type &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#00d73f1cacf5a5c37932de9e13219919">getSubchunksArray</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a>&lt; <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a> &gt;::type &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#835b31d016dcf698835df5982469d7bb">getSubchunksArray</a> ()</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const physx::PxShape <br class="typebreak">
 *const *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#0f89afb9e1d8fdee379ca6e0457a9784">getSubchunkShapes</a> () const override</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a>&lt; float &gt;::type &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#016cb094f3bb1fa657d4deef03122fac">getSupportChunkHealthsArray</a> ()</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#37d3cf27f13a73b3ec040a7073de2a6c">getTkActor</a> () const override</td></tr>
 
@@ -148,9 +163,19 @@ Inheritance diagram for Nv::Blast::final:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#761f1d70f78bf8be724f87811d54d872">getTkFamily</a> () const override</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#6632dba288df386d4ffa7d36883ffc14">initialize</a> ()</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#2860f4d636400cddc2445859ca1096c7">isPxUserDataUsed</a> () const override</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#8b8d10ecd849248bf2b0ee4b057873c9">onActorCreated</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a> &amp;family, <a class="el" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a> &amp;actor) <a class="el" href="class_nv_1_1_blast_1_1final.html">final</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#adc630159ccd75668648dc2a40707da4">onActorDestroyed</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a> &amp;family, <a class="el" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a> &amp;actor) <a class="el" href="class_nv_1_1_blast_1_1final.html">final</a></td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#86a62aef8240edb397aef283f2f22527">postSplitUpdate</a> () override</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#73ebc63dfd0266a5ae5d068eef94c06b">process</a> (<a class="el" href="struct_nv_1_1_blast_1_1_tk_worker_job.html">TkWorkerJob</a> &amp;job)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#afed732bd30dd788891c597d665a7c0e">process</a> (uint32_t jobID)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#4dae0e8a94bba1bd6f5a86a197ce2499">receive</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_tk_event.html">TkEvent</a> *events, uint32_t eventCount) override</td></tr>
 
@@ -164,9 +189,9 @@ Inheritance diagram for Nv::Blast::final:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#9cb3febd1db68fb5a90c3f70e00aa330">release</a> () override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#85b59d35d9ca4987554efed048c47d99">release</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#9cb3febd1db68fb5a90c3f70e00aa330">release</a> () override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#a3aa27e6a0ee825d4fa8dc37439d072e">serialize</a> (PxFileBuf &amp;stream, PxCooking &amp;cooking) const override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#85b59d35d9ca4987554efed048c47d99">release</a> ()</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#f22357beb57852925f170905a31b9b25">setActorCountLimit</a> (uint32_t limit) override</td></tr>
 
@@ -178,11 +203,15 @@ Inheritance diagram for Nv::Blast::final:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#905ae2985ac677bb4bf15be46eb7bf13">setPxShapeDescTemplate</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_shape_desc_template.html">ExtPxShapeDescTemplate</a> *pxShapeDesc) override</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#e882f1d34f5e31be0fc457477e3d661c">setUniformHealth</a> (bool enabled) override</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#2c6ca11d6538e0d134dd135cd6cc374e">spawn</a> (const physx::PxTransform &amp;pose, const physx::PxVec3 &amp;scale, const <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_spawn_settings.html">ExtPxSpawnSettings</a> &amp;settings) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#8d02f38c4dbe02470bada3f48d27e179">subscribe</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_px_listener.html">ExtPxListener</a> &amp;listener) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#8d02f38c4dbe02470bada3f48d27e179">subscribe</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_px_listener.html">ExtPxListener</a> &amp;listener) override</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#4f2f434b0570d2a462816075b9757d37">TkWorker</a> ()</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#43a3c23d471a5388c53a3c27a1c069e7">unregisterActor</a> (PxRigidDynamic *pxActor)</td></tr>
 
@@ -191,6 +220,8 @@ Inheritance diagram for Nv::Blast::final:</div>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#5ee7e8f12a169ea48e351aab521a728d">unsubscribe</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_px_listener.html">ExtPxListener</a> &amp;listener) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#5ee7e8f12a169ea48e351aab521a728d">unsubscribe</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_px_listener.html">ExtPxListener</a> &amp;listener) override</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#e00997aef0eba5d06df2bbdfceab00c0">update</a> (bool doDamage) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#5e6214993a74a5f16598f5b8634e6a21">updateJoint</a> (<a class="el" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a> &amp;joint)</td></tr>
 
@@ -207,6 +238,26 @@ Inheritance diagram for Nv::Blast::final:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">friend&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#01ea0c2730c4bedfacf00327930428ff">ExtPxManagerImpl</a></td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_local_buffer.html">LocalBuffer</a><br class="typebreak">
+&lt; <a class="el" href="struct_nv_blast_bond_fracture_data.html">NvBlastBondFractureData</a> &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#ed650bb8ed3ff0788a4a0ef0b7108acb">m_bondBuffer</a></td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">memory manager for bonds event data  <a href="#ed650bb8ed3ff0788a4a0ef0b7108acb"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_local_buffer.html">LocalBuffer</a><br class="typebreak">
+&lt; <a class="el" href="struct_nv_blast_chunk_fracture_data.html">NvBlastChunkFractureData</a> &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#c5bc74f1c610ec765fbd3cd8bdd215a2">m_chunkBuffer</a></td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">memory manager for chunk event data  <a href="#c5bc74f1c610ec765fbd3cd8bdd215a2"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">TkGroupImpl *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#dccf51f5d4d1f35a7979d8166244aac9">m_group</a></td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">the group owning this worker  <a href="#dccf51f5d4d1f35a7979d8166244aac9"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#fefef0946765efd7f615cb687ecca7cd">m_id</a></td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">this worker's id  <a href="#fefef0946765efd7f615cb687ecca7cd"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#2b0b1bc32a739e84cc00afd177bf4cce">m_isBusy</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#8c772466830154096e0a4e0ead3e2692">m_splitScratch</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#775c06cd2fe8bc2731fb77683a03ef2d">m_tempBuffer</a></td></tr>
+
 <tr><td colspan="2"><br><h2>Friends</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#0ca3de54fb5af8b338b5f701dc8d6595">ExtPxActorImpl</a></td></tr>
 
@@ -215,33 +266,8 @@ Inheritance diagram for Nv::Blast::final:</div>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html#9a22ae97f7cc3e1f3396efe3d597f0dc">ExtPxFamilyImpl</a></td></tr>
 
 </table>
-<hr><h2>Member Enumeration Documentation</h2>
-<a class="anchor" name="d03e5d5bceb9a339a46ca117629e586f"></a><!-- doxytag: member="Nv::Blast::final::Version" ref="d03e5d5bceb9a339a46ca117629e586f" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="class_nv_1_1_blast_1_1final.html#d03e5d5bceb9a339a46ca117629e586f">Nv::Blast::final::Version</a>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Enum which keeps track of the serialized data format. <dl compact><dt><b>Enumerator: </b></dt><dd>
-<table border="0" cellspacing="2" cellpadding="0">
-<tr><td valign="top"><em><a class="anchor" name="d03e5d5bceb9a339a46ca117629e586fa5179b74c4323bfcf1ef062084c49ffe"></a><!-- doxytag: member="Initial" ref="d03e5d5bceb9a339a46ca117629e586fa5179b74c4323bfcf1ef062084c49ffe" args="" -->Initial</em>&nbsp;</td><td>
-Initial version </td></tr>
-<tr><td valign="top"><em><a class="anchor" name="d03e5d5bceb9a339a46ca117629e586feb5962b21677902c823209aab614d32c"></a><!-- doxytag: member="Count" ref="d03e5d5bceb9a339a46ca117629e586feb5962b21677902c823209aab614d32c" args="" -->Count</em>&nbsp;</td><td>
-The number of serialized formats. </td></tr>
-<tr><td valign="top"><em><a class="anchor" name="d03e5d5bceb9a339a46ca117629e586f02681d9b97e236c78487e049b9940574"></a><!-- doxytag: member="Current" ref="d03e5d5bceb9a339a46ca117629e586f02681d9b97e236c78487e049b9940574" args="" -->Current</em>&nbsp;</td><td>
-The current version. This should always be Count-1 </td></tr>
-</table>
-</dl>
-
-</div>
-</div><p>
-<hr><h2>Constructor &amp; Destructor Documentation</h2>
+<hr><a name="_details"></a><h2>Detailed Description</h2>
+Thread worker fracturing and splitting actors sequentially. The list of actual jobs is provided by the group owning this worker. <hr><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" name="66fc5e2bb35ad8ec410209f6e254d128"></a><!-- doxytag: member="Nv::Blast::final::~ExtPxActorImpl" ref="66fc5e2bb35ad8ec410209f6e254d128" args="()" -->
 <div class="memitem">
 <div class="memproto">
@@ -563,7 +589,7 @@ Destroy a px joint associated with <a class="el" href="class_nv_1_1_blast_1_1_tk
 
 </div>
 </div><p>
-<a class="anchor" name="8db10d849ec732702a7787750a64c367"></a><!-- doxytag: member="Nv::Blast::final::ExtPxAssetImpl" ref="8db10d849ec732702a7787750a64c367" args="(TkAsset *tkAsset)" -->
+<a class="anchor" name="ad48eb7e3e1b898ec0fca814cca2a139"></a><!-- doxytag: member="Nv::Blast::final::ExtPxAssetImpl" ref="ad48eb7e3e1b898ec0fca814cca2a139" args="(TkAsset *asset)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -571,9 +597,85 @@ Destroy a px joint associated with <a class="el" href="class_nv_1_1_blast_1_1_tk
           <td class="memname">Nv::Blast::final::ExtPxAssetImpl           </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> *&nbsp;</td>
-          <td class="paramname"> <em>tkAsset</em>          </td>
+          <td class="paramname"> <em>asset</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="2e8f7e72102f7a64faa8e201d5988c71"></a><!-- doxytag: member="Nv::Blast::final::ExtPxAssetImpl" ref="2e8f7e72102f7a64faa8e201d5988c71" args="(TkAsset *asset, ExtPxAssetDesc::ChunkDesc *chunks, uint32_t chunkCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Nv::Blast::final::ExtPxAssetImpl           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> *&nbsp;</td>
+          <td class="paramname"> <em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">ExtPxAssetDesc::ChunkDesc</a> *&nbsp;</td>
+          <td class="paramname"> <em>chunks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="19ede4b4bd2f4c0e2d5480f05ff7d7dc"></a><!-- doxytag: member="Nv::Blast::final::ExtPxAssetImpl" ref="19ede4b4bd2f4c0e2d5480f05ff7d7dc" args="(const TkAssetDesc &amp;desc, ExtPxChunk *pxChunks, ExtPxSubchunk *pxSubchunks, TkFramework &amp;framework)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Nv::Blast::final::ExtPxAssetImpl           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_tk_asset_desc.html">TkAssetDesc</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>desc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a> *&nbsp;</td>
+          <td class="paramname"> <em>pxChunks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a> *&nbsp;</td>
+          <td class="paramname"> <em>pxSubchunks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>framework</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
         </tr>
       </table>
 </div>
@@ -688,6 +790,35 @@ Destroy a px joint associated with <a class="el" href="class_nv_1_1_blast_1_1_tk
 
 </div>
 </div><p>
+<a class="anchor" name="89254733f53d00141569816ac6550f5c"></a><!-- doxytag: member="Nv::Blast::final::ExtPxStressSolverImpl" ref="89254733f53d00141569816ac6550f5c" args="(ExtPxFamily &amp;family, ExtStressSolverSettings settings)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Nv::Blast::final::ExtPxStressSolverImpl           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>family</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a>&nbsp;</td>
+          <td class="paramname"> <em>settings</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="ccf06074b8a883d23108645fddabc822"></a><!-- doxytag: member="Nv::Blast::final::getActorCount" ref="ccf06074b8a883d23108645fddabc822" args="() const override" -->
 <div class="memitem">
 <div class="memproto">
@@ -793,6 +924,25 @@ Retrieve an array of pointers (into the user-supplied buffer) to actors.<p>
 
 </div>
 </div><p>
+<a class="anchor" name="bec69e67cb20b86344e1eaf901e2b768"></a><!-- doxytag: member="Nv::Blast::final::getBondHealthsArray" ref="bec69e67cb20b86344e1eaf901e2b768" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a>&lt;float&gt;::type&amp; Nv::Blast::final::getBondHealthsArray           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="409d4b1a96fa30e0167c41cdb6a9a3f4"></a><!-- doxytag: member="Nv::Blast::final::getChunkCount" ref="409d4b1a96fa30e0167c41cdb6a9a3f4" args="() const override" -->
 <div class="memitem">
 <div class="memproto">
@@ -885,12 +1035,12 @@ Access asset's array of chunks. Use <a class="el" href="class_nv_1_1_blast_1_1fi
 
 </div>
 </div><p>
-<a class="anchor" name="9b65727294847c5d5b4c508a54409dd7"></a><!-- doxytag: member="Nv::Blast::final::getChunksArray" ref="9b65727294847c5d5b4c508a54409dd7" args="()" -->
+<a class="anchor" name="ed0054b63bff34a0aa01b9e9650cfa8a"></a><!-- doxytag: member="Nv::Blast::final::getChunksArray" ref="ed0054b63bff34a0aa01b9e9650cfa8a" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="struct_nv_1_1_blast_1_1_ext_array.html">ExtArray</a>&lt;<a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a>&gt;::type&amp; Nv::Blast::final::getChunksArray           </td>
+          <td class="memname"><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a>&lt;<a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a>&gt;::type&amp; Nv::Blast::final::getChunksArray           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
@@ -901,6 +1051,52 @@ Access asset's array of chunks. Use <a class="el" href="class_nv_1_1_blast_1_1fi
 <div class="memdoc">
 
 <p>
+
+</div>
+</div><p>
+<a class="anchor" name="10ad54a69cbd96b970d05bed279965a8"></a><!-- doxytag: member="Nv::Blast::final::getDefaultActorDesc" ref="10ad54a69cbd96b970d05bed279965a8" args="() const override" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>&amp; Nv::Blast::final::getDefaultActorDesc           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [inline, override, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#4269cec8490e4cdb34ca46f24ce630f2">Nv::Blast::ExtPxAsset</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="addabe119a177bd7de72c6506893e630"></a><!-- doxytag: member="Nv::Blast::final::getDefaultActorDesc" ref="addabe119a177bd7de72c6506893e630" args="() override" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>&amp; Nv::Blast::final::getDefaultActorDesc           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [inline, override, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Get the default <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a> to be used when creating family from this asset. It is called 'default', because it can be overwritten in <a class="el" href="class_nv_1_1_blast_1_1_ext_px_manager.html#4f76548a36265c068f6080cde0ef674a">ExtPxManager::createFamily</a>(...) function.<p>
+Initially default <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a> contains only uniform health values, and 'nullptr' is set in arrays of health. Call setUniformHealth(false) in order to set health per bond/chunk. You can then access directly values stored in <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>, change them and they will be serialized/deserialized as withing asset itself.<p>
+NOTE: do not change actual pointers in <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>: initialBondHealths and initialSupportChunkHealths. You can change actual values in those arrays or if they are 'nullptr' call setUniformHealth(false) before. Or call setUniformHealth(true) to make them 'nullptr'.<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the default <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>. </dd></dl>
+
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#bd8250a0fd3bb8430eb6a61be57569b0">Nv::Blast::ExtPxAsset</a>.</p>
 
 </div>
 </div><p>
@@ -1177,6 +1373,29 @@ Get the default ExtPxPxShapeDesc to be used on all newly created PxShapes.<p>
 
 </div>
 </div><p>
+<a class="anchor" name="bcc1ebee1f569d03adab96a87d68432a"></a><!-- doxytag: member="Nv::Blast::final::getSolver" ref="bcc1ebee1f569d03adab96a87d68432a" args="() const override" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">ExtStressSolver</a>&amp; Nv::Blast::final::getSolver           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [inline, override, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Get actual <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">ExtStressSolver</a> used.<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the pointer to <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">ExtStressSolver</a> used internally. </dd></dl>
+
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_ext_px_stress_solver.html#380d5149991ddd30f4655381fec3479a">Nv::Blast::ExtPxStressSolver</a>.</p>
+
+</div>
+</div><p>
 <a class="anchor" name="c2c0d53307df34a39a771dafe3560e17"></a><!-- doxytag: member="Nv::Blast::final::getSubchunkCount" ref="c2c0d53307df34a39a771dafe3560e17" args="() const override" -->
 <div class="memitem">
 <div class="memproto">
@@ -1223,12 +1442,12 @@ Access asset's array of subchunks. Use <a class="el" href="class_nv_1_1_blast_1_
 
 </div>
 </div><p>
-<a class="anchor" name="00d73f1cacf5a5c37932de9e13219919"></a><!-- doxytag: member="Nv::Blast::final::getSubchunksArray" ref="00d73f1cacf5a5c37932de9e13219919" args="()" -->
+<a class="anchor" name="835b31d016dcf698835df5982469d7bb"></a><!-- doxytag: member="Nv::Blast::final::getSubchunksArray" ref="835b31d016dcf698835df5982469d7bb" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="struct_nv_1_1_blast_1_1_ext_array.html">ExtArray</a>&lt;<a class="el" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a>&gt;::type&amp; Nv::Blast::final::getSubchunksArray           </td>
+          <td class="memname"><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a>&lt;<a class="el" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a>&gt;::type&amp; Nv::Blast::final::getSubchunksArray           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
@@ -1262,6 +1481,25 @@ Access an array of shapes of subchunks. The size of array is equal <a class="el"
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>the pointer to subchunk shapes array. </dd></dl>
 
 <p>Implements <a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#baec9ea7954e265666dd7d03afcda7ae">Nv::Blast::ExtPxFamily</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="016cb094f3bb1fa657d4deef03122fac"></a><!-- doxytag: member="Nv::Blast::final::getSupportChunkHealthsArray" ref="016cb094f3bb1fa657d4deef03122fac" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a>&lt;float&gt;::type&amp; Nv::Blast::final::getSupportChunkHealthsArray           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
 
 </div>
 </div><p>
@@ -1331,6 +1569,25 @@ Every family has corresponding <a class="el" href="class_nv_1_1_blast_1_1_tk_fam
 
 </div>
 </div><p>
+<a class="anchor" name="6632dba288df386d4ffa7d36883ffc14"></a><!-- doxytag: member="Nv::Blast::final::initialize" ref="6632dba288df386d4ffa7d36883ffc14" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Nv::Blast::final::initialize           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="2860f4d636400cddc2445859ca1096c7"></a><!-- doxytag: member="Nv::Blast::final::isPxUserDataUsed" ref="2860f4d636400cddc2445859ca1096c7" args="() const override" -->
 <div class="memitem">
 <div class="memproto">
@@ -1354,6 +1611,82 @@ Get if useUserData was set upon manager creation.<p>
 
 </div>
 </div><p>
+<a class="anchor" name="8b8d10ecd849248bf2b0ee4b057873c9"></a><!-- doxytag: member="Nv::Blast::final::onActorCreated" ref="8b8d10ecd849248bf2b0ee4b057873c9" args="(ExtPxFamily &amp;family, ExtPxActor &amp;actor) final" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::final::onActorCreated           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>family</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>actor</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Interface to be implemented by the user. Will be called when <a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a> creates new actor.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>family</em>&nbsp;</td><td>Corresponding <a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a> with new actor. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>actor</em>&nbsp;</td><td>The new actor. </td></tr>
+  </table>
+</dl>
+
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_ext_px_listener.html#974e258bbfbd9cf333cc5b883b968ceb">Nv::Blast::ExtPxListener</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="adc630159ccd75668648dc2a40707da4"></a><!-- doxytag: member="Nv::Blast::final::onActorDestroyed" ref="adc630159ccd75668648dc2a40707da4" args="(ExtPxFamily &amp;family, ExtPxActor &amp;actor) final" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::final::onActorDestroyed           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>family</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>actor</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Interface to be implemented by the user. Will be called when <a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a> destroy an actor.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>family</em>&nbsp;</td><td>Corresponding <a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a>. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>actor</em>&nbsp;</td><td>The actor to be destroyed. </td></tr>
+  </table>
+</dl>
+
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_ext_px_listener.html#2ffefb96cbdea998a8761a8017daf214">Nv::Blast::ExtPxListener</a>.</p>
+
+</div>
+</div><p>
 <a class="anchor" name="86a62aef8240edb397aef283f2f22527"></a><!-- doxytag: member="Nv::Blast::final::postSplitUpdate" ref="86a62aef8240edb397aef283f2f22527" args="() override" -->
 <div class="memitem">
 <div class="memproto">
@@ -1372,6 +1705,49 @@ Get if useUserData was set upon manager creation.<p>
 <p>
 Call after split. 
 <p>Implements <a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#d0f72e382eeabf2d51529b806e7714cc">Nv::Blast::ExtPxFamily</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="73ebc63dfd0266a5ae5d068eef94c06b"></a><!-- doxytag: member="Nv::Blast::final::process" ref="73ebc63dfd0266a5ae5d068eef94c06b" args="(TkWorkerJob &amp;job)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Nv::Blast::final::process           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_tk_worker_job.html">TkWorkerJob</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>job</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="afed732bd30dd788891c597d665a7c0e"></a><!-- doxytag: member="Nv::Blast::final::process" ref="afed732bd30dd788891c597d665a7c0e" args="(uint32_t jobID)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Nv::Blast::final::process           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>jobId</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Process a job of this worker's <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>.<p>
+/param[in] jobId a job id in the range (0, <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#e98b1523b3f1323c42129fe88842f306">TkGroup::startProcess()</a>] 
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_tk_group_worker.html#df15d994a12f0c0b18dd0a878b1ddd2f">Nv::Blast::TkGroupWorker</a>.</p>
 
 </div>
 </div><p>
@@ -1525,6 +1901,27 @@ Release this <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPx
 
 </div>
 </div><p>
+<a class="anchor" name="9cb3febd1db68fb5a90c3f70e00aa330"></a><!-- doxytag: member="Nv::Blast::final::release" ref="9cb3febd1db68fb5a90c3f70e00aa330" args="() override" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::final::release           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [override, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Release this <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>. 
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#2d2e7f6418c5faa72daca12816ce1e14">Nv::Blast::ExtPxAsset</a>.</p>
+
+</div>
+</div><p>
 <a class="anchor" name="85b59d35d9ca4987554efed048c47d99"></a><!-- doxytag: member="Nv::Blast::final::release" ref="85b59d35d9ca4987554efed048c47d99" args="()" -->
 <div class="memitem">
 <div class="memproto">
@@ -1543,35 +1940,6 @@ Release this <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPx
 <p>
 Release this <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>. 
 <p>Implements <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#2d2e7f6418c5faa72daca12816ce1e14">Nv::Blast::ExtPxAsset</a>.</p>
-
-</div>
-</div><p>
-<a class="anchor" name="a3aa27e6a0ee825d4fa8dc37439d072e"></a><!-- doxytag: member="Nv::Blast::final::serialize" ref="a3aa27e6a0ee825d4fa8dc37439d072e" args="(PxFileBuf &amp;stream, PxCooking &amp;cooking) const override" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual bool Nv::Blast::final::serialize           </td>
-          <td>(</td>
-          <td class="paramtype">PxFileBuf &amp;&nbsp;</td>
-          <td class="paramname"> <em>stream</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">PxCooking &amp;&nbsp;</td>
-          <td class="paramname"> <em>cooking</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td> const<code> [override, virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
 
 </div>
 </div><p>
@@ -1695,6 +2063,29 @@ Set ExtPxCreateJointFunction to be used when new joints are being created.\<p>
 
 </div>
 </div><p>
+<a class="anchor" name="e882f1d34f5e31be0fc457477e3d661c"></a><!-- doxytag: member="Nv::Blast::final::setUniformHealth" ref="e882f1d34f5e31be0fc457477e3d661c" args="(bool enabled) override" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::final::setUniformHealth           </td>
+          <td>(</td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>enabled</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [override, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set if uniform health values should be used in <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a> or per bond/chunk ones. <dl class="see" compact><dt><b>See also:</b></dt><dd><a class="el" href="class_nv_1_1_blast_1_1final.html#addabe119a177bd7de72c6506893e630">getDefaultActorDesc</a>. </dd></dl>
+
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#0fff64440baf6cd557941d79a9f53d1a">Nv::Blast::ExtPxAsset</a>.</p>
+
+</div>
+</div><p>
 <a class="anchor" name="2c6ca11d6538e0d134dd135cd6cc374e"></a><!-- doxytag: member="Nv::Blast::final::spawn" ref="2c6ca11d6538e0d134dd135cd6cc374e" args="(const physx::PxTransform &amp;pose, const physx::PxVec3 &amp;scale, const ExtPxSpawnSettings &amp;settings) override" -->
 <div class="memitem">
 <div class="memproto">
@@ -1797,6 +2188,25 @@ Add a user implementation of <a class="el" href="class_nv_1_1_blast_1_1_ext_px_l
 
 </div>
 </div><p>
+<a class="anchor" name="4f2f434b0570d2a462816075b9757d37"></a><!-- doxytag: member="Nv::Blast::final::TkWorker" ref="4f2f434b0570d2a462816075b9757d37" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Nv::Blast::final::TkWorker           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="43a3c23d471a5388c53a3c27a1c069e7"></a><!-- doxytag: member="Nv::Blast::final::unregisterActor" ref="43a3c23d471a5388c53a3c27a1c069e7" args="(PxRigidDynamic *pxActor)" -->
 <div class="memitem">
 <div class="memproto">
@@ -1890,6 +2300,35 @@ Remove a user implementation of <a class="el" href="class_nv_1_1_blast_1_1_ext_p
 </dl>
 
 <p>Implements <a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#0da64cab1fb7b93167505a52da8c74d3">Nv::Blast::ExtPxFamily</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="e00997aef0eba5d06df2bbdfceab00c0"></a><!-- doxytag: member="Nv::Blast::final::update" ref="e00997aef0eba5d06df2bbdfceab00c0" args="(bool doDamage) override" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::final::update           </td>
+          <td>(</td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>doDamage</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [override, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Update stress solver.<p>
+Calculate stress and optionally apply damage.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>doDamage</em>&nbsp;</td><td>If 'true' damage will be applied after stress solver. </td></tr>
+  </table>
+</dl>
+
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_ext_px_stress_solver.html#7e5295b0db1eb3224ffbc6cdf9b24681">Nv::Blast::ExtPxStressSolver</a>.</p>
 
 </div>
 </div><p>
@@ -1990,8 +2429,121 @@ Remove a user implementation of <a class="el" href="class_nv_1_1_blast_1_1_ext_p
 
 </div>
 </div><p>
+<a class="anchor" name="ed650bb8ed3ff0788a4a0ef0b7108acb"></a><!-- doxytag: member="Nv::Blast::final::m_bondBuffer" ref="ed650bb8ed3ff0788a4a0ef0b7108acb" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_nv_1_1_blast_1_1_local_buffer.html">LocalBuffer</a>&lt;<a class="el" href="struct_nv_blast_bond_fracture_data.html">NvBlastBondFractureData</a>&gt; <a class="el" href="class_nv_1_1_blast_1_1final.html#ed650bb8ed3ff0788a4a0ef0b7108acb">Nv::Blast::final::m_bondBuffer</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+memory manager for bonds event data 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="c5bc74f1c610ec765fbd3cd8bdd215a2"></a><!-- doxytag: member="Nv::Blast::final::m_chunkBuffer" ref="c5bc74f1c610ec765fbd3cd8bdd215a2" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_nv_1_1_blast_1_1_local_buffer.html">LocalBuffer</a>&lt;<a class="el" href="struct_nv_blast_chunk_fracture_data.html">NvBlastChunkFractureData</a>&gt; <a class="el" href="class_nv_1_1_blast_1_1final.html#c5bc74f1c610ec765fbd3cd8bdd215a2">Nv::Blast::final::m_chunkBuffer</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+memory manager for chunk event data 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="dccf51f5d4d1f35a7979d8166244aac9"></a><!-- doxytag: member="Nv::Blast::final::m_group" ref="dccf51f5d4d1f35a7979d8166244aac9" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TkGroupImpl* <a class="el" href="class_nv_1_1_blast_1_1final.html#dccf51f5d4d1f35a7979d8166244aac9">Nv::Blast::final::m_group</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+the group owning this worker 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="fefef0946765efd7f615cb687ecca7cd"></a><!-- doxytag: member="Nv::Blast::final::m_id" ref="fefef0946765efd7f615cb687ecca7cd" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t <a class="el" href="class_nv_1_1_blast_1_1final.html#fefef0946765efd7f615cb687ecca7cd">Nv::Blast::final::m_id</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+this worker's id 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="2b0b1bc32a739e84cc00afd177bf4cce"></a><!-- doxytag: member="Nv::Blast::final::m_isBusy" ref="2b0b1bc32a739e84cc00afd177bf4cce" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="class_nv_1_1_blast_1_1final.html#2b0b1bc32a739e84cc00afd177bf4cce">Nv::Blast::final::m_isBusy</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="8c772466830154096e0a4e0ead3e2692"></a><!-- doxytag: member="Nv::Blast::final::m_splitScratch" ref="8c772466830154096e0a4e0ead3e2692" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* <a class="el" href="class_nv_1_1_blast_1_1final.html#8c772466830154096e0a4e0ead3e2692">Nv::Blast::final::m_splitScratch</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="775c06cd2fe8bc2731fb77683a03ef2d"></a><!-- doxytag: member="Nv::Blast::final::m_tempBuffer" ref="775c06cd2fe8bc2731fb77683a03ef2d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> <a class="el" href="class_nv_1_1_blast_1_1final.html#775c06cd2fe8bc2731fb77683a03ef2d">Nv::Blast::final::m_tempBuffer</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <hr>The documentation for this class was generated from the following files:<ul>
-<li>sdk/extensions/physx/source/physics/<a class="el" href="_nv_blast_ext_px_actor_impl_8h-source.html">NvBlastExtPxActorImpl.h</a><li>sdk/extensions/physx/source/physics/<a class="el" href="_nv_blast_ext_px_asset_impl_8h-source.html">NvBlastExtPxAssetImpl.h</a><li>sdk/extensions/physx/source/physics/<a class="el" href="_nv_blast_ext_px_family_impl_8h-source.html">NvBlastExtPxFamilyImpl.h</a><li>sdk/extensions/physx/source/physics/<a class="el" href="_nv_blast_ext_px_manager_impl_8h-source.html">NvBlastExtPxManagerImpl.h</a></ul>
+<li>sdk/extensions/physx/source/physics/<a class="el" href="_nv_blast_ext_px_actor_impl_8h-source.html">NvBlastExtPxActorImpl.h</a><li>sdk/extensions/physx/source/physics/<a class="el" href="_nv_blast_ext_px_asset_impl_8h-source.html">NvBlastExtPxAssetImpl.h</a><li>sdk/extensions/physx/source/physics/<a class="el" href="_nv_blast_ext_px_family_impl_8h-source.html">NvBlastExtPxFamilyImpl.h</a><li>sdk/extensions/physx/source/physics/<a class="el" href="_nv_blast_ext_px_manager_impl_8h-source.html">NvBlastExtPxManagerImpl.h</a><li>sdk/extensions/physx/source/physics/<a class="el" href="_nv_blast_ext_px_stress_solver_impl_8h-source.html">NvBlastExtPxStressSolverImpl.h</a><li>sdk/toolkit/source/<a class="el" href="_nv_blast_tk_task_impl_8h-source.html">NvBlastTkTaskImpl.h</a></ul>
 </div>
 <!-- start footer part -->
 <div class="footer">

@@ -58,7 +58,7 @@ void AnimationCache::Initialize(int numBones, NvInt32 frameStart, NvInt32 frameE
 void AnimationCache::Allocate()
 {
 	m_pBoneMatrices = new atcore_float4x4[m_numFrames * m_numBones];
-//	m_pBoneNames	= new char[NV_HAIR_MAX_STRING * m_numBones];
+	m_pBoneNames	= new char[NV_HAIR_MAX_STRING * m_numBones];
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -104,14 +104,12 @@ int AnimationCache::FindBone(const char *toFind) const
 {
 	if (!toFind)
 		return -1;
-	/*
 	for (int i = 0; i < m_numBones; i++)
 	{
 		const char* boneName = GetBoneName(i);
 		if (!strcmp(boneName, toFind))
 			return i;
 	}
-	*/
 	return -1;
 }
 
@@ -122,7 +120,7 @@ bool AnimationCache::FindBoneMapping( int numBones, const NvChar* boneNames, int
 
 	for (int i = 0; i < numBones; i++)
 	{
-		//mappedBoneId[i] = FindBone(boneNames + i * NV_HAIR_MAX_STRING);
+		mappedBoneId[i] = FindBone(boneNames + i * NV_HAIR_MAX_STRING);
 	}
 
 	return true;
@@ -140,7 +138,7 @@ void BoneData::Allocate(NvUInt32 numBones)
 	m_pBoneMatrices		= new atcore_float4x4[numBones];
 
 	m_pSkinDQs			= new atcore_dualquaternion[numBones];
-	//m_pBoneNames		= new char[NV_HAIR_MAX_STRING * m_numBones];
+	m_pBoneNames		= new char[NV_HAIR_MAX_STRING * m_numBones];
 	m_pMappedBoneId		= new int[numBones];
 
 	for (int i = 0; i < numBones; i++)

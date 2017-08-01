@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: NvBlastGraphShaderActor Struct Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: NvBlastGraphShaderActor Struct Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -58,6 +58,9 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">const <a class="el" href="struct_nv_blast_bond.html">NvBlastBond</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_graph_shader_actor.html#ebb7e8d55ddf8cb2ef71326632952cfe">assetBonds</a></td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">NvBlastBonds geometry in the <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a>.  <a href="#ebb7e8d55ddf8cb2ef71326632952cfe"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">const <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_graph_shader_actor.html#57bf267baa9b5397af645203592a0a40">assetChunks</a></td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">NvBlastChunks geometry in the <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a>.  <a href="#57bf267baa9b5397af645203592a0a40"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">const uint32_t *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_graph_shader_actor.html#7d93e1fd93ea0d30f9e7c580fabd89fa">chunkIndices</a></td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Graph's map from node index to support chunk index.  <a href="#7d93e1fd93ea0d30f9e7c580fabd89fa"></a><br></td></tr>
@@ -70,6 +73,9 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">const uint32_t *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_graph_shader_actor.html#b33f3af55cf81d8cb0b3cce0504c2e51">graphNodeIndexLinks</a></td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Linked index list of connected nodes. Traversable with nextIndex = graphNodeIndexLinks[currentIndex], terminates with 0xFFFFFFFF.  <a href="#b33f3af55cf81d8cb0b3cce0504c2e51"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">const float *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_graph_shader_actor.html#2dcbf1a8af0917a3989d356e1691ab26">supportChunkHealths</a></td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Actual chunk health values for dead chunk detection.  <a href="#2dcbf1a8af0917a3989d356e1691ab26"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 A single actor's representation used by NvBlastGraphShaderFunction. <hr><h2>Member Data Documentation</h2>
@@ -141,6 +147,23 @@ NvBlastBonds geometry in the <a class="el" href="struct_nv_blast_asset.html">NvB
 
 </div>
 </div><p>
+<a class="anchor" name="57bf267baa9b5397af645203592a0a40"></a><!-- doxytag: member="NvBlastGraphShaderActor::assetChunks" ref="57bf267baa9b5397af645203592a0a40" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a>* <a class="el" href="struct_nv_blast_graph_shader_actor.html#57bf267baa9b5397af645203592a0a40">NvBlastGraphShaderActor::assetChunks</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+NvBlastChunks geometry in the <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a>. 
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="7d93e1fd93ea0d30f9e7c580fabd89fa"></a><!-- doxytag: member="NvBlastGraphShaderActor::chunkIndices" ref="7d93e1fd93ea0d30f9e7c580fabd89fa" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -205,6 +228,23 @@ Entry index for graphNodeIndexLinks.
 
 <p>
 Linked index list of connected nodes. Traversable with nextIndex = graphNodeIndexLinks[currentIndex], terminates with 0xFFFFFFFF. 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="2dcbf1a8af0917a3989d356e1691ab26"></a><!-- doxytag: member="NvBlastGraphShaderActor::supportChunkHealths" ref="2dcbf1a8af0917a3989d356e1691ab26" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const float* <a class="el" href="struct_nv_blast_graph_shader_actor.html#2dcbf1a8af0917a3989d356e1691ab26">NvBlastGraphShaderActor::supportChunkHealths</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Actual chunk health values for dead chunk detection. 
 <p>
 
 </div>

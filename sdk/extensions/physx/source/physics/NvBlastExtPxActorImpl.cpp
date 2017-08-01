@@ -1,12 +1,30 @@
-﻿/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+﻿// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "NvBlastExtPxActorImpl.h"
 #include "NvBlastExtPxAsset.h"
@@ -15,6 +33,8 @@
 
 #include "PxRigidDynamic.h"
 #include "PxPhysics.h"
+
+#include "NvBlastAssert.h"
 
 #include "NvBlastTkActor.h"
 #include "NvBlastTkAsset.h"
@@ -57,7 +77,7 @@ ExtPxActorImpl::ExtPxActorImpl(ExtPxFamilyImpl* family, TkActor* tkActor, const 
 		// Single lower-support chunk actors might be leaf actors, check for this and disable contact callbacks if so
 		if (nodeCount <= 1)
 		{
-			PX_ASSERT(chunkIndices.size() == 1);
+			NVBLAST_ASSERT(chunkIndices.size() == 1);
 			if (chunkIndices.size() > 0)
 			{
 				const NvBlastChunk& chunk = chunks[chunkIndices[0]];
@@ -106,23 +126,23 @@ ExtPxActorImpl::ExtPxActorImpl(ExtPxFamilyImpl* family, TkActor* tkActor, const 
 
 			m_rigidDynamic->attachShape(*shape);
 
-			PX_ASSERT_WITH_MESSAGE(m_family->m_subchunkShapes[subchunkIndex] == nullptr, "Chunk has some shapes(live).");
+			NVBLAST_ASSERT_WITH_MESSAGE(m_family->m_subchunkShapes[subchunkIndex] == nullptr, "Chunk has some shapes(live).");
 			m_family->m_subchunkShapes[subchunkIndex] = shape;
 		}
 	}
 
 	// search for static chunk in actor's graph (make actor static if it contains static chunk)
-	bool staticFound = false;
+	bool staticFound = m_tkActor->isBoundToWorld();
 	if (nodeCount > 0)
 	{
-		auto& graphChunkIndices = m_family->m_indicesScratch;
-		graphChunkIndices.resize(nodeCount);
-		m_tkActor->getGraphNodeIndices(graphChunkIndices.begin(), static_cast<uint32_t>(graphChunkIndices.size()));
+		auto& graphNodeIndices = m_family->m_indicesScratch;
+		graphNodeIndices.resize(nodeCount);
+		m_tkActor->getGraphNodeIndices(graphNodeIndices.begin(), static_cast<uint32_t>(graphNodeIndices.size()));
 		const NvBlastSupportGraph graph = m_tkActor->getAsset()->getGraph();
 
-		for (uint32_t i = 0; !staticFound && i < graphChunkIndices.size(); ++i)
+		for (uint32_t i = 0; !staticFound && i < graphNodeIndices.size(); ++i)
 		{
-			uint32_t chunkIndex = graph.chunkIndices[graphChunkIndices[i]];
+			const uint32_t chunkIndex = graph.chunkIndices[graphNodeIndices[i]];
 			const ExtPxChunk& chunk = pxChunks[chunkIndex];
 			staticFound = chunk.isStatic;
 		}

@@ -1,16 +1,35 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
+
 #include "AppMainWindow.h"
 #include "GlobalSettings.h"
 #include <QtCore/QFileInfo>
-
+#include <QtCore/QDir>
 #include "NvBlastExtAuthoringTypes.h"
 #include "NvBlastExtAuthoringFractureTool.h"
 #include "NvBlastExtAuthoringBondGenerator.h"
@@ -26,6 +45,7 @@
 #include "CommonUIController.h"
 #include "DamageToolController.h"
 #include "SelectionToolController.h"
+#include "ExplodeToolController.h"
 #include "GizmoToolController.h"
 #include "EditionToolController.h"
 #include "SceneController.h"
@@ -41,9 +61,20 @@
 #include <set>
 #include "MaterialLibraryPanel.h"
 #include "MaterialAssignmentsPanel.h"
+#include "ViewerOutput.h"
+
+#include "NvBlastTkAsset.h"
+#include "BlastAssetModelSimple.h"
+#include "CorelibUtils.h"
+#include "BlastAssetModel.h"
+#include "SimpleScene.h"
+#include "FileReferencesPanel.h"
+#include "BlastPlugin.h"
+#include "BlastToolBar.h"
 
 using namespace physx;
 
+const uint32_t DEFAULT_VORONOI_UNIFORM_SITES_NUMBER = 5;
 physx::PxFoundation* foundation = nullptr;
 physx::PxPhysics* physics = nullptr;
 physx::PxCooking* cooking = nullptr;
@@ -89,7 +120,7 @@ void loggingCallback(int type, const char* msg, const char* file, int line)
 }
 
 void buildPxChunks(const std::vector<std::vector<Triangle>>& chunkGeometry, std::vector<ExtPxAssetDesc::ChunkDesc>& pxChunks,
-	std::vector<ExtPxAssetDesc::SubchunkDesc>& pxSubchunks)
+	std::vector<ExtPxAssetDesc::SubchunkDesc>& pxSubchunks, std::vector<bool>& statics)
 {
 	ConvexMeshBuilder collisionBuilder(cooking, &physics->getPhysicsInsertionCallback());
 
@@ -107,7 +138,7 @@ void buildPxChunks(const std::vector<std::vector<Triangle>>& chunkGeometry, std:
 		}
 		pxSubchunks[i].transform = physx::PxTransform(physx::PxIdentity);
 		pxSubchunks[i].geometry = physx::PxConvexMeshGeometry(collisionBuilder.buildConvexMesh(vertices));
-		pxChunks[i].isStatic = false;
+		pxChunks[i].isStatic = statics.size() == 0 ? false : statics[i];
 		pxChunks[i].subchunkCount = 1;
 		pxChunks[i].subchunks = &pxSubchunks[i];
 	}
@@ -118,10 +149,61 @@ void buildPxChunks(const std::vector<std::vector<Triangle>>& chunkGeometry, std:
 
 void saveFractureToObj(std::vector<std::vector<Triangle> > chunksGeometry, std::string name, std::string path)
 {
-	MaterialAssignmentsPanel* pMaterialAssignmentsPanel = MaterialAssignmentsPanel::ins();
-	std::vector<std::string> materialNames;
-	std::vector<std::string> materialPaths;
-	pMaterialAssignmentsPanel->getMaterialNameAndPaths(materialNames, materialPaths);
+	std::vector<std::string> materialNames(2);
+	std::vector<std::string> materialPaths(2);
+	float diffuseColor[2][4];
+
+	SampleManager* pSampleManager = SampleManager::ins();
+	BlastAsset* pCurBlastAsset = nullptr;
+	int nCurIndex = -1;
+	pSampleManager->getCurrentSelectedInstance(&pCurBlastAsset, nCurIndex);
+	if (pCurBlastAsset != nullptr && nCurIndex != -1)
+	{
+		pSampleManager->getMaterialForCurrentFamily(materialNames[0], true);
+		pSampleManager->getMaterialForCurrentFamily(materialNames[1], false);
+
+		BPPGraphicsMaterial* pMaterialEx = BlastProject::ins().getGraphicsMaterial(materialNames[0].c_str());
+		BPPGraphicsMaterial* pMaterialIn = BlastProject::ins().getGraphicsMaterial(materialNames[1].c_str());
+
+		diffuseColor[0][0] = pMaterialEx->diffuseColor.x;
+		diffuseColor[0][1] = pMaterialEx->diffuseColor.y;
+		diffuseColor[0][2] = pMaterialEx->diffuseColor.z;
+		diffuseColor[0][3] = pMaterialEx->diffuseColor.w;
+		if (pMaterialEx->diffuseTextureFilePath != nullptr)
+		{
+			materialPaths[0] = pMaterialEx->diffuseTextureFilePath;
+		}
+
+		if (pMaterialIn == nullptr)
+		{
+			pMaterialIn = pMaterialEx;
+		}
+
+		diffuseColor[1][0] = pMaterialIn->diffuseColor.x;
+		diffuseColor[1][1] = pMaterialIn->diffuseColor.y;
+		diffuseColor[1][2] = pMaterialIn->diffuseColor.z;
+		diffuseColor[1][3] = pMaterialIn->diffuseColor.w;
+		if (pMaterialIn->diffuseTextureFilePath != nullptr)
+		{
+			materialPaths[1] = pMaterialIn->diffuseTextureFilePath;
+		}
+	}
+	else
+	{
+		MaterialAssignmentsPanel* pMaterialAssignmentsPanel = MaterialAssignmentsPanel::ins();
+		pMaterialAssignmentsPanel->getMaterialNameAndPaths(materialNames, materialPaths);
+
+		if (materialPaths[0] == "")
+		{
+			RenderMaterial* pMaterialEx = RenderMaterial::getDefaultRenderMaterial();
+			pMaterialEx->getDiffuseColor(diffuseColor[0][0], diffuseColor[0][1], diffuseColor[0][2], diffuseColor[0][3]);
+		}
+		if (materialPaths[1] == "")
+		{
+			RenderMaterial* pMaterialIn = RenderMaterial::getDefaultRenderMaterial();
+			pMaterialIn->getDiffuseColor(diffuseColor[1][0], diffuseColor[1][1], diffuseColor[1][2], diffuseColor[1][3]);
+		}
+	}
 
 	uint32_t submeshCount = 2;
 	// export materials (mtl file)
@@ -133,8 +215,12 @@ void saveFractureToObj(std::vector<std::vector<Triangle> > chunksGeometry, std::
 
 		for (uint32_t submeshIndex = 0; submeshIndex < submeshCount; ++submeshIndex)
 		{
-			fprintf(f, "newmtl %s\n", materialNames[submeshIndex].c_str());
+			// Add By Lixu Begin
+			std::string& matName = materialNames[submeshIndex];
+			fprintf(f, "newmtl %s\n", matName.size()? matName.c_str() : "neverMat123XABCnever");  // this speical string is also used in another BlastModel.cpp.
+			// Add By Lixu End
 			fprintf(f, "\tmap_Kd %s\n", materialPaths[submeshIndex].c_str());
+			fprintf(f, "\tKd %f %f %f\n", diffuseColor[submeshIndex][0], diffuseColor[submeshIndex][1], diffuseColor[submeshIndex][2]);
 			fprintf(f, "\n");
 		}
 
@@ -217,81 +303,201 @@ void saveFractureToObj(std::vector<std::vector<Triangle> > chunksGeometry, std::
 	}
 }
 
-void FractureExecutor::setSourceMesh(Nv::Blast::Mesh* mesh)
+#include "NvBlastExtLlSerialization.h"
+#include "NvBlastExtTkSerialization.h"
+#include "NvBlastExtPxSerialization.h"
+#include "NvBlastExtSerialization.h"
+
+bool saveBlastObject(const std::string& outputDir, const std::string& objectName, const void* object, uint32_t objectTypeID)
 {
-	assert(m_fractureTool);
-	m_sourMesh = mesh;
-	m_fractureTool->setSourceMesh(mesh);
+	ExtSerialization* mSerialization = SampleManager::ins()->getBlastController().getExtSerialization();
+
+	void* buffer;
+	const uint64_t bufferSize = mSerialization->serializeIntoBuffer(buffer, object, objectTypeID);
+	if (bufferSize == 0)
+	{
+		std::cerr << "saveBlastObject: Serialization failed.\n";
+		return false;
+	}
+
+	// Add By Lixu Begin
+	physx::PsFileBuffer fileBuf((outputDir + "/" + objectName).c_str(), physx::PxFileBuf::OPEN_WRITE_ONLY);
+	// Add By Lixu End
+
+	bool result = fileBuf.isOpen();
+
+	if (!result)
+	{
+		std::cerr << "Can't open output buffer.\n";
+	}
+	else
+	{
+		result = (bufferSize == (size_t)fileBuf.write(buffer, (uint32_t)bufferSize));
+		if (!result)
+		{
+			std::cerr << "Buffer write failed.\n";
+		}
+		fileBuf.close();
+	}
+
+	NVBLAST_FREE(buffer);
+
+	return result;
 }
 
-void FractureExecutor::setSourceAsset(const BlastAsset* blastAsset)
+bool saveLlAsset(const std::string& outputDir, const std::string& objectName, const NvBlastAsset* assetLL)
+{
+	return saveBlastObject(outputDir, objectName, assetLL, LlObjectTypeID::Asset);
+}
+
+bool saveTkAsset(const std::string& outputDir, const std::string& objectName, const TkAsset* tkAsset)
+{
+	return saveBlastObject(outputDir, objectName, tkAsset, TkObjectTypeID::Asset);
+}
+
+bool saveExtAsset(const std::string& outputDir, const std::string& objectName, const ExtPxAsset* pxAsset)
+{
+	return saveBlastObject(outputDir, objectName, pxAsset, ExtPxObjectTypeID::Asset);
+}
+
+void FractureExecutor::setSourceAsset(BlastAsset* blastAsset)
 {
 	assert(m_fractureTool);
 	m_fractureTool->setSourceAsset(blastAsset);
-	m_sourMesh = nullptr;
+	m_pCurBlastAsset = blastAsset;
 }
 
 VoronoiFractureExecutor::VoronoiFractureExecutor()
-: m_cellsCount(5)
+: m_voronoi(nullptr)
 {
 	if (sSampleManager)
 		m_fractureTool = sSampleManager->m_fTool;
-}
-
-void VoronoiFractureExecutor::setCellsCount(uint32_t cellsCount)
-{
-	m_cellsCount = cellsCount;
 }
 
 bool VoronoiFractureExecutor::execute()
 {
-	Nv::Blast::Mesh* mesh = nullptr;
-	if (m_sourMesh)
+	std::vector<uint32_t>::iterator it;
+	for (it = m_chunkIds.begin(); it != m_chunkIds.end(); it++)
 	{
-		mesh = m_sourMesh;
-	}
-	else
-	{
-		mesh = m_fractureTool->getSourceMesh(m_chunkId);
-	}
-	// Prevent crash Junma Added By Lixu
-	if (mesh == nullptr)
-		return false;
+		Nv::Blast::Mesh* mesh = m_fractureTool->getSourceMesh(*it);
+		if (mesh == nullptr)
+			continue;
 
-	VoronoiSitesGenerator stGenerator(mesh, (m_randomGenerator == nullptr ? &sRandomGenerator : m_randomGenerator));
-	stGenerator.uniformlyGenerateSitesInMesh(m_cellsCount);
-	m_fractureTool->voronoiFracturing(m_chunkId, stGenerator.getVoronoiSites(), false);
+		VoronoiSitesGenerator* siteGenerator = nullptr;
+		if (m_voronoi)
+		{
+			siteGenerator = new VoronoiSitesGenerator(mesh, m_randomGenerator == nullptr ? &sRandomGenerator : m_randomGenerator);
+			if (0 == m_voronoi->siteGeneration)
+			{
+				siteGenerator->uniformlyGenerateSitesInMesh(m_voronoi->numSites);
+			}
+			else if (1 == m_voronoi->siteGeneration)
+			{
+				siteGenerator->clusteredSitesGeneration(m_voronoi->numberOfClusters, m_voronoi->sitesPerCluster, m_voronoi->clusterRadius);
+			}
+		}
+		else
+		{
+			siteGenerator = new VoronoiSitesGenerator(mesh, m_randomGenerator == nullptr ? &sRandomGenerator : m_randomGenerator);
+			siteGenerator->uniformlyGenerateSitesInMesh(DEFAULT_VORONOI_UNIFORM_SITES_NUMBER);
+		}
+
+		m_fractureTool->voronoiFracturing(*it, siteGenerator->getVoronoiSites(), false);
+		delete siteGenerator;
+	}
 	m_fractureTool->finalizeFracturing();
 
-	return sSampleManager->postProcessCurrentAsset();
+	std::vector<bool> supports;
+	std::vector<bool> statics;
+	std::vector<uint8_t> joints;
+	std::vector<uint32_t> worlds;
+	BlastAsset* pNewBlastAsset = sSampleManager->_replaceAsset(m_pCurBlastAsset, supports, statics, joints, worlds);
+	if (nullptr == pNewBlastAsset)
+	{
+		return false;
+	}
+
+	std::vector<uint32_t> NewChunkIndexes;
+	for (uint32_t ci = 0; ci < m_fractureTool->getChunkCount(); ci++)
+	{
+		for (uint32_t chunkId : m_chunkIds)
+		{
+			if (m_fractureTool->getChunkInfo(ci).parent == chunkId)
+			{
+				NewChunkIndexes.push_back(ci);
+			}
+		}
+	}
+
+	sSampleManager->ApplyAutoSelectNewChunks(pNewBlastAsset, NewChunkIndexes);
+
+	return true;
 }
 
 SliceFractureExecutor::SliceFractureExecutor()
-: m_config(new Nv::Blast::SlicingConfiguration())
+: m_slice(nullptr)
 {
 	if (sSampleManager)
 		m_fractureTool = sSampleManager->m_fTool;
 }
 
-void SliceFractureExecutor::applyNoise(float amplitude, float frequency, int32_t octaves, float falloff, int32_t relaxIterations, float relaxFactor, int32_t seed)
-{
-	m_fractureTool->applyNoise(amplitude, frequency, octaves, falloff, relaxIterations, relaxFactor, seed);
-}
-
-void SliceFractureExecutor::applyConfig(int32_t xSlices, int32_t ySlices, int32_t zSlices, float offsetVariations, float angleVariations)
-{
-	m_config->x_slices = xSlices;
-	m_config->y_slices = ySlices;
-	m_config->z_slices = zSlices;
-	m_config->offset_variations = offsetVariations;
-	m_config->angle_variations = angleVariations;
-}
-
 bool SliceFractureExecutor::execute()
 {
-	m_fractureTool->slicing(m_chunkId, *m_config, false, (m_randomGenerator == nullptr ? &sRandomGenerator : m_randomGenerator));
+	SlicingConfiguration config;
+	if (m_slice)
+	{
+		config.x_slices = m_slice->numSlicesX;
+		config.y_slices = m_slice->numSlicesY;
+		config.z_slices = m_slice->numSlicesZ;
+		config.offset_variations = m_slice->offsetVariation;
+		config.angle_variations = m_slice->rotationVariation;
+		config.noiseAmplitude = m_slice->noiseAmplitude;
+		config.noiseFrequency = m_slice->noiseFrequency;
+		config.noiseOctaveNumber = m_slice->noiseOctaveNumber;
+		config.surfaceResolution = m_slice->surfaceResolution;
+	}
+
+	if (m_randomGenerator == nullptr)
+	{
+		sRandomGenerator.seed(m_slice->noiseSeed);
+	}
+	else
+	{
+		m_randomGenerator->seed(m_slice->noiseSeed);
+	}
+
+	std::vector<uint32_t>::iterator it;
+	for (it = m_chunkIds.begin(); it != m_chunkIds.end(); it++)
+	{
+		m_fractureTool->slicing(*it, config, false, (m_randomGenerator == nullptr ? &sRandomGenerator : m_randomGenerator));
+	}
 	m_fractureTool->finalizeFracturing();
-	return sSampleManager->postProcessCurrentAsset();
+
+	std::vector<bool> supports;
+	std::vector<bool> statics;
+	std::vector<uint8_t> joints;
+	std::vector<uint32_t> worlds;
+	BlastAsset* pNewBlastAsset = sSampleManager->_replaceAsset(m_pCurBlastAsset, supports, statics, joints, worlds);
+	if (nullptr == pNewBlastAsset)
+	{
+		return false;
+	}
+
+	std::vector<uint32_t> NewChunkIndexes;
+	for (uint32_t ci = 0; ci < m_fractureTool->getChunkCount(); ci++)
+	{
+		for (uint32_t chunkId : m_chunkIds)
+		{
+			if (m_fractureTool->getChunkInfo(ci).parent == chunkId)
+			{
+				NewChunkIndexes.push_back(ci);
+			}
+		}
+	}
+
+	sSampleManager->ApplyAutoSelectNewChunks(pNewBlastAsset, NewChunkIndexes);
+
+	return true;
 }
 
 static VoronoiFractureExecutor sVoronoiFracture;
@@ -302,9 +508,8 @@ SampleManager* SampleManager::ins()
 }
 
 SampleManager::SampleManager(DeviceManager* pDeviceManager)
-{	
+{
 	sSampleManager = this;
-	m_bNeedConfig = false;
 	m_bNeedRefreshTree = false;
 
 	m_renderer = new Renderer();
@@ -313,10 +518,11 @@ SampleManager::SampleManager(DeviceManager* pDeviceManager)
 	m_sceneController = new SceneController();
 	m_damageToolController = new DamageToolController();
 	m_selectionToolController = new SelectionToolController();
+	m_explodeToolController = new ExplodeToolController();
 	m_gizmoToolController = new GizmoToolController();
 	m_editionToolController = new EditionToolController();
 	m_sampleController = new SampleController();
-//	m_commonUIController = new CommonUIController();
+	m_commonUIController = nullptr; // new CommonUIController();
 
 	m_pApplication = new Application(pDeviceManager);
 
@@ -328,8 +534,9 @@ SampleManager::SampleManager(DeviceManager* pDeviceManager)
 	app.addControllerToFront(m_sceneController);
 	app.addControllerToFront(m_damageToolController);
 	app.addControllerToFront(m_selectionToolController);
+	app.addControllerToFront(m_explodeToolController);
 	app.addControllerToFront(m_gizmoToolController);
-	app.addControllerToFront(m_editionToolController);
+//	app.addControllerToFront(m_editionToolController);
 	app.addControllerToFront(m_sampleController);
 //	app.addControllerToFront(m_commonUIController);
 
@@ -338,24 +545,14 @@ SampleManager::SampleManager(DeviceManager* pDeviceManager)
 		(static_cast<ISampleController*>(c))->setManager(this);
 	}
 
-	m_config.sampleName = L"";
-	m_config.assetsFile = "";
-
-	m_config.additionalResourcesDir.clear();
-	m_config.additionalResourcesDir.push_back("../resources");
-	m_config.additionalResourcesDir.push_back("../../../../bin/resources");
-
-	m_config.additionalAssetList.models.clear();
-	m_config.additionalAssetList.boxes.clear();
-	m_config.additionalAssetList.composites.clear();
-
-	m_fTool = new BlastFractureTool(loggingCallback);
+	m_fTool = new BlastFractureTool();
 	m_fractureExecutor = nullptr;
 
 	setFractureExecutor(&sVoronoiFracture);
 
 	m_pCurBlastAsset = nullptr;
 	m_nCurFamilyIndex = -1;
+	EnableSimulating(false);
 }
 
 SampleManager::~SampleManager()
@@ -366,6 +563,7 @@ SampleManager::~SampleManager()
 	delete m_sceneController;
 	delete m_damageToolController;
 	delete m_selectionToolController;
+	delete m_explodeToolController;
 	delete m_gizmoToolController;
 	delete m_editionToolController;
 	delete m_sampleController;
@@ -378,34 +576,36 @@ int SampleManager::init()
 	Application& app = *m_pApplication;
 	app.init();
 
-	m_ToolType = BTT_Num;
-	setBlastToolType(BTT_Edit);
+	m_damageToolController->DisableController();
+	m_selectionToolController->EnableController();
+	m_explodeToolController->DisableController();
+	m_gizmoToolController->DisableController();
+	BlastPlugin::Inst().GetMainToolbar()->updateCheckIconsStates();
+
+	EnableSimulating(false);
 
 	return 0;
 }
 
 int SampleManager::run()
 {
-	if (m_bNeedConfig)
-	{
-		getSceneController().onSampleStop();
-		getSceneController().onSampleStart();
-
-		_setSourceAsset();
-
-		m_bNeedConfig = false;
-		m_bNeedRefreshTree = true;
-	}
+	m_physXController->setPlaneVisible(AppMainWindow::Inst().m_bShowPlane);
 
 	Application& app = *m_pApplication;
 	app.run();
 
 	std::vector<std::string>::iterator itStr;
 	std::vector<Renderable*>::iterator itRenderable;
+	std::map<std::string, RenderMaterial*>::iterator itRenderMaterial;
 	for (itStr = m_NeedDeleteRenderMaterials.begin(); itStr != m_NeedDeleteRenderMaterials.end(); itStr++)
 	{
-		std::string materialName = *itStr;
-		RenderMaterial* pRenderMaterial = m_RenderMaterialMap[materialName];
+		itRenderMaterial = m_RenderMaterialMap.find(*itStr);
+		if (itRenderMaterial == m_RenderMaterialMap.end())
+		{
+			continue;
+		}
+		RenderMaterial* pRenderMaterial = itRenderMaterial->second;
+
 		std::vector<Renderable*>& renderables = pRenderMaterial->getRelatedRenderables();
 		for (itRenderable = renderables.begin(); itRenderable != renderables.end(); itRenderable++)
 		{
@@ -413,11 +613,11 @@ int SampleManager::run()
 			pRenderable->setMaterial(*RenderMaterial::getDefaultRenderMaterial());
 		}
 
-		removeRenderMaterial(materialName);
+		delete pRenderMaterial;
+		pRenderMaterial = nullptr;
+		m_RenderMaterialMap.erase(itRenderMaterial);
 	}
 	m_NeedDeleteRenderMaterials.clear();
-
-	MaterialLibraryPanel::ins()->deleteMaterials();
 
 	return 0;
 }
@@ -436,160 +636,34 @@ int SampleManager::free()
 	Application& app = *m_pApplication;
 	app.free();
 
-	/*
-	std::vector<AssetList::ModelAsset>& modelAssets = m_config.additionalAssetList.models;
-	std::vector<AssetList::ModelAsset>::iterator it;
-	char filename[50];
-	for (it = modelAssets.begin(); it != modelAssets.end(); it++)
-	{
-		AssetList::ModelAsset& m = *it;
-
-		sprintf(filename, "../../../../bin/resources/models/%s.bpxa", m.id.c_str());
-		DeleteFileA(filename);
-
-		sprintf(filename, "../../../../bin/resources/models/%s.mtl", m.id.c_str());
-		DeleteFileA(filename);
-
-		sprintf(filename, "../../../../bin/resources/models/%s.obj", m.id.c_str());
-		DeleteFileA(filename);
-	}
-	*/
-
 	return 0;
 }
 
-void SampleManager::addModelAsset(std::string path, std::string file, bool isSkinned, physx::PxTransform transform, bool clear)
-{
-	if (clear)
-	{
-		//m_config.additionalAssetList.models.clear();
-		//clearScene();
-		AppMainWindow::Inst().menu_clearScene();
-		GlobalSettings::Inst().m_projectFileDir = path;
-		GlobalSettings::Inst().m_projectFileName = file;
-		QFileInfo fileInfo(file.c_str());
-		std::string ext = fileInfo.suffix().toUtf8().data();
-		if (ext.length() < 1)
-			GlobalSettings::Inst().m_projectFileName += ".blastProj";
-	}
-	else
-	{
-		std::vector<AssetList::ModelAsset>& modelAssets = m_config.additionalAssetList.models;
-		std::vector<AssetList::ModelAsset>::iterator it = modelAssets.begin();
-		for (; it != modelAssets.end(); it++)
-		{
-			AssetList::ModelAsset& m = *it;
-			if (m.id == file)
-			{
-				modelAssets.erase(it);
-				break;
-			}
-		}
-	}
-
-	AssetList::ModelAsset modelAsset;
-	modelAsset.name = file;
-	modelAsset.id = file;
-	modelAsset.file = file;
-	modelAsset.isSkinned = isSkinned;
-	modelAsset.transform = transform;
-
-	m_config.additionalAssetList.models.push_back(modelAsset);
-
-	m_bNeedConfig = true;
-}
-
 bool SampleManager::createAsset(
-	std::string path,
-	std::string assetName,
-	std::vector<physx::PxVec3>& positions,
-	std::vector<physx::PxVec3>& normals,
-	std::vector<physx::PxVec2>& uv,
-	std::vector<unsigned int>&  indices,
-	bool fracture)
+	BlastAssetModelSimple** ppBlastAsset,
+	std::vector<Nv::Blast::Mesh*>& meshes,
+	std::vector<int32_t>& parentIds,
+	std::vector<bool>& supports,
+	std::vector<bool>& statics,
+	std::vector<uint8_t>& joints,
+	std::vector<uint32_t>& worlds)
 {
-	PhysXController& pc = getPhysXController();
-	BlastController& bc = getBlastController();
+	m_fTool->setSourceMeshes(meshes, parentIds);
+	m_fTool->finalizeFracturing();
 
-	physics = &pc.getPhysics();
-	foundation = &physics->getFoundation();
-	cooking = &pc.getCooking();
-	physicsManager = &bc.getExtPxManager();
-
-	std::vector<Nv::Blast::Mesh* > meshes;
-	PxVec3* nr = (!normals.empty()) ? normals.data() : 0;
-	PxVec2* uvp = (!uv.empty()) ? uv.data() : 0;
-	Nv::Blast::Mesh* sourceMesh = new Nv::Blast::Mesh(positions.data(), nr, uvp, static_cast<uint32_t>(positions.size()),
-		indices.data(), static_cast<uint32_t>(indices.size()));
-	meshes.push_back(sourceMesh);
-
-	m_fractureExecutor->setSourceMesh(sourceMesh);
-	if (fracture)
-	{
-		m_fractureExecutor->execute();
-		m_fractureExecutor = &sVoronoiFracture;
-	}
-	else
-	{
-		m_fTool->finalizeFracturing();
-	}
-
-	std::string outDir = path;
-	_createAsset(assetName, outDir, meshes);
-
-	delete sourceMesh;
-	sourceMesh = 0;
-
-	m_bNeedConfig = true;
+	_createAsset(ppBlastAsset, supports, statics, joints, worlds);
 
 	return true;
 }
 
-bool SampleManager::createAsset(
-	const std::string& path,
-	const std::string& assetName,
-	const std::vector<Nv::Blast::Mesh* >& meshes,
-	bool fracture)
+bool SampleManager::saveAsset(BlastAsset* pBlastAsset)
 {
-	PhysXController& pc = getPhysXController();
-	BlastController& bc = getBlastController();
-
-	physics = &pc.getPhysics();
-	foundation = &physics->getFoundation();
-	cooking = &pc.getCooking();
-	physicsManager = &bc.getExtPxManager();
-
-	if (meshes.size() == 1)
-	{
-		Nv::Blast::Mesh* sourceMesh = meshes[0];
-		m_fractureExecutor->setSourceMesh(sourceMesh);
-		if (fracture)
-		{
-			m_fractureExecutor->execute();
-			m_fractureExecutor = &sVoronoiFracture;
-		}
-		else
-		{
-			m_fTool->finalizeFracturing();
-		}
-	}
-
-	std::string outDir = path;
-	_createAsset(assetName, outDir, meshes);
-
-	m_bNeedConfig = true;
-
-	return true;
-}
-
-bool SampleManager::saveAsset()
-{
-	if (m_pCurBlastAsset == nullptr)
+	if (pBlastAsset == nullptr)
 	{
 		return false;
 	}
 
-	AssetList::ModelAsset& desc = m_AssetDescMap[m_pCurBlastAsset];
+	AssetList::ModelAsset& desc = m_AssetDescMap[pBlastAsset];
 	
 	PhysXController& pc = getPhysXController();
 	BlastController& bc = getBlastController();
@@ -600,29 +674,25 @@ bool SampleManager::saveAsset()
 
 	std::string outDir = GlobalSettings::Inst().m_projectFileDir;
 
-	std::string outBlastFilePath = GlobalSettings::MakeFileName(outDir.c_str(), std::string(desc.name + ".bpxa").c_str());
-	const ExtPxAsset* asset = m_pCurBlastAsset->getPxAsset();
+	std::string outBlastFilePath = GlobalSettings::MakeFileName(outDir.c_str(), std::string(desc.name + ".blast").c_str());
+	const ExtPxAsset* asset = pBlastAsset->getPxAsset();
 	if (asset == nullptr)
 	{
 		return false;
 	}
-	physx::PsFileBuffer fileBuf(outBlastFilePath.c_str(), physx::PxFileBuf::OPEN_WRITE_ONLY);
-	if (!asset->serialize(fileBuf, *cooking))
-	{
-		return false;
-	}
-	fileBuf.close();
+	saveExtAsset(outDir, std::string(desc.name + ".blast"), asset);
 
-	m_fTool->setSourceAsset(m_pCurBlastAsset);
+	m_fTool->setSourceAsset(pBlastAsset);
 	m_fTool->finalizeFracturing();
 
-	size_t nChunkListSize = m_fTool->getChunkList().size();
-	std::vector<std::vector<Triangle> > chunkMeshes(nChunkListSize);
+	size_t nChunkListSize = m_fTool->getChunkCount();
+	std::vector<std::shared_ptr<Triangle> > chunkMeshes(nChunkListSize);
+	std::vector<uint32_t> chunkMeshesTriangleCount(nChunkListSize);
 	std::vector<bool> isSupport(nChunkListSize);
 	for (uint32_t i = 0; i < nChunkListSize; ++i)
 	{
-		m_fTool->getBaseMesh(i, chunkMeshes[i]);
-		isSupport[i] = m_fTool->getChunkList()[i].isLeaf;
+		chunkMeshesTriangleCount[i] = m_fTool->getBaseMesh(i, chunkMeshes[i]);
+		isSupport[i] = m_fTool->getChunkInfo(i).isLeaf;
 	}
 
 	BlastBondGenerator bondGenerator(cooking, &physics->getPhysicsInsertionCallback());
@@ -644,27 +714,529 @@ bool SampleManager::saveAsset()
 		std::vector<char> scratch(chunkCount * sizeof(NvBlastChunkDesc));
 		NvBlastEnsureAssetExactSupportCoverage(chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
 		NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
-		NvBlastApplyAssetDescChunkReorderMapInplace(chunkDesc.data(), chunkCount, bondDescs.data(), bondCount, chunkReorderMap.data(), scratch.data(), loggingCallback);
+		NvBlastApplyAssetDescChunkReorderMapInPlace(chunkDesc.data(), chunkCount, bondDescs.data(), bondCount, chunkReorderMap.data(), true, scratch.data(), loggingCallback);
 		chunkReorderInvMap.resize(chunkReorderMap.size());
 		Nv::Blast::invertMap(chunkReorderInvMap.data(), chunkReorderMap.data(), static_cast<unsigned int>(chunkReorderMap.size()));
 	}
 
-	std::vector<std::vector<Triangle>> resultGeometry(chunkMeshes.size());
-	for (uint32_t i = 0; i < chunkMeshes.size(); ++i)
+	std::vector<std::vector<Triangle>> resultGeometry(nChunkListSize);
+	for (uint32_t i = 0; i < nChunkListSize; ++i)
 	{
 		uint32_t chunkIndex = chunkReorderInvMap[i];
-		resultGeometry[chunkIndex] = chunkMeshes[i];
+		resultGeometry[chunkIndex].resize(chunkMeshesTriangleCount[i]);
+		memcpy(resultGeometry[chunkIndex].data(), chunkMeshes[i].get(), chunkMeshesTriangleCount[i] * sizeof(Triangle));
 	}
 
 	saveFractureToObj(resultGeometry, desc.name, outDir);
 
-	std::string saveInfo = outBlastFilePath + " saved successfully\n";
-	output(saveInfo.c_str());
+	char message[MAX_PATH];
+	sprintf(message, "Blast file %s was saved.", outBlastFilePath.c_str());
+	output(message);
 
 	return true;
 }
 
-bool SampleManager::fractureAsset(std::string& path, std::string& assetName, const BlastAsset* pBlastAsset, int32_t chunkId)
+#include "fbxsdk.h"
+
+uint32_t currentDepth;
+bool bOutputFBXAscii = true;
+
+void PxVec3ToFbx(physx::PxVec3& inVector, FbxVector4& outVector)
+{
+	outVector[0] = inVector.x;
+	outVector[1] = inVector.y;
+	outVector[2] = inVector.z;
+	outVector[3] = 0;
+}
+
+void PxVec2ToFbx(physx::PxVec2& inVector, FbxVector2& outVector)
+{
+	outVector[0] = inVector.x;
+	outVector[1] = inVector.y;
+}
+
+void VertexToFbx(Nv::Blast::Vertex& vert, FbxVector4& outVertex, FbxVector4& outNormal, FbxVector2& outUV)
+{
+	PxVec3ToFbx(vert.p, outVertex);
+	PxVec3ToFbx(vert.n, outNormal);
+	PxVec2ToFbx(vert.uv[0], outUV);
+}
+
+uint32_t createChunkRecursive(FbxManager* sdkManager, uint32_t currentCpIdx, uint32_t chunkIndex, FbxNode *meshNode, FbxNode* parentNode, FbxSkin* skin, const NvBlastAsset* asset, std::vector<std::vector<Nv::Blast::Triangle>> chunksGeometry)
+{
+	currentDepth++;
+
+	auto chunks = NvBlastAssetGetChunks(asset, nullptr);
+	const NvBlastChunk* chunk = &chunks[chunkIndex];
+	auto triangles = chunksGeometry[chunkIndex];
+	physx::PxVec3 centroid = physx::PxVec3(chunk->centroid[0], chunk->centroid[1], chunk->centroid[2]);
+
+	std::ostringstream namestream;
+
+	//mesh->InitTextureUV(triangles.size() * 3);
+
+	std::ostringstream().swap(namestream); // Swap namestream with a default constructed ostringstream
+	namestream << "bone_" << chunkIndex;
+	std::string boneName = namestream.str();
+
+	FbxSkeleton* skelAttrib;
+	if (chunk->parentChunkIndex == UINT32_MAX)
+	{
+		skelAttrib = FbxSkeleton::Create(sdkManager, "SkelRootAttrib");
+		skelAttrib->SetSkeletonType(FbxSkeleton::eRoot);
+
+		// Change the centroid to origin
+		centroid = physx::PxVec3(0.0f);
+	}
+	else
+	{
+		skelAttrib = FbxSkeleton::Create(sdkManager, boneName.c_str());
+		skelAttrib->SetSkeletonType(FbxSkeleton::eLimbNode);
+	}
+
+	skelAttrib->Size.Set(1.0); // What's this for?
+
+
+	FbxNode* boneNode = FbxNode::Create(sdkManager, boneName.c_str());
+	boneNode->SetNodeAttribute(skelAttrib);
+
+	auto mat = parentNode->EvaluateGlobalTransform().Inverse();
+
+	FbxVector4 vec(centroid.x, centroid.y, centroid.z, 0);
+	FbxVector4 c2 = mat.MultT(vec);
+
+	boneNode->LclTranslation.Set(c2);
+
+	parentNode->AddChild(boneNode);
+
+	std::ostringstream().swap(namestream); // Swap namestream with a default constructed ostringstream
+	namestream << "cluster_" << std::setw(5) << std::setfill('0') << chunkIndex;
+	std::string clusterName = namestream.str();
+
+	FbxCluster* cluster = FbxCluster::Create(sdkManager, clusterName.c_str());
+	cluster->SetTransformMatrix(FbxAMatrix());
+	cluster->SetLink(boneNode);
+	cluster->SetLinkMode(FbxCluster::eTotalOne);
+
+	skin->AddCluster(cluster);
+
+	FbxMesh* mesh = static_cast<FbxMesh*>(meshNode->GetNodeAttribute());
+
+	FbxVector4* controlPoints = mesh->GetControlPoints();
+	auto geNormal = mesh->GetElementNormal();
+	auto geUV = mesh->GetElementUV("diffuseElement");
+	FbxGeometryElementMaterial* matElement = mesh->GetElementMaterial();
+
+	auto addVert = [&](Nv::Blast::Vertex vert, int controlPointIdx)
+	{
+		FbxVector4 vertex;
+		FbxVector4 normal;
+		FbxVector2 uv;
+
+		VertexToFbx(vert, vertex, normal, uv);
+
+		controlPoints[controlPointIdx] = vertex;
+		geNormal->GetDirectArray().Add(normal);
+		geUV->GetDirectArray().Add(uv);
+		// Add this control point to the bone with weight 1.0
+		cluster->AddControlPointIndex(controlPointIdx, 1.0);
+	};
+
+	uint32_t cpIdx = 0;
+	uint32_t polyCount = mesh->GetPolygonCount();
+	for (auto tri : triangles)
+	{
+		addVert(tri.a, currentCpIdx + cpIdx + 0);
+		addVert(tri.b, currentCpIdx + cpIdx + 1);
+		addVert(tri.c, currentCpIdx + cpIdx + 2);
+
+		mesh->BeginPolygon();
+		mesh->AddPolygon(currentCpIdx + cpIdx + 0);
+		mesh->AddPolygon(currentCpIdx + cpIdx + 1);
+		mesh->AddPolygon(currentCpIdx + cpIdx + 2);
+		mesh->EndPolygon();
+		if (tri.userInfo == 0)
+		{
+			matElement->GetIndexArray().SetAt(polyCount, 0);
+		}
+		else
+		{
+			matElement->GetIndexArray().SetAt(polyCount, 1);
+		}
+		polyCount++;
+		cpIdx += 3;
+	}
+
+	mat = meshNode->EvaluateGlobalTransform();
+	cluster->SetTransformMatrix(mat);
+
+	mat = boneNode->EvaluateGlobalTransform();
+	cluster->SetTransformLinkMatrix(mat);
+
+	uint32_t addedCps = static_cast<uint32_t>(triangles.size() * 3);
+
+	for (uint32_t i = chunk->firstChildIndex; i < chunk->childIndexStop; i++)
+	{
+		addedCps += createChunkRecursive(sdkManager, currentCpIdx + addedCps, i, meshNode, boneNode, skin, asset, chunksGeometry);
+	}
+
+	return addedCps;
+}
+
+bool finalizeFbxAndSave(FbxManager* sdkManager, FbxScene* scene, FbxSkin* skin, const std::string& outputFilePath)
+{
+	// Store the bind pose
+
+	std::unordered_set<FbxNode*> clusterNodes;
+
+	std::function<void(FbxNode*)> addRecursively = [&](FbxNode* node)
+	{
+		if (node)
+		{
+			addRecursively(node->GetParent());
+
+			clusterNodes.insert(node);
+		}
+	};
+
+	for (uint32_t i = 0; i < (uint32_t)skin->GetClusterCount(); i++)
+	{
+		FbxNode* clusterNode = skin->GetCluster(i)->GetLink();
+
+		addRecursively(clusterNode);
+	}
+
+	assert(clusterNodes.size() > 0);
+
+	FbxPose* pose = FbxPose::Create(sdkManager, "BasePose");
+	pose->SetIsBindPose(true);
+
+	for (auto node : clusterNodes)
+	{
+		FbxMatrix bindMat = node->EvaluateGlobalTransform();
+
+		pose->Add(node, bindMat);
+	}
+
+	scene->AddPose(pose);
+
+	FbxExporter* exporter = FbxExporter::Create(sdkManager, "Scene Exporter");
+
+	int lFormat;
+
+	if (bOutputFBXAscii)
+	{
+		lFormat = sdkManager->GetIOPluginRegistry()->FindWriterIDByDescription("FBX ascii (*.fbx)");
+	}
+	else
+	{
+		lFormat = sdkManager->GetIOPluginRegistry()->FindWriterIDByDescription("FBX binary (*.fbx)");
+	}
+
+	bool exportStatus = exporter->Initialize(outputFilePath.c_str(), lFormat, sdkManager->GetIOSettings());
+
+	if (!exportStatus)
+	{
+		std::cerr << "Call to FbxExporter::Initialize failed" << std::endl;
+		std::cerr << "Error returned: " << exporter->GetStatus().GetErrorString() << std::endl;
+		return false;
+	}
+
+	exportStatus = exporter->Export(scene);
+
+	if (!exportStatus)
+	{
+		auto fbxStatus = exporter->GetStatus();
+
+		std::cerr << "Call to FbxExporter::Export failed" << std::endl;
+		std::cerr << "Error returned: " << fbxStatus.GetErrorString() << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
+bool SampleManager::exportAsset()
+{
+	if (m_pCurBlastAsset == nullptr)
+	{
+		viewer_err("Please select one asset instance before saving!");
+		return false;
+	}
+
+	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM = m_AssetDescMap.find(m_pCurBlastAsset);
+	if (itADM == m_AssetDescMap.end())
+	{
+		viewer_err("Fails to find out the selected asset instance in current project!");
+		return false;
+	}
+
+	BPParams& projectParams = BlastProject::ins().getParams();
+
+	AssetList::ModelAsset& desc = itADM->second;
+
+	BPPAssetArray& assetArray = projectParams.blast.blastAssets;
+	BPPAsset asset;
+	int aaas = 0;
+	for (; aaas < assetArray.arraySizes[0]; aaas++)
+	{
+		asset = assetArray.buf[aaas];
+		std::string assetname = asset.name;
+		if (assetname == desc.name)
+			break;
+	}
+	if (aaas == assetArray.arraySizes[0])
+	{
+		return false;
+	}
+
+	PhysXController& pc = getPhysXController();
+	BlastController& bc = getBlastController();
+	physics = &pc.getPhysics();
+	foundation = &physics->getFoundation();
+	cooking = &pc.getCooking();
+	physicsManager = &bc.getExtPxManager();
+
+	std::string outDir = GlobalSettings::Inst().m_projectFileDir;
+
+	m_fTool->setSourceAsset(m_pCurBlastAsset);
+	m_fTool->finalizeFracturing();
+
+	size_t nChunkListSize = m_fTool->getChunkCount();
+	std::vector<std::shared_ptr<Triangle> > chunkMeshes(nChunkListSize);
+	std::vector<uint32_t> chunkMeshesTriangleCount(nChunkListSize);
+	std::vector<bool> isSupport(nChunkListSize);
+	for (uint32_t i = 0; i < nChunkListSize; ++i)
+	{
+		chunkMeshesTriangleCount[i] = m_fTool->getBaseMesh(i, chunkMeshes[i]);
+		isSupport[i] = m_fTool->getChunkInfo(i).isLeaf;
+	}
+
+	BlastBondGenerator bondGenerator(cooking, &physics->getPhysicsInsertionCallback());
+	BondGenerationConfig cnf;
+	cnf.bondMode = BondGenerationConfig::AVERAGE;
+	std::vector<NvBlastChunkDesc> chunkDesc;
+	std::vector<NvBlastBondDesc> bondDescs;
+	bondGenerator.buildDescFromInternalFracture(m_fTool, isSupport, bondDescs, chunkDesc);
+	const uint32_t chunkCount = static_cast<uint32_t>(chunkDesc.size());
+	const uint32_t bondCount = static_cast<uint32_t>(bondDescs.size());
+	if (bondCount == 0)
+	{
+		std::cout << "Can't create bonds descriptors..." << std::endl;
+	}
+
+	std::vector<uint32_t> chunkReorderInvMap;
+	{
+		std::vector<uint32_t> chunkReorderMap(chunkCount);
+		std::vector<char> scratch(chunkCount * sizeof(NvBlastChunkDesc));
+		NvBlastEnsureAssetExactSupportCoverage(chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
+		NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
+		NvBlastApplyAssetDescChunkReorderMapInPlace(chunkDesc.data(), chunkCount, bondDescs.data(), bondCount, chunkReorderMap.data(), true, scratch.data(), loggingCallback);
+		chunkReorderInvMap.resize(chunkReorderMap.size());
+		Nv::Blast::invertMap(chunkReorderInvMap.data(), chunkReorderMap.data(), static_cast<unsigned int>(chunkReorderMap.size()));
+	}
+
+	std::vector<std::vector<Triangle>> resultGeometry(nChunkListSize);
+	for (uint32_t i = 0; i < nChunkListSize; ++i)
+	{
+		uint32_t chunkIndex = chunkReorderInvMap[i];
+		resultGeometry[chunkIndex].resize(chunkMeshesTriangleCount[i]);
+		memcpy(resultGeometry[chunkIndex].data(), chunkMeshes[i].get(), chunkMeshesTriangleCount[i] * sizeof(Triangle));
+	}
+
+	if (asset.exportFBX)
+	{
+		FbxManager* sdkManager = FbxManager::Create();
+
+		FbxIOSettings* ios = FbxIOSettings::Create(sdkManager, IOSROOT);
+		// Set some properties on the io settings
+		
+		sdkManager->SetIOSettings(ios);
+
+		sdkManager->GetIOSettings()->SetBoolProp(EXP_ASCIIFBX, bOutputFBXAscii);
+
+		FbxScene* scene = FbxScene::Create(sdkManager, "Export Scene");
+		/*
+		if (getConvertToUE4())
+		{
+			FbxAxisSystem::EFrontVector FrontVector = (FbxAxisSystem::EFrontVector) - FbxAxisSystem::eParityOdd;
+			const FbxAxisSystem UnrealZUp(FbxAxisSystem::eZAxis, FrontVector, FbxAxisSystem::eRightHanded);
+
+			scene->GetGlobalSettings().SetAxisSystem(UnrealZUp);
+		}
+		*/
+		// Otherwise default to Maya defaults
+
+		FbxMesh* mesh = FbxMesh::Create(sdkManager, "meshgeo");
+
+		FbxGeometryElementNormal* geNormal = mesh->CreateElementNormal();
+		geNormal->SetMappingMode(FbxGeometryElement::eByControlPoint);
+		geNormal->SetReferenceMode(FbxGeometryElement::eDirect);
+
+		FbxGeometryElementUV* geUV = mesh->CreateElementUV("diffuseElement");
+		geUV->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
+		geUV->SetReferenceMode(FbxGeometryElement::eDirect);
+
+		// Get the triangles count for all of the mesh parts
+
+		size_t triangleCount = 0;
+		for (auto triangles : resultGeometry)
+		{
+			triangleCount += triangles.size();
+		}
+
+		mesh->InitControlPoints((int)triangleCount * 3);
+
+		FbxNode* meshNode = FbxNode::Create(scene, "meshnode");
+		meshNode->SetNodeAttribute(mesh);
+		meshNode->SetShadingMode(FbxNode::eTextureShading);
+
+		FbxNode* lRootNode = scene->GetRootNode();
+		lRootNode->AddChild(meshNode);
+
+		FbxSkin* skin = FbxSkin::Create(sdkManager, "Skin of the thing");
+		skin->SetGeometry(mesh);
+
+		mesh->AddDeformer(skin);
+
+		// Add a material otherwise UE4 freaks out on import
+
+		FbxGeometryElementMaterial* matElement = mesh->CreateElementMaterial();
+		matElement->SetMappingMode(FbxGeometryElement::eByPolygon);
+		matElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
+
+		FbxSurfacePhong* material = FbxSurfacePhong::Create(sdkManager, "FirstExportMaterial");
+
+		material->Diffuse.Set(FbxDouble3(1.0, 1.0, 0));
+		material->DiffuseFactor.Set(1.0);
+
+		meshNode->AddMaterial(material);
+
+		FbxSurfacePhong* material2 = FbxSurfacePhong::Create(sdkManager, "SecondExportMaterial");
+
+		material2->Diffuse.Set(FbxDouble3(1.0, 0.0, 1.0));
+		material2->DiffuseFactor.Set(1.0);
+
+		meshNode->AddMaterial(material2);
+
+		const ExtPxAsset* pExtPxAsset = m_pCurBlastAsset->getPxAsset();
+		if (pExtPxAsset == nullptr)
+		{
+			return false;
+		}
+
+		const TkAsset& tkAsset = pExtPxAsset->getTkAsset();
+		const NvBlastAsset* pAssetLL = tkAsset.getAssetLL();
+		uint32_t chunkCount = NvBlastAssetGetChunkCount(pAssetLL, nullptr);
+
+		auto chunks = NvBlastAssetGetChunks(pAssetLL, nullptr);
+
+		currentDepth = 0;
+		uint32_t cpIdx = 0;
+		for (uint32_t i = 0; i < chunkCount; i++)
+		{
+			const NvBlastChunk* chunk = &chunks[i];
+
+			if (chunk->parentChunkIndex == UINT32_MAX)
+			{
+				uint32_t addedCps = createChunkRecursive(sdkManager, cpIdx, i, meshNode, lRootNode, skin, pAssetLL, resultGeometry);
+
+				cpIdx += addedCps;
+			}
+		}
+
+		std::string outputFilePath = GlobalSettings::MakeFileName(outDir.c_str(), asset.fbx.buf);
+		finalizeFbxAndSave(sdkManager, scene, skin, outputFilePath);
+
+		sdkManager->Destroy();
+		sdkManager = nullptr;
+
+		std::string info = outputFilePath + " is saved.";
+		viewer_info(info.c_str());
+	}
+
+	if (asset.exportOBJ)
+	{
+		std::string filename = asset.obj.buf;
+		filename = filename.substr(0, filename.find_last_of('.'));
+		saveFractureToObj(resultGeometry, filename, outDir);
+
+		std::string outputFilePath = GlobalSettings::MakeFileName(outDir.c_str(), asset.obj.buf);
+		std::string info = outputFilePath + " is saved.";
+		viewer_info(info.c_str());
+	}
+
+	if (asset.exportBPXA)
+	{
+		std::string outputFilePath = GlobalSettings::MakeFileName(outDir.c_str(), asset.bpxa.buf);
+		const ExtPxAsset* pExtPxAsset = m_pCurBlastAsset->getPxAsset();
+		if (pExtPxAsset == nullptr)
+		{
+			return false;
+		}
+		saveExtAsset(outDir, std::string(asset.bpxa.buf), pExtPxAsset);
+
+		std::string info = outputFilePath + " is saved.";
+		viewer_info(info.c_str());
+	}
+
+	if (asset.exportCollision)
+	{
+		SampleManager* pSampleManager = SampleManager::ins();
+		PhysXController& physXController = pSampleManager->getPhysXController();
+		PxPhysics& physics = physXController.getPhysics();
+		PxScene& scene = physXController.getPhysXScene();
+
+		std::string outputFilePath = GlobalSettings::MakeFileName(outDir.c_str(), asset.collision.buf);
+		physXController.ExportCollisionRepX(outputFilePath.c_str(), &physics, &scene, false);
+
+		std::string info = outputFilePath + " is saved.";
+		viewer_info(info.c_str());
+	}
+
+	if (asset.exportTKAsset)
+	{
+		std::string outputFilePath = GlobalSettings::MakeFileName(outDir.c_str(), asset.tkasset.buf);
+		const ExtPxAsset* pExtPxAsset = m_pCurBlastAsset->getPxAsset();
+		if (pExtPxAsset == nullptr)
+		{
+			return false;
+		}
+
+		const TkAsset& tkAsset = pExtPxAsset->getTkAsset();
+
+		saveTkAsset(outDir, std::string(asset.tkasset.buf), &tkAsset);
+
+		std::string info = outputFilePath + " is saved.";
+		viewer_info(info.c_str());
+	}
+
+	if (asset.exportLLAsset)
+	{
+		std::string outputFilePath = GlobalSettings::MakeFileName(outDir.c_str(), asset.llasset.buf);
+		const ExtPxAsset* pExtPxAsset = m_pCurBlastAsset->getPxAsset();
+		if (pExtPxAsset == nullptr)
+		{
+			return false;
+		}
+
+		const TkAsset& tkAsset = pExtPxAsset->getTkAsset();
+		const NvBlastAsset* pAssetLL = tkAsset.getAssetLL();
+
+		saveLlAsset(outDir, std::string(asset.llasset.buf), pAssetLL);
+
+		std::string info = outputFilePath + " is saved.";
+		viewer_info(info.c_str());
+	}
+
+	return true;
+}
+
+void SampleManager::_createAsset(BlastAssetModelSimple** ppBlastAsset, 
+	std::vector<bool>& supports,
+	std::vector<bool>& statics,
+	std::vector<uint8_t>& joints,
+	std::vector<uint32_t>& worlds)
 {
 	PhysXController& pc = getPhysXController();
 	BlastController& bc = getBlastController();
@@ -673,35 +1245,38 @@ bool SampleManager::fractureAsset(std::string& path, std::string& assetName, con
 	foundation = &physics->getFoundation();
 	cooking = &pc.getCooking();
 	physicsManager = &bc.getExtPxManager();
-
-	m_fractureExecutor->setSourceAsset(pBlastAsset);
-	m_fractureExecutor->setTargetChunk(chunkId);
-	m_fractureExecutor->execute();
-	m_fractureExecutor = &sVoronoiFracture;
-
-	std::string outDir = path;
-	
-	std::string outBlastFilePath = GlobalSettings::MakeFileName(outDir.c_str(), std::string(assetName + ".bpxa").c_str());
+	TkFramework& tk = bc.getTkFramework();
 
 	std::vector<NvBlastChunkDesc> chunkDesc;
 	std::vector<NvBlastBondDesc> bondDescs;
-	std::vector<std::vector<Triangle> > chunkMeshes;
+	std::vector<std::shared_ptr<Triangle> > chunkMeshes;
+	std::vector<uint32_t> chunkMeshesTriangleCount(nChunkListSize);
 	std::vector<bool> isSupport;
 
-	size_t nChunkListSize = m_fTool->getChunkList().size();
+	size_t nChunkListSize = m_fTool->getChunkCount();
 	chunkMeshes.resize(nChunkListSize);
 	isSupport.resize(nChunkListSize);
 	for (uint32_t i = 0; i < nChunkListSize; ++i)
 	{
-		m_fTool->getBaseMesh(i, chunkMeshes[i]);
-		isSupport[i] = m_fTool->getChunkList()[i].isLeaf;
+		chunkMeshesTriangleCount[i] = m_fTool->getBaseMesh(i, chunkMeshes[i]);
+		isSupport[i] = supports.size() == 0 ? m_fTool->getChunkInfo(i).isLeaf : supports[i];
 	}
 
 	BlastBondGenerator bondGenerator(cooking, &physics->getPhysicsInsertionCallback());
-
-	BondGenerationConfig cnf;
-	cnf.bondMode = BondGenerationConfig::AVERAGE;
 	bondGenerator.buildDescFromInternalFracture(m_fTool, isSupport, bondDescs, chunkDesc);
+	bondDescs.clear();
+	bondGenerator.bondsFromPrefractured(chunkMeshes, isSupport, bondDescs);
+	int bondDescsSize = bondDescs.size();
+	if (bondDescsSize == worlds.size())
+	{		
+		for (int bds = 0; bds < bondDescsSize; bds++)
+		{
+			if (worlds[bds] == 0xFFFFFFFF)
+			{
+				bondDescs[bds].chunkIndices[1] = worlds[bds];
+			}
+		}
+	}
 
 	const uint32_t chunkCount = static_cast<uint32_t>(chunkDesc.size());
 	const uint32_t bondCount = static_cast<uint32_t>(bondDescs.size());
@@ -717,23 +1292,24 @@ bool SampleManager::fractureAsset(std::string& path, std::string& assetName, con
 		std::vector<char> scratch(chunkCount * sizeof(NvBlastChunkDesc));
 		NvBlastEnsureAssetExactSupportCoverage(chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
 		NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
-		NvBlastApplyAssetDescChunkReorderMapInplace(chunkDesc.data(), chunkCount, bondDescs.data(), bondCount, chunkReorderMap.data(), scratch.data(), loggingCallback);
+		NvBlastApplyAssetDescChunkReorderMapInPlace(chunkDesc.data(), chunkCount, bondDescs.data(), bondCount, chunkReorderMap.data(), true, scratch.data(), loggingCallback);
 		chunkReorderInvMap.resize(chunkReorderMap.size());
 		Nv::Blast::invertMap(chunkReorderInvMap.data(), chunkReorderMap.data(), static_cast<unsigned int>(chunkReorderMap.size()));
 	}
 
 	// get result geometry
-	std::vector<std::vector<Triangle>> resultGeometry(chunkMeshes.size());
-	for (uint32_t i = 0; i < chunkMeshes.size(); ++i)
+	std::vector<std::vector<Triangle>> resultGeometry(nChunkListSize);
+	for (uint32_t i = 0; i < nChunkListSize; ++i)
 	{
 		uint32_t chunkIndex = chunkReorderInvMap[i];
-		resultGeometry[chunkIndex] = chunkMeshes[i];
+		resultGeometry[chunkIndex].resize(chunkMeshesTriangleCount[i]);
+		memcpy(resultGeometry[chunkIndex].data(), chunkMeshes[i].get(), chunkMeshesTriangleCount[i] * sizeof(Triangle));
 	}
 
 	// prepare physics data (convexes)
 	std::vector<ExtPxAssetDesc::ChunkDesc> pxChunks(chunkCount);
 	std::vector<ExtPxAssetDesc::SubchunkDesc> pxSubchunks;
-	buildPxChunks(resultGeometry, pxChunks, pxSubchunks);
+	buildPxChunks(resultGeometry, pxChunks, pxSubchunks, statics);
 
 	// build and serialize ExtPhysicsAsset
 	ExtPxAssetDesc	descriptor;
@@ -741,45 +1317,83 @@ bool SampleManager::fractureAsset(std::string& path, std::string& assetName, con
 	descriptor.bondDescs = bondDescs.data();
 	descriptor.chunkCount = chunkCount;
 	descriptor.chunkDescs = chunkDesc.data();
-	descriptor.bondFlags = nullptr;
+	descriptor.bondFlags = joints.data();
 	descriptor.pxChunks = pxChunks.data();
-	ExtPxAsset* asset = ExtPxAsset::create(descriptor, bc.getTkFramework());
+	ExtPxAsset* asset = ExtPxAsset::create(descriptor, tk);
 	if (asset == nullptr)
 	{
-		return false;
+		return;
 	}
 
-	physx::PsFileBuffer fileBuf(outBlastFilePath.c_str(), physx::PxFileBuf::OPEN_WRITE_ONLY);
-	if (!asset->serialize(fileBuf, *cooking))
-	{
-		return false;
-	}
-	fileBuf.close();
-	asset->release();
+	std::string tempFilePath = utils::GetTempFilePath();
+	QFileInfo tempFileInfo(tempFilePath.c_str());
+	std::string tempdir = QDir::toNativeSeparators(tempFileInfo.absoluteDir().absolutePath()).toLocal8Bit();
+	std::string tempfile = tempFileInfo.fileName().toLocal8Bit();
+	saveFractureToObj(resultGeometry, tempfile, tempdir);
+	std::string objFilePath = tempFilePath + ".obj";
+	std::string mtlFilePath = tempFilePath + ".mtl";
+	BlastModel* pBlastModel = BlastModel::loadFromFileTinyLoader(objFilePath.c_str());
+	DeleteFileA(tempFilePath.c_str());
+	DeleteFileA(objFilePath.c_str());
+	DeleteFileA(mtlFilePath.c_str());
 
-	saveFractureToObj(resultGeometry, assetName, outDir);
-
-	m_bNeedConfig = true;
-
-	return true;
+	*ppBlastAsset = new BlastAssetModelSimple(asset, pBlastModel, getRenderer());
 }
 
-bool SampleManager::postProcessCurrentAsset()
+BlastAsset* SampleManager::_replaceAsset(BlastAsset* pBlastAsset,
+	std::vector<bool>& supports,
+	std::vector<bool>& statics,
+	std::vector<uint8_t>& joints,
+	std::vector<uint32_t>& worlds)
 {
-	std::vector<AssetList::ModelAsset>& models = m_config.additionalAssetList.models;
-	if (models.size() < 0)
+	if (pBlastAsset == nullptr)
 	{
-		return true;
+		return false;
 	}
 
-	std::string assetName = models.at(models.size() - 1).file;
-	std::string outDir = GlobalSettings::Inst().m_projectFileDir;
-	std::vector<Nv::Blast::Mesh* > meshes;
-	_createAsset(assetName, outDir, meshes);
+	BlastAsset* pCurBlastAsset = nullptr;
+	int nFamilyIndex = -1;
+	getCurrentSelectedInstance(&pCurBlastAsset, nFamilyIndex);
 
-	m_bNeedConfig = true;
+	std::vector<BlastFamily*> familiesOld = m_AssetFamiliesMap[pBlastAsset];
+	int familiesSize = familiesOld.size();
+	std::vector<physx::PxTransform> transforms(familiesSize);
+	std::vector<std::string> extMaterials(familiesSize);
+	std::vector<std::string> intMaterials(familiesSize);
+	for (int fs = 0; fs < familiesSize; fs++)
+	{
+		transforms[fs] = familiesOld[fs]->getSettings().transform;
 
-	return true;
+		setCurrentSelectedInstance(pBlastAsset, fs);
+		getMaterialForCurrentFamily(extMaterials[fs], true);
+		getMaterialForCurrentFamily(intMaterials[fs], false);
+	}
+
+	BlastAssetModelSimple* pBlastAssetNew;
+	_createAsset(&pBlastAssetNew, supports, statics, joints, worlds);
+
+	BlastAssetModelSimple* pBlastAssetOld = (BlastAssetModelSimple*)pBlastAsset;	
+	AssetList::ModelAsset desc = m_AssetDescMap[pBlastAsset];
+	removeBlastAsset(pBlastAssetOld);
+	addBlastAsset(pBlastAssetNew, desc);
+
+	for (int fs = 0; fs < familiesSize; fs++)
+	{
+		addBlastFamily(pBlastAssetNew, transforms[fs]);
+
+		setCurrentSelectedInstance(pBlastAssetNew, fs);
+
+		setMaterialForCurrentFamily(extMaterials[fs], true);
+		setMaterialForCurrentFamily(intMaterials[fs], false);
+	}
+
+	if (pCurBlastAsset == pBlastAsset)
+	{
+		pCurBlastAsset = pBlastAssetNew;
+	}
+	setCurrentSelectedInstance(pCurBlastAsset, nFamilyIndex);
+
+	return pBlastAssetNew;
 }
 
 std::vector<uint32_t> SampleManager::getCurrentSelectedChunks()
@@ -880,82 +1494,34 @@ void SampleManager::setFractureExecutor(FractureExecutor* executor)
 	}
 }
 
-void SampleManager::setBlastToolType(BlastToolType type)
+void SampleManager::EnableStepforward(bool bStepforward)
 {
-	if (m_ToolType == type)
+	m_stepforward = bStepforward;
+}
+
+void SampleManager::EnableSimulating(bool bSimulating)
+{
+	m_simulating = bSimulating;
+	m_stepforward = false;
+	m_physXController->setPaused(!m_simulating);
+
+	if (!m_simulating)
 	{
-		getPhysXController().setPaused(type != BTT_Damage);
-		return;
+		m_damageToolController->DisableController();
+#if 0
+		BlastSceneTree* pBlastSceneTree = BlastSceneTree::ins();
+		if (pBlastSceneTree)
+		{
+			pBlastSceneTree->hideAllChunks();
+			// make sure chunk0 shows.
+			std::vector<uint32_t> depths(1, 0);
+			pBlastSceneTree->setChunkVisible(depths, true);
+			// refresh in scene tree and viewport
+			//pBlastSceneTree->updateValues(false);
+			SampleManager::ins()->m_bNeedRefreshTree = true;
+		}
+#endif
 	}
-
-	// refresh selection
-	bool needClear = true;
-	bool currentGizmo = (m_ToolType >= BTT_Translate && m_ToolType <= BTT_Rotation);
-	bool switchToGizmo = (type >= BTT_Translate && type <= BTT_Rotation);
-	if (currentGizmo && switchToGizmo)
-	{
-		needClear = false;
-	}
-	if (needClear)
-	{
-		getSelectionToolController().clearSelect();
-		getGizmoToolController().resetPos();
-	}
-
-	getDamageToolController().getPickPointer()->setHidden(type != BTT_Damage);
-	getGizmoToolController().showAxisRenderables(switchToGizmo);
-	getPhysXController().setPaused(type != BTT_Damage);
-
-	getDamageToolController().DisableController();
-	getSelectionToolController().DisableController();
-	getGizmoToolController().DisableController();
-	getEditionToolController().DisableController();
-
-	switch (type)
-	{
-		case BTT_Damage:
-		{
-			getDamageToolController().EnableController();
-		}
-			break;
-		case BTT_Drag:
-		{
-			getDamageToolController().EnableController();
-		}
-			break;
-		case BTT_Select:
-		{
-			getSelectionToolController().EnableController();
-		}
-			break;
-		case BTT_Translate:
-		{
-			getGizmoToolController().EnableController();
-			getGizmoToolController().setGizmoToolMode(GTM_Translate);
-		}
-			break;
-		case BTT_Scale:
-		{
-			getGizmoToolController().EnableController();
-			getGizmoToolController().setGizmoToolMode(GTM_Scale);
-		}
-			break;
-		case BTT_Rotation:
-		{
-			getGizmoToolController().EnableController();
-			getGizmoToolController().setGizmoToolMode(GTM_Rotation);
-		}
-			break;
-		case BTT_Edit:
-		{
-			getEditionToolController().EnableController();
-		}
-			break;
-		default:
-			break;
-	}
-
-	m_ToolType = type;
 }
 
 #include <ViewerOutput.h>
@@ -976,189 +1542,158 @@ void SampleManager::output(physx::PxVec3& vec)
 
 void SampleManager::clearScene()
 {
-	getSceneController().ClearScene();
-	setBlastToolType(BTT_Edit);
-
-	MaterialLibraryPanel::ins()->deleteMaterialMap();
-
-	m_config.sampleName.clear();
-	m_config.assetsFile.clear();
-	m_config.additionalAssetList.models.clear();
-	m_config.additionalAssetList.composites.clear();
-	m_config.additionalAssetList.boxes.clear();
-
-	std::map<BlastAsset*, std::vector<BlastFamily*>>::iterator it;
-	for (it = m_AssetFamiliesMap.begin(); it != m_AssetFamiliesMap.end(); it++)
+	m_gizmoToolController->resetPos();
+	/*
+	BPPAssetArray& assets = BlastProject::ins().getParams().blast.blastAssets;
+	int assetSize = assets.arraySizes[0];
+	for (int as = 0; as < assetSize; as++)
 	{
-		std::vector<BlastFamily*>& fs = it->second;
+		BPPAsset& asset = assets.buf[as];
+		BlastSceneTree::ins()->removeBlastInstances(asset);
+		BlastSceneTree::ins()->removeBlastAsset(asset);
+	}
+	BlastSceneTree::ins()->clearProjectile();
+	*/
+	m_sceneController->ClearScene();
+
+	EnableSimulating(false);
+
+	std::map<std::string, RenderMaterial*>::iterator itRenderMaterial;
+	for (itRenderMaterial = m_RenderMaterialMap.begin();
+		itRenderMaterial != m_RenderMaterialMap.end(); itRenderMaterial++)
+	{
+		RenderMaterial* pRenderMaterial = itRenderMaterial->second;
+		delete pRenderMaterial;
+		pRenderMaterial = nullptr;
+	}
+	m_RenderMaterialMap.clear();
+
+	std::map<BlastAsset*, std::vector<BlastFamily*>>::iterator itAssetFamilies;
+	for (itAssetFamilies = m_AssetFamiliesMap.begin(); 
+		itAssetFamilies != m_AssetFamiliesMap.end(); itAssetFamilies++)
+	{
+		std::vector<BlastFamily*>& fs = itAssetFamilies->second;
 		fs.clear();
 	}
 	m_AssetFamiliesMap.clear();
 	m_AssetDescMap.clear();
+	m_instanceFamilyMap.clear();
+
+	physx::PxVec3 zero(0.0f, 0.0f, 0.0f);
+	m_assetExtents = zero;
 
 	m_bNeedRefreshTree = true;
+
+	m_pCurBlastAsset = nullptr;
+	m_nCurFamilyIndex = -1;
+
+	SimpleScene::Inst()->m_pCamera->SetDefaults();
 }
 
 void SampleManager::resetScene()
 {
+	std::map<BPPAssetInstance*, std::set<uint32_t>> selectChunks;
+
+	if (m_selectionToolController->IsEnabled())
+	{
+		std::set<PxActor*> actors = m_selectionToolController->getTargetActors();
+		for (PxActor* actor : actors)
+		{
+			BlastFamily* pBlastFamily = m_blastController->getFamilyByPxActor(*actor);
+			if (pBlastFamily)
+			{
+				BPPAssetInstance* assetInstance = getInstanceByFamily(pBlastFamily);
+				uint32_t chunkIndex = pBlastFamily->getChunkIndexByPxActor(*actor);
+				selectChunks[assetInstance].insert(chunkIndex);
+			}
+		}
+	}
+	else if (m_gizmoToolController->IsEnabled())
+	{
+		PxActor* actor = m_gizmoToolController->getTargetActor();
+
+		if (actor)
+		{
+			BlastFamily* pBlastFamily = m_blastController->getFamilyByPxActor(*actor);
+			if (pBlastFamily)
+			{
+				BPPAssetInstance* assetInstance = getInstanceByFamily(pBlastFamily);
+				uint32_t chunkIndex = pBlastFamily->getChunkIndexByPxActor(*actor);
+				selectChunks[assetInstance].insert(chunkIndex);
+			}
+		}
+	}
+
+	m_selectionToolController->clearSelect();
+	/*
+	std::map<BPPAssetInstance*, BlastFamily*>::iterator itIFM;
+	for (itIFM = m_instanceFamilyMap.begin(); itIFM != m_instanceFamilyMap.end(); itIFM++)
+	{
+		BPPAssetInstance* pInstance = itIFM->first;
+		BlastSceneTree::ins()->removeBlastInstance(*pInstance);
+	}
+	BlastSceneTree::ins()->clearProjectile();
+	*/
 	getSceneController().ResetScene();
-	setBlastToolType(BTT_Edit);
+	EnableSimulating(false);
+	/*
+	for (itIFM = m_instanceFamilyMap.begin(); itIFM != m_instanceFamilyMap.end(); itIFM++)
+	{
+		BPPAssetInstance* pInstance = itIFM->first;
+		BlastSceneTree::ins()->addBlastInstance(*pInstance);
+	}
+	*/
+	std::set<PxActor*> actors;
+	for (std::map<BPPAssetInstance*, std::set<uint32_t>>::iterator itr = selectChunks.begin(); itr != selectChunks.end(); ++itr)
+	{
+		BlastFamily* family = getFamilyByInstance(itr->first);
+		std::set<uint32_t>& chunkIndexes = itr->second;
+
+		if (nullptr != family)
+		{
+			for (uint32_t chunkIndex : chunkIndexes)
+			{
+				PxActor* actor = nullptr;
+				family->getPxActorByChunkIndex(chunkIndex, &actor);
+
+				if (actor)
+					actors.insert(actor);
+			}
+		}
+	}
+
+	if (m_selectionToolController->IsEnabled())
+	{
+		m_selectionToolController->setTargetActors(actors);
+	}
+	else if (m_gizmoToolController->IsEnabled())
+	{
+		if (actors.size() > 0)
+		 m_gizmoToolController->setTargetActor(*actors.begin());
+	}
+
+	// reset scene should not restore camera
+	//SimpleScene::Inst()->m_pCamera->SetDefaults();
 }
 
-bool SampleManager::_createAsset(
-	const std::string& assetName,
-	const std::string& outDir,
-	const std::vector<Nv::Blast::Mesh* >& meshes)
+bool isChunkVisible(std::vector<BlastFamily*>& fs, uint32_t chunkIndex)
 {
-	PhysXController& pc = getPhysXController();
-	BlastController& bc = getBlastController();
-
-	physics = &pc.getPhysics();
-	foundation = &physics->getFoundation();
-	cooking = &pc.getCooking();
-	physicsManager = &bc.getExtPxManager();
-	TkFramework& tk = bc.getTkFramework();
-
-	std::string outBlastFilePath = GlobalSettings::MakeFileName(outDir.c_str(), std::string(assetName + ".bpxa").c_str());
-
-	std::vector<NvBlastChunkDesc> chunkDesc;
-	std::vector<NvBlastBondDesc> bondDescs;
-	std::vector<std::vector<Triangle> > chunkMeshes;
-	std::vector<bool> isSupport;
-
-	if (meshes.size() <= 1)
+	int fsSize = fs.size();
+	if (fsSize == 0)
 	{
-		size_t nChunkListSize = m_fTool->getChunkList().size();
-		chunkMeshes.resize(nChunkListSize);
-		isSupport.resize(nChunkListSize);
-		for (uint32_t i = 0; i < nChunkListSize; ++i)
+		return true;
+	}
+
+	bool visible = false;
+	for (int i = 0; i < fsSize; i++)
+	{
+		if (fs[i]->isChunkVisible(chunkIndex))
 		{
-			m_fTool->getBaseMesh(i, chunkMeshes[i]);
-			isSupport[i] = m_fTool->getChunkList()[i].isLeaf;
+			visible = true;
+			break;
 		}
 	}
-	// If there are more than one mesh, then it seems that it prefractured, lets consider first mesh in meshes as depth 0, other meshes as depth 1 chunks
-	// we should just build Blast descriptors for such input.
-	else
-	{
-		chunkMeshes.resize(meshes.size());
-		std::vector<PxVec3> chunkCentroids(meshes.size(), PxVec3(0, 0, 0));
-
-		for (uint32_t i = 0; i < meshes.size(); ++i)
-		{
-			std::vector<Triangle>& chunk = chunkMeshes[i];
-
-			Vertex* vbf = meshes[i]->getVertices();
-			Edge* ebf = meshes[i]->getEdges();
-
-			for (uint32_t fc = 0; fc < meshes[i]->getFacetCount(); ++fc)
-			{
-				Facet* f = meshes[i]->getFacet(fc);
-				Triangle tr;
-				tr.a = vbf[ebf[f->firstEdgeNumber].s];
-				tr.b = vbf[ebf[f->firstEdgeNumber + 1].s];
-				tr.c = vbf[ebf[f->firstEdgeNumber + 2].s];
-				chunk.push_back(tr);
-
-				chunkCentroids[i] += tr.a.p + tr.b.p + tr.c.p;
-			}
-
-			chunkCentroids[i] *= 1.0f / (3 * meshes[i]->getFacetCount());
-		}
-
-		isSupport.resize(chunkMeshes.size());
-		chunkDesc.resize(chunkMeshes.size());
-		isSupport[0] = false;
-
-		chunkDesc[0].centroid[0] = chunkCentroids[0].x;
-		chunkDesc[0].centroid[1] = chunkCentroids[0].y;
-		chunkDesc[0].centroid[2] = chunkCentroids[0].z;
-		chunkDesc[0].parentChunkIndex = UINT32_MAX;
-
-		for (uint32_t i = 1; i < chunkDesc.size(); ++i)
-		{
-			chunkDesc[i].parentChunkIndex = 0;
-			chunkDesc[i].flags = NvBlastChunkDesc::SupportFlag;
-			chunkDesc[i].centroid[0] = chunkCentroids[i].x;
-			chunkDesc[i].centroid[1] = chunkCentroids[i].y;
-			chunkDesc[i].centroid[2] = chunkCentroids[i].z;
-			isSupport[i] = true;
-		}
-	}
-
-	BlastBondGenerator bondGenerator(cooking, &physics->getPhysicsInsertionCallback());
-
-	BondGenerationConfig cnf;
-	cnf.bondMode = BondGenerationConfig::AVERAGE;
-
-	if (meshes.size() > 1)
-	{
-		bondGenerator.bondsFromPrefractured(chunkMeshes, isSupport, bondDescs, cnf);
-	}
-	else
-	{
-		bondGenerator.buildDescFromInternalFracture(m_fTool, isSupport, bondDescs, chunkDesc);
-	}
-
-	const uint32_t chunkCount = static_cast<uint32_t>(chunkDesc.size());
-	const uint32_t bondCount = static_cast<uint32_t>(bondDescs.size());
-	if (bondCount == 0)
-	{
-		std::cout << "Can't create bonds descriptors..." << std::endl;
-	}
-
-	// order chunks, build map
-	std::vector<uint32_t> chunkReorderInvMap;
-	{
-		std::vector<uint32_t> chunkReorderMap(chunkCount);
-		std::vector<char> scratch(chunkCount * sizeof(NvBlastChunkDesc));
-		NvBlastEnsureAssetExactSupportCoverage(chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
-		NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
-		NvBlastApplyAssetDescChunkReorderMapInplace(chunkDesc.data(), chunkCount, bondDescs.data(), bondCount, chunkReorderMap.data(), scratch.data(), loggingCallback);
-		chunkReorderInvMap.resize(chunkReorderMap.size());
-		Nv::Blast::invertMap(chunkReorderInvMap.data(), chunkReorderMap.data(), static_cast<unsigned int>(chunkReorderMap.size()));
-	}
-
-	// get result geometry
-	std::vector<std::vector<Triangle>> resultGeometry(chunkMeshes.size());
-	for (uint32_t i = 0; i < chunkMeshes.size(); ++i)
-	{
-		uint32_t chunkIndex = chunkReorderInvMap[i];
-		resultGeometry[chunkIndex] = chunkMeshes[i];
-	}
-
-	// prepare physics data (convexes)
-	std::vector<ExtPxAssetDesc::ChunkDesc> pxChunks(chunkCount);
-	std::vector<ExtPxAssetDesc::SubchunkDesc> pxSubchunks;
-	buildPxChunks(resultGeometry, pxChunks, pxSubchunks);
-
-	// build and serialize ExtPhysicsAsset
-	ExtPxAssetDesc	descriptor;
-	descriptor.bondCount = bondCount;
-	descriptor.bondDescs = bondDescs.data();
-	descriptor.chunkCount = chunkCount;
-	descriptor.chunkDescs = chunkDesc.data();
-	descriptor.bondFlags = nullptr;
-	descriptor.pxChunks = pxChunks.data();
-	ExtPxAsset* asset = ExtPxAsset::create(descriptor, tk);
-	if (asset == nullptr)
-	{
-		return false;
-	}
-
-	physx::PsFileBuffer fileBuf(outBlastFilePath.c_str(), physx::PxFileBuf::OPEN_WRITE_ONLY);
-	if (!asset->serialize(fileBuf, *cooking))
-	{
-		return false;
-	}
-	fileBuf.close();
-	asset->release();
-
-	saveFractureToObj(resultGeometry, assetName, outDir);
-
-	m_bNeedConfig = true;
-
-	return true;
+	return visible;
 }
 
 void SampleManager::_setSourceAsset()
@@ -1172,23 +1707,44 @@ void SampleManager::_setSourceAsset()
 	}
 }
 
-void SampleManager::addRenderMaterial(RenderMaterial* pRenderMaterial)
+BlastFamily* SampleManager::getFamilyByInstance(BPPAssetInstance* instance)
 {
-	if (pRenderMaterial == nullptr)
+	if (instance)
 	{
-		return;
+		if (m_instanceFamilyMap.find(instance) != m_instanceFamilyMap.end())
+		{
+			return m_instanceFamilyMap[instance];
+		}
 	}
+	return nullptr;
+}
 
-	std::string materialName = pRenderMaterial->getMaterialName();
-	if (materialName.empty())
+BPPAssetInstance* SampleManager::getInstanceByFamily(BlastFamily* family)
+{
+	if (family)
 	{
-		return;
+		std::map<BPPAssetInstance*, BlastFamily*>::iterator itr = m_instanceFamilyMap.begin();
+		for (; itr != m_instanceFamilyMap.end(); ++itr)
+		{
+			if (itr->second == family)
+			{
+				return itr->first;
+			}
+		}
 	}
+	return nullptr;
+}
 
-	m_RenderMaterialMap[materialName] = pRenderMaterial;
-
-	std::string textureFileName = pRenderMaterial->getTextureFileName();
-	MaterialLibraryPanel::ins()->addMaterial(materialName, textureFileName);
+void SampleManager::updateFamily(BlastFamily* oldFamily, BlastFamily* newFamily)
+{
+	if (oldFamily)
+	{
+		BPPAssetInstance* instance = getInstanceByFamily(oldFamily);
+		if (instance)
+		{
+			m_instanceFamilyMap[instance] = newFamily;
+		}
+	}
 }
 
 void SampleManager::removeRenderMaterial(std::string name)
@@ -1201,19 +1757,8 @@ void SampleManager::removeRenderMaterial(std::string name)
 	std::map<std::string, RenderMaterial*>::iterator it = m_RenderMaterialMap.find(name);
 	if (it != m_RenderMaterialMap.end())
 	{
-		m_RenderMaterialMap.erase(it);
-		MaterialLibraryPanel::ins()->removeMaterial(name);
+		m_NeedDeleteRenderMaterials.push_back(name);
 	}
-}
-
-void SampleManager::deleteRenderMaterial(std::string name)
-{
-	if (name.empty())
-	{
-		return;
-	}
-
-	m_NeedDeleteRenderMaterials.push_back(name);
 }
 
 void SampleManager::renameRenderMaterial(std::string oldName, std::string newName)
@@ -1233,6 +1778,107 @@ void SampleManager::renameRenderMaterial(std::string oldName, std::string newNam
 	}
 }
 
+void SampleManager::reloadRenderMaterial(std::string name, float r, float g, float b, bool diffuse)
+{
+	if (name.empty())
+	{
+		return;
+	}
+
+	std::map<std::string, RenderMaterial*>::iterator it = m_RenderMaterialMap.find(name);
+	if (it != m_RenderMaterialMap.end())
+	{
+		RenderMaterial* pRenderMaterial = it->second;
+		if (diffuse)
+		{
+			pRenderMaterial->setDiffuseColor(r, g, b);
+		}
+		else
+		{
+			pRenderMaterial->setSpecularColor(r, g, b);
+		}
+	}
+}
+
+void SampleManager::reloadRenderMaterial(std::string name, std::string texture, RenderMaterial::TextureType tt)
+{
+	if (name.empty())
+	{
+		return;
+	}
+
+	std::map<std::string, RenderMaterial*>::iterator it = m_RenderMaterialMap.find(name);
+	if (it != m_RenderMaterialMap.end())
+	{
+		RenderMaterial* pRenderMaterial = it->second;
+		pRenderMaterial->setTextureFileName(texture, tt);
+	}
+}
+
+void SampleManager::reloadRenderMaterial(std::string name, float specularShininess)
+{
+	if (name.empty())
+	{
+		return;
+	}
+
+	std::map<std::string, RenderMaterial*>::iterator it = m_RenderMaterialMap.find(name);
+	if (it != m_RenderMaterialMap.end())
+	{
+		RenderMaterial* pRenderMaterial = it->second;
+		pRenderMaterial->setSpecularShininess(specularShininess);
+	}
+}
+
+RenderMaterial* SampleManager::getRenderMaterial(std::string name, bool create)
+{
+	if (name == "" || name == "None")
+	{
+		return RenderMaterial::getDefaultRenderMaterial();
+	}
+
+	std::map<std::string, RenderMaterial*>::iterator itRenderMaterial = m_RenderMaterialMap.find(name);
+	RenderMaterial* pRenderMaterial = nullptr;
+	if (itRenderMaterial != m_RenderMaterialMap.end())
+	{
+		pRenderMaterial = itRenderMaterial->second;
+	}
+	else if(create)
+	{
+		ResourceManager* pResourceManager = ResourceManager::ins();
+
+		BPPGraphicsMaterial* pBPPGraphicsMaterial = BlastProject::ins().getGraphicsMaterial(name.c_str());
+		
+		if (pBPPGraphicsMaterial == nullptr)
+		{
+			return RenderMaterial::getDefaultRenderMaterial();
+		}
+		else if (pBPPGraphicsMaterial->diffuseTextureFilePath.buf != nullptr)
+		{
+			pRenderMaterial = new RenderMaterial(name.c_str(), *pResourceManager,
+				"model_simple_textured_ex",
+				pBPPGraphicsMaterial->diffuseTextureFilePath.buf);
+			pRenderMaterial->setDiffuseColor(
+				pBPPGraphicsMaterial->diffuseColor[0],
+				pBPPGraphicsMaterial->diffuseColor[1],
+				pBPPGraphicsMaterial->diffuseColor[2],
+				pBPPGraphicsMaterial->diffuseColor[3]);
+		}
+		else
+		{
+			pRenderMaterial = new RenderMaterial(name.c_str(), *pResourceManager,
+				"model_simple_textured_ex",
+				pBPPGraphicsMaterial->diffuseColor[0],
+				pBPPGraphicsMaterial->diffuseColor[1],
+				pBPPGraphicsMaterial->diffuseColor[2],
+				pBPPGraphicsMaterial->diffuseColor[3]);
+		}
+
+		m_RenderMaterialMap[name] = pRenderMaterial;
+	}
+	return pRenderMaterial;
+}
+
 void SampleManager::getCurrentSelectedInstance(BlastAsset** ppBlastAsset, int& index)
 {
 	*ppBlastAsset = m_pCurBlastAsset;
@@ -1245,40 +1891,1267 @@ void SampleManager::setCurrentSelectedInstance(BlastAsset* pBlastAsset, int inde
 	m_nCurFamilyIndex = index;
 
 	MaterialAssignmentsPanel::ins()->updateValues();
+	FileReferencesPanel::ins()->updateValues();
 }
 
-void SampleManager::getMaterialForCurrentFamily(RenderMaterial** ppRenderMaterial, bool externalSurface)
+void SampleManager::getMaterialForCurrentFamily(std::string& name, bool externalSurface)
 {
+	name = "";
+
 	if (m_pCurBlastAsset == nullptr || m_nCurFamilyIndex < 0)
 	{
 		return;
 	}
 
-	std::vector<BlastFamily*>& fs = m_AssetFamiliesMap[m_pCurBlastAsset];
+	std::map<BlastAsset*, std::vector<BlastFamily*>>::iterator it = m_AssetFamiliesMap.find(m_pCurBlastAsset);
+	if (it == m_AssetFamiliesMap.end())
+	{
+		return;
+	}
+
+	std::vector<BlastFamily*>& fs = it->second;
 	int fsSize = fs.size();
-	if (fsSize == 0 || fsSize < m_nCurFamilyIndex)
+	if (fsSize == 0 || fsSize <= m_nCurFamilyIndex)
 	{
 		return;
 	}
 
 	BlastFamily* pBlastFamily = fs[m_nCurFamilyIndex];
-	pBlastFamily->getMaterial(ppRenderMaterial, externalSurface);
+	RenderMaterial* pRenderMaterial = nullptr;
+	pBlastFamily->getMaterial(&pRenderMaterial, externalSurface);
+	if (pRenderMaterial != nullptr)
+	{
+		name = pRenderMaterial->getMaterialName();
+		if (name != "")
+		{
+			return;
+		}
+	}
+
+	AssetList::ModelAsset modelAsset = m_AssetDescMap[m_pCurBlastAsset];
+	int assetID = BlastProject::ins().getAssetIDByName(modelAsset.name.c_str());
+	BPPAssetInstance* instance = BlastProject::ins().getAssetInstance(assetID, m_nCurFamilyIndex);
+	if (externalSurface && instance->exMaterial.buf != nullptr)
+	{
+		name = instance->exMaterial.buf;
+	}
+	else if (!externalSurface && instance->inMaterial.buf != nullptr)
+	{
+		name = instance->inMaterial.buf;
+	}
 }
 
-void SampleManager::setMaterialForCurrentFamily(RenderMaterial* pRenderMaterial, bool externalSurface)
+void SampleManager::setMaterialForCurrentFamily(std::string name, bool externalSurface)
 {
 	if (m_pCurBlastAsset == nullptr || m_nCurFamilyIndex < 0)
 	{
 		return;
 	}
 
-	std::vector<BlastFamily*>& fs = m_AssetFamiliesMap[m_pCurBlastAsset];
-	int fsSize = fs.size();
-	if (fsSize == 0 || fsSize < m_nCurFamilyIndex)
+	std::map<BlastAsset*, std::vector<BlastFamily*>>::iterator it = m_AssetFamiliesMap.find(m_pCurBlastAsset);
+	if (it == m_AssetFamiliesMap.end())
 	{
 		return;
 	}
+
+	std::vector<BlastFamily*>& fs = it->second;
+	int fsSize = fs.size();
+	if (fsSize == 0 || fsSize <= m_nCurFamilyIndex)
+	{
+		return;
+	}
+
+	RenderMaterial* pRenderMaterial = getRenderMaterial(name);
 
 	BlastFamily* pBlastFamily = fs[m_nCurFamilyIndex];
 	pBlastFamily->setMaterial(pRenderMaterial, externalSurface);
+
+	AssetList::ModelAsset modelAsset = m_AssetDescMap[m_pCurBlastAsset];
+	int assetID = BlastProject::ins().getAssetIDByName(modelAsset.name.c_str());
+	BPPAssetInstance* instance = BlastProject::ins().getAssetInstance(assetID, m_nCurFamilyIndex);
+	if (externalSurface)
+	{
+		copy(instance->exMaterial, name.c_str());
+	}
+	else
+	{
+		copy(instance->inMaterial, name.c_str());
+	}
+}
+
+#if 0
+void SampleManager::applyAssetToProjectParam(BlastAsset* pBlastAsset, bool addTo)
+{
+	BlastAssetModel* assetModel = dynamic_cast<BlastAssetModel*>(pBlastAsset);
+
+	BPPBlast& blast = BlastProject::ins().getParams().blast;
+
+	std::map<BlastAsset*, std::vector<BlastFamily*>>& AssetFamiliesMap = getAssetFamiliesMap();
+	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = getAssetDescMap();
+
+	AssetList::ModelAsset desc = AssetDescMap[pBlastAsset];
+	std::vector<BlastFamily*>& fs = AssetFamiliesMap[pBlastAsset];
+
+	BlastController& blastController = getBlastController();
+	SceneController& sceneController = getSceneController();
+
+	char str[MAX_PATH];
+
+	// asset array
+	BPPAssetArray assetArray;
+	assetArray.arraySizes[0] = 1;
+	assetArray.buf = new BPPAsset[1];
+	BPPAsset& asset = assetArray.buf[0];
+	::init(asset);
+	copy(asset.name, desc.name.c_str());
+	if (addTo)
+	{
+		asset.ID = BlastProject::ins().generateNewAssetID();
+		merge(blast.blastAssets, assetArray);
+	}
+	else
+	{
+		asset.ID = BlastProject::ins().getAssetIDByName(asset.name.buf);
+		apart(blast.blastAssets, assetArray);
+	}
+
+	const ExtPxAsset* pExtPxAsset = pBlastAsset->getPxAsset();
+	const ExtPxChunk* pExtPxChunk = pExtPxAsset->getChunks();
+
+	const TkAsset& tkAsset = pExtPxAsset->getTkAsset();
+	uint32_t chunkCount = tkAsset.getChunkCount();
+	const NvBlastChunk* pNvBlastChunk = tkAsset.getChunks();
+	uint32_t bondCount = tkAsset.getBondCount();
+	const NvBlastBond* pNvBlastBond = tkAsset.getBonds();
+
+	const NvBlastSupportGraph supportGraph = tkAsset.getGraph();
+	uint32_t* chunkIndices = supportGraph.chunkIndices;
+	uint32_t* adjacencyPartition = supportGraph.adjacencyPartition;
+	uint32_t* adjacentNodeIndices = supportGraph.adjacentNodeIndices;
+	uint32_t* adjacentBondIndices = supportGraph.adjacentBondIndices;
+
+	std::vector<bool> isSupports(chunkCount);
+	isSupports.assign(chunkCount, false);
+	std::vector<uint32_t> fromIDs(bondCount);
+	std::vector<uint32_t> toIDs(bondCount);
+	fromIDs.assign(bondCount, -1);
+	toIDs.assign(bondCount, -1);
+
+	for (uint32_t node0 = 0; node0 < supportGraph.nodeCount; ++node0)
+	{
+		const uint32_t chunkIndex0 = supportGraph.chunkIndices[node0];
+		if (chunkIndex0 >= chunkCount)
+		{
+			continue;
+		}
+
+		isSupports[chunkIndex0] = true;
+
+		for (uint32_t adjacencyIndex = adjacencyPartition[node0]; adjacencyIndex < adjacencyPartition[node0 + 1]; adjacencyIndex++)
+		{
+			uint32_t node1 = supportGraph.adjacentNodeIndices[adjacencyIndex];
+
+			// add this condition if you don't want to iterate all bonds twice
+			if (node0 > node1)
+				continue;
+
+			const uint32_t chunkIndex1 = supportGraph.chunkIndices[node1];
+
+			uint32_t bondIndex = supportGraph.adjacentBondIndices[adjacencyIndex];
+
+			if (chunkIndex0 < chunkIndex1)
+			{
+				fromIDs[bondIndex] = chunkIndex0;
+				toIDs[bondIndex] = chunkIndex1;
+			}
+			else
+			{
+				fromIDs[bondIndex] = chunkIndex1;
+				toIDs[bondIndex] = chunkIndex0;
+			}
+		}
+	}
+
+	// chunks
+	BPPChunkArray chunkArray;
+	{
+		chunkArray.buf = new BPPChunk[chunkCount];
+		chunkArray.arraySizes[0] = chunkCount;
+		char chunkname[10];
+		for (int cc = 0; cc < chunkCount; ++cc)
+		{
+			BPPChunk& chunk = chunkArray.buf[cc];
+			::init(chunk);
+
+			std::vector<uint32_t> parentChunkIndexes;
+			parentChunkIndexes.push_back(cc);
+			uint32_t parentChunkIndex = cc;
+			while ((parentChunkIndex = pNvBlastChunk[parentChunkIndex].parentChunkIndex) != -1)
+			{
+				parentChunkIndexes.push_back(parentChunkIndex);
+			}
+
+			std::string strChunkName = "Chunk";
+			for (int pcIndex = parentChunkIndexes.size() - 1; pcIndex >= 0; pcIndex--)
+			{
+				sprintf(chunkname, "_%d", parentChunkIndexes[pcIndex]);
+				strChunkName += chunkname;
+			}
+			copy(chunk.name, strChunkName.c_str());
+
+			chunk.asset = asset.ID;
+			chunk.ID = cc;
+			chunk.parentID = pNvBlastChunk[cc].parentChunkIndex;
+			chunk.staticFlag = pExtPxChunk[cc].isStatic;
+			chunk.visible = isChunkVisible(fs, cc);
+			chunk.support = isSupports[cc];
+
+			if (assetModel != nullptr)
+			{
+				const BlastModel& model = assetModel->getModel();
+
+				BPPGraphicsMesh& graphicsMesh = chunk.graphicsMesh;
+				::init(graphicsMesh);
+
+				const BlastModel::Chunk& chunk = model.chunks[cc];
+
+				const std::vector<BlastModel::Chunk::Mesh>& meshes = chunk.meshes;
+				int meshSize = meshes.size();
+
+				if (meshSize == 0)
+				{
+					continue;
+				}
+
+				std::vector<physx::PxVec3> positions;
+				std::vector<physx::PxVec3> normals;
+				std::vector<physx::PxVec2> uv;
+				std::vector<uint32_t>  ind;
+				std::vector<int>  faceBreakPoint;
+				std::vector<uint32_t>  materialIndexes;
+				uint16_t curIndex = 0;
+				for (int ms = 0; ms < meshSize; ms++)
+				{
+					const BlastModel::Chunk::Mesh& mesh = meshes[ms];
+					materialIndexes.push_back(mesh.materialIndex);
+					const SimpleMesh& simpleMesh = mesh.mesh;
+					const std::vector<SimpleMesh::Vertex>& vertices = simpleMesh.vertices;
+					const std::vector<uint16_t>& indices = simpleMesh.indices;
+
+					int NumVertices = vertices.size();
+					for (uint32_t i = 0; i < NumVertices; ++i)
+					{
+						positions.push_back(physx::PxVec3(vertices[i].position.x, vertices[i].position.y, vertices[i].position.z));
+						normals.push_back(physx::PxVec3(vertices[i].normal.x, vertices[i].normal.y, vertices[i].normal.z));
+						uv.push_back(physx::PxVec2(vertices[i].uv.x, vertices[i].uv.y));
+					}
+					int NumIndices = indices.size();
+					for (uint32_t i = 0; i < NumIndices; ++i)
+					{
+						ind.push_back(indices[i] + curIndex);
+					}
+					curIndex += NumIndices;
+					faceBreakPoint.push_back(NumIndices / 3);
+				}
+
+				graphicsMesh.materialAssignments.buf = new BPPMaterialAssignments[materialIndexes.size()];
+				graphicsMesh.materialAssignments.arraySizes[0] = materialIndexes.size();
+				for (size_t i = 0; i < materialIndexes.size(); ++i)
+				{
+					BPPMaterialAssignments& assignment = graphicsMesh.materialAssignments.buf[i];
+					assignment.libraryMaterialID = materialIndexes[i];
+					assignment.faceMaterialID = materialIndexes[i];
+				}
+
+				graphicsMesh.positions.buf = new nvidia::NvVec3[positions.size()];
+				graphicsMesh.positions.arraySizes[0] = positions.size();
+				for (size_t i = 0; i < positions.size(); ++i)
+				{
+					nvidia::NvVec3& item = graphicsMesh.positions.buf[i];
+					item.x = positions[i].x;
+					item.y = positions[i].y;
+					item.z = positions[i].z;
+				}
+
+				graphicsMesh.normals.buf = new nvidia::NvVec3[normals.size()];
+				graphicsMesh.normals.arraySizes[0] = normals.size();
+				for (size_t i = 0; i < normals.size(); ++i)
+				{
+					nvidia::NvVec3& item = graphicsMesh.normals.buf[i];
+					item.x = normals[i].x;
+					item.y = normals[i].y;
+					item.z = normals[i].z;
+				}
+
+				graphicsMesh.texcoords.buf = new nvidia::NvVec2[uv.size()];
+				graphicsMesh.texcoords.arraySizes[0] = uv.size();
+				for (size_t i = 0; i < uv.size(); ++i)
+				{
+					nvidia::NvVec2& item = graphicsMesh.texcoords.buf[i];
+					item.x = uv[i].x;
+					item.y = uv[i].y;
+				}
+
+				size_t indexCount = ind.size();
+				size_t faceCount = ind.size() / 3;
+
+				graphicsMesh.vertextCountInFace = 3;
+
+				graphicsMesh.positionIndexes.buf = new int32_t[indexCount];
+				graphicsMesh.positionIndexes.arraySizes[0] = indexCount;
+
+				graphicsMesh.normalIndexes.buf = new int32_t[indexCount];
+				graphicsMesh.normalIndexes.arraySizes[0] = indexCount;
+
+				graphicsMesh.texcoordIndexes.buf = new int32_t[indexCount];
+				graphicsMesh.texcoordIndexes.arraySizes[0] = indexCount;
+
+				graphicsMesh.materialIDs.buf = new int32_t[faceCount];
+				graphicsMesh.materialIDs.arraySizes[0] = faceCount;
+
+				for (size_t i = 0; i < indexCount; ++i)
+				{
+					graphicsMesh.positionIndexes.buf[i] = ind[i];
+					graphicsMesh.normalIndexes.buf[i] = ind[i];
+					graphicsMesh.texcoordIndexes.buf[i] = ind[i];
+					/*
+					size_t j = 0;
+					for (; j < faceBreakPoint.size(); ++j)
+					{
+						if (i < faceBreakPoint[j])
+							break;
+					}
+					graphicsMesh.materialIDs.buf[i / 3] = j;
+					*/
+				}
+
+				for (size_t f = 0; f < faceCount; f++)
+				{
+					int32_t ex = f < faceBreakPoint[0] ? 0 : 1;
+					graphicsMesh.materialIDs.buf[f] = ex;
+				}
+			}
+		}
+
+		if (addTo)
+		{
+			merge(blast.chunks, chunkArray);
+		}
+		else
+		{
+			apart(blast.chunks, chunkArray);
+		}
+	}
+
+	// bonds
+	BPPBondArray bondArray;
+	{
+		bondArray.buf = new BPPBond[bondCount];
+		bondArray.arraySizes[0] = bondCount;
+		char bondname[10];
+		bool visible;
+		for (int bc = 0; bc < bondCount; ++bc)
+		{
+			BPPBond& bond = bondArray.buf[bc];
+			bond.name.buf = nullptr;
+			::init(bond);
+
+			visible = isChunkVisible(fs, fromIDs[bc]) || isChunkVisible(fs, toIDs[bc]);
+			bond.visible = visible;
+			bond.fromChunk = fromIDs[bc];
+			bond.toChunk = toIDs[bc];
+
+			sprintf(bondname, "Bond_%d_%d", bond.fromChunk, bond.toChunk);
+			copy(bond.name, bondname);
+			bond.asset = asset.ID;
+
+			bond.support.healthMask.buf = nullptr;
+			bond.support.bondStrength = 1.0;
+			bond.support.enableJoint = false;
+		}
+
+		if (addTo)
+		{
+			merge(blast.bonds, bondArray);
+		}
+		else
+		{
+			apart(blast.bonds, bondArray);
+		}
+	}
+
+	freeBlast(bondArray);
+	freeBlast(chunkArray);
+	freeBlast(assetArray);
+
+	m_bNeedRefreshTree = true;
+}
+#endif
+
+void SampleManager::updateAssetFamilyStressSolver(BPPAsset* bppAsset, BPPStressSolver& stressSolver)
+{
+	if (nullptr == bppAsset || nullptr == bppAsset->name.buf || 0 == strlen(bppAsset->name.buf))
+		return;
+
+	BlastAsset* blastAsset = nullptr;
+	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itr = m_AssetDescMap.begin();
+	for (; itr != m_AssetDescMap.end(); ++itr)
+	{
+		if (itr->second.name == bppAsset->name.buf)
+		{
+			blastAsset = itr->first;
+			break;
+		}
+	}
+
+	if (nullptr == blastAsset)
+		return;
+
+	std::vector<BlastFamily*>& families = m_AssetFamiliesMap[blastAsset];
+
+	for (BlastFamily* family : families)
+	{
+		BlastFamily::Settings settings = family->getSettings();
+
+		ExtStressSolverSettings & stressSolverSettings = settings.stressSolverSettings;
+		stressSolverSettings.hardness = stressSolver.hardness;
+		stressSolverSettings.stressLinearFactor = stressSolver.linearFactor;
+		stressSolverSettings.stressAngularFactor = stressSolver.angularFactor;
+		stressSolverSettings.bondIterationsPerFrame = stressSolver.bondIterationsPerFrame;
+		stressSolverSettings.graphReductionLevel = stressSolver.graphReductionLevel;
+		family->setSettings(settings);
+	}
+}
+
+void SampleManager::updateModelMeshToProjectParam(BlastAsset* pBlastAsset)
+{
+	BlastProject& project = BlastProject::ins();
+	BlastAssetModel* assetModel = dynamic_cast<BlastAssetModel*>(pBlastAsset);
+	BPPBlast& blast = project.getParams().blast;
+	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = getAssetDescMap();
+	AssetList::ModelAsset desc = AssetDescMap[pBlastAsset];
+
+	int assetId = project.getAssetIDByName(desc.name.c_str());
+	if (-1 == assetId)
+		return;
+
+	std::vector<BPPChunk*> chunks = project.getChildrenChunks(assetId);
+
+	BPPChunk& chunk = *chunks[0];//unfracture model only has one chunk
+
+	if (assetModel != nullptr)
+	{
+		const BlastModel& model = assetModel->getModel();
+
+		BPPGraphicsMesh& graphicsMesh = chunk.graphicsMesh;
+
+		const BlastModel::Chunk& chunk = model.chunks[0];//unfracture model only has one chunk
+
+		const std::vector<BlastModel::Chunk::Mesh>& meshes = chunk.meshes;
+		int meshSize = meshes.size();
+
+		if (meshSize == 0)
+		{
+			return;
+		}
+
+		std::vector<physx::PxVec3> positions;
+		for (int ms = 0; ms < meshSize; ms++)
+		{
+			const BlastModel::Chunk::Mesh& mesh = meshes[ms];
+			const SimpleMesh& simpleMesh = mesh.mesh;
+			const std::vector<SimpleMesh::Vertex>& vertices = simpleMesh.vertices;
+
+			int NumVertices = vertices.size();
+			for (uint32_t i = 0; i < NumVertices; ++i)
+			{
+				positions.push_back(physx::PxVec3(vertices[i].position.x, vertices[i].position.y, vertices[i].position.z));
+			}
+		}
+
+		for (size_t i = 0; i < positions.size(); ++i)
+		{
+			nvidia::NvVec3& item = graphicsMesh.positions.buf[i];
+			item.x = positions[i].x;
+			item.y = positions[i].y;
+			item.z = positions[i].z;
+		}
+	}
+}
+
+#if 0
+void SampleManager::applyFamilyToProjectParam(BlastFamily* pBlastFamily, bool addTo)
+{
+	const BlastAsset& blastAsset = pBlastFamily->getBlastAsset();
+	BlastAsset* pBlastAsset = (BlastAsset*)&blastAsset;
+
+	std::vector<BlastFamily*>& fs = m_AssetFamiliesMap[pBlastAsset];
+	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = getAssetDescMap();
+	AssetList::ModelAsset desc = AssetDescMap[pBlastAsset];
+
+	const BlastFamily::Settings& familySetting = pBlastFamily->getSettings();
+	physx::PxTransform transform = familySetting.transform;
+
+	char str[MAX_PATH];
+
+	BPPBlast& blast = BlastProject::ins().getParams().blast;
+	int assetID = BlastProject::ins().getAssetIDByName(desc.name.c_str());
+
+	// instance array
+	BPPAssetInstanceArray instanceArray;
+	instanceArray.arraySizes[0] = 1;
+	instanceArray.buf = new BPPAssetInstance[1];
+	BPPAssetInstance& instance = instanceArray.buf[0];
+	if (addTo)
+	{
+		::init(instance);
+		int instanceIndex = fs.size() - 1;
+		sprintf(str, "%s_%d", desc.name.c_str(), instanceIndex);
+		copy(instance.name, str);
+		instance.asset = assetID;
+		PxVec3 p = transform.p;
+		PxQuat q = transform.q;
+		instance.transform.position = nvidia::NvVec3(p.x, p.y, p.z);
+		instance.transform.rotation = nvidia::NvVec4(q.x, q.y, q.z, q.w);
+	}
+	else
+	{
+		BPPAssetInstance* pInstance = getInstanceByFamily(pBlastFamily);
+		copy(instance, *pInstance);
+	}
+
+	std::vector<BPPAssetInstance*> instances;
+	BlastProject::ins().getAssetInstances(assetID, instances);
+	int instanceSize = instances.size();
+	std::vector<std::string> instanceNames(instanceSize);
+	std::vector<BlastFamily*> instanceFamilys(instanceSize);
+	for (int is = 0; is < instanceSize; is++)
+	{
+		instanceNames[is] = instances[is]->name;
+		instanceFamilys[is] = m_instanceFamilyMap[instances[is]];
+		m_instanceFamilyMap.erase(m_instanceFamilyMap.find(instances[is]));
+	}
+
+	if (addTo)
+	{
+		merge(blast.blastAssetInstances, instanceArray);
+		instanceNames.push_back(str);
+		instanceFamilys.push_back(pBlastFamily);
+
+		std::vector<BPPChunk*> chunks = BlastProject::ins().getChildrenChunks(assetID);
+		for (size_t i = 0; i < chunks.size(); ++i)
+		{
+			chunks[i]->visible = isChunkVisible(fs, i);
+		}
+	}
+	else
+	{
+		apart(blast.blastAssetInstances, instanceArray);
+	}
+
+	instanceSize = instanceNames.size();
+	for (int is = 0; is < instanceSize; is++)
+	{
+		BPPAssetInstance* curInstance = BlastProject::ins().getAssetInstance(assetID, instanceNames[is].c_str());
+		if (curInstance != nullptr)
+		{
+			m_instanceFamilyMap[curInstance] = instanceFamilys[is];
+		}
+	}
+
+	freeBlast(instanceArray);
+
+	m_bNeedRefreshTree = true;
+}
+#endif
+
+BlastAsset* SampleManager::loadBlastFile(std::string dir, std::string file, AssetList::ModelAsset modelAsset)
+{
+	GlobalSettings::Inst().m_projectFileDir = dir;
+	GlobalSettings::Inst().m_projectFileName = file;
+
+	TkFramework& framework = getBlastController().getTkFramework();
+	PxPhysics& physics = getPhysXController().getPhysics();
+	PxCooking& cooking = getPhysXController().getCooking();
+	Renderer& renderer = getRenderer();
+	ExtSerialization& serialization = *getBlastController().getExtSerialization();
+
+	BlastAssetModelSimple* pBlastAssetModelSimple = new BlastAssetModelSimple(
+		framework, physics, cooking, serialization, renderer, file.c_str());
+
+	addBlastAsset(pBlastAssetModelSimple, modelAsset);
+
+	return pBlastAssetModelSimple;
+}
+
+void SampleManager::addBlastAsset(BlastAssetModelSimple* pBlastAssetModelSimple, AssetList::ModelAsset modelAsset, bool inProject)
+{
+	// 1
+	m_AssetDescMap[pBlastAssetModelSimple] = modelAsset;
+	m_AssetFamiliesMap[pBlastAssetModelSimple].clear();
+	pBlastAssetModelSimple->initialize();
+
+	// 2
+	m_sceneController->addBlastAsset(pBlastAssetModelSimple, modelAsset);
+
+	if (!inProject)
+	{
+		// 3
+		_addAssetToProjectParam(pBlastAssetModelSimple);
+	}
+
+	//4
+	const BlastModel& model = pBlastAssetModelSimple->getModel();
+	const physx::PxVec3 extent = (model.bbMax - model.bbMin) * 0.5f;
+	atcore_float3 max = gfsdk_max(*(atcore_float3*)&m_assetExtents, *(atcore_float3*)&(extent));
+	m_assetExtents = *(physx::PxVec3*)&max;
+
+	getGizmoToolController().setAxisLength(m_assetExtents.magnitude());
+
+	m_bNeedRefreshTree = true;
+	/*
+	BPPAsset* pBPPAsset = BlastProject::ins().getAsset(modelAsset.name.c_str());
+	BlastSceneTree::ins()->addBlastAsset(*pBPPAsset);
+	*/
+}
+
+void SampleManager::removeBlastAsset(BlastAssetModelSimple* pBlastAssetModelSimple)
+{
+	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM = m_AssetDescMap.find(pBlastAssetModelSimple);
+	/*
+	AssetList::ModelAsset modelAsset = itADM->second;
+	BPPAsset* pBPPAsset = BlastProject::ins().getAsset(modelAsset.name.c_str());
+	BlastSceneTree::ins()->removeBlastInstances(*pBPPAsset);
+	BlastSceneTree::ins()->removeBlastAsset(*pBPPAsset);
+	*/
+	// 3
+	_removeInstancesFromProjectParam(pBlastAssetModelSimple);
+	_removeAssetFromProjectParam(pBlastAssetModelSimple);
+
+	// 2
+	m_sceneController->removeBlastAsset(pBlastAssetModelSimple);
+
+	_refreshInstanceFamilyMap();
+
+	// 1
+	m_AssetDescMap.erase(itADM);
+
+	m_bNeedRefreshTree = true;
+}
+
+BlastFamily* SampleManager::addBlastFamily(BlastAsset* pBlastAsset, physx::PxTransform transform, bool inProject)
+{
+	if (pBlastAsset == nullptr)
+	{
+		return nullptr;
+	}
+
+	BlastFamily* pBlastFamily = m_sceneController->addBlastFamily(pBlastAsset, transform);
+
+	if (!inProject)
+	{
+		_addInstanceToProjectParam(pBlastFamily);
+	}
+
+	_refreshInstanceFamilyMap();
+	/*
+	BPPAssetInstance* pBPPAssetInstance = getInstanceByFamily(pBlastFamily);
+	BlastSceneTree::ins()->addBlastInstance(*pBPPAssetInstance);
+	*/
+	/*
+	AssetList::ModelAsset modelAsset = m_AssetDescMap[pBlastAsset];
+	int assetID = BlastProject::ins().getAssetIDByName(modelAsset.name.c_str());
+	std::vector<BPPAssetInstance*> instances;
+	BlastProject::ins().getAssetInstances(assetID, instances);
+	std::vector<BlastFamily*> families = m_AssetFamiliesMap[pBlastAsset];
+	int familiesSize = families.size();
+	for (int fs = 0; fs < familiesSize; fs++)
+	{
+		m_instanceFamilyMap.insert(std::make_pair(instances[fs], families[fs]));
+	}
+	*/
+	// should not quit here. we still need set up right bounding extent
+	m_bNeedRefreshTree = true;
+	return pBlastFamily;
+}
+
+bool SampleManager::removeBlastFamily(BlastAsset* pBlastAsset, int nFamilyIndex)
+{
+	if (pBlastAsset == nullptr)
+	{
+		return false;
+	}
+
+	std::map<BlastAsset*, std::vector<BlastFamily*>>::iterator itAFM = m_AssetFamiliesMap.find(pBlastAsset);
+	if (itAFM == m_AssetFamiliesMap.end())
+	{
+		return false;
+	}
+
+	std::vector<BlastFamily*> families = itAFM->second;
+	int familySize = families.size();
+	if (familySize == 0 || familySize <= nFamilyIndex)
+	{
+		return false;
+	}
+
+	_removeInstanceFromProjectParam(families[nFamilyIndex]);
+	/*
+	BPPAssetInstance* pBPPAssetInstance = getInstanceByFamily(families[nFamilyIndex]);
+	BlastSceneTree::ins()->addBlastInstance(*pBPPAssetInstance);
+	*/
+	m_sceneController->removeBlastFamily(pBlastAsset, nFamilyIndex);
+
+	_refreshInstanceFamilyMap();
+	m_bNeedRefreshTree = true;
+	return true;
+}
+
+void SampleManager::refreshAsset(BlastAsset* pBlastAsset)
+{
+	m_fTool->setSourceAsset(pBlastAsset);
+	m_fTool->finalizeFracturing();
+
+	std::map<BlastAsset*, AssetList::ModelAsset>::iterator it = m_AssetDescMap.find(pBlastAsset);
+	AssetList::ModelAsset desc = it->second;
+
+	int nChunkCount = pBlastAsset->getPxAsset()->getChunkCount();
+	int nBondCount = pBlastAsset->getPxAsset()->getTkAsset().getBondCount();
+
+	std::vector<bool> supports(nChunkCount);
+	std::vector<bool> statics(nChunkCount);
+
+	int nCur = 0;
+
+	BPPBlast& blast = BlastProject::ins().getParams().blast;
+	int assetID = BlastProject::ins().getAssetIDByName(desc.name.c_str());
+	int chunkSize = blast.chunks.arraySizes[0];
+	for (int cs = 0; cs < chunkSize; cs++)
+	{
+		BPPChunk& chunk = blast.chunks.buf[cs];
+		if (chunk.asset == assetID)
+		{
+			supports[nCur] = chunk.support;
+			statics[nCur] = chunk.staticFlag;
+			nCur++;
+		}
+	}
+
+	if (nCur != nChunkCount)
+	{
+		assert("chunk size not right");
+	}
+
+	nCur = 0;
+
+	std::vector<uint8_t> joints(nBondCount);
+	std::vector<uint32_t> worlds(nBondCount);
+	int bondSize = blast.bonds.arraySizes[0];
+	for (int bs = 0; bs < bondSize; bs++)
+	{
+		BPPBond& bond = blast.bonds.buf[bs];
+		if (bond.asset == assetID)
+		{
+			joints[nCur] = bond.support.enableJoint;
+			worlds[nCur] = bond.toChunk;
+			nCur++;
+		}
+	}
+
+	if (nCur != nBondCount)
+	{
+		assert("bond size not right");
+	}
+
+	_replaceAsset(pBlastAsset, supports, statics, joints, worlds);
+}
+
+void SampleManager::UpdateCamera()
+{
+	m_renderer->UpdateCamera();
+}
+
+void SampleManager::_addAssetToProjectParam(BlastAsset* pBlastAsset)
+{
+	BlastAssetModel* assetModel = dynamic_cast<BlastAssetModel*>(pBlastAsset);
+
+	BPPBlast& blast = BlastProject::ins().getParams().blast;
+
+	std::map<BlastAsset*, std::vector<BlastFamily*>>& AssetFamiliesMap = getAssetFamiliesMap();
+	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = getAssetDescMap();
+
+	AssetList::ModelAsset desc = AssetDescMap[pBlastAsset];
+	std::vector<BlastFamily*>& fs = AssetFamiliesMap[pBlastAsset];
+
+	BlastController& blastController = getBlastController();
+	SceneController& sceneController = getSceneController();
+
+	char str[MAX_PATH];
+
+	// asset array
+	BPPAssetArray assetArray;
+	assetArray.arraySizes[0] = 1;
+	assetArray.buf = new BPPAsset[1];
+	BPPAsset& asset = assetArray.buf[0];
+	::init(asset);
+	copy(asset.name, desc.name.c_str());
+	asset.ID = BlastProject::ins().generateNewAssetID();
+	merge(blast.blastAssets, assetArray);
+
+	const ExtPxAsset* pExtPxAsset = pBlastAsset->getPxAsset();
+	const ExtPxChunk* pExtPxChunk = pExtPxAsset->getChunks();
+
+	const TkAsset& tkAsset = pExtPxAsset->getTkAsset();
+	uint32_t chunkCount = tkAsset.getChunkCount();
+	const NvBlastChunk* pNvBlastChunk = tkAsset.getChunks();
+	uint32_t bondCount = tkAsset.getBondCount();
+	const NvBlastBond* pNvBlastBond = tkAsset.getBonds();
+
+	const NvBlastSupportGraph supportGraph = tkAsset.getGraph();
+	uint32_t* chunkIndices = supportGraph.chunkIndices;
+	uint32_t* adjacencyPartition = supportGraph.adjacencyPartition;
+	uint32_t* adjacentNodeIndices = supportGraph.adjacentNodeIndices;
+	uint32_t* adjacentBondIndices = supportGraph.adjacentBondIndices;
+
+	std::vector<bool> isSupports(chunkCount);
+	isSupports.assign(chunkCount, false);
+	std::vector<uint32_t> fromIDs(bondCount);
+	std::vector<uint32_t> toIDs(bondCount);
+	fromIDs.assign(bondCount, -1);
+	toIDs.assign(bondCount, -1);
+
+	for (uint32_t node0 = 0; node0 < supportGraph.nodeCount; ++node0)
+	{
+		const uint32_t chunkIndex0 = supportGraph.chunkIndices[node0];
+		if (chunkIndex0 >= chunkCount)
+		{
+			continue;
+		}
+
+		isSupports[chunkIndex0] = true;
+
+		for (uint32_t adjacencyIndex = adjacencyPartition[node0]; adjacencyIndex < adjacencyPartition[node0 + 1]; adjacencyIndex++)
+		{
+			uint32_t node1 = supportGraph.adjacentNodeIndices[adjacencyIndex];
+
+			// add this condition if you don't want to iterate all bonds twice
+			if (node0 > node1)
+				continue;
+
+			const uint32_t chunkIndex1 = supportGraph.chunkIndices[node1];
+
+			uint32_t bondIndex = supportGraph.adjacentBondIndices[adjacencyIndex];
+
+			if (chunkIndex0 < chunkIndex1)
+			{
+				fromIDs[bondIndex] = chunkIndex0;
+				toIDs[bondIndex] = chunkIndex1;
+			}
+			else
+			{
+				fromIDs[bondIndex] = chunkIndex1;
+				toIDs[bondIndex] = chunkIndex0;
+			}
+		}
+	}
+
+	// chunks
+	BPPChunkArray chunkArray;
+	{
+		chunkArray.buf = new BPPChunk[chunkCount];
+		chunkArray.arraySizes[0] = chunkCount;
+		char chunkname[10];
+		for (int cc = 0; cc < chunkCount; ++cc)
+		{
+			BPPChunk& chunk = chunkArray.buf[cc];
+			::init(chunk);
+
+			std::vector<uint32_t> parentChunkIndexes;
+			parentChunkIndexes.push_back(cc);
+			uint32_t parentChunkIndex = cc;
+			while ((parentChunkIndex = pNvBlastChunk[parentChunkIndex].parentChunkIndex) != -1)
+			{
+				parentChunkIndexes.push_back(parentChunkIndex);
+			}
+
+			std::string strChunkName = "Chunk";
+			for (int pcIndex = parentChunkIndexes.size() - 1; pcIndex >= 0; pcIndex--)
+			{
+				sprintf(chunkname, "_%d", parentChunkIndexes[pcIndex]);
+				strChunkName += chunkname;
+			}
+			copy(chunk.name, strChunkName.c_str());
+
+			chunk.asset = asset.ID;
+			chunk.ID = cc;
+			chunk.parentID = pNvBlastChunk[cc].parentChunkIndex;
+			chunk.staticFlag = pExtPxChunk[cc].isStatic;
+			chunk.visible = isChunkVisible(fs, cc);
+			chunk.support = isSupports[cc];
+
+			if (assetModel != nullptr)
+			{
+				const BlastModel& model = assetModel->getModel();
+
+				BPPGraphicsMesh& graphicsMesh = chunk.graphicsMesh;
+				::init(graphicsMesh);
+
+				const BlastModel::Chunk& chunk = model.chunks[cc];
+
+				const std::vector<BlastModel::Chunk::Mesh>& meshes = chunk.meshes;
+				int meshSize = meshes.size();
+
+				if (meshSize == 0)
+				{
+					continue;
+				}
+
+				std::vector<physx::PxVec3> positions;
+				std::vector<physx::PxVec3> normals;
+				std::vector<physx::PxVec3> tangents;
+				std::vector<physx::PxVec2> uv;
+				std::vector<uint32_t>  ind;
+				std::vector<int>  faceBreakPoint;
+				std::vector<uint32_t>  materialIndexes;
+				uint16_t curIndex = 0;
+				for (int ms = 0; ms < meshSize; ms++)
+				{
+					const BlastModel::Chunk::Mesh& mesh = meshes[ms];
+					materialIndexes.push_back(mesh.materialIndex);
+					const SimpleMesh& simpleMesh = mesh.mesh;
+					const std::vector<SimpleMesh::Vertex>& vertices = simpleMesh.vertices;
+					const std::vector<uint16_t>& indices = simpleMesh.indices;
+
+					int NumVertices = vertices.size();
+					for (uint32_t i = 0; i < NumVertices; ++i)
+					{
+						positions.push_back(physx::PxVec3(vertices[i].position.x, vertices[i].position.y, vertices[i].position.z));
+						normals.push_back(physx::PxVec3(vertices[i].normal.x, vertices[i].normal.y, vertices[i].normal.z));
+						tangents.push_back(physx::PxVec3(vertices[i].tangent.x, vertices[i].tangent.y, vertices[i].tangent.z));
+						uv.push_back(physx::PxVec2(vertices[i].uv.x, vertices[i].uv.y));
+					}
+					int NumIndices = indices.size();
+					for (uint32_t i = 0; i < NumIndices; ++i)
+					{
+						ind.push_back(indices[i] + curIndex);
+					}
+					curIndex += NumVertices;
+					faceBreakPoint.push_back(NumIndices / 3);
+				}
+
+				graphicsMesh.materialAssignments.buf = new BPPMaterialAssignments[materialIndexes.size()];
+				graphicsMesh.materialAssignments.arraySizes[0] = materialIndexes.size();
+				for (size_t i = 0; i < materialIndexes.size(); ++i)
+				{
+					BPPMaterialAssignments& assignment = graphicsMesh.materialAssignments.buf[i];
+					assignment.libraryMaterialID = materialIndexes[i];
+					assignment.faceMaterialID = materialIndexes[i];
+				}
+
+				graphicsMesh.positions.buf = new nvidia::NvVec3[positions.size()];
+				graphicsMesh.positions.arraySizes[0] = positions.size();
+				for (size_t i = 0; i < positions.size(); ++i)
+				{
+					nvidia::NvVec3& item = graphicsMesh.positions.buf[i];
+					item.x = positions[i].x;
+					item.y = positions[i].y;
+					item.z = positions[i].z;
+				}
+
+				graphicsMesh.normals.buf = new nvidia::NvVec3[normals.size()];
+				graphicsMesh.normals.arraySizes[0] = normals.size();
+				for (size_t i = 0; i < normals.size(); ++i)
+				{
+					nvidia::NvVec3& item = graphicsMesh.normals.buf[i];
+					item.x = normals[i].x;
+					item.y = normals[i].y;
+					item.z = normals[i].z;
+				}
+
+				graphicsMesh.tangents.buf = new nvidia::NvVec3[tangents.size()];
+				graphicsMesh.tangents.arraySizes[0] = tangents.size();
+				for (size_t i = 0; i < tangents.size(); ++i)
+				{
+					nvidia::NvVec3& item = graphicsMesh.tangents.buf[i];
+					item.x = tangents[i].x;
+					item.y = tangents[i].y;
+					item.z = tangents[i].z;
+				}
+
+				graphicsMesh.texcoords.buf = new nvidia::NvVec2[uv.size()];
+				graphicsMesh.texcoords.arraySizes[0] = uv.size();
+				for (size_t i = 0; i < uv.size(); ++i)
+				{
+					nvidia::NvVec2& item = graphicsMesh.texcoords.buf[i];
+					item.x = uv[i].x;
+					item.y = uv[i].y;
+				}
+
+				size_t indexCount = ind.size();
+				size_t faceCount = ind.size() / 3;
+
+				graphicsMesh.vertextCountInFace = 3;
+
+				graphicsMesh.positionIndexes.buf = new int32_t[indexCount];
+				graphicsMesh.positionIndexes.arraySizes[0] = indexCount;
+
+				graphicsMesh.normalIndexes.buf = new int32_t[indexCount];
+				graphicsMesh.normalIndexes.arraySizes[0] = indexCount;
+
+				graphicsMesh.texcoordIndexes.buf = new int32_t[indexCount];
+				graphicsMesh.texcoordIndexes.arraySizes[0] = indexCount;
+
+				graphicsMesh.materialIDs.buf = new int32_t[faceCount];
+				graphicsMesh.materialIDs.arraySizes[0] = faceCount;
+
+				for (size_t i = 0; i < indexCount; ++i)
+				{
+					graphicsMesh.positionIndexes.buf[i] = ind[i];
+					graphicsMesh.normalIndexes.buf[i] = ind[i];
+					graphicsMesh.texcoordIndexes.buf[i] = ind[i];
+				}
+
+				for (size_t f = 0; f < faceCount; f++)
+				{
+					int32_t ex = f < faceBreakPoint[0] ? 0 : 1;
+					graphicsMesh.materialIDs.buf[f] = ex;
+				}
+			}
+		}
+
+		merge(blast.chunks, chunkArray);
+	}
+
+	// bonds
+	BPPBondArray bondArray;
+	{
+		bondArray.buf = new BPPBond[bondCount];
+		bondArray.arraySizes[0] = bondCount;
+		char bondname[20];
+		bool visible;
+		for (int bc = 0; bc < bondCount; ++bc)
+		{
+			BPPBond& bond = bondArray.buf[bc];
+			bond.name.buf = nullptr;
+			::init(bond);
+
+			visible = isChunkVisible(fs, fromIDs[bc]) || isChunkVisible(fs, toIDs[bc]);
+			bond.visible = visible;
+			bond.fromChunk = fromIDs[bc];
+			bond.toChunk = toIDs[bc];
+
+			if (bond.toChunk == 0xFFFFFFFF)
+			{
+				sprintf(bondname, "Bond_%d_world", bond.fromChunk);
+			}
+			else
+			{
+				sprintf(bondname, "Bond_%d_%d", bond.fromChunk, bond.toChunk);
+			}
+			copy(bond.name, bondname);
+			bond.asset = asset.ID;
+
+			bond.support.healthMask.buf = nullptr;
+			bond.support.bondStrength = 1.0;
+			bond.support.enableJoint = false;
+		}
+
+		merge(blast.bonds, bondArray);
+	}
+
+	freeBlast(bondArray);
+	freeBlast(chunkArray);
+	freeBlast(assetArray);
+
+	m_bNeedRefreshTree = true;
+}
+
+void SampleManager::_removeAssetFromProjectParam(BlastAsset* pBlastAsset)
+{
+	if (pBlastAsset == nullptr)
+	{
+		return;
+	}
+
+	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM = m_AssetDescMap.find(pBlastAsset);
+	if (itADM == m_AssetDescMap.end())
+	{
+		return;
+	}
+
+	AssetList::ModelAsset desc = m_AssetDescMap[pBlastAsset];
+
+	BPPBlast& blast = BlastProject::ins().getParams().blast;
+	
+	int32_t assetId = BlastProject::ins().getAssetIDByName(desc.name.c_str());
+
+	apart(blast.blastAssets, assetId);
+	apart(blast.chunks, assetId);
+	apart(blast.bonds, assetId);
+}
+
+void SampleManager::_addInstanceToProjectParam(BlastFamily* pBlastFamily)
+{
+	const BlastAsset& blastAsset = pBlastFamily->getBlastAsset();
+	BlastAsset* pBlastAsset = (BlastAsset*)&blastAsset;
+
+	std::vector<BlastFamily*>& fs = m_AssetFamiliesMap[pBlastAsset];
+	AssetList::ModelAsset desc = m_AssetDescMap[pBlastAsset];
+
+	const BlastFamily::Settings& familySetting = pBlastFamily->getSettings();
+	physx::PxTransform transform = familySetting.transform;
+
+	char str[MAX_PATH];
+
+	BPPBlast& blast = BlastProject::ins().getParams().blast;
+	int assetID = BlastProject::ins().getAssetIDByName(desc.name.c_str());
+
+	// instance array
+	BPPAssetInstanceArray instanceArray;
+	instanceArray.arraySizes[0] = 1;
+	instanceArray.buf = new BPPAssetInstance[1];
+	BPPAssetInstance& instance = instanceArray.buf[0];
+	::init(instance);
+	int instanceIndex = fs.size() - 1;
+	sprintf(str, "%s_%d", desc.name.c_str(), instanceIndex);
+	copy(instance.name, str);
+	instance.asset = assetID;
+	PxVec3 p = transform.p;
+	PxQuat q = transform.q;
+	instance.transform.position = nvidia::NvVec3(p.x, p.y, p.z);
+	instance.transform.rotation = nvidia::NvVec4(q.x, q.y, q.z, q.w);
+
+	merge(blast.blastAssetInstances, instanceArray);
+
+	std::vector<BPPChunk*> chunks = BlastProject::ins().getChildrenChunks(assetID);
+	for (size_t i = 0; i < chunks.size(); ++i)
+	{
+		chunks[i]->visible = isChunkVisible(fs, i);
+	}
+
+	freeBlast(instanceArray);
+
+	m_bNeedRefreshTree = true;
+}
+
+void SampleManager::_removeInstanceFromProjectParam(BlastFamily* pBlastFamily)
+{
+	BPPAssetInstance* pInstance = getInstanceByFamily(pBlastFamily);
+	if (pInstance == nullptr)
+	{
+		return;
+	}
+
+	BPPBlast& blast = BlastProject::ins().getParams().blast;
+	apart(blast.blastAssetInstances, pInstance->asset, pInstance->name.buf);
+}
+
+void SampleManager::_removeInstancesFromProjectParam(BlastAsset* pBlastAsset)
+{
+	if (pBlastAsset == nullptr)
+	{
+		return;
+	}
+
+	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM = m_AssetDescMap.find(pBlastAsset);
+	if (itADM == m_AssetDescMap.end())
+	{
+		return;
+	}
+
+	AssetList::ModelAsset desc = m_AssetDescMap[pBlastAsset];
+
+	BPPBlast& blast = BlastProject::ins().getParams().blast;
+
+	int32_t assetId = BlastProject::ins().getAssetIDByName(desc.name.c_str());
+
+	apart(blast.blastAssetInstances, assetId);
+}
+
+void SampleManager::_refreshInstanceFamilyMap()
+{
+	m_instanceFamilyMap.clear();
+
+	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM;
+	std::map<BlastAsset*, std::vector<BlastFamily*>>::iterator itAFM;
+	for (itADM = m_AssetDescMap.begin(); itADM != m_AssetDescMap.end(); itADM++)
+	{
+		BlastAsset* pBlastAsset = itADM->first;
+		itAFM = m_AssetFamiliesMap.find(pBlastAsset);
+		if (itAFM == m_AssetFamiliesMap.end())
+		{
+			continue;
+		}
+
+		AssetList::ModelAsset modelAsset = itADM->second;
+		int assetID = BlastProject::ins().getAssetIDByName(modelAsset.name.c_str());
+		std::vector<BPPAssetInstance*> instances;
+		BlastProject::ins().getAssetInstances(assetID, instances);
+		int instancesSize = instances.size();
+		std::vector<BlastFamily*> families = itAFM->second;
+		int familiesSize = families.size();
+		if (instancesSize != familiesSize)
+		{
+			assert("size of instance in scene and project not equal");
+		}
+		for (int fs = 0; fs < familiesSize; fs++)
+		{
+			m_instanceFamilyMap.insert(std::make_pair(instances[fs], families[fs]));
+		}
+	}
+}
+
+bool SampleManager::eventAlreadyHandled()
+{
+	bool isAlt = (GetAsyncKeyState(VK_MENU) && 0x8000);
+	bool isLight = (GetAsyncKeyState('L') && 0x8000);
+	return m_selectionToolController->IsEnabled() && !(isAlt || isLight);
+}
+
+void SampleManager::ApplyAutoSelectNewChunks(BlastAsset* pNewBlastAsset, std::vector<uint32_t>& NewChunkIndexes)
+{
+	std::map<BlastAsset*, std::vector<BlastFamily*>>::iterator itAFM = m_AssetFamiliesMap.find(pNewBlastAsset);
+	if (itAFM == m_AssetFamiliesMap.end())
+	{
+		return;
+	}
+
+	bool autoSelectNewChunks = BlastProject::ins().getParams().fracture.general.autoSelectNewChunks;
+
+	std::vector<BlastFamily*> families = itAFM->second;
+	for (BlastFamily* pBlastFamily : families)
+	{
+		pBlastFamily->clearChunksSelected();
+
+		if (!autoSelectNewChunks)
+		{
+			continue;
+		}
+
+		for (uint32_t chunkInd : NewChunkIndexes)
+		{
+			pBlastFamily->setChunkSelected(chunkInd, true);
+			pBlastFamily->setChunkVisible(chunkInd, true);
+		}
+	}
+
+	BlastSceneTree::ins()->ApplyAutoSelectNewChunks(pNewBlastAsset, NewChunkIndexes);
+}
+
+void SampleManager::ApplySelectionDepthTest()
+{
+	bool selectionDepthTest = BlastProject::ins().getParams().fracture.general.selectionDepthTest;
+
+	std::vector<BlastFamily*>& families = m_blastController->getFamilies();
+
+	for (BlastFamily* pBlastFamily : families)
+	{
+		std::vector<uint32_t> selectedChunks = pBlastFamily->getSelectedChunks();
+
+		for (uint32_t chunkInd : selectedChunks)
+		{
+			pBlastFamily->setChunkSelected(chunkInd, true);
+			pBlastFamily->setChunkVisible(chunkInd, true);
+		}
+	}
 }

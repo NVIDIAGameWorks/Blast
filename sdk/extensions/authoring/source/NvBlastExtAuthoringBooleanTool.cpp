@@ -1,15 +1,34 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
 
+
+#include "NvBlastGlobals.h"
 #include "NvBlastExtAuthoringBooleanTool.h"
-#include "NvBlastExtAuthoringMesh.h"
+#include "NvBlastExtAuthoringMeshImpl.h"
 #include "NvBlastExtAuthoringAccelerator.h"
 
 #include <math.h>
@@ -40,7 +59,6 @@ NV_FORCE_INLINE void vec2Lerp(const PxVec2& a, const PxVec2& b, PxVec2& out, flo
 	out.x = (b.x - a.x) * t + a.x;
 	out.y = (b.y - a.y) * t + a.y;
 }
-
 
 NV_FORCE_INLINE int32_t BooleanEvaluator::addIfNotExist(Vertex& p)
 {
@@ -187,18 +205,26 @@ int32_t shadowing10(const PxVec3& sEdge, const PxVec3& eEdge, const PxVec3& p)
 Vertex-facet shadowing functions
 */
 
-int32_t vfStatus02(const PxVec3& p, const Vertex* points, const Edge* edges, int32_t edgesCount, Vertex& out1, Vertex& out2)
+int32_t vfStatus02(const PxVec3& p, const Vertex* points, const Edge* edges, int32_t edgesCount, Vertex* out)
 {
 	int32_t val = 0;
 	Vertex pnt;
 	bool hasOnEdge = false;
+	out[0].p.y = -MAXIMUM_EXTENT;
+	out[1].p.y = MAXIMUM_EXTENT;
 	for (int32_t i = 0; i < edgesCount; ++i)
 	{
 		val -= shadowing01(points[edges->s], points[edges->e], p, pnt, hasOnEdge);
 		if (hasOnEdge != 0)
 		{
-			out2 = out1;
-			out1 = pnt;
+			if (p.y > pnt.p.y && pnt.p.y > out[0].p.y)
+			{
+				out[0] = pnt;
+			}
+			if (p.y < pnt.p.y && pnt.p.y < out[1].p.y)
+			{
+				out[1] = pnt;
+			}
 		}
 		++edges;
 	}
@@ -208,24 +234,24 @@ int32_t vfStatus02(const PxVec3& p, const Vertex* points, const Edge* edges, int
 
 int32_t shadowing02(const PxVec3& p, const Vertex* points, const Edge* edges, int edgesCount, bool& hasOnFacetPoint, Vertex& onFacetPoint)
 {
-	Vertex p1, p2;
-	int32_t stat = vfStatus02(p, points, edges, edgesCount, p1, p2);
+	Vertex outp[2];
+	int32_t stat = vfStatus02(p, points, edges, edgesCount, outp);
 	float z = 0;
 	hasOnFacetPoint = false;
 	if (stat != 0)
 	{
+		Vertex& p1 = outp[0];
+		Vertex& p2 = outp[1];
 		PxVec3 vc = p2.p - p1.p;
 		float t = 0;
-		t = (abs(vc.x) > abs(vc.y)) ? (p.x - p1.p.x) / vc.x : (p.y - p1.p.y) / vc.y;
-		t = (t < 0) ? 0 : t;
-		t = (t > 1) ? 1 : t;
-		z = t * vc.z + p1.p.z;
+		t = (std::abs(vc.x) > std::abs(vc.y)) ? (p.x - p1.p.x) / vc.x : (p.y - p1.p.y) / vc.y;
+		t = PxClamp(t, 0.0f, 1.0f);
 
+		z = t * vc.z + p1.p.z;
 		hasOnFacetPoint = true;
 		onFacetPoint.p.x = p.x;
 		onFacetPoint.p.y = p.y;
 		onFacetPoint.p.z = z;
-
 		vec2Lerp(p1.uv[0], p2.uv[0], onFacetPoint.uv[0], t);
 		vec3Lerp(p1.n, p2.n, onFacetPoint.n, t);
 
@@ -237,18 +263,27 @@ int32_t shadowing02(const PxVec3& p, const Vertex* points, const Edge* edges, in
 	return 0;
 }
 
-int32_t vfStatus20(const PxVec3& p, const Vertex* points, const Edge* edges, int32_t edgesCount, Vertex& out1, Vertex& out2)
+int32_t vfStatus20(const PxVec3& p, const Vertex* points, const Edge* edges, int32_t edgesCount, Vertex* out)
 {
 	int32_t val = 0;
 	Vertex pnt;
 	bool hasOnEdge = false;
+	out[0].p.y = -MAXIMUM_EXTENT;
+	out[1].p.y = MAXIMUM_EXTENT;
+
 	for (int32_t i = 0; i < edgesCount; ++i)
 	{
 		val += shadowing10(points[edges->s], points[edges->e], p, pnt, hasOnEdge);
 		if (hasOnEdge != 0)
 		{
-			out2 = out1;
-			out1 = pnt;
+			if (p.y > pnt.p.y && pnt.p.y > out[0].p.y)
+			{
+				out[0] = pnt;
+			}
+			if (p.y < pnt.p.y && pnt.p.y < out[1].p.y)
+			{
+				out[1] = pnt;
+			}
 		}
 		++edges;
 	}
@@ -257,17 +292,18 @@ int32_t vfStatus20(const PxVec3& p, const Vertex* points, const Edge* edges, int
 
 int32_t shadowing20(const PxVec3& p, const Vertex* points, const Edge* edges, int edgesCount, bool& hasOnFacetPoint, Vertex& onFacetPoint)
 {
-	Vertex p1, p2;
-	int32_t stat = vfStatus20(p, points, edges, edgesCount, p1, p2);
+	Vertex outp[2];
+	int32_t stat = vfStatus20(p, points, edges, edgesCount, outp);
 	hasOnFacetPoint = false;
 	if (stat != 0)
 	{
+		Vertex& p1 = outp[0];
+		Vertex& p2 = outp[1];
 		PxVec3 vc = p2.p - p1.p;
 		float t = 0;
-		t = (abs(vc.x) > abs(vc.y)) ? (p.x - p1.p.x) / vc.x : (p.y - p1.p.y) / vc.y;
-		t = (t < 0) ? 0 : t;
-		t = (t > 1) ? 1 : t;
-
+		t = (std::abs(vc.x) > std::abs(vc.y)) ? (p.x - p1.p.x) / vc.x : (p.y - p1.p.y) / vc.y;		
+		t = PxClamp(t, 0.0f, 1.0f);	
+		
 		hasOnFacetPoint = true;
 		onFacetPoint.p.x = p.x;
 		onFacetPoint.p.y = p.y;
@@ -291,91 +327,72 @@ NV_FORCE_INLINE int32_t edgesCrossCheck(const PxVec3& eAs, const PxVec3& eAe, co
 	return shadowing01(eBs, eBe, eAe) - shadowing01(eBs, eBe, eAs) + shadowing10(eAs, eAe, eBe) - shadowing10(eAs, eAe, eBs);
 }
 
+
+
 int32_t edgesIntersection(const Vertex& eAs, const Vertex& eAe, const Vertex& eBs, const Vertex& eBe, Vertex& intersectionA, Vertex& intersectionB, bool& hasPoints)
 {
 	int32_t status = edgesCrossCheck(eAs.p, eAe.p, eBs.p, eBe.p);
 	hasPoints = false;
 	if (status == 0)
+	{
 		return 0;
-	Vertex tempPoint;
+	}
 
+	Vertex tempPoint;
 	Vertex bShadowingPair[2];
 	Vertex aShadowingPair[2];
 	bool hasOnEdge = false;
-	int32_t shadowingType = shadowing10(eAs, eAe, eBs.p, tempPoint, hasOnEdge);
-
 	bool aShadowing = false;
-	bool bShadowing = false;
+	bool bShadowing = false;	
 
+	/**
+		Search for two pairs where parts of A shadows B, and where B shadows are.
+		Needed for search intersection point.
+	*/
 
-	if (shadowingType == 0 && hasOnEdge)
+	for (auto p : { &eBs, &eBe })
 	{
-		aShadowing = true;
-		aShadowingPair[0] = eBs;
-		aShadowingPair[1] = tempPoint;
-	}
-	else
-	{
-		if (shadowingType == 1 || shadowingType == -1)
+		int32_t shadowingType = shadowing10(eAs, eAe, p->p, tempPoint, hasOnEdge);
+		if (shadowingType == 0 && !aShadowing && hasOnEdge)
 		{
-			bShadowing = true;
-			bShadowingPair[0] = eBs;
-			bShadowingPair[1] = tempPoint;
+			aShadowing = true;
+			aShadowingPair[0] = *p;
+			aShadowingPair[1] = tempPoint;
+		}
+		else
+		{
+			if ((shadowingType == 1 || shadowingType == -1) && !bShadowing)
+			{
+				bShadowing = true;
+				bShadowingPair[0] = *p;
+				bShadowingPair[1] = tempPoint;
+			}
+		}
+	}
+	if (!aShadowing || !bShadowing)
+	{
+		for (auto p : { &eAs, &eAe })
+		{
+			int32_t	shadowingType = shadowing01(eBs, eBe, p->p, tempPoint, hasOnEdge);
+
+			if (shadowingType == 0 && !aShadowing && hasOnEdge)
+			{
+				aShadowing = true;
+				aShadowingPair[1] = *p;
+				aShadowingPair[0] = tempPoint;
+			}
+			else
+			{
+				if ((shadowingType == 1 || shadowingType == -1) && !bShadowing)
+				{
+					bShadowing = true;
+					bShadowingPair[1] = *p;
+					bShadowingPair[0] = tempPoint;
+				}
+			}
 		}
 	}
 
-	shadowingType = shadowing10(eAs, eAe, eBe.p, tempPoint, hasOnEdge);
-
-	if (shadowingType == 0 && !aShadowing && hasOnEdge)
-	{
-		aShadowing = true;
-		aShadowingPair[0] = eBe;
-		aShadowingPair[1] = tempPoint;
-	}
-	else
-	{
-		if ((shadowingType == 1 || shadowingType == -1) && !bShadowing)
-		{
-			bShadowing = true;
-			bShadowingPair[0] = eBe;
-			bShadowingPair[1] = tempPoint;
-		}
-	}
-	shadowingType = shadowing01(eBs, eBe, eAe.p, tempPoint, hasOnEdge);
-
-	if (shadowingType == 0 && !aShadowing && hasOnEdge)
-	{
-		aShadowing = true;
-		aShadowingPair[1] = eAe;
-		aShadowingPair[0] = tempPoint;
-	}
-	else
-	{
-		if ((shadowingType == 1 || shadowingType == -1) && !bShadowing)
-		{
-			bShadowing = true;
-			bShadowingPair[1] = eAe;
-			bShadowingPair[0] = tempPoint;
-		}
-	}
-
-	shadowingType = shadowing01(eBs, eBe, eAs.p, tempPoint, hasOnEdge);
-
-	if (shadowingType == 0 && !aShadowing && hasOnEdge)
-	{
-		aShadowing = true;
-		aShadowingPair[1] = eAs;
-		aShadowingPair[0] = tempPoint;
-	}
-	else
-	{
-		if ((shadowingType == 1 || shadowingType == -1) && !bShadowing)
-		{
-			bShadowing = true;
-			bShadowingPair[1] = eAs;
-			bShadowingPair[0] = tempPoint;
-		}
-	}
 	float deltaPlus = bShadowingPair[0].p.y - bShadowingPair[1].p.y;
 	float deltaMinus = aShadowingPair[0].p.y - aShadowingPair[1].p.y;
 	float div = 0;
@@ -413,43 +430,30 @@ int32_t edgeFacetIntersection12(const Vertex& edSt, const Vertex& edEnd, const V
 	Vertex bShadowingPair[2];
 	Vertex aShadowingPair[2];
 	bool hasPoint = false;
-	int32_t shadowingType = shadowing02(edEnd.p, points, edges, edgesCount, hasPoint, p1);
-	status -= shadowingType;
 	bool aShadowing = false;
 	bool bShadowing = false;
-
-	if (shadowingType == 0 && hasPoint)
+	int32_t mlt = -1;
+	int32_t shadowingType;
+	for (auto p : { &edEnd, &edSt })
 	{
-		aShadowing = true;
-		aShadowingPair[0] = p1;
-		aShadowingPair[1] = edEnd;
-	}
-	else
-	{
-		if (shadowingType == 1 || shadowingType == -1)
+		shadowingType = shadowing02(p->p, points, edges, edgesCount, hasPoint, p1);
+		status += mlt * shadowingType;
+		if (shadowingType == 0 && !aShadowing && hasPoint)
 		{
-			bShadowing = true;
-			bShadowingPair[0] = p1;
-			bShadowingPair[1] = edEnd;
+			aShadowing = true;
+			aShadowingPair[0] = p1;
+			aShadowingPair[1] = *p;
 		}
-	}
-
-	shadowingType = shadowing02(edSt.p, points, edges, edgesCount, hasPoint, p1);
-	status += shadowingType;
-	if (shadowingType == 0 && !aShadowing && hasPoint)
-	{
-		aShadowing = true;
-		aShadowingPair[0] = p1;
-		aShadowingPair[1] = edSt;
-	}
-	else
-	{
-		if ((shadowingType == 1 || shadowingType == -1) && !bShadowing)
+		else
 		{
-			bShadowing = true;
-			bShadowingPair[0] = p1;
-			bShadowingPair[1] = edSt;
+			if ((shadowingType == 1 || shadowingType == -1) && !bShadowing)
+			{
+				bShadowing = true;
+				bShadowingPair[0] = p1;
+				bShadowingPair[1] = *p;
+			}
 		}
+		mlt = 1;
 	}
 
 	for (int32_t ed = 0; ed < edgesCount; ++ed)
@@ -472,14 +476,11 @@ int32_t edgeFacetIntersection12(const Vertex& edSt, const Vertex& edEnd, const V
 			}
 		}
 	}
-	if (status == 0)
+	if (!status || !bShadowing || !aShadowing)
 	{
 		return 0;
 	}
-	if (!bShadowing || !aShadowing)
-	{
-		return 0;
-	}
+
 	float deltaPlus = bShadowingPair[0].p.z - bShadowingPair[1].p.z;
 	float div = 0;
 	if (deltaPlus != 0)
@@ -508,42 +509,32 @@ int32_t edgeFacetIntersection21(const Vertex& edSt, const Vertex& edEnd, const V
 	Vertex bShadowingPair[2];
 	Vertex aShadowingPair[2];
 	bool hasPoint = false;
-	int32_t shadowingType = shadowing20(edEnd.p, points, edges, edgesCount, hasPoint, p1);
-	status = shadowingType;
 	bool aShadowing = false;
 	bool bShadowing = false;
-	if (shadowingType == 0 && hasPoint)
-	{
-		aShadowing = true;
-		aShadowingPair[0] = edEnd;
-		aShadowingPair[1] = p1;
-	}
-	else
-	{
-		if (shadowingType == 1 || shadowingType == -1)
-		{
-			bShadowing = true;
-			bShadowingPair[0] = edEnd;
-			bShadowingPair[1] = p1;
-		}
-	}
 
-	shadowingType = shadowing20(edSt.p, points, edges, edgesCount, hasPoint, p1);
-	status -= shadowingType;
-	if (shadowingType == 0 && !aShadowing && hasPoint)
+	int32_t shadowingType;
+	int32_t mlt = 1;
+	for (auto p : { &edEnd, &edSt })
 	{
-		aShadowing = true;
-		aShadowingPair[0] = edSt;
-		aShadowingPair[1] = p1;
-	}
-	else
-	{
-		if ((shadowingType == 1 || shadowingType == -1) && !bShadowing)
+		shadowingType = shadowing20(p->p, points, edges, edgesCount, hasPoint, p1);
+		status += mlt * shadowingType;
+
+		if (shadowingType == 0 && !aShadowing && hasPoint)
 		{
-			bShadowing = true;
-			bShadowingPair[0] = edSt;
-			bShadowingPair[1] = p1;
+			aShadowing = true;
+			aShadowingPair[0] = *p;
+			aShadowingPair[1] = p1;
 		}
+		else
+		{
+			if ((shadowingType == 1 || shadowingType == -1) && !bShadowing)
+			{
+				bShadowing = true;
+				bShadowingPair[0] = *p;
+				bShadowingPair[1] = p1;
+			}
+		}
+		mlt = -1;
 	}
 
 	for (int32_t ed = 0; ed < edgesCount; ++ed)
@@ -569,11 +560,7 @@ int32_t edgeFacetIntersection21(const Vertex& edSt, const Vertex& edEnd, const V
 			}
 		}
 	}
-	if (status == 0)
-	{
-		return 0;
-	}
-	if (!bShadowing || !aShadowing)
+	if (!status || !bShadowing || !aShadowing)
 	{
 		return 0;
 	}
@@ -595,7 +582,7 @@ int32_t edgeFacetIntersection21(const Vertex& edSt, const Vertex& edEnd, const V
 	return status;
 }
 
-int32_t BooleanEvaluator::vertexMeshStatus03(const PxVec3& p, Mesh* mesh)
+int32_t BooleanEvaluator::vertexMeshStatus03(const PxVec3& p, const Mesh* mesh)
 {
 	int32_t status = 0;
 	Vertex pnt;
@@ -604,7 +591,7 @@ int32_t BooleanEvaluator::vertexMeshStatus03(const PxVec3& p, Mesh* mesh)
 	int32_t facet = mAcceleratorB->getNextFacet();
 	while (facet != -1)
 	{
-		Edge* ed = mesh->getEdges() + mesh->getFacet(facet)->firstEdgeNumber;
+		const Edge* ed = mesh->getEdges() + mesh->getFacet(facet)->firstEdgeNumber;
 		status += shadowing02(p, mesh->getVertices(), ed, mesh->getFacet(facet)->edgesCount, hasPoint, pnt);
 		facet = mAcceleratorB->getNextFacet();
 	}
@@ -618,7 +605,7 @@ int32_t BooleanEvaluator::vertexMeshStatus03(const PxVec3& p, Mesh* mesh)
 	return status;
 }
 
-int32_t BooleanEvaluator::vertexMeshStatus30(const PxVec3& p, Mesh* mesh)
+int32_t BooleanEvaluator::vertexMeshStatus30(const PxVec3& p, const Mesh* mesh)
 {
 	int32_t status = 0;
 	bool hasPoints = false;
@@ -627,7 +614,7 @@ int32_t BooleanEvaluator::vertexMeshStatus30(const PxVec3& p, Mesh* mesh)
 	int32_t facet = mAcceleratorA->getNextFacet();
 	while ( facet != -1)
 	{
-		Edge* ed = mesh->getEdges() + mesh->getFacet(facet)->firstEdgeNumber;
+		const Edge* ed = mesh->getEdges() + mesh->getFacet(facet)->firstEdgeNumber;
 		status -= shadowing20(p, mesh->getVertices(), ed, mesh->getFacet(facet)->edgesCount, hasPoints, point);
 		facet = mAcceleratorA->getNextFacet();
 	}
@@ -675,7 +662,7 @@ struct VertexPairComparator
 	}
 };
 
-int32_t BooleanEvaluator::isPointContainedInMesh(Mesh* msh, const PxVec3& point)
+int32_t BooleanEvaluator::isPointContainedInMesh(const Mesh* msh, const PxVec3& point)
 {
 	if (msh == nullptr)
 	{
@@ -687,7 +674,7 @@ int32_t BooleanEvaluator::isPointContainedInMesh(Mesh* msh, const PxVec3& point)
 
 }
 
-int32_t BooleanEvaluator::isPointContainedInMesh(Mesh* msh, SpatialAccelerator* spAccel, const PxVec3& point)
+int32_t BooleanEvaluator::isPointContainedInMesh(const Mesh* msh, SpatialAccelerator* spAccel, const PxVec3& point)
 {
 	if (msh == nullptr)
 	{
@@ -724,8 +711,8 @@ void BooleanEvaluator::buildFaceFaceIntersections(BooleanConf mode)
 	Vertex newPointA;
 	Vertex newPointB;
 
-	Vertex* meshAPoints = mMeshA->getVertices();
-	Vertex* meshBPoints = mMeshB->getVertices();
+	const Vertex* meshAPoints = mMeshA->getVertices();
+	const Vertex* meshBPoints = mMeshB->getVertices();
 	EdgeWithParent newEdge;
 	mEdgeFacetIntersectionData12.clear();
 	mEdgeFacetIntersectionData21.clear();
@@ -739,10 +726,10 @@ void BooleanEvaluator::buildFaceFaceIntersections(BooleanConf mode)
 		int32_t facetA = mAcceleratorA->getNextFacet();
 		while (facetA != -1)
 		{
-			Edge* facetBEdges = mMeshB->getEdges() + mMeshB->getFacet(facetB)->firstEdgeNumber;
-			Edge* facetAEdges = mMeshA->getEdges() + mMeshA->getFacet(facetA)->firstEdgeNumber;
-			Edge* fbe = facetBEdges;
-			Edge* fae = facetAEdges;
+			const Edge* facetBEdges = mMeshB->getEdges() + mMeshB->getFacet(facetB)->firstEdgeNumber;
+			const Edge* facetAEdges = mMeshA->getEdges() + mMeshA->getFacet(facetA)->firstEdgeNumber;
+			const Edge* fbe = facetBEdges;
+			const Edge* fae = facetAEdges;
 			retainedStarts.clear();
 			retainedEnds.clear();
 			PxVec3 compositeEndPoint(0, 0, 0);
@@ -814,7 +801,7 @@ void BooleanEvaluator::buildFaceFaceIntersections(BooleanConf mode)
 			}
 			if (retainedStarts.size() != retainedEnds.size())
 			{
-				NVBLAST_LOG_ERROR(mLoggingCallback, "Not equal number of starting and ending vertices! Probably input mesh has open edges.");
+				NVBLAST_LOG_ERROR("Not equal number of starting and ending vertices! Probably input mesh has open edges.");
 				return;
 			}
 			if (retainedStarts.size() > 1)
@@ -856,7 +843,7 @@ void BooleanEvaluator::buildFastFaceFaceIntersection(BooleanConf mode)
 	Vertex newPointA;
 	Vertex newPointB;
 
-	Vertex* meshAPoints = mMeshA->getVertices();
+	const Vertex* meshAPoints = mMeshA->getVertices();
 	EdgeWithParent newEdge;
 
 	mEdgeFacetIntersectionData12.clear();
@@ -867,10 +854,10 @@ void BooleanEvaluator::buildFastFaceFaceIntersection(BooleanConf mode)
 
 	for (uint32_t facetA = 0; facetA < mMeshA->getFacetCount(); ++facetA)
 	{
-		Edge* facetAEdges = mMeshA->getEdges() + mMeshA->getFacet(facetA)->firstEdgeNumber;
+		const Edge* facetAEdges = mMeshA->getEdges() + mMeshA->getFacet(facetA)->firstEdgeNumber;
 		int32_t facetB = 0;
-			Edge* facetBEdges = mMeshB->getEdges() + mMeshB->getFacet(facetB)->firstEdgeNumber;
-			Edge* fae = facetAEdges;
+			const Edge* facetBEdges = mMeshB->getEdges() + mMeshB->getFacet(facetB)->firstEdgeNumber;
+			const Edge* fae = facetAEdges;
 			retainedStarts.clear();
 			retainedEnds.clear();
 			PxVec3 compositeEndPoint(0, 0, 0);
@@ -911,7 +898,7 @@ void BooleanEvaluator::buildFastFaceFaceIntersection(BooleanConf mode)
 			}
 			if (retainedStarts.size() != retainedEnds.size())
 			{
-				NVBLAST_LOG_ERROR(mLoggingCallback, "Not equal number of starting and ending vertices! Probably input mesh has open edges.");
+				NVBLAST_LOG_ERROR("Not equal number of starting and ending vertices! Probably input mesh has open edges.");
 				return;
 			}
 			if (retainedStarts.size() > 1)
@@ -942,11 +929,11 @@ void BooleanEvaluator::collectRetainedPartsFromA(BooleanConf mode)
 
 	int32_t statusValue = 0;
 	int32_t inclusionValue = 0;
-	Vertex* vertices = mMeshA->getVertices();
+	const Vertex* vertices = mMeshA->getVertices();
 	Vertex newPoint;
 	VertexComparator comp;
-	PxBounds3& bMeshBoudning = mMeshB->getBoundingBox();
-	Edge* facetEdges = mMeshA->getEdges();
+	const PxBounds3& bMeshBoudning = mMeshB->getBoundingBox();
+	const Edge* facetEdges = mMeshA->getEdges();
 	std::vector<Vertex> retainedStartVertices;
 	std::vector<Vertex> retainedEndVertices;
 	retainedStartVertices.reserve(255);
@@ -1053,7 +1040,7 @@ void BooleanEvaluator::collectRetainedPartsFromA(BooleanConf mode)
 			facetEdges++;
 			if (retainedStartVertices.size() != retainedEndVertices.size())
 			{
-				NVBLAST_LOG_ERROR(mLoggingCallback, "Not equal number of starting and ending vertices! Probably input mesh has open edges.");
+				NVBLAST_LOG_ERROR("Not equal number of starting and ending vertices! Probably input mesh has open edges.");
 				return;
 			}
 			if (retainedEndVertices.size() > 1)
@@ -1082,11 +1069,11 @@ void BooleanEvaluator::collectRetainedPartsFromB(BooleanConf mode)
 {
 	int32_t statusValue = 0;
 	int32_t inclusionValue = 0;
-	Vertex* vertices = mMeshB->getVertices();
+	const Vertex* vertices = mMeshB->getVertices();
 	Vertex newPoint;
 	VertexComparator comp;
-	PxBounds3& aMeshBoudning = mMeshA->getBoundingBox();
-	Edge* facetEdges = mMeshB->getEdges();
+	const PxBounds3& aMeshBoudning = mMeshA->getBoundingBox();
+	const Edge* facetEdges = mMeshB->getEdges();
 	std::vector<Vertex> retainedStartVertices;
 	std::vector<Vertex> retainedEndVertices;
 	retainedStartVertices.reserve(255);
@@ -1194,7 +1181,7 @@ void BooleanEvaluator::collectRetainedPartsFromB(BooleanConf mode)
 			facetEdges++;
 			if (retainedStartVertices.size() != retainedEndVertices.size())
 			{
-				NVBLAST_LOG_ERROR(mLoggingCallback, "Not equal number of starting and ending vertices! Probably input mesh has open edges.");
+				NVBLAST_LOG_ERROR("Not equal number of starting and ending vertices! Probably input mesh has open edges.");
 				return;
 			}
 			if (retainedEndVertices.size() - lastPos > 1)
@@ -1222,7 +1209,7 @@ bool EdgeWithParentSortComp(const EdgeWithParent& a, const EdgeWithParent& b)
 }
 
 
-void BooleanEvaluator::performBoolean(Mesh* meshA, Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode)
+void BooleanEvaluator::performBoolean(const Mesh* meshA, const Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode)
 {
 	reset();
 	mMeshA = meshA;
@@ -1236,7 +1223,7 @@ void BooleanEvaluator::performBoolean(Mesh* meshA, Mesh* meshB, SpatialAccelerat
 	mAcceleratorB = nullptr;
 }
 
-void BooleanEvaluator::performBoolean(Mesh* meshA, Mesh* meshB, BooleanConf mode)
+void BooleanEvaluator::performBoolean(const Mesh* meshA, const Mesh* meshB, BooleanConf mode)
 {
 	reset();
 	mMeshA = meshA;
@@ -1247,7 +1234,7 @@ void BooleanEvaluator::performBoolean(Mesh* meshA, Mesh* meshB, BooleanConf mode
 }
 
 
-void BooleanEvaluator::performFastCutting(Mesh* meshA, Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode)
+void BooleanEvaluator::performFastCutting(const Mesh* meshA, const Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode)
 {
 	reset();
 	mMeshA = meshA;
@@ -1260,7 +1247,7 @@ void BooleanEvaluator::performFastCutting(Mesh* meshA, Mesh* meshB, SpatialAccel
 	mAcceleratorB = nullptr;
 }
 
-void BooleanEvaluator::performFastCutting(Mesh* meshA, Mesh* meshB, BooleanConf mode)
+void BooleanEvaluator::performFastCutting(const Mesh* meshA, const Mesh* meshB, BooleanConf mode)
 {
 	reset();
 	mMeshA = meshA;
@@ -1273,13 +1260,12 @@ void BooleanEvaluator::performFastCutting(Mesh* meshA, Mesh* meshB, BooleanConf 
 
 
 
-BooleanEvaluator::BooleanEvaluator(NvBlastLog loggingCallback)
+BooleanEvaluator::BooleanEvaluator()
 {
 	mMeshA = nullptr;
 	mMeshB = nullptr;
 	mAcceleratorA = nullptr;
 	mAcceleratorB = nullptr;
-	mLoggingCallback = loggingCallback;
 }
 BooleanEvaluator::~BooleanEvaluator()
 {
@@ -1301,6 +1287,7 @@ Mesh* BooleanEvaluator::createNewMesh()
 	int32_t lastParent = mEdgeAggregate[0].parent;
 	uint32_t collected = 0;
 	int32_t userData = 0;
+	int32_t materialId = 0;
 	for (uint32_t i = 0; i < mEdgeAggregate.size(); ++i)
 	{
 		if (mEdgeAggregate[i].parent != lastParent)
@@ -1308,12 +1295,14 @@ Mesh* BooleanEvaluator::createNewMesh()
 			if (lastParent < (int32_t)mMeshA->getFacetCount())
 			{
 				userData = mMeshA->getFacet(lastParent)->userData;
+				materialId = mMeshA->getFacet(lastParent)->materialId;
 			}
 			else
 			{
 				userData = mMeshB->getFacet(lastParent - mMeshA->getFacetCount())->userData;
+				materialId = mMeshB->getFacet(lastParent - mMeshA->getFacetCount())->materialId;
 			}
-			newFacets.push_back(Facet(lastPos, collected, userData));
+			newFacets.push_back(Facet(lastPos, collected, materialId, userData));
 			lastPos = i;
 			lastParent = mEdgeAggregate[i].parent;
 			collected = 0;
@@ -1326,13 +1315,16 @@ Mesh* BooleanEvaluator::createNewMesh()
 	if (lastParent < (int32_t)mMeshA->getFacetCount())
 	{
 		userData = mMeshA->getFacet(lastParent)->userData;
+		materialId = mMeshA->getFacet(lastParent)->materialId;
+
 	}
 	else
 	{
 		userData = mMeshB->getFacet(pr)->userData;
+		materialId = mMeshB->getFacet(pr)->materialId;
 	}
-	newFacets.push_back(Facet(lastPos, collected, userData));
-	return new Mesh(&mVerticesAggregate[0], &newEdges[0], &newFacets[0], static_cast<uint32_t>(mVerticesAggregate.size()), static_cast<uint32_t>(mEdgeAggregate.size()), static_cast<uint32_t>(newFacets.size()));
+	newFacets.push_back(Facet(lastPos, collected, materialId, userData));
+	return new MeshImpl(mVerticesAggregate.data(), newEdges.data(), newFacets.data(), static_cast<uint32_t>(mVerticesAggregate.size()), static_cast<uint32_t>(mEdgeAggregate.size()), static_cast<uint32_t>(newFacets.size()));
 }
 
 void BooleanEvaluator::reset()

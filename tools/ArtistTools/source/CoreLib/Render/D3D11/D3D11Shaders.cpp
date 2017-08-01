@@ -30,7 +30,6 @@
 #include "MeshShaderParam.h"
 #include "LightShaderParam.h"
 
-//#include <Nv/Blast/NvHairSdk.h>
 #include "D3D11RenderShader.h"
 
 using namespace RenderInterface;
@@ -39,7 +38,7 @@ using namespace RenderInterface;
 // Common shader settings
 //static D3D11RenderShader*	g_pShaders[SHADER_TYPE_END];
 static std::map<int, D3D11RenderShader*> g_pShaders;
-/*
+
 namespace BodyShaderBlobs
 {
 	#include "Shaders/BodyShader_VS.h"
@@ -76,22 +75,9 @@ namespace ColorBlobs
 	#include "Shaders/Color_PS.h"
 }
 
-#ifndef NV_ARTISTTOOLS
-namespace BlastShaderBlobs
-{
-#include "Shaders/BlastShader_PS.h"
-}
-
-namespace BlastShadowBlobs
-{
-#include "Shaders/BlastShadow_PS.h"
-}
-#endif // NV_ARTISTTOOLS
-*/
 //////////////////////////////////////////////////////////////////////////
 bool InitializeShadersD3D11()
 {
-	/*
 	D3D11_INPUT_ELEMENT_DESC layoutBodyRender[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -142,23 +128,6 @@ bool InitializeShadersD3D11()
 		sizeof(SimpleShaderParam), 0,
 		&layout_Position_And_Color[0], numElements2);
 
-#ifndef NV_ARTISTTOOLS
-	g_pShaders[SHADER_TYPE_HAIR_SHADER_DEFAULT] = D3D11RenderShader::Create(
-		"hairShaderDefault",  0, 0,
-		(void*)BlastShaderBlobs::g_ps_main, sizeof(BlastShaderBlobs::g_ps_main),
-		sizeof(NvHair::ShaderConstantBuffer),
-		sizeof(LightShaderParam)
-		);
-
-	g_pShaders[SHADER_TYPE_HAIR_SHADER_SHADOW] = D3D11RenderShader::Create(
-		"hairShadow",  0, 0,
-		(void*)BlastShadowBlobs::g_ps_main, sizeof(BlastShadowBlobs::g_ps_main),
-		sizeof(NvHair::ShaderConstantBuffer),
-		0);
-#else
-	CoreLib::Inst()->D3D11Shaders_InitializeShadersD3D11(g_pShaders);
-#endif // NV_ARTISTTOOLS
-	*/
 	return true;
 }
 

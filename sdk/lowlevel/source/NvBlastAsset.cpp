@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "NvBlastAssert.h"
 #include "NvBlastAsset.h"
@@ -36,37 +54,37 @@ static bool solverAssetBuildValidateInput(void* mem, const NvBlastAssetDesc* des
 {
 	if (mem == nullptr)
 	{
-		NVBLAST_LOG_ERROR(logFn, "AssetBuildValidateInput: NULL mem pointer input.");
+		NVBLASTLL_LOG_ERROR(logFn, "AssetBuildValidateInput: NULL mem pointer input.");
 		return false;
 	}
 
 	if (desc == nullptr)
 	{
-		NVBLAST_LOG_ERROR(logFn, "AssetBuildValidateInput: NULL desc pointer input.");
+		NVBLASTLL_LOG_ERROR(logFn, "AssetBuildValidateInput: NULL desc pointer input.");
 		return false;
 	}
 
 	if (desc->chunkCount == 0)
 	{
-		NVBLAST_LOG_ERROR(logFn, "AssetBuildValidateInput: Zero chunk count not allowed.");
+		NVBLASTLL_LOG_ERROR(logFn, "AssetBuildValidateInput: Zero chunk count not allowed.");
 		return false;
 	}
 
 	if (desc->chunkDescs == nullptr)
 	{
-		NVBLAST_LOG_ERROR(logFn, "AssetBuildValidateInput: NULL chunkDescs pointer input.");
+		NVBLASTLL_LOG_ERROR(logFn, "AssetBuildValidateInput: NULL chunkDescs pointer input.");
 		return false;
 	}
 
 	if (desc->bondCount != 0 && desc->bondDescs == nullptr)
 	{
-		NVBLAST_LOG_ERROR(logFn, "AssetBuildValidateInput: bondCount non-zero but NULL bondDescs pointer input.");
+		NVBLASTLL_LOG_ERROR(logFn, "AssetBuildValidateInput: bondCount non-zero but NULL bondDescs pointer input.");
 		return false;
 	}
 
 	if (scratch == nullptr)
 	{
-		NVBLAST_LOG_ERROR(logFn, "AssetBuildValidateInput: NULL scratch pointer input.");
+		NVBLASTLL_LOG_ERROR(logFn, "AssetBuildValidateInput: NULL scratch pointer input.");
 		return false;
 	}
 
@@ -111,7 +129,7 @@ Asset* initializeAsset(void* mem, NvBlastID id, uint32_t chunkCount, uint32_t gr
 	// Restricting our data size to < 4GB so that we may use uint32_t offsets
 	if (dataSize > (size_t)UINT32_MAX)
 	{
-		NVBLAST_LOG_ERROR(logFn, "Nv::Blast::allocateAsset: Asset data size will exceed 4GB.  Instance not created.\n");
+		NVBLASTLL_LOG_ERROR(logFn, "Nv::Blast::allocateAsset: Asset data size will exceed 4GB.  Instance not created.\n");
 		return nullptr;
 	}
 
@@ -121,7 +139,7 @@ Asset* initializeAsset(void* mem, NvBlastID id, uint32_t chunkCount, uint32_t gr
 	// Fill in fields
 	const size_t graphOffset = NV_OFFSET_OF(Asset, m_graph);
 	asset->m_header.dataType = NvBlastDataBlock::AssetDataBlock;
-	asset->m_header.formatVersion = NvBlastAssetDataFormat::Current;
+	asset->m_header.formatVersion = 0;	// Not currently using this field
 	asset->m_header.size = (uint32_t)dataSize;
 	asset->m_header.reserved = 0;
 	asset->m_ID = id;
@@ -223,7 +241,7 @@ static bool testForValidTrees(uint32_t chunkCount, const NvBlastChunkDesc* chunk
 		// Ensure there are no loops
 		if (testForLoop(chunkDescs, i))
 		{
-			NVBLAST_LOG_WARNING(logFn, "testForValidTrees: loop found.  Asset will not be created.");
+			NVBLASTLL_LOG_WARNING(logFn, "testForValidTrees: loop found.  Asset will not be created.");
 			return false;
 		}
 	}
@@ -255,7 +273,7 @@ class BondsOrdered
 public:
 	bool	operator () (const BondSortData& bond0, const BondSortData& bond1) const
 	{
-		return (bond0.m_c0 != bond1.m_c0) ? (bond0.m_c0 < bond1.m_c0) : (bond0.m_c1 < bond1.m_c1);
+		return (bond0.m_c0 != bond1.m_c0) ? (bond0.m_c0 < bond1.m_c0) : (bond0.m_c1 != bond1.m_c1 ? bond0.m_c1 < bond1.m_c1 : bond0.m_b < bond1.m_b);
 	}
 };
 
@@ -273,6 +291,19 @@ size_t Asset::getMemorySize(const NvBlastAssetDesc* desc)
 		graphNodeCount += (uint32_t)((desc->chunkDescs[i].flags & NvBlastChunkDesc::SupportFlag) != 0);
 	}
 
+	for (uint32_t i = 0; i < desc->bondCount; ++i)
+	{
+		const NvBlastBondDesc& bondDesc = desc->bondDescs[i];
+		const uint32_t chunkIndex0 = bondDesc.chunkIndices[0];
+		const uint32_t chunkIndex1 = bondDesc.chunkIndices[1];
+		if ((isInvalidIndex(chunkIndex0) && chunkIndex1 < desc->chunkCount) ||
+			(isInvalidIndex(chunkIndex1) && chunkIndex0 < desc->chunkCount))
+		{
+			++graphNodeCount;	// world node
+			break;
+		}
+	}
+
 	AssetDataOffsets offsets;
 	return createAssetDataOffsets(offsets, desc->chunkCount, graphNodeCount, desc->bondCount);
 }
@@ -280,7 +311,7 @@ size_t Asset::getMemorySize(const NvBlastAssetDesc* desc)
 
 size_t Asset::createRequiredScratch(const NvBlastAssetDesc* desc)
 {
-#if NVBLAST_CHECK_PARAMS
+#if NVBLASTLL_CHECK_PARAMS
 	if (desc == nullptr)
 	{
 		NVBLAST_ALWAYS_ASSERT();
@@ -292,14 +323,14 @@ size_t Asset::createRequiredScratch(const NvBlastAssetDesc* desc)
 	return 16 +
 		align16(desc->chunkCount*sizeof(char)) +
 		align16(desc->chunkCount*sizeof(uint32_t)) +
-		align16(2 * desc->bondCount*sizeof(Nv::Blast::BondSortData)) +
+		align16(2 * desc->bondCount*sizeof(BondSortData)) +
 		align16(desc->bondCount*sizeof(uint32_t));
 }
 
 
 Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvBlastLog logFn)
 {
-#if NVBLAST_CHECK_PARAMS
+#if NVBLASTLL_CHECK_PARAMS
 	if (!solverAssetBuildValidateInput(mem, desc, scratch, logFn))
 	{
 		return nullptr;
@@ -308,7 +339,7 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 	NV_UNUSED(solverAssetBuildValidateInput);
 #endif
 
-	NVBLAST_CHECK((reinterpret_cast<uintptr_t>(mem) & 0xF) == 0, logFn, "NvBlastCreateAsset: mem pointer not 16-byte aligned.", return nullptr);
+	NVBLASTLL_CHECK((reinterpret_cast<uintptr_t>(mem) & 0xF) == 0, logFn, "NvBlastCreateAsset: mem pointer not 16-byte aligned.", return nullptr);
 
 	// Make sure we have valid trees before proceeding
 	if (!testForValidTrees(desc->chunkCount, desc->chunkDescs, logFn))
@@ -319,20 +350,21 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 	scratch = (void*)align16((size_t)scratch);	// Bump to 16-byte alignment (see padding in NvBlastGetRequiredScratchForCreateAsset)
 
 	// reserve chunkAnnotation on scratch
-	char* chunkAnnotation = reinterpret_cast<char*>(scratch); scratch = Nv::Blast::pointerOffset(scratch, align16(desc->chunkCount));
+	char* chunkAnnotation = reinterpret_cast<char*>(scratch); scratch = pointerOffset(scratch, align16(desc->chunkCount));
 
 	// test for coverage, chunkAnnotation will be filled there.
 	uint32_t leafChunkCount;
 	uint32_t supportChunkCount;
 	if (!ensureExactSupportCoverage(supportChunkCount, leafChunkCount, chunkAnnotation, desc->chunkCount, const_cast<NvBlastChunkDesc*>(desc->chunkDescs), true, logFn))
 	{
+		NVBLASTLL_LOG_ERROR(logFn, "NvBlastCreateAsset: support coverage is not exact.  Asset will not be created.  The Asset helper function NvBlastEnsureAssetExactSupportCoverage may be used to create exact coverage.");
 		return nullptr;
 	}
 
 	// test for valid chunk order
 	if (!testForValidChunkOrder(desc->chunkCount, desc->chunkDescs, chunkAnnotation, scratch))
 	{
-		NVBLAST_LOG_ERROR(logFn, "NvBlastCreateAsset: chunks order is invalid.  Asset will not be created.  Use Asset helper functions such as NvBlastBuildAssetDescChunkReorderMap to fix descriptor order.");
+		NVBLASTLL_LOG_ERROR(logFn, "NvBlastCreateAsset: chunks order is invalid.  Asset will not be created.  Use Asset helper functions such as NvBlastBuildAssetDescChunkReorderMap to fix descriptor order.");
 		return nullptr;
 	}
 
@@ -348,7 +380,7 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 	}
 
 	// Create map from global indices to graph node indices and initialize to invalid values 
-	uint32_t* graphNodeIndexMap = (uint32_t*)scratch; scratch = Nv::Blast::pointerOffset(scratch, align16(desc->chunkCount * sizeof(uint32_t)));
+	uint32_t* graphNodeIndexMap = (uint32_t*)scratch; scratch = pointerOffset(scratch, align16(desc->chunkCount * sizeof(uint32_t)));
 	memset(graphNodeIndexMap, 0xFF, desc->chunkCount*sizeof(uint32_t));
 
 	// Fill graphNodeIndexMap
@@ -363,7 +395,7 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 	NVBLAST_ASSERT(graphNodeCount == supportChunkCount);
 
 	// Scratch array for bond sorting, of size 2*desc->bondCount
-	Nv::Blast::BondSortData* bondSortArray = (Nv::Blast::BondSortData*)scratch; scratch = Nv::Blast::pointerOffset(scratch, align16(2 * desc->bondCount*sizeof(Nv::Blast::BondSortData)));
+	BondSortData* bondSortArray = (BondSortData*)scratch; scratch = pointerOffset(scratch, align16(2 * desc->bondCount*sizeof(BondSortData)));
 
 	// Bond remapping array of size desc->bondCount
 	uint32_t* bondMap = (uint32_t*)scratch;
@@ -380,33 +412,56 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 
 		// Construct temp array of chunk index pairs and bond indices.  This array is symmetrized to hold the reversed chunk indices as well.
 		uint32_t bondSortArraySize = 0;
-		Nv::Blast::BondSortData* t = bondSortArray;
+		BondSortData* t = bondSortArray;
+		bool addWorldNode = false;
 		for (uint32_t i = 0; i < desc->bondCount; ++i)
 		{
 			const NvBlastBondDesc& bondDesc = desc->bondDescs[i];
 			const uint32_t chunkIndex0 = bondDesc.chunkIndices[0];
 			const uint32_t chunkIndex1 = bondDesc.chunkIndices[1];
 
-			if (chunkIndex0 >= desc->chunkCount || chunkIndex1 >= desc->chunkCount || chunkIndex0 == chunkIndex1)
+			if ((chunkIndex0 >= desc->chunkCount && !isInvalidIndex(chunkIndex0)) ||
+				(chunkIndex1 >= desc->chunkCount && !isInvalidIndex(chunkIndex1)) ||
+				chunkIndex0 == chunkIndex1)
 			{
 				invalidFound = true;
 				continue;
 			}
 
-			const uint32_t graphIndex0 = graphNodeIndexMap[chunkIndex0];
-			const uint32_t graphIndex1 = graphNodeIndexMap[chunkIndex1];
-			if (Nv::Blast::isInvalidIndex(graphIndex0) || Nv::Blast::isInvalidIndex(graphIndex1))
+			uint32_t graphIndex0;
+			if (!isInvalidIndex(chunkIndex0))
+			{
+				graphIndex0 = graphNodeIndexMap[chunkIndex0];
+			}
+			else
+			{
+				addWorldNode = true;
+				graphIndex0 = graphNodeCount;	// Will set graphNodeCount = supportChunkCount + 1
+			}
+
+			uint32_t graphIndex1;
+			if (!isInvalidIndex(chunkIndex1))
+			{
+				graphIndex1 = graphNodeIndexMap[chunkIndex1];
+			}
+			else
+			{
+				addWorldNode = true;
+				graphIndex1 = graphNodeCount;	// Will set graphNodeCount = supportChunkCount + 1
+			}
+
+			if (isInvalidIndex(graphIndex0) || isInvalidIndex(graphIndex1))
 			{
 				nonSupportFound = true;
 				continue;
 			}
 
-			t[bondSortArraySize++] = Nv::Blast::BondSortData(graphIndex0, graphIndex1, i);
-			t[bondSortArraySize++] = Nv::Blast::BondSortData(graphIndex1, graphIndex0, i);
+			t[bondSortArraySize++] = BondSortData(graphIndex0, graphIndex1, i);
+			t[bondSortArraySize++] = BondSortData(graphIndex1, graphIndex0, i);
 		}
 
 		// Sort the temp array
-		std::sort(bondSortArray, bondSortArray + bondSortArraySize, Nv::Blast::BondsOrdered());
+		std::sort(bondSortArray, bondSortArray + bondSortArraySize, BondsOrdered());
 
 		uint32_t symmetrizedBondCount = 0;
 		for (uint32_t i = 0; i < bondSortArraySize; ++i)
@@ -426,48 +481,55 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 
 		bondCount = symmetrizedBondCount / 2;
 
+		// World node references found in bonds; add a world node
+		if (addWorldNode)
+		{
+			++graphNodeCount;
+		}
+
 		// Report warnings
 		if (invalidFound)
 		{
-			NVBLAST_LOG_WARNING(logFn, "NvBlastCreateAsset: Invalid bonds found (non-existent or same chunks referenced) and removed from asset.");
+			NVBLASTLL_LOG_WARNING(logFn, "NvBlastCreateAsset: Invalid bonds found (non-existent or same chunks referenced) and removed from asset.");
 		}
 		if (duplicateFound)
 		{
-			NVBLAST_LOG_WARNING(logFn, "NvBlastCreateAsset: Duplicate bonds found and removed from asset.");
+			NVBLASTLL_LOG_WARNING(logFn, "NvBlastCreateAsset: Duplicate bonds found and removed from asset.");
 		}
 		if (nonSupportFound)
 		{
-			NVBLAST_LOG_WARNING(logFn, "NvBlastCreateAsset: Bonds referencing non-support chunks found and removed from asset.");
+			NVBLASTLL_LOG_WARNING(logFn, "NvBlastCreateAsset: Bonds referencing non-support chunks found and removed from asset.");
 		}
 	}
 
 	// Allocate memory for asset
 	NvBlastID id;
 	memset(&id, 0, sizeof(NvBlastID));	// To do - create an actual id
-	Nv::Blast::Asset* asset = initializeAsset(mem, id, desc->chunkCount, supportChunkCount, leafChunkCount, firstSubsupportChunkIndex, bondCount, logFn);
+	Asset* asset = initializeAsset(mem, id, desc->chunkCount, graphNodeCount, leafChunkCount, firstSubsupportChunkIndex, bondCount, logFn);
 
 	// Asset data pointers
-	Nv::Blast::SupportGraph& graph = asset->m_graph;
+	SupportGraph& graph = asset->m_graph;
 	NvBlastChunk* chunks = asset->getChunks();
 	NvBlastBond* bonds = asset->getBonds();
 	uint32_t* subtreeLeafChunkCounts = asset->getSubtreeLeafChunkCounts();
 
 	// Create chunks
 	uint32_t* graphChunkIndices = graph.getChunkIndices();
+	memset(graphChunkIndices, 0xFF, graphNodeCount * sizeof(uint32_t));	// Ensures unmapped node indices go to invalidIndex - this is important for the world node, if added
 	for (uint32_t i = 0; i < desc->chunkCount; ++i)
 	{
 		const NvBlastChunkDesc& chunkDesc = desc->chunkDescs[i];
-		const uint32_t newChunkIndex = i;
-		NvBlastChunk& assetChunk = chunks[newChunkIndex];
+		NvBlastChunk& assetChunk = chunks[i];
 		memcpy(assetChunk.centroid, chunkDesc.centroid, 3 * sizeof(float));
 		assetChunk.volume = chunkDesc.volume;
-		assetChunk.parentChunkIndex = Nv::Blast::isInvalidIndex(chunkDesc.parentChunkIndex) ? chunkDesc.parentChunkIndex : chunkDesc.parentChunkIndex;
-		assetChunk.firstChildIndex = Nv::Blast::invalidIndex<uint32_t>();	// Will be filled in below
+		assetChunk.parentChunkIndex = isInvalidIndex(chunkDesc.parentChunkIndex) ? chunkDesc.parentChunkIndex : chunkDesc.parentChunkIndex;
+		assetChunk.firstChildIndex = invalidIndex<uint32_t>();	// Will be filled in below
 		assetChunk.childIndexStop = assetChunk.firstChildIndex;
 		assetChunk.userData = chunkDesc.userData;
-		if (!Nv::Blast::isInvalidIndex(graphNodeIndexMap[newChunkIndex]))
+		const uint32_t graphNodeIndex = graphNodeIndexMap[i];
+		if (!isInvalidIndex(graphNodeIndex))
 		{
-			graphChunkIndices[graphNodeIndexMap[newChunkIndex]] = newChunkIndex;
+			graphChunkIndices[graphNodeIndex] = i;
 		}
 	}
 
@@ -478,7 +540,7 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 	for (uint32_t i = 0; i < desc->chunkCount; ++i)
 	{
 		const uint32_t parentChunkIndex = chunks[i].parentChunkIndex;
-		if (!Nv::Blast::isInvalidIndex(parentChunkIndex))
+		if (!isInvalidIndex(parentChunkIndex))
 		{
 			if (chunks[parentChunkIndex].childIndexStop == chunks[parentChunkIndex].firstChildIndex)
 			{
@@ -495,32 +557,22 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 	if (bondCount > 0)
 	{
 		// Create the lookup table from the sorted array
-		Nv::Blast::createIndexStartLookup<uint32_t>(graphAdjacencyPartition, 0, graphNodeCount - 1, &bondSortArray->m_c0, 2 * bondCount, sizeof(Nv::Blast::BondSortData));
+		createIndexStartLookup<uint32_t>(graphAdjacencyPartition, 0, graphNodeCount - 1, &bondSortArray->m_c0, 2 * bondCount, sizeof(BondSortData));
 
 		// Write the adjacent chunk and bond index data
 		uint32_t bondIndex = 0;
 		for (uint32_t i = 0; i < 2 * bondCount; ++i)
 		{
-			const Nv::Blast::BondSortData& bondSortData = bondSortArray[i];
+			const BondSortData& bondSortData = bondSortArray[i];
 			graphAdjacentNodeIndices[i] = bondSortData.m_c1;
 			const uint32_t oldBondIndex = bondSortData.m_b;
 			const NvBlastBondDesc& bondDesc = desc->bondDescs[oldBondIndex];
-			if (Nv::Blast::isInvalidIndex(bondMap[oldBondIndex]))
+			if (isInvalidIndex(bondMap[oldBondIndex]))
 			{
 				bonds[bondIndex] = bondDesc.bond;
-				// Our convention is that the bond normal points away from the lower-indexed chunk, towards the higher-indexed chunk.
-				// If our new (graph node) indexing would reverse this direction from the bond descriptor's indexing, we must flip the nomral.
-				const bool nodeIndicesOrdered = bondSortData.m_c0 < bondSortData.m_c1;
-				const bool descNodeIndicesOrdered = bondDesc.chunkIndices[0] < bondDesc.chunkIndices[1];
-				if (descNodeIndicesOrdered && !nodeIndicesOrdered)
-				{
-					float* normal = bonds[bondIndex].normal;
-					normal[0] = -normal[0];
-					normal[1] = -normal[1];
-					normal[2] = -normal[2];
-				}
 				bondMap[oldBondIndex] = bondIndex++;
 			}
+			NVBLAST_ASSERT(bondMap[oldBondIndex] < bondCount);
 			graphAdjacentBondIndices[i] = bondMap[oldBondIndex];
 		}
 	}
@@ -535,7 +587,7 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 	uint32_t* breadthFirstChunkIndices = graphNodeIndexMap;	// Reusing graphNodeIndexMap ... graphNodeIndexMap may no longer be used
 	for (uint32_t startChunkIndex = 0; startChunkIndex < desc->chunkCount; ++startChunkIndex)
 	{
-		if (!Nv::Blast::isInvalidIndex(chunks[startChunkIndex].parentChunkIndex))
+		if (!isInvalidIndex(chunks[startChunkIndex].parentChunkIndex))
 		{
 			break;	// Only iterate through root chunks at this level
 		}
@@ -637,7 +689,7 @@ bool Asset::ensureExactSupportCoverage(uint32_t& supportChunkCount, uint32_t& le
 
 	if (redundantCoverage)
 	{
-		NVBLAST_LOG_INFO(logFn, "NvBlastCreateAsset: some leaf-to-root chains had more than one support chunk.  Some support chunks removed.");
+		NVBLASTLL_LOG_INFO(logFn, "NvBlastCreateAsset: some leaf-to-root chains had more than one support chunk.  Some support chunks removed.");
 	}
 
 	if (insufficientCoverage)
@@ -698,7 +750,7 @@ bool Asset::ensureExactSupportCoverage(uint32_t& supportChunkCount, uint32_t& le
 			}
 		}
 
-		NVBLAST_LOG_INFO(logFn, "NvBlastCreateAsset: some leaf-to-root chains had no support chunks.  Support chunks added.");
+		NVBLASTLL_LOG_INFO(logFn, "NvBlastCreateAsset: some leaf-to-root chains had no support chunks.  Support chunks added.");
 	}
 
 	// Apply changes and count the number of support chunks
@@ -731,12 +783,12 @@ bool Asset::testForValidChunkOrder(uint32_t chunkCount, const NvBlastChunkDesc* 
 		const uint32_t parentChunkIndex = chunkDescs[i].parentChunkIndex;
 		if (parentChunkIndex != currentParentChunkIndex)
 		{
-			if (!Nv::Blast::isInvalidIndex(currentParentChunkIndex))
+			if (!isInvalidIndex(currentParentChunkIndex))
 			{
 				chunkMarks[currentParentChunkIndex] = 1;
 			}
 			currentParentChunkIndex = parentChunkIndex;
-			if (Nv::Blast::isInvalidIndex(currentParentChunkIndex))
+			if (isInvalidIndex(currentParentChunkIndex))
 			{
 				return false;
 			}
@@ -772,7 +824,7 @@ extern "C"
 
 size_t NvBlastGetRequiredScratchForCreateAsset(const NvBlastAssetDesc* desc, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(desc != nullptr, logFn, "NvBlastGetRequiredScratchForCreateAsset: NULL desc pointer input.", return 0);
+	NVBLASTLL_CHECK(desc != nullptr, logFn, "NvBlastGetRequiredScratchForCreateAsset: NULL desc pointer input.", return 0);
 
 	return Nv::Blast::Asset::createRequiredScratch(desc);
 }
@@ -780,7 +832,7 @@ size_t NvBlastGetRequiredScratchForCreateAsset(const NvBlastAssetDesc* desc, NvB
 
 size_t NvBlastGetAssetMemorySize(const NvBlastAssetDesc* desc, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(desc != nullptr, logFn, "NvBlastGetAssetMemorySize: NULL desc input.", return 0);
+	NVBLASTLL_CHECK(desc != nullptr, logFn, "NvBlastGetAssetMemorySize: NULL desc input.", return 0);
 
 	return Nv::Blast::Asset::getMemorySize(desc);
 }
@@ -794,7 +846,7 @@ NvBlastAsset* NvBlastCreateAsset(void* mem, const NvBlastAssetDesc* desc, void* 
 
 size_t NvBlastAssetGetFamilyMemorySize(const NvBlastAsset* asset, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetGetFamilyMemorySize: NULL asset pointer input.", return 0);
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetFamilyMemorySize: NULL asset pointer input.", return 0);
 
 	return Nv::Blast::getFamilyMemorySize(reinterpret_cast<const Nv::Blast::Asset*>(asset));
 }
@@ -802,7 +854,7 @@ size_t NvBlastAssetGetFamilyMemorySize(const NvBlastAsset* asset, NvBlastLog log
 
 NvBlastID NvBlastAssetGetID(const NvBlastAsset* asset, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetGetID: NULL asset pointer input.", NvBlastID zero; memset(&zero, 0, sizeof(NvBlastID)); return zero);
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetID: NULL asset pointer input.", NvBlastID zero; memset(&zero, 0, sizeof(NvBlastID)); return zero);
 
 	return ((Nv::Blast::Asset*)asset)->m_ID;
 }
@@ -810,8 +862,8 @@ NvBlastID NvBlastAssetGetID(const NvBlastAsset* asset, NvBlastLog logFn)
 
 bool NvBlastAssetSetID(NvBlastAsset* asset, const NvBlastID* id, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetSetID: NULL asset pointer input.", return false);
-	NVBLAST_CHECK(id != nullptr, logFn, "NvBlastAssetSetID: NULL id pointer input.", return false);
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetSetID: NULL asset pointer input.", return false);
+	NVBLASTLL_CHECK(id != nullptr, logFn, "NvBlastAssetSetID: NULL id pointer input.", return false);
 
 	((Nv::Blast::Asset*)asset)->m_ID = *id;
 
@@ -821,7 +873,7 @@ bool NvBlastAssetSetID(NvBlastAsset* asset, const NvBlastID* id, NvBlastLog logF
 
 uint32_t NvBlastAssetGetFormatVersion(const NvBlastAsset* asset, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetGetFormatVersion: NULL asset input.", return UINT32_MAX);
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetFormatVersion: NULL asset input.", return UINT32_MAX);
 
 	return ((Nv::Blast::Asset*)asset)->m_header.formatVersion;
 }
@@ -829,7 +881,7 @@ uint32_t NvBlastAssetGetFormatVersion(const NvBlastAsset* asset, NvBlastLog logF
 
 uint32_t NvBlastAssetGetSize(const NvBlastAsset* asset, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetGetSize: NULL asset input.", return 0);
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetSize: NULL asset input.", return 0);
 
 	return ((Nv::Blast::Asset*)asset)->m_header.size;
 }
@@ -837,15 +889,31 @@ uint32_t NvBlastAssetGetSize(const NvBlastAsset* asset, NvBlastLog logFn)
 
 uint32_t NvBlastAssetGetChunkCount(const NvBlastAsset* asset, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetGetChunkCount: NULL asset input.", return 0);
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetChunkCount: NULL asset input.", return 0);
 
 	return ((Nv::Blast::Asset*)asset)->m_chunkCount;
 }
 
 
+uint32_t NvBlastAssetGetSupportChunkCount(const NvBlastAsset* asset, NvBlastLog logFn)
+{
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetSupportChunkCount: NULL asset input.", return 0);
+
+	const Nv::Blast::Asset* a = reinterpret_cast<const Nv::Blast::Asset*>(asset);
+	const Nv::Blast::SupportGraph& graph = a->m_graph;
+
+	if (graph.m_nodeCount == 0)
+	{
+		return 0;	// This shouldn't happen
+	}
+
+	return Nv::Blast::isInvalidIndex(graph.getChunkIndices()[graph.m_nodeCount - 1]) ? graph.m_nodeCount - 1 : graph.m_nodeCount;
+}
+
+
 uint32_t NvBlastAssetGetLeafChunkCount(const NvBlastAsset* asset, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetGetLeafChunkCount: NULL asset input.", return 0);
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetLeafChunkCount: NULL asset input.", return 0);
 
 	return ((Nv::Blast::Asset*)asset)->m_leafChunkCount;
 }
@@ -853,7 +921,7 @@ uint32_t NvBlastAssetGetLeafChunkCount(const NvBlastAsset* asset, NvBlastLog log
 
 uint32_t NvBlastAssetGetFirstSubsupportChunkIndex(const NvBlastAsset* asset, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetGetFirstSubsupportChunkIndex: NULL asset input.", return 0);
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetFirstSubsupportChunkIndex: NULL asset input.", return 0);
 
 	return ((Nv::Blast::Asset*)asset)->m_firstSubsupportChunkIndex;
 }
@@ -861,7 +929,7 @@ uint32_t NvBlastAssetGetFirstSubsupportChunkIndex(const NvBlastAsset* asset, NvB
 
 uint32_t NvBlastAssetGetBondCount(const NvBlastAsset* asset, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetGetBondCount: NULL asset input.", return 0);
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetBondCount: NULL asset input.", return 0);
 
 	return ((Nv::Blast::Asset*)asset)->m_bondCount;
 }
@@ -869,7 +937,7 @@ uint32_t NvBlastAssetGetBondCount(const NvBlastAsset* asset, NvBlastLog logFn)
 
 const NvBlastSupportGraph NvBlastAssetGetSupportGraph(const NvBlastAsset* asset, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetGetSupportGraph: NULL asset input.",
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetSupportGraph: NULL asset input.",
 		NvBlastSupportGraph blank; blank.nodeCount = 0; blank.chunkIndices = blank.adjacencyPartition = blank.adjacentNodeIndices = blank.adjacentBondIndices = nullptr; return blank);
 
 	const Nv::Blast::SupportGraph& supportGraph = static_cast<const Nv::Blast::Asset*>(asset)->m_graph;
@@ -887,7 +955,7 @@ const NvBlastSupportGraph NvBlastAssetGetSupportGraph(const NvBlastAsset* asset,
 
 const uint32_t* NvBlastAssetGetChunkToGraphNodeMap(const NvBlastAsset* asset, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetGetChunkToGraphNodeMap: NULL asset input.", return nullptr);
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetChunkToGraphNodeMap: NULL asset input.", return nullptr);
 
 	return static_cast<const Nv::Blast::Asset*>(asset)->getChunkToGraphNodeMap();
 }
@@ -895,7 +963,7 @@ const uint32_t* NvBlastAssetGetChunkToGraphNodeMap(const NvBlastAsset* asset, Nv
 
 const NvBlastChunk* NvBlastAssetGetChunks(const NvBlastAsset* asset, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetGetChunks: NULL asset input.", return 0);
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetChunks: NULL asset input.", return 0);
 
 	return ((Nv::Blast::Asset*)asset)->getChunks();
 }
@@ -903,7 +971,7 @@ const NvBlastChunk* NvBlastAssetGetChunks(const NvBlastAsset* asset, NvBlastLog 
 
 const NvBlastBond* NvBlastAssetGetBonds(const NvBlastAsset* asset, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetGetBonds: NULL asset input.", return 0);
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetBonds: NULL asset input.", return 0);
 
 	return ((Nv::Blast::Asset*)asset)->getBonds();
 }
@@ -911,7 +979,7 @@ const NvBlastBond* NvBlastAssetGetBonds(const NvBlastAsset* asset, NvBlastLog lo
 
 uint32_t NvBlastAssetGetActorSerializationSizeUpperBound(const NvBlastAsset* asset, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(asset != nullptr, logFn, "NvBlastAssetGetActorSerializationSizeUpperBound: NULL asset input.", return 0);
+	NVBLASTLL_CHECK(asset != nullptr, logFn, "NvBlastAssetGetActorSerializationSizeUpperBound: NULL asset input.", return 0);
 
 	const Nv::Blast::Asset& solverAsset = *(const Nv::Blast::Asset*)asset;
 	const uint32_t graphNodeCount = solverAsset.m_graph.m_nodeCount;
@@ -921,7 +989,7 @@ uint32_t NvBlastAssetGetActorSerializationSizeUpperBound(const NvBlastAsset* ass
 
 	if (upperBound > UINT32_MAX)
 	{
-		NVBLAST_LOG_WARNING(logFn, "NvBlastAssetGetActorSerializationSizeUpperBound: Serialization block size exceeds 4GB.  Returning 0.\n");
+		NVBLASTLL_LOG_WARNING(logFn, "NvBlastAssetGetActorSerializationSizeUpperBound: Serialization block size exceeds 4GB.  Returning 0.\n");
 		return 0;
 	}
 

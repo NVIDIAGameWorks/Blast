@@ -3,22 +3,41 @@
 These are the current Blast extensions:
 <br>
 <br>
-\subpage pageextauthoring
+\subpage pageextshaders - Standard damage shaders (radial, shear, line segment) which can be used in NvBlast and NvBlastTk damage functions.
 <br>
-\subpage pageextapeximport
 <br>
-\subpage pageextserialization
+\subpage pageextstress - A toolkit for performing stress calculations on low-level Blast&tm; actors, using a minimal API to assign masses and apply forces.  Does not use any external physics library.
 <br>
-\subpage pageextconverterll
 <br>
-\subpage pageextshaders
+\subpage pageextassetutils - NvBlastAsset utility functions.  Add world bonds, merge assets, and transform geometric data.
 <br>
-\subpage pageextphysx
+<br>
+\subpage pageextauthoring - Powerful tools for cleaning and fracturing meshes using voronoi, clustered voronoi, and slicing methods.
+<br>
+<br>
+\subpage pageextimport - Functions to import data from external formats and convert to a Blast&tm; asset.  Currently handles APEX NvDestructibleAsset data.
+<br>
+<br>
+\subpage pageextexporter - Standard mesh and collision writer tools in fbx, obj, and json formats.
+<br>
+<br>
+\subpage pageextserialization - Blast&tm; object serialization manager.  With the ExtTkSerialization and ExtPxSerialization extensions, can serialize assets for low-level, Tk, and ExtPhysX libraries
+using a variety of encodings.  This extension comes with low-level serializers built-in.
+<br>
+<br>
+\subpage pageexttkserialization - This module contains serializers for NvBlastTk objects.  Use in conjunction  with ExtSerialization.
+<br>
+<br>
+\subpage pageextpxserialization - This module contains serializers for ExtPhysX objects.  Use in conjunction  with ExtSerialization.
+<br>
+<br>
+\subpage pageextphysx - A reference implementation of a physics manager, using the PhysX SDK.  Creates and manages actors and joints, and handles impact damage and uses the stress solver (ExtStress) to
+handle stress calculations.
 <br>
 <br>
 To use them, include the appropriate headers in include/extensions (each extension will describe which headers are necessary),
 and link to the desired NvBlastExt*{config}{arch} library in the lib folder.  Here, config is the usual DEBUG/CHECKED/PROFILE (or nothing for release),
 and {arch} distinguishes achitecture, if needed (such as _x86 or _x64).
-
+<br>
 <br>
 */

@@ -1,0 +1,108 @@
+# This code contains NVIDIA Confidential Information and is disclosed to you
+# under a form of NVIDIA software license agreement provided separately to you.
+#
+# Notice
+# NVIDIA Corporation and its licensors retain all intellectual property and
+# proprietary rights in and to this software and related documentation and
+# any modifications thereto. Any use, reproduction, disclosure, or
+# distribution of this software and related documentation without an express
+# license agreement from NVIDIA Corporation is strictly prohibited.
+#
+# ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+# NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+# THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+# MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+#
+# Information and code furnished is believed to be accurate and reliable.
+# However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+# information or for any infringement of patents or other rights of third parties that may
+# result from its use. No license is granted by implication or otherwise under any patent
+# or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+# This code supersedes and replaces all information previously supplied.
+# NVIDIA Corporation products are not authorized for use as critical
+# components in life support devices or systems without express written approval of
+# NVIDIA Corporation.
+#
+# Copyright (c) 2017 NVIDIA Corporation. All rights reserved.
+
+
+@0x9a4a58fac38375e0;
+
+using Cxx = import "/capnp/c++.capnp";
+
+$Cxx.namespace("Nv::Blast::Serialization");
+
+struct Asset
+{
+	header @0 :NvBlastDataBlock;
+
+	iD @1 :UUID;
+
+	chunkCount @2 :UInt32;
+
+	graph @3 :NvBlastSupportGraph;
+
+	leafChunkCount @4 :UInt32;
+
+	firstSubsupportChunkIndex @5 :UInt32;
+
+	bondCount @6 :UInt32;
+
+	chunks @7: List(NvBlastChunk);
+
+	bonds @8: List(NvBlastBond);
+
+	subtreeLeafChunkCounts @9: List(UInt32);
+
+	chunkToGraphNodeMap @10: List(UInt32);
+}
+
+struct NvBlastDataBlock
+{
+	enum Type
+	{
+		assetDataBlock @0;
+		instanceDataBlock @1;
+	}
+
+	dataType @0 :Type;
+
+	formatVersion @1 :UInt32;
+
+	size @2 :UInt32;
+}
+
+struct NvBlastChunk
+{
+	centroid @0 :List(Float32);
+
+	volume @1 :Float32;
+
+	parentChunkIndex @2 :UInt32;
+	firstChildIndex @3 :UInt32;
+	childIndexStop @4 :UInt32;
+	userData @5 :UInt32;
+}
+
+struct NvBlastBond
+{
+	normal @0 :List(Float32);
+	area @1 :Float32;
+	centroid @2 :List(Float32);
+	userData @3 :UInt32;
+}
+
+struct NvBlastSupportGraph
+{
+	nodeCount @0 : UInt32;
+
+	chunkIndices @1 : List(UInt32);
+	adjacencyPartition @2 : List(UInt32);
+	adjacentNodeIndices @3 : List(UInt32);
+	adjacentBondIndices @4 : List(UInt32);
+}
+
+struct UUID
+{
+	value @0 : Data;
+}

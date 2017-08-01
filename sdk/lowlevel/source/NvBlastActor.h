@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTACTOR_H
 #define NVBLASTACTOR_H
@@ -16,6 +34,8 @@
 #include "NvBlastDLink.h"
 #include "NvBlastIteratorBase.h"
 #include "NvBlastSupportGraph.h"
+#include "NvBlastFamilyGraph.h"
+#include "NvBlastPreprocessorInternal.h"
 
 #include <cstring>
 
@@ -309,6 +329,11 @@ public:
 	//////// Damage and fracturing methods ////////
 
 	/**
+	See NvBlastActorGenerateFracture
+	*/
+	void				generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBlastDamageProgram& program, const NvBlastProgramParams* programParams, NvBlastLog logFn, NvBlastTimers* timers) const;
+
+	/**
 	Damage bond between two chunks by health amount (instance graph also will be notified in case bond is broken after).
 	*/
 	uint32_t			damageBond(uint32_t nodeIndex0, uint32_t nodeIndex1, float healthDamage);
@@ -322,73 +347,6 @@ public:
 	TODO: document
 	*/
 	uint32_t			damageBond(const NvBlastBondFractureData& cmd);
-
-	/**
-	See NvBlastActorGenerateFracture
-	*/
-	void				generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBlastDamageProgram& program, const NvBlastProgramParams* programParams, NvBlastLog logFn, NvBlastTimers* timers) const;
-
-	/**
-	Hierarchically distribute damage to child chunks.
-
-	\param chunkIndex		asset chunk index to hierarchically damage
-	\param suboffset		index of the first sub-support health
-	\param healthDamage		damage strength to apply
-	\param chunkHealths		instance chunk healths
-	\param chunks			asset chunk collection
-	*/
-	void				fractureSubSupportNoEvents(uint32_t chunkIndex, uint32_t suboffset, float healthDamage, float* chunkHealths, const NvBlastChunk* chunks);
-
-	/**
-	Hierarchically distribute damage to child chunks, recording a fracture event for each health damage applied.
-
-	If outBuffer is too small, events are dropped but the chunks are still damaged.
-
-	\param chunkIndex		asset chunk index to hierarchically damage
-	\param suboffset		index of the first sub-support health
-	\param healthDamage		damage strength to apply
-	\param chunkHealths		instance chunk healths
-	\param chunks			asset chunk collection
-	\param outBuffer		target buffer for fracture events
-	\param currentIndex		current position in outBuffer - returns the number of damaged chunks
-	\param maxCount			capacity of outBuffer
-	*/
-	void				fractureSubSupport(uint32_t chunkIndex, uint32_t suboffset, float healthDamage, float* chunkHealths, const NvBlastChunk* chunks, NvBlastChunkFractureData* outBuffer, uint32_t* currentIndex, const uint32_t maxCount);
-
-	/**
-	Apply chunk fracture commands hierarchically.
-
-	\param chunkFractureCount	number of chunk fracture commands to apply
-	\param chunkFractures		array of chunk fracture commands
-	*/
-	void				fractureNoEvents(uint32_t chunkFractureCount, const NvBlastChunkFractureData* chunkFractures);
-
-	/**
-	Apply chunk fracture commands hierarchically, recording a fracture event for each health damage applied.
-
-	If events array is too small, events are dropped but the chunks are still damaged.
-
-	\param chunkFractureCount	number of chunk fracture commands to apply
-	\param commands				array of chunk fracture commands
-	\param events				target buffer for fracture events
-	\param eventsSize			number of available entries in 'events'
-	\param count				returns the number of damaged chunks
-	*/
-	void				fractureWithEvents(uint32_t chunkFractureCount, const NvBlastChunkFractureData* commands, NvBlastChunkFractureData* events, uint32_t eventsSize, uint32_t* count);
-
-	/**
-	Apply chunk fracture commands hierarchically, recording a fracture event for each health damage applied.
-
-	In-Place version: fracture commands are replaced by fracture events.
-
-	If inoutbuffer array is too small, events are dropped but the chunks are still damaged.
-
-	\param chunkFractureCount	number of chunk fracture commands to apply
-	\param inoutbuffer			array of chunk fracture commands to be replaced by events
-	\param eventsSize			number of available entries in inoutbuffer
-	\param count				returns the number of damaged chunks
-	*/
-	void				fractureInPlaceEvents(uint32_t chunkFractureCount, NvBlastChunkFractureData* inoutbuffer, uint32_t eventsSize, uint32_t* count);
 
 	/**
 	See NvBlastActorApplyFracture
@@ -472,6 +430,16 @@ public:
 	\return the number of new actors created.
 	*/
 	uint32_t			partitionMultipleGraphNodes(Actor** newActors, uint32_t newActorsSize, NvBlastLog logFn);
+
+	/**
+	\return true iff this actor contains the "world" support graph node, created when a bond contains the invalidIndex<uint32_t>() value for one of their chunkIndices.
+	*/
+	bool				isBoundToWorld() const;
+
+	/**
+	\return true iff this actor was damaged and split() call is required.
+	*/
+	bool				isSplitRequired() const;
 
 private:
 
@@ -695,12 +663,64 @@ NV_INLINE bool Actor::release()
 
 NV_INLINE uint32_t Actor::partition(Actor** newActors, uint32_t newActorsSize, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(newActorsSize == 0 || newActors != nullptr, logFn, "Nv::Blast::Actor::partition: NULL newActors pointer array input with non-zero newActorCount.", return 0);
+	NVBLASTLL_CHECK(newActorsSize == 0 || newActors != nullptr, logFn, "Nv::Blast::Actor::partition: NULL newActors pointer array input with non-zero newActorCount.", return 0);
 
 	// Call one of two partition functions depending on the actor's support status
 	return m_graphNodeCount <= 1 ?
 		partitionSingleLowerSupportChunk(newActors, newActorsSize, logFn) :	// This actor will partition into subsupport chunks
 		partitionMultipleGraphNodes(newActors, newActorsSize, logFn);		// This actor will partition into support chunks
+}
+
+
+NV_INLINE bool Actor::isBoundToWorld() const
+{
+	const SupportGraph& graph = *getGraph();
+
+	if (graph.m_nodeCount == 0)
+	{
+		return false;	// This shouldn't happen
+	}
+
+	const uint32_t lastGraphChunkIndex = graph.getChunkIndices()[graph.m_nodeCount - 1];
+
+	if (!isInvalidIndex(lastGraphChunkIndex))
+	{
+		return false;	// There is no world node
+	}
+
+	return getFamilyGraph()->getIslandIds()[graph.m_nodeCount - 1] == getIndex();
+}
+
+
+NV_INLINE bool Actor::isSplitRequired() const
+{
+	NVBLAST_ASSERT(isActive());
+
+	if (getGraphNodeCount() <= 1)
+	{
+		uint32_t chunkHealthIndex = isSingleSupportChunk() ? getIndex() : getFirstVisibleChunkIndex() - getFirstSubsupportChunkIndex() + getGraph()->m_nodeCount;
+		float* chunkHealths = getLowerSupportChunkHealths();
+		if (chunkHealths[chunkHealthIndex] <= 0.0f)
+		{
+			const uint32_t chunkIndex = m_graphNodeCount == 0 ? m_firstVisibleChunkIndex : getGraph()->getChunkIndices()[m_firstGraphNodeIndex];
+			if (!isInvalidIndex(chunkIndex))
+			{
+				const NvBlastChunk& chunk = getChunks()[chunkIndex];
+				uint32_t childCount = chunk.childIndexStop - chunk.firstChildIndex;
+				return childCount > 0;
+			}
+		}
+	}
+	else
+	{
+		uint32_t* firstDirtyNodeIndices = getFamilyGraph()->getFirstDirtyNodeIndices();
+		if (!isInvalidIndex(firstDirtyNodeIndices[getIndex()]))
+		{
+			return true;
+		}
+
+	}
+	return false;
 }
 
 
@@ -717,16 +737,28 @@ NV_INLINE Actor::GraphNodeIt::GraphNodeIt(const Actor& actor) : LListIt<uint32_t
 {
 }
 
+
+//////// Helper functions ////////
+
+#if NVBLASTLL_CHECK_PARAMS
+/**
+Helper function to validate fracture buffer values being meaningful.
+*/
+static inline bool isValid(const NvBlastFractureBuffers* buffers)
+{
+	if (buffers->chunkFractureCount != 0 && buffers->chunkFractures == nullptr)
+		return false;
+
+	if (buffers->bondFractureCount != 0 && buffers->bondFractures == nullptr)
+		return false;
+
+	return true;
+}
+#endif
+
+
 } // namespace Blast
 } // namespace Nv
-
-
-/**
-Returns the closest chunk asset index for a supported actor.
-Helper functions still used in tests. 
-Has become obsolete with introduction of chunkMap and its inverse.
-*/
-uint32_t NvBlastActorClosestChunk(const float point[4], const NvBlastActor* actor, NvBlastLog logFn);
 
 
 #endif // ifndef NVBLASTACTOR_H

@@ -7,6 +7,12 @@ SupportPanel::SupportPanel(QWidget *parent) :
 {
     ui->setupUi(this);
 
+	//ui->labelHealthMask->setEnabled(false);
+	//ui->comboBoxHealthMask->setEnabled(false);
+	//ui->btnAddHealthMask->setEnabled(false);
+	//ui->btnPen->setEnabled(false);
+	//ui->btnRemove->setEnabled(false);
+
 	_selectedBonds.clear();
 }
 
@@ -23,15 +29,15 @@ void SupportPanel::updateValues()
 	{
 		BPPBond* bond = _selectedBonds[0];
 
-		ui->comboBoxHealthMask->clear();
-		ui->comboBoxHealthMask->addItem(bond->name.buf);
+		//ui->comboBoxHealthMask->clear();
+		//ui->comboBoxHealthMask->addItem(bond->name.buf);
 		ui->spinBoxBondStrength->setValue(bond->support.bondStrength);
 		ui->checkBoxEnableJoint->setChecked(bond->support.enableJoint);
 	}
 	else
 	{
-		ui->comboBoxHealthMask->clear();
-		ui->comboBoxHealthMask->addItem("None");
+		//ui->comboBoxHealthMask->clear();
+		//ui->comboBoxHealthMask->addItem("None");
 		ui->spinBoxBondStrength->setValue(1.0f);
 		ui->checkBoxEnableJoint->setChecked(false);
 	}

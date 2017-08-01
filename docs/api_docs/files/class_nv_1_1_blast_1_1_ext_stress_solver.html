@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 API Reference: Nv::Blast::ExtStressSolver Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 API Reference: Nv::Blast::ExtStressSolver Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -28,6 +28,11 @@
 <p>
 <a href="class_nv_1_1_blast_1_1_ext_stress_solver-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
+<tr><td colspan="2"><br><h2>Classes</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html">DebugBuffer</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html">DebugLine</a></td></tr>
+
 <tr><td colspan="2"><br><h2>Public Types</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">enum &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d">DebugRenderMode</a> { <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d1fd3b240bb76745efd8d5d3d2664cabc">STRESS_GRAPH</a> =  0, 
 <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d0b55d93864b9c304d94922037b53eb13">STRESS_GRAPH_NODES_IMPULSES</a> =  1, 
@@ -35,17 +40,29 @@
  }</td></tr>
 
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#b851008c858aed4f67c0d0296fbed9a2">applyImpulse</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a> &amp;actor, physx::PxVec3 position, physx::PxVec3 force)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#1d9a764d4ae041cce5154d8b3b314ec1">addAngularVelocity</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> &amp;actor, physx::PxVec3 localCenterMass, physx::PxVec3 localAngularVelocity)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#26dafec790b8dc19f3ec2af2081d7134">fillDebugRender</a> (const std::vector&lt; uint32_t &gt; &amp;nodes, std::vector&lt; physx::PxDebugLine &gt; &amp;lines, <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d">DebugRenderMode</a> mode, float scale=1.0f)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#91dfb9e712ca7ce1af32ce05064ec46f">addForce</a> (uint32_t graphNodeIndex, physx::PxVec3 localForce, <a class="el" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d">ExtForceMode::Enum</a> mode=ExtForceMode::IMPULSE)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#a1ca6a1101fa2c9fee8143a772dcc9f1">addForce</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> &amp;actor, physx::PxVec3 localPosition, physx::PxVec3 localForce, <a class="el" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d">ExtForceMode::Enum</a> mode=ExtForceMode::IMPULSE)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#1ac066c6d4a0e1385ceec64f1d1d7e02">addGravityForce</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> &amp;actor, physx::PxVec3 localGravity)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html">DebugBuffer</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#4b35d74e1dcce20d903bff6d6cf8a63f">fillDebugRender</a> (const uint32_t *nodes, uint32_t nodeCount, <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d">DebugRenderMode</a> mode, float scale=1.0f)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#8d878c56d8151b9f3c06d3b8f793fc00">generateFractureCommands</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> &amp;commands)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d75b9476c3b6189d4d84d3b55016bdf7">generateFractureCommands</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> &amp;actor, <a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> &amp;commands)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#8c995a408197e43f53a71769a31f39d3">generateFractureCommandsPerActor</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> **actorBuffer, <a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandsBuffer, uint32_t bufferSize)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#aba9643df955f917bcdf2324499c63fb">getBondCount</a> () const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#b6cfefa6068c4002dc7d7663ae2332cb">getFrameCount</a> () const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#7ab2d78dd024211b6086405a412ba900">getIterationCount</a> () const =0</td></tr>
-
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#5862a13c3ad815bc1b2128c142e2af82">getIterationsPerFrame</a> () const </td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#9f74a5d7affbf89a5c05a1e2320cd60d">getOverstressedBondCount</a> () const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <br class="typebreak">
 <a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#3afebb3d2ebfb89ae1390c3d943ac8a3">getSettings</a> () const =0</td></tr>
@@ -54,21 +71,31 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#7b461e1f03f5a85e3b86b0b4aa09be5c">getStressErrorLinear</a> () const =0</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#ad55fa12a3694fb005a377192cb20ea1">notifyActorCreated</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> &amp;actor)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#44bf60cdcbcb06364b1c23215b8b7bb4">notifyActorDestroyed</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> &amp;actor)=0</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#9f740702a06e3bd915218ec8aa8415d8">release</a> ()=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#1d0593b22f6cd335a479c18eaf102e40">reset</a> ()=0</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#419c77935487b2e689e377c986bf6eb5">setAllNodesInfoFromLL</a> (float density=1.0f)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#21b7a38036c0db1e7dfc9591e7d1efed">setNodeInfo</a> (uint32_t graphNodeIndex, float mass, float volume, physx::PxVec3 localPosition, bool isStatic)=0</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#cfef7926067c389179248e7dbd1e3686">setSettings</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a> &amp;settings)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#72303ee44e9f7ca9a0220180bcdfdaef">update</a> (bool doDamage=true)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#0a994dd1c576f36e5acd73895817ee72">update</a> ()=0</td></tr>
 
 <tr><td colspan="2"><br><h2>Static Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">ExtStressSolver</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#9df981e4e349c536e7c69482ae1eebae">create</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a> &amp;family, <a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a> settings=<a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a>())</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">ExtStressSolver</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#a69418650f816f3182ea363713111180">create</a> (<a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a> &amp;family, <a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a> settings=<a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a>())</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">static uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#dfc63fbe02a9de751e97500f88d0c823">getIterationsPerFrame</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a> &amp;settings, uint32_t bondCount)</td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Stress Solver.<p>
-Uses <a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a>, allocates and prepares it's graph once when it's created. Then it's being quickly updated on every actor split. Works on both dynamic and static actor's within family. For static actors it applies gravity. For dynamic actors it applies centrifugal force. Additionally <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#b851008c858aed4f67c0d0296fbed9a2">applyImpulse()</a> method can be used to apply external impulse (like impact damage). <hr><h2>Member Enumeration Documentation</h2>
+Uses <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a>, allocates and prepares its graph once when it's created. Then it's being quickly updated on every actor split. It uses <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> support graph, you can apply forces on nodes and stress on bonds will be calculated as the result. When stress on bond exceeds it's health bond is considered broken (overstressed). Basic usage: 1. Create it with create function once for family 2. Fill node info for every node in support graph or use <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#419c77935487b2e689e377c986bf6eb5">setAllNodesInfoFromLL()</a> function. 3. Use notifyActorCreated / notifyActorDestroyed whenever actors are created and destroyed in family. 4. Every frame: Apply forces (there are different functions for it see ) 5. Every frame: Call <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#0a994dd1c576f36e5acd73895817ee72">update()</a> for actual solver to process. 6. If <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#9f74a5d7affbf89a5c05a1e2320cd60d">getOverstressedBondCount()</a> &gt; 0 use <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d75b9476c3b6189d4d84d3b55016bdf7">generateFractureCommands()</a> functions to get FractureCommands with bonds fractured <hr><h2>Member Enumeration Documentation</h2>
 <a class="anchor" name="d0250c97326fe162fe78a2801f35ef4d"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::DebugRenderMode" ref="d0250c97326fe162fe78a2801f35ef4d" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -95,27 +122,27 @@ render stress graph + bonds impulses after solving stress </td></tr>
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="b851008c858aed4f67c0d0296fbed9a2"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::applyImpulse" ref="b851008c858aed4f67c0d0296fbed9a2" args="(ExtPxActor &amp;actor, physx::PxVec3 position, physx::PxVec3 force)=0" -->
+<a class="anchor" name="1d9a764d4ae041cce5154d8b3b314ec1"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::addAngularVelocity" ref="1d9a764d4ae041cce5154d8b3b314ec1" args="(const NvBlastActor &amp;actor, physx::PxVec3 localCenterMass, physx::PxVec3 localAngularVelocity)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Nv::Blast::ExtStressSolver::applyImpulse           </td>
+          <td class="memname">virtual bool Nv::Blast::ExtStressSolver::addAngularVelocity           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a> &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>actor</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">physx::PxVec3&nbsp;</td>
-          <td class="paramname"> <em>position</em>, </td>
+          <td class="paramname"> <em>localCenterMass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">physx::PxVec3&nbsp;</td>
-          <td class="paramname"> <em>force</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>localAngularVelocity</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -127,25 +154,157 @@ render stress graph + bonds impulses after solving stress </td></tr>
 <div class="memdoc">
 
 <p>
-Apply external impulse on particular actor of family<p>
+Apply centrifugal force produced by actor's angular movement.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>actor</em>&nbsp;</td><td>The <a class="el" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a> to apply impulse on. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>position</em>&nbsp;</td><td>Local position in actor's coordinates to apply impulse on. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>force</em>&nbsp;</td><td>Impulse to apply (kg * m / s). </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>actor</em>&nbsp;</td><td>The actor to apply impulse on. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>localCenterMass</em>&nbsp;</td><td>Actor's local center of mass. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>localAngularVelocity</em>&nbsp;</td><td>Local angular velocity of an actor.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true iff force was applied on at least one node. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="91dfb9e712ca7ce1af32ce05064ec46f"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::addForce" ref="91dfb9e712ca7ce1af32ce05064ec46f" args="(uint32_t graphNodeIndex, physx::PxVec3 localForce, ExtForceMode::Enum mode=ExtForceMode::IMPULSE)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::ExtStressSolver::addForce           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>graphNodeIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">physx::PxVec3&nbsp;</td>
+          <td class="paramname"> <em>localForce</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d">ExtForceMode::Enum</a>&nbsp;</td>
+          <td class="paramname"> <em>mode</em> = <code>ExtForceMode::IMPULSE</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Apply external impulse on particular node.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>graphNodeIndex</em>&nbsp;</td><td>The graph node index to apply impulse on. See <a class="el" href="struct_nv_blast_support_graph.html">NvBlastSupportGraph</a>. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>localForce</em>&nbsp;</td><td>Force to apply in local actor's coordinates. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mode</em>&nbsp;</td><td>The mode to use when applying the force/impulse(see ExtForceMode) </td></tr>
   </table>
 </dl>
 
 </div>
 </div><p>
-<a class="anchor" name="9df981e4e349c536e7c69482ae1eebae"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::create" ref="9df981e4e349c536e7c69482ae1eebae" args="(ExtPxFamily &amp;family, ExtStressSolverSettings settings=ExtStressSolverSettings())" -->
+<a class="anchor" name="a1ca6a1101fa2c9fee8143a772dcc9f1"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::addForce" ref="a1ca6a1101fa2c9fee8143a772dcc9f1" args="(const NvBlastActor &amp;actor, physx::PxVec3 localPosition, physx::PxVec3 localForce, ExtForceMode::Enum mode=ExtForceMode::IMPULSE)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool Nv::Blast::ExtStressSolver::addForce           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">physx::PxVec3&nbsp;</td>
+          <td class="paramname"> <em>localPosition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">physx::PxVec3&nbsp;</td>
+          <td class="paramname"> <em>localForce</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d">ExtForceMode::Enum</a>&nbsp;</td>
+          <td class="paramname"> <em>mode</em> = <code>ExtForceMode::IMPULSE</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Apply external impulse on particular actor of family. This function will find nearest actor's graph node to apply impulse on.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>actor</em>&nbsp;</td><td>The actor to apply impulse on. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>localPosition</em>&nbsp;</td><td>Local position in actor's coordinates to apply impulse on. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>localForce</em>&nbsp;</td><td>Force to apply in local actor's coordinates. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mode</em>&nbsp;</td><td>The mode to use when applying the force/impulse(see ExtForceMode)</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true iff node was found and force applied. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="1ac066c6d4a0e1385ceec64f1d1d7e02"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::addGravityForce" ref="1ac066c6d4a0e1385ceec64f1d1d7e02" args="(const NvBlastActor &amp;actor, physx::PxVec3 localGravity)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool Nv::Blast::ExtStressSolver::addGravityForce           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">physx::PxVec3&nbsp;</td>
+          <td class="paramname"> <em>localGravity</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Apply external gravity on particular actor of family. This function applies gravity on every node withing actor, so it makes sense only for static actors.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>actor</em>&nbsp;</td><td>The actor to apply impulse on. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>localGravity</em>&nbsp;</td><td>Gravity to apply in local actor's coordinates. <a class="el" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d1817b8c6d54b7904ce139f9953deac4a" title="parameter has unit of distance / time, i.e. the effect is mass independent: a velocity...">ExtForceMode::VELOCITY</a> is used.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true iff force was applied on at least one node. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="a69418650f816f3182ea363713111180"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::create" ref="a69418650f816f3182ea363713111180" args="(NvBlastFamily &amp;family, ExtStressSolverSettings settings=ExtStressSolverSettings())" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">static <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">ExtStressSolver</a>* Nv::Blast::ExtStressSolver::create           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a> &amp;&nbsp;</td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>family</em>, </td>
         </tr>
         <tr>
@@ -175,21 +334,21 @@ Create a new <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">
 
 </div>
 </div><p>
-<a class="anchor" name="26dafec790b8dc19f3ec2af2081d7134"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::fillDebugRender" ref="26dafec790b8dc19f3ec2af2081d7134" args="(const std::vector&lt; uint32_t &gt; &amp;nodes, std::vector&lt; physx::PxDebugLine &gt; &amp;lines, DebugRenderMode mode, float scale=1.0f)=0" -->
+<a class="anchor" name="4b35d74e1dcce20d903bff6d6cf8a63f"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::fillDebugRender" ref="4b35d74e1dcce20d903bff6d6cf8a63f" args="(const uint32_t *nodes, uint32_t nodeCount, DebugRenderMode mode, float scale=1.0f)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Nv::Blast::ExtStressSolver::fillDebugRender           </td>
+          <td class="memname">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html">DebugBuffer</a> Nv::Blast::ExtStressSolver::fillDebugRender           </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; uint32_t &gt; &amp;&nbsp;</td>
+          <td class="paramtype">const uint32_t *&nbsp;</td>
           <td class="paramname"> <em>nodes</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; physx::PxDebugLine &gt; &amp;&nbsp;</td>
-          <td class="paramname"> <em>lines</em>, </td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>nodeCount</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -214,14 +373,129 @@ Create a new <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">
 
 <p>
 Fill debug render for passed array of support graph nodes.<p>
+NOTE: Returned <a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html">DebugBuffer</a> points into internal memory which is valid till next <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#4b35d74e1dcce20d903bff6d6cf8a63f">fillDebugRender()</a> call.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nodes</em>&nbsp;</td><td>Node indices of support graph to debug render for. </td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>lines</em>&nbsp;</td><td>Lines array to fill. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nodeCount</em>&nbsp;</td><td>Node indices count. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mode</em>&nbsp;</td><td>Debug render mode. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>scale</em>&nbsp;</td><td>Scale to be applied on impulses. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>scale</em>&nbsp;</td><td>Scale to be applied on impulses.</td></tr>
   </table>
 </dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>debug buffer with array of lines </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="8d878c56d8151b9f3c06d3b8f793fc00"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::generateFractureCommands" ref="8d878c56d8151b9f3c06d3b8f793fc00" args="(NvBlastFractureBuffers &amp;commands)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::ExtStressSolver::generateFractureCommands           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>commands</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Generate fracture commands for whole family. A bit faster way to get all fractured bonds then calling <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d75b9476c3b6189d4d84d3b55016bdf7">generateFractureCommands()</a> for every actor.<p>
+Calling this function if <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#9f74a5d7affbf89a5c05a1e2320cd60d">getOverstressedBondCount()</a> == 0 or actor has no bond doesn't make sense, bondFractureCount will be '0'.<p>
+IMPORTANT: <a class="el" href="struct_nv_blast_fracture_buffers.html#5768e2ed80216a98fbcaee56a6194837" title="memory to be filled by fracture functions">NvBlastFractureBuffers::bondFractures</a> will point to internal stress solver memory which will be valid till next call of any of <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d75b9476c3b6189d4d84d3b55016bdf7">generateFractureCommands()</a> functions or stress solver <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#9f740702a06e3bd915218ec8aa8415d8">release()</a> call.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>commands</em>&nbsp;</td><td>Pointer to command buffer to fill. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="d75b9476c3b6189d4d84d3b55016bdf7"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::generateFractureCommands" ref="d75b9476c3b6189d4d84d3b55016bdf7" args="(const NvBlastActor &amp;actor, NvBlastFractureBuffers &amp;commands)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::ExtStressSolver::generateFractureCommands           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>commands</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Generate fracture commands for particular actor.<p>
+Calling this function if <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#9f74a5d7affbf89a5c05a1e2320cd60d">getOverstressedBondCount()</a> == 0 or actor has no bond doesn't make sense, bondFractureCount will be '0'. Filled fracture commands buffer can be passed directly to NvBlastActorApplyFracture.<p>
+IMPORTANT: <a class="el" href="struct_nv_blast_fracture_buffers.html#5768e2ed80216a98fbcaee56a6194837" title="memory to be filled by fracture functions">NvBlastFractureBuffers::bondFractures</a> will point to internal stress solver memory which will be valid till next call of any of <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d75b9476c3b6189d4d84d3b55016bdf7">generateFractureCommands()</a> functions or stress solver <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#9f740702a06e3bd915218ec8aa8415d8">release()</a> call.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>actor</em>&nbsp;</td><td>The actor to fill fracture commands for. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>commands</em>&nbsp;</td><td>Pointer to command buffer to fill. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="8c995a408197e43f53a71769a31f39d3"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::generateFractureCommandsPerActor" ref="8c995a408197e43f53a71769a31f39d3" args="(const NvBlastActor **actorBuffer, NvBlastFractureBuffers *commandsBuffer, uint32_t bufferSize)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual uint32_t Nv::Blast::ExtStressSolver::generateFractureCommandsPerActor           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> **&nbsp;</td>
+          <td class="paramname"> <em>actorBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *&nbsp;</td>
+          <td class="paramname"> <em>commandsBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>bufferSize</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Generate fracture commands for every actor in family.<p>
+Actors and commands buffer must be passed in order to be filled. It's recommended for bufferSize to be the count of actor with more then one bond in family.<p>
+Calling this function if <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#9f74a5d7affbf89a5c05a1e2320cd60d">getOverstressedBondCount()</a> == 0 or actor has no bond doesn't make sense, '0' will be returned.<p>
+IMPORTANT: <a class="el" href="struct_nv_blast_fracture_buffers.html#5768e2ed80216a98fbcaee56a6194837" title="memory to be filled by fracture functions">NvBlastFractureBuffers::bondFractures</a> will point to internal stress solver memory which will be valid till next call of any of <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d75b9476c3b6189d4d84d3b55016bdf7">generateFractureCommands()</a> functions or stress solver <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#9f740702a06e3bd915218ec8aa8415d8">release()</a> call.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>buffer</em>&nbsp;</td><td>A user-supplied array of <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> pointers to fill. </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>commandsBuffer</em>&nbsp;</td><td>A user-supplied array of <a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> to fill. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bufferSize</em>&nbsp;</td><td>The number of elements available to write into buffer.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the number of actors and command buffers written to the buffer. </dd></dl>
 
 </div>
 </div><p>
@@ -262,29 +536,8 @@ Get stress solver bonds count, after graph reduction was applied.<p>
 <div class="memdoc">
 
 <p>
-Get stress solver total frames count (<a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#72303ee44e9f7ca9a0220180bcdfdaef">update()</a> calls) since it was created (or reset).<p>
+Get stress solver total frames count (<a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#0a994dd1c576f36e5acd73895817ee72">update()</a> calls) since it was created (or reset).<p>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>the frames count. </dd></dl>
-
-</div>
-</div><p>
-<a class="anchor" name="7ab2d78dd024211b6086405a412ba900"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::getIterationCount" ref="7ab2d78dd024211b6086405a412ba900" args="() const =0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual uint32_t Nv::Blast::ExtStressSolver::getIterationCount           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td> const<code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Get stress solver total iterations count since it was created (or reset).<p>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>the iterations count. </dd></dl>
 
 </div>
 </div><p>
@@ -304,9 +557,69 @@ Get stress solver total iterations count since it was created (or reset).<p>
 <div class="memdoc">
 
 <p>
-Get iteration per frame (<a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#72303ee44e9f7ca9a0220180bcdfdaef">update()</a> call).<p>
+Get iteration per frame (<a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#0a994dd1c576f36e5acd73895817ee72">update()</a> call).<p>
 Helper method to know how many solver iterations are made per frame.<p>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>the iterations per frame count. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="dfc63fbe02a9de751e97500f88d0c823"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::getIterationsPerFrame" ref="dfc63fbe02a9de751e97500f88d0c823" args="(const ExtStressSolverSettings &amp;settings, uint32_t bondCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">static uint32_t Nv::Blast::ExtStressSolver::getIterationsPerFrame           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>settings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>bondCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [inline, static]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Get solver iteration per frame (<a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#0a994dd1c576f36e5acd73895817ee72">update()</a> call) for particular settings and bondCount.<p>
+Helper method to know how many solver iterations are made per frame. This function made so transparent to make it clear how <a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#d489853b66a5f118e8a70b4d1e296f3d" title="number of bond iterations to perform per frame,">ExtStressSolverSettings::bondIterationsPerFrame</a> is used.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>settings</em>&nbsp;</td><td>Debug render mode. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondCount</em>&nbsp;</td><td>Scale to be applied on impulses.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the iterations per frame count. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="9f74a5d7affbf89a5c05a1e2320cd60d"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::getOverstressedBondCount" ref="9f74a5d7affbf89a5c05a1e2320cd60d" args="() const =0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual uint32_t Nv::Blast::ExtStressSolver::getOverstressedBondCount           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Get overstressed/broken bonds count.<p>
+This count is updated after every <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#0a994dd1c576f36e5acd73895817ee72">update()</a> call. Number of overstressed bond directly hints if any bond fracture is recommended by stress solver.<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the overstressed bonds count. </dd></dl>
 
 </div>
 </div><p>
@@ -373,6 +686,61 @@ Get stress solver linear error.<p>
 
 </div>
 </div><p>
+<a class="anchor" name="ad55fa12a3694fb005a377192cb20ea1"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::notifyActorCreated" ref="ad55fa12a3694fb005a377192cb20ea1" args="(const NvBlastActor &amp;actor)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool Nv::Blast::ExtStressSolver::notifyActorCreated           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>actor</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Notify stress solver on newly created actor.<p>
+Call this function for all initial actors present in family and later upon every actor split.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>actor</em>&nbsp;</td><td>The actor created.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true if actor will take part in stress solver process. false if actor doesn't contain any bonds. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="44bf60cdcbcb06364b1c23215b8b7bb4"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::notifyActorDestroyed" ref="44bf60cdcbcb06364b1c23215b8b7bb4" args="(const NvBlastActor &amp;actor)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::ExtStressSolver::notifyActorDestroyed           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>actor</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Notify stress solver on destroyed actor.<p>
+Call this function when actor is destroyed (split futher) or deactivated.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>actor</em>&nbsp;</td><td>The actor destroyed. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
 <a class="anchor" name="9f740702a06e3bd915218ec8aa8415d8"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::release" ref="9f740702a06e3bd915218ec8aa8415d8" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
@@ -412,6 +780,90 @@ Reset stress solver.<p>
 Stress solver uses warm start internally, calling this function will flush all previous data calculated and also zeros frame count. This function is to be used for debug purposes. 
 </div>
 </div><p>
+<a class="anchor" name="419c77935487b2e689e377c986bf6eb5"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::setAllNodesInfoFromLL" ref="419c77935487b2e689e377c986bf6eb5" args="(float density=1.0f)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::ExtStressSolver::setAllNodesInfoFromLL           </td>
+          <td>(</td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>density</em> = <code>1.0f</code>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set all nodes info using low level <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> data. Uses NvBlastChunk's centroid and volume. Uses 'world' node to mark nodes as static.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>density</em>&nbsp;</td><td>Density. Used to convert volume to mass. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="21b7a38036c0db1e7dfc9591e7d1efed"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::setNodeInfo" ref="21b7a38036c0db1e7dfc9591e7d1efed" args="(uint32_t graphNodeIndex, float mass, float volume, physx::PxVec3 localPosition, bool isStatic)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::ExtStressSolver::setNodeInfo           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>graphNodeIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>mass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>volume</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">physx::PxVec3&nbsp;</td>
+          <td class="paramname"> <em>localPosition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>isStatic</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set node info.<p>
+All the required info per node for stress solver is set with this function. Call it for every node in graph or use <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#419c77935487b2e689e377c986bf6eb5">setAllNodesInfoFromLL()</a>.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>graphNodeIndex</em>&nbsp;</td><td>Index of the node in support graph. see <a class="el" href="struct_nv_blast_support_graph.html">NvBlastSupportGraph</a>. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mass</em>&nbsp;</td><td>Node mass. For static node it is irrelevant. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>volume</em>&nbsp;</td><td>Node volume. For static node it is irrelevant. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>localPosition</em>&nbsp;</td><td>Node local position. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>isStatic</em>&nbsp;</td><td>Is node static. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
 <a class="anchor" name="cfef7926067c389179248e7dbd1e3686"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::setSettings" ref="cfef7926067c389179248e7dbd1e3686" args="(const ExtStressSolverSettings &amp;settings)=0" -->
 <div class="memitem">
 <div class="memproto">
@@ -438,15 +890,14 @@ Set stress solver settings. Changing graph reduction level will lead to graph be
 
 </div>
 </div><p>
-<a class="anchor" name="72303ee44e9f7ca9a0220180bcdfdaef"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::update" ref="72303ee44e9f7ca9a0220180bcdfdaef" args="(bool doDamage=true)=0" -->
+<a class="anchor" name="0a994dd1c576f36e5acd73895817ee72"></a><!-- doxytag: member="Nv::Blast::ExtStressSolver::update" ref="0a994dd1c576f36e5acd73895817ee72" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">virtual void Nv::Blast::ExtStressSolver::update           </td>
           <td>(</td>
-          <td class="paramtype">bool&nbsp;</td>
-          <td class="paramname"> <em>doDamage</em> = <code>true</code>          </td>
+          <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
           <td><code> [pure virtual]</code></td>
         </tr>
@@ -456,17 +907,11 @@ Set stress solver settings. Changing graph reduction level will lead to graph be
 
 <p>
 Update stress solver.<p>
-Calculate stress and optionally apply damage.<p>
-<dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>doDamage</em>&nbsp;</td><td>If 'true' damage will be applied after stress solver. </td></tr>
-  </table>
-</dl>
-
+Actual performance heavy stress calculation happens there. Call it after all relevant forces were applied, usually every frame. 
 </div>
 </div><p>
 <hr>The documentation for this class was generated from the following file:<ul>
-<li>sdk/extensions/physx/include/<a class="el" href="_nv_blast_ext_stress_solver_8h-source.html">NvBlastExtStressSolver.h</a></ul>
+<li>sdk/extensions/stress/include/<a class="el" href="_nv_blast_ext_stress_solver_8h-source.html">NvBlastExtStressSolver.h</a></ul>
 </div>
 <!-- start footer part -->
 <div class="footer">

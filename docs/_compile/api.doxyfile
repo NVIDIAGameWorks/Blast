@@ -2,24 +2,29 @@
 
 @INCLUDE               = Doxyfile
 
-PROJECT_NAME           = "NVIDIA(R) Blast(R) SDK 1.0 API Reference"
+PROJECT_NAME           = "NVIDIA(R) Blast(R) SDK 1.1 API Reference"
 
 INPUT                  = ../../sdk \
 						 ../release_notes.txt \
 						 ../_source/api_users_guide.txt \
 						 ../_source/introduction.txt \
 						 ../_source/api_ll_users_guide.txt \
+						 ../_source/api_globals_users_guide.txt \
 						 ../_source/api_hl_users_guide.txt \
 						 ../_source/api_ext_users_guide.txt \
+						 ../_source/ext_shaders.txt \
+						 ../_source/ext_stress.txt \
+						 ../_source/ext_assetutils.txt \
 						 ../_source/ext_authoring.txt \
 						 ../_source/ext_import.txt \
+						 ../_source/ext_exporter.txt \
 						 ../_source/ext_serialization.txt \
-						 ../_source/ext_converterll.txt \
-						 ../_source/ext_materials.txt \
+						 ../_source/ext_tkserialization.txt \
+						 ../_source/ext_pxserialization.txt \
 						 ../_source/ext_physx.txt \
 						 ../_source/tools.txt \
 						 ../_source/apex_importer.txt \
-						 ../_source/data_converter.txt \
+						 ../_source/legacy_converter.txt \
 						 ../_source/authoring_tool.txt \
 						 ../_source/samples.txt \
 						 ../_source/sample_asset_viewer.txt \

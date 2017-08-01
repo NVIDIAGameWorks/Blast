@@ -1,0 +1,57 @@
+#!/bin/sh
+
+PM_PACKMAN_VERSION=4.0-rc3
+
+# Specify where configuration file could exist
+export PM_CONFIG_PATH=$(dirname "$0")/packman_config.txt
+
+# The packages root may already be configured by the user
+if [ -z "$PM_PACKAGES_ROOT" ]; then
+	export PM_PACKAGES_ROOT="${HOME}/packman-repo"
+fi
+
+# Ensure the packages root path exists:
+if [ ! -d "$PM_PACKAGES_ROOT" ]; then
+	echo "Creating packman packages repository at $PM_PACKAGES_ROOT"
+	mkdir -p "$PM_PACKAGES_ROOT"
+fi
+
+# The packman module may be externally configured
+if [ -z "$PM_MODULE_EXT" ]; then
+	PM_MODULE_DIR="$PM_PACKAGES_ROOT/packman/$PM_PACKMAN_VERSION-common"
+	export PM_MODULE="$PM_MODULE_DIR/packman.py"
+else
+	export PM_MODULE="$PM_MODULE_EXT"
+fi
+
+fetch_file_from_s3() 
+{
+	SOURCE=$1
+	SOURCE_URL=http://packman.s3.amazonaws.com/$SOURCE
+	TARGET=$2
+	echo "Fetching $SOURCE from S3 ..."
+	if command -v wget >/dev/null 2>&1; then
+		wget --quiet -O$TARGET $SOURCE_URL
+	else
+		curl -o $TARGET $SOURCE_URL -s -S
+	fi		
+}
+
+# Ensure the packman package exists:
+if [ ! -f "$PM_MODULE" ]; then
+	PM_MODULE_PACKAGE="packman@$PM_PACKMAN_VERSION-common.zip"
+	TARGET="/tmp/$PM_MODULE_PACKAGE"
+	# We always fetch packman from S3:
+	fetch_file_from_s3 $PM_MODULE_PACKAGE $TARGET
+	if [ "$?" -eq "0" ]; then
+		echo "Unpacking ..."
+		mkdir -p "$PM_MODULE_DIR"
+		unzip -q $TARGET -d "$PM_MODULE_DIR"
+		rm $TARGET
+	else
+		echo "Failure while fetching packman module from S3!"
+		exit 1
+	fi
+fi
+
+python "$PM_MODULE" $*

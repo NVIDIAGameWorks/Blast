@@ -1,12 +1,29 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
 
 
 #include "NvBlastActor.h"
@@ -25,18 +42,18 @@ namespace Blast
 
 Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(family != nullptr, logFn, "Actor::deserialize: NULL family pointer input.", return nullptr);
+	NVBLASTLL_CHECK(family != nullptr, logFn, "Actor::deserialize: NULL family pointer input.", return nullptr);
 
 	const ActorSerializationHeader* serHeader = reinterpret_cast<const ActorSerializationHeader*>(buffer);
 	if (serHeader->m_formatVersion != ActorSerializationFormat::Current)
 	{
-		NVBLAST_LOG_ERROR(logFn, "Actor::deserialize: wrong data format.  Serialization data must be converted to current version.");
+		NVBLASTLL_LOG_ERROR(logFn, "Actor::deserialize: wrong data format.  Serialization data must be converted to current version.");
 		return nullptr;
 	}
 
 	FamilyHeader* header = reinterpret_cast<FamilyHeader*>(family);
 	const Asset* asset = header->m_asset;
-	const Nv::Blast::SupportGraph& graph = asset->m_graph;
+	const SupportGraph& graph = asset->m_graph;
 	const uint32_t* graphChunkIndices = graph.getChunkIndices();
 	const uint32_t* graphAdjacencyPartition = graph.getAdjacencyPartition();
 	const uint32_t* graphAdjacentNodeIndices = graph.getAdjacentNodeIndices();
@@ -55,7 +72,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 
 	if (actor == nullptr)
 	{
-		NVBLAST_LOG_ERROR(logFn, "Actor::deserialize: invalid actor index in serialized data.  Actor not created.");
+		NVBLASTLL_LOG_ERROR(logFn, "Actor::deserialize: invalid actor index in serialized data.  Actor not created.");
 		return nullptr;
 	}
 
@@ -63,7 +80,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 	uint32_t* chunkActorIndices = header->getChunkActorIndices();
 	FamilyGraph* familyGraph = header->getFamilyGraph();
 
-#if NVBLAST_CHECK_PARAMS
+#if NVBLASTLL_CHECK_PARAMS
 	{
 		const uint32_t* serVisibleChunkIndices = serHeader->getVisibleChunkIndices();
 		for (uint32_t i = 0; i < serHeader->m_visibleChunkCount; ++i)
@@ -71,7 +88,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 			const uint32_t visibleChunkIndex = serVisibleChunkIndices[i];
 			if (!isInvalidIndex(chunkActorIndices[visibleChunkIndex]))
 			{
-				NVBLAST_LOG_ERROR(logFn, "Actor::deserialize: visible chunk already has an actor in family.  Actor not created.");
+				NVBLASTLL_LOG_ERROR(logFn, "Actor::deserialize: visible chunk already has an actor in family.  Actor not created.");
 				header->returnActor(*actor);
 				return nullptr;
 			}
@@ -125,7 +142,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 		{
 			uint32_t serLowerSupportChunkCount = 0;
 			float* graphNodeHealths = header->getLowerSupportChunkHealths();
-			for (Nv::Blast::Actor::GraphNodeIt i = *actor; (bool)i; ++i)
+			for (Actor::GraphNodeIt i = *actor; (bool)i; ++i)
 			{
 				const uint32_t graphNodeIndex = (uint32_t)i;
 				graphNodeHealths[graphNodeIndex] = serLowerSupportChunkHealths[serLowerSupportChunkCount++];
@@ -152,7 +169,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 	{
 		const float* serBondHealths = serHeader->getBondHealths();
 		float* bondHealths = header->getBondHealths();
-		for (Nv::Blast::Actor::GraphNodeIt i = *actor; (bool)i; ++i)
+		for (Actor::GraphNodeIt i = *actor; (bool)i; ++i)
 		{
 			const uint32_t graphNodeIndex = (uint32_t)i;
 			for (uint32_t adjacentIndex = graphAdjacencyPartition[graphNodeIndex]; adjacentIndex < graphAdjacencyPartition[graphNodeIndex + 1]; ++adjacentIndex)
@@ -176,7 +193,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 	{
 		const uint32_t* serFastRoute = serHeader->getFastRoute();
 		uint32_t* fastRoute = header->getFamilyGraph()->getFastRoute();
-		for (Nv::Blast::Actor::GraphNodeIt i = *actor; (bool)i; ++i)
+		for (Actor::GraphNodeIt i = *actor; (bool)i; ++i)
 		{
 			fastRoute[(uint32_t)i] = *serFastRoute++;
 		}
@@ -186,7 +203,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 	{
 		const uint32_t* serHopCounts = serHeader->getHopCounts();
 		uint32_t* hopCounts = header->getFamilyGraph()->getHopCounts();
-		for (Nv::Blast::Actor::GraphNodeIt i = *actor; (bool)i; ++i)
+		for (Actor::GraphNodeIt i = *actor; (bool)i; ++i)
 		{
 			hopCounts[(uint32_t)i] = *serHopCounts++;
 		}
@@ -198,7 +215,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 		uint32_t serBondIndex = 0;
 		const FixedBoolArray* serEdgeRemovedArray = serHeader->getEdgeRemovedArray();
 		FixedBoolArray* edgeRemovedArray = familyGraph->getIsEdgeRemoved();
-		for (Nv::Blast::Actor::GraphNodeIt i = *actor; (bool)i; ++i)
+		for (Actor::GraphNodeIt i = *actor; (bool)i; ++i)
 		{
 			const uint32_t graphNodeIndex = (uint32_t)i;
 			for (uint32_t adjacentIndex = graphAdjacencyPartition[graphNodeIndex]; adjacentIndex < graphAdjacencyPartition[graphNodeIndex + 1]; ++adjacentIndex)
@@ -232,7 +249,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 {
 	// Set up pointers and such
 	const Asset* asset = getAsset();
-	const Nv::Blast::SupportGraph& graph = asset->m_graph;
+	const SupportGraph& graph = asset->m_graph;
 	const uint32_t* graphChunkIndices = graph.getChunkIndices();
 	const uint32_t* graphAdjacencyPartition = graph.getAdjacencyPartition();
 	const uint32_t* graphAdjacentNodeIndices = graph.getAdjacentNodeIndices();
@@ -247,7 +264,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 		const uint32_t* firstDirtyNodeIndices = header->getFamilyGraph()->getFirstDirtyNodeIndices();
 		if (!isInvalidIndex(firstDirtyNodeIndices[thisActorIndex]))
 		{
-			NVBLAST_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: instance graph has dirty nodes.  Call Nv::Blast::Actor::findIslands before serializing.");
+			NVBLASTLL_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: instance graph has dirty nodes.  Call Nv::Blast::Actor::findIslands before serializing.");
 			return 0;
 		}
 	}
@@ -274,12 +291,12 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 		offset = align16(offset + m_visibleChunkCount*sizeof(uint32_t));
 		if (offset > bufferSize)
 		{
-			NVBLAST_LOG_ERROR(logFn, "Nv::Blast::Actor::Actor::serialize: buffer size exceeded.");
+			NVBLASTLL_LOG_ERROR(logFn, "Nv::Blast::Actor::Actor::serialize: buffer size exceeded.");
 			return 0;	// Buffer size insufficient
 		}
 		uint32_t* serVisibleChunkIndices = serHeader->getVisibleChunkIndices();
 		uint32_t serVisibleChunkCount = 0;
-		for (Nv::Blast::Actor::VisibleChunkIt i = *this; (bool)i; ++i)
+		for (Actor::VisibleChunkIt i = *this; (bool)i; ++i)
 		{
 			NVBLAST_ASSERT(serVisibleChunkCount < m_visibleChunkCount);
 			serVisibleChunkIndices[serVisibleChunkCount++] = (uint32_t)i;
@@ -293,12 +310,12 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 		offset = align16(offset + m_graphNodeCount*sizeof(uint32_t));
 		if (offset > bufferSize)
 		{
-			NVBLAST_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
+			NVBLASTLL_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
 			return 0;	// Buffer size insufficient
 		}
 		uint32_t* serGraphNodeIndices = serHeader->getGraphNodeIndices();
 		uint32_t serGraphNodeCount = 0;
-		for (Nv::Blast::Actor::GraphNodeIt i = *this; (bool)i; ++i)
+		for (Actor::GraphNodeIt i = *this; (bool)i; ++i)
 		{
 			NVBLAST_ASSERT(serGraphNodeCount < m_graphNodeCount);
 			serGraphNodeIndices[serGraphNodeCount++] = (uint32_t)i;
@@ -316,7 +333,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 		{
 			uint32_t serLowerSupportChunkCount = 0;
 			const float* graphNodeHealths = header->getLowerSupportChunkHealths();
-			for (Nv::Blast::Actor::GraphNodeIt i = *this; (bool)i; ++i)
+			for (Actor::GraphNodeIt i = *this; (bool)i; ++i)
 			{
 				const uint32_t graphNodeIndex = (uint32_t)i;
 				serLowerSupportChunkHealths[serLowerSupportChunkCount++] = graphNodeHealths[graphNodeIndex];
@@ -329,7 +346,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 				{
 					if (offset >= bufferSize)
 					{
-						NVBLAST_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
+						NVBLASTLL_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
 						return 0;	// Buffer size insufficient
 					}
 					serLowerSupportChunkHealths[serLowerSupportChunkCount++] = subsupportHealths[(uint32_t)j - subsupportChunkCount];
@@ -343,7 +360,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 			NVBLAST_ASSERT(m_firstVisibleChunkIndex >= subsupportChunkCount);
 			if (offset >= bufferSize)
 			{
-				NVBLAST_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
+				NVBLASTLL_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
 				return 0;	// Buffer size insufficient
 			}
 			*serLowerSupportChunkHealths = subsupportHealths[m_firstVisibleChunkIndex - subsupportChunkCount];
@@ -358,7 +375,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 		serHeader->m_bondHealthsOffset = (uint32_t)offset;
 		float* serBondHealths = serHeader->getBondHealths();
 		const float* bondHealths = header->getBondHealths();
-		for (Nv::Blast::Actor::GraphNodeIt i = *this; (bool)i; ++i)
+		for (Actor::GraphNodeIt i = *this; (bool)i; ++i)
 		{
 			const uint32_t graphNodeIndex = (uint32_t)i;
 			for (uint32_t adjacentIndex = graphAdjacencyPartition[graphNodeIndex]; adjacentIndex < graphAdjacencyPartition[graphNodeIndex + 1]; ++adjacentIndex)
@@ -372,7 +389,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 					{
 						if (offset >= bufferSize)
 						{
-							NVBLAST_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
+							NVBLASTLL_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
 							return 0;	// Buffer size insufficient
 						}
 						const uint32_t adjacentBondIndex = graphAdjacentBondIndices[adjacentIndex];
@@ -391,12 +408,12 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 		offset = align16(offset + m_graphNodeCount*sizeof(uint32_t));
 		if (offset > bufferSize)
 		{
-			NVBLAST_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
+			NVBLASTLL_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
 			return 0;	// Buffer size insufficient
 		}
 		uint32_t* serFastRoute = serHeader->getFastRoute();
 		const uint32_t* fastRoute = header->getFamilyGraph()->getFastRoute();
-		for (Nv::Blast::Actor::GraphNodeIt i = *this; (bool)i; ++i)
+		for (Actor::GraphNodeIt i = *this; (bool)i; ++i)
 		{
 			*serFastRoute++ = fastRoute[(uint32_t)i];
 		}
@@ -408,12 +425,12 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 		offset = align16(offset + m_graphNodeCount*sizeof(uint32_t));
 		if (offset > bufferSize)
 		{
-			NVBLAST_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
+			NVBLASTLL_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
 			return 0;	// Buffer size insufficient
 		}
 		uint32_t* serHopCounts = serHeader->getHopCounts();
 		const uint32_t* hopCounts = header->getFamilyGraph()->getHopCounts();
-		for (Nv::Blast::Actor::GraphNodeIt i = *this; (bool)i; ++i)
+		for (Actor::GraphNodeIt i = *this; (bool)i; ++i)
 		{
 			*serHopCounts++ = hopCounts[(uint32_t)i];
 		}
@@ -426,7 +443,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 		offset = align16(offset + FixedBoolArray::requiredMemorySize(serBondCount));
 		if (offset > bufferSize)
 		{
-			NVBLAST_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
+			NVBLASTLL_LOG_ERROR(logFn, "Nv::Blast::Actor::serialize: buffer size exceeded.");
 			return 0;	// Buffer size insufficient
 		}
 		uint32_t serBondIndex = 0;
@@ -434,7 +451,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 		new (serEdgeRemovedArray)FixedBoolArray(serBondCount);
 		serEdgeRemovedArray->fill();	// Reset bits as we find bonds
 		const FixedBoolArray* edgeRemovedArray = header->getFamilyGraph()->getIsEdgeRemoved();
-		for (Nv::Blast::Actor::GraphNodeIt i = *this; (bool)i; ++i)
+		for (Actor::GraphNodeIt i = *this; (bool)i; ++i)
 		{
 			const uint32_t graphNodeIndex = (uint32_t)i;
 			for (uint32_t adjacentIndex = graphAdjacencyPartition[graphNodeIndex]; adjacentIndex < graphAdjacencyPartition[graphNodeIndex + 1]; ++adjacentIndex)
@@ -468,7 +485,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 uint32_t Actor::serializationRequiredStorage(NvBlastLog logFn) const
 {
 	const Asset* asset = getAsset();
-	const Nv::Blast::SupportGraph& graph = asset->m_graph;
+	const SupportGraph& graph = asset->m_graph;
 	const uint32_t* graphChunkIndices = graph.getChunkIndices();
 	const uint32_t* graphAdjacencyPartition = graph.getAdjacencyPartition();
 	const uint32_t* graphAdjacentNodeIndices = graph.getAdjacentNodeIndices();
@@ -515,7 +532,7 @@ uint32_t Actor::serializationRequiredStorage(NvBlastLog logFn) const
 
 	if (dataSize > UINT32_MAX)
 	{
-		NVBLAST_LOG_WARNING(logFn, "Nv::Blast::Actor::serializationRequiredStorage: Serialization block size exceeds 4GB.  Returning 0.\n");
+		NVBLASTLL_LOG_WARNING(logFn, "Nv::Blast::Actor::serializationRequiredStorage: Serialization block size exceeds 4GB.  Returning 0.\n");
 		return 0;
 	}
 
@@ -533,13 +550,13 @@ extern "C"
 
 uint32_t NvBlastActorGetSerializationSize(const NvBlastActor* actor, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(actor != nullptr, logFn, "NvBlastActorGetSerializationSize: NULL actor pointer input.", return 0);
+	NVBLASTLL_CHECK(actor != nullptr, logFn, "NvBlastActorGetSerializationSize: NULL actor pointer input.", return 0);
 
 	const Nv::Blast::Actor& a = *static_cast<const Nv::Blast::Actor*>(actor);
 
 	if (!a.isActive())
 	{
-		NVBLAST_LOG_ERROR(logFn, "NvBlastActorGetSerializationSize: inactive actor pointer input.");
+		NVBLASTLL_LOG_ERROR(logFn, "NvBlastActorGetSerializationSize: inactive actor pointer input.");
 		return 0;
 	}
 
@@ -549,14 +566,14 @@ uint32_t NvBlastActorGetSerializationSize(const NvBlastActor* actor, NvBlastLog 
 
 uint32_t NvBlastActorSerialize(void* buffer, uint32_t bufferSize, const NvBlastActor* actor, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(buffer != nullptr, logFn, "NvBlastActorSerialize: NULL buffer pointer input.", return 0);
-	NVBLAST_CHECK(actor != nullptr, logFn, "NvBlastActorSerialize: NULL actor pointer input.", return 0);
+	NVBLASTLL_CHECK(buffer != nullptr, logFn, "NvBlastActorSerialize: NULL buffer pointer input.", return 0);
+	NVBLASTLL_CHECK(actor != nullptr, logFn, "NvBlastActorSerialize: NULL actor pointer input.", return 0);
 
 	const Nv::Blast::Actor& a = *static_cast<const Nv::Blast::Actor*>(actor);
 
 	if (!a.isActive())
 	{
-		NVBLAST_LOG_ERROR(logFn, "NvBlastActorSerialize: inactive actor pointer input.");
+		NVBLASTLL_LOG_ERROR(logFn, "NvBlastActorSerialize: inactive actor pointer input.");
 		return 0;
 	}
 
@@ -566,8 +583,8 @@ uint32_t NvBlastActorSerialize(void* buffer, uint32_t bufferSize, const NvBlastA
 
 NvBlastActor* NvBlastFamilyDeserializeActor(NvBlastFamily* family, const void* buffer, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(family != nullptr, logFn, "NvBlastFamilyDeserializeActor: NULL family input.  No actor deserialized.", return nullptr);
-	NVBLAST_CHECK(buffer != nullptr, logFn, "NvBlastFamilyDeserializeActor: NULL buffer pointer input.  No actor deserialized.", return nullptr);
+	NVBLASTLL_CHECK(family != nullptr, logFn, "NvBlastFamilyDeserializeActor: NULL family input.  No actor deserialized.", return nullptr);
+	NVBLASTLL_CHECK(buffer != nullptr, logFn, "NvBlastFamilyDeserializeActor: NULL buffer pointer input.  No actor deserialized.", return nullptr);
 
 	return Nv::Blast::Actor::deserialize(family, buffer, logFn);
 }

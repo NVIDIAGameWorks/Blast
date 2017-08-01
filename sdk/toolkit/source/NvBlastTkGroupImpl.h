@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTTKGROUPIMPL_H
 #define NVBLASTTKGROUPIMPL_H
@@ -34,20 +52,25 @@ public:
 
 	NVBLASTTK_IMPL_DEFINE_IDENTIFIABLE('G', 'R', 'P', '\0');
 
-	static TkGroupImpl*	create(const TkGroupDesc& desc);
+	static TkGroupImpl*		create(const TkGroupDesc& desc);
 
 	// Begin TkGroup
-	virtual bool		addActor(TkActor& actor) override;
+	virtual bool			addActor(TkActor& actor) override;
 
-	virtual uint32_t	getActorCount() const override;
+	virtual uint32_t		getActorCount() const override;
 
-	virtual uint32_t	getActors(TkActor** buffer, uint32_t bufferSize, uint32_t indexStart = 0) const override;
+	virtual uint32_t		getActors(TkActor** buffer, uint32_t bufferSize, uint32_t indexStart = 0) const override;
 
-	virtual bool		process() override;
+	virtual uint32_t		startProcess() override;
+	virtual bool			endProcess() override;
 
-	virtual bool		sync(bool block = true) override;
+	virtual void			getStats(TkGroupStats& stats) const override;
 
-	virtual void		getStats(TkGroupStats& stats) const override;
+	virtual void			setWorkerCount(uint32_t workerCount) override;
+	virtual uint32_t		getWorkerCount() const override;
+
+	virtual TkGroupWorker*	acquireWorker() override;
+	virtual void			returnWorker(TkGroupWorker*) override;
 	// End TkGroup
 
 	// TkGroupImpl API
@@ -55,54 +78,51 @@ public:
 	/**
 	Remove the actor from this group if the actor actually belongs to it and the group is not processing.
 
-	\param[in]	actor	The TkActor to remove.
+	\param[in]	actor		The TkActor to remove.
 
-	\return				true if removing succeeded, false otherwise
+	\return					true if removing succeeded, false otherwise
 	*/
-	bool				removeActor(TkActor& actor);
+	bool					removeActor(TkActor& actor);
 
 	/**
 	Add the actor to this group's job queue. 
 	It is the caller's responsibility to add an actor only once. This condition is checked in debug builds.
 	*/
-	void				enqueue(TkActorImpl* tkActor);
+	void					enqueue(TkActorImpl* tkActor);
 
 	/**
 	Atomically check if this group is processing actors. @see setProcessing()
 
 	\return				true between process() and sync() calls, false otherwise
 	*/
-	bool				isProcessing() const;
+	bool					isProcessing() const;
 
 private:
 	/**
 	Atomically set the processing state. This function checks for the current state
 	before changing it. @see isProcessing()
 
-	\param[in]	value	the value of the new state
+	\param[in]	value		the value of the new state
 
-	\return				true if the new state could be set, false otherwise
+	\return					true if the new state could be set, false otherwise
 	*/
-	bool				setProcessing(bool value);
+	bool					setProcessing(bool value);
 
 	/** 
 	Get the group-family shared memory for the specified family. To be used when the memory is expected to already exist.
 	*/
-	SharedMemory*		getSharedMemory(TkFamilyImpl* family);
-	void				releaseSharedMemory(TkFamilyImpl* fam, SharedMemory* mem);
+	SharedMemory*			getSharedMemory(TkFamilyImpl* family);
+	void					releaseSharedMemory(TkFamilyImpl* fam, SharedMemory* mem);
 
 	// functions to add/remove actors _without_ group-family memory management
-	void				addActorInternal(TkActorImpl& tkActor);
-	void				addActorsInternal(TkActorImpl** actors, uint32_t numActors);
-	void				removeActorInternal(TkActorImpl& tkActor);
+	void					addActorInternal(TkActorImpl& tkActor);
+	void					addActorsInternal(TkActorImpl** actors, uint32_t numActors);
+	void					removeActorInternal(TkActorImpl& tkActor);
 
-
-	physx::PxTaskManager*							m_pxTaskManager;		//!< the task manager used to dispatch workers
-	uint32_t										m_initialNumThreads;	//!< tracks the number of worker threads
 
 	uint32_t										m_actorCount;			//!< number of actors in this group
 
-	TkHashMap<TkFamilyImpl*, SharedMemory*>::type	m_sharedMemory;			//!< memory sharable by actors in the same family in this group
+	HashMap<TkFamilyImpl*, SharedMemory*>::type		m_sharedMemory;			//!< memory sharable by actors in the same family in this group
 
 	// it is assumed no more than the asset's number of bond and chunks fracture commands are produced
 	SharedBlock<NvBlastChunkFractureData>			m_chunkTempDataBlock;	//!< chunk data for damage/fracture
@@ -112,16 +132,16 @@ private:
 	SharedBlock<char>								m_splitScratchBlock;	//!< split scratch memory 
 
 	std::atomic<bool>								m_isProcessing;			//!< true while workers are processing
-	TaskSync										m_sync;					//!< keeps track of finished workers
 
-	TkArray<TkWorker>::type							m_workers;				//!< this group's workers
-	TkAtomicJobQueue								m_jobQueue;				//!< shared job queue for workers
+	Array<TkWorker>::type							m_workers;				//!< this group's workers
 
-	TkArray<TkWorkerJob>::type						m_jobs;					//!< this group's process jobs
+	Array<TkWorkerJob>::type						m_jobs;					//!< this group's process jobs
 
 //#if NV_PROFILE
 	TkGroupStats									m_stats;				//!< accumulated group's worker stats
 //#endif
+
+	std::mutex	m_workerMtx;
 
 	friend class TkWorker;
 };

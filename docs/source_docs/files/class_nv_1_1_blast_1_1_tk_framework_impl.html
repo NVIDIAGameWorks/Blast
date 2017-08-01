@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::TkFrameworkImpl Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::TkFrameworkImpl Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -67,24 +67,11 @@ Inheritance diagram for Nv::Blast::TkFrameworkImpl:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#a2c0a8e8db4ba338bc7c35db417ce122">createJoint</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_tk_joint_desc.html">TkJointDesc</a> &amp;desc) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_tk_serializable.html">TkSerializable</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#38b505f3e84a26e516ac99c5aea19761">deserialize</a> (physx::general_PxIOStream2::PxFileBuf &amp;stream) override</td></tr>
-
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#60e047e544757a625b123fb633194d80">ensureAssetExactSupportCoverage</a> (<a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount) const override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_tk_identifiable.html">TkIdentifiable</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#30c107f6e6a83b7eba0de851bc67af73">findObjectByID</a> (const <a class="el" href="struct_nv_blast_i_d.html">NvBlastID</a> &amp;id) const override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_tk_identifiable.html">TkIdentifiable</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#95f2ae1d3cce13ce93fdde0c06b7c097">findObjectByIDInternal</a> (const <a class="el" href="struct_nv_blast_i_d.html">NvBlastID</a> &amp;id) const </td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <br class="typebreak">
-physx::PxAllocatorCallback &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#f1b9ce36da7494909359b1ec4656d604">getAllocatorCallback</a> () const override</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxAllocatorCallback &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#73ba3c8e350e7809c8f3c530bcc73a0e">getAllocatorCallbackInternal</a> () const </td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual physx::PxErrorCallback &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#51a2ec81f3dbb75b170319602e2cb5c4">getErrorCallback</a> () const override</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxErrorCallback &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#e24103f12d39e5feeac7c8a9a16f09ad">getErrorCallbackInternal</a> () const </td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#496780a06857ea9f04b456c51d655d40">getLogFn</a> () const override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#4332119be0c96bc812f2911cb9528ffd">getObjectCount</a> (const <a class="el" href="class_nv_1_1_blast_1_1_tk_type.html">TkType</a> &amp;type) const override</td></tr>
 
@@ -104,40 +91,28 @@ physx::PxAllocatorCallback &amp;&nbsp;</td><td class="memItemRight" valign="bott
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#9375502b9aadd680afa1bd2e3fba9e48">release</a> () override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#e9676d87343ea45be3dd1e83ad937f54">reorderAssetDescChunks</a> (<a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *bondDescs, uint32_t bondCount, uint32_t *chunkReorderMap=nullptr) const override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#d7a2e15a8ebca7995a5653d5efdd82a7">reorderAssetDescChunks</a> (<a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *bondDescs, uint32_t bondCount, uint32_t *chunkReorderMap=nullptr, bool keepBondNormalChunkOrder=false) const override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#7ad98d012d6711e09985ef334f89c538">serializeHeader</a> (const <a class="el" href="class_nv_1_1_blast_1_1_tk_serializable.html">TkSerializable</a> &amp;object, physx::general_PxIOStream2::PxFileBuf &amp;stream)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#35d33007587949a1569388ba5fec8459">TkFrameworkImpl</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_tk_framework_desc.html">TkFrameworkDesc</a> &amp;desc)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#53ce3a88183164bfab8541b193d98e38">TkFrameworkImpl</a> ()</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#b9761e9be425a9ddb71f1293920e11ac">~TkFrameworkImpl</a> ()</td></tr>
 
 <tr><td colspan="2"><br><h2>Static Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static void *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#a38e2caa47f9ae268d4326ae7f5dd020">alloc</a> (size_t size)</td></tr>
-
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">A function with the std::malloc signature which returns 16-byte aligned memory.  <a href="#a38e2caa47f9ae268d4326ae7f5dd020"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#b98bfbc3392010df818f7bb538902cd0">free</a> (void *mem)</td></tr>
-
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">A function with the std::free signature which can deallocate memory created by alloc.  <a href="#b98bfbc3392010df818f7bb538902cd0"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html">TkFrameworkImpl</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#0c7167f8fd55e170e52cd194c597ad18">get</a> ()</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#8d8f4af0889c747672c929ad50f34221">log</a> (int type, const char *msg, const char *file, int line)</td></tr>
-
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">A function with the NvBlastLog signature which can be used in NvBlast low-level function calls.  <a href="#8d8f4af0889c747672c929ad50f34221"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">static bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html#822f1e27b1a3cca2442f7576cb40d25b">set</a> (<a class="el" href="class_nv_1_1_blast_1_1_tk_framework_impl.html">TkFrameworkImpl</a> *framework)</td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Implementation of <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> <hr><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" name="35d33007587949a1569388ba5fec8459"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::TkFrameworkImpl" ref="35d33007587949a1569388ba5fec8459" args="(const TkFrameworkDesc &amp;desc)" -->
+<a class="anchor" name="53ce3a88183164bfab8541b193d98e38"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::TkFrameworkImpl" ref="53ce3a88183164bfab8541b193d98e38" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">Nv::Blast::TkFrameworkImpl::TkFrameworkImpl           </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_tk_framework_desc.html">TkFrameworkDesc</a> &amp;&nbsp;</td>
-          <td class="paramname"> <em>desc</em>          </td>
+          <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
           <td></td>
         </tr>
@@ -169,28 +144,6 @@ Implementation of <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="a38e2caa47f9ae268d4326ae7f5dd020"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::alloc" ref="a38e2caa47f9ae268d4326ae7f5dd020" args="(size_t size)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">static void* Nv::Blast::TkFrameworkImpl::alloc           </td>
-          <td>(</td>
-          <td class="paramtype">size_t&nbsp;</td>
-          <td class="paramname"> <em>size</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-A function with the std::malloc signature which returns 16-byte aligned memory. 
-<p>
-
-</div>
-</div><p>
 <a class="anchor" name="8abe98c41d659ecdeb70b722450b56be"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::createActor" ref="8abe98c41d659ecdeb70b722450b56be" args="(const TkActorDesc &amp;desc) override" -->
 <div class="memitem">
 <div class="memproto">
@@ -362,38 +315,6 @@ A joint cannot be created between chunks within the same actor using this method
 
 </div>
 </div><p>
-<a class="anchor" name="38b505f3e84a26e516ac99c5aea19761"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::deserialize" ref="38b505f3e84a26e516ac99c5aea19761" args="(physx::general_PxIOStream2::PxFileBuf &amp;stream) override" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="class_nv_1_1_blast_1_1_tk_serializable.html">TkSerializable</a>* Nv::Blast::TkFrameworkImpl::deserialize           </td>
-          <td>(</td>
-          <td class="paramtype">physx::general_PxIOStream2::PxFileBuf &amp;&nbsp;</td>
-          <td class="paramname"> <em>stream</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [override, virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Deserialize an object from the given stream. Only objects derived from <a class="el" href="class_nv_1_1_blast_1_1_tk_serializable.html">TkSerializable</a> may be serialized and deserialized. Use the parent class method <a class="el" href="class_nv_1_1_blast_1_1_tk_identifiable.html#d156c3e85ee665c251e26ac86d3cf03b">TkIdentifiable::getType()</a> to know the type to which to cast the object.<p>
-Notes for different classes:<p>
-<a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a>: deserializing a serialized <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> will recreate the asset in memory with the same <a class="el" href="struct_nv_blast_i_d.html">NvBlastID</a> (see <a class="el" href="class_nv_1_1_blast_1_1_tk_identifiable.html#610a75ccff6579e5e54a59f2840f6630">TkIdentifiable::getID()</a>) as the original asset.<p>
-<a class="el" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a>: deserializing a serialized <a class="el" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a> will generate all <a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a> and <a class="el" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a> objects that were originally contained in the family. The <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> which generated the family must exist at the time the family is deserialized.<p>
-<dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>stream</em>&nbsp;</td><td>User-defined stream object.</td></tr>
-  </table>
-</dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>pointer the deserialized object if successful, or NULL if unsuccessful. </dd></dl>
-
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#902537856fc43e0d4dd04f9d1ba47bbf">Nv::Blast::TkFramework</a>.</p>
-
-</div>
-</div><p>
 <a class="anchor" name="60e047e544757a625b123fb633194d80"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::ensureAssetExactSupportCoverage" ref="60e047e544757a625b123fb633194d80" args="(NvBlastChunkDesc *chunkDescs, uint32_t chunkCount) const override" -->
 <div class="memitem">
 <div class="memproto">
@@ -484,28 +405,6 @@ Look up an object derived from <a class="el" href="class_nv_1_1_blast_1_1_tk_ide
 Internal (non-virtual) method to find a <a class="el" href="class_nv_1_1_blast_1_1_tk_identifiable.html">TkIdentifiable</a> object based upon its <a class="el" href="struct_nv_blast_i_d.html">NvBlastID</a>. 
 </div>
 </div><p>
-<a class="anchor" name="b98bfbc3392010df818f7bb538902cd0"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::free" ref="b98bfbc3392010df818f7bb538902cd0" args="(void *mem)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">static void Nv::Blast::TkFrameworkImpl::free           </td>
-          <td>(</td>
-          <td class="paramtype">void *&nbsp;</td>
-          <td class="paramname"> <em>mem</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-A function with the std::free signature which can deallocate memory created by alloc. 
-<p>
-
-</div>
-</div><p>
 <a class="anchor" name="0c7167f8fd55e170e52cd194c597ad18"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::get" ref="0c7167f8fd55e170e52cd194c597ad18" args="()" -->
 <div class="memitem">
 <div class="memproto">
@@ -523,107 +422,6 @@ A function with the std::free signature which can deallocate memory created by a
 
 <p>
 Retrieve the global singleton. 
-</div>
-</div><p>
-<a class="anchor" name="f1b9ce36da7494909359b1ec4656d604"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::getAllocatorCallback" ref="f1b9ce36da7494909359b1ec4656d604" args="() const override" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual physx::PxAllocatorCallback&amp; Nv::Blast::TkFrameworkImpl::getAllocatorCallback           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td> const<code> [override, virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Access to the allocator callback set by the user. 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#10c01b13eb802dc0262a93d248729055">Nv::Blast::TkFramework</a>.</p>
-
-</div>
-</div><p>
-<a class="anchor" name="73ba3c8e350e7809c8f3c530bcc73a0e"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::getAllocatorCallbackInternal" ref="73ba3c8e350e7809c8f3c530bcc73a0e" args="() const " -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">NV_INLINE physx::PxAllocatorCallback &amp; Nv::Blast::TkFrameworkImpl::getAllocatorCallbackInternal           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Access to the allocator callback set by the user. 
-</div>
-</div><p>
-<a class="anchor" name="51a2ec81f3dbb75b170319602e2cb5c4"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::getErrorCallback" ref="51a2ec81f3dbb75b170319602e2cb5c4" args="() const override" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual physx::PxErrorCallback&amp; Nv::Blast::TkFrameworkImpl::getErrorCallback           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td> const<code> [override, virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Access to the error callback set by the user. 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#d2155df8d8391e7682f3c93cf74db9ef">Nv::Blast::TkFramework</a>.</p>
-
-</div>
-</div><p>
-<a class="anchor" name="e24103f12d39e5feeac7c8a9a16f09ad"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::getErrorCallbackInternal" ref="e24103f12d39e5feeac7c8a9a16f09ad" args="() const " -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">NV_INLINE physx::PxErrorCallback &amp; Nv::Blast::TkFrameworkImpl::getErrorCallbackInternal           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Access to the error callback set by the user. 
-</div>
-</div><p>
-<a class="anchor" name="496780a06857ea9f04b456c51d655d40"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::getLogFn" ref="496780a06857ea9f04b456c51d655d40" args="() const override" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> Nv::Blast::TkFrameworkImpl::getLogFn           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td> const<code> [override, virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Access to a log function which can be used in <a class="el" href="namespace_nv_1_1_blast.html">Blast</a> low-level calls. This function uses the user-supplied PxErrorCallback (see <a class="el" href="struct_nv_1_1_blast_1_1_tk_framework_desc.html">TkFrameworkDesc</a>). 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#033e4c2f304ee859140a9c972ef12e75">Nv::Blast::TkFramework</a>.</p>
-
 </div>
 </div><p>
 <a class="anchor" name="4332119be0c96bc812f2911cb9528ffd"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::getObjectCount" ref="4332119be0c96bc812f2911cb9528ffd" args="(const TkType &amp;type) const override" -->
@@ -734,49 +532,6 @@ To find the type information for a given TkIdentifiable-derived class, use this 
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>type object associated with the object's class. </dd></dl>
 
 <p>Implements <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#c675c056796a68b29fb303b135eab416">Nv::Blast::TkFramework</a>.</p>
-
-</div>
-</div><p>
-<a class="anchor" name="8d8f4af0889c747672c929ad50f34221"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::log" ref="8d8f4af0889c747672c929ad50f34221" args="(int type, const char *msg, const char *file, int line)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">static void Nv::Blast::TkFrameworkImpl::log           </td>
-          <td>(</td>
-          <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&nbsp;</td>
-          <td class="paramname"> <em>msg</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&nbsp;</td>
-          <td class="paramname"> <em>file</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>line</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-A function with the NvBlastLog signature which can be used in NvBlast low-level function calls. 
-<p>
 
 </div>
 </div><p>
@@ -916,7 +671,7 @@ Release this framework and all contained objects. Global singleton is set to NUL
 
 </div>
 </div><p>
-<a class="anchor" name="e9676d87343ea45be3dd1e83ad937f54"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::reorderAssetDescChunks" ref="e9676d87343ea45be3dd1e83ad937f54" args="(NvBlastChunkDesc *chunkDescs, uint32_t chunkCount, NvBlastBondDesc *bondDescs, uint32_t bondCount, uint32_t *chunkReorderMap=nullptr) const override" -->
+<a class="anchor" name="d7a2e15a8ebca7995a5653d5efdd82a7"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::reorderAssetDescChunks" ref="d7a2e15a8ebca7995a5653d5efdd82a7" args="(NvBlastChunkDesc *chunkDescs, uint32_t chunkCount, NvBlastBondDesc *bondDescs, uint32_t bondCount, uint32_t *chunkReorderMap=nullptr, bool keepBondNormalChunkOrder=false) const override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -948,7 +703,13 @@ Release this framework and all contained objects. Global singleton is set to NUL
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t *&nbsp;</td>
-          <td class="paramname"> <em>chunkReorderMap</em> = <code>nullptr</code></td><td>&nbsp;</td>
+          <td class="paramname"> <em>chunkReorderMap</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>keepBondNormalChunkOrder</em> = <code>false</code></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -965,46 +726,18 @@ This is a convenience wrapper for the low-level NvBlastReorderAssetDescChunks fu
 This function may modify both the chunkDescs and bondDescs array, since rearranging chunk descriptors requires re-indexing within the bond descriptors.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkDescs</em>&nbsp;</td><td>Array of chunk descriptors of size chunkCount. It will be updated accordingly. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkDescs</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of chunk descriptors of size chunkCount. It will be updated accordingly. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkCount</em>&nbsp;</td><td>The number of chunk descriptors. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondDescs</em>&nbsp;</td><td>Array of bond descriptors of size chunkCount. It will be updated accordingly. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondDescs</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of bond descriptors of size chunkCount. It will be updated accordingly. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondCount</em>&nbsp;</td><td>The number of bond descriptors. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkReorderMap</em>&nbsp;</td><td>If not NULL, must be a pointer to a uint32_t array of size desc.chunkCount. Maps old chunk indices to the reordered chunk indices.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkReorderMap</em>&nbsp;</td><td>If not NULL, must be a pointer to a uint32_t array of size desc.chunkCount. Maps old chunk indices to the reordered chunk indices. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>keepBondNormalChunkOrder</em>&nbsp;</td><td>If true, bond normals will be flipped if their chunk index order was reveresed by the reorder map.</td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>true iff the chunks did not require reordering (chunkReorderMap is the identity map). </dd></dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#58b670d4e37ebb15894d00ed3abfe648">Nv::Blast::TkFramework</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html#5a0817a19d4f4c0f715d3a54fe25eadf">Nv::Blast::TkFramework</a>.</p>
 
-</div>
-</div><p>
-<a class="anchor" name="7ad98d012d6711e09985ef334f89c538"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::serializeHeader" ref="7ad98d012d6711e09985ef334f89c538" args="(const TkSerializable &amp;object, physx::general_PxIOStream2::PxFileBuf &amp;stream)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Nv::Blast::TkFrameworkImpl::serializeHeader           </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_tk_serializable.html">TkSerializable</a> &amp;&nbsp;</td>
-          <td class="paramname"> <em>object</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">physx::general_PxIOStream2::PxFileBuf &amp;&nbsp;</td>
-          <td class="paramname"> <em>stream</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Serialize a TkSerializable's standard header data, including its type ID, type version, object ID, and TkObject::userIntData. 
 </div>
 </div><p>
 <a class="anchor" name="822f1e27b1a3cca2442f7576cb40d25b"></a><!-- doxytag: member="Nv::Blast::TkFrameworkImpl::set" ref="822f1e27b1a3cca2442f7576cb40d25b" args="(TkFrameworkImpl *framework)" -->

@@ -3,10 +3,12 @@
 #include <QtWidgets/QInputDialog>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMessageBox>
+#include "SampleManager.h"
 
 GeneralPanel::GeneralPanel(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::GeneralPanel)
+    ui(new Ui::GeneralPanel),
+	_updateData(true)
 {
     ui->setupUi(this);
 }
@@ -18,48 +20,71 @@ GeneralPanel::~GeneralPanel()
 
 void GeneralPanel::updateValues()
 {
-	std::vector<StressSolverUserPreset> presets = BlastProject::ins().getUserPresets();
+	_updateData = false;
 	ui->comboBoxUserPreset->clear();
+	QStringList userPresets;
+	userPresets.append("Default");
+	std::vector<StressSolverUserPreset> presets = BlastProject::ins().getUserPresets();
 	int countUserPresets = (int)presets.size();
 	if (countUserPresets > 0)
 	{
-		QStringList userPresets;
 		for (int i = 0; i < countUserPresets; ++i)
 		{
 			userPresets.append(presets[i].name.c_str());
 		}
-		ui->comboBoxUserPreset->addItems(userPresets);
 	}
+	ui->comboBoxUserPreset->addItems(userPresets);
 
-	std::vector<BPPAsset*> selectedAssets = BlastProject::ins().getSelectedBlastAssets();
-	if (selectedAssets.size() > 0)
+	if (_selectedAssets.size() > 0)
 	{
-		ui->comboBoxUserPreset->setCurrentText(selectedAssets[0]->activePreset.buf);
+		if (nullptr == _selectedAssets[0]->activeUserPreset.buf
+			|| 0 == strlen(_selectedAssets[0]->activeUserPreset.buf)
+			|| !BlastProject::ins().isUserPresetNameExist(_selectedAssets[0]->activeUserPreset.buf))
+		{
+			ui->comboBoxUserPreset->setCurrentIndex(0);
+		}
+		else
+		{
+			ui->comboBoxUserPreset->setCurrentText(_selectedAssets[0]->activeUserPreset.buf);
+		}
 
 		_updateStressSolverUIs();
 	}
 	else
 	{
-		ui->comboBoxUserPreset->setCurrentIndex(-1);
-
+		ui->comboBoxUserPreset->setCurrentIndex(0);
 	}
+	_updateData = true;
+}
+
+void GeneralPanel::dataSelected(std::vector<BlastNode*> selections)
+{
+	_selectedAssets.clear();
+
+	for (BlastNode* node : selections)
+	{
+		if (eAsset == node->getType())
+		{
+			BPPAsset* asset = static_cast<BPPAsset*>(node->getData());
+			_selectedAssets.push_back(asset);
+		}
+	}
+
+	updateValues();
 }
 
 void GeneralPanel::on_comboBoxUserPreset_currentIndexChanged(int index)
 {
-	std::vector<BPPAsset*> assets = BlastProject::ins().getSelectedBlastAssets();
-	for (size_t i = 0; i < assets.size(); ++i)
+	if (!_updateData)
+		return;
+
+	for (size_t i = 0; i < _selectedAssets.size(); ++i)
 	{
 		QByteArray tem = ui->comboBoxUserPreset->currentText().toUtf8();
-		copy(assets[i]->activePreset, tem.data());
-
-		BPPStressSolver* preset = _getUserPreset(tem.data());
-		if (preset)
-		{
-			copy(assets[i]->stressSolver, *preset);
-		}
+		copy(_selectedAssets[i]->activeUserPreset, tem.data());
 	}
 	_updateStressSolverUIs();
+	_updateStressSolverToBlast();
 }
 
 void GeneralPanel::on_btnAddUserPreset_clicked()
@@ -90,7 +115,7 @@ void GeneralPanel::on_btnAddUserPreset_clicked()
 
 void GeneralPanel::on_btnModifyUserPreset_clicked()
 {
-	if (ui->comboBoxUserPreset->currentIndex() == -1)
+	if (ui->comboBoxUserPreset->currentIndex() < 1)
 	{
 		QMessageBox::warning(this, "Blast Tool", "You should select an user preset!");
 		return;
@@ -109,12 +134,14 @@ void GeneralPanel::on_btnModifyUserPreset_clicked()
 	bool nameExist = BlastProject::ins().isUserPresetNameExist(newName.toUtf8().data());
 	if (ok && !newName.isEmpty() && !nameExist)
 	{
-		int curIndex = ui->comboBoxUserPreset->currentIndex();
-
-		std::vector<StressSolverUserPreset>& presets = BlastProject::ins().getUserPresets();
-		presets[curIndex].name = newName.toUtf8().data();
-		updateValues();
-		ui->comboBoxUserPreset->setCurrentIndex(curIndex);
+		int curIndex = ui->comboBoxUserPreset->currentIndex() - 1;
+		if (curIndex >= 0)
+		{
+			std::vector<StressSolverUserPreset>& presets = BlastProject::ins().getUserPresets();
+			presets[curIndex].name = newName.toUtf8().data();
+			updateValues();
+			ui->comboBoxUserPreset->setCurrentIndex(curIndex + 1);
+		}
 	}
 	else if (ok && nameExist)
 	{
@@ -122,130 +149,133 @@ void GeneralPanel::on_btnModifyUserPreset_clicked()
 	}
 	else if (ok && newName.isEmpty())
 	{
-		QMessageBox::warning(this, "Blast Tool", "You need input a name for the selected graphics material!");
+		QMessageBox::warning(this, "Blast Tool", "You need input a name for the selected preset!");
 	}
 }
 
 void GeneralPanel::on_btnSaveUserPreset_clicked()
 {
-	int currentUserPreset = ui->comboBoxUserPreset->currentIndex();
-	if (-1 != currentUserPreset)
-	{
-		std::vector<StressSolverUserPreset>& presets = BlastProject::ins().getUserPresets();
-		BPPStressSolver& stressSolver = presets[currentUserPreset].stressSolver;
-		stressSolver.solverMode = ui->comboBoxSolverMode->currentIndex();
-		stressSolver.linearFactor = ui->spinBoxLinearFactor->value();
-		stressSolver.angularFactor = ui->spinBoxAngularFactor->value();
-		stressSolver.meanError = ui->spinBoxMeanError->value();
-		stressSolver.varianceError = ui->spinBoxVarianceError->value();
-		stressSolver.bondsPerFrame = ui->spinBoxBondsPerFrame->value();
-		stressSolver.bondsIterations = ui->spinBoxBondsIterations->value();
-	}
-
 	BlastProject::ins().saveUserPreset();
 }
 
-void GeneralPanel::on_comboBoxSolverMode_currentIndexChanged(int index)
+void GeneralPanel::on_spinBoxMaterialHardness_valueChanged(double arg1)
 {
-	BPPStressSolver* stressSolver = _getCurrentStressSolver();
+	if (!_updateData)
+		return;
+
+	BPPStressSolver* stressSolver = _getCurrentUserPresetStressSolver();
 
 	if (stressSolver)
 	{
-		stressSolver->solverMode = index;
+		stressSolver->hardness = arg1;
 	}
+	else
+	{
+		for (BPPAsset* asset : _selectedAssets)
+		{
+			asset->stressSolver.hardness = arg1;
+		}
+	}
+
+	_updateStressSolverToBlast();
 }
 
 void GeneralPanel::on_spinBoxLinearFactor_valueChanged(double arg1)
 {
-	BPPStressSolver* stressSolver = _getCurrentStressSolver();
+	if (!_updateData)
+		return;
+
+	BPPStressSolver* stressSolver = _getCurrentUserPresetStressSolver();
 
 	if (stressSolver)
 	{
 		stressSolver->linearFactor = arg1;
 	}
-	
+	else
+	{
+		for (BPPAsset* asset : _selectedAssets)
+		{
+			asset->stressSolver.linearFactor = arg1;
+		}
+	}
+
+	_updateStressSolverToBlast();
 }
 
 void GeneralPanel::on_spinBoxAngularFactor_valueChanged(double arg1)
 {
-	BPPStressSolver* stressSolver = _getCurrentStressSolver();
+	if (!_updateData)
+		return;
+
+	BPPStressSolver* stressSolver = _getCurrentUserPresetStressSolver();
 
 	if (stressSolver)
 	{
 		stressSolver->angularFactor = arg1;
 	}
-}
-
-void GeneralPanel::on_spinBoxMeanError_valueChanged(double arg1)
-{
-	BPPStressSolver* stressSolver = _getCurrentStressSolver();
-
-	if (stressSolver)
-	{
-		stressSolver->meanError = arg1;
-	}
-}
-
-void GeneralPanel::on_spinBoxVarianceError_valueChanged(double arg1)
-{
-	BPPStressSolver* stressSolver = _getCurrentStressSolver();
-
-	if (stressSolver)
-	{
-		stressSolver->varianceError = arg1;
-	}
-}
-
-void GeneralPanel::on_spinBoxBondsPerFrame_valueChanged(int arg1)
-{
-	BPPStressSolver* stressSolver = _getCurrentStressSolver();
-
-	if (stressSolver)
-	{
-		stressSolver->bondsPerFrame = arg1;
-	}
-}
-
-void GeneralPanel::on_spinBoxBondsIterations_valueChanged(int arg1)
-{
-	BPPStressSolver* stressSolver = _getCurrentStressSolver();
-
-	if (stressSolver)
-	{
-		stressSolver->bondsIterations = arg1;
-	}
-}
-
-BPPStressSolver* GeneralPanel::_getCurrentStressSolver()
-{
-	int currentUserPreset = ui->comboBoxUserPreset->currentIndex();
-
-	if (-1 != currentUserPreset)
-	{
-		std::vector<StressSolverUserPreset>& presets = BlastProject::ins().getUserPresets();
-		return &(presets[currentUserPreset].stressSolver);
-	}
 	else
 	{
-		std::vector<BPPAsset*> assets = BlastProject::ins().getSelectedBlastAssets();
-
-		if (assets.size() > 0)
+		for (BPPAsset* asset : _selectedAssets)
 		{
-			return &(assets[0]->stressSolver);
+			asset->stressSolver.angularFactor = arg1;
 		}
 	}
 
-	return nullptr;
+	_updateStressSolverToBlast();
 }
 
-BPPStressSolver* GeneralPanel::_getUserPreset(const char* name)
+void GeneralPanel::on_spinBoxBondIterations_valueChanged(int arg1)
 {
-	std::vector<StressSolverUserPreset>& presets = BlastProject::ins().getUserPresets();
+	if (!_updateData)
+		return;
 
-	for (size_t i = 0; i < presets.size(); ++i)
+	BPPStressSolver* stressSolver = _getCurrentUserPresetStressSolver();
+
+	if (stressSolver)
 	{
-		if (presets[i].name == name)
-			return &(presets[i].stressSolver);
+		stressSolver->bondIterationsPerFrame = arg1;
+	}
+	else
+	{
+		for (BPPAsset* asset : _selectedAssets)
+		{
+			asset->stressSolver.bondIterationsPerFrame = arg1;
+		}
+	}
+
+	_updateStressSolverToBlast();
+}
+
+void GeneralPanel::on_spinBoxGraphReductionLevel_valueChanged(int arg1)
+{
+	if (!_updateData)
+		return;
+
+	BPPStressSolver* stressSolver = _getCurrentUserPresetStressSolver();
+
+	if (stressSolver)
+	{
+		stressSolver->graphReductionLevel = arg1;
+	}
+	else
+	{
+		for (BPPAsset* asset : _selectedAssets)
+		{
+			asset->stressSolver.graphReductionLevel = arg1;
+		}
+	}
+
+	_updateStressSolverToBlast();
+}
+
+BPPStressSolver* GeneralPanel::_getCurrentUserPresetStressSolver()
+{
+	int currentUserPreset = ui->comboBoxUserPreset->currentIndex();
+
+	if (0 < currentUserPreset)
+	{
+		std::vector<StressSolverUserPreset>& presets = BlastProject::ins().getUserPresets();
+		return &(presets[currentUserPreset - 1].stressSolver);
 	}
 
 	return nullptr;
@@ -253,29 +283,33 @@ BPPStressSolver* GeneralPanel::_getUserPreset(const char* name)
 
 void GeneralPanel::_updateStressSolverUIs()
 {
-	BPPStressSolver* stressSolver = _getCurrentStressSolver();
-	if (stressSolver != nullptr)
+	BPPStressSolver noStressSolver;
+	init(noStressSolver);
+	BPPStressSolver* stressSolver = _getCurrentUserPresetStressSolver();
+	if (stressSolver == nullptr)
 	{
-		ui->comboBoxSolverMode->setCurrentIndex(stressSolver->solverMode);
-		ui->spinBoxLinearFactor->setValue(stressSolver->linearFactor);
-		ui->spinBoxAngularFactor->setValue(stressSolver->angularFactor);
-		ui->spinBoxMeanError->setValue(stressSolver->meanError);
-		ui->spinBoxVarianceError->setValue(stressSolver->varianceError);
-		ui->spinBoxBondsPerFrame->setValue(stressSolver->bondsPerFrame);
-		ui->spinBoxBondsIterations->setValue(stressSolver->bondsIterations);
-	}
-	else
-	{
-		BPPStressSolver noStressSolver;
-		init(noStressSolver);
-		
-		ui->comboBoxSolverMode->setCurrentIndex(noStressSolver.solverMode);
-		ui->spinBoxLinearFactor->setValue(noStressSolver.linearFactor);
-		ui->spinBoxAngularFactor->setValue(noStressSolver.angularFactor);
-		ui->spinBoxMeanError->setValue(noStressSolver.meanError);
-		ui->spinBoxVarianceError->setValue(noStressSolver.varianceError);
-		ui->spinBoxBondsPerFrame->setValue(noStressSolver.bondsPerFrame);
-		ui->spinBoxBondsIterations->setValue(noStressSolver.bondsIterations);
+		if (0 < _selectedAssets.size())
+		{
+			copy(noStressSolver, _selectedAssets[0]->stressSolver);
+		}
+		stressSolver = &noStressSolver;
 	}
 
+	_updateData = false;
+	ui->spinBoxMaterialHardness->setValue(stressSolver->hardness);
+	ui->spinBoxLinearFactor->setValue(stressSolver->linearFactor);
+	ui->spinBoxAngularFactor->setValue(stressSolver->angularFactor);
+	ui->spinBoxBondIterations->setValue(stressSolver->bondIterationsPerFrame);
+	ui->spinBoxGraphReductionLevel->setValue(stressSolver->graphReductionLevel);
+	_updateData = true;
+}
+
+void GeneralPanel::_updateStressSolverToBlast()
+{
+	BPPStressSolver* stressSolver = _getCurrentUserPresetStressSolver();
+
+	for (BPPAsset* asset : _selectedAssets)
+	{
+		SampleManager::ins()->updateAssetFamilyStressSolver(asset, nullptr != stressSolver? *stressSolver : asset->stressSolver);
+	}
 }

@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "NvBlastExtAuthoringAccelerator.h"
 #include "NvBlastExtAuthoringMesh.h"
@@ -25,16 +43,16 @@ DummyAccelerator::DummyAccelerator(int32_t count) :count(count)
 {
 	current = 0;
 }
-void DummyAccelerator::setState(Vertex* pos, Edge* ed, Facet& fc)
+void DummyAccelerator::setState(const Vertex* pos, const Edge* ed, const Facet& fc)
 {
 	current = 0;
-	(void)pos;
-	(void)ed;
-	(void)fc;
+	NV_UNUSED(pos);
+	NV_UNUSED(ed);
+	NV_UNUSED(fc);
 }
 void DummyAccelerator::setState(const physx::PxVec3& point) {
 	current = 0;
-	(void)point;
+	NV_UNUSED(point);
 }
 int32_t DummyAccelerator::getNextFacet()
 {
@@ -49,7 +67,7 @@ int32_t DummyAccelerator::getNextFacet()
 
 
 
-BBoxBasedAccelerator::BBoxBasedAccelerator(Mesh* mesh, int32_t resolution) : mResolution(resolution), alreadyGotValue(1)
+BBoxBasedAccelerator::BBoxBasedAccelerator(const Mesh* mesh, int32_t resolution) : mResolution(resolution), alreadyGotValue(1)
 {
 	mBounds = mesh->getBoundingBox();
 	mSpatialMap.resize(resolution * resolution * resolution);
@@ -124,14 +142,14 @@ int32_t BBoxBasedAccelerator::getNextFacet()
 	}
 	return facetId;
 }
-void BBoxBasedAccelerator::setState(Vertex* pos, Edge* ed, Facet& fc)
+void BBoxBasedAccelerator::setState(const Vertex* pos, const Edge* ed, const Facet& fc)
 {
 	alreadyGotValue++;
 	mIteratorCell = -1;
 	mIteratorFacet = -1;
 	cellList.clear();
 	facetBox.setEmpty();
-	Edge* edge = ed + fc.firstEdgeNumber;
+	const Edge* edge = ed + fc.firstEdgeNumber;
 	uint32_t count = fc.edgesCount;
 	for (uint32_t ec = 0; ec < count; ++ec)
 	{
@@ -195,13 +213,13 @@ bool BBoxBasedAccelerator::testCellPolygonIntersection(int32_t cellId, PxBounds3
 		return false;
 }
 
-void BBoxBasedAccelerator::buildAccelStructure(Vertex* pos, Edge* edges, Facet* fc, int32_t facetCount)
+void BBoxBasedAccelerator::buildAccelStructure(const Vertex* pos, const Edge* edges, const Facet* fc, int32_t facetCount)
 {
 	for (int32_t facet = 0; facet < facetCount; ++facet)
 	{
 		PxBounds3 bBox;
 		bBox.setEmpty();
-		Edge* edge = &edges[0] + fc->firstEdgeNumber;
+		const Edge* edge = &edges[0] + fc->firstEdgeNumber;
 		int32_t count = fc->edgesCount;
 		for (int32_t ec = 0; ec < count; ++ec)
 		{
@@ -349,15 +367,15 @@ enum TrivialFlags
 
 
 
-int32_t testFacetUnitCubeIntersection(Vertex* vertices, Edge* edges, Facet& fc, PxBounds3 cube, float fattening)
+int32_t testFacetUnitCubeIntersection(const Vertex* vertices, const Edge* edges, const Facet& fc, PxBounds3 cube, float fattening)
 {
-	Edge* ed = edges + fc.firstEdgeNumber;
+	const Edge* ed = edges + fc.firstEdgeNumber;
 	int32_t trivialFlags = ALL_ONE;
 	cube.fattenFast(fattening);
 	for (uint32_t i = 0; i < fc.edgesCount; ++i)
 	{
 		{
-			PxVec3& p = vertices[ed->s].p;
+			const PxVec3& p = vertices[ed->s].p;
 			if (cube.contains(p))
 				return 1;
 			if (p.x < cube.getCenter().x + 0.5)
@@ -376,7 +394,7 @@ int32_t testFacetUnitCubeIntersection(Vertex* vertices, Edge* edges, Facet& fc, 
 				trivialFlags &= HAS_POINT_ABOVE_LOW_Z;
 		}
 		{
-			PxVec3& p = vertices[ed->e].p;
+			const PxVec3& p = vertices[ed->e].p;
 			if (cube.contains(p))
 				return 1;
 			if (p.x < cube.getCenter().x + 0.5)
@@ -411,9 +429,9 @@ int32_t testFacetUnitCubeIntersection(Vertex* vertices, Edge* edges, Facet& fc, 
 	/**
 		Compute normal
 	*/
-	PxVec3& v1 = vertices[ed->s].p;
-	PxVec3* v2 = nullptr;
-	PxVec3* v3 = nullptr;
+	const PxVec3& v1 = vertices[ed->s].p;
+	const PxVec3* v2 = nullptr;
+	const PxVec3* v3 = nullptr;
 	
 	for (uint32_t i = 0; i < fc.edgesCount; ++i)
 	{
@@ -476,7 +494,7 @@ int32_t testFacetUnitCubeIntersection(Vertex* vertices, Edge* edges, Facet& fc, 
 }
 
 
-IntersectionTestingAccelerator::IntersectionTestingAccelerator(Mesh* in, int32_t resolution)
+IntersectionTestingAccelerator::IntersectionTestingAccelerator(const Mesh* in, int32_t resolution)
 {
 
 
@@ -563,7 +581,7 @@ int32_t IntersectionTestingAccelerator::getNextFacet()
 	return facetId;
 }
 
-void IntersectionTestingAccelerator::setState(Vertex* pos, Edge* ed, Facet& fc)
+void IntersectionTestingAccelerator::setState(const Vertex* pos, const Edge* ed, const Facet& fc)
 {
 	alreadyGotValue++;
 	mIteratorCell = -1;

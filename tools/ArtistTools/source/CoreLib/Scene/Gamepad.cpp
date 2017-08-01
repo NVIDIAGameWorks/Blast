@@ -263,7 +263,7 @@ void ToggleSimulation()
 #endif // NV_ARTISTTOOLS
 }
 
-void StartAnimation()
+void PlaySample()
 {
 #ifndef NV_ARTISTTOOLS
 	GlobalSettings::Inst().toggleSimulation();
@@ -282,7 +282,7 @@ void StartAnimation()
 	// reset animation
 	//toolbar->on_btnResetAnimation_clicked();
 #else
-	CoreLib::Inst()->Gamepad_StartAnimation();
+	CoreLib::Inst()->Gamepad_PlaySample();
 #endif // NV_ARTISTTOOLS
 }
 
@@ -353,7 +353,7 @@ void LoadSamples(bool bNext)
 						continue;
 					QString fn = t.toLower();
 					std::string strFN = fn.toUtf8().data();
-					const char* ptest = strstr(strFN.c_str(), ".furproj");
+					const char* ptest = strstr(strFN.c_str(), ".blastProj");
 					if (ptest)
 					{
 						const char* pchar = strchr(strFN.c_str(), ':');
@@ -397,7 +397,7 @@ void LoadSamples(bool bNext)
 			if(!projectPath.isEmpty())
 			{
 				QStringList filters; 
-				filters<<QString("*.furproj"); 
+				filters<<QString("*.blastProj"); 
 				QDirIterator dir_iterator(projectPath, filters, QDir::Files | QDir::NoSymLinks,QDirIterator::Subdirectories);
 				while(dir_iterator.hasNext())
 				{
@@ -1259,13 +1259,13 @@ void Gamepad::DemoModeOnOff()
 void Gamepad::DemoNext()
 {
 	LoadSamples(true);
-	StartAnimation();
+	PlaySample();
 }
 
 void Gamepad::DemoPrev()
 {
 	LoadSamples(false);
-	StartAnimation();
+	PlaySample();
 }
 
 void Gamepad::SetDemoMode(bool onOff)
@@ -1278,9 +1278,6 @@ void Gamepad::SetDemoMode(bool onOff)
 	{
 		curentPrjIdx = -1;  // make it start from first demo
 		DemoNext();
-
-		// turn off FPS display
-		GlobalSettings::Inst().m_showFPS = false;
 	}
 	else
 	{

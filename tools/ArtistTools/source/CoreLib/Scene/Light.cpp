@@ -512,7 +512,7 @@ bool Light::SetEnvTextureFromFilePath(const char* textureFilePath)
 	m_envTextureFilePath = (textureFilePath) ? textureFilePath : "";
 
 	SAFE_RELEASE(m_pEnvTextureSRV);
-	if ((!textureFilePath) && (strlen(textureFilePath) > 0))
+	if ((textureFilePath) && (strlen(textureFilePath) > 0))
 		m_pEnvTextureSRV = RenderInterface::CreateTextureResource(textureFilePath);
 
 	return true;

@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 API Reference: SampleAssetViewer</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 API Reference: SampleAssetViewer</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -52,10 +52,10 @@ Scene</a></h3>
 Here you can select which assets to add to the scene, set the material damage properties, and enable a stress solver.<p>
 In Replace mode (the default, set by radio button), selecting assets in the Assets list will remove all destructible actors from the scene and insert the selected one. In Append mode (the other radio button), selecting a new asset will insert its actor into the scene while keeping the others as well.<p>
 You may also select actors in the Scene Actors list, and remove (or reload) the actor using the buttons below the list. Reloading an actor will restore it to its unfractured state.<p>
-Note, in addition to destructible actors, the Scene Actors list shows the boxes that were fired into the scene using the 'F' key. You may remove those using this UI as well.<p>
+Note, in addition to destructible actors, the Scene Actors list shows the boxes that were fired into the scene using the 'F' key. Holding down the 'F' key "charges" the throw, increasing the cube's speed the longer you hold down the kye. You may remove the cubes using the scene controls. All cubes will be removed when the scene is reset.<p>
 The Blast Material properties are used by the various damage tools available.<p>
 <ul>
-<li>singleChunkThreadhold = the damage a single lower-support chunk must take in order to fracture</li><li>graphChunkThreshold = the damage a support chunk must take in order to fracture</li><li>bondNormalThreshold = the damage a bond must take using compressive (e.g. radial damage) in order to break</li><li>bondTangentialThreshold = the damage a bond must take using shear (e.g. from directional damage) in order to break</li><li>damageAttenuation = how fast damage falls off in the materal from an impact location</li></ul>
+<li>Health = the value which damage must exceed to break a bond or chunk</li><li>Min Damage Threshold = a fraction of Health, below which damage has no effect</li><li>Max Damage Threshold = a fraction of Health, equal to the maximum damage that can be applied per damage event</li></ul>
 <p>
 A stress solver may be enabled by selcting the Stress Solver Enabled checkbox. When enabled you will be presented with several options. NOTE: you must then select the Stress Damage Enabled checkbox in order to allow stress to do damage to the actors in the scene. Bond Iterations Per Frame - is max amount of bonds allowed to be processed in one frame. The more this value the better quality of stress solver, but the time taken by it is increased linearly. You can check this timing in <em>Stats</em> submenu. Using this value stress solver takes fixed amount of CPU time on asset of any size. So the more asset complex (the more bonds it has) the less total iterations (on all bonds) are made. Use graph reduction level param to simplify stress graph for large assets. You can look at stress graph using by using <em>Debug</em> Render submenu. Stress linear and angular factors are corresponded for amount of damage to be applied on bonds from linear and angular momentum of stress on every bond.<p>
 Replay control section allows to control recording and replaying Blast events. It demonstrates the usage of ExtSync extension. You may start/stop recording of blast events (damage, split). If you toggle to sync initial actors once recording starts full blast state is saved.<h3><a class="anchor" name="viewer_blast">

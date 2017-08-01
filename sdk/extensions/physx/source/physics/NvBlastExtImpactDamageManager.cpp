@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "NvBlastExtImpactDamageManager.h"
 #include "NvBlastExtPxManager.h"
@@ -17,8 +35,7 @@
 #include "NvBlastAssert.h"
 
 #include "NvBlastExtDamageShaders.h"
-#include "NvBlastExtArray.h"
-#include "NvBlastExtDefs.h"
+#include "NvBlastArray.h"
 
 #include "PxRigidDynamic.h"
 #include "PxSimulationEventCallback.h"
@@ -59,7 +76,7 @@ public:
 
 	virtual void					release() override
 	{
-		NVBLASTEXT_DELETE(this, ExtImpactDamageManagerImpl);
+		NVBLAST_DELETE(this, ExtImpactDamageManagerImpl);
 	}
 
 
@@ -124,7 +141,7 @@ private:
 	ExtPxManager*						m_pxManager;
 	ExtImpactSettings					m_settings;
 	PxManagerListener					m_listener;
-	ExtArray<PxContactPairPoint>::type	m_pairPointBuffer;
+	Array<PxContactPairPoint>::type		m_pairPointBuffer;
 	bool								m_usePxUserData;
 
 	struct ImpactDamageData
@@ -135,10 +152,10 @@ private:
 		PxShape*			shape;
 	};
 
-	ExtArray<ImpactDamageData>::type	m_impactDamageBuffer;
+	Array<ImpactDamageData>::type		m_impactDamageBuffer;
 
 	NvBlastFractureBuffers				m_fractureBuffers;
-	ExtArray<uint8_t>::type				m_fractureData;
+	Array<uint8_t>::type				m_fractureData;
 };
 
 
@@ -148,7 +165,7 @@ private:
 
 ExtImpactDamageManager* ExtImpactDamageManager::create(ExtPxManager* pxManager, ExtImpactSettings settings)
 {
-	return NVBLASTEXT_NEW(ExtImpactDamageManagerImpl) (pxManager, settings);
+	return NVBLAST_NEW(ExtImpactDamageManagerImpl) (pxManager, settings);
 }
 
 
@@ -310,12 +327,6 @@ void ExtImpactDamageManagerImpl::onContact(const PxContactPairHeader& pairHeader
 //										ExtImpactDamageManager damage processing
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-float clampedLerp(float from, float to, float t)
-{
-	t = PxClamp(t, 0.0f, 1.0f);
-	return (1 - t) * from + to * t;
-}
-
 void ExtImpactDamageManagerImpl::applyDamage()
 {
 	const auto damageFn = m_settings.damageFunction;
@@ -323,10 +334,7 @@ void ExtImpactDamageManagerImpl::applyDamage()
 
 	for (const ImpactDamageData& data : m_impactDamageBuffer)
 	{
-		float forceMag = data.force.magnitude();
-		float acceleration = forceMag / data.actor->getPhysXActor().getMass();
-		float factor = acceleration * m_settings.fragility * 0.001f;
-		if (factor > 0.05f)
+		if (data.force.magnitudeSquared() > m_settings.impulseMinThreshold * m_settings.impulseMinThreshold)
 		{
 			PxTransform t(data.actor->getPhysXActor().getGlobalPose().getInverse());
 			PxVec3 force = t.rotate(data.force);
@@ -334,7 +342,7 @@ void ExtImpactDamageManagerImpl::applyDamage()
 
 			if (!damageFn || !damageFn(damageFnData, data.actor, data.shape, position, force))
 			{
-				damageActor(data.actor, data.shape, position, force*.00001f);
+				damageActor(data.actor, data.shape, position, force);
 			}
 		}
 	}
@@ -358,32 +366,73 @@ void ExtImpactDamageManagerImpl::damageActor(ExtPxActor* actor, PxShape* /*shape
 {
 	ensureBuffersSize(actor);
 
-	NvBlastExtShearDamageDesc damage[] = {
-		{
-			{ force[0], force[1], force[2] },			// shear
-			{ position[0], position[1], position[2] }	// position
-		}							
-	};
+	const float f0 = m_settings.impulseMinThreshold;
+	const float f1 = m_settings.impulseMaxThreshold;
+	const float impulse01 = PxClamp<float>((force.magnitude() - f0) / PxMax<float>(f1 - f0, 1.0f), 0, 1);
+	const float damage = m_settings.damageMax * impulse01;
 
-	const void* familyMaterial = actor->getTkActor().getFamily().getMaterial();
+	const void* material = actor->getTkActor().getFamily().getMaterial();
+	if (!material)
+	{
+		return;
+	}
 
-	// default material params settings
-	const NvBlastExtMaterial defaultMaterial = { 3.0f, 0.1f, 0.2f, 1.5f + 1e-5f, 0.95f };
+	const float normalizedDamage = reinterpret_cast<const NvBlastExtMaterial*>(material)->getNormalizedDamage(damage);
+	if (normalizedDamage == 0.f)
+	{
+		return;
+	}
+
+	const PxVec3 normal = force.getNormalized();
+	const float maxDistance = m_settings.damageRadiusMax * impulse01;
+	const float minDistance = maxDistance * PxClamp<float>(1 - m_settings.damageAttenuation, 0, 1);
 
 	NvBlastProgramParams programParams;
 	programParams.damageDescCount = 1;
-	programParams.damageDescBuffer = &damage;
-	programParams.material = familyMaterial == nullptr ? &defaultMaterial : familyMaterial;
+	programParams.material = nullptr;
+	NvBlastDamageProgram program;
 
-	NvBlastDamageProgram program = {
-		NvBlastExtShearGraphShader,
-		NvBlastExtShearSubgraphShader
-	};
+	if (m_settings.shearDamage)
+	{
+		NvBlastExtShearDamageDesc desc[] = {
+			{
+				normalizedDamage,
+				{ normal[0], normal[1], normal[2] },			// shear
+				{ position[0], position[1], position[2] },	// position
+				minDistance,
+				maxDistance
+			}
+		};
 
-	NvBlastFractureBuffers fractureEvents = m_fractureBuffers;
+		programParams.damageDescBuffer = &desc;
 
-	actor->getTkActor().generateFracture(&fractureEvents, program, &programParams);
-	actor->getTkActor().applyFracture(nullptr, &fractureEvents);
+		program.graphShaderFunction = NvBlastExtShearGraphShader;
+		program.subgraphShaderFunction = NvBlastExtShearSubgraphShader;
+
+		NvBlastFractureBuffers fractureEvents = m_fractureBuffers;
+		actor->getTkActor().generateFracture(&fractureEvents, program, &programParams);
+		actor->getTkActor().applyFracture(nullptr, &fractureEvents);
+	}
+	else
+	{
+		NvBlastExtRadialDamageDesc desc[] = {
+			{
+				normalizedDamage,
+				{ position[0], position[1], position[2] },	// position
+				minDistance,
+				maxDistance
+			}
+		};
+
+		programParams.damageDescBuffer = &desc;
+
+		program.graphShaderFunction = NvBlastExtFalloffGraphShader;
+		program.subgraphShaderFunction = NvBlastExtFalloffSubgraphShader;
+
+		NvBlastFractureBuffers fractureEvents = m_fractureBuffers;
+		actor->getTkActor().generateFracture(&fractureEvents, program, &programParams);
+		actor->getTkActor().applyFracture(nullptr, &fractureEvents);
+	}
 }
 
 

@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::TkTypeImpl Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::TkTypeImpl Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -57,8 +57,6 @@ Inheritance diagram for Nv::Blast::TkTypeImpl:</div>
 <a href="class_nv_1_1_blast_1_1_tk_type_impl-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="namespace_nv_1_1_blast.html#b801f413057351a5d675778d85341b7f">TkDeserializeFn</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_type_impl.html#113eab4c431855c8d8f67ec015418edf">getDeserializeFn</a> () const </td></tr>
-
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_type_impl.html#91f482def3abe0cfcfe455bbca497288">getID</a> () const </td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_type_impl.html#8452e902f67973e648598bf038ef334f">getIndex</a> () const </td></tr>
@@ -73,7 +71,7 @@ Inheritance diagram for Nv::Blast::TkTypeImpl:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_type_impl.html#bf22e8a732d364430dd39a72f49c39d5">indexIsValid</a> () const </td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_type_impl.html#36a317447835513dc342857f5b034f99">TkTypeImpl</a> (const char *typeName, uint32_t typeID, uint32_t version, <a class="el" href="namespace_nv_1_1_blast.html#b801f413057351a5d675778d85341b7f">TkDeserializeFn</a> deserializeFn)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_type_impl.html#bc43497e32ff0e170feb4f741698afe2">TkTypeImpl</a> (const char *typeName, uint32_t typeID, uint32_t version)</td></tr>
 
 <tr><td colspan="2"><br><h2>Friends</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_type_impl.html#b3dc3d8e38a1518e1215c39f55db6851">TkFrameworkImpl</a></td></tr>
@@ -81,7 +79,7 @@ Inheritance diagram for Nv::Blast::TkTypeImpl:</div>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Implementation of <a class="el" href="class_nv_1_1_blast_1_1_tk_type.html">TkType</a>, storing class information for TkIdentifiable-derived classes. <hr><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" name="36a317447835513dc342857f5b034f99"></a><!-- doxytag: member="Nv::Blast::TkTypeImpl::TkTypeImpl" ref="36a317447835513dc342857f5b034f99" args="(const char *typeName, uint32_t typeID, uint32_t version, TkDeserializeFn deserializeFn)" -->
+<a class="anchor" name="bc43497e32ff0e170feb4f741698afe2"></a><!-- doxytag: member="Nv::Blast::TkTypeImpl::TkTypeImpl" ref="bc43497e32ff0e170feb4f741698afe2" args="(const char *typeName, uint32_t typeID, uint32_t version)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -101,13 +99,7 @@ Implementation of <a class="el" href="class_nv_1_1_blast_1_1_tk_type.html">TkTyp
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>version</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespace_nv_1_1_blast.html#b801f413057351a5d675778d85341b7f">TkDeserializeFn</a>&nbsp;</td>
-          <td class="paramname"> <em>deserializeFn</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>version</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -123,26 +115,6 @@ Implementation of <a class="el" href="class_nv_1_1_blast_1_1_tk_type.html">TkTyp
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="113eab4c431855c8d8f67ec015418edf"></a><!-- doxytag: member="Nv::Blast::TkTypeImpl::getDeserializeFn" ref="113eab4c431855c8d8f67ec015418edf" args="() const " -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">NV_INLINE <a class="el" href="namespace_nv_1_1_blast.html#b801f413057351a5d675778d85341b7f">TkDeserializeFn</a> Nv::Blast::TkTypeImpl::getDeserializeFn           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>the class's deserialization function. </dd></dl>
-
-</div>
-</div><p>
 <a class="anchor" name="91f482def3abe0cfcfe455bbca497288"></a><!-- doxytag: member="Nv::Blast::TkTypeImpl::getID" ref="91f482def3abe0cfcfe455bbca497288" args="() const " -->
 <div class="memitem">
 <div class="memproto">
@@ -159,7 +131,7 @@ Implementation of <a class="el" href="class_nv_1_1_blast_1_1_tk_type.html">TkTyp
 <div class="memdoc">
 
 <p>
-Access to a unique identifier for the class (set using the NVBLASTTK_IMPL_DEFINE_IDENTIFIABLE or NVBLASTTK_IMPL_DEFINE_SERIALIZABLE macro).<p>
+Access to a unique identifier for the class (set using the NVBLASTTK_IMPL_DEFINE_IDENTIFIABLE macro).<p>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>the class's unique identifier. </dd></dl>
 
 </div>
@@ -268,7 +240,7 @@ The data format version for this class. When deserializing, this version must ma
 <div class="memdoc">
 
 <p>
-Access to the data format version for the class (used if it TkSerializable-derived).<p>
+Access to the data format version for the class.<p>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>the data format version. </dd></dl>
 
 </div>

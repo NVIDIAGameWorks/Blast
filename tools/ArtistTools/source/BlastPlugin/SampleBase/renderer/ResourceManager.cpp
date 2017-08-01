@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "ResourceManager.h"
 #include "PxAssert.h"
@@ -50,6 +68,19 @@ const TextureResource* ResourceManager::requestTexture(const char* name)
 	return resource != nullptr ? static_cast<const TextureResource*>(resource) : nullptr;
 }
 
+void ResourceManager::releaseTexture(const char* name)
+{
+	std::pair<ResourceType, std::string> key(eTEXTURE, name);
+	auto val = m_loadedResources.find(key);
+	if (val != m_loadedResources.end())
+	{
+		Resource* pResource = val->second;
+		delete pResource;
+		pResource = nullptr;
+		m_loadedResources.erase(key);
+	}
+}
+
 const Resource* ResourceManager::requestResource(ResourceType type, const char* name)
 {
 	// search in loaded
@@ -57,17 +88,17 @@ const Resource* ResourceManager::requestResource(ResourceType type, const char* 
 	auto val = m_loadedResources.find(key);
 	if (val != m_loadedResources.end())
 	{
-		return val->second.get();
+		return val->second;
 	}
 
-	std::shared_ptr<Resource> resource;
+	Resource* resource = nullptr;
 	if (type == eSHADER_FILE)
 	{
 		char path[PATH_MAX_LEN];
 		const char* exts[] = { "hlsl" };
 		if (findFile(name, std::vector<const char*>(exts, exts + sizeof(exts) / sizeof(exts[0])), path))
 		{
-			resource = std::shared_ptr<Resource>(new ShaderFileResource(path));
+			resource = new ShaderFileResource(path);
 		}
 		else
 		{
@@ -78,33 +109,38 @@ const Resource* ResourceManager::requestResource(ResourceType type, const char* 
 	{
 		char path[PATH_MAX_LEN];
 // Add By Lixu Begin
-		const char* exts[] = { "dds", "tga", "jpg", "png" };
+		const char* exts[] = { "dds", "tga", "jpg", "png", "bmp" };
 // Add By Lixu End
 		if (findFile(name, std::vector<const char*>(exts, exts + sizeof(exts) / sizeof(exts[0])), path))
 		{
-			std::shared_ptr<TextureResource> textureResource(new TextureResource());
+			TextureResource* textureResource(new TextureResource());
 			WCHAR wPath[MAX_PATH];
 			MultiByteToWideChar(CP_ACP, 0, path, -1, wPath, MAX_PATH);
 			wPath[MAX_PATH - 1] = 0;
 
 			const char* ext = strext(path);
-			if (::strcmp(ext, "dds") == 0)
+			if (::stricmp(ext, "dds") == 0)
 			{
 				V(DirectX::LoadFromDDSFile(wPath, DirectX::DDS_FLAGS_NONE, &textureResource->metaData,
 					textureResource->image));
 			}
-			else if (::strcmp(ext, "tga") == 0)
+			else if (::stricmp(ext, "tga") == 0)
 			{
 				V(DirectX::LoadFromTGAFile(wPath, &textureResource->metaData,
 					textureResource->image));
 			}
 // Add By Lixu Begin
-			else if (::strcmp(ext, "jpg") == 0)
+			else if (::stricmp(ext, "jpg") == 0)
 			{
 				V(DirectX::LoadFromWICFile(wPath, DirectX::TEX_FILTER_DEFAULT | DirectX::WIC_FLAGS_ALL_FRAMES, &textureResource->metaData,
 					textureResource->image));
 			}
-			else if (::strcmp(ext, "png") == 0)
+			else if (::stricmp(ext, "png") == 0)
+			{
+				V(DirectX::LoadFromWICFile(wPath, DirectX::TEX_FILTER_DEFAULT | DirectX::WIC_FLAGS_ALL_FRAMES, &textureResource->metaData,
+					textureResource->image));
+			}
+			else if (::stricmp(ext, "bmp") == 0)
 			{
 				V(DirectX::LoadFromWICFile(wPath, DirectX::TEX_FILTER_DEFAULT | DirectX::WIC_FLAGS_ALL_FRAMES, &textureResource->metaData,
 					textureResource->image));
@@ -118,10 +154,10 @@ const Resource* ResourceManager::requestResource(ResourceType type, const char* 
 		}
 	}
 
-	if (resource.get())
+	if (resource)
 	{
 		m_loadedResources.emplace(key, resource);
-		return resource.get();
+		return resource;
 	}
 	else
 	{
@@ -195,6 +231,15 @@ bool ResourceManager::findFileInDir(std::string fileNameFull, const char* path, 
 bool ResourceManager::findFile(std::string fileName, const std::vector<const char*>& exts, char* foundPath)
 {
 	std::string fileNameOnly = fileName;
+	
+	std::string::size_type pos = 0;
+	pos = fileNameOnly.find("\\", pos);
+	while ((pos != std::string::npos))
+	{
+		fileNameOnly.replace(pos, 1, "/");
+		pos = fileNameOnly.find("\\", (pos + 1));
+	}
+
 	size_t ind = fileNameOnly.find_last_of('/');
 	if (ind > 0)
 		fileNameOnly = fileNameOnly.substr(ind + 1);

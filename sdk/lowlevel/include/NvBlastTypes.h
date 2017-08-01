@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTTYPES_H
 #define NVBLASTTYPES_H
@@ -123,28 +141,6 @@ struct NvBlastDataBlock
 ///////////////////////////////////////////////////////////////////////////////
 ///@{
 
-
-/**
-Struct-enum which keeps track of the asset data format.
-*/
-struct NvBlastAssetDataFormat
-{
-	enum Version
-	{
-		/** Initial version */
-		Initial,
-
-		//	New formats must come before Count.  They should be given descriptive names with more information in comments.
-
-		/** The number of asset formats. */
-		Count,
-
-		/** The current version.  This should always be Count-1 */
-		Current = Count - 1
-	};
-};
-
-
 /**
 Represents a piece of a destructible asset which may be realized as an entity with a physical and graphical component.
 
@@ -189,8 +185,6 @@ struct NvBlastChunk
 
 /**
 Represents the interface between two chunks.  At most one bond is created for a chunk pair.
-The convention regarding the normal direction is based upon the chunk indices,
-pointing from the lower-indexed chunk to the higher-indexed chunk.
 */
 struct NvBlastBond
 {
@@ -283,7 +277,7 @@ struct NvBlastSupportGraph
 /**
 Asset (opaque)
 
-Static destructible data, used to create actor familes.
+Static destructible data, used to create actor families.
 
 Pointer to this struct can be created with NvBlastCreateAsset.
 
@@ -327,11 +321,16 @@ Chunk bond descriptor used to build an asset.  See NvBlastAssetDesc.
 */
 struct NvBlastBondDesc
 {
-	/** The indices of the chunks linked by this bond.  They must be different support chunk indices. */
-	uint32_t	chunkIndices[2];
-
 	/** Bond data (see NvBlastBond). */
 	NvBlastBond	bond;
+
+	/**
+	The indices of the chunks linked by this bond.  They must be different support chunk indices.
+	If one of the chunk indices is the invalid index (UINT32_MAX), then this will create a bond between
+	the chunk indexed by the other index (which must be valid) and "the world."  Any actor containing
+	this bond will cause the function NvBlastActorIsBoundToWorld to return true.
+	*/
+	uint32_t	chunkIndices[2];
 };
 
 
@@ -365,28 +364,6 @@ struct NvBlastAssetDesc
 //	NvBlastActor related types
 ///////////////////////////////////////////////////////////////////////////////
 ///@{
-
-
-/**
-Struct-enum which keeps track of the family data format.
-*/
-struct NvBlastFamilyDataFormat
-{
-	enum Version
-	{
-		/** Initial version */
-		Initial,
-
-		//	New formats must come before Count.  They should be given descriptive names with more information in comments.
-
-		/** The number of family formats. */
-		Count,
-
-		/** The current version.  This should always be Count-1 */
-		Current = Count - 1
-	};
-};
-
 
 /**
 Family (opaque)
@@ -435,7 +412,7 @@ struct NvBlastActorDesc
 
 	/**
 	Initial health of all support chunks.  If not NULL, this must be of length
-	NvBlastAssetGetSupportGraph(asset, logFn).nodeCount. The elements in the initialSupportChunkHealth
+	NvBlastAssetGetSupportChunkCount(asset, logFn).nodeCount. The elements in the initialSupportChunkHealth
 	array will correspond to the chunk indices in the NvBlastAssetGetSupportGraph(asset, logFn).chunkIndices
 	array.  Every descendent of a support chunk will have its health initialized to its ancestor support
 	chunk's health, so this initializes all lower-support chunk healths.
@@ -520,7 +497,9 @@ struct NvBlastGraphShaderActor
 	const uint32_t*		adjacentNodeIndices;	//!<	See NvBlastSupportGraph::adjacentNodeIndices.
 	const uint32_t*		adjacentBondIndices;	//!<	See NvBlastSupportGraph::adjacentBondIndices.
 	const NvBlastBond*	assetBonds;				//!<	NvBlastBonds geometry in the NvBlastAsset.
+	const NvBlastChunk*	assetChunks;			//!<	NvBlastChunks geometry in the NvBlastAsset.
 	const float*		familyBondHealths;		//!<	Actual bond health values for broken bond detection.
+	const float*		supportChunkHealths;	//!<	Actual chunk health values for dead chunk detection.
 };
 
 

@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef TKBASETEST_H
 #define TKBASETEST_H
@@ -14,17 +32,17 @@
 
 #include "NvBlastTk.h"
 #include "NvBlastTkActor.h"
+#include "NvBlastPxCallbacks.h"
 
 #include "BlastBaseTest.h"
 
 #include "NvBlastExtDamageShaders.h"
 
 #include "NvBlastIndexFns.h"
-#include "NvBlastProfiler.h"
+#include "NvBlastExtCustomProfiler.h"
 #include "TestProfiler.h"
+#include "NvBlastExtPxTask.h"
 
-#include "PxAllocatorCallback.h"
-#include "PxErrorCallback.h"
 #include "PxCpuDispatcher.h"
 #include "PxTask.h"
 #include "PxFoundation.h"
@@ -201,9 +219,11 @@ public:
 
 	virtual void SetUp() override
 	{
-		m_foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, *this, *this);
+		m_foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
 
-		NvBlastProfilerEnablePlatform(true);
+		NvBlastProfilerSetCallback(&m_profiler);
+		NvBlastProfilerSetDetail(Nv::Blast::ProfilerDetail::LOW);
+		m_profiler.setPlatformEnabled(true);
 
 #if USE_PHYSX_DISPATCHER
 		PxU32 affinity[] = { 1, 2, 4, 8 };
@@ -213,11 +233,13 @@ public:
 		m_cpuDispatcher = new TestCpuDispatcher(4);
 #endif
 
-		m_taskman = PxTaskManager::createTaskManager(*this, m_cpuDispatcher, nullptr);
+		m_taskman = PxTaskManager::createTaskManager(NvBlastGetPxErrorCallback(), m_cpuDispatcher, nullptr);
+		m_groupTM = ExtGroupTaskManager::create(*m_taskman);
 	}
 
 	virtual void TearDown() override
 	{
+		m_groupTM->release();
 		m_cpuDispatcher->release();
 		if (m_taskman) m_taskman->release();
 		if (m_foundation) m_foundation->release();
@@ -225,10 +247,7 @@ public:
 	
 	void createFramework()
 	{
-		TkFrameworkDesc desc;
-		desc.allocatorCallback = this;
-		desc.errorCallback = this;
-		TkFramework* framework = NvBlastTkFrameworkCreate(desc);
+		TkFramework* framework = NvBlastTkFrameworkCreate();
 		EXPECT_TRUE(framework != nullptr);
 		EXPECT_EQ(framework, NvBlastTkFrameworkGet());
 	}
@@ -295,7 +314,7 @@ public:
 		testAssets.clear();
 	}
 
-	NvBlastExtRadialDamageDesc getRadialDamageDesc(float x, float y, float z, float minRadius = 10.0f, float maxRadius = 10.0f, float compressive = 10.0f)
+	NvBlastExtRadialDamageDesc getRadialDamageDesc(float x, float y, float z, float minRadius = 10.0f, float maxRadius = 10.0f, float damage = 1.0f)
 	{
 		NvBlastExtRadialDamageDesc desc;
 		desc.position[0] = x;
@@ -304,20 +323,25 @@ public:
 
 		desc.minRadius = minRadius;
 		desc.maxRadius = maxRadius;
-		desc.compressive = compressive;
+		desc.damage = damage;
 		return desc;
 	}
 
-	NvBlastExtShearDamageDesc getShearDamageDesc(float x, float y, float z, float shearX = 1.0f, float shearY = 0.0f, float shearZ = 0.0f)
+	NvBlastExtShearDamageDesc getShearDamageDesc(float x, float y, float z, float shearX = 1.0f, float shearY = 0.0f, float shearZ = 0.0f, float minRadius = 10.0f, float maxRadius = 10.0f, float damage = 1.0f)
 	{
 		NvBlastExtShearDamageDesc desc;
 		desc.position[0] = x;
 		desc.position[1] = y;
 		desc.position[2] = z;
 
-		desc.shear[0] = shearX;
-		desc.shear[1] = shearY;
-		desc.shear[2] = shearZ;
+		desc.normal[0] = shearX;
+		desc.normal[1] = shearY;
+		desc.normal[2] = shearZ;
+
+		desc.minRadius = minRadius;
+		desc.maxRadius = maxRadius;
+		desc.damage = damage;
+
 		return desc;
 	}
 
@@ -341,13 +365,7 @@ public:
 
 	static const NvBlastExtMaterial* getDefaultMaterial()
 	{
-		static NvBlastExtMaterial material = {
-			0.0f,
-			0.0f,
-			0.0f,
-			0.0f,
-			0.0f
-		};
+		static NvBlastExtMaterial material;
 		return &material;
 	};
 
@@ -364,6 +382,9 @@ public:
 
 	PxTaskManager*			m_taskman;
 	PxFoundation*			m_foundation;
+
+	ExtGroupTaskManager*	m_groupTM;
+	ExtCustomProfiler		m_profiler;
 };
 
 

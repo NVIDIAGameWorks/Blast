@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 API Reference: sdk/extensions/authoring/include/NvBlastExtAuthoringTypes.h File Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 API Reference: sdk/extensions/authoring/include/NvBlastExtAuthoringTypes.h File Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -23,13 +23,18 @@
 <h1>sdk/extensions/authoring/include/NvBlastExtAuthoringTypes.h File Reference</h1><code>#include &lt;PxVec3.h&gt;</code><br>
 <code>#include &lt;PxVec2.h&gt;</code><br>
 <code>#include &lt;PxBounds3.h&gt;</code><br>
-<code>#include &lt;algorithm&gt;</code><br>
 <code>#include &quot;<a class="el" href="_nv_blast_types_8h-source.html">NvBlastTypes.h</a>&quot;</code><br>
 
 <p>
 <a href="_nv_blast_ext_authoring_types_8h-source.html">Go to the source code of this file.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Classes</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull_1_1_hull_polygon.html">Nv::Blast::CollisionHull::CollisionHull::HullPolygon</a></td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Nv::Blast::Edge</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Nv::Blast::Facet</a></td></tr>
@@ -48,16 +53,50 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html">Nv::Blast</a></td></tr>
 
 <tr><td colspan="2"><br><h2>Defines</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_types_8h.html#4b5be3049d66fc468db102281f6c068b">MATERIAL_INTERIOR</a>&nbsp;&nbsp;&nbsp;1000</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_types_8h.html#d4944cec8cff7e7abfc2e2478558e6da">NOT_VALID_VERTEX</a>&nbsp;&nbsp;&nbsp;INT32_MAX</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_types_8h.html#5c135fd7a43ce8f0cd09ad8891975ff7">SMOOTHING_GROUP_INTERIOR</a>&nbsp;&nbsp;&nbsp;1000</td></tr>
 
 </table>
 <hr><h2>Define Documentation</h2>
+<a class="anchor" name="4b5be3049d66fc468db102281f6c068b"></a><!-- doxytag: member="NvBlastExtAuthoringTypes.h::MATERIAL_INTERIOR" ref="4b5be3049d66fc468db102281f6c068b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MATERIAL_INTERIOR&nbsp;&nbsp;&nbsp;1000          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="d4944cec8cff7e7abfc2e2478558e6da"></a><!-- doxytag: member="NvBlastExtAuthoringTypes.h::NOT_VALID_VERTEX" ref="d4944cec8cff7e7abfc2e2478558e6da" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">#define NOT_VALID_VERTEX&nbsp;&nbsp;&nbsp;INT32_MAX          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="5c135fd7a43ce8f0cd09ad8891975ff7"></a><!-- doxytag: member="NvBlastExtAuthoringTypes.h::SMOOTHING_GROUP_INTERIOR" ref="5c135fd7a43ce8f0cd09ad8891975ff7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SMOOTHING_GROUP_INTERIOR&nbsp;&nbsp;&nbsp;1000          </td>
         </tr>
       </table>
 </div>

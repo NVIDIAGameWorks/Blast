@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::Asset Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::Asset Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -251,7 +251,7 @@ Chunk order depends on support coverage, so this function should be called befor
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>leafChunkCount</em>&nbsp;</td><td>The number of leaf chunks. NOTE - this value is not meaninful if testOnly = true and the return value is false. </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>chunkAnnotation</em>&nbsp;</td><td>User-supplied char array of size chunkCount. NOTE - these values are not meaninful if testOnly = true and the return value is false. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkCount</em>&nbsp;</td><td>The number of chunk descriptors. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkDescs</em>&nbsp;</td><td>Array of chunk descriptors of size chunkCount. It will be updated accordingly. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkDescs</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of chunk descriptors of size chunkCount. It will be updated accordingly. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>testOnly</em>&nbsp;</td><td>If true, this function early-outs if support coverage is not exact. If false, exact coverage is ensured by possibly modifying chunkDescs' flags. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>logFn</em>&nbsp;</td><td>User-supplied message function (see NvBlastLog definition). May be NULL.</td></tr>
   </table>
@@ -519,7 +519,7 @@ getSubtreeLeafChunkCount returns a uint32_t array of size m_chunkCount.
 <div class="memdoc">
 
 <p>
-Array of bond data for the interfaces between two chunks. Since the bond is shared by two chunks, the same bond data is used for chunk[i] -&gt; chunk[j] as for chunk[j] -&gt; chunk[i]. The size of the array is m_graph.adjacencyPartition[m_graph.m_nodeCount]/2. See <a class="el" href="struct_nv_blast_bond.html">NvBlastBond</a>.<p>
+<a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of bond data for the interfaces between two chunks. Since the bond is shared by two chunks, the same bond data is used for chunk[i] -&gt; chunk[j] as for chunk[j] -&gt; chunk[i]. The size of the array is m_graph.adjacencyPartition[m_graph.m_nodeCount]/2. See <a class="el" href="struct_nv_blast_bond.html">NvBlastBond</a>.<p>
 getBonds returns an array of size m_bondCount. 
 </div>
 </div><p>

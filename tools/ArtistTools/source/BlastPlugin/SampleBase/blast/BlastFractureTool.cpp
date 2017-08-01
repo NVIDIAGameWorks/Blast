@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "BlastFractureTool.h"
 #include <BlastAssetModel.h>
@@ -126,7 +144,10 @@ void BlastFractureTool::setSourceAsset(const BlastAsset* pBlastAsset)
 		for (uint32_t i = 0; i < supportGraph.nodeCount; ++i)
 		{
 			const uint32_t chunkIndex = supportGraph.chunkIndices[i];
-			isLeafs[chunkIndex] = true;
+			if (chunkIndex < chunkSize)
+			{
+				isLeafs[chunkIndex] = true;
+			}
 		}
 	}
 
@@ -143,7 +164,68 @@ void BlastFractureTool::setSourceAsset(const BlastAsset* pBlastAsset)
 			continue;
 		mChunkData[cs].meshData = new Nv::Blast::Mesh(*chunkMeshes[cs]);
 		mChunkData[cs].parent = parentIds[cs];
-		mChunkData[cs].chunkId = cs;
+		mChunkData[cs].chunkId = mChunkIdCounter++;
+		mChunkData[cs].isLeaf = isLeafs[cs];
+
+		mesh = mChunkData[cs].meshData;
+		Nv::Blast::Vertex* verticesBuffer = mesh->getVertices();
+		for (uint32_t i = 0; i < mesh->getVerticesCount(); ++i)
+		{
+			verticesBuffer[i].p = (verticesBuffer[i].p - mOffset) * (1.0f / mScaleFactor);
+		}
+		mesh->getBoundingBox().minimum = (mesh->getBoundingBox().minimum - mOffset) * (1.0f / mScaleFactor);
+		mesh->getBoundingBox().maximum = (mesh->getBoundingBox().maximum - mOffset) * (1.0f / mScaleFactor);
+		for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
+		{
+			mesh->getFacet(i)->userData = chunkMeshes[cs]->getFacet(i)->userData;
+		}
+	}
+}
+
+void BlastFractureTool::setSourceMeshes(std::vector<Nv::Blast::Mesh*>& meshes, std::vector<int32_t>& parentIds)
+{
+	free();
+
+	int chunkSize = meshes.size();
+	if (chunkSize == 0)
+	{
+		return;
+	}
+
+	chunkMeshes.resize(chunkSize, nullptr);
+	for (int cs = 0; cs < chunkSize; cs++)
+	{
+		Nv::Blast::Mesh* pMesh = new Nv::Blast::Mesh(*meshes[cs]);
+		chunkMeshes[cs] = pMesh;
+	}
+
+	std::vector<bool> isLeafs;
+	isLeafs.resize(chunkSize, true);
+	for (int cs = 0; cs < chunkSize; cs++)
+	{
+		int32_t parentId = parentIds[cs];
+		if (parentId == -1)
+		{
+			continue;
+		}
+
+		isLeafs[parentId] = false;
+	}
+
+	setSourceMesh(chunkMeshes[0]);
+
+	mChunkData.resize(chunkSize);
+	mChunkData[0].parent = parentIds[0];
+	mChunkData[0].isLeaf = isLeafs[0];
+	mChunkData[0].chunkId = 0;
+	Nv::Blast::Mesh* mesh = nullptr;
+	for (int cs = 1; cs < chunkSize; cs++)
+	{
+		if (chunkMeshes[cs] == nullptr)
+			continue;
+		mChunkData[cs].meshData = new Nv::Blast::Mesh(*chunkMeshes[cs]);
+		mChunkData[cs].parent = parentIds[cs];
+		mChunkData[cs].chunkId = mChunkIdCounter++;
 		mChunkData[cs].isLeaf = isLeafs[cs];
 
 		mesh = mChunkData[cs].meshData;

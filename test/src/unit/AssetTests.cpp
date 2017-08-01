@@ -1,4 +1,33 @@
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
+
 #include "NvBlastAsset.h"
+#include "NvBlastMath.h"
 
 #include "BlastBaseTest.h"
 
@@ -7,20 +36,18 @@
 #include <algorithm>
 
 
-#if defined(_MSC_VER) && _MSC_VER < 1900 || defined(_XBOX_ONE) || defined(PS4) || PX_LINUX
-#define ENABLE_SERIALIZATION_TESTS 0
-#else
+// all supported platform now provide serialization
+// keep the define for future platforms that won't
 #define ENABLE_SERIALIZATION_TESTS 1
-#endif
 
 #pragma warning( push )
 #pragma warning( disable : 4267 )
 // NOTE: Instead of excluding serialization and the tests when on VC12, should break the tests out into a separate C++ file.
 
 #if ENABLE_SERIALIZATION_TESTS
-#include "NvBlastExtSerializationInterface.h"
-
-#include "generated/NvBlastExtSerialization.capn.h"
+#include "NvBlastExtSerialization.h"
+#include "NvBlastExtLlSerialization.h"
+#include "NvBlastExtSerializationInternal.h"
 #endif
 
 #pragma warning( pop )
@@ -39,10 +66,7 @@ public:
 
 	AssetTest()
 	{
-		Nv::Blast::TkFrameworkDesc desc;
-		desc.allocatorCallback = this;
-		desc.errorCallback = this;
-		NvBlastTkFrameworkCreate(desc);
+		NvBlastTkFrameworkCreate();
 	}
 
 	~AssetTest()
@@ -57,12 +81,12 @@ public:
 
 	static void* alloc(size_t size)
 	{
-		return BlastBaseTest<FailLevel, Verbosity>::alloc(size);
+		return BlastBaseTest<FailLevel, Verbosity>::alignedZeroedAlloc(size);
 	}
 
 	static void free(void* mem)
 	{
-		BlastBaseTest<FailLevel, Verbosity>::free(mem);
+		BlastBaseTest<FailLevel, Verbosity>::alignedFree(mem);
 	}
 
 	void testSubtreeLeafChunkCounts(const Nv::Blast::Asset& a)
@@ -112,7 +136,7 @@ public:
 		std::vector<char> scratch;
 		scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(desc, messageLog));
 		void* mem = alloc(NvBlastGetAssetMemorySize(desc, messageLog));
-		NvBlastAsset* asset = NvBlastCreateAsset(mem, desc, &scratch[0], messageLog);
+		NvBlastAsset* asset = NvBlastCreateAsset(mem, desc, scratch.data(), messageLog);
 		EXPECT_TRUE(asset != nullptr);
 		if (asset == nullptr)
 		{
@@ -141,13 +165,103 @@ public:
 		testChunkToNodeMap(asset);
 	}
 
+	// expects that the bond normal points from the lower indexed chunk to higher index chunk
+	// uses chunk.centroid
+	// convention, requirement from findClosestNode
+	void checkNormalDir(NvBlastChunkDesc* chunkDescs, size_t chunkDescCount, NvBlastBondDesc* bondDescs, size_t bondDescCount)
+	{
+		for (size_t bondIndex = 0; bondIndex < bondDescCount; ++bondIndex)
+		{
+			NvBlastBondDesc& bond = bondDescs[bondIndex];
+			uint32_t chunkIndex0 = bond.chunkIndices[0];
+			uint32_t chunkIndex1 = bond.chunkIndices[1];
+
+			bool swap = chunkIndex0 > chunkIndex1;
+			uint32_t testIndex0 = swap ? chunkIndex1 : chunkIndex0;
+			uint32_t testIndex1 = swap ? chunkIndex0 : chunkIndex1;
+
+			EXPECT_TRUE(testIndex0 < testIndex1);
+
+			// no convention for world chunks
+			if (!Nv::Blast::isInvalidIndex(testIndex0) && !Nv::Blast::isInvalidIndex(testIndex1))
+			{
+				NvBlastChunkDesc& chunk0 = chunkDescs[testIndex0];
+				NvBlastChunkDesc& chunk1 = chunkDescs[testIndex1];
+
+				float dir[3];
+				Nv::Blast::VecMath::sub(chunk1.centroid, chunk0.centroid, dir);
+				bool meetsConvention = Nv::Blast::VecMath::dot(bond.bond.normal, dir) > 0;
+				EXPECT_TRUE(meetsConvention);
+				if (!meetsConvention)
+				{
+					printf("bond %zd chunks(%d,%d):   %.2f %.2f %.2f   %.2f %.2f %.2f   %d\n",
+						bondIndex, chunkIndex0, chunkIndex1,
+						bond.bond.normal[0], bond.bond.normal[1], bond.bond.normal[2],
+						dir[0], dir[1], dir[2],
+						Nv::Blast::VecMath::dot(bond.bond.normal, dir) > 0);
+				}
+			}
+		}
+	}
+
+	// expects that the bond normal points from the lower indexed node to higher index node
+	// uses chunk.centroid
+	// convention, requirement from findClosestNode
+	void checkNormalDir(const NvBlastSupportGraph graph, const NvBlastChunk* assetChunks, const NvBlastBond* assetBonds)
+	{
+		for (uint32_t nodeIndex = 0; nodeIndex < graph.nodeCount; nodeIndex++)
+		{
+			uint32_t adjStart = graph.adjacencyPartition[nodeIndex];
+			uint32_t adjStop = graph.adjacencyPartition[nodeIndex + 1];
+			for (uint32_t adj = adjStart; adj < adjStop; ++adj)
+			{
+				uint32_t adjNodeIndex = graph.adjacentNodeIndices[adj];
+
+				bool swap = nodeIndex > adjNodeIndex;
+				uint32_t testIndex0 = swap ? adjNodeIndex : nodeIndex;
+				uint32_t testIndex1 = swap ? nodeIndex : adjNodeIndex;
+
+				// no convention for world chunks
+				if (!Nv::Blast::isInvalidIndex(graph.chunkIndices[testIndex0]) && !Nv::Blast::isInvalidIndex(graph.chunkIndices[testIndex1]))
+				{
+					const NvBlastChunk& chunk0 = assetChunks[graph.chunkIndices[testIndex0]];
+					const NvBlastChunk& chunk1 = assetChunks[graph.chunkIndices[testIndex1]];
+
+					uint32_t bondIndex = graph.adjacentBondIndices[adj];
+					const NvBlastBond& bond = assetBonds[bondIndex];
+
+					float dir[3];
+					Nv::Blast::VecMath::sub(chunk1.centroid, chunk0.centroid, dir);
+					bool meetsConvention = Nv::Blast::VecMath::dot(bond.normal, dir) > 0;
+					EXPECT_TRUE(meetsConvention);
+					if (!meetsConvention)
+					{
+						printf("bond %d nodes(%d,%d):   %.2f %.2f %.2f   %.2f %.2f %.2f   %d\n",
+							bondIndex, nodeIndex, adjNodeIndex,
+							bond.normal[0], bond.normal[1], bond.normal[2],
+							dir[0], dir[1], dir[2],
+							Nv::Blast::VecMath::dot(bond.normal, dir) > 0);
+					}
+				}
+			}
+		}
+	}
+
+	void checkNormalDir(const NvBlastAsset* asset)
+	{
+		const NvBlastChunk* assetChunks = NvBlastAssetGetChunks(asset, nullptr);
+		const NvBlastBond* assetBonds = NvBlastAssetGetBonds(asset, nullptr);
+		const NvBlastSupportGraph graph = NvBlastAssetGetSupportGraph(asset, nullptr);
+		checkNormalDir(graph, assetChunks, assetBonds);
+	}
+
 	void buildAssetShufflingDescriptors(const NvBlastAssetDesc* desc, const ExpectedAssetValues& expected, uint32_t shuffleCount, bool useTk)
 	{
 		NvBlastAssetDesc shuffledDesc = *desc;
 		std::vector<NvBlastChunkDesc> chunkDescs(desc->chunkDescs, desc->chunkDescs + desc->chunkCount);
-		shuffledDesc.chunkDescs = &chunkDescs[0];
+		shuffledDesc.chunkDescs = chunkDescs.data();
 		std::vector<NvBlastBondDesc> bondDescs(desc->bondDescs, desc->bondDescs + desc->bondCount);
-		shuffledDesc.bondDescs = &bondDescs[0];
+		shuffledDesc.bondDescs = bondDescs.data();
 		if (!useTk)
 		{
 			std::vector<char> scratch(desc->chunkCount);
@@ -159,9 +273,13 @@ public:
 		}
 		for (uint32_t i = 0; i < shuffleCount; ++i)
 		{
-			shuffleAndFixChunkDescs(&chunkDescs[0], desc->chunkCount, &bondDescs[0], desc->bondCount, useTk);
+			checkNormalDir(chunkDescs.data(), chunkDescs.size(), bondDescs.data(), bondDescs.size());
+			shuffleAndFixChunkDescs(chunkDescs.data(), desc->chunkCount, bondDescs.data(), desc->bondCount, useTk);
+			checkNormalDir(chunkDescs.data(), chunkDescs.size(), bondDescs.data(), bondDescs.size());
+
 			NvBlastAsset* asset = buildAsset(expected, &shuffledDesc);
 			EXPECT_TRUE(asset != nullptr);
+			checkNormalDir(asset);
 			if (asset)
 			{
 				free(asset);
@@ -193,7 +311,11 @@ public:
 			std::vector<NvBlastBondDesc> savedBondDescs(bondDescs, bondDescs + bondDescCount);
 
 			// Shuffle chunks and bonds
-			NvBlastApplyAssetDescChunkReorderMap(shuffledChunkDescs.data(), chunkDescs, chunkDescCount, bondDescs, bondDescCount, shuffledOrder.data(), nullptr);
+			NvBlastApplyAssetDescChunkReorderMap(shuffledChunkDescs.data(), chunkDescs, chunkDescCount, bondDescs, bondDescCount, shuffledOrder.data(), true, nullptr);
+
+			// All the normals are pointing in the expected direction (they have been swapped)
+			checkNormalDir(shuffledChunkDescs.data(), chunkDescCount, bondDescs, bondDescCount);
+			checkNormalDir(chunkDescs, chunkDescCount, savedBondDescs.data(), bondDescCount);
 
 			// Check the results
 			for (uint32_t i = 0; i < chunkDescCount; ++i)
@@ -205,7 +327,10 @@ public:
 			{
 				for (uint32_t k = 0; k < 2; ++k)
 				{
-					EXPECT_EQ(shuffledOrder[savedBondDescs[i].chunkIndices[k]], bondDescs[i].chunkIndices[k]);
+					if (!Nv::Blast::isInvalidIndex(savedBondDescs[i].chunkIndices[k]))
+					{
+						EXPECT_EQ(shuffledOrder[savedBondDescs[i].chunkIndices[k]], bondDescs[i].chunkIndices[k]);
+					}
 				}
 			}
 
@@ -239,12 +364,12 @@ public:
 			std::vector<char> scratch2(2 * chunkDescCount * sizeof(uint32_t));
 			const bool isIdentity = NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), shuffledChunkDescs.data(), chunkDescCount, scratch2.data(), messageLog);
 			EXPECT_FALSE(isIdentity);
-			NvBlastApplyAssetDescChunkReorderMap(chunkDescs, shuffledChunkDescs.data(), chunkDescCount, bondDescs, bondDescCount, chunkReorderMap.data(), messageLog);
+			NvBlastApplyAssetDescChunkReorderMap(chunkDescs, shuffledChunkDescs.data(), chunkDescCount, bondDescs, bondDescCount, chunkReorderMap.data(), true, messageLog);
 		}
 		else
 		{
 			memcpy(chunkDescs, shuffledChunkDescs.data(), chunkDescCount * sizeof(NvBlastChunkDesc));
-			const bool isIdentity = NvBlastTkFrameworkGet()->reorderAssetDescChunks(chunkDescs, chunkDescCount, bondDescs, bondDescCount);
+			const bool isIdentity = NvBlastTkFrameworkGet()->reorderAssetDescChunks(chunkDescs, chunkDescCount, bondDescs, bondDescCount, nullptr, true);
 			EXPECT_FALSE(isIdentity);
 		}
 	}
@@ -278,55 +403,14 @@ TEST_F(AssetTestStrict, BuildAssets)
 }
 
 #if ENABLE_SERIALIZATION_TESTS
-// Restricting this test to windows since we don't have a handy cross platform temp file.
-#if defined(WIN32) || defined(WIN64)
-TEST_F(AssetTestStrict, SerializeAssetIntoFile)
+TEST_F(AssetTestStrict, SerializeAssets)
 {
+	Nv::Blast::ExtSerialization* ser = NvBlastExtSerializationCreate();
+	EXPECT_TRUE(ser != nullptr);
+
 	const uint32_t assetDescCount = sizeof(g_assetDescs) / sizeof(g_assetDescs[0]);
 
-	std::vector<Nv::Blast::Asset *> assets(assetDescCount);
-
-	// Build
-	for (uint32_t i = 0; i < assetDescCount; ++i)
-	{
-		assets[i] = reinterpret_cast<Nv::Blast::Asset*>(buildAsset(g_assetExpectedValues[i], &g_assetDescs[i]));
-	}
-
-	char tempPath[1024];
-	GetTempPathA(1024, tempPath);
-
-	char tempFilename[1024];
-
-	GetTempFileNameA(tempPath, nullptr, 0, tempFilename);
-
-	std::ofstream myFile(tempFilename, std::ios::out | std::ios::binary);
-
-	EXPECT_TRUE(serializeAssetIntoStream(assets[0], myFile));
-
-	myFile.flush();
-
-	// Load it back
-
-	std::ifstream myFileReader(tempFilename, std::ios::binary);
-
-	Nv::Blast::Asset* rtAsset = reinterpret_cast<Nv::Blast::Asset *>(deserializeAssetFromStream(myFileReader));
-	EXPECT_TRUE(rtAsset != nullptr);
-
-	checkAssetsExpected(*rtAsset, g_assetExpectedValues[0]);
-
-	for (uint32_t i = 0; i < assetDescCount; ++i)
-	{
-		free(assets[i]);
-	}
-	free(rtAsset);
-}
-#endif
-
-TEST_F(AssetTestStrict, SerializeAssetsNewBuffer)
-{
-	const uint32_t assetDescCount = sizeof(g_assetDescs) / sizeof(g_assetDescs[0]);
-
-	std::vector<Nv::Blast::Asset *> assets(assetDescCount);
+	std::vector<Nv::Blast::Asset*> assets(assetDescCount);
 
 	// Build
 	for (uint32_t i = 0; i < assetDescCount; ++i)
@@ -337,14 +421,17 @@ TEST_F(AssetTestStrict, SerializeAssetsNewBuffer)
 	// Serialize them
 	for (Nv::Blast::Asset* asset : assets)
 	{
-		uint32_t size = 0;
-		unsigned char* buffer = nullptr;
+		void* buffer;
+		const uint64_t size = NvBlastExtSerializationSerializeAssetIntoBuffer(buffer, *ser, asset);
+		EXPECT_TRUE(size != 0);
 
-
-//		auto result = Nv::Blast::BlastSerialization<Nv::Blast::Asset, Nv::Blast::Serialization::Asset::Reader, Nv::Blast::Serialization::Asset::Builder>::serializeIntoNewBuffer(asset, &buffer, size);
-		EXPECT_TRUE(serializeAssetIntoNewBuffer(asset, &buffer, size));
-
-		free(static_cast<void*>(buffer));
+		uint32_t objectTypeID;
+		uint32_t encodingID;
+		uint64_t dataSize = 0;
+		EXPECT_TRUE(ser->peekHeader(&objectTypeID, &encodingID, &dataSize, buffer, size));
+		EXPECT_EQ(objectTypeID, Nv::Blast::LlObjectTypeID::Asset);
+		EXPECT_EQ(encodingID, ser->getSerializationEncoding());
+		EXPECT_EQ(dataSize + Nv::Blast::ExtSerializationInternal::HeaderSize, size);
 	}
 
 	// Destroy
@@ -356,51 +443,17 @@ TEST_F(AssetTestStrict, SerializeAssetsNewBuffer)
 		}
 	}
 
-}
-
-TEST_F(AssetTestStrict, SerializeAssetsExistingBuffer)
-{
-	const uint32_t assetDescCount = sizeof(g_assetDescs) / sizeof(g_assetDescs[0]);
-
-	std::vector<Nv::Blast::Asset *> assets(assetDescCount);
-
-	// Build
-	for (uint32_t i = 0; i < assetDescCount; ++i)
-	{
-		assets[i] = reinterpret_cast<Nv::Blast::Asset*>(buildAsset(g_assetExpectedValues[i], &g_assetDescs[i]));
-	}
-
-	// How big does our buffer need to be? Guess.
-
-	uint32_t maxSize = 1024 * 1024;
-	void* buffer = alloc(maxSize);
-
-	// Serialize them
-	for (Nv::Blast::Asset* asset : assets)
-	{
-		uint32_t usedSize = 0;
-
-		EXPECT_TRUE(serializeAssetIntoExistingBuffer(asset, (unsigned char *)buffer, maxSize, usedSize));
-	}
-
-	free(static_cast<void*>(buffer));
-
-	// Destroy
-	for (uint32_t i = 0; i < assetDescCount; ++i)
-	{
-		if (assets[i])
-		{
-			free(assets[i]);
-		}
-	}
-
+	ser->release();
 }
 
 TEST_F(AssetTestStrict, SerializeAssetsRoundTrip)
 {
+	Nv::Blast::ExtSerialization* ser = NvBlastExtSerializationCreate();
+	EXPECT_TRUE(ser != nullptr);
+
 	const uint32_t assetDescCount = sizeof(g_assetDescs) / sizeof(g_assetDescs[0]);
 
-	std::vector<Nv::Blast::Asset *> assets(assetDescCount);
+	std::vector<Nv::Blast::Asset*> assets(assetDescCount);
 
 	// Build
 	for (uint32_t i = 0; i < assetDescCount; ++i)
@@ -408,23 +461,32 @@ TEST_F(AssetTestStrict, SerializeAssetsRoundTrip)
 		assets[i] = reinterpret_cast<Nv::Blast::Asset*>(buildAsset(g_assetExpectedValues[i], &g_assetDescs[i]));
 	}
 
-	// Serialize them
-	for (uint32_t i = 0; i < assetDescCount; ++i)
+	const uint32_t encodings[] =
 	{
-		Nv::Blast::Asset* asset = assets[i];
-		uint32_t size = 0;
-		unsigned char* buffer = nullptr;
+		Nv::Blast::ExtSerialization::EncodingID::CapnProtoBinary,
+		Nv::Blast::ExtSerialization::EncodingID::RawBinary
+	};
 
-		EXPECT_TRUE(serializeAssetIntoNewBuffer(asset, &buffer, size));
+	for (auto encoding : encodings)
+	{
+		ser->setSerializationEncoding(encoding);
 
-		// No release needed for this asset since it's never put into that system
-		Nv::Blast::Asset* rtAsset = reinterpret_cast<Nv::Blast::Asset*>(deserializeAsset(buffer, size));
+		// Serialize them
+		for (uint32_t i = 0; i < assetDescCount; ++i)
+		{
+			Nv::Blast::Asset* asset = assets[i];
 
-		//TODO: Compare assets
-		checkAssetsExpected(*rtAsset, g_assetExpectedValues[i]);
+			void* buffer;
+			const uint64_t size = NvBlastExtSerializationSerializeAssetIntoBuffer(buffer, *ser, asset);
+			EXPECT_TRUE(size != 0);
 
-		free(static_cast<void*>(buffer));
-		free(static_cast<void*>(rtAsset));
+			Nv::Blast::Asset* rtAsset = reinterpret_cast<Nv::Blast::Asset*>(ser->deserializeFromBuffer(buffer, size));
+
+			//TODO: Compare assets
+			checkAssetsExpected(*rtAsset, g_assetExpectedValues[i]);
+
+			free(static_cast<void*>(rtAsset));
+		}
 	}
 
 	// Destroy
@@ -435,39 +497,123 @@ TEST_F(AssetTestStrict, SerializeAssetsRoundTrip)
 			free(assets[i]);
 		}
 	}
+
+	ser->release();
 }
-#endif
 
-
-#if 0
-TEST_F(AssetTestStrict, AssociateAsset)
+TEST_F(AssetTestStrict, SerializeAssetsRoundTripWithSkipping)
 {
-	const uint32_t assetDescCount = sizeof(g_assetDescs) / sizeof(g_assetDescs[0]);
+	Nv::Blast::ExtSerialization* ser = NvBlastExtSerializationCreate();
+	EXPECT_TRUE(ser != nullptr);
 
-	for (uint32_t i = 0; i < assetDescCount; ++i)
+	std::vector<char> stream;
+
+	class StreamBufferProvider : public Nv::Blast::ExtSerialization::BufferProvider
 	{
-		// Build
-		NvBlastAsset asset;
-		if (!buildAsset(&asset, g_assetExpectedValues[i], &g_assetDescs[i]))
+	public:
+		StreamBufferProvider(std::vector<char>& stream) : m_stream(stream), m_cursor(0) {}
+
+		virtual void*   requestBuffer(size_t size) override
 		{
-			continue;
+			m_stream.resize(m_cursor + size);
+			void* data = m_stream.data() + m_cursor;
+			m_cursor += size;
+			return data;
 		}
 
-		// Copy
-		const char* data = (const char*)NvBlastAssetGetData(&asset, messageLog);
-		const size_t dataSize = NvBlastAssetDataGetSize(data, messageLog);
-		NvBlastAsset duplicate;
-		char* duplicateData = (char*)alloc(dataSize);
-		memcpy(duplicateData, data, dataSize);
-		const bool assetAssociateResult = NvBlastAssetAssociateData(&duplicate, duplicateData, messageLog);
-		EXPECT_TRUE(assetAssociateResult);
+	private:
+		std::vector<char>&	m_stream;
+		size_t				m_cursor;
+	} myStreamProvider(stream);
 
-		// Destroy
-		NvBlastAssetFreeData(&asset, free, messageLog);
-		NvBlastAssetFreeData(&duplicate, free, messageLog);
+	ser->setBufferProvider(&myStreamProvider);
+	
+	const uint32_t assetDescCount = sizeof(g_assetDescs) / sizeof(g_assetDescs[0]);
+
+	std::vector<Nv::Blast::Asset*> assets(assetDescCount);
+
+	// Build
+	for (uint32_t i = 0; i < assetDescCount; ++i)
+	{
+		assets[i] = reinterpret_cast<Nv::Blast::Asset*>(buildAsset(g_assetExpectedValues[i], &g_assetDescs[i]));
 	}
+
+	const uint32_t encodings[] =
+	{
+		Nv::Blast::ExtSerialization::EncodingID::CapnProtoBinary,
+		Nv::Blast::ExtSerialization::EncodingID::RawBinary
+	};
+
+	for (auto encoding : encodings)
+	{
+		ser->setSerializationEncoding(encoding);
+
+		// Serialize them
+		for (uint32_t i = 0; i < assetDescCount; ++i)
+		{
+			void* buffer;
+			const uint64_t size = NvBlastExtSerializationSerializeAssetIntoBuffer(buffer, *ser, assets[i]);
+			EXPECT_TRUE(size != 0);
+		}
+	}
+
+	// Deserialize from stream
+	const void* buffer = stream.data();
+	uint64_t bufferSize = stream.size();
+	for (uint32_t assetCount = 0; bufferSize; ++assetCount)
+	{
+		uint32_t objectTypeID;
+		uint32_t encodingID;
+		const bool peekSuccess = ser->peekHeader(&objectTypeID, &encodingID, nullptr, buffer, bufferSize);
+		EXPECT_TRUE(peekSuccess);
+		if (!peekSuccess)
+		{
+			break;
+		}
+
+		EXPECT_EQ(Nv::Blast::LlObjectTypeID::Asset, objectTypeID);
+		if (assetCount < assetDescCount)
+		{
+			EXPECT_EQ(Nv::Blast::ExtSerialization::EncodingID::CapnProtoBinary, encodingID);
+		}
+		else
+		{
+			EXPECT_EQ(Nv::Blast::ExtSerialization::EncodingID::RawBinary, encodingID);
+		}
+
+		const bool skip = (assetCount & 1) != 0;
+
+		if (!skip)
+		{
+			const uint32_t assetnum = assetCount % assetDescCount;
+			Nv::Blast::Asset* rtAsset = reinterpret_cast<Nv::Blast::Asset*>(ser->deserializeFromBuffer(buffer, bufferSize));
+			EXPECT_TRUE(rtAsset != nullptr);
+			if (rtAsset == nullptr)
+			{
+				break;
+			}
+
+			//TODO: Compare assets
+			checkAssetsExpected(*rtAsset, g_assetExpectedValues[assetnum]);
+
+			free(static_cast<void*>(rtAsset));
+		}
+
+		buffer = ser->skipObject(bufferSize, buffer);
+	}
+
+	// Destroy
+	for (uint32_t i = 0; i < assetDescCount; ++i)
+	{
+		if (assets[i])
+		{
+			free(assets[i]);
+		}
+	}
+
+	ser->release();
 }
-#endif
+#endif	// ENABLE_SERIALIZATION_TESTS
 
 TEST_F(AssetTestAllowWarnings, BuildAssetsMissingCoverage)
 {
@@ -486,7 +632,7 @@ TEST_F(AssetTestAllowWarnings, BuildAssetsMissingCoverage)
 		std::vector<char> scratch(desc->chunkCount * sizeof(NvBlastChunkDesc));
 		const bool changedCoverage = !NvBlastEnsureAssetExactSupportCoverage(chunkDescs.data(), fixedDesc.chunkCount, scratch.data(), messageLog);
 		EXPECT_TRUE(changedCoverage);
-		NvBlastReorderAssetDescChunks(chunkDescs.data(), fixedDesc.chunkCount, bondDescs.data(), fixedDesc.bondCount, chunkReorderMap.data(), scratch.data(), messageLog);
+		NvBlastReorderAssetDescChunks(chunkDescs.data(), fixedDesc.chunkCount, bondDescs.data(), fixedDesc.bondCount, chunkReorderMap.data(), true, scratch.data(), messageLog);
 		fixedDesc.chunkDescs = chunkDescs.data();
 		fixedDesc.bondDescs = bondDescs.data();
 		assets[i] = buildAsset(g_assetsFromMissingCoverageExpectedValues[i], &fixedDesc);

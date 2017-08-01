@@ -259,7 +259,7 @@ static void ShowUsage()
 		"FurViewer Command-line Options:\n\n"
 		"Usage: FurViewer.[win64|win32].exe [file] [options]...\n\n"
 		"[file]: \n"
-		"\t: File to load. .furproj, .apx or .apb are supported.\n\t ex) media/HairBall/Hairball.furproj\n\n"
+		"\t: File to load. .blastProj, .apx or .apb are supported.\n\t ex) media/Ball/ball.blastProj\n\n"
 		"[options]:\n"
 		"-size <width>x<height>\n\t: Window resolution\t  ex) -size 1024x768\n"
 		"-aa <1|2|4|8>\n\t: MSAA anti-aliasing options. 1 for off.\t  ex) -aa 4 or -aa 1\n"
@@ -421,20 +421,20 @@ bool ParseCommandLineOptions(int argc, char* argv[])
 			char* extension = strrchr(argv[idx], '.');
 			if (extension)
 			{
-				if (!_stricmp(extension, ".furproj"))
+				if (!_stricmp(extension, ".blastProj"))
 				{
 					oaValue value;
 					value.String = argv[idx];
 					settings.SetOptionValue("User/ProjectPath", OA_TYPE_STRING, &value);
 					isValid = true;
 				}
-				else if (!_stricmp(extension, ".apx") || !_stricmp(extension, ".apb"))
-				{
-					oaValue value;
-					value.String = argv[idx];
-					settings.SetOptionValue("User/FurAssetPath", OA_TYPE_STRING, &value);
-					isValid = true;
-				}
+				//else if (!_stricmp(extension, ".apx") || !_stricmp(extension, ".apb"))
+				//{
+				//	oaValue value;
+				//	value.String = argv[idx];
+				//	settings.SetOptionValue("User/FurAssetPath", OA_TYPE_STRING, &value);
+				//	isValid = true;
+				//}
 			}
 			if (!isValid)
 			{
@@ -880,12 +880,12 @@ bool CoreLib::Gamepad_ResetScene()
 	return true;
 }
 
-bool CoreLib::Gamepad_StartAnimation()
+bool CoreLib::Gamepad_PlaySample()
 {
 	std::map<QString, PluginInterface*>::iterator it;
 	for (it = m_PluginInterfaces.begin(); it != m_PluginInterfaces.end(); it++)
 	{
-		if (!(it->second)->Gamepad_StartAnimation())
+		if (!(it->second)->Gamepad_PlaySample())
 			break;
 	}
 	return true;
@@ -997,10 +997,24 @@ bool CoreLib::SimpleScene_Draw_DX11()
 }
 bool CoreLib::SimpleScene_FitCamera(atcore_float3& center, atcore_float3& extents)
 {
+	bool valid = true;
 	std::map<QString, PluginInterface*>::iterator it;
 	for (it = m_PluginInterfaces.begin(); it != m_PluginInterfaces.end(); it++)
 	{
 		if (!(it->second)->SimpleScene_FitCamera(center, extents))
+		{
+			valid = false;
+			break;
+		}
+	}
+	return valid;
+}
+bool CoreLib::SimpleScene_UpdateCamera()
+{
+	std::map<QString, PluginInterface*>::iterator it;
+	for (it = m_PluginInterfaces.begin(); it != m_PluginInterfaces.end(); it++)
+	{
+		if (!(it->second)->SimpleScene_UpdateCamera())
 			break;
 	}
 	return true;
@@ -1034,6 +1048,14 @@ bool CoreLib::SimpleScene_DrawAxis()
 			break;
 	}
 	return true;
+}
+void CoreLib::SimpleScene_OpenFilesByDrop(const QStringList& fileNames)
+{
+	std::map<QString, PluginInterface*>::iterator it;
+	for (it = m_PluginInterfaces.begin(); it != m_PluginInterfaces.end(); it++)
+	{
+		(it->second)->SimpleScene_OpenFilesByDrop(fileNames);
+	}
 }
 bool CoreLib::SimpleScene_LoadSceneFromFbx(const char* dir, const char* fbxName)
 {
@@ -1342,6 +1364,18 @@ bool CoreLib::AppMainWindow_closeEvent(QCloseEvent *event)
 	for (it = m_PluginInterfaces.begin(); it != m_PluginInterfaces.end(); it++)
 	{
 		if (!(it->second)->AppMainWindow_closeEvent(event))
+			break;
+	}
+	return true;
+}
+
+
+bool CoreLib::menu_item_triggered(QAction* action)
+{
+	std::map<QString, PluginInterface*>::iterator it;
+	for (it = m_PluginInterfaces.begin(); it != m_PluginInterfaces.end(); it++)
+	{
+		if (!(it->second)->AppMainWindow_menu_item_triggered(action))
 			break;
 	}
 	return true;

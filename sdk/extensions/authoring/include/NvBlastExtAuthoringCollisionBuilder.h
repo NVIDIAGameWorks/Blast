@@ -1,26 +1,42 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTEXTAUTHORINGCOLLISIONBUILDER_H
 #define NVBLASTEXTAUTHORINGCOLLISIONBUILDER_H
 
 #include "NvBlastTypes.h"
-#include <vector>
-#include <PxVec3.h>
 
 namespace physx
 {
-	class PxCooking;
-	class PxPhysicsInsertionCallback;
-	class PxVec3;
-	class PxConvexMesh;
+class PxCooking;
+class PxPhysicsInsertionCallback;
+class PxVec3;
+class PxConvexMesh;
 }
 
 
@@ -29,32 +45,7 @@ namespace Nv
 namespace Blast
 {
 
-/**
-	Collision hull geometry format.
-*/
-struct CollisionHull
-{
-	/**
-		Collision hull polygon format.
-	*/
-	struct HullPolygon
-	{
-		// Polygon base plane
-		float		mPlane[4];
-		// Number vertices in polygon
-		uint16_t	mNbVerts;
-		// First index in CollisionHull.indices array for this polygon
-		uint16_t	mIndexBase;
-	};
-	///**
-
-	CollisionHull(){};
-
-	std::vector<physx::PxVec3>	points;
-	std::vector<uint32_t>		indices;
-	std::vector<HullPolygon>	polygonData;
-};
-
+struct CollisionHull;
 
 /**
 	ConvexMeshBuilder provides routine to build collision hulls from array of vertices.
@@ -64,35 +55,38 @@ struct CollisionHull
 class ConvexMeshBuilder
 {
 public:
+	virtual ~ConvexMeshBuilder() {}
 
 	/**
-		Constructor should be provided with PxCoocking and PxPhysicsInsertionCallback objects.
+	Release ConvexMeshBuilder memory
 	*/
-	ConvexMeshBuilder(physx::PxCooking* cooking, physx::PxPhysicsInsertionCallback* insertionCallback) : mInsertionCallback(insertionCallback), mCooking(cooking) {}
+	virtual void					release() = 0;
 
 	/**
 		Method creates CollisionHull from provided array of vertices.
+		\param[in]  verticesCount	Number of vertices
 		\param[in]	vertexData		Vertex array of some object, for which collision geometry should be built
 		\param[out] output			Reference on CollisionHull object in which generated geometry should be saved
 	*/
-	void					buildCollisionGeometry(const std::vector<physx::PxVec3>& vertexData, CollisionHull& output);
+	virtual CollisionHull*			buildCollisionGeometry(uint32_t verticesCount, const physx::PxVec3* vertexData) = 0;
 
 	/**
 	Method creates PxConvexMesh from provided array of vertices.
-	\param[in]	vertexData		Vertex array of some object, for which collision geometry should be built
+	\param[in]  verticesCount		Number of vertices
+	\param[in]	vertexData			Vertex array of some object, for which collision geometry should be built
 
 	\return pointer to the PxConvexMesh object if it was built successfully, 'nullptr' otherwise.
 	*/
-	physx::PxConvexMesh*	buildConvexMesh(std::vector<physx::PxVec3>& vertexData);
+	virtual physx::PxConvexMesh*	buildConvexMesh(uint32_t verticesCount, const physx::PxVec3* vertexData) = 0;
 
 
 	/**
 		Method creates PxConvexMesh from provided ConvexHull geometry
-		\param[in]	hull ConvexHull geometry
+		\param[in]	hull			ConvexHull geometry
 
 		\return pointer to the PxConvexMesh object if it was built successfully, 'nullptr' otherwise.
 	*/
-	physx::PxConvexMesh*	buildConvexMesh(CollisionHull& hull);
+	virtual physx::PxConvexMesh*	buildConvexMesh(const CollisionHull& hull) = 0;
 
 
 	/**
@@ -102,18 +96,13 @@ public:
 		This method trims all intersecting parts of collision geometry.
 		As a drawback, trimming collision geometry can lead to penetrating render meshes during simulation.
 
-
-		\param[in]	in ConvexHull geometry which should be clipped. 
-		\param[in]	chunkDepth Array of depth levels of convex hulls corresponding chunks.
+		\param[in]		chunksCount	Number of chunks
+		\param[in,out]	in			ConvexHull geometry which should be clipped. 
+		\param[in]		chunkDepth	Array of depth levels of convex hulls corresponding chunks.
 
 	*/
-	
-	void					trimCollisionGeometry(std::vector<CollisionHull>& in, const std::vector<uint32_t>& chunkDepth);
+	virtual void					trimCollisionGeometry(uint32_t chunksCount, CollisionHull** in, const uint32_t* chunkDepth) = 0;
 
-
-private:
-	physx::PxPhysicsInsertionCallback*	mInsertionCallback;
-	physx::PxCooking*					mCooking;
 };
 
 } // namespace Blast

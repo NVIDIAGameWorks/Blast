@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef BLASTBASETEST_H
 #define BLASTBASETEST_H
@@ -18,56 +36,31 @@
 
 #include "NvBlast.h"
 
-#include "AlignedAllocator.h"
-
 #include "TestAssets.h"
 
-#include "PxErrorCallback.h"
-#include "PxAllocatorCallback.h"
-
+#include "NvBlastGlobals.h"
 
 #include <ostream>
 
 
 template<int FailLevel, int Verbosity>
-class BlastBaseTest : public testing::Test, public physx::PxAllocatorCallback, public physx::PxErrorCallback
+class BlastBaseTest : public testing::Test, public Nv::Blast::ErrorCallback
 {
 public:
-	static void* tkAlloc(size_t size)
+	BlastBaseTest()
 	{
-		Nv::Blast::TkFramework* fw = NvBlastTkFrameworkGet();
-		if (fw != nullptr)
-		{
-			return fw->getAllocatorCallback().allocate(size, nullptr, __FILE__, __LINE__);
-		}
-		else
-		{
-			return std::malloc(size);
-		}
-	}
-
-	static void tkFree(void* mem)
-	{
-		Nv::Blast::TkFramework* fw = NvBlastTkFrameworkGet();
-		if (fw != nullptr)
-		{
-			fw->getAllocatorCallback().deallocate(mem);
-		}
-		else
-		{
-			std::free(mem);
-		}
+		NvBlastGlobalSetErrorCallback(this);
 	}
 
 	// A zeroing alloc with the same signature as malloc
-	static void* alloc(size_t size)
+	static void* alignedZeroedAlloc(size_t size)
 	{
-		return memset(alignedAlloc<tkAlloc>(size), 0, size);
+		return memset(NVBLAST_ALLOC(size), 0, size);
 	}
 
-	static void free(void* mem)
+	static void alignedFree(void* mem)
 	{
-		alignedFree<tkFree>(mem);
+		NVBLAST_FREE(mem);
 	}
 
 	// Message log for blast functions
@@ -96,31 +89,16 @@ public:
 		}
 	}
 
-	// PxAllocatorCallback interface
-	virtual void* allocate(size_t size, const char* typeName, const char* filename, int line) override
-	{
-		NV_UNUSED(typeName);
-		NV_UNUSED(filename);
-		NV_UNUSED(line);
-		return alignedAlloc<std::malloc>(size);
-	}
-
-	// PxAllocatorCallback interface
-	virtual void deallocate(void* ptr) override
-	{
-		alignedFree<std::free>(ptr);
-	}
-
-	// PxErrorCallback interface
-	virtual void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line) override
+	// ErrorCallback interface
+	virtual void reportError(Nv::Blast::ErrorCode::Enum code, const char* message, const char* file, int line) override
 	{
 		uint32_t failMask = 0;
 		switch (FailLevel)
 		{
 		case NvBlastMessage::Debug:
-		case NvBlastMessage::Info:		failMask |= physx::PxErrorCode::eDEBUG_INFO;
-		case NvBlastMessage::Warning:	failMask |= physx::PxErrorCode::eDEBUG_WARNING;
-		case NvBlastMessage::Error:		failMask |= physx::PxErrorCode::eABORT | physx::PxErrorCode::eABORT | physx::PxErrorCode::eINTERNAL_ERROR | physx::PxErrorCode::eOUT_OF_MEMORY | physx::PxErrorCode::eINVALID_OPERATION | physx::PxErrorCode::eINVALID_PARAMETER;
+		case NvBlastMessage::Info:		failMask |= Nv::Blast::ErrorCode::eDEBUG_INFO;
+		case NvBlastMessage::Warning:	failMask |= Nv::Blast::ErrorCode::eDEBUG_WARNING;
+		case NvBlastMessage::Error:		failMask |= Nv::Blast::ErrorCode::eABORT | Nv::Blast::ErrorCode::eABORT | Nv::Blast::ErrorCode::eINTERNAL_ERROR | Nv::Blast::ErrorCode::eOUT_OF_MEMORY | Nv::Blast::ErrorCode::eINVALID_OPERATION | Nv::Blast::ErrorCode::eINVALID_PARAMETER;
 		}
 
 		if (!(failMask & code) && Verbosity <= 0)
@@ -131,15 +109,15 @@ public:
 		std::string output = "NvBlast Test ";
 		switch (code)
 		{
-		case physx::PxErrorCode::eNO_ERROR:												break;
-		case physx::PxErrorCode::eDEBUG_INFO:			output += "Debug Info";			break;
-		case physx::PxErrorCode::eDEBUG_WARNING:		output += "Debug Warning";		break;
-		case physx::PxErrorCode::eINVALID_PARAMETER:	output += "Invalid Parameter";	break;
-		case physx::PxErrorCode::eINVALID_OPERATION:	output += "Invalid Operation";	break;
-		case physx::PxErrorCode::eOUT_OF_MEMORY:		output += "Out of Memory";		break;
-		case physx::PxErrorCode::eINTERNAL_ERROR:		output += "Internal Error";		break;
-		case physx::PxErrorCode::eABORT:				output += "Abort";				break;
-		case physx::PxErrorCode::ePERF_WARNING:			output += "Perf Warning";		break;
+		case Nv::Blast::ErrorCode::eNO_ERROR:											break;
+		case Nv::Blast::ErrorCode::eDEBUG_INFO:			output += "Debug Info";			break;
+		case Nv::Blast::ErrorCode::eDEBUG_WARNING:		output += "Debug Warning";		break;
+		case Nv::Blast::ErrorCode::eINVALID_PARAMETER:	output += "Invalid Parameter";	break;
+		case Nv::Blast::ErrorCode::eINVALID_OPERATION:	output += "Invalid Operation";	break;
+		case Nv::Blast::ErrorCode::eOUT_OF_MEMORY:		output += "Out of Memory";		break;
+		case Nv::Blast::ErrorCode::eINTERNAL_ERROR:		output += "Internal Error";		break;
+		case Nv::Blast::ErrorCode::eABORT:				output += "Abort";				break;
+		case Nv::Blast::ErrorCode::ePERF_WARNING:		output += "Perf Warning";	break;
 		default:										FAIL();
 		}
 		output += std::string(" message in ") + file + "(" + std::to_string(line) + "): " + message + "\n";

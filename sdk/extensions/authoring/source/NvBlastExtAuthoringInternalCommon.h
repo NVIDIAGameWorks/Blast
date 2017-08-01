@@ -1,16 +1,35 @@
-/*
-* Copyright (c) 2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTINTERNALCOMMON_H
 #define NVBLASTINTERNALCOMMON_H
 #include "NvBlastExtAuthoringTypes.h"
+#include <algorithm>
 
 using namespace physx;
 
@@ -74,15 +93,15 @@ Computes best direction to project points.
 */
 NV_FORCE_INLINE ProjectionDirections getProjectionDirection(const physx::PxVec3& normal)
 {
-	float maxv = std::max(abs(normal.x), std::max(abs(normal.y), abs(normal.z)));
+	float maxv = std::max(std::abs(normal.x), std::max(std::abs(normal.y), std::abs(normal.z)));
 	ProjectionDirections retVal;
-	if (maxv == abs(normal.x))
+	if (maxv == std::abs(normal.x))
 	{
 		retVal = YZ_PLANE;
 		if (normal.x < 0) retVal = (ProjectionDirections)((int)retVal | (int)OPPOSITE_WINDING);
 		return retVal;
 	}
-	if (maxv == abs(normal.y))
+	if (maxv == std::abs(normal.y))
 	{
 		retVal = ZX_PLANE;
 		if (normal.y > 0) retVal = (ProjectionDirections)((int)retVal | (int)OPPOSITE_WINDING);
@@ -186,6 +205,54 @@ NV_INLINE bool getPlaneSegmentIntersection(const PxPlane& pl, const PxVec3& a, c
 	result = (b - a) * t + a;
 	return true;
 }
+
+
+#define VEC_COMPARISON_OFFSET 1e-5f
+/**
+Vertex comparator for vertex welding.
+*/
+struct VrtComp
+{
+	bool operator()(const Vertex& a, const Vertex& b) const
+	{
+		if (a.p.x + VEC_COMPARISON_OFFSET < b.p.x) return true;
+		if (a.p.x - VEC_COMPARISON_OFFSET > b.p.x) return false;
+		if (a.p.y + VEC_COMPARISON_OFFSET < b.p.y) return true;
+		if (a.p.y - VEC_COMPARISON_OFFSET > b.p.y) return false;
+		if (a.p.z + VEC_COMPARISON_OFFSET < b.p.z) return true;
+		if (a.p.z - VEC_COMPARISON_OFFSET > b.p.z) return false;
+
+		if (a.n.x + 1e-3 < b.n.x) return true;
+		if (a.n.x - 1e-3 > b.n.x) return false;
+		if (a.n.y + 1e-3 < b.n.y) return true;
+		if (a.n.y - 1e-3 > b.n.y) return false;
+		if (a.n.z + 1e-3 < b.n.z) return true;
+		if (a.n.z - 1e-3 > b.n.z) return false;
+
+
+		if (a.uv[0].x + 1e-3 < b.uv[0].x) return true;
+		if (a.uv[0].x - 1e-3 > b.uv[0].x) return false;
+		if (a.uv[0].y + 1e-3 < b.uv[0].y) return true;
+		return false;
+	};
+};
+
+/**
+Vertex comparator for vertex welding (not accounts normal and uv parameters of vertice).
+*/
+struct VrtPositionComparator
+{
+	bool operator()(const physx::PxVec3& a, const physx::PxVec3& b) const
+	{
+		if (a.x + VEC_COMPARISON_OFFSET < b.x) return true;
+		if (a.x - VEC_COMPARISON_OFFSET > b.x) return false;
+		if (a.y + VEC_COMPARISON_OFFSET < b.y) return true;
+		if (a.y - VEC_COMPARISON_OFFSET > b.y) return false;
+		if (a.z + VEC_COMPARISON_OFFSET < b.z) return true;
+		if (a.z - VEC_COMPARISON_OFFSET > b.z) return false;
+		return false;
+	};
+};
 
 }	// namespace Blast
 }	// namespace Nv

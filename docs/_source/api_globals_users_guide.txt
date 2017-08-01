@@ -1,0 +1,94 @@
+/*! \page pageglobalsapi Globals API (NvBlastGlobals)
+
+The NvBlastGlobals library is a utility library which is used by NvBlastTk (see \ref pagehlapi) and some extensions (see \ref pageextapi) and samples.
+
+It provides a global allocator, error callback, and profiler API.
+
+<br>
+\section globalsallocator Allocator
+
+<b>Include NvBlastGlobals.h</b>
+<br>
+
+A global allocator with interface
+
+\code
+Nv::Blast::AllocatorCallback
+\endcode
+
+may be set by the user with the function
+
+\code
+NvBlastGlobalSetAllocatorCallback
+\endcode
+
+and accessed using
+
+\code
+NvBlastGlobalGetAllocatorCallback
+\endcode
+
+An internal, default allocator is used if the user does not set their own, or if NULL is passed into NvBlastGlobalSetAllocatorCallback.
+
+This allocator is used by NvBlastTk, as well as any extension that allocates memory.  In addition, utility macros are provided such as
+<b>NVBLAST_ALLOC</b>, <b>NVBLAST_FREE</b>, <b>NVBLAST_NEW</b>, and <b>NVBLAST_DELETE</b>.
+
+<br>
+\section globalserror Error Callback
+
+<b>Include NvBlastGlobals.h</b>
+
+A global error message callback with interface
+
+\code
+Nv::Blast::ErrorCallback
+\endcode
+
+may be set by the user with the function
+
+\code
+NvBlastGlobalSetErrorCallback
+\endcode
+
+and accessed using
+
+\code
+NvBlastGlobalGetErrorCallback
+\endcode
+
+An internal, default error callback is used if the user does not set their own, or if NULL is passed into NvBlastGlobalSetErrorCallback.
+
+This error callback is used by NvBlastTk, as well as many extensions.  In addition, utility macros are provided such as
+<b>NVBLAST_LOG_ERROR</b> and <b>NVBLAST_LOG_WARNDING</b>.
+
+Finally, a function with signature given by NvBlastLog is provided which uses the global error callback,
+
+\code
+Nv::Blast::logLL
+\endcode
+
+This function may be passed into any NvBlast&tm; function's log parameter.
+
+<br>
+\section globalsprofiler Profiler API
+
+<b>Include NvBlastProfiler.h</b>
+<br>
+
+BlastTk contains many profiling zones which use the global profiler which can be accessed in this library.  The user may implement
+the interface
+
+\code
+Nv::Blast::ProfilerCallback
+\endcode
+
+and pass it to the globals library using
+
+\code
+NvBlastProfilerSetCallback
+\endcode
+
+A NULL pointer may be passed in, disabling profiling.  Profiler features are only active in checked, debug and profile builds.
+
+<br>
+*/

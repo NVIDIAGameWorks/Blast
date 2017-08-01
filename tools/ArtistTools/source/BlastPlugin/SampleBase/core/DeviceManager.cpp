@@ -7,6 +7,7 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
+#include "GlobalSettings.h"
 
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p)      { if (p) { (p)->Release(); (p)=NULL; } }
@@ -333,14 +334,7 @@ DeviceManager::MessageLoop()
 	if (m_SwapChain && GetWindowState() != kWindowMinimized)
 	{
 		Animate(elapsedSeconds);
-		// changed by Junma Lixu
-		CoreLib* pCore = CoreLib::Inst();
-		RenderInterface::SwitchToDX11();
-		pCore->SimpleScene_Draw_DX11();
 		Render();
-		RenderInterface::FlushDX11();
-		RenderInterface::PresentRenderWindow();
-		//m_SwapChain->Present(m_SyncInterval, 0);
 		Sleep(0);
 	}
 	else
@@ -486,7 +480,8 @@ DeviceManager::Render()
         }
     }
 
-    m_ImmediateContext->OMSetRenderTargets(0, NULL, NULL);
+    m_ImmediateContext->OMSetRenderTargets(1, &m_BackBufferRTV, m_DepthStencilDSV);
+	GlobalSettings::Inst().m_renderFrameCnt++;
 }
 
 void
@@ -796,6 +791,6 @@ DeviceManager::SetWindowDeviceAndSwapChain(D3DHandles& deviceHandles)
 	m_DepthStencilBuffer = (ID3D11Texture2D*)deviceHandles.pD3D11DepthBuffer;
 	m_DepthStencilDSV = (ID3D11DepthStencilView*)deviceHandles.pD3D11DepthStencilView;
 	m_DepthStencilBuffer->GetDesc(&m_DepthStencilDesc);
-	//m_DepthStencilDSV->GetDesc(&);
+
 	return S_OK;
 }

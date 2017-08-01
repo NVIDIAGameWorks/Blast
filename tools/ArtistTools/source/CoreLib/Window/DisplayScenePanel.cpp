@@ -76,6 +76,17 @@ void DisplayScenePanel::on_btnSkinningDQ_stateChanged(int state)
 void DisplayScenePanel::on_checkBoxGizmoWithLocal_stateChanged(int state)
 {
 	AppMainWindow::Inst().m_bGizmoWithLocal = state;
+	CoreLib::Inst()->AppMainWindow_updateMainToolbar();
+}
+
+void DisplayScenePanel::on_checkBoxGizmoWithDepthTest_stateChanged(int state)
+{
+	AppMainWindow::Inst().m_bGizmoWithDepthTest = state;
+}
+
+void DisplayScenePanel::on_checkBoxShowPlane_stateChanged(int state)
+{
+	AppMainWindow::Inst().m_bShowPlane = state;
 }
 
 void DisplayScenePanel::updateValues()
@@ -90,4 +101,6 @@ void DisplayScenePanel::updateValues()
 	ui.btnUseLighting->setChecked(globalSettings.m_useLighting);
 	ui.btnShowGraphicsMesh->setChecked( globalSettings.m_showGraphicsMesh);
 	ui.btnShowSkinnedOnly->setChecked( globalSettings.m_showSkinnedMeshOnly);
+	ui.checkBoxGizmoWithLocal->setChecked(AppMainWindow::Inst().m_bGizmoWithLocal);
+	ui.checkBoxGizmoWithDepthTest->setChecked(AppMainWindow::Inst().m_bGizmoWithDepthTest);
 }

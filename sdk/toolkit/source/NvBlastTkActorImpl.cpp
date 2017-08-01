@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "NvBlastPreprocessor.h"
 
@@ -22,11 +40,7 @@
 #include "NvBlastMemory.h"
 
 #include "Px.h"
-#include "PxFileBuf.h"
-#include "PxAllocatorCallback.h"
 #include "PxTransform.h"
-
-using namespace physx::general_PxIOStream2;
 
 
 namespace Nv
@@ -41,11 +55,11 @@ TkActorImpl* TkActorImpl::create(const TkActorDesc& desc)
 	TkFamilyImpl* family = TkFamilyImpl::create(asset);
 
 	NvBlastFamily* familyLL = family->getFamilyLLInternal();
-	TkArray<char>::type scratch((uint32_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(familyLL, TkFrameworkImpl::get()->log));
-	NvBlastActor* actorLL = NvBlastFamilyCreateFirstActor(familyLL, &desc, scratch.begin(), TkFrameworkImpl::get()->log);
+	Array<char>::type scratch((uint32_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(familyLL, logLL));
+	NvBlastActor* actorLL = NvBlastFamilyCreateFirstActor(familyLL, &desc, scratch.begin(), logLL);
 	if (actorLL == nullptr)
 	{
-		NVBLASTTK_LOG_ERROR("TkActorImpl::create: low-level actor could not be created.");
+		NVBLAST_LOG_ERROR("TkActorImpl::create: low-level actor could not be created.");
 		return nullptr;
 	}
 
@@ -126,7 +140,7 @@ void TkActorImpl::release()
 
 	if (m_actorLL != nullptr)
 	{
-		NvBlastActorDeactivate(m_actorLL, TkFrameworkImpl::get()->log);
+		NvBlastActorDeactivate(m_actorLL, logLL);
 	}
 
 	if (m_family != nullptr)
@@ -170,13 +184,13 @@ TkGroup* TkActorImpl::removeFromGroup()
 {
 	if (m_group == nullptr)
 	{
-		NVBLASTTK_LOG_WARNING("TkActorImpl::removeFromGroup: actor not in a group.");
+		NVBLAST_LOG_WARNING("TkActorImpl::removeFromGroup: actor not in a group.");
 		return nullptr;
 	}
 
 	if (m_group->isProcessing())
 	{
-		NVBLASTTK_LOG_ERROR("TkActorImpl::removeFromGroup: cannot alter Group while processing.");
+		NVBLAST_LOG_ERROR("TkActorImpl::removeFromGroup: cannot alter Group while processing.");
 		return nullptr;
 	}
 
@@ -200,37 +214,37 @@ const TkAsset* TkActorImpl::getAsset() const
 
 uint32_t TkActorImpl::getVisibleChunkCount() const
 {
-	return NvBlastActorGetVisibleChunkCount(m_actorLL, TkFrameworkImpl::get()->log);
+	return NvBlastActorGetVisibleChunkCount(m_actorLL, logLL);
 }
 
 
 uint32_t TkActorImpl::getVisibleChunkIndices(uint32_t* visibleChunkIndices, uint32_t visibleChunkIndicesSize) const
 {
-	return NvBlastActorGetVisibleChunkIndices(visibleChunkIndices, visibleChunkIndicesSize, m_actorLL, TkFrameworkImpl::get()->log);
+	return NvBlastActorGetVisibleChunkIndices(visibleChunkIndices, visibleChunkIndicesSize, m_actorLL, logLL);
 }
 
 
 uint32_t TkActorImpl::getGraphNodeCount() const
 {
-	return NvBlastActorGetGraphNodeCount(m_actorLL, TkFrameworkImpl::get()->log);
+	return NvBlastActorGetGraphNodeCount(m_actorLL, logLL);
 }
 
 
 uint32_t TkActorImpl::getGraphNodeIndices(uint32_t* graphNodeIndices, uint32_t graphNodeIndicesSize) const
 {
-	return NvBlastActorGetGraphNodeIndices(graphNodeIndices, graphNodeIndicesSize, m_actorLL, TkFrameworkImpl::get()->log);
+	return NvBlastActorGetGraphNodeIndices(graphNodeIndices, graphNodeIndicesSize, m_actorLL, logLL);
 }
 
 
 const float* TkActorImpl::getBondHealths() const
 {
-	return NvBlastActorGetBondHealths(m_actorLL, TkFrameworkImpl::get()->log);
+	return NvBlastActorGetBondHealths(m_actorLL, logLL);
 }
 
 
 uint32_t TkActorImpl::getSplitMaxActorCount() const
 {
-	return NvBlastActorGetMaxActorCountForSplit(m_actorLL, TkFrameworkImpl::get()->log);
+	return NvBlastActorGetMaxActorCountForSplit(m_actorLL, logLL);
 }
 
 
@@ -268,21 +282,21 @@ TkActorImpl::operator Nv::Blast::TkActorData() const
 
 void TkActorImpl::damage(const NvBlastDamageProgram& program, const NvBlastProgramParams* programParams)
 {
-	PERF_SCOPE_L("TkActor::damage");
+	BLAST_PROFILE_SCOPE_L("TkActor::damage");
 
 	if (m_group == nullptr)
 	{
-		NVBLASTTK_LOG_WARNING("TkActor::damage: actor is not in a group, cannot fracture.");
+		NVBLAST_LOG_WARNING("TkActor::damage: actor is not in a group, cannot fracture.");
 		return;
 	}
 
 	if (m_group->isProcessing())
 	{
-		NVBLASTTK_LOG_WARNING("TkActor::damage: group is being processed, cannot fracture this actor.");
+		NVBLAST_LOG_WARNING("TkActor::damage: group is being processed, cannot fracture this actor.");
 		return;
 	}
 
-	if (NvBlastActorCanFracture(m_actorLL, TkFrameworkImpl::get()->log))
+	if (NvBlastActorCanFracture(m_actorLL, logLL))
 	{
 		m_damageBuffer.pushBack(DamageData(program, programParams));
 		makePending();
@@ -298,21 +312,21 @@ void TkActorImpl::damage(const NvBlastDamageProgram& program, const void* damage
 
 void TkActorImpl::damage(const NvBlastDamageProgram& program, const void* damageDesc, uint32_t descSize, const void* material)
 {
-	PERF_SCOPE_L("TkActor::damage");
+	BLAST_PROFILE_SCOPE_L("TkActor::damage");
 
 	if (m_group == nullptr)
 	{
-		NVBLASTTK_LOG_WARNING("TkActor::damage: actor is not in a group, cannot fracture.");
+		NVBLAST_LOG_WARNING("TkActor::damage: actor is not in a group, cannot fracture.");
 		return;
 	}
 
 	if (m_group->isProcessing())
 	{
-		NVBLASTTK_LOG_WARNING("TkActor::damage: group is being processed, cannot fracture this actor.");
+		NVBLAST_LOG_WARNING("TkActor::damage: group is being processed, cannot fracture this actor.");
 		return;
 	}
 
-	if (NvBlastActorCanFracture(m_actorLL, TkFrameworkImpl::get()->log))
+	if (NvBlastActorCanFracture(m_actorLL, logLL))
 	{
 		bool appended = false;
 		for (auto& damageData : m_damageBuffer)
@@ -336,30 +350,30 @@ void TkActorImpl::damage(const NvBlastDamageProgram& program, const void* damage
 
 void TkActorImpl::generateFracture(NvBlastFractureBuffers* commands, const NvBlastDamageProgram& program, const NvBlastProgramParams* programParams) const
 {
-	PERF_SCOPE_L("TkActor::generateFracture");
+	BLAST_PROFILE_SCOPE_L("TkActor::generateFracture");
 
 	if (m_group && m_group->isProcessing())
 	{
-		NVBLASTTK_LOG_WARNING("TkActor::generateFracture: group is being processed, cannot fracture this actor.");
+		NVBLAST_LOG_WARNING("TkActor::generateFracture: group is being processed, cannot fracture this actor.");
 		return;
 	}
 
 	// const context, must make m_timers mutable otherwise
-	NvBlastActorGenerateFracture(commands, m_actorLL, program, programParams, TkFrameworkImpl::get()->log, const_cast<NvBlastTimers*>(&m_timers));
+	NvBlastActorGenerateFracture(commands, m_actorLL, program, programParams, logLL, const_cast<NvBlastTimers*>(&m_timers));
 }
 
 
 void TkActorImpl::applyFracture(NvBlastFractureBuffers* eventBuffers, const NvBlastFractureBuffers* commands)
 {
-	PERF_SCOPE_L("TkActor::applyFracture");
+	BLAST_PROFILE_SCOPE_L("TkActor::applyFracture");
 
 	if (m_group && m_group->isProcessing())
 	{
-		NVBLASTTK_LOG_WARNING("TkActor::applyFracture: group is being processed, cannot fracture this actor.");
+		NVBLAST_LOG_WARNING("TkActor::applyFracture: group is being processed, cannot fracture this actor.");
 		return;
 	}
 
-	NvBlastActorApplyFracture(eventBuffers, m_actorLL, commands, TkFrameworkImpl::get()->log, &m_timers);
+	NvBlastActorApplyFracture(eventBuffers, m_actorLL, commands, logLL, &m_timers);
 
 	if (commands->chunkFractureCount > 0 || commands->bondFractureCount > 0)
 	{
@@ -390,6 +404,12 @@ uint32_t TkActorImpl::getJoints(TkJoint** joints, uint32_t jointsSize) const
 	}
 
 	return jointsWritten;
+}
+
+
+bool TkActorImpl::isBoundToWorld() const
+{
+	return NvBlastActorIsBoundToWorld(m_actorLL, logLL);
 }
 
 

@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "NvBlastTime.h"
 
@@ -26,7 +44,7 @@ void SharedMemory::allocate(TkFamilyImpl& tkFamily)
 	
 	// at most leafChunkCount actors can be created within a family
 	// tasks will grab their portion out of these memory blocks
-	uint32_t leafChunkCount = NvBlastAssetGetLeafChunkCount(assetLL, TkFrameworkImpl::get()->log);
+	uint32_t leafChunkCount = NvBlastAssetGetLeafChunkCount(assetLL, logLL);
 	m_newActorBuffers.allocate(2 * leafChunkCount); // GWD-167 workaround (2*)
 	m_newTkActorBuffers.allocate(leafChunkCount);
 }
@@ -107,157 +125,147 @@ NV_FORCE_INLINE void reportFractureEvents(
 }
 
 
-void TkWorker::run()
+void TkWorker::initialize()
 {
-	PERF_SCOPE_L("TkWorker Task");
-
-	NvBlastTimers* timers = nullptr;
-
-#if NV_PROFILE
-	NvBlastTimers myTimers;
-	timers = &myTimers;
-	NvBlastTimersReset(timers);
-	uint32_t jobCount = 0;
-	Time workTime;
-#endif
-
 	// temporary memory used to generate and apply fractures
 	// it must fit for the largest family involved in the group that owns this worker 
 	NvBlastBondFractureData* bondFractureData = m_group->m_bondTempDataBlock.getBlock(m_id);
 	uint32_t bondFractureCount = m_group->m_bondTempDataBlock.numElementsPerBlock();
 	NvBlastChunkFractureData* chunkFractureData = m_group->m_chunkTempDataBlock.getBlock(m_id);
 	uint32_t chunkFractureCount = m_group->m_chunkTempDataBlock.numElementsPerBlock();
-	const NvBlastFractureBuffers tempBuffer = { bondFractureCount, chunkFractureCount, bondFractureData, chunkFractureData };
+	m_tempBuffer = { bondFractureCount, chunkFractureCount, bondFractureData, chunkFractureData };
 
 	// temporary memory used to split the actor
 	// large enough for the largest family involved
-	void* splitScratch = m_group->m_splitScratchBlock.getBlock(m_id);
+	m_splitScratch = m_group->m_splitScratchBlock.getBlock(m_id);
 
 	// to avoid unnecessary allocations, preallocated memory exists to fit all chunks and bonds taking damage once
 	// where multiple damage occurs, more memory will be allocated on demand (this may thwart other threads doing the same)
 	m_bondBuffer.initialize(m_group->m_bondEventDataBlock.getBlock(m_id), m_group->m_bondEventDataBlock.numElementsPerBlock());
 	m_chunkBuffer.initialize(m_group->m_chunkEventDataBlock.getBlock(m_id), m_group->m_chunkEventDataBlock.numElementsPerBlock());
 
-	TkAtomicJobQueue& q = m_group->m_jobQueue;
-	TkWorkerJob* j;
-
-	while ((j = q.next()) != nullptr)
-	{
-		PERF_SCOPE_M("TkActor");
-
-		TkActorImpl* tkActor = j->m_tkActor;
-		const uint32_t tkActorIndex = tkActor->getIndex();
-		NvBlastActor* actorLL = tkActor->getActorLLInternal();
-		TkFamilyImpl& family = tkActor->getFamilyImpl();
-		SharedMemory* mem = m_group->getSharedMemory(&family);
-		TkEventQueue& events = mem->m_events;
-
-		NVBLAST_ASSERT(tkActor->getGroupImpl() == m_group);
-
 #if NV_PROFILE
-		*timers += tkActor->m_timers;
-		NvBlastTimersReset(&tkActor->m_timers);
-		jobCount++;
-#endif
-
-		// generate and apply fracture for all damage requested on this actor
-		// and queue events accordingly
-		for (const auto& damage : tkActor->m_damageBuffer)
-		{
-			NvBlastFractureBuffers commandBuffer = tempBuffer;
-
-			PERF_ZONE_BEGIN("Material");
-			damage.generateFracture(&commandBuffer, actorLL, timers);
-			PERF_ZONE_END("Material");
-
-			if (commandBuffer.chunkFractureCount > 0 || commandBuffer.bondFractureCount > 0)
-			{
-				PERF_SCOPE_M("Fill Command Events");
-				reportFractureCommands(commandBuffer, m_bondBuffer, m_chunkBuffer, events, tkActor);
-			}
-
-			NvBlastFractureBuffers eventBuffer = tempBuffer;
-
-			PERF_ZONE_BEGIN("Fracture");
-			NvBlastActorApplyFracture(&eventBuffer, actorLL, &commandBuffer, TkFrameworkImpl::get()->log, timers);
-			PERF_ZONE_END("Fracture");
-
-			if (eventBuffer.chunkFractureCount > 0 || eventBuffer.bondFractureCount > 0)
-			{
-				PERF_SCOPE_M("Fill Fracture Events");
-				tkActor->m_flags |= (TkActorFlag::DAMAGED);
-				reportFractureEvents(eventBuffer, m_bondBuffer, m_chunkBuffer, events, tkActor);
-			}
-		}
-
-
-		// split the actor, which could have been damaged directly though the TkActor's fracture functions
-		// i.e. it did not have damage queued for the above loop
-
-		NvBlastActorSplitEvent splitEvent = { nullptr, nullptr };
-		if (tkActor->isDamaged())
-		{
-			PERF_ZONE_BEGIN("Split Memory");
-			uint32_t maxActorCount = NvBlastActorGetMaxActorCountForSplit(actorLL, TkFrameworkImpl::get()->log); 
-			splitEvent.newActors = mem->reserveNewActors(maxActorCount);
-			PERF_ZONE_END("Split Memory");
-			PERF_ZONE_BEGIN("Split");
-			j->m_newActorsCount = NvBlastActorSplit(&splitEvent, actorLL, maxActorCount, splitScratch, TkFrameworkImpl::get()->log, timers);
-			PERF_ZONE_END("Split");
-
-			tkActor->m_flags.clear(TkActorFlag::DAMAGED);
-		}
-		else
-		{
-			j->m_newActorsCount = 0;
-		}
-
-
-		// update the TkActor according to the LL split results and queue events accordingly
-		if (j->m_newActorsCount > 0)
-		{
-			NVBLAST_ASSERT(splitEvent.deletedActor == tkActor->getActorLL());
-
-			PERF_ZONE_BEGIN("memory new actors");
-
-			auto tkSplitEvent = events.allocData<TkSplitEvent>();
-
-			tkSplitEvent->children = mem->reserveNewTkActors(j->m_newActorsCount);
-			tkSplitEvent->numChildren = j->m_newActorsCount;
-
-			tkSplitEvent->parentData.family = &family;
-			tkSplitEvent->parentData.userData = tkActor->userData;
-			tkSplitEvent->parentData.index = tkActorIndex;
-			family.removeActor(tkActor);
-
-			PERF_ZONE_END("memory new actors");
-
-
-			PERF_ZONE_BEGIN("create new actors");
-			for (uint32_t i = 0; i < j->m_newActorsCount; ++i)
-			{
-				TkActorImpl* newActor = family.addActor(splitEvent.newActors[i]);
-				tkSplitEvent->children[i] = newActor;
-			}
-			j->m_newActors = reinterpret_cast<TkActorImpl**>(tkSplitEvent->children);
-			PERF_ZONE_END("create new actors");
-
-			PERF_ZONE_BEGIN("split event");
-			events.addEvent(tkSplitEvent);
-			PERF_ZONE_END("split event");
-		}
-	}
-
-#if NV_PROFILE
-	PERF_ZONE_BEGIN("write timers");
-	m_stats.timers = *timers;
-	m_stats.processedActorsCount = jobCount;
-	m_stats.workerTime = workTime.getElapsedTicks();
-	PERF_ZONE_END("write timers");
+	NvBlastTimersReset(&m_stats.timers);
+	m_stats.processedActorsCount = 0;
 #endif
 }
 
-void TkWorker::release()
+void TkWorker::process(TkWorkerJob& j)
 {
-	m_group->m_sync.notify();
+	NvBlastTimers* timers = nullptr;
+
+		BLAST_PROFILE_SCOPE_M("TkActor");
+
+	TkActorImpl* tkActor = j.m_tkActor;
+	const uint32_t tkActorIndex = tkActor->getIndex();
+	NvBlastActor* actorLL = tkActor->getActorLLInternal();
+	TkFamilyImpl& family = tkActor->getFamilyImpl();
+	SharedMemory* mem = m_group->getSharedMemory(&family);
+	TkEventQueue& events = mem->m_events;
+
+	NVBLAST_ASSERT(tkActor->getGroupImpl() == m_group);
+	NVBLAST_ASSERT(tkActor->m_flags.isSet(TkActorFlag::PENDING));
+
+#if NV_PROFILE
+	timers = &m_stats.timers;
+	*timers += tkActor->m_timers;
+	NvBlastTimersReset(&tkActor->m_timers);
+	m_stats.processedActorsCount++;
+#endif
+
+	// generate and apply fracture for all damage requested on this actor
+	// and queue events accordingly
+	for (const auto& damage : tkActor->m_damageBuffer)
+	{
+		NvBlastFractureBuffers commandBuffer = m_tempBuffer;
+
+			BLAST_PROFILE_ZONE_BEGIN("Material");
+		damage.generateFracture(&commandBuffer, actorLL, timers);
+			BLAST_PROFILE_ZONE_END("Material");
+
+		if (commandBuffer.chunkFractureCount > 0 || commandBuffer.bondFractureCount > 0)
+		{
+				BLAST_PROFILE_SCOPE_M("Fill Command Events");
+			reportFractureCommands(commandBuffer, m_bondBuffer, m_chunkBuffer, events, tkActor);
+		}
+
+		NvBlastFractureBuffers eventBuffer = m_tempBuffer;
+
+			BLAST_PROFILE_ZONE_BEGIN("Fracture");
+		NvBlastActorApplyFracture(&eventBuffer, actorLL, &commandBuffer, logLL, timers);
+			BLAST_PROFILE_ZONE_END("Fracture");
+
+		if (eventBuffer.chunkFractureCount > 0 || eventBuffer.bondFractureCount > 0)
+		{
+				BLAST_PROFILE_SCOPE_M("Fill Fracture Events");
+			tkActor->m_flags |= (TkActorFlag::DAMAGED);
+			reportFractureEvents(eventBuffer, m_bondBuffer, m_chunkBuffer, events, tkActor);
+		}
+	}
+
+
+	// split the actor, which could have been damaged directly though the TkActor's fracture functions
+	// i.e. it did not have damage queued for the above loop
+
+	NvBlastActorSplitEvent splitEvent = { nullptr, nullptr };
+	if (tkActor->isDamaged())
+	{
+			BLAST_PROFILE_ZONE_BEGIN("Split Memory");
+		uint32_t maxActorCount = NvBlastActorGetMaxActorCountForSplit(actorLL, logLL);
+		splitEvent.newActors = mem->reserveNewActors(maxActorCount);
+			BLAST_PROFILE_ZONE_END("Split Memory");
+			BLAST_PROFILE_ZONE_BEGIN("Split");
+		j.m_newActorsCount = NvBlastActorSplit(&splitEvent, actorLL, maxActorCount, m_splitScratch, logLL, timers);
+			BLAST_PROFILE_ZONE_END("Split");
+
+		tkActor->m_flags.clear(TkActorFlag::DAMAGED);
+	}
+	else
+	{
+		j.m_newActorsCount = 0;
+	}
+
+
+	// update the TkActor according to the LL split results and queue events accordingly
+	if (j.m_newActorsCount > 0)
+	{
+		NVBLAST_ASSERT(splitEvent.deletedActor == tkActor->getActorLL());
+
+			BLAST_PROFILE_ZONE_BEGIN("memory new actors");
+
+		auto tkSplitEvent = events.allocData<TkSplitEvent>();
+
+		tkSplitEvent->children = mem->reserveNewTkActors(j.m_newActorsCount);
+		tkSplitEvent->numChildren = j.m_newActorsCount;
+
+		tkSplitEvent->parentData.family = &family;
+		tkSplitEvent->parentData.userData = tkActor->userData;
+		tkSplitEvent->parentData.index = tkActorIndex;
+		family.removeActor(tkActor);
+
+			BLAST_PROFILE_ZONE_END("memory new actors");
+
+
+			BLAST_PROFILE_ZONE_BEGIN("create new actors");
+		for (uint32_t i = 0; i < j.m_newActorsCount; ++i)
+		{
+			TkActorImpl* newActor = family.addActor(splitEvent.newActors[i]);
+			tkSplitEvent->children[i] = newActor;
+		}
+		j.m_newActors = reinterpret_cast<TkActorImpl**>(tkSplitEvent->children);
+			BLAST_PROFILE_ZONE_END("create new actors");
+
+			BLAST_PROFILE_ZONE_BEGIN("split event");
+		events.addEvent(tkSplitEvent);
+			BLAST_PROFILE_ZONE_END("split event");
+	}
+
+	j.m_tkActor->m_flags.clear(TkActorFlag::PENDING);
+}
+
+
+void TkWorker::process(uint32_t jobID)
+{
+	TkWorkerJob& j = m_group->m_jobs[jobID];
+	process(j);
 }

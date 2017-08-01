@@ -1,4 +1,4 @@
-Blast 1.0
+Blast 1.1
 =========
 
 ![Alt text](/images/blast.png?raw=true "Blast Intro")
@@ -42,51 +42,53 @@ In order to help the user get started quickly, however, there is a PhysX-specifi
 and joints.  The source code for this extension, like all Blast extensions, is intended to be a reference implementation.
 
 Current blast extensions:
+* ExtAssetUtils - NvBlastAsset utility functions. Add world bonds, merge assets, and transform geometric data. 
 * ExtAuthoring - a set of geometric tools which can split a mesh hierarchically and create a Blast asset, along with collision geometry and chunk graphics meshes in a separate files.
 * ExtConverterLL - a data format converter for low-level assets and actor families.  This simple converter uses user-defined conversion functions.
 * ExtImport - provides functions to import an APEX Destructible Asset to create a Blast asset.
-* ExtPhysX - a physics manager using PhysX which keeps PxActors and PxJoints updated in a user-supplied PxScene.  It handles impact damage (through the contact callback), includes a stress solver, and provides a listener that enables multiple clients to keep their state synchronized.
-* ExtSerialization and ExtSerializationLL - serialization extensions for Tk and the low-level, which uses Cap'n Proto to provide robust serialization across different platforms.
+* ExtExporter - standard mesh and collision writer tools in fbx, obj, and json formats. 
+* ExtPhysX - a physics manager using PhysX which keeps PxActors and PxJoints updated in a user-supplied PxScene.  It handles impact damage (through the contact callback), includes a stress solver wrapper, and provides a listener that enables multiple clients to keep their state synchronized.
+* ExtSerialization, ExtTkSerialization, ExtPxSerialization - serialization extensions for low-level, Tk and Px layers. Uses Cap'n Proto to provide robust serialization across different platforms.
 * ExtShaders - sample damage shaders to pass to both the low-level and Tk actor damage functions.
+* ExtStress - a toolkit for performing stress calculations on low-evel Blast actors, using a minimal API to assign masses and apply forces. Does not use any external physics library. 
 
 Documentation
 -------------
 
-See docs/api_docs/index.html for api documentation.
+See [docs/api_docs/index.html](docs/api_docs/index.html) for api documentation.
 
-See docs/source_docs/index.html for full source doxygen pages.
+See [docs/source_docs/index.html](docs/source_docs/index.html) for full source doxygen pages.
 
-See docs/release_notes.txt for changes.
+See [docs/release_notes.txt](docs/release_notes.txt) for changes.
 
 Compiling
 ---------
 
-For windows (VS2013 and VS2015):
-* Run generate_projects_vcNNwinBB.bat, where NN = 12 or 14, and BB = 32 or 64, depending on which compiler
-(vc12/vc14) you're using and which OS style (32 or 64 bit) you're targeting.  This step will download all necessary
-dependencies that are not already downloaded into a folder NVIDIA/packman-repo at the root of your hard drive, so
+For windows (VS2015):
+* Run `generate_projects_vc14winBB.bat`, where BB = 32 or 64, depending on which OS style (32 or 64 bit) you're targeting.  
+This step will download all necessary dependencies that are not already downloaded into a folder `NVIDIA/packman-repo` at the root of your hard drive, so
 this might take some time the first time one of these scripts is run (or when a dependency version changes).
-* Open compiler/vcNNwinBB-cmake/BlastAll.sln.  This contains all Blast windows projects, including the
+* Open `compiler/vc14winBB-cmake/BlastAll.sln`.  This contains all Blast windows projects, including the
 low-level, toolkit, extensions, tools, tests, and sample.
-* If you run the sample, you should first run download_sample_resources.bat.  This will load complex asset
+* If you run the sample, you should first run `download_sample_resources.bat`.  This will load complex asset
 files with nontrivial graphics meshes.  Without these assets, only procedurally-generated box assets are available
 in the sample.
 
 For linux:
-* Run generate_projects_linux.sh.  This step will download all necessary dependencies that are not already
-downloaded into a folder NVIDIA/packman-repo at the root of your hard drive, so this might take some time the first
+* Run `generate_projects_linux.sh`.  This step will download all necessary dependencies that are not already
+downloaded into a folder `NVIDIA/packman-repo` at the root of your hard drive, so this might take some time the first
 time the script is run (or when a dependency version changes).
-* Makefiles will be generated in compiler/linux64-CONFIG-gcc, where CONFIG = debug or release.
+* Makefiles will be generated in `compiler/linux64-CONFIG-gcc`, where CONFIG = debug or release.
 These will build all Blast linux projects, including the low-level, toolkit, extensions, and tests.
 
 For PS4 and XBoxOne:
-* Please visit developer.nvidia.com in order to contact NVIDIA for further information.
+* Please visit https://developer.nvidia.com in order to contact NVIDIA for further information.
 
 Tools and Samples Binaries (Windows only)
 -----------------------------------------
 
 Blast tools and sample executables, along with all necessary supporting libraries, are packaged in the
-blast_tools_and_samples-windows.zip file.  This allows someone without a development environment to use these
+[blast_tools_and_samples-windows.zip](blast_tools_and_samples-windows.zip) file.  This allows someone without a development environment to use these
 applications.
 
 Gallery

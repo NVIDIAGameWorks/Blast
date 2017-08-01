@@ -1,15 +1,18 @@
 #include <QtCore/QtPlugin>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
+#include <QtCore/QVariant>
+
+#include <QtGui/QDesktopServices>
+
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QFileDialog>
-#include <QtGui/QDesktopServices>
 #include <QtWidgets/QPushButton>
-#include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QCheckBox>
@@ -22,6 +25,9 @@
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+
+#include <Shlwapi.h>
+#include <string>
 
 #include "PluginBlast.h"
 #include "BlastPlugin.h"
@@ -39,31 +45,180 @@
 #include "ViewerOutput.h"
 #include "ExpandablePanel.h"
 #include "DisplayMeshesPanel.h"
-#include "PluginBlast.h"
 #include "BlastToolbar.h"
 #include "MaterialLibraryPanel.h"
 #include "MaterialAssignmentsPanel.h"
 #include "FileReferencesPanel.h"
 #include "GeneralPanel.h"
-#include "BlastCompositePanel.h"
-#include "BlastSceneTree.h"
 #include "FiltersDockWidget.h"
 #include "DefaultDamagePanel.h"
-#include "FiltersDockWidget.h"
-#include "FractureCutoutSettingsPanel.h"
 #include "FractureGeneralPanel.h"
-#include "FractureShellCutSettingsPanel.h"
 #include "FractureSliceSettingsPanel.h"
 #include "FractureVisualizersPanel.h"
 #include "FractureVoronoiSettingsPanel.h"
 #include "SupportPanel.h"
 #include "BlastSceneTree.h"
-#include "FiltersDockWidget.h"
+#include "SceneController.h"
+
+#include <Shlwapi.h>
+#include "FbxUtil.h"
+#include "MeshData.h"
+#include "PxVec2.h"
+#include "SourceAssetOpenDlg.h"
+#include "NvBlastExtAuthoringMesh.h"
+#include "PxScene.h"
+#include "BlastController.h"
+#include "PhysXController.h"
+#include "SelectionToolController.h"
+#include "GizmoToolController.h"
+#include <QtCore/QTimer>
+
+const float tolenrance = 10e-6;
+
+QTimer gPlayTimer;
+
+// Determine whether point P in triangle ABC
+// Use this method if not volumn check does not work
+/*
+bool pointintriangle(PxVec3 A, PxVec3 B, PxVec3 C, PxVec3 P)
+{
+PxVec3 v0 = C - A;
+PxVec3 v1 = B - A;
+PxVec3 v2 = P - A;
+
+float dot00 = v0.dot(v0);
+float dot01 = v0.dot(v1);
+float dot02 = v0.dot(v2);
+float dot11 = v1.dot(v1);
+float dot12 = v1.dot(v2);
+
+float inverDeno = 1 / (dot00 * dot11 - dot01 * dot01);
+
+float u = (dot11 * dot02 - dot01 * dot12) * inverDeno;
+if (u < 0 || u > 1) // if u out of range, return directly
+{
+return false;
+}
+
+float v = (dot00 * dot12 - dot01 * dot02) * inverDeno;
+if (v < 0 || v > 1) // if v out of range, return directly
+{
+return false;
+}
+
+return u + v <= 1;
+}
+*/
+
+bool outside(int vc1, int fc1, Vertex* pv1, physx::PxBounds3& b1,
+	int vc2, int fc2, Vertex* pv2, physx::PxBounds3& b2)
+{
+	// mesh2 is not a volumn
+	if (fc2 < 4)
+	{
+		return true;
+	}
+
+	float test;
+
+	for (int nv = 0; nv < vc1; nv++)
+	{
+		Vertex v1 = pv1[nv];
+
+		if ((test = v1.p.x - b2.minimum.x) < -tolenrance)
+		{
+			return true;
+		}
+		if ((test = v1.p.y - b2.minimum.y) < -tolenrance)
+		{
+			return true;
+		}
+		if ((test = v1.p.z - b2.minimum.z) < -tolenrance)
+		{
+			return true;
+		}
+		if ((test = v1.p.x - b2.maximum.x) > tolenrance)
+		{
+			return true;
+		}
+		if ((test = v1.p.y - b2.maximum.y) > tolenrance)
+		{
+			return true;
+		}
+		if ((test = v1.p.z - b2.maximum.z) > tolenrance)
+		{
+			return true;
+		}
+
+		for (int nt = 0; nt < fc2; nt++)
+		{
+			Vertex v20 = pv2[nt * 3 + 0];
+			Vertex v21 = pv2[nt * 3 + 1];
+			Vertex v22 = pv2[nt * 3 + 2];
+
+			PxVec3 distance = v1.p - v20.p;
+
+			PxVec3 e1 = v21.p - v20.p;
+			PxVec3 e2 = v22.p - v20.p;
+			PxVec3 normal = e1.cross(e2);
+			normal = normal.getNormalized();
+
+			test = distance.dot(normal);
+			if (test > tolenrance)
+			{
+				return true;
+			}
+			/*
+			else if (test > -tolenrance)
+			{
+			if (fc2 < 4 && !pointintriangle(v20.p, v21.p, v22.p, v1.p))
+			{
+			return true;
+			}
+			}
+			*/
+		}
+	}
+
+	return false;
+}
+
+/*
+return value
+-1 : meshDesc1 contains meshDesc2
+1 : meshDesc2 contains meshDesc1
+0 : no relation
+*/
+int contains(Nv::Blast::Mesh* pMesh1, Nv::Blast::Mesh* pMesh2)
+{
+	int ret = 0;
+
+	int vc1 = pMesh1->getVerticesCount();
+	int fc1 = pMesh1->getFacetCount();
+	Vertex* pv1 = pMesh1->getVertices();
+	physx::PxBounds3& b1 = pMesh1->getBoundingBox();
+	int vc2 = pMesh2->getVerticesCount();
+	int fc2 = pMesh2->getFacetCount();
+	Vertex* pv2 = pMesh2->getVertices();
+	physx::PxBounds3& b2 = pMesh2->getBoundingBox();
+
+	if (outside(vc1, fc1, pv1, b1, vc2, fc2, pv2, b2))
+	{
+		ret--;
+	}
+	if (outside(vc2, fc2, pv2, b2, vc1, fc1, pv1, b1))
+	{
+		ret++;
+	}
+
+	return ret;
+}
 
 // A singleton, sort of... To pass the events from WindowProc to the object.
 DeviceManager* g_DeviceManagerInstance = NULL;
 
 HWND g_hWnd = 0;
+BlastPlugin* gBlastPlugin = nullptr;
 
 DeviceManager* GetDeviceManager()
 {
@@ -80,6 +235,23 @@ bool BlastPlugin::CoreLib_RunApp()
 	return true;
 }
 
+BlastPlugin::BlastPlugin()
+	: QObject()
+	, _recentProjectMenu(NV_NULL)
+	, _recentProjectRecordFile("RecentProjects", "Project")
+{
+	gBlastPlugin = this;
+}
+
+BlastPlugin::~BlastPlugin()
+{
+	gBlastPlugin = nullptr;
+}
+
+BlastPlugin& BlastPlugin::Inst()
+{
+	return *gBlastPlugin;
+}
 bool BlastPlugin::LoadRenderPlugin(std::string api)
 {
 	return PluginBlast::Create(api);
@@ -92,6 +264,7 @@ bool BlastPlugin::GetBoneNames(std::vector<std::string>& BoneNames)
 
 bool BlastPlugin::MainToolbar_updateValues()
 { 
+	_mainToolbar->updateValues();
 	return true; 
 }
 
@@ -172,8 +345,19 @@ bool BlastPlugin::Gamepad_ResetScene()
 	return true; 
 }
 
-bool BlastPlugin::Gamepad_StartAnimation()
+void BlastPlugin::slot_Gamepad_PlaySample()
+{
+	gPlayTimer.stop();
+	_mainToolbar->on_btnSimulatePlay_clicked();
+}
+
+bool BlastPlugin::Gamepad_PlaySample()
 { 
+	if (_mainToolbar)
+	{
+		_mainToolbar->on_btnReset_clicked();
+		gPlayTimer.start(10);
+	}
 	return true; 
 }
 
@@ -319,9 +503,6 @@ bool BlastPlugin::SimpleScene_Initialize(int backdoor)
 
 	QShortcut* shortCut;
 
-	shortCut = new QShortcut(QKeySequence(Qt::Key_K), d3dWidget);
-	connect(shortCut, SIGNAL(activated()), this, SLOT(shortcut_damagetool()));
-
 	shortCut = new QShortcut(QKeySequence(Qt::Key_Q), d3dWidget);
 	connect(shortCut, SIGNAL(activated()), this, SLOT(shortcut_selecttool()));
 
@@ -332,35 +513,42 @@ bool BlastPlugin::SimpleScene_Initialize(int backdoor)
 	shortCut = new QShortcut(QKeySequence(Qt::Key_R), d3dWidget);
 	connect(shortCut, SIGNAL(activated()), this, SLOT(shortcut_Scale()));
 
-	shortCut = new QShortcut(QKeySequence(Qt::Key_L), d3dWidget);
-	connect(shortCut, SIGNAL(activated()), this, SLOT(shortcut_edittool()));
+	shortCut = new QShortcut(QKeySequence(Qt::Key_T), d3dWidget);
+	connect(shortCut, SIGNAL(activated()), this, SLOT(shortcut_damagetool()));
+
+	//shortCut = new QShortcut(QKeySequence(Qt::Key_E), d3dWidget);
+	//connect(shortCut, SIGNAL(activated()), this, SLOT(shortcut_edittool()));
+
+	shortCut = new QShortcut(QKeySequence(Qt::Key_I), d3dWidget);
+	connect(shortCut, SIGNAL(activated()), this, SLOT(shortcut_addFamily()));
 	
-	_chunkContextMenu = new QMenu();
+	_contextMenu = new QMenu();
 	action_Make_Support = new QAction(tr("Make Support"), d3dWidget);
-	_chunkContextMenu->addAction(action_Make_Support);
+	_contextMenu->addAction(action_Make_Support);
 	connect(action_Make_Support, SIGNAL(triggered()), this, SLOT(slot_Make_Support()));
 
 	action_Make_Static_Support = new QAction(tr("Make Static Support"), d3dWidget);
-	_chunkContextMenu->addAction(action_Make_Static_Support);
+	_contextMenu->addAction(action_Make_Static_Support);
 	connect(action_Make_Static_Support, SIGNAL(triggered()), this, SLOT(slot_Make_Static_Support()));
 
 	action_Remove_Support = new QAction(tr("Remove Support"), d3dWidget);
-	_chunkContextMenu->addAction(action_Remove_Support);
+	_contextMenu->addAction(action_Remove_Support);
 	connect(action_Remove_Support, SIGNAL(triggered()), this, SLOT(slot_Remove_Support()));
 
-	_bondContextMenu = new QMenu();
-	action_Bond_Chunks = new QAction(tr("Bond Chunks"), d3dWidget);
-	_bondContextMenu->addAction(action_Bond_Chunks);
-	connect(action_Bond_Chunks, SIGNAL(triggered()), this, SLOT(slot_Bond_Chunks()));
+	//action_Bond_Chunks = new QAction(tr("Bond Chunks"), d3dWidget);
+	//_contextMenu->addAction(action_Bond_Chunks);
+	//connect(action_Bond_Chunks, SIGNAL(triggered()), this, SLOT(slot_Bond_Chunks()));
 
-	action_Bond_Chunks_with_Joints = new QAction(tr("Bond Chunks With Joints"), d3dWidget);
-	_bondContextMenu->addAction(action_Bond_Chunks_with_Joints);
-	connect(action_Bond_Chunks_with_Joints, SIGNAL(triggered()), this, SLOT(slot_Bond_Chunks_with_Joints()));
+	//action_Bond_Chunks_with_Joints = new QAction(tr("Bond Chunks With Joints"), d3dWidget);
+	//_contextMenu->addAction(action_Bond_Chunks_with_Joints);
+	//connect(action_Bond_Chunks_with_Joints, SIGNAL(triggered()), this, SLOT(slot_Bond_Chunks_with_Joints()));
 
-	action_Remove_all_Bonds = new QAction(tr("Remove All Bonds"), d3dWidget);
-	_bondContextMenu->addAction(action_Remove_all_Bonds);
-	connect(action_Remove_all_Bonds, SIGNAL(triggered()), this, SLOT(slot_Remove_all_Bonds()));
-	
+	//action_Remove_all_Bonds = new QAction(tr("Remove All Bonds"), d3dWidget);
+	//_contextMenu->addAction(action_Remove_all_Bonds);
+	//connect(action_Remove_all_Bonds, SIGNAL(triggered()), this, SLOT(slot_Remove_all_Bonds()));
+
+	connect(&gPlayTimer, SIGNAL(timeout()), this, SLOT(slot_Gamepad_PlaySample()));
+
 	return true; 
 }
 bool BlastPlugin::SimpleScene_Shutdown()
@@ -379,12 +567,12 @@ bool BlastPlugin::SimpleScene_Shutdown()
 //#include "SceneController.h"
 bool BlastPlugin::SimpleScene_Clear()
 {
-	SampleManager& sampleManager = SimpleScene::Inst()->GetSampleManager();
-	sampleManager.clearScene();
-//	SceneController& sceneController = sampleManager.getSceneController();
-//	sceneController.ClearScene();
+	SampleManager* pSampleManager = SampleManager::ins();
+	pSampleManager->clearScene();
 
 	BlastProject::ins().clear();
+
+	BlastSceneTree::ins()->clear();
 
 	GlobalSettings& globalSettings = GlobalSettings::Inst();
 	globalSettings.m_projectFileDir.clear();
@@ -591,13 +779,85 @@ void BlastPlugin::DrawHUD()
 
 bool BlastPlugin::SimpleScene_Draw_DX11()
 {
-	BlastPlugin::DrawHUD();
+	D3DWidget_paintEvent(NULL);
+	DrawHUD();
 	return true;
 }
 
 bool BlastPlugin::SimpleScene_FitCamera(atcore_float3& center, atcore_float3& extents)
 {
+	atcore_float3 bbMin = gfsdk_makeFloat3(FLT_MAX, FLT_MAX, FLT_MAX);
+	atcore_float3 bbMax = gfsdk_makeFloat3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+	SampleManager* pSampleManager = SampleManager::ins();
+	PxScene& scene = pSampleManager->getPhysXController().getEditPhysXScene();
+	const PxU32 actorsCount = scene.getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC);
+	if (actorsCount == 0)
+	{
+		return false;
+	}
+
+	std::vector<PxActor*> actors(actorsCount);
+	PxU32 nbActors = scene.getActors(PxActorTypeFlag::eRIGID_DYNAMIC, &actors[0], actorsCount, 0);
+	PX_ASSERT(actorsCount == nbActors);
+
+	BlastFamily* pFamily = nullptr;
+	{
+		BlastAsset* pBlastAsset = pSampleManager->getCurBlastAsset();
+		if (pBlastAsset != nullptr)
+		{
+			std::map<BlastAsset*, std::vector<BlastFamily*>>& AssetFamiliesMap = pSampleManager->getAssetFamiliesMap();
+			std::map<BlastAsset*, std::vector<BlastFamily*>>::iterator itAFM = AssetFamiliesMap.find(pBlastAsset);
+			if (itAFM != AssetFamiliesMap.end())
+			{
+				std::vector<BlastFamily*> families = itAFM->second;
+				if (families.size() > 0)
+				{
+					pFamily = families[0];
+				}
+			}
+		}
+	}
+
+	if (pFamily == nullptr)
+	{
+		for (int act = 0; act < actorsCount; act++)
+		{
+			PxActor* actor = actors[act];
+			PxBounds3 bound = actor->getWorldBounds();
+			atcore_float3 minimum = gfsdk_makeFloat3(bound.minimum.x, bound.minimum.y, bound.minimum.z);
+			atcore_float3 maximum = gfsdk_makeFloat3(bound.maximum.x, bound.maximum.y, bound.maximum.z);
+			bbMin = gfsdk_min(bbMin, minimum);
+			bbMax = gfsdk_max(bbMax, maximum);
+		}
+	}
+	else
+	{
+		for (int act = 0; act < actorsCount; act++)
+		{
+			PxActor* actor = actors[act];
+			if (!pFamily->find(*actors[act]))
+			{
+				continue;
+			}
+			PxBounds3 bound = actor->getWorldBounds();
+			atcore_float3 minimum = gfsdk_makeFloat3(bound.minimum.x, bound.minimum.y, bound.minimum.z);
+			atcore_float3 maximum = gfsdk_makeFloat3(bound.maximum.x, bound.maximum.y, bound.maximum.z);
+			bbMin = gfsdk_min(bbMin, minimum);
+			bbMax = gfsdk_max(bbMax, maximum);
+		}
+	}
+
+	center = 0.5f * (bbMin + bbMax);
+	extents = 1.1f * (bbMax - bbMin);
+
 	return true; 
+}
+bool BlastPlugin::SimpleScene_UpdateCamera()
+{
+	SampleManager* pSampleManager = SampleManager::ins();
+	pSampleManager->UpdateCamera();
+	return true;
 }
 bool BlastPlugin::SimpleScene_DrawGround()
 { 
@@ -612,32 +872,199 @@ bool BlastPlugin::SimpleScene_DrawAxis()
 	return true; 
 }
 
-#include <Shlwapi.h>
-#include <FbxUtil.h>
-#include <MeshData.h>
-#include <PxVec2.h>
-#include <SourceAssetOpenDlg.h>
-bool BlastPlugin::SimpleScene_LoadSceneFromFbx(const char* d, const char* f)
+void BlastPlugin::SimpleScene_OpenFilesByDrop(const QStringList& fileNames)
 {
-	SourceAssetOpenDlg dlg(false, &AppMainWindow::Inst());
+	QString projName, fbxName, bpxaName;
+	int projCount = 0, fbxCount = 0, bpxaCount = 0;
+	for (int i = 0; i < fileNames.size(); ++i)
+	{
+		QString fn = fileNames[i];
+		QFileInfo fileInfo(fn);
+		std::string ext = fileInfo.suffix().toLower().toUtf8().data();
+		if (ext == "blastproj")
+		{
+			++projCount;
+			projName = fn;
+		}
+		else if (ext == "fbx")
+		{
+			++fbxCount;
+			fbxName = fn;
+		}
+		else if (ext == "blast")
+		{
+			++bpxaCount;
+			bpxaName = fn;
+		}
+	}
+	bool bUpdateUI = false;
+	if (projCount == 1)
+	{
+		QFileInfo fileInfo(projName);
+		GlobalSettings& globalSettings = GlobalSettings::Inst();
+		globalSettings.m_projectFileDir = fileInfo.absolutePath().toUtf8().data();
+		globalSettings.m_projectFileName = fileInfo.fileName().toUtf8().data();
+		SimpleScene_LoadProject(fileInfo.absolutePath().toUtf8().data(), fileInfo.fileName().toUtf8().data());
+		bUpdateUI = true;
+	}
+	else if (fbxCount == 1)
+	{
+		QFileInfo fileInfo(fbxName);
+		SimpleScene_LoadSceneFromFbx(fileInfo.absolutePath().toUtf8().data(), fileInfo.fileName().toUtf8().data());
+		bUpdateUI = true;
+	}
+	else if (bpxaCount == 1)
+	{
+		QFileInfo fileInfo(bpxaName);
+		OpenBpxa(fileInfo.absolutePath().toUtf8().data(), fileInfo.fileName().toUtf8().data());
+		bUpdateUI = true;
+	}
+	if (bUpdateUI)
+	{
+		AppMainWindow::Inst().endProgress();
+		AppMainWindow::Inst().updateUI();
+	}
+}
+
+void BlastPlugin::OpenBpxa(const char* d, const char* f)
+{
+	qDebug("%s", __FUNCTION__);
+	SourceAssetOpenDlg dlg(1, &AppMainWindow::Inst());
+	QString fn = QString(d) + "/" + QString(f);
+	if (fn.length() > 1)
+		dlg.setDefaultFile(fn);
 	int res = dlg.exec();
 	if (res != QDialog::Accepted || dlg.getFile().isEmpty())
-		return false;
+		return;
+
+	if (!dlg.isAppend())
+	{
+		SimpleScene::Inst()->Clear();
+		// it is not nice to call AppMainWindow::Inst().updateUI(). but it helps to clear some data in former editing project.
+		// 1. open box.fbx 2. open teapot.fbx 3. now there are two materials in material list, one for box and one for teapot.
+		// need improve it later.
+		AppMainWindow::Inst().updateUI();
+	}
+
+	AppMainWindow::Inst().addRecentFile(dlg.getFile());
 
 	QFileInfo fileInfo(dlg.getFile());
 	std::string dir = QDir::toNativeSeparators(fileInfo.absoluteDir().absolutePath()).toLocal8Bit();
+	std::string file = fileInfo.baseName().toLocal8Bit();
+
+	physx::PxTransform t(physx::PxIdentity);
+	{
+		QVector3D Position = dlg.getPosition();
+		t.p = physx::PxVec3(Position.x(), Position.y(), Position.z());
+
+		QVector3D RotationAxis = dlg.getRotationAxis();
+		physx::PxVec3 Axis = physx::PxVec3(RotationAxis.x(), RotationAxis.y(), RotationAxis.z());
+		Axis = Axis.getNormalized();
+		float RotationDegree = dlg.getRotationDegree();
+		float DEGREE_TO_RAD = acos(-1.0) / 180.0;
+		RotationDegree = RotationDegree * DEGREE_TO_RAD;
+		t.q = physx::PxQuat(RotationDegree, Axis);
+	}
+
+	AssetList::ModelAsset modelAsset;
+	modelAsset.name = file;
+	modelAsset.id = file;
+	modelAsset.file = file;
+	modelAsset.isSkinned = dlg.getSkinned();
+	modelAsset.transform = t;
+	char fullpath[MAX_PATH];
+	PathCombineA(fullpath, dir.c_str(), modelAsset.file.c_str());
+	modelAsset.fullpath = fullpath;
+	modelAsset.fullpath = modelAsset.fullpath + ".blast";
+	std::string objPath = std::string(fullpath) + ".obj";
+	std::string fbxPath = std::string(fullpath) + ".fbx";
+	bool bMeshExist = QFile::exists(objPath.c_str()) || QFile::exists(fbxPath.c_str());
+	if (bMeshExist)
+	{
+		SampleManager* pSampleManager = SampleManager::ins();
+		BlastAsset* pBlastAsset = pSampleManager->loadBlastFile(dir, file, modelAsset);
+		pSampleManager->addBlastFamily(pBlastAsset, t);
+	}
+	else
+	{
+		viewer_err("Mesh geometry does not exist!");
+	}
+}
+
+bool BlastPlugin::SimpleScene_LoadSceneFromFbx(const char* d, const char* f)
+{
+	SourceAssetOpenDlg dlg(0, &AppMainWindow::Inst());
+	QString fn = QString(d) + "/" + QString(f);
+	if (fn.length() > 1)
+		dlg.setDefaultFile(fn);
+	int res = dlg.exec();
+	if (res != QDialog::Accepted || dlg.getFile().isEmpty())
+		return false;
+	if (!dlg.isAppend())
+	{
+		SimpleScene::Inst()->Clear();
+		// it is not nice to call AppMainWindow::Inst().updateUI(). but it helps to clear some data in former editing project.
+		// 1. open box.fbx 2. open teapot.fbx 3. now there are two materials in material list, one for box and one for teapot.
+		// need improve it later.
+		AppMainWindow::Inst().updateUI();
+	}
+
+	AppMainWindow::Inst().addRecentFile(dlg.getFile());
+	QFileInfo fileInfo(dlg.getFile());
+	std::string dir = QDir::toNativeSeparators(fileInfo.absoluteDir().absolutePath()).toLocal8Bit();
+	std::string filebase = fileInfo.baseName().toLocal8Bit();
 	std::string fbxName = fileInfo.fileName().toLocal8Bit();
 	
 	GlobalSettings& globalSettings = GlobalSettings::Inst();
+	if (!dlg.isAppend())
+	{
+		globalSettings.m_projectFileDir = dir;
+		globalSettings.m_projectFileName = filebase + ".blastProj";
+	}
 
 	char fbxFilePath[MAX_PATH];
 
-	float sceneUnit = globalSettings.getSceneUnitInCentimeters();
+	int unitIndex = dlg.sceneUnitIndex();
+	float sceneUnit = globalSettings.getSceneUnitInCentimeters(unitIndex); //globalSettings.getSceneUnitInCentimeters();
+	bool bConvertUnit = true;
+	if (unitIndex == SCENE_UNIT_UNKNOWN)
+	{
+		// use FBX unit
+		bConvertUnit = false;
+	}
 
 	PathCombineA(fbxFilePath, dir.c_str(), fbxName.c_str());
 
 	AppMainWindow::Inst().setProgress("Initializing FBX loader", 0);
-	FbxUtil::Initialize(fbxFilePath, sceneUnit);
+	float fbxSceneUnit = -1.0f;
+	FbxUtil::Initialize(fbxFilePath, fbxSceneUnit, sceneUnit, bConvertUnit);
+	float fError = 0.001f;
+	if (!bConvertUnit)
+	{
+		// we intend to use FBX's unit, but if FBX has a non-supported unit, we still convert its unit.
+		bool bSupported = GlobalSettings::Inst().isSupportedUnitByUnitInCm(fbxSceneUnit);
+		if (!bSupported)
+		{
+			viewer_msg("FBX scene is scaled to unit, %f cm.", sceneUnit);
+		}
+		else
+		{
+			sceneUnit = fbxSceneUnit;
+			viewer_msg("Use FBX's default unit, %f cm.", sceneUnit);
+		}
+	}
+	else
+	{
+		if (fabs(fbxSceneUnit - sceneUnit) > fError)
+		{
+			viewer_msg("FBX scene is scaled to unit, %f cm.", sceneUnit);
+		}
+		else
+		{
+			viewer_msg("FBX has a same unit, %f cm.", sceneUnit);
+		}
+	}
+	globalSettings.setSceneUnitByUnitInCm(sceneUnit);
 
 	char rootBoneName[MAX_PATH];
 	int upAxis = 0;
@@ -653,30 +1080,66 @@ bool BlastPlugin::SimpleScene_LoadSceneFromFbx(const char* d, const char* f)
 	else if (upAxis = 2)
 		SimpleScene::Inst()->ResetUpDir(true);
 
-	SampleManager& sampleManager = SimpleScene::Inst()->GetSampleManager();
+	SampleManager *pSampleManager = SampleManager::ins();
 
 	int numMeshes = 0;
 	char* meshNames = 0;
+	char* parents = 0;
 	char* skinned = 0;
-	FbxUtil::GetMeshInfo(&numMeshes, &meshNames, &skinned);
-	if (numMeshes > 1)
+	FbxUtil::GetMeshInfo(&numMeshes, &meshNames, &parents, &skinned);
+
+	if (numMeshes == 0)
 	{
-		//return false;
+		FbxUtil::Release();
+		return false;
+	}
+			 
+	if (!dlg.isPreFractured())
+	{
+		numMeshes = 1;
 	}
 
-	// to do later when numMeshes is more than one
-	numMeshes = 1;
-
-	for (int i = 0; i < numMeshes; i++)
+	std::vector<Nv::Blast::Mesh*> meshes(numMeshes);
+	std::vector<int32_t> parentIds(numMeshes);
+	std::vector<std::string> materialNames(numMeshes);
+	bool bMaterial = false;
+	for (int nm = 0; nm < numMeshes; nm++)
 	{
-		const char* meshName = meshNames + i * 128;
+		const char* meshName = meshNames + nm * 128;
 
 		MeshDesc meshDesc;
 		FbxUtil::CreateMeshDescriptor(meshName, meshDesc);
 
-		MeshMaterial* materials = 0;
+		MeshMaterial* pMeshMaterial = 0;
 		int numMaterials = 0;
-		FbxUtil::GetMeshMaterials(meshName, &numMaterials, &materials);
+		FbxUtil::GetMeshMaterials(meshName, &numMaterials, &pMeshMaterial);
+		
+		if (numMaterials > 0)
+		{
+			std::string materialName = pMeshMaterial->m_name;
+			if (materialName != "" && !BlastProject::ins().isGraphicsMaterialNameExist(materialName.c_str()))
+			{
+				BlastProject::ins().addGraphicsMaterial(materialName.c_str());
+				BlastProject::ins().reloadDiffuseTexture(materialName.c_str(),
+					pMeshMaterial->m_diffuseTexture);
+				BlastProject::ins().reloadDiffuseColor(materialName.c_str(),
+					pMeshMaterial->m_diffuseColor.x,
+					pMeshMaterial->m_diffuseColor.y,
+					pMeshMaterial->m_diffuseColor.z);
+				materialNames[nm] = materialName;
+				bMaterial = true;
+			}
+		}
+		if(!bMaterial)
+		{
+			std::string materialName = BlastProject::ins().generateNewMaterialName(meshName);
+			BlastProject::ins().addGraphicsMaterial(materialName.c_str());
+			BlastProject::ins().reloadDiffuseColor(materialName.c_str(),
+				meshDesc.m_ColorRGB.x,
+				meshDesc.m_ColorRGB.y,
+				meshDesc.m_ColorRGB.z);
+			materialNames[nm] = materialName;
+		}
 		
 		SkinData skinData;
 		FbxUtil::InitializeSkinData(meshName, skinData);
@@ -688,41 +1151,229 @@ bool BlastPlugin::SimpleScene_LoadSceneFromFbx(const char* d, const char* f)
 		std::vector<physx::PxVec2> uv;
 		std::vector<unsigned int>  indices;
 
-		for (uint32_t i = 0; i < meshDesc.m_NumVertices; ++i)
+		for (uint32_t nt = 0; nt < meshDesc.m_NumTriangles; nt++)
 		{
-			atcore_float3 pos = meshDesc.m_pVertices[i];
-			atcore_float3 vertexNormal = meshDesc.m_pVertexNormals[i];
-			atcore_float2 texcoord = meshDesc.m_pTexCoords[i];
+			for (int vi = 0; vi < 3; vi++)
+			{
+				NvUInt32 nti = nt * 3 + vi;
 
-			positions.push_back(physx::PxVec3(pos.x, pos.y, pos.z));
-			normals.push_back(physx::PxVec3(vertexNormal.x, vertexNormal.y, vertexNormal.z));
-			uv.push_back(physx::PxVec2(texcoord.x, texcoord.y));
+				NvUInt32 posIndex = meshDesc.m_pIndices[nti];
+				atcore_float3 pos = meshDesc.m_pVertices[posIndex];
+				positions.push_back(physx::PxVec3(pos.x, pos.y, pos.z));
+
+				atcore_float3 vertexNormal = meshDesc.m_pVertexNormals[nti];
+				normals.push_back(physx::PxVec3(vertexNormal.x, vertexNormal.y, vertexNormal.z));
+
+				atcore_float2 texcoord = meshDesc.m_pTexCoords[nti];
+				uv.push_back(physx::PxVec2(texcoord.x, texcoord.y));
+
+				indices.push_back(nti);
+			}
 		}
 
-		for (uint32_t i = 0; i < meshDesc.m_NumTriangles; ++i)
+		physx::PxVec3* nr = (!normals.empty()) ? normals.data() : 0;
+		physx::PxVec2* uvp = (!uv.empty()) ? uv.data() : 0;
+		Nv::Blast::Mesh* pMesh = new Nv::Blast::Mesh(positions.data(), nr, uvp, static_cast<uint32_t>(positions.size()),
+			indices.data(), static_cast<uint32_t>(indices.size()));		
+		meshes[nm] = pMesh;
+
+		const char* parentName = parents + nm * 128;
+		int nfind = 0;
+		for (; nfind < numMeshes; nfind++)
 		{
-			indices.push_back(meshDesc.m_pIndices[i * 3 + 0]);
-			indices.push_back(meshDesc.m_pIndices[i * 3 + 1]);
-			indices.push_back(meshDesc.m_pIndices[i * 3 + 2]);
+			const char* mName = meshNames + nfind * 128;
+			if (!strcmp(parentName, mName))
+			{
+				break;
+			}
 		}
-
-		sampleManager.createAsset(dir, meshName, positions, normals, uv, indices);
-
-		physx::PxTransform t(physx::PxIdentity);
+		if (nfind == numMeshes)
 		{
-			QVector3D Position = dlg.getPosition();
-			t.p = physx::PxVec3(Position.x(), Position.y(), Position.z());
-
-			QVector3D RotationAxis = dlg.getRotationAxis();
-			physx::PxVec3 Axis = physx::PxVec3(RotationAxis.x(), RotationAxis.y(), RotationAxis.z());
-			Axis = Axis.getNormalized();
-			float RotationDegree = dlg.getRotationDegree();
-			float DEGREE_TO_RAD = acos(-1.0) / 180.0;
-			RotationDegree = RotationDegree * DEGREE_TO_RAD;
-			t.q = physx::PxQuat(RotationDegree, Axis);
+			nfind = -1;
 		}
-		sampleManager.addModelAsset(dir, meshName, dlg.getSkinned(), t, !dlg.isAppend());
+		parentIds[nm] = nfind;
 	}
+
+	if (dlg.isAutoCompute())
+	{
+		parentIds.assign(numMeshes, -1);
+
+		std::map<int, std::vector<int>> ParentIDsMap;
+		std::map<int, std::vector<int>> ExistIDsMap;
+		bool exist;
+		for (int nm1 = 0; nm1 < numMeshes; nm1++)
+		{
+			Nv::Blast::Mesh* pMesh1 = meshes[nm1];
+			std::vector<int>& HandleList1 = ExistIDsMap[nm1];
+
+			for (int nm2 = 0; nm2 < numMeshes; nm2++)
+			{
+				if (nm1 == nm2)
+				{
+					continue;
+				}
+
+				exist = false;
+				for (int pid1 : HandleList1)
+				{
+					if (pid1 == nm2)
+					{
+						exist = true;
+						break;
+					}
+				}
+				if (exist)
+				{
+					continue;
+				}
+
+				std::vector<int>& HandleList2 = ExistIDsMap[nm2];
+				exist = false;
+				for (int pid2 : HandleList2)
+				{
+					if (pid2 == nm1)
+					{
+						exist = true;
+						break;
+					}
+				}
+				if (exist)
+				{
+					continue;
+				}
+
+				Nv::Blast::Mesh* pMesh2 = meshes[nm2];
+
+				ExistIDsMap[nm1].push_back(nm2);
+				ExistIDsMap[nm2].push_back(nm1);
+
+				/*
+				return value
+				-1 : meshDesc1 contains meshDesc2
+				1 : meshDesc2 contains meshDesc1
+				0 : no relation
+				*/
+				int ret = contains(pMesh1, pMesh2);
+				if (ret == 0)
+				{
+					continue;
+				}
+
+				if (ret == -1)
+				{
+					ParentIDsMap[nm2].push_back(nm1);
+				}
+				else if (ret == 1)
+				{
+					ParentIDsMap[nm1].push_back(nm2);
+				}
+			}
+		}
+		std::map<int, std::vector<int>>::iterator itPIM;
+		for (std::pair<int, std::vector<int>> pidPair : ParentIDsMap)
+		{
+			std::vector<int>& ParentIDsList = pidPair.second;
+			int targetSize = ParentIDsList.size();
+			if (targetSize == 0)
+			{
+				continue;
+			}
+
+			int childId = pidPair.first;
+			int parentId = ParentIDsList[0];
+			
+			if (targetSize > 1)
+			{
+				targetSize = targetSize - 1;
+				for (int pid : ParentIDsList)
+				{
+					int parentSize = 0;
+					itPIM = ParentIDsMap.find(pid);
+					if (itPIM != ParentIDsMap.end())
+					{
+						parentSize = itPIM->second.size();
+					}
+					if (parentSize == targetSize)
+					{
+						parentId = pid;
+						break;
+					}
+				}
+			}
+
+			if (parentIds[childId] == -1)
+			{
+				parentIds[childId] = parentId;
+			}
+		}
+	}
+
+	BlastAssetModelSimple* pBlastAssetModelSimple;
+	std::vector<bool> supports;
+	std::vector<bool> statics;
+	std::vector<uint8_t> joints;
+	std::vector<uint32_t> worlds;
+	pSampleManager->createAsset(&pBlastAssetModelSimple, meshes, parentIds, supports, statics, joints, worlds);
+
+	physx::PxTransform t(physx::PxIdentity);
+	{
+		QVector3D Position = dlg.getPosition();
+		t.p = physx::PxVec3(Position.x(), Position.y(), Position.z());
+
+		QVector3D RotationAxis = dlg.getRotationAxis();
+		physx::PxVec3 Axis = physx::PxVec3(RotationAxis.x(), RotationAxis.y(), RotationAxis.z());
+		Axis = Axis.getNormalized();
+		float RotationDegree = dlg.getRotationDegree();
+		float DEGREE_TO_RAD = acos(-1.0) / 180.0;
+		RotationDegree = RotationDegree * DEGREE_TO_RAD;
+		t.q = physx::PxQuat(RotationDegree, Axis);
+	}
+
+	std::string validName = filebase;
+	std::map<BlastAsset*, AssetList::ModelAsset>& assetDescMap = pSampleManager->getAssetDescMap();
+	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM;
+	std::map<std::string, int> existNameMap;
+	std::map<std::string, int>::iterator itENM;
+	for (itADM = assetDescMap.begin(); itADM != assetDescMap.end(); itADM++)
+	{
+		AssetList::ModelAsset m = itADM->second;
+		existNameMap[m.id] = 0;
+	}
+	char vn[MAX_PATH];
+	for (int ind = 0; existNameMap.find(validName) != existNameMap.end(); ind++)
+	{
+		sprintf(vn, "%s_%d", filebase.c_str(), ind);
+		validName = vn;
+	}
+
+	AssetList::ModelAsset modelAsset;
+	modelAsset.name = validName;
+	modelAsset.id = validName;
+	modelAsset.file = validName;
+	modelAsset.isSkinned = dlg.getSkinned();
+	modelAsset.transform = t;
+	char fullpath[MAX_PATH];
+	PathCombineA(fullpath, dir.c_str(), filebase.c_str());
+	modelAsset.fullpath = fullpath;
+	modelAsset.fullpath = modelAsset.fullpath + ".blast";
+
+	pSampleManager->addBlastAsset(pBlastAssetModelSimple, modelAsset);
+	pSampleManager->addBlastFamily((BlastAsset*)pBlastAssetModelSimple, t);
+
+	if (materialNames.size() > 0)
+	{
+		BlastAsset* pBlastAsset = (BlastAsset*)pBlastAssetModelSimple;
+		pSampleManager->setCurrentSelectedInstance(pBlastAsset, 0);
+		pSampleManager->setMaterialForCurrentFamily(materialNames[0], true);
+		pSampleManager->setMaterialForCurrentFamily(materialNames[0], false);
+	}
+
+	std::vector<Nv::Blast::Mesh*>::iterator itMesh;
+	for (itMesh = meshes.begin(); itMesh != meshes.end(); itMesh++)
+	{
+		delete *itMesh;
+	}
+	meshes.clear();
 
 	FbxUtil::Release();
 
@@ -764,30 +1415,160 @@ bool BlastPlugin::SimpleScene_SaveProject(const char* dir, const char* file)
 
 	return false;
 }
+
+
 bool BlastPlugin::SimpleScene_LoadParameters(NvParameterized::Interface* iface)
-{ 
+{
 	nvidia::parameterized::BlastProjectParameters* params = static_cast<nvidia::parameterized::BlastProjectParameters*>(iface);
 
 	nvidia::parameterized::BlastProjectParametersNS::ParametersStruct& srcDesc = params->parameters();
 	copy(BlastProject::ins().getParams(), srcDesc);
 
-	for (int i = 0; i < srcDesc.blast.blastAssets.arraySizes[0]; ++i)
+	SampleManager* pSampleManager = SampleManager::ins();
+	std::string dir = GlobalSettings::Inst().m_projectFileDir;
+
+	int assetCount = srcDesc.blast.blastAssets.arraySizes[0];
+	BPPChunkArray& chunkArray = srcDesc.blast.chunks;
+	int chunkCount = chunkArray.arraySizes[0];
+	BPPBondArray& bondArray = srcDesc.blast.bonds;
+	int bondCount = bondArray.arraySizes[0];
+
+	for (int ac = 0; ac < assetCount; ac++)
 	{
-		BPPAsset& asset = srcDesc.blast.blastAssets.buf[i];
-		QFileInfo fileInfo(asset.path.buf);
-		QByteArray tmp = fileInfo.baseName().toUtf8();
-		QByteArray tmpPath = fileInfo.absolutePath().toUtf8();
-		const char* fileName = tmp.data();
-		physx::PxTransform t(physx::PxIdentity);
-		BPPAssetInstance* instance = BlastProject::ins().getAssetInstance(asset.path.buf, 0);
-		if (instance != nullptr)
+		BPPAsset& asset = srcDesc.blast.blastAssets.buf[ac];
+
+		std::vector<BPPAssetInstance*> instances;
+		BlastProject::ins().getAssetInstances(asset.ID, instances);
+		int instanceSize = instances.size();
+		if (instanceSize == 0)
 		{
+			continue;
+		}
+
+		AssetList::ModelAsset modelAsset;
+		modelAsset.name = asset.name.buf;
+		modelAsset.id = asset.name.buf;
+		modelAsset.file = asset.name.buf;
+		modelAsset.isSkinned = false;
+		modelAsset.fullpath = asset.name.buf;
+
+		std::vector<Nv::Blast::Mesh*> meshes;
+		std::vector<int32_t> parentIds;
+		std::vector<bool> supports;
+		std::vector<bool> statics;
+		std::vector<bool> visibles;
+
+		for (int cc = 0; cc < chunkCount; cc++)
+		{
+			BPPChunk& chunk = chunkArray.buf[cc];
+			if (chunk.asset != asset.ID)
+			{
+				continue;
+			}
+
+			std::vector<physx::PxVec3> positions;
+			std::vector<physx::PxVec3> normals;
+			std::vector<physx::PxVec3> tangents;
+			std::vector<physx::PxVec2> uv;
+			std::vector<unsigned int>  indices;
+
+			BPPVEC3Array& positionArray = chunk.graphicsMesh.positions;
+			BPPVEC3Array& normalArray = chunk.graphicsMesh.normals;
+			BPPVEC3Array& tangentArray = chunk.graphicsMesh.tangents;
+			BPPVEC2Array& uvArray = chunk.graphicsMesh.texcoords;
+			BPPI32Array& materialIDArray = chunk.graphicsMesh.materialIDs;
+
+			BPPI32Array& indexArray = chunk.graphicsMesh.positionIndexes;
+
+			int numVertices = positionArray.arraySizes[0];
+			int numIndics = indexArray.arraySizes[0];
+			int numFaces = materialIDArray.arraySizes[0];
+
+			for (uint32_t nv = 0; nv < numVertices; nv++)
+			{
+				nvidia::NvVec3& position = positionArray.buf[nv];
+				nvidia::NvVec3& normal = normalArray.buf[nv];
+				nvidia::NvVec3& tangent = tangentArray.buf[nv];
+				nvidia::NvVec2& texcoord = uvArray.buf[nv];
+
+				positions.push_back(physx::PxVec3(position.x, position.y, position.z));
+				normals.push_back(physx::PxVec3(normal.x, normal.y, normal.z));
+				tangents.push_back(physx::PxVec3(tangent.x, tangent.y, tangent.z));
+				uv.push_back(physx::PxVec2(texcoord.x, texcoord.y));
+			}
+
+			for (uint32_t ni = 0; ni < numIndics; ni++)
+			{
+				indices.push_back(indexArray.buf[ni]);
+			}
+
+			physx::PxVec3* nr = (!normals.empty()) ? normals.data() : 0;
+			physx::PxVec2* uvp = (!uv.empty()) ? uv.data() : 0;
+			Nv::Blast::Mesh* pMesh = new Nv::Blast::Mesh(positions.data(), nr, uvp, static_cast<uint32_t>(positions.size()),
+				indices.data(), static_cast<uint32_t>(indices.size()));
+			for (uint32_t nf = 0; nf < numFaces; nf++)
+			{
+				pMesh->getFacet(nf)->userData = materialIDArray.buf[nf];
+			}
+
+			meshes.push_back(pMesh);
+
+			parentIds.push_back(chunk.parentID);
+
+			supports.push_back(chunk.support);
+
+			statics.push_back(chunk.staticFlag);
+
+			visibles.push_back(chunk.visible);
+		}
+
+		std::vector<uint8_t> joints;
+		std::vector<uint32_t> worlds;
+		for (int bc = 0; bc < bondCount; bc++)
+		{
+			BPPBond& bond = bondArray.buf[bc];
+			if (bond.asset != asset.ID)
+			{
+				continue;
+			}
+
+			uint8_t enableJoint = bond.support.enableJoint ? 1 : 0;
+			joints.push_back(enableJoint);
+
+			worlds.push_back(bond.toChunk);
+		}
+
+		BlastAssetModelSimple* pBlastAssetModelSimple;
+		pSampleManager->createAsset(&pBlastAssetModelSimple, meshes, parentIds, supports, statics, joints, worlds);
+		pSampleManager->addBlastAsset(pBlastAssetModelSimple, modelAsset, true);
+
+		BlastAsset* pBlastAsset = (BlastAsset*)pBlastAssetModelSimple;		
+		physx::PxTransform t;
+		for (int is = 0; is < instanceSize; is++)
+		{
+			BPPAssetInstance* instance = instances[is];
 			nvidia::NvVec3& postion = instance->transform.position;
-			nvidia::NvVec4& rotation = instance->transform.rotation;
+			nvidia::NvVec4& rotation = instance->transform.rotation;			
 			t.p = physx::PxVec3(postion.x, postion.y, postion.z);
 			t.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
+
+			BlastFamily* pBlastFamily = pSampleManager->addBlastFamily(pBlastAsset, t, true);
+			int visibleCount = visibles.size();
+			for (int vc = 0; vc < visibleCount; vc++)
+			{
+				pBlastFamily->setChunkVisible(vc, visibles[vc]);
+			}
+
+			pSampleManager->setCurrentSelectedInstance(pBlastAsset, is);
+			if (nullptr != instance->exMaterial.buf)
+			{
+				pSampleManager->setMaterialForCurrentFamily(instance->exMaterial.buf, true);
+			}
+			if (nullptr != instance->inMaterial.buf)
+			{
+				pSampleManager->setMaterialForCurrentFamily(instance->inMaterial.buf, false);
+			}
 		}
-		SimpleScene::Inst()->GetSampleManager().addModelAsset(tmpPath.data(), fileName, false, t, true);
 	}
 
 	SimpleScene* pScene = SimpleScene::Inst();
@@ -854,10 +1635,9 @@ bool BlastPlugin::SimpleScene_LoadParameters(NvParameterized::Interface* iface)
 	//	if (false == pScene->GetFurCharacter().LoadHairParameters(handle))
 	//		return false;
 	//}
-
-	BlastProject::ins().loadUserPreset();
 	return true;
 }
+
 bool BlastPlugin::SimpleScene_SaveParameters(NvParameterized::Interface* iface)
 {
 	nvidia::parameterized::BlastProjectParameters* params = static_cast<nvidia::parameterized::BlastProjectParameters*>(iface);
@@ -865,7 +1645,16 @@ bool BlastPlugin::SimpleScene_SaveParameters(NvParameterized::Interface* iface)
 	memset(&targetDesc, sizeof(BPParams), 0);
 	BPParams& srcParams = BlastProject::ins().getParams();
 	copy(targetDesc, srcParams);
-
+	/*
+	SampleManager* pSampleManager = SampleManager::ins();
+	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = pSampleManager->getAssetDescMap();
+	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM;
+	for (itADM = AssetDescMap.begin(); itADM != AssetDescMap.end(); itADM++)
+	{
+		BlastAsset* pBlastAsset = itADM->first;
+		pSampleManager->saveAsset(pBlastAsset);
+	}
+	*/
 	SimpleScene* pScene = SimpleScene::Inst();
 
 	if (pScene->m_pCamera)
@@ -1036,6 +1825,9 @@ bool BlastPlugin::D3DWidget_mouseMoveEvent(QMouseEvent* e)
 	LPARAM lParam = MAKELPARAM(x, y);
 	deviceManager.MsgProc(g_hWnd, WM_MOUSEMOVE, wParam, lParam);
 
+	if(SampleManager::ins()->eventAlreadyHandled())
+		e->setAccepted(false);
+
 	return true;
 }
 
@@ -1068,37 +1860,80 @@ bool BlastPlugin::D3DWidget_contextMenuEvent(QContextMenuEvent *e)
 {
 	QPoint pos = QCursor::pos();
 
+	std::vector<BlastChunkNode*> chunkNodes;
 	std::map<BlastAsset*, std::vector<uint32_t>> selectedAssetChunks = SampleManager::ins()->getSelectedChunks();
-	if (1 == selectedAssetChunks.size())
+	std::map<BlastAsset*, std::vector<uint32_t>>::iterator itr = selectedAssetChunks.begin();
+	for (; itr != selectedAssetChunks.end(); ++itr)
 	{
-		std::map<BlastAsset*, std::vector<uint32_t>>::iterator itr = selectedAssetChunks.begin();
 		BlastAsset* asset = itr->first;
 		std::vector<uint32_t> selectChunks = itr->second;
 
-		std::vector<BlastChunkNode*> chunkNodes = BlastTreeData::ins().getChunkNodeByBlastChunk(asset, selectChunks);
-		if (1 == chunkNodes.size())
+		std::vector<BlastChunkNode*> curChunkNodes = BlastTreeData::ins().getChunkNodeByBlastChunk(asset, selectChunks);
+		chunkNodes.insert(chunkNodes.end(), curChunkNodes.begin(), curChunkNodes.end());
+	}
+
+	{
+		std::vector<BlastChunkNode*> topChunkNodes = BlastTreeData::getTopChunkNodes(chunkNodes);
+		action_Make_Support->setEnabled(true);
+		action_Make_Static_Support->setEnabled(true);
+		action_Remove_Support->setEnabled(true);
+
+		//select chunk nodes have parent child relation ship, disable all menu items
+		if (topChunkNodes.size() < chunkNodes.size())
 		{
-			_chunkContextMenu->exec(pos);
+			action_Make_Support->setEnabled(false);
+			action_Make_Static_Support->setEnabled(false);
+			action_Remove_Support->setEnabled(false);
 		}
-		else if (1 < chunkNodes.size())
+		else
 		{
-			bool allSupportChunk = true;
-			for (size_t i = 0; i < chunkNodes.size(); ++i)
+			bool allSupported = true, allStaticSupport = true, allUnSupported = true, hasLeaf = false;
+
+			for (BlastChunkNode* chunkNode : chunkNodes)
 			{
-				BlastChunkNode* chunkNode = chunkNodes[i];
-				if (eChunk != chunkNode->getType())
+				BPPChunk* chunk = (BPPChunk*)(chunkNode->getData());
+				if (chunk->support)
 				{
-					allSupportChunk = false;
-					break;
+					allUnSupported = false;
+				}
+				else
+				{
+					allSupported = false;
+				}
+
+				if (!chunk->staticFlag)
+				{
+					allStaticSupport = false;
+				}
+
+				if (BlastTreeData::isLeaf(chunkNode))
+				{
+					hasLeaf = true;
 				}
 			}
 
-			if (allSupportChunk)
+			if (allSupported && !allStaticSupport)
 			{
-				_bondContextMenu->exec(QCursor::pos());
+				action_Make_Support->setEnabled(false);
+			}
+
+			if (allStaticSupport)
+			{
+				action_Make_Static_Support->setEnabled(false);
+			}
+
+			if (allUnSupported || hasLeaf)
+			{
+				action_Remove_Support->setEnabled(false);
 			}
 		}
 	}
+
+	if (0 < chunkNodes.size())
+	{
+		_contextMenu->exec(QCursor::pos());
+	}
+
 	e->accept();
 	return true;
 }
@@ -1112,21 +1947,25 @@ bool BlastPlugin::D3D11Shaders_InitializeShadersD3D11(std::map<int, D3D11RenderS
 
 bool BlastPlugin::AppMainWindow_AppMainWindow()
 { 
-	_mainToolbar = 0;
-	_materialLibraryPanel = 0;
-	_materialAssignmentsPanel = 0;
-	_fileReferencesPanel = 0;
-	_generalPanel = 0;
-	_defaultDamagePanel = 0;
-	_fractureCutoutSettingsPanel = 0;
-	_fractureGeneralPanel = 0;
-	_fractureShellCutSettingPanel = 0;
-	_fractureSliceSettingsPanel = 0;
-	_fractureVisualizersPanel = 0;
-	_fractureVoronoiSettingsPanel = 0;
-	_supportPanel = 0;
-	_blastSceneTree = 0;
-	_filtersDockWidget = 0;
+	_mainToolbar = nullptr;
+	_materialLibraryPanel = nullptr;
+	_materialAssignmentsPanel = nullptr;
+	_fileReferencesPanel = nullptr;
+	_generalPanel = nullptr;
+	_defaultDamagePanel = nullptr;
+	_fractureGeneralPanel = nullptr;
+	_fractureSliceSettingsPanel = nullptr;
+	_fractureVisualizersPanel = nullptr;
+	_fractureVoronoiSettingsPanel = nullptr;
+	_supportPanel = nullptr;
+	_fractureVoronoiSettingsExpandlePanel = nullptr;
+	_fractureSliceSettingsExpandlePanel = nullptr;
+	_blastSceneTree = nullptr;
+	_filtersDockWidget = nullptr;
+
+	BlastProject::ins().loadUserPreset();
+	BlastProject::ins().loadFracturePreset();
+	BlastProject::ins().loadFilterPreset();
 
 	return true; 
 }
@@ -1141,6 +1980,11 @@ bool BlastPlugin::AppMainWindow_InitMenuItems(QMenuBar* pMenuBar)
 	connect(act, SIGNAL(triggered()), this, SLOT(menu_openProject()));
 	pMenu->addAction(act);
 
+	act = new QAction("Recents", this);
+	pMenu->addAction(act);
+	_recentProjectMenu = new QMenu("Recents", pMenuBar);
+	act->setMenu(_recentProjectMenu);
+
 	act = new QAction("Save project file", this);
 	act->setShortcut(QKeySequence::Save);
 	connect(act, SIGNAL(triggered()), this, SLOT(menu_saveProject()));
@@ -1152,6 +1996,8 @@ bool BlastPlugin::AppMainWindow_InitMenuItems(QMenuBar* pMenuBar)
 
 	pMenu->addSeparator();
 
+	_loadRecentProject();
+
 	return true;
 }
 
@@ -1160,14 +2006,15 @@ bool BlastPlugin::AppMainWindow_InitMainTab(QWidget *displayScrollAreaContents, 
 	ExpandablePanel* panel = new ExpandablePanel(displayScrollAreaContents);
 	displayScrollAreaLayout->insertWidget(idx++, panel);
 	panel->SetTitle("Display Mesh Materials");
+	panel->setVisible(false);
 
 	return true;
 }
 
 bool BlastPlugin::AppMainWindow_InitPluginTab(QTabWidget* sideBarTab)
 {
+	QWidget *tabMaterial;
 	{
-		QWidget *tabMaterial;
 		QGridLayout *gridLayoutMaterial;
 		QFrame *materialEditorArea;
 		QVBoxLayout *materialEditorAreaLayout;
@@ -1213,10 +2060,6 @@ bool BlastPlugin::AppMainWindow_InitPluginTab(QTabWidget* sideBarTab)
 
 		gridLayoutMaterial->addWidget(materialScrollArea, 0, 0, 1, 1);
 
-		sideBarTab->addTab(tabMaterial, QString());
-
-		sideBarTab->setTabText(sideBarTab->indexOf(tabMaterial), QApplication::translate("AppMainWindowClass", "Materials", 0));
-
 		ExpandablePanel* panel = 0;
 		int pannelCnt = 0;
 
@@ -1233,8 +2076,8 @@ bool BlastPlugin::AppMainWindow_InitPluginTab(QTabWidget* sideBarTab)
 		panel->SetTitle("Material Assignments");
 	}
 
+	QWidget *tabBlast;
 	{
-		QWidget *tabBlast;
 		QGridLayout *gridLayout;
 		QFrame *blastMaterialEditorArea;
 		QVBoxLayout *blastMaterialEditorAreaLayout;
@@ -1280,10 +2123,6 @@ bool BlastPlugin::AppMainWindow_InitPluginTab(QTabWidget* sideBarTab)
 
 		gridLayout->addWidget(blastScrollArea, 0, 0, 1, 1);
 
-		sideBarTab->addTab(tabBlast, QString());
-
-		sideBarTab->setTabText(sideBarTab->indexOf(tabBlast), QApplication::translate("AppMainWindowClass", "Blast", 0));
-
 		ExpandablePanel* panel = 0;
 		int pannelCnt = 0;
 
@@ -1306,50 +2145,42 @@ bool BlastPlugin::AppMainWindow_InitPluginTab(QTabWidget* sideBarTab)
 		panel->SetTitle("Support");
 
 		panel = new ExpandablePanel(blastScrollAreaContents);
-		_blastCompositePanel = new BlastCompositePanel(panel);
-		panel->AddContent(_blastCompositePanel);
-		blastScrollAreaLayout->insertWidget(pannelCnt++, panel);
-		panel->SetTitle("Blast Composite");
-
-		panel = new ExpandablePanel(blastScrollAreaContents);
 		_fractureGeneralPanel = new FractureGeneralPanel(panel);
 		panel->AddContent(_fractureGeneralPanel);
 		blastScrollAreaLayout->insertWidget(pannelCnt++, panel);
 		panel->SetTitle("Fracture General");
 
 		panel = new ExpandablePanel(blastScrollAreaContents);
-		_fractureCutoutSettingsPanel = new FractureCutoutSettingsPanel(panel);
-		panel->AddContent(_fractureCutoutSettingsPanel);
-		blastScrollAreaLayout->insertWidget(pannelCnt++, panel);
-		panel->SetTitle("Cutout Projection Settings");
-
-		panel = new ExpandablePanel(blastScrollAreaContents);
-		_fractureShellCutSettingPanel = new FractureShellCutSettingsPanel(panel);
-		panel->AddContent(_fractureShellCutSettingPanel);
-		blastScrollAreaLayout->insertWidget(pannelCnt++, panel);
-		panel->SetTitle("Shell Cut Settings");
-
-		panel = new ExpandablePanel(blastScrollAreaContents);
-		_fractureSliceSettingsPanel = new FractureSliceSettingsPanel(panel);
-		panel->AddContent(_fractureSliceSettingsPanel);
-		blastScrollAreaLayout->insertWidget(pannelCnt++, panel);
-		panel->SetTitle("Slice Settings");
-
-		panel = new ExpandablePanel(blastScrollAreaContents);
+		_fractureVoronoiSettingsExpandlePanel = panel;
 		_fractureVoronoiSettingsPanel = new FractureVoronoiSettingsPanel(panel);
 		panel->AddContent(_fractureVoronoiSettingsPanel);
 		blastScrollAreaLayout->insertWidget(pannelCnt++, panel);
 		panel->SetTitle("Voronoi Settings");
+		_fractureVoronoiSettingsExpandlePanel->setVisible(true);
+
+		panel = new ExpandablePanel(blastScrollAreaContents);
+		_fractureSliceSettingsExpandlePanel = panel;
+		_fractureSliceSettingsPanel = new FractureSliceSettingsPanel(panel);
+		panel->AddContent(_fractureSliceSettingsPanel);
+		blastScrollAreaLayout->insertWidget(pannelCnt++, panel);
+		panel->SetTitle("Slice Settings");
+		_fractureSliceSettingsExpandlePanel->setVisible(false);
 
 		panel = new ExpandablePanel(blastScrollAreaContents);
 		_fractureVisualizersPanel = new FractureVisualizersPanel(panel);
 		panel->AddContent(_fractureVisualizersPanel);
 		blastScrollAreaLayout->insertWidget(pannelCnt++, panel);
 		panel->SetTitle("Visualizers");
+
+		_fractureGeneralPanel->setFracturePanels(_fractureVoronoiSettingsPanel, _fractureSliceSettingsPanel, _fractureVisualizersPanel);
+		_fractureGeneralPanel->setFractureExpandablePanels(_fractureVoronoiSettingsExpandlePanel, _fractureSliceSettingsExpandlePanel);
+		_fractureVoronoiSettingsPanel->setFractureGeneralPanel(_fractureGeneralPanel);
+		_fractureSliceSettingsPanel->setFractureGeneralPanel(_fractureGeneralPanel);
+		_fractureVisualizersPanel->setFractureGeneralPanel(_fractureGeneralPanel);
 	}
 
+	QWidget *tabDamage;
 	{
-		QWidget *tabDamage;
 		QGridLayout *gridLayoutDamage;
 		QFrame *damageEditorArea;
 		QVBoxLayout *damageEditorAreaLayout;
@@ -1395,9 +2226,21 @@ bool BlastPlugin::AppMainWindow_InitPluginTab(QTabWidget* sideBarTab)
 
 		gridLayoutDamage->addWidget(damageScrollArea, 0, 0, 1, 1);
 
-		sideBarTab->addTab(tabDamage, QString());
+		// GWDCC-523 Blast Tool - Tabs should be arranged Blast/Damage/Materials/Settings
+		sideBarTab->insertTab(0, tabBlast, QString());
+
+		sideBarTab->setTabText(sideBarTab->indexOf(tabBlast), QApplication::translate("AppMainWindowClass", "Blast", 0));
+
+		sideBarTab->insertTab(1, tabDamage, QString());
 
 		sideBarTab->setTabText(sideBarTab->indexOf(tabDamage), QApplication::translate("AppMainWindowClass", "Damage", 0));
+
+		sideBarTab->insertTab(2, tabMaterial, QString());
+
+		sideBarTab->setTabText(sideBarTab->indexOf(tabMaterial), QApplication::translate("AppMainWindowClass", "Materials", 0));
+
+		// make Blast page as current selected
+		sideBarTab->setCurrentIndex(0);
 
 		ExpandablePanel* panel = 0;
 		int pannelCnt = 0;
@@ -1430,6 +2273,7 @@ bool BlastPlugin::AppMainWindow_InitUI()
 	_blastSceneTree->setFeatures(_blastSceneTree->features()&~QDockWidget::DockWidgetClosable);
 	_blastSceneTree->addObserver(_defaultDamagePanel);
 	_blastSceneTree->addObserver(_supportPanel);
+	_blastSceneTree->addObserver(_generalPanel);
 	mainWindow->addDockWidget(Qt::LeftDockWidgetArea, _blastSceneTree);
 	return true;
 }
@@ -1443,7 +2287,10 @@ bool BlastPlugin::AppMainWindow_updateUI()
 		_filtersDockWidget->updateValues();
 
 	if (_blastSceneTree)
+	{
 		_blastSceneTree->updateValues();
+		//SampleManager::ins()->m_bNeedRefreshTree = true;
+	}
 
 	if (_materialLibraryPanel)
 		_materialLibraryPanel->updateValues();
@@ -1457,17 +2304,8 @@ bool BlastPlugin::AppMainWindow_updateUI()
 	if (_generalPanel)
 		_generalPanel->updateValues();
 
-	if (_blastCompositePanel)
-		_blastCompositePanel->updateValues();
-
-	if (_fractureCutoutSettingsPanel)
-		_fractureCutoutSettingsPanel->updateValues();
-
 	if (_fractureGeneralPanel)
 		_fractureGeneralPanel->updateValues();
-
-	if (_fractureShellCutSettingPanel)
-		_fractureShellCutSettingPanel->updateValues();
 
 	if (_fractureSliceSettingsPanel)
 		_fractureSliceSettingsPanel->updateValues();
@@ -1518,9 +2356,15 @@ bool BlastPlugin::AppMainWindow_InitToolbar(QWidget *pQWidget, QVBoxLayout* pLay
 
 bool BlastPlugin::AppMainWindow_shortcut_expert(bool mode)
 { 
-	if (_mainToolbar)
-		_mainToolbar->setVisible(mode);
+	//if (_mainToolbar)
+	//	_mainToolbar->setVisible(mode);
+	if (_filtersDockWidget)
+		_filtersDockWidget->setVisible(mode);
+	if (_blastSceneTree)
+		_blastSceneTree->setVisible(mode);
 
+	// set FPS display
+	GlobalSettings::Inst().m_showFPS = mode;
 	return true; 
 }
 
@@ -1530,6 +2374,27 @@ bool BlastPlugin::AppMainWindow_updateMainToolbar()
 		_mainToolbar->updateValues();
 
 	return true; 
+}
+
+bool BlastPlugin::AppMainWindow_menu_item_triggered(QAction* action)
+{
+	bool clickRecent = false;
+	for (int i = 0; i < _recentProjectActions.count(); ++i)
+	{
+		if (_recentProjectActions.at(i) == action)
+		{
+			clickRecent = true;
+			break;
+		}
+	}
+
+	if (clickRecent)
+	{
+		bool ret = _openProject(action->text());
+		_resetRecentProject(action->text());
+		return ret;
+	}
+	return false;
 }
 
 bool BlastPlugin::AppMainWindow_menu_about()
@@ -1580,7 +2445,9 @@ bool BlastPlugin::menu_openProject()
 	QString lastDir = window._lastFilePath;
 	QString fileName = QFileDialog::getOpenFileName(&window, "Open Blast Project File", lastDir, "Blast Project File (*.blastProj)");
 
-	return window.openProject(fileName);
+	_addRecentProject(fileName);
+
+	return _openProject(fileName);
 }
 
 bool BlastPlugin::menu_saveProject()
@@ -1636,6 +2503,7 @@ bool BlastPlugin::menu_saveProjectAs()
 
 	QString lastDir = window._lastFilePath;
 	QString fileName = QFileDialog::getSaveFileName(&window, "Save Blast Project File", lastDir, "Blast Project File (*.blastProj)");
+	_addRecentProject(fileName);
 	if (!fileName.isEmpty())
 	{
 		QFileInfo fileInfo(fileName);
@@ -1652,7 +2520,7 @@ bool BlastPlugin::menu_saveProjectAs()
 			return false;
 		}
 
-		sprintf(message, "Project file %s was saved.", (const char*)file);
+		sprintf(message, "Project file %s was saved.", (const char*)fileName.toUtf8().data());
 
 		/*
 		QMessageBox messageBox;
@@ -1662,6 +2530,9 @@ bool BlastPlugin::menu_saveProjectAs()
 
 		viewer_msg(message);
 
+		// show project path in toolbar
+		BlastPlugin::Inst().GetMainToolbar()->updateValues();
+
 		window._lastFilePath = fileInfo.absoluteDir().absolutePath();
 		return true;
 	}
@@ -1670,44 +2541,76 @@ bool BlastPlugin::menu_saveProjectAs()
 
 bool BlastPlugin::shortcut_damagetool()
 {
-	SampleManager& sampleManager = SimpleScene::Inst()->GetSampleManager();
-	sampleManager.setBlastToolType(BTT_Damage);
+	BlastPlugin::Inst().GetMainToolbar()->on_btnDamage_clicked();
 	return true;
 }
 
 bool BlastPlugin::shortcut_selecttool()
 {
-	SampleManager& sampleManager = SimpleScene::Inst()->GetSampleManager();
-	sampleManager.setBlastToolType(BTT_Select);
+	BlastPlugin::Inst().GetMainToolbar()->on_btnSelectTool_clicked();
+	BlastPlugin::Inst().GetMainToolbar()->updateCheckIconsStates();
 	return true;
 }
 
 bool BlastPlugin::shortcut_Translate()
 {
-	SampleManager& sampleManager = SimpleScene::Inst()->GetSampleManager();
-	sampleManager.setBlastToolType(BTT_Translate);
+	BlastPlugin::Inst().GetMainToolbar()->on_Translate_clicked();
+	BlastPlugin::Inst().GetMainToolbar()->updateCheckIconsStates();
 	return true;
 }
 
 bool BlastPlugin::shortcut_Rotation()
 {
-	SampleManager& sampleManager = SimpleScene::Inst()->GetSampleManager();
-	sampleManager.setBlastToolType(BTT_Rotation);
+	BlastPlugin::Inst().GetMainToolbar()->on_Rotation_clicked();
+	BlastPlugin::Inst().GetMainToolbar()->updateCheckIconsStates();
 	return true;
 }
 
 bool BlastPlugin::shortcut_Scale()
 {
-	SampleManager& sampleManager = SimpleScene::Inst()->GetSampleManager();
-	sampleManager.setBlastToolType(BTT_Scale);
+	BlastPlugin::Inst().GetMainToolbar()->on_Scale_clicked();
+	BlastPlugin::Inst().GetMainToolbar()->updateCheckIconsStates();
 	return true;
 }
 
 bool BlastPlugin::shortcut_edittool()
 {
 	SampleManager& sampleManager = SimpleScene::Inst()->GetSampleManager();
-	sampleManager.setBlastToolType(BTT_Edit);
+	sampleManager.EnableSimulating(false);
 	return true;
+}
+
+bool BlastPlugin::shortcut_addFamily()
+{
+	SampleManager* pSampleManager = SampleManager::ins();
+	BlastAsset* pBlastAsset = pSampleManager->getCurBlastAsset();
+	if (pBlastAsset == nullptr)
+	{
+		viewer_warn("please select asset first to create family !");
+		return false;
+	}
+
+	SourceAssetOpenDlg dlg(2, &AppMainWindow::Inst());
+	if (dlg.exec() != QDialog::Accepted)
+		return false;
+
+	physx::PxTransform t(physx::PxIdentity);
+	{
+		QVector3D Position = dlg.getPosition();
+		t.p = physx::PxVec3(Position.x(), Position.y(), Position.z());
+
+		QVector3D RotationAxis = dlg.getRotationAxis();
+		physx::PxVec3 Axis = physx::PxVec3(RotationAxis.x(), RotationAxis.y(), RotationAxis.z());
+		Axis = Axis.getNormalized();
+		float RotationDegree = dlg.getRotationDegree();
+		float DEGREE_TO_RAD = acos(-1.0) / 180.0;
+		RotationDegree = RotationDegree * DEGREE_TO_RAD;
+		t.q = physx::PxQuat(RotationDegree, Axis);
+	}
+	bool res = pSampleManager->addBlastFamily(pBlastAsset, t);
+	if(res)
+		AppMainWindow::Inst().updateUI();
+	return res;
 }
 
 bool BlastPlugin::slot_Make_Support()
@@ -1744,4 +2647,124 @@ bool BlastPlugin::slot_Remove_all_Bonds()
 {
 	BlastSceneTree::ins()->removeAllBonds();
 	return true;
+}
+
+bool BlastPlugin::_openProject(const QString project)
+{
+	AppMainWindow& window = AppMainWindow::Inst();
+	bool ret = window.openProject(project);
+	if (ret)
+	{
+		SampleManager* pSampleManager = SampleManager::ins();
+		SelectionToolController& selectionToolController = pSampleManager->getSelectionToolController();
+		GizmoToolController& gizmoToolController = pSampleManager->getGizmoToolController();
+		gizmoToolController.showAxisRenderables(false);
+		if (selectionToolController.IsEnabled() || gizmoToolController.IsEnabled())
+		{
+			// do nothing here
+		}
+		else
+		{
+			// turn on selection tool
+			selectionToolController.EnableController();
+			BlastPlugin::Inst().GetMainToolbar()->updateCheckIconsStates();
+		}
+	}
+	return ret;
+}
+
+void BlastPlugin::_addRecentProject(const QString project)
+{
+	if (project.isEmpty())
+		return;
+
+	if (_recentProjectRecordFile.getItems().count() > 0 && _recentProjectRecordFile.getItems().first() == project)
+		return;
+
+	if (_recentProjectActions.count() == 8)
+	{
+		QAction* act = _recentProjectActions.last();
+		_recentProjectMenu->removeAction(act);
+
+		_recentProjectRecordFile.getItems().pop_back();
+		_recentProjectActions.pop_back();
+	}
+
+	if (_recentProjectRecordFile.isItemExist(project))
+	{
+		_resetRecentProject(project);
+		return;
+	}
+
+	QAction* act = new QAction(project, _recentProjectMenu);
+	if (_recentProjectActions.count() > 0)
+		_recentProjectMenu->insertAction(_recentProjectActions.first(), act);
+	else
+		_recentProjectMenu->addAction(act);
+
+	_recentProjectActions.push_front(act);
+
+	_recentProjectRecordFile.getItems().push_front(project);
+
+	_saveRecentProject();
+}
+
+void BlastPlugin::_resetRecentProject(const QString project)
+{
+	if (project.isEmpty())
+		return;
+
+	if (_recentProjectRecordFile.getItems().count() > 0 && _recentProjectRecordFile.getItems().first() == project)
+		return;
+
+	if (!_recentProjectRecordFile.isItemExist(project))
+		return;
+
+	QList<QAction*> actions;
+	for (int i = 0; i < _recentProjectActions.count(); ++i)
+	{
+		QAction* act = _recentProjectActions.at(i);
+		if (act->text() == project)
+			actions.push_front(act);
+		else
+			actions.push_back(act);
+	}
+
+	_recentProjectMenu->addActions(actions);
+	_recentProjectActions = actions;
+
+	QList<QString> projectsTMP;
+	QList<QString>& projectsCurrent = _recentProjectRecordFile.getItems();
+	for (int i = 0; i < projectsCurrent.count(); ++i)
+	{
+		QString item = projectsCurrent.at(i);
+		if (item == project)
+			projectsTMP.push_front(item);
+		else
+			projectsTMP.push_back(item);
+	}
+	projectsCurrent.clear();
+	projectsCurrent = projectsTMP;
+
+	_saveRecentProject();
+}
+
+void BlastPlugin::_loadRecentProject()
+{
+	QString recentProjectRecordFile = QCoreApplication::applicationDirPath() + "/RecentBlastProjects.rbp";
+	_recentProjectRecordFile.load(recentProjectRecordFile);
+
+	QList<QString> recentProjects = _recentProjectRecordFile.getItems();
+	_recentProjectRecordFile.getItems().clear();
+
+	for (int i = recentProjects.count() - 1; i >= 0; --i)
+	{
+		_addRecentProject(recentProjects.at(i));
+	}
+}
+
+void BlastPlugin::_saveRecentProject()
+{
+	QString recentProjectRecordFile = QCoreApplication::applicationDirPath() + "/RecentBlastProjects.rbp";
+	_recentProjectRecordFile.save(recentProjectRecordFile);
 }

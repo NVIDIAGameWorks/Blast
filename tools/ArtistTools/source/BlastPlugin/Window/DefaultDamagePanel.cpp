@@ -2,12 +2,42 @@
 #include "ui_DefaultDamagePanel.h"
 #include "ProjectParams.h"
 #include "BlastSceneTree.h"
+#include <float.h>
+
+#include "DamageToolController.h"
+
+DefaultDamagePanel* gDefaultDamagePanel = nullptr;
+DefaultDamagePanel* DefaultDamagePanel::ins()
+{
+	return gDefaultDamagePanel;
+}
+
+QComboBox* DefaultDamagePanel::getDamageProfile()
+{
+	return ui->comboBoxDamageProfile;
+}
+
+void DefaultDamagePanel::setUpdateData(bool bUpdateData)
+{
+	_updateData = bUpdateData;
+}
 
 DefaultDamagePanel::DefaultDamagePanel(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::DefaultDamagePanel)
+    ui(new Ui::DefaultDamagePanel),
+	_updateData(true)
 {
+	gDefaultDamagePanel = this;
+
     ui->setupUi(this);
+
+	_updateData = false;
+	ui->spinBoxDamageAmount->setRange(0.0f, DBL_MAX);
+	ui->spinBoxExplosiveImpulse->setRange(0.0f, DBL_MAX);
+	ui->spinBoxDamageRadius->setRange(0.0f, DBL_MAX);
+	ui->spinBoxStressDamageForce->setRange(0.0f, DBL_MAX);
+	ui->checkBoxDamageContinuously->setChecked(false);
+	_updateData = true;
 }
 
 DefaultDamagePanel::~DefaultDamagePanel()
@@ -17,23 +47,29 @@ DefaultDamagePanel::~DefaultDamagePanel()
 
 void DefaultDamagePanel::updateValues()
 {
-	if (_selectedAssets.size() > 0)
-	{
-		BPPDefaultDamage& damage = _selectedAssets[0]->defaultDamage;
-
-		ui->spinBoxMinRadius->setValue(damage.minRadius);
-		ui->spinBoxMaxRadius->setValue(damage.maxRadius);
-		ui->comboBoxFallOff->setCurrentIndex(damage.FallOff);
-		ui->spinBoxMaxChunkSpeed->setValue(damage.maxChunkSpeed);
+	_updateData = false;
+	BPPDefaultDamage& damage = BlastProject::ins().getParams().defaultDamage;
+	if (damage.damageStructs.arraySizes[0] > 0)
+	{		
+		uint32_t damageProfile = damage.damageProfile;
+		BPPDamageStruct& damageStruct = damage.damageStructs.buf[damageProfile];
+		ui->spinBoxDamageAmount->setValue(damage.damageAmount);
+		ui->spinBoxExplosiveImpulse->setValue(damage.explosiveImpulse);
+		ui->spinBoxStressDamageForce->setValue(damage.stressDamageForce);
+		ui->comboBoxDamageProfile->setCurrentIndex(damageProfile);
+		ui->spinBoxDamageRadius->setValue(damageStruct.damageRadius);
+		ui->checkBoxDamageContinuously->setChecked(damageStruct.continuously);
 	}
 	else
 	{
-		ui->spinBoxMinRadius->setValue(0.0f);
-		ui->spinBoxMaxRadius->setValue(0.0f);
-		ui->checkBoxMaxRadius->setChecked(false);
-		ui->comboBoxFallOff->setCurrentIndex(-1);
-		ui->spinBoxMaxChunkSpeed->setValue(0.0f);
+		ui->spinBoxDamageAmount->setValue(0);
+		ui->spinBoxExplosiveImpulse->setValue(0);
+		ui->spinBoxDamageRadius->setValue(0);
+		ui->spinBoxStressDamageForce->setValue(0);
+		ui->checkBoxDamageContinuously->setChecked(false);
+		ui->comboBoxDamageProfile->setCurrentIndex(0);
 	}
+	_updateData = true;
 }
 
 void DefaultDamagePanel::dataSelected(std::vector<BlastNode*> selections)
@@ -52,53 +88,74 @@ void DefaultDamagePanel::dataSelected(std::vector<BlastNode*> selections)
 	updateValues();
 }
 
-void DefaultDamagePanel::on_spinBoxMinRadius_valueChanged(double arg1)
+void DefaultDamagePanel::on_spinBoxDamageAmount_valueChanged(double arg1)
 {
-	for (size_t i = 0; i < _selectedAssets.size(); ++i)
-	{
-		BPPDefaultDamage& damage = _selectedAssets[i]->defaultDamage;
-		damage.minRadius = arg1;
-	}
+	if (!_updateData)
+		return;
+
+	BPPDefaultDamage& damage = BlastProject::ins().getParams().defaultDamage;
+	damage.damageAmount = arg1;
+
+	DamageToolController::ins()->setDamageAmount(arg1);
 }
 
-void DefaultDamagePanel::on_spinBoxMaxRadius_valueChanged(double arg1)
+void DefaultDamagePanel::on_spinBoxExplosiveImpulse_valueChanged(double arg1)
 {
-	for (size_t i = 0; i < _selectedAssets.size(); ++i)
-	{
-		BPPDefaultDamage& damage = _selectedAssets[i]->defaultDamage;
+	if (!_updateData)
+		return;
 
-		damage.maxRadius = arg1;
+	BPPDefaultDamage& damage = BlastProject::ins().getParams().defaultDamage;
+	damage.explosiveImpulse = arg1;
 
-		if (arg1 < damage.minRadius)
-		{
-			damage.maxRadius = damage.minRadius;
-		}
-	}
+	DamageToolController::ins()->setExplosiveImpulse(arg1);
 }
 
-void DefaultDamagePanel::on_checkBoxMaxRadius_stateChanged(int arg1)
+void DefaultDamagePanel::on_spinBoxDamageRadius_valueChanged(double arg1)
 {
-	for (size_t i = 0; i < _selectedAssets.size(); ++i)
-	{
-		BPPDefaultDamage& damage = _selectedAssets[i]->defaultDamage;
-		damage.maxRadiusEnable = (arg1 != 0 ? true: false);
-	}
+	if (!_updateData)
+		return;
+
+	BPPDefaultDamage& damage = BlastProject::ins().getParams().defaultDamage;
+	uint32_t damageProfile = damage.damageProfile;
+	BPPDamageStruct& damageStruct = damage.damageStructs.buf[damageProfile];
+	damageStruct.damageRadius = arg1;
+
+	DamageToolController::ins()->setRadius(arg1);
 }
 
-void DefaultDamagePanel::on_comboBoxFallOff_currentIndexChanged(int index)
+void DefaultDamagePanel::on_spinBoxStressDamageForce_valueChanged(double arg1)
 {
-	for (size_t i = 0; i < _selectedAssets.size(); ++i)
-	{
-		BPPDefaultDamage& damage = _selectedAssets[i]->defaultDamage;
-		damage.FallOff = index;
-	}
+	if (!_updateData)
+		return;
+
+	BPPDefaultDamage& damage = BlastProject::ins().getParams().defaultDamage;
+	damage.stressDamageForce = arg1;
+
+	DamageToolController::ins()->setStressForceFactor(arg1);
 }
 
-void DefaultDamagePanel::on_spinBoxMaxChunkSpeed_valueChanged(double arg1)
+void DefaultDamagePanel::on_comboBoxDamageProfile_currentIndexChanged(int index)
 {
-	for (size_t i = 0; i < _selectedAssets.size(); ++i)
-	{
-		BPPDefaultDamage& damage = _selectedAssets[i]->defaultDamage;
-		damage.maxChunkSpeed = arg1;
-	}
+	if (!_updateData)
+		return;
+
+	BPPDefaultDamage& damage = BlastProject::ins().getParams().defaultDamage;
+	damage.damageProfile = index;
+
+	DamageToolController::ins()->setDamagerIndex(index);
+
+	updateValues();
+}
+
+void DefaultDamagePanel::on_checkBoxDamageContinuously_stateChanged(int arg1)
+{
+	if (!_updateData)
+		return;
+
+	BPPDefaultDamage& damage = BlastProject::ins().getParams().defaultDamage;
+	uint32_t damageProfile = damage.damageProfile;
+	BPPDamageStruct& damageStruct = damage.damageStructs.buf[damageProfile];
+	damageStruct.continuously = arg1;
+
+	DamageToolController::ins()->setDamageWhilePressed(arg1);
 }

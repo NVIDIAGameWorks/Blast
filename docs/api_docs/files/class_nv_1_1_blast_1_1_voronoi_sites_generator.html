@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 API Reference: Nv::Blast::VoronoiSitesGenerator Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 API Reference: Nv::Blast::VoronoiSitesGenerator Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -29,79 +29,43 @@
 <a href="class_nv_1_1_blast_1_1_voronoi_sites_generator-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#434ce0ebf01a9381fd7039a93d291bf6">addSite</a> (const physx::PxVec3 &amp;site)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#5142e8884ef7b25748b8ae4ab9c2356f">addSite</a> (const physx::PxVec3 &amp;site)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#6efcf8ca0f3700269f892c7da450237f">clearStencil</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#248bef86683470a1e3b83248cd2be110">clearStencil</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#fe570486fdca2806fd5064127f8b7c53">clusteredSitesGeneration</a> (const uint32_t numberOfClusters, const uint32_t sitesPerCluster, float clusterRadius)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#c9261d76e925a9e514dbb68cf098e4ce">clusteredSitesGeneration</a> (uint32_t numberOfClusters, uint32_t sitesPerCluster, float clusterRadius)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#d4e6643500937e4784ad5727d45f43e3">deleteInSphere</a> (const float radius, const physx::PxVec3 &amp;center, const float eraserProbability=1)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#16867c95d16e8eb0e7de6c58742135b9">deleteInSphere</a> (const float radius, const physx::PxVec3 &amp;center, const float eraserProbability=1)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#f849437d60aeae7727286c612a47e652">generateInSphere</a> (const uint32_t count, const float radius, const physx::PxVec3 &amp;center)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#dbc02a0d6818fcb252259c64cd6c1dc6">generateInSphere</a> (const uint32_t count, const float radius, const physx::PxVec3 &amp;center)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">std::vector&lt; physx::PxVec3 &gt; &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#c80b46225bb7cdbf639caff61b4ba6ac">getVoronoiSites</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#285a5922634685029929317047adb4ac">getVoronoiSites</a> (const physx::PxVec3 *&amp;sites)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#779128ee5c68d8caad79f4fc64c9dd73">radialPattern</a> (const physx::PxVec3 &amp;center, const physx::PxVec3 &amp;normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset=0.0f, float variability=0.0f)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#e657e2b3e6e587d7b717128d13e0581b">radialPattern</a> (const physx::PxVec3 &amp;center, const physx::PxVec3 &amp;normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset=0.0f, float variability=0.0f)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#1d8c6b8245ad77fd9d749f93f440c462">setBaseMesh</a> (<a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *m)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#6a0531d652867a7f973dcd5559800b5b">release</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#c43c5ca8555b49ffaf93e12d7c900593">setStencil</a> (<a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *stencil)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#b25db00f7569db1719408b4cf2a0e112">setBaseMesh</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *mesh)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#fe2b205547a959f232112b5eb0ea0d00">uniformlyGenerateSitesInMesh</a> (const uint32_t numberOfSites)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#bf0eeed0dc2a632c85572b4026b195c2">setStencil</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *stencil)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#639b27642a6ddd5054ef9a1a23166f8d">VoronoiSitesGenerator</a> (<a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *mesh, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#1940917c639e2f134530d24e144022b8">uniformlyGenerateSitesInMesh</a> (uint32_t numberOfSites)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#b3d7867eb5e22d821a7e5ada6d2e965a">~VoronoiSitesGenerator</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#8d4ddd2ad08b37a448fa033141a297a8">~VoronoiSitesGenerator</a> ()</td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Class for voronoi sites generation inside supplied mesh. <hr><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" name="639b27642a6ddd5054ef9a1a23166f8d"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::VoronoiSitesGenerator" ref="639b27642a6ddd5054ef9a1a23166f8d" args="(Mesh *mesh, RandomGeneratorBase *rnd)" -->
+<a class="anchor" name="8d4ddd2ad08b37a448fa033141a297a8"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::~VoronoiSitesGenerator" ref="8d4ddd2ad08b37a448fa033141a297a8" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Nv::Blast::VoronoiSitesGenerator::VoronoiSitesGenerator           </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td>
-          <td class="paramname"> <em>mesh</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *&nbsp;</td>
-          <td class="paramname"> <em>rnd</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Voronoi sites should not be generated outside of the fractured mesh, so <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html">VoronoiSitesGenerator</a> should be supplied with fracture mesh. <dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mesh</em>&nbsp;</td><td>Fracture mesh </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>rnd</em>&nbsp;</td><td>User supplied random value generator. </td></tr>
-  </table>
-</dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd></dd></dl>
-
-</div>
-</div><p>
-<a class="anchor" name="b3d7867eb5e22d821a7e5ada6d2e965a"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::~VoronoiSitesGenerator" ref="b3d7867eb5e22d821a7e5ada6d2e965a" args="()" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Nv::Blast::VoronoiSitesGenerator::~VoronoiSitesGenerator           </td>
+          <td class="memname">virtual Nv::Blast::VoronoiSitesGenerator::~VoronoiSitesGenerator           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [inline, virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -112,17 +76,17 @@ Voronoi sites should not be generated outside of the fractured mesh, so <a class
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="434ce0ebf01a9381fd7039a93d291bf6"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::addSite" ref="434ce0ebf01a9381fd7039a93d291bf6" args="(const physx::PxVec3 &amp;site)" -->
+<a class="anchor" name="5142e8884ef7b25748b8ae4ab9c2356f"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::addSite" ref="5142e8884ef7b25748b8ae4ab9c2356f" args="(const physx::PxVec3 &amp;site)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::VoronoiSitesGenerator::addSite           </td>
+          <td class="memname">virtual void Nv::Blast::VoronoiSitesGenerator::addSite           </td>
           <td>(</td>
           <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
           <td class="paramname"> <em>site</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -137,16 +101,16 @@ Add site in particular point <dl compact><dt><b>Parameters:</b></dt><dd>
 
 </div>
 </div><p>
-<a class="anchor" name="6efcf8ca0f3700269f892c7da450237f"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::clearStencil" ref="6efcf8ca0f3700269f892c7da450237f" args="()" -->
+<a class="anchor" name="248bef86683470a1e3b83248cd2be110"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::clearStencil" ref="248bef86683470a1e3b83248cd2be110" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::VoronoiSitesGenerator::clearStencil           </td>
+          <td class="memname">virtual void Nv::Blast::VoronoiSitesGenerator::clearStencil           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -156,20 +120,20 @@ Add site in particular point <dl compact><dt><b>Parameters:</b></dt><dd>
 Removes stencil mesh 
 </div>
 </div><p>
-<a class="anchor" name="fe570486fdca2806fd5064127f8b7c53"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::clusteredSitesGeneration" ref="fe570486fdca2806fd5064127f8b7c53" args="(const uint32_t numberOfClusters, const uint32_t sitesPerCluster, float clusterRadius)" -->
+<a class="anchor" name="c9261d76e925a9e514dbb68cf098e4ce"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::clusteredSitesGeneration" ref="c9261d76e925a9e514dbb68cf098e4ce" args="(uint32_t numberOfClusters, uint32_t sitesPerCluster, float clusterRadius)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::VoronoiSitesGenerator::clusteredSitesGeneration           </td>
+          <td class="memname">virtual void Nv::Blast::VoronoiSitesGenerator::clusteredSitesGeneration           </td>
           <td>(</td>
-          <td class="paramtype">const uint32_t&nbsp;</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
           <td class="paramname"> <em>numberOfClusters</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const uint32_t&nbsp;</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
           <td class="paramname"> <em>sitesPerCluster</em>, </td>
         </tr>
         <tr>
@@ -181,7 +145,7 @@ Removes stencil mesh
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -198,12 +162,12 @@ Generate sites in clustered fashion <dl compact><dt><b>Parameters:</b></dt><dd>
 
 </div>
 </div><p>
-<a class="anchor" name="d4e6643500937e4784ad5727d45f43e3"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::deleteInSphere" ref="d4e6643500937e4784ad5727d45f43e3" args="(const float radius, const physx::PxVec3 &amp;center, const float eraserProbability=1)" -->
+<a class="anchor" name="16867c95d16e8eb0e7de6c58742135b9"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::deleteInSphere" ref="16867c95d16e8eb0e7de6c58742135b9" args="(const float radius, const physx::PxVec3 &amp;center, const float eraserProbability=1)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::VoronoiSitesGenerator::deleteInSphere           </td>
+          <td class="memname">virtual void Nv::Blast::VoronoiSitesGenerator::deleteInSphere           </td>
           <td>(</td>
           <td class="paramtype">const float&nbsp;</td>
           <td class="paramname"> <em>radius</em>, </td>
@@ -223,7 +187,7 @@ Generate sites in clustered fashion <dl compact><dt><b>Parameters:</b></dt><dd>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -240,12 +204,12 @@ Deletes sites inside supplied sphere <dl compact><dt><b>Parameters:</b></dt><dd>
 
 </div>
 </div><p>
-<a class="anchor" name="f849437d60aeae7727286c612a47e652"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::generateInSphere" ref="f849437d60aeae7727286c612a47e652" args="(const uint32_t count, const float radius, const physx::PxVec3 &amp;center)" -->
+<a class="anchor" name="dbc02a0d6818fcb252259c64cd6c1dc6"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::generateInSphere" ref="dbc02a0d6818fcb252259c64cd6c1dc6" args="(const uint32_t count, const float radius, const physx::PxVec3 &amp;center)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::VoronoiSitesGenerator::generateInSphere           </td>
+          <td class="memname">virtual void Nv::Blast::VoronoiSitesGenerator::generateInSphere           </td>
           <td>(</td>
           <td class="paramtype">const uint32_t&nbsp;</td>
           <td class="paramname"> <em>count</em>, </td>
@@ -265,7 +229,7 @@ Deletes sites inside supplied sphere <dl compact><dt><b>Parameters:</b></dt><dd>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -282,31 +246,38 @@ Generate sites inside sphere <dl compact><dt><b>Parameters:</b></dt><dd>
 
 </div>
 </div><p>
-<a class="anchor" name="c80b46225bb7cdbf639caff61b4ba6ac"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::getVoronoiSites" ref="c80b46225bb7cdbf639caff61b4ba6ac" args="()" -->
+<a class="anchor" name="285a5922634685029929317047adb4ac"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::getVoronoiSites" ref="285a5922634685029929317047adb4ac" args="(const physx::PxVec3 *&amp;sites)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;physx::PxVec3&gt;&amp; Nv::Blast::VoronoiSitesGenerator::getVoronoiSites           </td>
+          <td class="memname">virtual uint32_t Nv::Blast::VoronoiSitesGenerator::getVoronoiSites           </td>
           <td>(</td>
-          <td class="paramname">          </td>
+          <td class="paramtype">const physx::PxVec3 *&amp;&nbsp;</td>
+          <td class="paramname"> <em>sites</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-Returns reference on vector of generated voronoi sites. 
+Access to generated voronoi sites. <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>Pointer</em>&nbsp;</td><td>to generated voronoi sites </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>Count of generated voronoi sites. </dd></dl>
+
 </div>
 </div><p>
-<a class="anchor" name="779128ee5c68d8caad79f4fc64c9dd73"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::radialPattern" ref="779128ee5c68d8caad79f4fc64c9dd73" args="(const physx::PxVec3 &amp;center, const physx::PxVec3 &amp;normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset=0.0f, float variability=0.0f)" -->
+<a class="anchor" name="e657e2b3e6e587d7b717128d13e0581b"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::radialPattern" ref="e657e2b3e6e587d7b717128d13e0581b" args="(const physx::PxVec3 &amp;center, const physx::PxVec3 &amp;normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset=0.0f, float variability=0.0f)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::VoronoiSitesGenerator::radialPattern           </td>
+          <td class="memname">virtual void Nv::Blast::VoronoiSitesGenerator::radialPattern           </td>
           <td>(</td>
           <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
           <td class="paramname"> <em>center</em>, </td>
@@ -350,7 +321,7 @@ Returns reference on vector of generated voronoi sites.
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -371,17 +342,36 @@ Radial pattern of sites generation <dl compact><dt><b>Parameters:</b></dt><dd>
 
 </div>
 </div><p>
-<a class="anchor" name="1d8c6b8245ad77fd9d749f93f440c462"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::setBaseMesh" ref="1d8c6b8245ad77fd9d749f93f440c462" args="(Mesh *m)" -->
+<a class="anchor" name="6a0531d652867a7f973dcd5559800b5b"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::release" ref="6a0531d652867a7f973dcd5559800b5b" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::VoronoiSitesGenerator::setBaseMesh           </td>
+          <td class="memname">virtual void Nv::Blast::VoronoiSitesGenerator::release           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td>
-          <td class="paramname"> <em>m</em>          </td>
+          <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Release <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html">VoronoiSitesGenerator</a> memory 
+</div>
+</div><p>
+<a class="anchor" name="b25db00f7569db1719408b4cf2a0e112"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::setBaseMesh" ref="b25db00f7569db1719408b4cf2a0e112" args="(const Mesh *mesh)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::VoronoiSitesGenerator::setBaseMesh           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td>
+          <td class="paramname"> <em>mesh</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -391,17 +381,17 @@ Radial pattern of sites generation <dl compact><dt><b>Parameters:</b></dt><dd>
 Set base fracture mesh 
 </div>
 </div><p>
-<a class="anchor" name="c43c5ca8555b49ffaf93e12d7c900593"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::setStencil" ref="c43c5ca8555b49ffaf93e12d7c900593" args="(Mesh *stencil)" -->
+<a class="anchor" name="bf0eeed0dc2a632c85572b4026b195c2"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::setStencil" ref="bf0eeed0dc2a632c85572b4026b195c2" args="(const Mesh *stencil)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::VoronoiSitesGenerator::setStencil           </td>
+          <td class="memname">virtual void Nv::Blast::VoronoiSitesGenerator::setStencil           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td>
           <td class="paramname"> <em>stencil</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -416,17 +406,17 @@ Set stencil mesh. With stencil mesh sites are generated only inside both of frac
 
 </div>
 </div><p>
-<a class="anchor" name="fe2b205547a959f232112b5eb0ea0d00"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::uniformlyGenerateSitesInMesh" ref="fe2b205547a959f232112b5eb0ea0d00" args="(const uint32_t numberOfSites)" -->
+<a class="anchor" name="1940917c639e2f134530d24e144022b8"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGenerator::uniformlyGenerateSitesInMesh" ref="1940917c639e2f134530d24e144022b8" args="(uint32_t numberOfSites)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::VoronoiSitesGenerator::uniformlyGenerateSitesInMesh           </td>
+          <td class="memname">virtual void Nv::Blast::VoronoiSitesGenerator::uniformlyGenerateSitesInMesh           </td>
           <td>(</td>
-          <td class="paramtype">const uint32_t&nbsp;</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
           <td class="paramname"> <em>numberOfSites</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>

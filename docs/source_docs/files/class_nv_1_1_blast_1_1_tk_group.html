@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::TkGroup Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::TkGroup Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -58,7 +58,11 @@ Inheritance diagram for Nv::Blast::TkGroup:</div>
 <a href="class_nv_1_1_blast_1_1_tk_group-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_tk_group_worker.html">TkGroupWorker</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#afdf7e869582f414b447edc422b05fb0">acquireWorker</a> ()=0</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#0ef2653e6d605641a65e07634cb0436c">addActor</a> (<a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a> &amp;actor)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#4d21bd8b0225ae57b81bb8fe09df39ff">endProcess</a> ()=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#0cd433d98578658e1240c7c50fb3c334">getActorCount</a> () const =0</td></tr>
 
@@ -66,14 +70,42 @@ Inheritance diagram for Nv::Blast::TkGroup:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#dedce0f4d320f3c7f67d1c9c8ebac152">getStats</a> (<a class="el" href="struct_nv_1_1_blast_1_1_tk_group_stats.html">TkGroupStats</a> &amp;stats) const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#14de050466d57e840ea2f2400eb22d44">process</a> ()=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#d8f946a317af8760c9f70f9455b1dd6e">getWorkerCount</a> () const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#d6e5795147da35529cd5473411cb11c5">sync</a> (bool block=true)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#e207854ae3e30047c6347f9fd3e7a3b9">process</a> ()</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#7fc6d691a59aa7b107adfaac6fe5fd65">returnWorker</a> (<a class="el" href="class_nv_1_1_blast_1_1_tk_group_worker.html">TkGroupWorker</a> *)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#6a5d3d9dedc6025460c1102b288a1a85">setWorkerCount</a> (uint32_t workerCount)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#e98b1523b3f1323c42129fe88842f306">startProcess</a> ()=0</td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 A group is a processing unit, to which the user may add TkActors. New actors generated from splitting a <a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a> are automatically put into the same group. However, any actor may be removed from its group and placed into another group (or no group) by the user's choice.<p>
-When the group's process function is called, all actors' damage buffers will be processed and turned into fracture events and the actor is split if applicable. This work is done in separate (possibly multiple) threads. The sync function waits for the processing threads to finish and dispatches events for processing that actually occurred. <hr><h2>Member Function Documentation</h2>
+When the group's process function is called, all actors' damage buffers will be processed and turned into fracture events and the actor is split if applicable.<p>
+This work can be done in multiple threads with the help of <a class="el" href="class_nv_1_1_blast_1_1_tk_group_worker.html">TkGroupWorker</a>: Instead of calling the process function, commence the procedure with startProcess which returns the number of jobs to process. Each concurrent thread uses an acquired <a class="el" href="class_nv_1_1_blast_1_1_tk_group_worker.html">TkGroupWorker</a> to process the jobs. Over the whole procedure, each job must be processed once and only once. Jobs can be processed in any order. TkGroupWorkers can be returned and acquired later by another task. After processing every job and returning all the workers to the group, endProcess concludes the procedure. <hr><h2>Member Function Documentation</h2>
+<a class="anchor" name="afdf7e869582f414b447edc422b05fb0"></a><!-- doxytag: member="Nv::Blast::TkGroup::acquireWorker" ref="afdf7e869582f414b447edc422b05fb0" args="()=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="class_nv_1_1_blast_1_1_tk_group_worker.html">TkGroupWorker</a>* Nv::Blast::TkGroup::acquireWorker           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Acquire one worker to process the group concurrently on a thread. The worker must be returned with <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#7fc6d691a59aa7b107adfaac6fe5fd65">returnWorker()</a> before <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#4d21bd8b0225ae57b81bb8fe09df39ff">endProcess()</a> is called on its group.<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>A worker for this group (at most getWorkerCount) or nullptr if none is available. </dd></dl>
+
+</div>
+</div><p>
 <a class="anchor" name="0ef2653e6d605641a65e07634cb0436c"></a><!-- doxytag: member="Nv::Blast::TkGroup::addActor" ref="0ef2653e6d605641a65e07634cb0436c" args="(TkActor &amp;actor)=0" -->
 <div class="memitem">
 <div class="memproto">
@@ -98,6 +130,28 @@ Add the actor to this group, if the actor does not currently belong to a group.<
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>true if successful, false otherwise. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="4d21bd8b0225ae57b81bb8fe09df39ff"></a><!-- doxytag: member="Nv::Blast::TkGroup::endProcess" ref="4d21bd8b0225ae57b81bb8fe09df39ff" args="()=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool Nv::Blast::TkGroup::endProcess           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Unlock this group after all jobs were processed with <a class="el" href="class_nv_1_1_blast_1_1_tk_group_worker.html">TkGroupWorker</a>. All workers must have been returned with <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#7fc6d691a59aa7b107adfaac6fe5fd65">returnWorker()</a>. This function gathers the results of the split operations on the actors in this group. Events will be dispatched to notify listeners of new and deleted actors.<p>
+Note that groups concurrently dispatching events for the same <a class="el" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a> require synchronization in the TkFamily's Listener. However, concurrent use of endProcess is not recommended in this version. It should be called from the main thread.<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true if the group was processing </dd></dl>
 
 </div>
 </div><p>
@@ -183,7 +237,7 @@ Retrieve an array of pointers (into the user-supplied buffer) to actors.<p>
 <div class="memdoc">
 
 <p>
-For profile builds only, request stats of the last successful processing. Inactive in other builds. The times and counters reported account for all the <a class="el" href="class_nv_1_1_blast_1_1_tk_worker.html">TkWorker</a> (accumulated) taking part in the processing.<p>
+For profile builds only, request stats of the last successful processing. Inactive in other builds. The times and counters reported account for all the TkWorker (accumulated) taking part in the processing.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>stats</em>&nbsp;</td><td>The struct to be filled in. </td></tr>
@@ -192,12 +246,97 @@ For profile builds only, request stats of the last successful processing. Inacti
 
 </div>
 </div><p>
-<a class="anchor" name="14de050466d57e840ea2f2400eb22d44"></a><!-- doxytag: member="Nv::Blast::TkGroup::process" ref="14de050466d57e840ea2f2400eb22d44" args="()=0" -->
+<a class="anchor" name="d8f946a317af8760c9f70f9455b1dd6e"></a><!-- doxytag: member="Nv::Blast::TkGroup::getWorkerCount" ref="d8f946a317af8760c9f70f9455b1dd6e" args="() const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">virtual bool Nv::Blast::TkGroup::process           </td>
+          <td class="memname">virtual uint32_t Nv::Blast::TkGroup::getWorkerCount           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>The total amount of workers allocated for this group. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="e207854ae3e30047c6347f9fd3e7a3b9"></a><!-- doxytag: member="Nv::Blast::TkGroup::process" ref="e207854ae3e30047c6347f9fd3e7a3b9" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_INLINE void Nv::Blast::TkGroup::process           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Helper function to process the group synchronously on a single thread. 
+</div>
+</div><p>
+<a class="anchor" name="7fc6d691a59aa7b107adfaac6fe5fd65"></a><!-- doxytag: member="Nv::Blast::TkGroup::returnWorker" ref="7fc6d691a59aa7b107adfaac6fe5fd65" args="(TkGroupWorker *)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::TkGroup::returnWorker           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_tk_group_worker.html">TkGroupWorker</a> *&nbsp;</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Return a worker previously acquired with <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#afdf7e869582f414b447edc422b05fb0">acquireWorker()</a> to this <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>The</em>&nbsp;</td><td><a class="el" href="class_nv_1_1_blast_1_1_tk_group_worker.html">TkGroupWorker</a> previously acquired from this <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="6a5d3d9dedc6025460c1102b288a1a85"></a><!-- doxytag: member="Nv::Blast::TkGroup::setWorkerCount" ref="6a5d3d9dedc6025460c1102b288a1a85" args="(uint32_t workerCount)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::TkGroup::setWorkerCount           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>workerCount</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set the expected number of concurrent worker threads that will process this group concurrently. 
+</div>
+</div><p>
+<a class="anchor" name="e98b1523b3f1323c42129fe88842f306"></a><!-- doxytag: member="Nv::Blast::TkGroup::startProcess" ref="e98b1523b3f1323c42129fe88842f306" args="()=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual uint32_t Nv::Blast::TkGroup::startProcess           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
@@ -208,36 +347,8 @@ For profile builds only, request stats of the last successful processing. Inacti
 <div class="memdoc">
 
 <p>
-TkActors that have been damaged with applyFracture() such that they may be split into separate actors are split by this function. TkActors that have damage queued through the actor's damage() function will be fractured and split by this function. Fracture and splitting work will be run on different threads provided through <a class="el" href="struct_nv_1_1_blast_1_1_tk_group_desc.html#428f382e3df48edf10ab518375da4bd5" title="User-defined task manager.">TkGroupDesc::pxTaskManager</a>. All work is done asynchronously, and the results are gathered by the <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#d6e5795147da35529cd5473411cb11c5">sync()</a> function.<p>
-Note: The number of threads provided by pxTaskManager must not change over the group's lifetime.<p>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>true if processing may be launched (this group is not currently processing), false otherwise. </dd></dl>
-
-</div>
-</div><p>
-<a class="anchor" name="d6e5795147da35529cd5473411cb11c5"></a><!-- doxytag: member="Nv::Blast::TkGroup::sync" ref="d6e5795147da35529cd5473411cb11c5" args="(bool block=true)=0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual bool Nv::Blast::TkGroup::sync           </td>
-          <td>(</td>
-          <td class="paramtype">bool&nbsp;</td>
-          <td class="paramname"> <em>block</em> = <code>true</code>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-If all threads spawned by <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#14de050466d57e840ea2f2400eb22d44">process()</a> have finished, and <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#d6e5795147da35529cd5473411cb11c5">sync()</a> has not yet been called since, then this function gathers the results of the split operations on the actors in this group. Events will be dispatched to notify listeners of new and deleted actors.<p>
-<dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>block</em>&nbsp;</td><td>If true, this function waits until all threads have completed execution, then performs the gather and dispatch work. If false, this function will perform the gather and dispatch work only if threads have completed execution, otherwise it returns immediately.</td></tr>
-  </table>
-</dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>true if gather and dispatch work have been performed, false otherwise. </dd></dl>
+Lock this group for processing concurrently with <a class="el" href="class_nv_1_1_blast_1_1_tk_group_worker.html">TkGroupWorker</a>. The group is unlocked again with the <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#4d21bd8b0225ae57b81bb8fe09df39ff">endProcess()</a> function.<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>The number of jobs to process. <a class="el" href="class_nv_1_1_blast_1_1_tk_group_worker.html#df15d994a12f0c0b18dd0a878b1ddd2f">TkGroupWorker::process</a> must be called once for each jobID from 0 to this number-1. See <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#e207854ae3e30047c6347f9fd3e7a3b9">TkGroup::process</a> for a single threaded example. </dd></dl>
 
 </div>
 </div><p>

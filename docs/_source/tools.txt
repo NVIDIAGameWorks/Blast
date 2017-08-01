@@ -5,26 +5,15 @@
 See \ref pagecopyrights for license information regarding third-party software used by the tools.
 
 <br>
-
-\section importer Apex Importer
-
-Import Apex assets into Blast format.
-
-\subpage pageimporter
+\subpage pageimporter - Import Apex assets into Blast format.
 
 
-\section converter Data Converter
-
-Convert serialized data from an old format to the current format.
-
-\subpage pageconverter
+<br>
+\subpage pageauthoring - Command line authoring tool.
 
 
-\section authoring Authoring Tool
-
-Command line authoring tool.
-
-\subpage pageauthoring
+<br>
+\subpage pageconverter - Convert serialized data from legacy formats (.llasset, .tkasset, .bpxa, .pllasset, .ptkasset, .pbpxa) to the current unified (.blast) format.
 
 
 <br>

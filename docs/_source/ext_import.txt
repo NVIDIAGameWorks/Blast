@@ -1,6 +1,8 @@
-/*! \page pageextapeximport Apex Import (NvBlastExtApexImport)
+/*! \page pageextimport Importer (NvBlastExtImport)
 
-Blast extensions provide Nv::Blast::ApexImporter::ApexImportTool, which can be used for converting APEX Destructible assets into Blast assets.
+This extension provides tools to import data from external formats and convert to a Blast&tm; asset.
+
+Currently the only external data format handled is NvApexDestructibleAsset, handled by Nv::Blast::ApexImporter::ApexImportTool.
 
 This tool supports two bond generation modes and can be configured by providing: 
 \code

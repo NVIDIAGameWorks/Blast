@@ -2,7 +2,7 @@
 
 @INCLUDE               = Doxyfile
 
-PROJECT_NAME           = "NVIDIA(R) Blast(R) SDK 1.0 Source Reference"
+PROJECT_NAME           = "NVIDIA(R) Blast(R) SDK 1.1 Source Reference"
 
 INPUT                  = ../../sdk
 FILE_PATTERNS		   = *.h

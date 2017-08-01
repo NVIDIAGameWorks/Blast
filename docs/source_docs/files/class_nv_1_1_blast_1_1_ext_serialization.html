@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::ExtSerialization&lt; TAsset, TSerializationReader, TSerializationBuilder &gt; Class Template Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::ExtSerialization Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -41,474 +41,341 @@
   </div>
 </div>
 <div class="contents">
-<h1>Nv::Blast::ExtSerialization&lt; TAsset, TSerializationReader, TSerializationBuilder &gt; Class Template Reference</h1><!-- doxytag: class="Nv::Blast::ExtSerialization" --><code>#include &lt;<a class="el" href="_nv_blast_ext_serialization_8h-source.html">NvBlastExtSerialization.h</a>&gt;</code>
+<h1>Nv::Blast::ExtSerialization Class Reference</h1><!-- doxytag: class="Nv::Blast::ExtSerialization" --><code>#include &lt;<a class="el" href="_nv_blast_ext_serialization_8h-source.html">NvBlastExtSerialization.h</a>&gt;</code>
 <p>
+<div class="dynheader">
+Inheritance diagram for Nv::Blast::ExtSerialization:</div>
+<div class="dynsection">
+
+<p><center><img src="class_nv_1_1_blast_1_1_ext_serialization.png" usemap="#Nv::Blast::ExtSerialization_map" border="0" alt=""></center>
+<map name="Nv::Blast::ExtSerialization_map">
+<area href="class_nv_1_1_blast_1_1_ext_serialization_internal.html" alt="Nv::Blast::ExtSerializationInternal" shape="rect" coords="0,56,195,80">
+</map>
+</div>
 
 <p>
 <a href="class_nv_1_1_blast_1_1_ext_serialization-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
+<tr><td colspan="2"><br><h2>Classes</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization_1_1_buffer_provider.html">BufferProvider</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_serialization_1_1_encoding_i_d.html">EncodingID</a></td></tr>
+
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memTemplParams" nowrap colspan="2">template&lt;&gt; </td></tr>
-<tr><td class="memTemplItemLeft" nowrap align="right" valign="top">NV_INLINE <a class="el" href="class_nv_1_1_blast_1_1_asset.html">Nv::Blast::Asset</a> *&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#e08f3acc61adfd3d61988748c00aeeb5">deserializeFromStreamReader</a> (capnp::InputStreamMessageReader &amp;message)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#6fb7f346cbe938ccb155be5a8b8c9efe">deserializeFromBuffer</a> (const void *buffer, uint64_t bufferSize, uint32_t *objectTypeIDPtr=nullptr)=0</td></tr>
 
-<tr><td class="memTemplParams" nowrap colspan="2">template&lt;&gt; </td></tr>
-<tr><td class="memTemplItemLeft" nowrap align="right" valign="top">NV_INLINE <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">Nv::Blast::ExtPxAsset</a> *&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#abdcd905987cf0ab48e985953e59f5a1">deserializeFromStreamReader</a> (capnp::InputStreamMessageReader &amp;message)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#5e4409ef51f083ccaf2993e0b77dc951">getSerializationEncoding</a> () const =0</td></tr>
 
-<tr><td class="memTemplParams" nowrap colspan="2">template&lt;&gt; </td></tr>
-<tr><td class="memTemplItemLeft" nowrap align="right" valign="top">NV_INLINE <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">Nv::Blast::TkAsset</a> *&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#0b242540cd12fb690f36327d7951d432">deserializeFromStreamReader</a> (capnp::InputStreamMessageReader &amp;message)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#031a3f5df089e26d4e97f76f35c1bc9f">peekHeader</a> (uint32_t *objectTypeID, uint32_t *encodingID, uint64_t *dataSize, const void *buffer, uint64_t bufferSize)=0</td></tr>
 
-<tr><td class="memTemplParams" nowrap colspan="2">template&lt;&gt; </td></tr>
-<tr><td class="memTemplItemLeft" nowrap align="right" valign="top">NV_INLINE bool&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#c96c17717ed344644c4e0604197e7762">serializeIntoBuilder</a> (<a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_asset_1_1_builder.html">Nv::Blast::Serialization::Asset::Builder</a> &amp;assetBuilder, const <a class="el" href="class_nv_1_1_blast_1_1_asset.html">Nv::Blast::Asset</a> *asset)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#08937f68c380fe0bcb0cba17ea4b539e">release</a> ()=0</td></tr>
 
-<tr><td class="memTemplParams" nowrap colspan="2">template&lt;&gt; </td></tr>
-<tr><td class="memTemplItemLeft" nowrap align="right" valign="top">NV_INLINE bool&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#fc6c9ea87e5693af933c998bec196187">serializeIntoBuilder</a> (<a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_builder.html">Nv::Blast::Serialization::ExtPxAsset::Builder</a> &amp;assetBuilder, const <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">Nv::Blast::ExtPxAsset</a> *asset)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint64_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#dfb92a5ecbd708138d0b9f67a323be79">serializeIntoBuffer</a> (void *&amp;buffer, const void *object, uint32_t objectTypeID)=0</td></tr>
 
-<tr><td class="memTemplParams" nowrap colspan="2">template&lt;&gt; </td></tr>
-<tr><td class="memTemplItemLeft" nowrap align="right" valign="top">NV_INLINE bool&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#5605e617e03c7d8e67fd0bbe16cf50f3">serializeIntoBuilder</a> (<a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1_builder.html">Nv::Blast::Serialization::TkAsset::Builder</a> &amp;assetBuilder, const <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">Nv::Blast::TkAsset</a> *asset)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#5790c794d5c395736c223d8ab6f036ca">setBufferProvider</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_serialization_1_1_buffer_provider.html">BufferProvider</a> *bufferProvider)=0</td></tr>
 
-<tr><td class="memTemplParams" nowrap colspan="2">template&lt;&gt; </td></tr>
-<tr><td class="memTemplItemLeft" nowrap align="right" valign="top">NV_INLINE bool&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#4299212f0ced30a5373e2ab7c28c9960">serializeIntoMessage</a> (capnp::MallocMessageBuilder &amp;message, const <a class="el" href="class_nv_1_1_blast_1_1_asset.html">Nv::Blast::Asset</a> *asset)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#9d922a89c41ba9b1997d7e60d6d7b35b">setSerializationEncoding</a> (uint32_t encodingID)=0</td></tr>
 
-<tr><td class="memTemplParams" nowrap colspan="2">template&lt;&gt; </td></tr>
-<tr><td class="memTemplItemLeft" nowrap align="right" valign="top">NV_INLINE bool&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#28a86d6cced56bc383cedf55b572a271">serializeIntoMessage</a> (capnp::MallocMessageBuilder &amp;message, const <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">Nv::Blast::ExtPxAsset</a> *asset)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const void *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#52f3f5008a0047ee072fb5e1155c28e5">skipObject</a> (uint64_t &amp;bufferSize, const void *buffer)=0</td></tr>
 
-<tr><td class="memTemplParams" nowrap colspan="2">template&lt;&gt; </td></tr>
-<tr><td class="memTemplItemLeft" nowrap align="right" valign="top">NV_INLINE bool&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#e55adcc9076633e97951b0e9bf68d342">serializeIntoMessage</a> (capnp::MallocMessageBuilder &amp;message, const <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">Nv::Blast::TkAsset</a> *asset)</td></tr>
-
-<tr><td colspan="2"><br><h2>Static Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static TAsset *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#98b42b40eb7108267ce43a700ed1df11">deserialize</a> (const unsigned char *input, uint32_t size)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static TAsset *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#5d05225efe61686c8cf9ab896c7f7dad">deserializeFromStream</a> (std::istream &amp;inputStream)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#87437bcfdde3d568cf5d4fa29a49b27b">serializeIntoExistingBuffer</a> (const TAsset *asset, unsigned char *buffer, uint32_t maxSize, uint32_t &amp;usedSize)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#97d184de2ec1516e8e0f339f41d34048">serializeIntoNewBuffer</a> (const TAsset *asset, unsigned char **outBuffer, uint32_t &amp;outSize)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#cb3d061415f027e761c43131588a767f">serializeIntoStream</a> (const TAsset *asset, std::ostream &amp;outputStream)</td></tr>
+<tr><td colspan="2"><br><h2>Protected Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#d8a918eb53660a15238793c99a686cb1">~ExtSerialization</a> ()</td></tr>
 
 </table>
-<h3>template&lt;typename TAsset, typename TSerializationReader, typename TSerializationBuilder&gt;<br>
- class Nv::Blast::ExtSerialization&lt; TAsset, TSerializationReader, TSerializationBuilder &gt;</h3>
+<hr><a name="_details"></a><h2>Detailed Description</h2>
+<a class="el" href="namespace_nv_1_1_blast_1_1_serialization.html">Serialization</a> manager interface <hr><h2>Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" name="d8a918eb53660a15238793c99a686cb1"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::~ExtSerialization" ref="d8a918eb53660a15238793c99a686cb1" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual Nv::Blast::ExtSerialization::~ExtSerialization           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [inline, protected, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
 
+<p>
+Destructor is virtual and not public - use the <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#08937f68c380fe0bcb0cba17ea4b539e">release()</a> method instead of explicitly deleting the serialization manager 
+</div>
+</div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="98b42b40eb7108267ce43a700ed1df11"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::deserialize" ref="98b42b40eb7108267ce43a700ed1df11" args="(const unsigned char *input, uint32_t size)" -->
+<a class="anchor" name="6fb7f346cbe938ccb155be5a8b8c9efe"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::deserializeFromBuffer" ref="6fb7f346cbe938ccb155be5a8b8c9efe" args="(const void *buffer, uint64_t bufferSize, uint32_t *objectTypeIDPtr=nullptr)=0" -->
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;typename TAsset , typename TSerializationReader , typename TSerializationBuilder &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">TAsset * <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; TAsset, TSerializationReader, TSerializationBuilder &gt;::deserialize           </td>
+          <td class="memname">virtual void* Nv::Blast::ExtSerialization::deserializeFromBuffer           </td>
           <td>(</td>
-          <td class="paramtype">const unsigned char *&nbsp;</td>
-          <td class="paramname"> <em>input</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>size</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [inline, static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="5d05225efe61686c8cf9ab896c7f7dad"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::deserializeFromStream" ref="5d05225efe61686c8cf9ab896c7f7dad" args="(std::istream &amp;inputStream)" -->
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename TAsset , typename TSerializationReader , typename TSerializationBuilder &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">TAsset * <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; TAsset, TSerializationReader, TSerializationBuilder &gt;::deserializeFromStream           </td>
-          <td>(</td>
-          <td class="paramtype">std::istream &amp;&nbsp;</td>
-          <td class="paramname"> <em>inputStream</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [inline, static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="e08f3acc61adfd3d61988748c00aeeb5"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::deserializeFromStreamReader" ref="e08f3acc61adfd3d61988748c00aeeb5" args="(capnp::InputStreamMessageReader &amp;message)" -->
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">NV_INLINE <a class="el" href="class_nv_1_1_blast_1_1_asset.html">Nv::Blast::Asset</a> * <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; <a class="el" href="class_nv_1_1_blast_1_1_asset.html">Nv::Blast::Asset</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_asset_1_1_reader.html">Nv::Blast::Serialization::Asset::Reader</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_asset_1_1_builder.html">Nv::Blast::Serialization::Asset::Builder</a> &gt;::deserializeFromStreamReader           </td>
-          <td>(</td>
-          <td class="paramtype">capnp::InputStreamMessageReader &amp;&nbsp;</td>
-          <td class="paramname"> <em>message</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [inline]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="abdcd905987cf0ab48e985953e59f5a1"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::deserializeFromStreamReader" ref="abdcd905987cf0ab48e985953e59f5a1" args="(capnp::InputStreamMessageReader &amp;message)" -->
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">NV_INLINE <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">Nv::Blast::ExtPxAsset</a> * <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">Nv::Blast::ExtPxAsset</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html">Nv::Blast::Serialization::ExtPxAsset::Reader</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_builder.html">Nv::Blast::Serialization::ExtPxAsset::Builder</a> &gt;::deserializeFromStreamReader           </td>
-          <td>(</td>
-          <td class="paramtype">capnp::InputStreamMessageReader &amp;&nbsp;</td>
-          <td class="paramname"> <em>message</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [inline]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="0b242540cd12fb690f36327d7951d432"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::deserializeFromStreamReader" ref="0b242540cd12fb690f36327d7951d432" args="(capnp::InputStreamMessageReader &amp;message)" -->
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">NV_INLINE <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">Nv::Blast::TkAsset</a> * <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">Nv::Blast::TkAsset</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1_reader.html">Nv::Blast::Serialization::TkAsset::Reader</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1_builder.html">Nv::Blast::Serialization::TkAsset::Builder</a> &gt;::deserializeFromStreamReader           </td>
-          <td>(</td>
-          <td class="paramtype">capnp::InputStreamMessageReader &amp;&nbsp;</td>
-          <td class="paramname"> <em>message</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [inline]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="c96c17717ed344644c4e0604197e7762"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::serializeIntoBuilder" ref="c96c17717ed344644c4e0604197e7762" args="(Nv::Blast::Serialization::Asset::Builder &amp;assetBuilder, const Nv::Blast::Asset *asset)" -->
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">NV_INLINE bool <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; <a class="el" href="class_nv_1_1_blast_1_1_asset.html">Nv::Blast::Asset</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_asset_1_1_reader.html">Nv::Blast::Serialization::Asset::Reader</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_asset_1_1_builder.html">Nv::Blast::Serialization::Asset::Builder</a> &gt;::serializeIntoBuilder           </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_asset_1_1_builder.html">Nv::Blast::Serialization::Asset::Builder</a> &amp;&nbsp;</td>
-          <td class="paramname"> <em>assetBuilder</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_asset.html">Nv::Blast::Asset</a> *&nbsp;</td>
-          <td class="paramname"> <em>asset</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [inline]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="fc6c9ea87e5693af933c998bec196187"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::serializeIntoBuilder" ref="fc6c9ea87e5693af933c998bec196187" args="(Nv::Blast::Serialization::ExtPxAsset::Builder &amp;assetBuilder, const Nv::Blast::ExtPxAsset *asset)" -->
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">NV_INLINE bool <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">Nv::Blast::ExtPxAsset</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html">Nv::Blast::Serialization::ExtPxAsset::Reader</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_builder.html">Nv::Blast::Serialization::ExtPxAsset::Builder</a> &gt;::serializeIntoBuilder           </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_builder.html">Nv::Blast::Serialization::ExtPxAsset::Builder</a> &amp;&nbsp;</td>
-          <td class="paramname"> <em>assetBuilder</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">Nv::Blast::ExtPxAsset</a> *&nbsp;</td>
-          <td class="paramname"> <em>asset</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [inline]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="5605e617e03c7d8e67fd0bbe16cf50f3"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::serializeIntoBuilder" ref="5605e617e03c7d8e67fd0bbe16cf50f3" args="(Nv::Blast::Serialization::TkAsset::Builder &amp;assetBuilder, const Nv::Blast::TkAsset *asset)" -->
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">NV_INLINE bool <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">Nv::Blast::TkAsset</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1_reader.html">Nv::Blast::Serialization::TkAsset::Reader</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1_builder.html">Nv::Blast::Serialization::TkAsset::Builder</a> &gt;::serializeIntoBuilder           </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1_builder.html">Nv::Blast::Serialization::TkAsset::Builder</a> &amp;&nbsp;</td>
-          <td class="paramname"> <em>assetBuilder</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">Nv::Blast::TkAsset</a> *&nbsp;</td>
-          <td class="paramname"> <em>asset</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [inline]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="87437bcfdde3d568cf5d4fa29a49b27b"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::serializeIntoExistingBuffer" ref="87437bcfdde3d568cf5d4fa29a49b27b" args="(const TAsset *asset, unsigned char *buffer, uint32_t maxSize, uint32_t &amp;usedSize)" -->
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename TAsset , typename TSerializationReader , typename TSerializationBuilder &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">bool <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; TAsset, TSerializationReader, TSerializationBuilder &gt;::serializeIntoExistingBuffer           </td>
-          <td>(</td>
-          <td class="paramtype">const TAsset *&nbsp;</td>
-          <td class="paramname"> <em>asset</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned char *&nbsp;</td>
+          <td class="paramtype">const void *&nbsp;</td>
           <td class="paramname"> <em>buffer</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">uint64_t&nbsp;</td>
+          <td class="paramname"> <em>bufferSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>objectTypeIDPtr</em> = <code>nullptr</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Deserialize from a buffer into a newly allocated object.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>buffer</em>&nbsp;</td><td>Pointer to the buffer to read. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bufferSize</em>&nbsp;</td><td>Size of the buffer to read. </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>objectTypeIDPtr</em>&nbsp;</td><td>Optional, if not NULL then *objectTypeIDPtr will be filled with the deserialized object's type ID if deserialization is successful, or 0 if unsuccessful.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>object pointer; returns null if failed to deserialize. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="5e4409ef51f083ccaf2993e0b77dc951"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::getSerializationEncoding" ref="5e4409ef51f083ccaf2993e0b77dc951" args="() const =0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual uint32_t Nv::Blast::ExtSerialization::getSerializationEncoding           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Retrieve the current serialization encoding being used. Note, by default this is set to the encoding of the first serializer registered by a module. Currently this is done automatically by the NvBlastExtLlExtension module.<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the current serialization encoding (zero if none is set). </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="031a3f5df089e26d4e97f76f35c1bc9f"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::peekHeader" ref="031a3f5df089e26d4e97f76f35c1bc9f" args="(uint32_t *objectTypeID, uint32_t *encodingID, uint64_t *dataSize, const void *buffer, uint64_t bufferSize)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool Nv::Blast::ExtSerialization::peekHeader           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>objectTypeID</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>encodingID</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t *&nbsp;</td>
+          <td class="paramname"> <em>dataSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&nbsp;</td>
+          <td class="paramname"> <em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&nbsp;</td>
+          <td class="paramname"> <em>bufferSize</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Reads information from a buffer, returning the contained object type ID, encoding ID, and data size. <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>objectTypeID</em>&nbsp;</td><td>If not NULL, the object type ID is written to *objectTypeID. </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>encodingID</em>&nbsp;</td><td>If not NULL, the encoding ID is written to *encodingID. </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>dataSize</em>&nbsp;</td><td>If not NULL, the data size is written to *dataSize. (Does not include the size of the header.) </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>buffer</em>&nbsp;</td><td>Pointer to the buffer to read. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bufferSize</em>&nbsp;</td><td>Size of the buffer to read.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true iff the header is successfully read. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="08937f68c380fe0bcb0cba17ea4b539e"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::release" ref="08937f68c380fe0bcb0cba17ea4b539e" args="()=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::ExtSerialization::release           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Release the serialization manager and all contained objects. 
+</div>
+</div><p>
+<a class="anchor" name="dfb92a5ecbd708138d0b9f67a323be79"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::serializeIntoBuffer" ref="dfb92a5ecbd708138d0b9f67a323be79" args="(void *&amp;buffer, const void *object, uint32_t objectTypeID)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual uint64_t Nv::Blast::ExtSerialization::serializeIntoBuffer           </td>
+          <td>(</td>
+          <td class="paramtype">void *&amp;&nbsp;</td>
+          <td class="paramname"> <em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&nbsp;</td>
+          <td class="paramname"> <em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>maxSize</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t &amp;&nbsp;</td>
-          <td class="paramname"> <em>usedSize</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>objectTypeID</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td><code> [inline, static]</code></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
+Serialize into a buffer. Allocates the buffer internally using the callack set in setBufferProvider.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>buffer</em>&nbsp;</td><td>Pointer to the buffer created. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>object</em>&nbsp;</td><td>Object pointer. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>objectTypeID</em>&nbsp;</td><td>Object type ID.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the number of bytes serialized into the buffer (zero if unsuccessful). </dd></dl>
 
 </div>
 </div><p>
-<a class="anchor" name="4299212f0ced30a5373e2ab7c28c9960"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::serializeIntoMessage" ref="4299212f0ced30a5373e2ab7c28c9960" args="(capnp::MallocMessageBuilder &amp;message, const Nv::Blast::Asset *asset)" -->
+<a class="anchor" name="5790c794d5c395736c223d8ab6f036ca"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::setBufferProvider" ref="5790c794d5c395736c223d8ab6f036ca" args="(BufferProvider *bufferProvider)=0" -->
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">NV_INLINE bool <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; <a class="el" href="class_nv_1_1_blast_1_1_asset.html">Nv::Blast::Asset</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_asset_1_1_reader.html">Nv::Blast::Serialization::Asset::Reader</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_asset_1_1_builder.html">Nv::Blast::Serialization::Asset::Builder</a> &gt;::serializeIntoMessage           </td>
+          <td class="memname">virtual void Nv::Blast::ExtSerialization::setBufferProvider           </td>
           <td>(</td>
-          <td class="paramtype">capnp::MallocMessageBuilder &amp;&nbsp;</td>
-          <td class="paramname"> <em>message</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_asset.html">Nv::Blast::Asset</a> *&nbsp;</td>
-          <td class="paramname"> <em>asset</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [inline]</code></td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_ext_serialization_1_1_buffer_provider.html">BufferProvider</a> *&nbsp;</td>
+          <td class="paramname"> <em>bufferProvider</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
+Set the buffer provider callback to use. (See <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization_1_1_buffer_provider.html">BufferProvider</a>.) If not set, a default provider using NVBLAST_ALLOC (see <a class="el" href="_nv_blast_globals_8h.html">NvBlastGlobals.h</a>) is used, which may be freed using NvBLAST_FREE.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bufferProvider</em>&nbsp;</td><td>Buffer provider callback to use. If NULL, uses the default provider using the allocator given in NvBlastGlobals. </td></tr>
+  </table>
+</dl>
 
 </div>
 </div><p>
-<a class="anchor" name="28a86d6cced56bc383cedf55b572a271"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::serializeIntoMessage" ref="28a86d6cced56bc383cedf55b572a271" args="(capnp::MallocMessageBuilder &amp;message, const Nv::Blast::ExtPxAsset *asset)" -->
+<a class="anchor" name="9d922a89c41ba9b1997d7e60d6d7b35b"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::setSerializationEncoding" ref="9d922a89c41ba9b1997d7e60d6d7b35b" args="(uint32_t encodingID)=0" -->
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">NV_INLINE bool <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">Nv::Blast::ExtPxAsset</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html">Nv::Blast::Serialization::ExtPxAsset::Reader</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_builder.html">Nv::Blast::Serialization::ExtPxAsset::Builder</a> &gt;::serializeIntoMessage           </td>
+          <td class="memname">virtual bool Nv::Blast::ExtSerialization::setSerializationEncoding           </td>
           <td>(</td>
-          <td class="paramtype">capnp::MallocMessageBuilder &amp;&nbsp;</td>
-          <td class="paramname"> <em>message</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">Nv::Blast::ExtPxAsset</a> *&nbsp;</td>
-          <td class="paramname"> <em>asset</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [inline]</code></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>encodingID</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
+Set the serialization encoding to use. (See <a class="el" href="struct_nv_1_1_blast_1_1_ext_serialization_1_1_encoding_i_d.html">EncodingID</a>.)<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true iff successful. </dd></dl>
 
 </div>
 </div><p>
-<a class="anchor" name="e55adcc9076633e97951b0e9bf68d342"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::serializeIntoMessage" ref="e55adcc9076633e97951b0e9bf68d342" args="(capnp::MallocMessageBuilder &amp;message, const Nv::Blast::TkAsset *asset)" -->
+<a class="anchor" name="52f3f5008a0047ee072fb5e1155c28e5"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::skipObject" ref="52f3f5008a0047ee072fb5e1155c28e5" args="(uint64_t &amp;bufferSize, const void *buffer)=0" -->
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">NV_INLINE bool <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">Nv::Blast::TkAsset</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1_reader.html">Nv::Blast::Serialization::TkAsset::Reader</a>, <a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1_builder.html">Nv::Blast::Serialization::TkAsset::Builder</a> &gt;::serializeIntoMessage           </td>
+          <td class="memname">virtual const void* Nv::Blast::ExtSerialization::skipObject           </td>
           <td>(</td>
-          <td class="paramtype">capnp::MallocMessageBuilder &amp;&nbsp;</td>
-          <td class="paramname"> <em>message</em>, </td>
+          <td class="paramtype">uint64_t &amp;&nbsp;</td>
+          <td class="paramname"> <em>bufferSize</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">Nv::Blast::TkAsset</a> *&nbsp;</td>
-          <td class="paramname"> <em>asset</em></td><td>&nbsp;</td>
+          <td class="paramtype">const void *&nbsp;</td>
+          <td class="paramname"> <em>buffer</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td><code> [inline]</code></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-
-</div>
-</div><p>
-<a class="anchor" name="97d184de2ec1516e8e0f339f41d34048"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::serializeIntoNewBuffer" ref="97d184de2ec1516e8e0f339f41d34048" args="(const TAsset *asset, unsigned char **outBuffer, uint32_t &amp;outSize)" -->
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename TAsset , typename TSerializationReader , typename TSerializationBuilder &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">bool <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; TAsset, TSerializationReader, TSerializationBuilder &gt;::serializeIntoNewBuffer           </td>
-          <td>(</td>
-          <td class="paramtype">const TAsset *&nbsp;</td>
-          <td class="paramname"> <em>asset</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned char **&nbsp;</td>
-          <td class="paramname"> <em>outBuffer</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t &amp;&nbsp;</td>
-          <td class="paramname"> <em>outSize</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [inline, static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="cb3d061415f027e761c43131588a767f"></a><!-- doxytag: member="Nv::Blast::ExtSerialization::serializeIntoStream" ref="cb3d061415f027e761c43131588a767f" args="(const TAsset *asset, std::ostream &amp;outputStream)" -->
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename TAsset , typename TSerializationReader , typename TSerializationBuilder &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">bool <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html">Nv::Blast::ExtSerialization</a>&lt; TAsset, TSerializationReader, TSerializationBuilder &gt;::serializeIntoStream           </td>
-          <td>(</td>
-          <td class="paramtype">const TAsset *&nbsp;</td>
-          <td class="paramname"> <em>asset</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::ostream &amp;&nbsp;</td>
-          <td class="paramname"> <em>outputStream</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [inline, static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
+Determines the current object in the buffer and returns the position in the buffer immediately after the object.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>bufferSize</em>&nbsp;</td><td>Size of the buffer to read on input, on output the remaining buffer size given the return buffer value. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>buffer</em>&nbsp;</td><td>Pointer to the buffer to read.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>a pointer to the new position in the buffer after the skipped object if successful, NULL otherwise. The bufferSize field is only updated if a valid pointer is returned. </dd></dl>
 
 </div>
 </div><p>
 <hr>The documentation for this class was generated from the following file:<ul>
-<li>sdk/extensions/serialization/source/<a class="el" href="_nv_blast_ext_serialization_8h-source.html">NvBlastExtSerialization.h</a></ul>
+<li>sdk/extensions/serialization/include/<a class="el" href="_nv_blast_ext_serialization_8h-source.html">NvBlastExtSerialization.h</a></ul>
 </div>
 <!-- start footer part -->
 <div class="footer">

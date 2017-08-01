@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 API Reference: sdk/toolkit/include/NvBlastTkFramework.h File Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 API Reference: sdk/toolkit/include/NvBlastTkFramework.h File Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -36,8 +36,6 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">Nv::Blast::TkFramework</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_tk_framework_desc.html">Nv::Blast::TkFrameworkDesc</a></td></tr>
-
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_tk_joint_desc.html">Nv::Blast::TkJointDesc</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_tk_type_index.html">Nv::Blast::TkTypeIndex</a></td></tr>
@@ -49,24 +47,21 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacephysx.html">physx</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacephysx_1_1general___px_i_o_stream2.html">physx::general_PxIOStream2</a></td></tr>
-
 <tr><td colspan="2"><br><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">Nv::Blast::TkFramework</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_tk_framework_8h.html#b7a2038459b3735da68e60ddef615099">NvBlastTkFrameworkCreate</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_tk_framework_desc.html">Nv::Blast::TkFrameworkDesc</a> &amp;desc)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">Nv::Blast::TkFramework</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_tk_framework_8h.html#bffad36b5cbe769ac6d119bfb58d3523">NvBlastTkFrameworkCreate</a> ()</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">Nv::Blast::TkFramework</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_tk_framework_8h.html#c9ef4ab9d817890d7a0f456cc6f07907">NvBlastTkFrameworkGet</a> ()</td></tr>
 
 </table>
 <hr><h2>Function Documentation</h2>
-<a class="anchor" name="b7a2038459b3735da68e60ddef615099"></a><!-- doxytag: member="NvBlastTkFramework.h::NvBlastTkFrameworkCreate" ref="b7a2038459b3735da68e60ddef615099" args="(const Nv::Blast::TkFrameworkDesc &amp;desc)" -->
+<a class="anchor" name="bffad36b5cbe769ac6d119bfb58d3523"></a><!-- doxytag: member="NvBlastTkFramework.h::NvBlastTkFrameworkCreate" ref="bffad36b5cbe769ac6d119bfb58d3523" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">Nv::Blast::TkFramework</a>* NvBlastTkFrameworkCreate           </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_tk_framework_desc.html">Nv::Blast::TkFrameworkDesc</a> &amp;&nbsp;</td>
-          <td class="paramname"> <em>desc</em>          </td>
+          <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
           <td></td>
         </tr>
@@ -76,11 +71,6 @@
 
 <p>
 Create a new TkFramework. This creates a global singleton, and will fail if a TkFramework object already exists.<p>
-<dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>desc</em>&nbsp;</td><td>The descriptor used to create the new framework (see TkFrameworkDesc).</td></tr>
-  </table>
-</dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>the new TkFramework if successful, NULL otherwise. </dd></dl>
 
 </div>

@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::TkActor Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::TkActor Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -93,6 +93,8 @@ Inheritance diagram for Nv::Blast::TkActor:</div>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html#8893ef15edb5ed7878f636438df97274">getVisibleChunkCount</a> () const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html#78c00a774558ed4f74b980d2f66d8548">getVisibleChunkIndices</a> (uint32_t *visibleChunkIndices, uint32_t visibleChunkIndicesSize) const =0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html#834a7e291fd82ee3b36ad0fc6f349399">isBoundToWorld</a> () const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html#2079bb8ac6d223c5941357994e8ae522">isPending</a> () const =0</td></tr>
 
@@ -676,6 +678,30 @@ NOTE: Wrapper function over low-level function call, see NvBlastActorGetVisibleC
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>the number of indices written to visibleChunkIndices. This will not exceed visibleChunkIndicesSize. </dd></dl>
 
 <p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#7e196969fe9f3b8d6cf664b5ab0862bf">Nv::Blast::TkActorImpl</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="834a7e291fd82ee3b36ad0fc6f349399"></a><!-- doxytag: member="Nv::Blast::TkActor::isBoundToWorld" ref="834a7e291fd82ee3b36ad0fc6f349399" args="() const =0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool Nv::Blast::TkActor::isBoundToWorld           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Whether or not this actor is bound to the world using a bond with an invalid chunk index to represent the NRF.<p>
+NOTE: Wrapper function over low-level function call NvBlastActorIsBoundToWorld.<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true iff this actor contains the "world" support graph node, created when a bond contains the UINT32_MAX value for one of their chunkIndices. </dd></dl>
+
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#cc0b93e58b5a5d1c115ed1cd30615b9f">Nv::Blast::TkActorImpl</a>.</p>
 
 </div>
 </div><p>

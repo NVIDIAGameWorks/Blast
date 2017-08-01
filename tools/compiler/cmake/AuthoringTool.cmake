@@ -22,21 +22,7 @@ SET(COMMON_FILES
 	${AUTHORTINGTOOL_PLATFORM_COMMON_FILES}
 	
 	${AUTHORTINGTOOL_SOURCE_DIR}/AuthoringTool.cpp
-	${TOOLS_COMMON_SOURCE_DIR}/IMeshFileReader.h
-	${TOOLS_COMMON_SOURCE_DIR}/IMeshFileWriter.h
-	${TOOLS_COMMON_SOURCE_DIR}/FbxFileReader.h
-	${TOOLS_COMMON_SOURCE_DIR}/FbxFileReader.cpp
-	${TOOLS_COMMON_SOURCE_DIR}/ObjFileReader.h
-	${TOOLS_COMMON_SOURCE_DIR}/ObjFileReader.cpp
-	${TOOLS_COMMON_SOURCE_DIR}/ObjFileWriter.h
-	${TOOLS_COMMON_SOURCE_DIR}/ObjFileWriter.cpp
-	${TOOLS_COMMON_SOURCE_DIR}/FbxFileWriter.h
-	${TOOLS_COMMON_SOURCE_DIR}/FbxFileWriter.cpp
-	${TOOLS_COMMON_SOURCE_DIR}/FbxUtils.h
-	${TOOLS_COMMON_SOURCE_DIR}/FbxUtils.cpp
 	${AUTHORTINGTOOL_SOURCE_DIR}/SimpleRandomGenerator.h
-	${AUTHORTINGTOOL_SOURCE_DIR}/FractureProcessor.h
-	${AUTHORTINGTOOL_SOURCE_DIR}/FractureProcessor.cpp	
 	${TOOLS_COMMON_SOURCE_DIR}/BlastDataExporter.h
 	${TOOLS_COMMON_SOURCE_DIR}/BlastDataExporter.cpp
 )
@@ -63,6 +49,7 @@ TARGET_INCLUDE_DIRECTORIES(AuthoringTool
 	PRIVATE ${EXT_AUTHORING_INCLUDE_DIR}
 	PRIVATE ${TK_INCLUDE_DIR}
 	PRIVATE ${BLAST_ROOT_DIR}/sdk/common
+	PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/common/include
 	
 	PRIVATE ${PHYSXSDK_INCLUDE_DIRS}
 	PRIVATE ${PXSHAREDSDK_INCLUDE_DIRS}
@@ -84,7 +71,7 @@ SET_TARGET_PROPERTIES(AuthoringTool PROPERTIES
 
 # Do final direct sets after the target has been defined
 TARGET_LINK_LIBRARIES(AuthoringTool
-	PRIVATE NvBlast NvBlastTk NvBlastExtSerialization NvBlastExtPhysX NvBlastExtAuthoring 
+	PRIVATE NvBlast NvBlastTk NvBlastExtSerialization NvBlastExtTkSerialization NvBlastExtPxSerialization NvBlastExtPhysX NvBlastExtExporter NvBlastExtAuthoring
 	PRIVATE ${FBXSDK_LIBRARIES}
 )
 

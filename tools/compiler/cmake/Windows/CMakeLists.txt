@@ -45,14 +45,7 @@ SET(CMAKE_RELEASE_POSTFIX "${CMAKE_RELEASE_POSTFIX}_${LIBPATH_SUFFIX}")
 # Should this be here or in the common part?
 #ADD_SUBDIRECTORY(${BLAST_ROOT_DIR}/sdk "${CMAKE_CURRENT_BINARY_DIR}/blast_bin")
 
-
 # Include all of the projects
+INCLUDE(${PROJECT_CMAKE_FILES_DIR}/LegacyConverter.cmake)
+INCLUDE(${PROJECT_CMAKE_FILES_DIR}/AuthoringTool.cmake)
 INCLUDE(${PROJECT_CMAKE_FILES_DIR}/ApexImporter.cmake)
-INCLUDE(${PROJECT_CMAKE_FILES_DIR}/DataConverter.cmake)
-
-# Exclude AuthoringTool because VC12 can't handle Capn Proto.
-if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 19.0.0.0)
-	INCLUDE(${PROJECT_CMAKE_FILES_DIR}/AuthoringTool.cmake)
-else()
-	SET(SERIALIZATION_INCLUDED 0)
-endif()

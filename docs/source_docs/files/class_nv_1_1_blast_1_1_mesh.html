@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::Mesh Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::Mesh Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -43,178 +43,73 @@
 <div class="contents">
 <h1>Nv::Blast::Mesh Class Reference</h1><!-- doxytag: class="Nv::Blast::Mesh" --><code>#include &lt;<a class="el" href="_nv_blast_ext_authoring_mesh_8h-source.html">NvBlastExtAuthoringMesh.h</a>&gt;</code>
 <p>
+<div class="dynheader">
+Inheritance diagram for Nv::Blast::Mesh:</div>
+<div class="dynsection">
+
+<p><center><img src="class_nv_1_1_blast_1_1_mesh.png" usemap="#Nv::Blast::Mesh_map" border="0" alt=""></center>
+<map name="Nv::Blast::Mesh_map">
+<area href="class_nv_1_1_blast_1_1_mesh_impl.html" alt="Nv::Blast::MeshImpl" shape="rect" coords="0,56,120,80">
+</map>
+</div>
 
 <p>
 <a href="class_nv_1_1_blast_1_1_mesh-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxBounds3 &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#44bd529fdb98f8f49a52117a7ffc769e">getBoundingBox</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const physx::PxBounds3 &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#b14c86e03b94b1d2cb2bc691009f04b5">getBoundingBox</a> () const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#efdd2c7000fbdfb573fdc88ba58a6156">getEdges</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual physx::PxBounds3 &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#29110bbb30c0de321bd0de1812750c30">getBoundingBoxWritable</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#44ee539d298fdb52e756c278eb06a8fd">getEdgesCount</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#085ffcc67f9cd938f93d3aa43a0d0bf0">getEdges</a> () const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#e881276cc0a6199342224c4a189d5f30">getFacet</a> (int32_t facet)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#fc8859fe20911e2ab593b9075223a36a">getEdgesCount</a> () const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#d87f429c566a65878b965aa36754654a">getFacetCount</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#c3e5b150bd16d7f22b22fb571de9004f">getEdgesWritable</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#5ddbe00d0d58011bcadf8fd1c3a15d44">getFacetsBuffer</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#1737163f2dc8fe4456f5df27ab5740b8">getFacet</a> (int32_t facet) const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#71ddc172ff2bb43df0944f07d2494c63">getMeshVolume</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#5bb922c1dcb50c67e2105f84454019af">getFacetCount</a> () const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#921e7410a8d34c759d2f0be60a312cfe">getVertices</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#dcee600d1e263eedc13561b99c7ea762">getFacetsBuffer</a> () const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#b3b4fc4130ba757b01d8a7736bd5087f">getVerticesCount</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#480c3919561789e75df950aea69fec4a">getFacetsBufferWritable</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#b89e005dd566eef92a0bc8e3eee2f7b6">isValid</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#2f6a3389000c02e892d4514fd1322765">getFacetWritable</a> (int32_t facet)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#f2801a9ae608076d101616c47ea39424">Mesh</a> (<a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *vertices, <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *edges, <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> *facets, uint32_t posCount, uint32_t edgesCount, uint32_t facetsCount)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#220f3c64f6a192843ab44c3728960820">getMeshVolume</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#0201fbe5f71b595be110e26eda711882">Mesh</a> (physx::PxVec3 *position, physx::PxVec3 *normals, physx::PxVec2 *uv, uint32_t verticesCount, uint32_t *indices, uint32_t indicesCount)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#927148143ec2335c9ed6dd9c65215196">getVertices</a> () const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#56b3d7927e8fe50993dc61e063d5c2cd">recalculateBoundingBox</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#b86107cfd02392fd2a49b79fe0367887">getVerticesCount</a> () const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#fb8b13a1241cd92765f4323ba028dd54">~Mesh</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#55945b655bb1cb9fed0d481497942c71">getVerticesWritable</a> ()=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#cc7ba66081cfd2bd55c5eae7d6053c71">isValid</a> () const =0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#24544d5b6a315cee19d67da9ed0fd8dd">recalculateBoundingBox</a> ()=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#df6faa07b98b634b86a198ad4a6fcc14">release</a> ()=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#9c512712bbe2a2e16bd957baeccd2f57">setMaterialId</a> (int32_t *materialIds)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#52f8e09ebf69b53a5fd720165ab8629d">setSmoothingGroup</a> (int32_t *smoothingGroup)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#9b5fbdd369ae324448c536ceabe82ad7">~Mesh</a> ()</td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Class for internal mesh representation <hr><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" name="0201fbe5f71b595be110e26eda711882"></a><!-- doxytag: member="Nv::Blast::Mesh::Mesh" ref="0201fbe5f71b595be110e26eda711882" args="(physx::PxVec3 *position, physx::PxVec3 *normals, physx::PxVec2 *uv, uint32_t verticesCount, uint32_t *indices, uint32_t indicesCount)" -->
+<a class="anchor" name="9b5fbdd369ae324448c536ceabe82ad7"></a><!-- doxytag: member="Nv::Blast::Mesh::~Mesh" ref="9b5fbdd369ae324448c536ceabe82ad7" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Nv::Blast::Mesh::Mesh           </td>
-          <td>(</td>
-          <td class="paramtype">physx::PxVec3 *&nbsp;</td>
-          <td class="paramname"> <em>position</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">physx::PxVec3 *&nbsp;</td>
-          <td class="paramname"> <em>normals</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">physx::PxVec2 *&nbsp;</td>
-          <td class="paramname"> <em>uv</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>verticesCount</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t *&nbsp;</td>
-          <td class="paramname"> <em>indices</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>indicesCount</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Constructs mesh object from array of triangles. <dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>position</em>&nbsp;</td><td>Array of vertex positions </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>normals</em>&nbsp;</td><td>Array of vertex normals </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>uv</em>&nbsp;</td><td>Array of vertex uv coordinates </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>verticesCount</em>&nbsp;</td><td>Vertices count </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>indices</em>&nbsp;</td><td>Array of vertex indices. Indices contain vertex index triplets which form a mesh triangle. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>indicesCount</em>&nbsp;</td><td>Indices count (should be equal to numberOfTriangles * 3) </td></tr>
-  </table>
-</dl>
-
-</div>
-</div><p>
-<a class="anchor" name="f2801a9ae608076d101616c47ea39424"></a><!-- doxytag: member="Nv::Blast::Mesh::Mesh" ref="f2801a9ae608076d101616c47ea39424" args="(Vertex *vertices, Edge *edges, Facet *facets, uint32_t posCount, uint32_t edgesCount, uint32_t facetsCount)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Nv::Blast::Mesh::Mesh           </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *&nbsp;</td>
-          <td class="paramname"> <em>vertices</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *&nbsp;</td>
-          <td class="paramname"> <em>edges</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> *&nbsp;</td>
-          <td class="paramname"> <em>facets</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>posCount</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>edgesCount</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>facetsCount</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Constructs mesh object from array of facets. <dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>vertices</em>&nbsp;</td><td>Array of vertices </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>edges</em>&nbsp;</td><td>Array of edges </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>facets</em>&nbsp;</td><td>Array of facets </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>posCount</em>&nbsp;</td><td>Vertices count </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>edgesCount</em>&nbsp;</td><td>Edges count </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>facetsCount</em>&nbsp;</td><td>Facets count </td></tr>
-  </table>
-</dl>
-
-</div>
-</div><p>
-<a class="anchor" name="fb8b13a1241cd92765f4323ba028dd54"></a><!-- doxytag: member="Nv::Blast::Mesh::~Mesh" ref="fb8b13a1241cd92765f4323ba028dd54" args="()" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Nv::Blast::Mesh::~Mesh           </td>
+          <td class="memname">virtual Nv::Blast::Mesh::~Mesh           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [inline, virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -225,16 +120,16 @@ Constructs mesh object from array of facets. <dl compact><dt><b>Parameters:</b><
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="44bd529fdb98f8f49a52117a7ffc769e"></a><!-- doxytag: member="Nv::Blast::Mesh::getBoundingBox" ref="44bd529fdb98f8f49a52117a7ffc769e" args="()" -->
+<a class="anchor" name="b14c86e03b94b1d2cb2bc691009f04b5"></a><!-- doxytag: member="Nv::Blast::Mesh::getBoundingBox" ref="b14c86e03b94b1d2cb2bc691009f04b5" args="() const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">physx::PxBounds3&amp; Nv::Blast::Mesh::getBoundingBox           </td>
+          <td class="memname">virtual const physx::PxBounds3&amp; Nv::Blast::Mesh::getBoundingBox           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td> const<code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -242,18 +137,41 @@ Constructs mesh object from array of facets. <dl compact><dt><b>Parameters:</b><
 
 <p>
 Return reference on mesh bounding box. 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#c2248c2993c67362e7e1723fbf7dbb1c">Nv::Blast::MeshImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="efdd2c7000fbdfb573fdc88ba58a6156"></a><!-- doxytag: member="Nv::Blast::Mesh::getEdges" ref="efdd2c7000fbdfb573fdc88ba58a6156" args="()" -->
+<a class="anchor" name="29110bbb30c0de321bd0de1812750c30"></a><!-- doxytag: member="Nv::Blast::Mesh::getBoundingBoxWritable" ref="29110bbb30c0de321bd0de1812750c30" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* Nv::Blast::Mesh::getEdges           </td>
+          <td class="memname">virtual physx::PxBounds3&amp; Nv::Blast::Mesh::getBoundingBoxWritable           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Return writable reference on mesh bounding box. 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#8113b725623bcc84d6346c02b2ea1253">Nv::Blast::MeshImpl</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="085ffcc67f9cd938f93d3aa43a0d0bf0"></a><!-- doxytag: member="Nv::Blast::Mesh::getEdges" ref="085ffcc67f9cd938f93d3aa43a0d0bf0" args="() const =0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* Nv::Blast::Mesh::getEdges           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -261,18 +179,20 @@ Return reference on mesh bounding box.
 
 <p>
 Return pointer on edges array 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#db1bc85f36ba170694a268b593f9ff35">Nv::Blast::MeshImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="44ee539d298fdb52e756c278eb06a8fd"></a><!-- doxytag: member="Nv::Blast::Mesh::getEdgesCount" ref="44ee539d298fdb52e756c278eb06a8fd" args="()" -->
+<a class="anchor" name="fc8859fe20911e2ab593b9075223a36a"></a><!-- doxytag: member="Nv::Blast::Mesh::getEdgesCount" ref="fc8859fe20911e2ab593b9075223a36a" args="() const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint32_t Nv::Blast::Mesh::getEdgesCount           </td>
+          <td class="memname">virtual uint32_t Nv::Blast::Mesh::getEdgesCount           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td> const<code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -280,19 +200,42 @@ Return pointer on edges array
 
 <p>
 Return edges count 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#85ddf08692dfda42187088f966b9e7ae">Nv::Blast::MeshImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="e881276cc0a6199342224c4a189d5f30"></a><!-- doxytag: member="Nv::Blast::Mesh::getFacet" ref="e881276cc0a6199342224c4a189d5f30" args="(int32_t facet)" -->
+<a class="anchor" name="c3e5b150bd16d7f22b22fb571de9004f"></a><!-- doxytag: member="Nv::Blast::Mesh::getEdgesWritable" ref="c3e5b150bd16d7f22b22fb571de9004f" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>* Nv::Blast::Mesh::getFacet           </td>
+          <td class="memname">virtual <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* Nv::Blast::Mesh::getEdgesWritable           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Return writable pointer on edges array 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#1590a830a4d5ec1ac62300b2cc9d6214">Nv::Blast::MeshImpl</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="1737163f2dc8fe4456f5df27ab5740b8"></a><!-- doxytag: member="Nv::Blast::Mesh::getFacet" ref="1737163f2dc8fe4456f5df27ab5740b8" args="(int32_t facet) const =0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>* Nv::Blast::Mesh::getFacet           </td>
           <td>(</td>
           <td class="paramtype">int32_t&nbsp;</td>
           <td class="paramname"> <em>facet</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td> const<code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -300,18 +243,20 @@ Return edges count
 
 <p>
 Return pointer on specified facet 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#4679ecf7db414191d152e2b79af2c2cc">Nv::Blast::MeshImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="d87f429c566a65878b965aa36754654a"></a><!-- doxytag: member="Nv::Blast::Mesh::getFacetCount" ref="d87f429c566a65878b965aa36754654a" args="()" -->
+<a class="anchor" name="5bb922c1dcb50c67e2105f84454019af"></a><!-- doxytag: member="Nv::Blast::Mesh::getFacetCount" ref="5bb922c1dcb50c67e2105f84454019af" args="() const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint32_t Nv::Blast::Mesh::getFacetCount           </td>
+          <td class="memname">virtual uint32_t Nv::Blast::Mesh::getFacetCount           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td> const<code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -319,18 +264,20 @@ Return pointer on specified facet
 
 <p>
 Return facet count 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#b930517d05cb83a73aed79788a909979">Nv::Blast::MeshImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="5ddbe00d0d58011bcadf8fd1c3a15d44"></a><!-- doxytag: member="Nv::Blast::Mesh::getFacetsBuffer" ref="5ddbe00d0d58011bcadf8fd1c3a15d44" args="()" -->
+<a class="anchor" name="dcee600d1e263eedc13561b99c7ea762"></a><!-- doxytag: member="Nv::Blast::Mesh::getFacetsBuffer" ref="dcee600d1e263eedc13561b99c7ea762" args="() const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>* Nv::Blast::Mesh::getFacetsBuffer           </td>
+          <td class="memname">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>* Nv::Blast::Mesh::getFacetsBuffer           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td> const<code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -338,18 +285,63 @@ Return facet count
 
 <p>
 Return pointer on facets array 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#b58056e7f06d9441a25e892067fa655f">Nv::Blast::MeshImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="71ddc172ff2bb43df0944f07d2494c63"></a><!-- doxytag: member="Nv::Blast::Mesh::getMeshVolume" ref="71ddc172ff2bb43df0944f07d2494c63" args="()" -->
+<a class="anchor" name="480c3919561789e75df950aea69fec4a"></a><!-- doxytag: member="Nv::Blast::Mesh::getFacetsBufferWritable" ref="480c3919561789e75df950aea69fec4a" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">float Nv::Blast::Mesh::getMeshVolume           </td>
+          <td class="memname">virtual <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>* Nv::Blast::Mesh::getFacetsBufferWritable           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Return writable pointer on facets array 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#82d3ee50e089daa034b033d45a387ee5">Nv::Blast::MeshImpl</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="2f6a3389000c02e892d4514fd1322765"></a><!-- doxytag: member="Nv::Blast::Mesh::getFacetWritable" ref="2f6a3389000c02e892d4514fd1322765" args="(int32_t facet)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>* Nv::Blast::Mesh::getFacetWritable           </td>
+          <td>(</td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>facet</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Return writable pointer on specified facet 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#3136defb8903a7ef54ee497d71da9859">Nv::Blast::MeshImpl</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="220f3c64f6a192843ab44c3728960820"></a><!-- doxytag: member="Nv::Blast::Mesh::getMeshVolume" ref="220f3c64f6a192843ab44c3728960820" args="()=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual float Nv::Blast::Mesh::getMeshVolume           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -357,18 +349,20 @@ Return pointer on facets array
 
 <p>
 Compute mesh volume. Can be used only for triangulated meshes. Return mesh volume. If mesh is not triangulated return 0. 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#8141667f919d998d88cb97a83156394a">Nv::Blast::MeshImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="921e7410a8d34c759d2f0be60a312cfe"></a><!-- doxytag: member="Nv::Blast::Mesh::getVertices" ref="921e7410a8d34c759d2f0be60a312cfe" args="()" -->
+<a class="anchor" name="927148143ec2335c9ed6dd9c65215196"></a><!-- doxytag: member="Nv::Blast::Mesh::getVertices" ref="927148143ec2335c9ed6dd9c65215196" args="() const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* Nv::Blast::Mesh::getVertices           </td>
+          <td class="memname">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* Nv::Blast::Mesh::getVertices           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td> const<code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -376,18 +370,20 @@ Compute mesh volume. Can be used only for triangulated meshes. Return mesh volum
 
 <p>
 Return pointer on vertices array 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#a3cafc9e72f84575081550b9f05c6816">Nv::Blast::MeshImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="b3b4fc4130ba757b01d8a7736bd5087f"></a><!-- doxytag: member="Nv::Blast::Mesh::getVerticesCount" ref="b3b4fc4130ba757b01d8a7736bd5087f" args="()" -->
+<a class="anchor" name="b86107cfd02392fd2a49b79fe0367887"></a><!-- doxytag: member="Nv::Blast::Mesh::getVerticesCount" ref="b86107cfd02392fd2a49b79fe0367887" args="() const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint32_t Nv::Blast::Mesh::getVerticesCount           </td>
+          <td class="memname">virtual uint32_t Nv::Blast::Mesh::getVerticesCount           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td> const<code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -395,18 +391,41 @@ Return pointer on vertices array
 
 <p>
 Return vertices count 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#745bc7afc69940a4173e2618219e7abd">Nv::Blast::MeshImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="b89e005dd566eef92a0bc8e3eee2f7b6"></a><!-- doxytag: member="Nv::Blast::Mesh::isValid" ref="b89e005dd566eef92a0bc8e3eee2f7b6" args="()" -->
+<a class="anchor" name="55945b655bb1cb9fed0d481497942c71"></a><!-- doxytag: member="Nv::Blast::Mesh::getVerticesWritable" ref="55945b655bb1cb9fed0d481497942c71" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool Nv::Blast::Mesh::isValid           </td>
+          <td class="memname">virtual <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* Nv::Blast::Mesh::getVerticesWritable           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Return writable pointer on vertices array 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#582a256cb35c5921d3c132d93289b16c">Nv::Blast::MeshImpl</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="cc7ba66081cfd2bd55c5eae7d6053c71"></a><!-- doxytag: member="Nv::Blast::Mesh::isValid" ref="cc7ba66081cfd2bd55c5eae7d6053c71" args="() const =0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool Nv::Blast::Mesh::isValid           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -414,18 +433,20 @@ Return vertices count
 
 <p>
 Return true if mesh is valid 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#611420e197bd938cda4c737f7543e6e0">Nv::Blast::MeshImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="56b3d7927e8fe50993dc61e063d5c2cd"></a><!-- doxytag: member="Nv::Blast::Mesh::recalculateBoundingBox" ref="56b3d7927e8fe50993dc61e063d5c2cd" args="()" -->
+<a class="anchor" name="24544d5b6a315cee19d67da9ed0fd8dd"></a><!-- doxytag: member="Nv::Blast::Mesh::recalculateBoundingBox" ref="24544d5b6a315cee19d67da9ed0fd8dd" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::Mesh::recalculateBoundingBox           </td>
+          <td class="memname">virtual void Nv::Blast::Mesh::recalculateBoundingBox           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -433,6 +454,73 @@ Return true if mesh is valid
 
 <p>
 Recalculate bounding box 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#9e69417e462e30039484a4e405cfed24">Nv::Blast::MeshImpl</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="df6faa07b98b634b86a198ad4a6fcc14"></a><!-- doxytag: member="Nv::Blast::Mesh::release" ref="df6faa07b98b634b86a198ad4a6fcc14" args="()=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::Mesh::release           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Release <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> memory 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#fd0a2a856078f362d0c0f5f2da1ba03e">Nv::Blast::MeshImpl</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="9c512712bbe2a2e16bd957baeccd2f57"></a><!-- doxytag: member="Nv::Blast::Mesh::setMaterialId" ref="9c512712bbe2a2e16bd957baeccd2f57" args="(int32_t *materialIds)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::Mesh::setMaterialId           </td>
+          <td>(</td>
+          <td class="paramtype">int32_t *&nbsp;</td>
+          <td class="paramname"> <em>materialIds</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set per-facet material id. 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#14a9a0be24b392467984ba07811ad75f">Nv::Blast::MeshImpl</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="52f8e09ebf69b53a5fd720165ab8629d"></a><!-- doxytag: member="Nv::Blast::Mesh::setSmoothingGroup" ref="52f8e09ebf69b53a5fd720165ab8629d" args="(int32_t *smoothingGroup)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::Mesh::setSmoothingGroup           </td>
+          <td>(</td>
+          <td class="paramtype">int32_t *&nbsp;</td>
+          <td class="paramname"> <em>smoothingGroup</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set per-facet smoothing group. 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#990f18999ab2b12b2dc242f459651ec7">Nv::Blast::MeshImpl</a>.</p>
+
 </div>
 </div><p>
 <hr>The documentation for this class was generated from the following file:<ul>

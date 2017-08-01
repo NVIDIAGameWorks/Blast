@@ -1,3 +1,31 @@
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
+
 #include "TkBaseTest.h"
 
 #include <map>
@@ -6,10 +34,9 @@
 
 #include "PsMemoryBuffer.h"
 
-#include "NvBlastTkSerializable.h"
-
 #include "NvBlastTime.h"
 
+#include "NvBlastExtPxTask.h"
 
 struct ExpectedVisibleChunks 
 {
@@ -67,11 +94,11 @@ TEST_F(TkTestStrict, CreateAsset)
 #if USE_PHYSX_DISPATCHER
 TEST_F(TkTestStrict, DISABLED_MemLeak)
 {
-	PxFoundation* pxFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, *this, *this);
+	PxFoundation* pxFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
 	PxU32 affinity[] = { 1, 2, 4, 8 };
 	PxDefaultCpuDispatcher* cpuDispatcher = PxDefaultCpuDispatcherCreate(4, affinity);
 	cpuDispatcher->setRunProfiled(false);
-	PxTaskManager* taskman = PxTaskManager::createTaskManager(*this, cpuDispatcher, nullptr);
+	PxTaskManager* taskman = PxTaskManager::createTaskManager(NvBlastGetPxErrorCallback(), cpuDispatcher, nullptr);
 
 	cpuDispatcher->release();
 	taskman->release();
@@ -79,7 +106,7 @@ TEST_F(TkTestStrict, DISABLED_MemLeak)
 }
 #endif
 
-TEST_F(TkTestAllowWarnings, ActorDamageNoGroup)
+TEST_F(TkTestStrict, ActorDamageNoGroup)
 {
 	createFramework();
 	createTestAssets();
@@ -111,14 +138,16 @@ TEST_F(TkTestAllowWarnings, ActorDamageNoGroup)
 	EXPECT_TRUE(actor->isPending());
 
 	TkGroupDesc gdesc;
-	gdesc.pxTaskManager = m_taskman;
+	gdesc.workerCount = m_taskman->getCpuDispatcher()->getWorkerCount();
 	TkGroup* group = fwk->createGroup(gdesc);
 	EXPECT_TRUE(group != nullptr);
 
+	m_groupTM->setGroup(group);
+
 	group->addActor(*actor);
 
-	group->process();
-	group->sync(true);
+	m_groupTM->process();
+	m_groupTM->wait();
 
 	EXPECT_FALSE(actor->isPending());
 	EXPECT_EQ(2, family.getActorCount());
@@ -126,7 +155,7 @@ TEST_F(TkTestAllowWarnings, ActorDamageNoGroup)
 	releaseFramework();
 }
 
-TEST_F(TkTestAllowWarnings, ActorDamageGroup)
+TEST_F(TkTestStrict, ActorDamageGroup)
 {
 	TEST_ZONE_BEGIN("ActorDamageGroup");
 
@@ -138,9 +167,11 @@ TEST_F(TkTestAllowWarnings, ActorDamageGroup)
 	TestFamilyTracker ftrack1, ftrack2;
 
 	TkGroupDesc gdesc;
-	gdesc.pxTaskManager = m_taskman;
+	gdesc.workerCount = m_taskman->getCpuDispatcher()->getWorkerCount();
 	TkGroup* group = fwk->createGroup(gdesc);
 	EXPECT_TRUE(group != nullptr);
+
+	m_groupTM->setGroup(group);
 
 	NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0);
 	NvBlastExtShearDamageDesc shearDamage = getShearDamageDesc(0, 0, 0);
@@ -163,12 +194,8 @@ TEST_F(TkTestAllowWarnings, ActorDamageGroup)
 		expectedVisibleChunks[&actor2->getFamily()] = ExpectedVisibleChunks(1, 1); // not split
 
 		GeneratorAsset cube;
-		generateCube(cube, 5, 2);
 		TkAssetDesc assetDesc;
-		assetDesc.bondCount = (uint32_t)cube.solverBonds.size();
-		assetDesc.bondDescs = cube.solverBonds.data();
-		assetDesc.chunkCount = (uint32_t)cube.chunks.size();
-		assetDesc.chunkDescs = cube.solverChunks.data();
+		generateCube(cube, assetDesc, 5, 2);
 		assetDesc.bondFlags = nullptr;
 
 		TkAsset* cubeAsset = fwk->createAsset(assetDesc);
@@ -211,11 +238,10 @@ TEST_F(TkTestAllowWarnings, ActorDamageGroup)
 		actor1->damage(getFalloffProgram(), &radialDamage, sizeof(radialDamage), getDefaultMaterial());
 	}
 
-	EXPECT_FALSE(group->sync(true));
-	EXPECT_FALSE(group->sync(false));
+	EXPECT_FALSE(group->endProcess());
 
-	group->process();
-	group->sync();
+	m_groupTM->process();
+	m_groupTM->wait();
 
 	testResults(families, expectedVisibleChunks);
 
@@ -231,8 +257,8 @@ TEST_F(TkTestAllowWarnings, ActorDamageGroup)
 	}
 	expectedVisibleChunks[trackedFamily] = ExpectedVisibleChunks(4, 2);
 
-	group->process();
-	group->sync();
+	m_groupTM->process();
+	m_groupTM->wait();
 
 	testResults(families, expectedVisibleChunks);
 
@@ -249,8 +275,8 @@ TEST_F(TkTestAllowWarnings, ActorDamageGroup)
 
 	expectedVisibleChunks[trackedFamily] = ExpectedVisibleChunks(8, 1);
 
-	group->process();
-	group->sync();
+	m_groupTM->process();
+	m_groupTM->wait();
 
 	testResults(families, expectedVisibleChunks);
 
@@ -267,8 +293,8 @@ TEST_F(TkTestAllowWarnings, ActorDamageGroup)
 	}
 	expectedVisibleChunks[trackedFamily] = ExpectedVisibleChunks(4096, 1);
 
-	group->process();
-	while (!group->sync(true));
+	m_groupTM->process();
+	m_groupTM->wait();
 
 	testResults(families, expectedVisibleChunks);
 
@@ -285,9 +311,8 @@ TEST_F(TkTestAllowWarnings, ActorDamageGroup)
 		TEST_ZONE_END("damage");
 	}
 
-	group->process();
-	while (!group->sync(true))
-		;
+	m_groupTM->process();
+	m_groupTM->wait();
 
 
 
@@ -302,8 +327,8 @@ TEST_F(TkTestAllowWarnings, ActorDamageGroup)
 		TEST_ZONE_END("damage");
 	}
 
-	group->process();
-	while (!group->sync(true));
+	m_groupTM->process();
+	m_groupTM->wait();
 
 	group->release();
 
@@ -318,7 +343,7 @@ TEST_F(TkTestAllowWarnings, ActorDamageGroup)
 }
 
 
-TEST_F(TkTestAllowWarnings, ActorDamageMultiGroup)
+TEST_F(TkTestStrict, ActorDamageMultiGroup)
 {
 	createFramework();
 	createTestAssets();
@@ -328,11 +353,14 @@ TEST_F(TkTestAllowWarnings, ActorDamageMultiGroup)
 	TestFamilyTracker ftrack1, ftrack2;
 
 	TkGroupDesc gdesc;
-	gdesc.pxTaskManager = m_taskman;
+	gdesc.workerCount = m_taskman->getCpuDispatcher()->getWorkerCount();
 	TkGroup* group0 = fwk->createGroup(gdesc);
 	EXPECT_TRUE(group0 != nullptr);
 	TkGroup* group1 = fwk->createGroup(gdesc);
 	EXPECT_TRUE(group1 != nullptr);
+
+	ExtGroupTaskManager& gtm1 = *ExtGroupTaskManager::create(*m_taskman, *group1);
+	ExtGroupTaskManager& gtm0 = *ExtGroupTaskManager::create(*m_taskman, *group0);
 
 	std::vector<TkFamily*> families(2);
 	std::map<TkFamily*, ExpectedVisibleChunks> expectedVisibleChunks;
@@ -340,12 +368,8 @@ TEST_F(TkTestAllowWarnings, ActorDamageMultiGroup)
 	// prepare 2 equal actors/families and damage
 	{
 		GeneratorAsset cube;
-		generateCube(cube, 6, 2, 5);
 		TkAssetDesc assetDesc;
-		assetDesc.bondCount = (uint32_t)cube.solverBonds.size();
-		assetDesc.bondDescs = cube.solverBonds.data();
-		assetDesc.chunkCount = (uint32_t)cube.chunks.size();
-		assetDesc.chunkDescs = cube.solverChunks.data();
+		generateCube(cube, assetDesc, 6, 2, 5);
 		assetDesc.bondFlags = nullptr;
 
 		TkAsset* cubeAsset = fwk->createAsset(assetDesc);
@@ -385,14 +409,14 @@ TEST_F(TkTestAllowWarnings, ActorDamageMultiGroup)
 
 	// async process 2 groups
 	{
-		EXPECT_TRUE(group0->process());
-		EXPECT_TRUE(group1->process());
+		EXPECT_GT(gtm0.process(2), (uint32_t)0);
+		EXPECT_GT(gtm1.process(2), (uint32_t)0);
 		uint32_t completed = 0;
 		while (completed < 2)
 		{
-			if (group0->sync(false))
+			if (gtm0.wait(false))
 				completed++;
-			if (group1->sync(false))
+			if (gtm1.wait(false))
 				completed++;
 		}
 	}
@@ -456,14 +480,14 @@ TEST_F(TkTestAllowWarnings, ActorDamageMultiGroup)
 
 	// async process 2 groups
 	{
-		EXPECT_TRUE(group1->process());
-		EXPECT_TRUE(group0->process());
+		EXPECT_GT(gtm1.process(2), (uint32_t)0);
+		EXPECT_GT(gtm0.process(2), (uint32_t)0);
 		uint32_t completed = 0;
 		while (completed < 2)
 		{
-			if (group0->sync(false))
+			if (gtm1.wait(false))
 				completed++;
-			if (group1->sync(false))
+			if (gtm0.wait(false))
 				completed++;
 		}
 	}
@@ -520,24 +544,24 @@ TEST_F(TkTestAllowWarnings, ActorDamageMultiGroup)
 					newGroup->addActor(*actor);
 				}
 			}
+			TEST_ZONE_END("damage loop");
 
 			if (!workTBD)
 				break;
 
 			// async process 2 groups
 			{
-				EXPECT_TRUE(group1->process());
-				EXPECT_TRUE(group0->process());
+				EXPECT_GT(gtm1.process(2), (uint32_t)0);
+				EXPECT_GT(gtm0.process(2), (uint32_t)0);
 				uint32_t completed = 0;
 				while (completed < 2)
 				{
-					if (group0->sync(false))
+					if (gtm1.wait(false))
 						completed++;
-					if (group1->sync(false))
+					if (gtm0.wait(false))
 						completed++;
 				}
 			}
-			TEST_ZONE_END("damage loop");
 		}
 	}
 
@@ -546,6 +570,9 @@ TEST_F(TkTestAllowWarnings, ActorDamageMultiGroup)
 	EXPECT_EQ(families[1]->getActorCount(), ftrack2.actors.size());
 	EXPECT_EQ(65536, families[0]->getActorCount() + families[1]->getActorCount());
 	EXPECT_EQ(65536, group0->getActorCount() + group1->getActorCount());
+
+	gtm0.release();
+	gtm1.release();
 
 	group0->release();
 	group1->release();
@@ -557,28 +584,26 @@ TEST_F(TkTestAllowWarnings, ActorDamageMultiGroup)
 	releaseFramework();
 }
 
-TEST_F(TkTestAllowWarnings, ActorDamageBufferedDamage)
+TEST_F(TkTestStrict, ActorDamageBufferedDamage)
 {
 	createFramework();
 	TkFramework* fwk = NvBlastTkFrameworkGet();
 
 	// group
 	TkGroupDesc gdesc;
-	gdesc.pxTaskManager = m_taskman;
+	gdesc.workerCount = m_taskman->getCpuDispatcher()->getWorkerCount();
 	TkGroup* group = fwk->createGroup(gdesc);
 	EXPECT_TRUE(group != nullptr);
-	
+
+	m_groupTM->setGroup(group);
+
 	// random engine
 	std::default_random_engine re;
 
 	// cube asset
 	GeneratorAsset cube;
-	generateCube(cube, 4, 2, 3);
 	TkAssetDesc assetDesc;
-	assetDesc.bondCount = (uint32_t)cube.solverBonds.size();
-	assetDesc.bondDescs = cube.solverBonds.data();
-	assetDesc.chunkCount = (uint32_t)cube.chunks.size();
-	assetDesc.chunkDescs = cube.solverChunks.data();
+	generateCube(cube, assetDesc, 4, 2, 3);
 	assetDesc.bondFlags = nullptr;
 	TkAsset* cubeAsset = fwk->createAsset(assetDesc);
 	testAssets.push_back(cubeAsset);
@@ -650,8 +675,8 @@ TEST_F(TkTestAllowWarnings, ActorDamageBufferedDamage)
 		}
 
 		// sync
-		EXPECT_TRUE(group->process());
-		group->sync(true);
+		EXPECT_GT(m_groupTM->process(), (uint32_t)0);
+		m_groupTM->wait();
 
 		const auto ac = family->getActorCount();
 
@@ -756,6 +781,7 @@ TEST_F(TkTestStrict, CreateActor)
 template<int FailMask, int Verbosity>
 TkFamily* TkBaseTest<FailMask, Verbosity>::familySerialization(TkFamily* family)
 {
+#if 0
 	TkFramework* fw = NvBlastTkFrameworkGet();
 
 	const TkType* familyType = fw->getType(TkTypeIndex::Family);
@@ -785,18 +811,22 @@ TkFamily* TkBaseTest<FailMask, Verbosity>::familySerialization(TkFamily* family)
 	}
 
 	return family;
+#endif
+	return nullptr;
 }
 
-TEST_F(TkTestAllowWarnings, FamilySerialization)
+TEST_F(TkTestAllowWarnings, DISABLED_FamilySerialization)
 {
 	createFramework();
 	TkFramework* fwk = NvBlastTkFrameworkGet();
 
 	// group
 	TkGroupDesc gdesc;
-	gdesc.pxTaskManager = m_taskman;
+	gdesc.workerCount = m_taskman->getCpuDispatcher()->getWorkerCount();
 	TkGroup* group = fwk->createGroup(gdesc);
 	EXPECT_TRUE(group != nullptr);
+
+	m_groupTM->setGroup(group);
 
 	// random engine
 	std::default_random_engine re;
@@ -865,8 +895,8 @@ TEST_F(TkTestAllowWarnings, FamilySerialization)
 			}
 
 			// sync
-			EXPECT_TRUE(group->process());
-			group->sync(true);
+			EXPECT_GT(m_groupTM->process(), (uint32_t)0);
+			m_groupTM->wait();
 
 			family = familySerialization(family);
 		}
@@ -889,9 +919,11 @@ TEST_F(TkTestStrict, GroupStats)
 
 	// group
 	TkGroupDesc gdesc;
-	gdesc.pxTaskManager = m_taskman;
+	gdesc.workerCount = m_taskman->getCpuDispatcher()->getWorkerCount();
 	TkGroup* group = fwk->createGroup(gdesc);
 	EXPECT_TRUE(group != nullptr);
+
+	m_groupTM->setGroup(group);
 
 	TkAsset* cubeAsset = createCubeAsset(4, 2);
 	TkActorDesc cubeDesc(cubeAsset);
@@ -913,8 +945,8 @@ TEST_F(TkTestStrict, GroupStats)
 	cubeActor4->damage(getFalloffProgram(), &r0, sizeof(r0));
 
 	Nv::Blast::Time time;
-	group->process();
-	group->sync(true);
+	m_groupTM->process();
+	m_groupTM->wait();
 	int64_t groupTime = time.getElapsedTicks();
 
 	TkGroupStats gstats;
@@ -1036,8 +1068,10 @@ TEST_F(TkTestStrict, FractureReportSupport)
 	EXPECT_EQ((void*)'root', actor->userData);
 	EXPECT_EQ(0, actor->getIndex());
 
-	TkGroupDesc groupDesc = { m_taskman };
+	TkGroupDesc groupDesc = { m_taskman->getCpuDispatcher()->getWorkerCount() };
 	TkGroup* group = fwk->createGroup(groupDesc);
+
+	m_groupTM->setGroup(group);
 
 	group->addActor(*actor);
 
@@ -1045,8 +1079,8 @@ TEST_F(TkTestStrict, FractureReportSupport)
 	NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0);
 	actor->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
 
-	group->process();
-	group->sync();
+	m_groupTM->process();
+	m_groupTM->wait();
 
 	releaseFramework();
 }
@@ -1057,20 +1091,20 @@ TEST_F(TkTestStrict, FractureReportGraph)
 
 	TkFramework* fwk = NvBlastTkFrameworkGet();
 
-	NvBlastBond bondToBreak = { { 1,0,0 }, 1,{ 0, 0, 0 }, 0 };
-	NvBlastBond bondToKeep = { { 1,0,0 }, 1,{ 10, 10, 10 }, 0 };
+	NvBlastBond bondToBreak = { { 1, 0, 0 }, 1, { 0, 0, 0 }, 0 };
+	NvBlastBond bondToKeep = { { 1, 0, 0 }, 1, { 10, 10, 10 }, 0 };
 	NvBlastBondDesc bondDescs[] =
 	{
-		{ { 1,2 }, bondToKeep },
-		{ { 2,3 }, bondToBreak },
+		{ bondToKeep, { 1, 2 } },
+		{ bondToBreak, { 2, 3 } },
 	};
 
 	NvBlastChunkDesc chunkDescs[] =
 	{
-		{ { 0,0,0 }, 2, UINT32_MAX, NvBlastChunkDesc::NoFlags, 'root' },
-		{ { -1,0,0 }, 1, 0, NvBlastChunkDesc::SupportFlag, 'A' },
-		{ { +1,0,0 }, 1, 0, NvBlastChunkDesc::SupportFlag, 'B' },
-		{ { +1,0,0 }, 1, 0, NvBlastChunkDesc::SupportFlag, 'C' },
+		{ { 0, 0, 0 }, 2, UINT32_MAX, NvBlastChunkDesc::NoFlags, 'root' },
+		{ { -1, 0, 0 }, 1, 0, NvBlastChunkDesc::SupportFlag, 'A' },
+		{ { +1, 0, 0 }, 1, 0, NvBlastChunkDesc::SupportFlag, 'B' },
+		{ { +1, 0, 0 }, 1, 0, NvBlastChunkDesc::SupportFlag, 'C' },
 	};
 
 	TkAssetDesc assetDesc;
@@ -1102,7 +1136,7 @@ TEST_F(TkTestStrict, FractureReportGraph)
 				case TkFractureCommands::EVENT_TYPE:
 				{
 					const TkActorData& actor = event.getPayload<TkFractureCommands>()->tkActorData;
-					
+
 					// Group::sync still needed the family for SharedMemory management.
 					EXPECT_TRUE(nullptr != actor.family);
 
@@ -1154,7 +1188,7 @@ TEST_F(TkTestStrict, FractureReportGraph)
 
 					{
 						TkActor* a = split->children[0];
-						EXPECT_EQ(1, a->getVisibleChunkCount()); 
+						EXPECT_EQ(1, a->getVisibleChunkCount());
 						a->getVisibleChunkIndices(visibleChunkIndex, 1);
 						uint32_t actorIndex = a->getIndex();
 						EXPECT_EQ(2, actorIndex);
@@ -1176,8 +1210,10 @@ TEST_F(TkTestStrict, FractureReportGraph)
 	EXPECT_EQ(0, rootActor->getIndex());
 	EXPECT_EQ(1, rootActor->getVisibleChunkCount());
 
-	TkGroupDesc groupDesc = { m_taskman };
+	TkGroupDesc groupDesc = { m_taskman->getCpuDispatcher()->getWorkerCount() };
 	TkGroup* group = fwk->createGroup(groupDesc);
+
+	m_groupTM->setGroup(group);
 
 	group->addActor(*rootActor);
 
@@ -1185,8 +1221,8 @@ TEST_F(TkTestStrict, FractureReportGraph)
 	NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0, 0.5f, 0.5f);
 	rootActor->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
 
-	group->process();
-	group->sync();
+	m_groupTM->process();
+	m_groupTM->wait();
 
 	releaseFramework();
 }
@@ -1222,16 +1258,18 @@ TEST_F(TkTestStrict, SplitWarning) // GWD-167
 	actorDesc.asset = asset;
 	TkActor* actor = fwk->createActor(actorDesc);
 
-	TkGroupDesc groupDesc = { m_taskman };
+	TkGroupDesc groupDesc = { m_taskman->getCpuDispatcher()->getWorkerCount() };
 	TkGroup* group = fwk->createGroup(groupDesc);
+
+	m_groupTM->setGroup(group);
 
 	group->addActor(*actor);
 
 	NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0);
 	actor->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
 
-	group->process();
-	group->sync();
+	m_groupTM->process();
+	m_groupTM->wait();
 
 	releaseFramework();
 }
@@ -1309,14 +1347,17 @@ TEST_F(TkTestAllowWarnings, ChangeThreadCountToZero)
 	TestCpuDispatcher* disp4 = new TestCpuDispatcher(4);
 #endif
 
-	PxTaskManager* taskman = PxTaskManager::createTaskManager(*this, disp4);
+	m_taskman->setCpuDispatcher(*disp4);
 
-	TkGroupDesc groupDesc = { taskman };
+	TkGroupDesc groupDesc = { m_taskman->getCpuDispatcher()->getWorkerCount() };
 	TkGroup* group = fwk->createGroup(groupDesc);
+
+	m_groupTM->setGroup(group);
 
 	group->addActor(*actor1);
 	group->addActor(*actor2);
-	taskman->setCpuDispatcher(*disp0);
+	m_taskman->setCpuDispatcher(*disp0);
+	//group->setWorkerCount(m_taskman->getCpuDispatcher()->getWorkerCount());
 	group->addActor(*actor3);
 	group->addActor(*actor4);
 
@@ -1326,8 +1367,8 @@ TEST_F(TkTestAllowWarnings, ChangeThreadCountToZero)
 	actor3->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
 	actor4->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
 
-	group->process();
-	group->sync();
+	m_groupTM->process();
+	m_groupTM->wait();
 
 	EXPECT_EQ(4, listener.fracCommands);
 	EXPECT_EQ(4, listener.fracEvents);
@@ -1336,10 +1377,9 @@ TEST_F(TkTestAllowWarnings, ChangeThreadCountToZero)
 
 	disp0->release();
 	disp4->release();
-	taskman->release();
 }
 
-TEST_F(TkTestAllowWarnings, ChangeThreadCountUp)
+TEST_F(TkTestStrict, ChangeThreadCountUp)
 {
 	// tests that group allocates more memory for additional workers 
 	// by replacing to a higher thread count cpu dispatcher (warns)
@@ -1411,10 +1451,11 @@ TEST_F(TkTestAllowWarnings, ChangeThreadCountUp)
 	TestCpuDispatcher* disp4 = new TestCpuDispatcher(4);
 #endif
 
-	PxTaskManager* taskman = PxTaskManager::createTaskManager(*this, disp2);
-
-	TkGroupDesc groupDesc = { taskman };
+	m_taskman->setCpuDispatcher(*disp2);
+	TkGroupDesc groupDesc = { m_taskman->getCpuDispatcher()->getWorkerCount() };
 	TkGroup* group = fwk->createGroup(groupDesc);
+
+	m_groupTM->setGroup(group);
 
 	group->addActor(*actor1);
 	group->addActor(*actor2);
@@ -1427,10 +1468,11 @@ TEST_F(TkTestAllowWarnings, ChangeThreadCountUp)
 	actor3->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
 	actor4->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
 
-	taskman->setCpuDispatcher(*disp4);
+	m_taskman->setCpuDispatcher(*disp4);
+	//group->setWorkerCount(m_taskman->getCpuDispatcher()->getWorkerCount());
 
-	group->process();
-	group->sync();
+	m_groupTM->process();
+	m_groupTM->wait();
 
 	EXPECT_EQ(4, listener.fracCommands);
 	EXPECT_EQ(4, listener.fracEvents);
@@ -1439,7 +1481,6 @@ TEST_F(TkTestAllowWarnings, ChangeThreadCountUp)
 
 	disp2->release();
 	disp4->release();
-	taskman->release();
 }
 
 TEST_F(TkTestAllowWarnings, GroupNoWorkers)
@@ -1503,8 +1544,17 @@ TEST_F(TkTestAllowWarnings, GroupNoWorkers)
 	actor3->getFamily().addListener(listener);
 	actor4->getFamily().addListener(listener);
 
-	TkGroupDesc groupDesc = { nullptr };
+#if USE_PHYSX_DISPATCHER
+	PxDefaultCpuDispatcher* disp = PxDefaultCpuDispatcherCreate(0);
+#else
+	TestCpuDispatcher* disp = new TestCpuDispatcher(0);
+#endif
+	m_taskman->setCpuDispatcher(*disp);
+
+	TkGroupDesc groupDesc = { m_taskman->getCpuDispatcher()->getWorkerCount() };
 	TkGroup* group = fwk->createGroup(groupDesc);
+
+	m_groupTM->setGroup(group);
 
 	group->addActor(*actor1);
 	group->addActor(*actor2);
@@ -1517,11 +1567,13 @@ TEST_F(TkTestAllowWarnings, GroupNoWorkers)
 	actor3->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
 	actor4->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
 
-	group->process();
-	group->sync();
+	m_groupTM->process();
+	m_groupTM->wait();
 
 	EXPECT_EQ(4, listener.fracCommands);
 	EXPECT_EQ(4, listener.fracEvents);
+
+	disp->release();
 
 	releaseFramework();
 }

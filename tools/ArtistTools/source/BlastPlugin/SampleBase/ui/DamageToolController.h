@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef DAMAGE_TOOL_CONTROLLER_H
 #define DAMAGE_TOOL_CONTROLLER_H
@@ -15,6 +33,7 @@
 #include "NvBlastTypes.h"
 #include <DirectXMath.h>
 #include <functional>
+#include "PxVec2.h"
 #include "PxVec3.h"
 
 
@@ -37,6 +56,14 @@ public:
 	DamageToolController();
 	virtual ~DamageToolController();
 
+	static DamageToolController* ins();
+	void setDamageAmount(float value);
+	void setExplosiveImpulse(float value);
+	void setStressForceFactor(float value);
+	void setDamagerIndex(int index);
+	void setRadius(float value);
+	void setDamageWhilePressed(bool value);
+
 	virtual LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	virtual void Animate(double dt);
 	void drawUI();
@@ -54,8 +81,10 @@ public:
 // Add By Lixu Begin
 	Renderable* getPickPointer()
 	{
-		return m_pickPointerRenderable;
+		return m_sphereToolRenderable;
 	}
+
+	void setDamageMode(bool enabled);
 // Add By Lixu End
 
 private:
@@ -64,17 +93,9 @@ private:
 
 	//////// private methods ////////
 
-	void damage(physx::PxVec3 position, physx::PxVec3 normal);
-
-	void setDamageProfile(uint32_t profile);
-	uint32_t getDamageProfile() const
-	{ 
-		return m_damageProfile; 
-	}
-
 	void changeDamageRadius(float dr);
 
-	void setDamageMode(bool enabled);
+	
 
 
 	//////// used controllers ////////
@@ -97,33 +118,48 @@ private:
 
 	//////// internal data ////////
 
-	Renderable* m_pickPointerRenderable;
-	RenderMaterial* m_pickPointerRenderMaterial;
-	DirectX::XMFLOAT4 m_pickPointerColor;
+	RenderMaterial*   m_toolRenderMaterial;
+	Renderable*       m_sphereToolRenderable;
+	DirectX::XMFLOAT4 m_toolColor;
+	Renderable*       m_lineToolRenderable;
 
-	float m_damageRadius;
-	float m_compressiveDamage;
-	float m_explosiveImpulse;
-	float m_stressForceFactor;
-	uint32_t m_damageProfile;
+	float             m_damage;
+	float             m_explosiveImpulse;
+	float             m_stressForceFactor;
 
 	struct Damager
 	{
-		const char* uiName;
-		NvBlastDamageProgram program;
-		DirectX::XMFLOAT4 pointerColor;
-		std::function<void(const Damager* damager, Nv::Blast::ExtPxActor* actor, physx::PxVec3 position, physx::PxVec3 normal)> executeFunction;
-
-		void execute(Nv::Blast::ExtPxActor* actor, physx::PxVec3 position, physx::PxVec3 normal)
+		Damager() : damageWhilePressed(false), radius(5.0f), radiusLimit(1000.0f)
 		{
-			executeFunction(this, actor, position, normal);
 		}
+
+		enum PointerType
+		{
+			Sphere,
+			Line
+		};
+
+		typedef std::function<void(const Damager* damager, Nv::Blast::ExtPxActor* actor, physx::PxVec3 origin, physx::PxVec3 position, physx::PxVec3 normal)> ExecuteFn;
+
+		const char*				uiName;
+		NvBlastDamageProgram	program;
+		PointerType				pointerType;
+		DirectX::XMFLOAT4		pointerColor;
+		float					radius;
+		float					radiusLimit;
+		bool					damageWhilePressed;
+		ExecuteFn				executeFunction;
 	};
 
-	std::vector<Damager> m_armory;
-	std::vector<const char*> m_armoryNames;
+	std::vector<Damager>     m_damagers;
+	std::vector<const char*> m_damagerNames;
+	uint32_t				 m_damagerIndex;
 
-	bool m_damageMode;
+	bool                     m_damageMode;
+
+	physx::PxVec2            m_lastMousePos;
+	bool                     m_isMousePressed;
+	uint32_t                 m_damageCountWhilePressed;
 };
 
 #endif

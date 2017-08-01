@@ -49,36 +49,38 @@ For the remainder of this page we will be in the Nv::Blast namespace, and will d
 <br>
 
 
+BlastTk access the 
+
 BlastTk adds:
 
 - An object class hierarchy (see \ref tk_class_hierarchy, below).
-- A global framework, <b>TkFramework</b> (a singleton).  This holds an allocator and error message callback, keeps track of <b>TkIdentifiable</b> objects and allows
+- A global framework, <b>TkFramework</b> (a singleton).  This keeps track of <b>TkIdentifiable</b> objects and allows
 the user to query them based upon either GUID or <b>TkIdentifiable</b> subclass type, and also provides a number of functions to create the various objects in BlastTk.
-- Task management and processing groups (see <b>TkGroup</b>).
+- Processing groups with a task interface (see <b>TkGroup</b>).
 - Event dispatching for actor families (see <b>TkFamily</b>).
-- Intra-actor and inter-actor joint management (see <b>TkJoint</b>).  Note, only joint descriptions are managed, since physical objects are not handled by BlastTk.
-- Various damage and material options for actors (<b>TkActor</b>).
+- Intra-actor and inter-actor joint management (see <b>TkJoint</b>).  Note, these "joints" only hold descriptor data, since physical objects are not handled by BlastTk.
 
 <br>
 \section tk_class_hierarchy NvBlastTk Class Hierarchy
 
-- There are three abstract interfaces, in an inheritance chain: <b>TkObject <- TkIdentifiable <- TkSerializable</b>.
+- There are two abstract interfaces, one of which deriving from the other: <b>TkObject <- TkIdentifiable.
  - Lightweight objects are derived from <b>TkObject</b>.
  - Objects which use a GUID and class identification are derieved from <b>TkIdentifiable</b>.
- - Objects which support serialization are derived from <b>TkSerializable</b>.
-- <b>TkAsset</b> derives from <b>TkSerializable</b>.  This is mostly a wrapper for NvBlastAsset, however it also stores
-extra data associated with the asset such as a chunk map and internal joint descriptors.
-- <b>TkFamily</b> derives from <b>TkSerializable</b>.  One and only one of these objects is made when a <b>TkActor</b> is instanced
+- <b>TkAsset</b> derives from <b>TkIdentifiable</b>.  This is mostly a wrapper for NvBlastAsset, however it also stores
+extra data associated with the asset such as internal joint descriptors.
+- <b>TkFamily</b> derives from <b>TkIdentifiable</b>.  One of these objects is made when a <b>TkActor</b> is instanced
 from a <b>TkAsset</b>.  All actors that are created by splitting the family's original actor remain within the same family.  Actor and joint
 events are dispatched from the <b>TkFamily</b>.
 - <b>TkGroup</b> derives from <b>TkIdentifiable</b>.  Groups are processing units.  The user may create as many groups as they please, and add
-or remove actors as they please from groups.  The group will process damage applied to its actors, and split the actors into new actors when
-the actors fracture.  Groups use a user-defined task manager and can process actors in multiple threads simultaneously.
+or remove actors as they please from groups.  The group provides a worker (TkGroupWorker) interface which allows the user to process multiple
+jobs in the group asynchoronously.  These jobs, along with a call to TkGroup::endProcess(), perform the tasks of generating fracture commands,
+applying fracture commands, and actor splitting at the low-level.  The user is informed of splitting through listeners given to TkFamily objects.
 - <b>TkActor</b> derives from <b>TkObject</b>.  It is mostly a wrapper for NvBlastActor, but it also provides a number of damage functions
 to the user.
-- <b>TkJoint</b> derives from <b>TkObject</b>.  Based upon <b>TkAsset</b> and <b>TkComposite</b> descriptors, a <b>TkJoint</b> may be internal
-to an actor (joining chunks within the same actor) or external (joining chunks between two actors).  As actors split, internal joints may become
-external.  The user gets notification whenever joints become external, or when actors joined by joints change or are deleted.
+- <b>TkJoint</b> derives from <b>TkObject</b>.  <b>TkAsset</b> descriptors, cause internal <b>TkJoint</b> obejcts to be created within an actor
+(joining chunks within the same actor).  Alternatively, the TkFramework provides a function which allows the user to create an external joint
+between any two different actors.  As actors split, internal joints may become external.  The user gets notification whenever joints become
+external, or when actors joined by joints change or are deleted, through listeners attached to the associated TkFamily objects.
 
 <br>
 \section tk_include_and_library Linking and Header Files
@@ -105,25 +107,14 @@ As a reminder, in this document we assume we are in the Nv::Blast namespace:
 using Nv::Blast;
 \endcode
 
-In order to use NvBlastTk, one first has to create a TkFramework singleton.  This requires a descriptor which
-holds two callback classes defined by the user.  These classes are derived from the physx::PxErrorCallback and
-physx::PxAllocatorCallback interfaces, and define message handling and allocation/deallocation functions,
-respectively.  Assuming the user has already defined these objects with names gErrorCallback and gAllocatorCallback,
-the TkFramework descriptor is built as follows:
+In order to use NvBlastTk, one first has to create a TkFramework singleton.  This simply requires a call
+to the global function NvBlastTkFrameworkCreate:
 
 \code
-TkFrameworkDesc desc;
-desc.errorCallback = &gErrorCallback;			// physx::PxErrorCallback-derived callback object
-desc.allocatorCallback = &gAllocatorCallback;	// physx::PxAllocatorCallback-derived callback object
+TkFramework* framework = NvBlastTkFrameworkCreate();
 \endcode
 
-One then creates the framework:
-
-\code
-TkFramework* framework = NvBlastTkFrameworkCreate( desc );
-\endcode
-
-The framework is a global singleton, and may be accessed via:
+The framework may be accessed via:
 
 \code
 TkFramework* framework = NvBlastTkFrameworkGet();
@@ -182,7 +173,8 @@ TkAsset using all of the default parameters of the createAsset function:
 TkAsset* asset = framework->createAsset(llAsset, nullptr, 0, true);
 \endcode
 
-The last parameter sets ownership.
+The last parameter sets ownership.  N.B.: in order for the TkAsset to own the underlying llAsset, and therefore release it when the TkAsset is released,
+the memory for the llAsset must be allocated using the allocator accessed through NvBlastGlobals (see \ref pageglobalsapi).
 
 If one wants to author internal joints in a TkAsset using this second createAsset method, one must pass in a valid array of joint descriptors of type
 TkAssetJointDesc.  Each joint descriptor takes two positions and two node indices.  The positions are the joint's attachment positions in asset space, and
@@ -204,7 +196,7 @@ The code above assumes you know the support graph nodes to which you'd like to a
 Fortunately it's easy to map chunk indices to graph node indices.  In order to get the map, use the low-level function
 
 \code
-const uint32_t map = NvBlastAssetGetChunkToGraphNodeMap(llAsset, nullptr);
+const uint32_t map = NvBlastAssetGetChunkToGraphNodeMap(llAsset, logFn);
 \endcode
 
 This map is an array with an entry for every chunk index.  To get the graph node index for a chunk indexed <b>chunkIndex</b>, use
@@ -225,9 +217,9 @@ asset->release();
 
 Whereas with the Blast&tm; low-level (\ref pagellapi), one must explicitly create a family (NvBlastFamily) from an asset (NvBlastAsset) before creating
 the first actor (NvBlastActor) in the family, NvBlastTk creates a TkFamily automatically when an unfractured TkActor is instanced from a TkAsset using
-the framework's createActor function.  This family is accessible through the actor and any actor that is created from splitting it.  The family <em>not</em>
-released automatically when all actors within it have been released.  The user must use the TkObject::release() method to do so.  (Or wait until the
-framework is released.)  If a family is released that contains actors, the actors within will be released as well.
+the framework's createActor function.  This family is accessible through the actor and any actor that is created from splitting it.  The family is
+<em>not</em> released automatically when all actors within it have been released.  The user must use the TkFamily's release() method (see TkObject base
+API) to do so.  (Or wait until the framework is released.)  If a family is released that contains actors, the actors within will be released as well.
 
 The TkFamily has a special roll in NvBlastTk, holding user-supplied event listeners (TkEventListener).  All <em>internal</em> actor creation and destruction
 events are broadcast to listeners through split events (TkSplitEvent).  These signal when a fracturing operation has destroyed an actor and created
@@ -242,11 +234,8 @@ As with the TkAssetDesc, the TkActorDesc is derived from its low-level counterpa
 the TkAsset being instanced.  An example of TkActor creation is given below, given a TkAsset pointer <b>asset</b>.
 
 \code
-TkActorDesc desc;
-
-myFunctionToFillInLowLevelActorFields(desc);	// Fill in the low-level (NvBlastActorDesc) fields as usual
-
-desc.asset = asset;
+TkActorDesc desc;	// The TkActorDesc constructor sets sane default values for the base (NvBlastActorDesc) fields, giving uniform chunk and bond healths of 1.0.
+desc.asset = asset;	// This field of TkActorDesc must be set to a valid asset pointer.
 
 TkActor* actor = framework->createActor(desc);
 \endcode
@@ -266,23 +255,28 @@ in sync with the splitting of the TkActor.  For more on this, see \ref tkevents.
 <br>
 \section tkgroups Groups
 
-One feature of NvBlastTk is multithreading of damage processing.  The mechanism by which the toolkit does this is the group object, TkGroup.  Groups are created
-at the request of the user; the user may create as many groups as they like.  Actors may be added or removed from groups in any way the user wishes, with the only
-constraint being that a given actor may belong to no more than one group.  A group is a processing object, much like a scene in a physics simulation.  Indeed, a
-natural pattern would be to associate one group per physics scene, and synchronize the group processing with scene simulation.  Another pattern would be to subdivide
-the world into neighborhoods, and associate each neighborhood with a group.  A distributed game could take advantage of this structure to similarly distribute
-computation.
+One important feature of NvBlastTk is the ability to multitask damage processing.  The mechanism by which the toolkit does this is the group object, TkGroup.
+Groups are created at the request of the user; the user may create as many groups as he or she likes.  Actors may be added or removed from groups in any way the
+user wishes, with the only constraint being that a given actor may belong to no more than one group.  A group is a processing object, much like a scene in a physics
+simulation.  Indeed, a natural pattern would be to associate one group per physics scene, and synchronize the group processing with scene simulation.  Another
+pattern would be to subdivide the world into neighborhoods, and associate each neighborhood with a group.  A distributed game could take advantage of this structure
+to similarly distribute computation.
 
-When processing, a group spawns tasks to calculate the effects of all damage taken by the group's actors.  The group's sync function waits for all tasks to finish,
-and then has each family associated with its actors broadcast events to its listeners.
+Group processing is performed by <em>workers</em>, which have a TkGroupWorker API exposed to the user.  The number of workers may be set by the user, with the idea being
+that this should correspond to the number of threads available for group processing.  Processing starts with a call to TkGroup::startProcess().  This creates a number
+of jobs which the user may assign to workers as they like, each worker potentially on its own thread.  The jobs calculate the effects of all damage taken
+by the group's actors.  After all jobs have been run, the user must call TkGroup::endProcess().  This will result in all events being fired off to listeners associated
+with families with actors in the group.
+
+A convenience function, TkGroup::process(), is provided which uses one worker to perform all jobs sequentially on the calling thread.  This is useful shortcut to
+get BlastTk up and running quickly.  A multithreaded group processing implementation is given by Nv::Blast::ExtGroupTaskManagerImpl (in NvBlastExtPxTaskImpl.h).
+This resides in \ref pageextphysx, because it uses physx::PxTask.
 
 Actors resulting from the split of a "parent" actor will be placed automatically into the group that the parent belonged to.  This is similar to the assigment of
 families from a split, except that unlike families, the user then has the option to move the new actors to other groups, or no group at all.
 
 Also similar to families, groups are not automatically released when the last actor is removed from it.  Unlike families, when a group is released, the actors which
 belong to the group are <em>not</em> released.  They will, however, be removed from the group before the release is complete.
-
-Because a group spawns tasks, for flexibility it requires a user-defined task manager.  This manager needs to implement the type physx::PxTaskManager interface.
 
 A typical usage is outlined below.  See \ref damage_in_tk for methods of applying damage to actors.
 
@@ -317,15 +311,9 @@ myDamageFunction(actor2);
 myDamageFunction(actor3);
 // etc...
 
-// Calling the groups' process functions will spawn tasks to process damage taken to the contained actors.
+// Calling the groups' process functions will (synchronously) run all jobs to process damage taken by the contained actors.
 group1->process();
 group2->process();
-
-// The user may insert code to be run asynchronously with group processing...
-
-// Call the groups' sync functions (with default block = true argument) to wait for processing to finish and fire off events.
-group1->sync();
-group2->sync();
 
 // When the groups are no longer needed, they may be released with the usual release method.
 group1->release();
@@ -380,11 +368,9 @@ damageDescs[1].maxRadius = 5.0f;
 // The example material "Material" is modeled after NvBlastExtMaterial in the NvBlastExtShaders extension
 Material material;
 
-material.singleChunkThreshold = 1.0f;
-material.graphChunkThreshold = 1.0f;
-material.bondTangentialThreshold = 0.5f;
-material.bondNormalThreshold = 0.25f;
-material.damageAttenuation = 0.75f
+material.health = 10.0f;
+material.minDamageThreshold = 0.1f;
+material.maxDamageThreshold = 0.8f;
 
 // Set the damage params struct
 NvBlastProgramParams params = { damageDescs, 2, &material };
@@ -405,11 +391,9 @@ To use this method, the user must first set a default material in the actor's fa
 // The example material "Material" is modeled after NvBlastExtMaterial in the NvBlastExtShaders extension
 Material material;
 
-material.singleChunkThreshold = 1.0f;
-material.graphChunkThreshold = 1.0f;
-material.bondTangentialThreshold = 0.5f;
-material.bondNormalThreshold = 0.25f;
-material.damageAttenuation = 0.75f
+material.health = 10.0f;
+material.minDamageThreshold = 0.1f;
+material.maxDamageThreshold = 0.8f;
 
 // Set the default material used by the material-less TkActor::damage call
 actor->getFamily().setMaterial(&material);

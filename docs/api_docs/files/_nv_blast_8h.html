@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 API Reference: sdk/lowlevel/include/NvBlast.h File Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 API Reference: sdk/lowlevel/include/NvBlast.h File Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -37,6 +37,10 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">size_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#8ecf1456b8fb626a4384fb82265a802d">NvBlastActorGetRequiredScratchForSplit</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#fd4fbf5c7be23baba91f5c5b1a8b91f3">NvBlastActorIsBoundToWorld</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#9199afeefb94662e609d85a79be31a31">NvBlastActorIsSplitRequired</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#dc280b2a624d76981c87fb5f068d5106">NvBlastActorSplit</a> (<a class="el" href="struct_nv_blast_actor_split_event.html">NvBlastActorSplitEvent</a> *result, <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, uint32_t newActorsMaxCount, void *scratch, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn, <a class="el" href="struct_nv_blast_timers.html">NvBlastTimers</a> *timers)</td></tr>
 
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
@@ -61,15 +65,15 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#cab7d192ec7ac6d3a095a6b0646375fe">NvBlastActorSerialize</a> (void *buffer, uint32_t bufferSize, const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#bddff2d2e2502d48baa90b3fe64a40a2">NvBlastApplyAssetDescChunkReorderMap</a> (<a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *reorderedChunkDescs, const <a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *bondDescs, uint32_t bondCount, const uint32_t *chunkReorderMap, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#3204e6077b424c4e10f605af0fa119d5">NvBlastApplyAssetDescChunkReorderMap</a> (<a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *reorderedChunkDescs, const <a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *bondDescs, uint32_t bondCount, const uint32_t *chunkReorderMap, bool keepBondNormalChunkOrder, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#1f9cce66f78c5cce0bfda117a43ad4a3">NvBlastApplyAssetDescChunkReorderMapInplace</a> (<a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *bondDescs, uint32_t bondCount, const uint32_t *chunkReorderMap, void *scratch, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#9eea9e02fc7f81cdc0399e7196bddf58">NvBlastApplyAssetDescChunkReorderMapInPlace</a> (<a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *bondDescs, uint32_t bondCount, const uint32_t *chunkReorderMap, bool keepBondNormalChunkOrder, void *scratch, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#c4748f2da0b6a1be9055141c68ac668f">NvBlastBuildAssetDescChunkReorderMap</a> (uint32_t *chunkReorderMap, const <a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount, void *scratch, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#fd09f53fb71a1fb33053eebf1610367b">NvBlastEnsureAssetExactSupportCoverage</a> (<a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount, void *scratch, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#c61d3b9346765324a627b73803290373">NvBlastReorderAssetDescChunks</a> (<a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *bondDescs, uint32_t bondCount, uint32_t *chunkReorderMap, void *scratch, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#773ddce30d6fdeebf0a770dcc5fc1305">NvBlastReorderAssetDescChunks</a> (<a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *chunkDescs, uint32_t chunkCount, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *bondDescs, uint32_t bondCount, uint32_t *chunkReorderMap, bool keepBondNormalChunkOrder, void *scratch, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#868a59bb905879503d5e9a034cff247e">NvBlastAssetCreateFamily</a> (void *mem, const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> *asset, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
@@ -98,6 +102,8 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#d7ee1d97ad6e4f048eab694249fa2594">NvBlastAssetGetSize</a> (const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> *asset, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#3b2193da26679967e526001578327d41">NvBlastAssetGetSupportChunkCount</a> (const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> *asset, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">const <a class="el" href="struct_nv_blast_support_graph.html">NvBlastSupportGraph</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#c2307bd41ba85f2d69df0f229105fd09">NvBlastAssetGetSupportGraph</a> (const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> *asset, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#c0c345ce6676ad87cbd06e2f0debd8f7">NvBlastAssetSetID</a> (<a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> *asset, const <a class="el" href="struct_nv_blast_i_d.html">NvBlastID</a> *id, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
@@ -116,6 +122,8 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#88fd777ba36d4ad6c6d7a7913810c24d">NvBlastFamilyGetActorCount</a> (const <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a> *family, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#eb9144660cd1dbdb4dc23720a3e542de">NvBlastFamilyGetActors</a> (<a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> **actors, uint32_t actorsSize, const <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a> *family, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#dca8ba4a5449c530cfdb9a39e50215dd">NvBlastFamilyGetAsset</a> (const <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a> *family, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_blast_i_d.html">NvBlastID</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#fa406b4fc35520001060b529ec95e820">NvBlastFamilyGetAssetID</a> (const <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a> *family, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
@@ -740,6 +748,68 @@ Retrieve a list of visible chunk indices for the actor into the given array.<p>
 
 </div>
 </div><p>
+<a class="anchor" name="fd4fbf5c7be23baba91f5c5b1a8b91f3"></a><!-- doxytag: member="NvBlast.h::NvBlastActorIsBoundToWorld" ref="fd4fbf5c7be23baba91f5c5b1a8b91f3" args="(const NvBlastActor *actor, NvBlastLog logFn)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool NvBlastActorIsBoundToWorld           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *&nbsp;</td>
+          <td class="paramname"> <em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td>
+          <td class="paramname"> <em>logFn</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true iff this actor contains the "world" support graph node, created when a bond contains the UINT32_MAX value for one of their chunkIndices. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="9199afeefb94662e609d85a79be31a31"></a><!-- doxytag: member="NvBlast.h::NvBlastActorIsSplitRequired" ref="9199afeefb94662e609d85a79be31a31" args="(const NvBlastActor *actor, NvBlastLog logFn)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool NvBlastActorIsSplitRequired           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *&nbsp;</td>
+          <td class="paramname"> <em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td>
+          <td class="paramname"> <em>logFn</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Determines if the actor is damaged (was fractured) and split call is required.<p>
+The actor could be damaged by calling NvBlastActorApplyFracture or NvBlastFamilyApplyFracture and NvBlastActorSplit is expected after. This function gives a hint that NvBlastActorSplit will have some work to be done and actor could potentially be split. If actor is not damaged calling NvBlastActorSplit will make no effect.<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true iff split call is required for this actor. </dd></dl>
+
+</div>
+</div><p>
 <a class="anchor" name="cab7d192ec7ac6d3a095a6b0646375fe"></a><!-- doxytag: member="NvBlast.h::NvBlastActorSerialize" ref="cab7d192ec7ac6d3a095a6b0646375fe" args="(void *buffer, uint32_t bufferSize, const NvBlastActor *actor, NvBlastLog logFn)" -->
 <div class="memitem">
 <div class="memproto">
@@ -857,7 +927,7 @@ Releases the oldActor and creates its children newActors if necessary.<p>
 
 </div>
 </div><p>
-<a class="anchor" name="bddff2d2e2502d48baa90b3fe64a40a2"></a><!-- doxytag: member="NvBlast.h::NvBlastApplyAssetDescChunkReorderMap" ref="bddff2d2e2502d48baa90b3fe64a40a2" args="(NvBlastChunkDesc *reorderedChunkDescs, const NvBlastChunkDesc *chunkDescs, uint32_t chunkCount, NvBlastBondDesc *bondDescs, uint32_t bondCount, const uint32_t *chunkReorderMap, NvBlastLog logFn)" -->
+<a class="anchor" name="3204e6077b424c4e10f605af0fa119d5"></a><!-- doxytag: member="NvBlast.h::NvBlastApplyAssetDescChunkReorderMap" ref="3204e6077b424c4e10f605af0fa119d5" args="(NvBlastChunkDesc *reorderedChunkDescs, const NvBlastChunkDesc *chunkDescs, uint32_t chunkCount, NvBlastBondDesc *bondDescs, uint32_t bondCount, const uint32_t *chunkReorderMap, bool keepBondNormalChunkOrder, NvBlastLog logFn)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -900,6 +970,12 @@ Releases the oldActor and creates its children newActors if necessary.<p>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>keepBondNormalChunkOrder</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td>
           <td class="paramname"> <em>logFn</em></td><td>&nbsp;</td>
         </tr>
@@ -924,18 +1000,19 @@ Function applies reorder map on <a class="el" href="struct_nv_blast_chunk_desc.h
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondDescs</em>&nbsp;</td><td>Array of bond descriptors of size chunkCount. It will be updated accordingly. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondCount</em>&nbsp;</td><td>The number of bond descriptors. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkReorderMap</em>&nbsp;</td><td>Chunk reorder map to use, must be of size chunkCount. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>keepBondNormalChunkOrder</em>&nbsp;</td><td>If true, bond normals will be flipped if their chunk index order was reveresed by the reorder map. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>logFn</em>&nbsp;</td><td>User-supplied message function (see NvBlastLog definition). May be NULL. </td></tr>
   </table>
 </dl>
 
 </div>
 </div><p>
-<a class="anchor" name="1f9cce66f78c5cce0bfda117a43ad4a3"></a><!-- doxytag: member="NvBlast.h::NvBlastApplyAssetDescChunkReorderMapInplace" ref="1f9cce66f78c5cce0bfda117a43ad4a3" args="(NvBlastChunkDesc *chunkDescs, uint32_t chunkCount, NvBlastBondDesc *bondDescs, uint32_t bondCount, const uint32_t *chunkReorderMap, void *scratch, NvBlastLog logFn)" -->
+<a class="anchor" name="9eea9e02fc7f81cdc0399e7196bddf58"></a><!-- doxytag: member="NvBlast.h::NvBlastApplyAssetDescChunkReorderMapInPlace" ref="9eea9e02fc7f81cdc0399e7196bddf58" args="(NvBlastChunkDesc *chunkDescs, uint32_t chunkCount, NvBlastBondDesc *bondDescs, uint32_t bondCount, const uint32_t *chunkReorderMap, bool keepBondNormalChunkOrder, void *scratch, NvBlastLog logFn)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void NvBlastApplyAssetDescChunkReorderMapInplace           </td>
+          <td class="memname">void NvBlastApplyAssetDescChunkReorderMapInPlace           </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *&nbsp;</td>
           <td class="paramname"> <em>chunkDescs</em>, </td>
@@ -963,6 +1040,12 @@ Function applies reorder map on <a class="el" href="struct_nv_blast_chunk_desc.h
           <td></td>
           <td class="paramtype">const uint32_t *&nbsp;</td>
           <td class="paramname"> <em>chunkReorderMap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>keepBondNormalChunkOrder</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -997,6 +1080,7 @@ This overload of function reorders chunks in place.<p>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondDescs</em>&nbsp;</td><td>Array of bond descriptors of size chunkCount. It will be updated accordingly. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondCount</em>&nbsp;</td><td>The number of bond descriptors. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkReorderMap</em>&nbsp;</td><td>Chunk reorder map to use, must be of size chunkCount. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>keepBondNormalChunkOrder</em>&nbsp;</td><td>If true, bond normals will be flipped if their chunk index order was reveresed by the reorder map. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>scratch</em>&nbsp;</td><td>User-supplied scratch storage, must point to chunkCount * sizeof(NvBlastChunkDesc) valid bytes of memory. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>logFn</em>&nbsp;</td><td>User-supplied message function (see NvBlastLog definition). May be NULL. </td></tr>
   </table>
@@ -1378,7 +1462,7 @@ Retrieve the data format version for the given asset<p>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>logFn</em>&nbsp;</td><td>User-supplied message function (see NvBlastLog definition). May be NULL.</td></tr>
   </table>
 </dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>the data format version (<a class="el" href="struct_nv_blast_asset_data_format.html">NvBlastAssetDataFormat</a>). </dd></dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the data format version (NvBlastAssetDataFormat). </dd></dl>
 
 </div>
 </div><p>
@@ -1490,6 +1574,43 @@ Retrieve the memory size (in bytes) of the given data asset<p>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>the memory size of the asset (in bytes). </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="3b2193da26679967e526001578327d41"></a><!-- doxytag: member="NvBlast.h::NvBlastAssetGetSupportChunkCount" ref="3b2193da26679967e526001578327d41" args="(const NvBlastAsset *asset, NvBlastLog logFn)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t NvBlastAssetGetSupportChunkCount           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> *&nbsp;</td>
+          <td class="paramname"> <em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td>
+          <td class="paramname"> <em>logFn</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Get the number of support chunks in the given asset. This will equal the number of graph nodes in <a class="el" href="struct_nv_blast_support_graph.html#ac2f6bdd02cc6ed2b30af8f3099d072f">NvBlastSupportGraph::nodeCount</a> returned by NvBlastAssetGetSupportGraph only if no extra "world" node was created due to bonds defined between support chunks and the world. If such bonds were created, then there is an extra graph node representing the world, and this function will return <a class="el" href="struct_nv_blast_support_graph.html#ac2f6bdd02cc6ed2b30af8f3099d072f">NvBlastSupportGraph::nodeCount</a> - 1.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>asset</em>&nbsp;</td><td>The asset. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>logFn</em>&nbsp;</td><td>User-supplied message function (see NvBlastLog definition). May be NULL.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the number of chunks in the asset. </dd></dl>
 
 </div>
 </div><p>
@@ -1620,7 +1741,7 @@ Set an asset's ID<p>
 <p>
 Build chunk reorder map.<p>
 NvBlastCreateAsset function requires <a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> array to be in correct oder:<p>
-1. Root chunks (chunks with invalid parent index) must be first in the asset's chunk list. 2. Chunks in the asset should be arranged such that sibling chunks (chunks with the same parent) are contiguous. 3. Chunks are also should be arranged such that upper-support chunks (support chunks and their parent chunks) should go first in chunk list.<p>
+1. Root chunks (chunks with invalid parent index) must be first in the asset's chunk list. 2. Chunks in the asset must be arranged such that sibling chunks (chunks with the same parent) are contiguous. 3. Chunks must be arranged such that upper-support chunks (support chunks and their parent chunks) go first in chunk list.<p>
 This function builds chunk reorder map which can be used to order chunk descs. Reordering chunk's descriptors according to generated map places them in correct order for NvBlastCreateAsset to succeed.<p>
 Iff chunks are already ordered correctly, function returns 'true' and identity chunk reorder map. Otherwise 'false' is returned.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
@@ -1924,6 +2045,43 @@ Retrieve the active actors associated with the given family.<p>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>the number of actor pointers written to actors. This will not exceed actorsSize. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="dca8ba4a5449c530cfdb9a39e50215dd"></a><!-- doxytag: member="NvBlast.h::NvBlastFamilyGetAsset" ref="dca8ba4a5449c530cfdb9a39e50215dd" args="(const NvBlastFamily *family, NvBlastLog logFn)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a>* NvBlastFamilyGetAsset           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a> *&nbsp;</td>
+          <td class="paramname"> <em>family</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td>
+          <td class="paramname"> <em>logFn</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Retrieve the asset of the given family.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>family</em>&nbsp;</td><td>The family. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>logFn</em>&nbsp;</td><td>User-supplied message function (see NvBlastLog definition). May be NULL.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>pointer to the asset associated with the family. </dd></dl>
 
 </div>
 </div><p>
@@ -2273,7 +2431,7 @@ Returns the number of bytes of scratch memory that the user must supply to NvBla
 
 </div>
 </div><p>
-<a class="anchor" name="c61d3b9346765324a627b73803290373"></a><!-- doxytag: member="NvBlast.h::NvBlastReorderAssetDescChunks" ref="c61d3b9346765324a627b73803290373" args="(NvBlastChunkDesc *chunkDescs, uint32_t chunkCount, NvBlastBondDesc *bondDescs, uint32_t bondCount, uint32_t *chunkReorderMap, void *scratch, NvBlastLog logFn)" -->
+<a class="anchor" name="773ddce30d6fdeebf0a770dcc5fc1305"></a><!-- doxytag: member="NvBlast.h::NvBlastReorderAssetDescChunks" ref="773ddce30d6fdeebf0a770dcc5fc1305" args="(NvBlastChunkDesc *chunkDescs, uint32_t chunkCount, NvBlastBondDesc *bondDescs, uint32_t bondCount, uint32_t *chunkReorderMap, bool keepBondNormalChunkOrder, void *scratch, NvBlastLog logFn)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2310,6 +2468,12 @@ Returns the number of bytes of scratch memory that the user must supply to NvBla
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>keepBondNormalChunkOrder</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">void *&nbsp;</td>
           <td class="paramname"> <em>scratch</em>, </td>
         </tr>
@@ -2338,6 +2502,7 @@ Function basically calls NvBlastBuildAssetDescChunkReorderMap and NvBlastApplyAs
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondDescs</em>&nbsp;</td><td>Array of bond descriptors of size chunkCount. It will be updated accordingly. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondCount</em>&nbsp;</td><td>The number of bond descriptors. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkReorderMap</em>&nbsp;</td><td>Chunk reorder map to fill, must be of size chunkCount. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>keepBondNormalChunkOrder</em>&nbsp;</td><td>If true, bond normals will be flipped if their chunk index order was reveresed by the reorder map. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>scratch</em>&nbsp;</td><td>User-supplied scratch storage, must point to chunkCount * sizeof(NvBlastChunkDesc) valid bytes of memory. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>logFn</em>&nbsp;</td><td>User-supplied message function (see NvBlastLog definition). May be NULL.</td></tr>
   </table>

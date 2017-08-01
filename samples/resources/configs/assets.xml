@@ -1,3 +1,4 @@
+<!--<Model file="blast" name="Blast" position="0 5 0"/>-->
 <Model file="wall" name="Model Wall (Simple)" position="0 11.5 0" rotation="1 0 0 -90"/>
 <Model file="wall" name="Model Wall (Skinned)" position="0 11.5 0" rotation="1 0 0 -90" isSkinned = "true"/>
 <Model file="hugeAsset" name="Tower - 38k chunks (Skinned)" position="0 0 0" rotation="1 0 0 0" isSkinned = "true"/>
@@ -37,13 +38,33 @@
   	<Joint asset0="1" asset1="-1" chunk0="5" chunk1="0" position0="0 8 0" position1="-15 38 0" />
 </Composite>
 
-<Box name="Wall (3 depth, 625 nodes)" extents="20 20 2" staticHeight="0.5">
+<!-- 
+	<Box> bondFlagsMask:
+		X_BONDS             = 1 << 0,
+		Y_BONDS             = 1 << 1,
+		Z_BONDS             = 1 << 2,
+		X_PLUS_WORLD_BONDS  = 1 << 3,
+		X_MINUS_WORLD_BONDS = 1 << 4,
+		Y_PLUS_WORLD_BONDS  = 1 << 5,
+		Y_MINUS_WORLD_BONDS = 1 << 6,
+		Z_PLUS_WORLD_BONDS  = 1 << 7,
+		Z_MINUS_WORLD_BONDS = 1 << 8,	
+	default: 000000111 (X_BONDS | Y_BONDS | Z_BONDS)
+-->
+
+<Box name="Wall (3 depth, 625 nodes)" extents="20 20 2" bondFlagsMask="1000111">
 	<Level slices="1 1 1"  />
 	<Level slices="5 5 1"  />
 	<Level slices="5 5 1" isSupport="true" />
 </Box> 
 
-<Box name="Wall (2 depth, 625 nodes, no root chunk)" extents="20 20 2" staticHeight="0.5">
+<Box name="Wall (2 depth, 625 nodes, no root chunk)" extents="20 20 2" bondFlagsMask="1000111">
+	<Level slices="5 5 1"  />
+	<Level slices="5 5 1" isSupport="true" />
+</Box> 
+
+<Box name="Static Frame" extents="20 20 2" bondFlagsMask="1111111">
+	<Level slices="1 1 1"  />
 	<Level slices="5 5 1"  />
 	<Level slices="5 5 1" isSupport="true" />
 </Box> 
@@ -67,7 +88,7 @@
 	<Level slices="1 10 1"  isSupport="true"/>	
 </Box>
 
-<Box id="column support 1" name="Column (3 depth, 50 nodes)" extents="2 20 2">
+<Box id="column support 1" name="Column (3 depth, 50 nodes, support depth = 1)" extents="2 20 2">
   <Level slices="1 1 1"  />
   <Level slices="1 5 1"  isSupport="true" />
   <Level slices="1 10 1" />
@@ -79,7 +100,7 @@
 	<Level slices="5 5 5"  isSupport="true"/>	
 </Box> 
 
-<Box name="Brittle Wall" extents="40 20 1" staticHeight="0.5">
+<Box name="Brittle Wall" extents="40 20 1" bondFlagsMask="1000111">
 	<Level slices="1 1 1"  />
 	<Level slices="2 2 1"  />
 	<Level slices="2 2 1"  isSupport="true"/>	

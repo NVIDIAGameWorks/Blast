@@ -36,6 +36,11 @@ public slots:
 		void on_rectselect_action();
 		void on_drawselect_action();
 
+		bool on_Translate_clicked();
+		bool on_Rotation_clicked();
+		bool on_Scale_clicked();
+		void on_btnGizmoWithLocal_clicked();
+
 		void on_btnPaintbrush_clicked();
 		void on_btnFractureTool_clicked();
 		void on_btnExplodedViewTool_clicked();
@@ -46,11 +51,13 @@ public slots:
 		void on_btnSimulatePlay_clicked();
 		void on_btnFrameStepForward_clicked();
 
-		void on_btnBomb_clicked();
+		void on_btnDamage_clicked();
 		void on_btnProjectile_clicked();
 		void on_btnDropObject_clicked();
 
 		void on_btnPreferences_clicked();
+
+		void updateCheckIconsStates();
 
 private:
 	QHBoxLayout *hLayout;
@@ -74,9 +81,14 @@ private:
 	QLabel *lbExactCoverage;
 	QCheckBox* cbExactCoverage;
 	
-	QPushButton *btnSelectTool;	
+	QPushButton *btnSelectTool;
+	QPushButton *btnTranslate;
+	QPushButton *btnRotate;
+	QPushButton *btnScale;
+	QPushButton *btnGizmoWithLocal;
+
 	QPushButton *btnPaintbrush;
-	QPushButton *btnFractureTool;	
+	QPushButton *btnFractureTool;
 	QPushButton *btnExplodedViewTool;
 	QPushButton *btnJointsTool;
 	QPushButton *btnFuseSelectedChunks;
@@ -85,10 +97,12 @@ private:
 	QPushButton *btnSimulatePlay;
 	QPushButton *btnFrameStepForward;
 	
-	QPushButton *btnBomb;
+	QPushButton *btnDamage;
 	QPushButton *btnProjectile;
 	QPushButton *btnDropObject;
 	
 	QPushButton *btnPreferences;
+
+	bool m_fullCoverage;
 };
 #endif // BlastToolbar_h__

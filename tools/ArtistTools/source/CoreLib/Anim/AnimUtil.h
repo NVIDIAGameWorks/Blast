@@ -29,8 +29,7 @@
 
 #include "MathUtil.h"
 #include <string.h>
-
-//#include <Nv/Blast/NvHairSdk.h>
+#define NV_HAIR_MAX_STRING 128
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // cache for animated bone data
@@ -67,7 +66,7 @@ struct CORELIB_EXPORT AnimationCache
 
 	const atcore_float4x4* GetNodeMatrices(int index) const { return m_pBoneMatrices + index * m_numBones; }
 	atcore_float4x4* GetNodeMatrices(int index) { return m_pBoneMatrices + index * m_numBones; }
-	/*
+	
 	const char* GetBoneName(int index) const
 	{
 		return m_pBoneNames + index * NV_HAIR_MAX_STRING;
@@ -78,7 +77,7 @@ struct CORELIB_EXPORT AnimationCache
 		char* str = m_pBoneNames + index * NV_HAIR_MAX_STRING;
 		strcpy_s(str, NV_HAIR_MAX_STRING, boneName);
 	}
-	*/
+
 	int		FindBone(const char *boneName) const;
 	bool	FindBoneMapping( int numBones, const NvChar* boneNames, int* mappedBoneId) const;
 
@@ -117,7 +116,7 @@ public:
 
 	void Allocate(NvUInt32 numBones);
 	void Release();
-	/*
+
 	const char* getBoneName(int index)
 	{
 		return m_pBoneNames + index * NV_HAIR_MAX_STRING;
@@ -128,7 +127,7 @@ public:
 		char* str = m_pBoneNames + index * NV_HAIR_MAX_STRING;
 		strcpy_s(str, NV_HAIR_MAX_STRING, boneName);
 	}
-	*/
+
 	void InitializeAnimationCache(AnimationCache* pGlobalCache, const char* nodeName);
 	bool Update(float frameTime, const char* rootBoneName, bool bindPose, bool zup);
 
@@ -164,6 +163,7 @@ struct CORELIB_EXPORT MeshDesc
 	atcore_float3*			m_pVertexNormals;
 	atcore_float3*			m_pFaceNormals;
 	atcore_float3*			m_pTangents;
+	atcore_float3			m_ColorRGB;
 
 	NvUInt32*				m_pIndices;
 	atcore_float2*			m_pTexCoords;
@@ -180,7 +180,9 @@ public:
 
 		m_pIndices(nullptr),
 		m_pTexCoords(nullptr)
-		{}
+		{
+			m_ColorRGB = gfsdk_makeFloat3(0, 0, 0);
+		}
 
 	void Allocate(NvUInt32 numVertices, NvUInt32 numTriangles);
 	void Release();

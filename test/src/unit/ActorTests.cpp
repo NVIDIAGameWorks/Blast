@@ -1,3 +1,31 @@
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
+
 #include "BlastBaseTest.h"
 #include "AssetGenerator.h"
 
@@ -31,6 +59,10 @@ static bool chooseRandomGraphNodes(uint32_t* g, uint32_t count, const Nv::Blast:
 		{
 			const uint32_t c0 = m_asset.m_graph.getChunkIndices()[i0];
 			const uint32_t c1 = m_asset.m_graph.getChunkIndices()[i1];
+			if (Nv::Blast::isInvalidIndex(c0) || Nv::Blast::isInvalidIndex(c1))
+			{
+				return c0 < c1;
+			}
 			return m_asset.getChunks()[c0].userData < m_asset.getChunks()[c1].userData;
 		}
 
@@ -106,6 +138,7 @@ static void blast(std::set<NvBlastActor*>& actorsToDamage, GeneratorAsset* testA
 
 		NvBlastActorGenerateFracture(&events, actor, program, &programParams, nullptr, nullptr);
 		NvBlastActorApplyFracture(&events, actor, &events, nullptr, nullptr);
+		const bool isDamaged = NvBlastActorIsSplitRequired(actor, nullptr);
 		bool removeActor = false;
 
 		if (events.bondFractureCount + events.chunkFractureCount > 0)
@@ -116,8 +149,13 @@ static void blast(std::set<NvBlastActor*>& actorsToDamage, GeneratorAsset* testA
 
 			splitScratch.resize((size_t)NvBlastActorGetRequiredScratchForSplit(actor, nullptr));
 			const size_t newActorsCount = NvBlastActorSplit(&splitEvent, actor, newActorSize, splitScratch.data(), nullptr, nullptr);
+			EXPECT_TRUE(isDamaged || newActorsCount == 0);
 			totalNewActorsCount += newActorsCount;
 			removeActor = splitEvent.deletedActor != NULL;
+		}
+		else
+		{
+			EXPECT_FALSE(isDamaged);
 		}
 
 		if (removeActor)
@@ -153,12 +191,12 @@ public:
 
 	static void* alloc(size_t size)
 	{
-		return BlastBaseTest<FailLevel, Verbosity>::alloc(size);
+		return BlastBaseTest<FailLevel, Verbosity>::alignedZeroedAlloc(size);
 	}
 
 	static void free(void* mem)
 	{
-		BlastBaseTest<FailLevel, Verbosity>::free(mem);
+		BlastBaseTest<FailLevel, Verbosity>::alignedFree(mem);
 	}
 
 	NvBlastAsset* buildAsset(const NvBlastAssetDesc& desc)
@@ -170,14 +208,14 @@ public:
 		std::vector<uint32_t> chunkReorderMap(desc.chunkCount);
 		std::vector<char> scratch(desc.chunkCount * sizeof(NvBlastChunkDesc));
 		NvBlastEnsureAssetExactSupportCoverage(chunkDescs.data(), fixedDesc.chunkCount, scratch.data(), messageLog);
-		NvBlastReorderAssetDescChunks(chunkDescs.data(), fixedDesc.chunkCount, bondDescs.data(), fixedDesc.bondCount, chunkReorderMap.data(), scratch.data(), messageLog);
+		NvBlastReorderAssetDescChunks(chunkDescs.data(), fixedDesc.chunkCount, bondDescs.data(), fixedDesc.bondCount, chunkReorderMap.data(), true, scratch.data(), messageLog);
 		fixedDesc.chunkDescs = chunkDescs.data();
 		fixedDesc.bondDescs = bondDescs.empty() ? nullptr : bondDescs.data();
 
 		// create asset
 		m_scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(&fixedDesc, messageLog));
 		void* mem = alloc(NvBlastGetAssetMemorySize(&fixedDesc, messageLog));
-		NvBlastAsset* asset = NvBlastCreateAsset(mem, &fixedDesc, &m_scratch[0], messageLog);
+		NvBlastAsset* asset = NvBlastCreateAsset(mem, &fixedDesc, m_scratch.data(), messageLog);
 		EXPECT_TRUE(asset != nullptr);
 		return asset;
 	}
@@ -199,7 +237,7 @@ public:
 		void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(&asset, nullptr));
 		NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, &asset, nullptr);
 		std::vector<char> scratch((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, messageLog));
-		NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, &scratch[0], messageLog);
+		NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), messageLog);
 		EXPECT_TRUE(actor != nullptr);
 		return actor;
 	}
@@ -252,7 +290,7 @@ public:
 
 		NvBlastFamily* family = NvBlastActorGetFamily(actors[0], messageLog);
 
-		const uint32_t supportChunkCount = actors[0]->getAsset()->m_graph.m_nodeCount;
+		const uint32_t supportChunkCount = NvBlastAssetGetSupportChunkCount(&asset, messageLog);
 		const uint32_t leafChunkCount = actors[0]->getAsset()->m_leafChunkCount;
 
 		// Now randomly partition the actors in the array, and keep going until we're down to single support chunks
@@ -290,7 +328,7 @@ public:
 						if (bondIndex != Nv::Blast::invalidIndex<uint32_t>())
 						{
 							a->damageBond(g[0], g[1], bondIndex, 100.0f);
-							a->findIslands(&m_scratch[0]);
+							a->findIslands(m_scratch.data());
 						}
 					}
 					else
@@ -349,11 +387,19 @@ public:
 
 			++remainingActorCount;
 
-			NVBLAST_ASSERT(1 == a->getVisibleChunkCount());
-			EXPECT_EQ(1, a->getVisibleChunkCount());
+			NVBLAST_ASSERT(1 == a->getVisibleChunkCount() || a->isBoundToWorld());
+			EXPECT_TRUE(1 == a->getVisibleChunkCount() || a->isBoundToWorld());
 			if (!partitionToSubsupport)
 			{
 				EXPECT_EQ(1, a->getGraphNodeCount());
+			}
+
+			if (0 == a->getVisibleChunkCount())
+			{
+				EXPECT_TRUE(a->isBoundToWorld());
+				EXPECT_EQ(1, a->getGraphNodeCount());
+				EXPECT_EQ(a->getFamilyHeader()->m_asset->m_graph.m_nodeCount - 1, a->getFirstGraphNodeIndex());
+				--remainingActorCount;	// Do not count this as a remaining actor, to be compared with leaf or support chunk counts later
 			}
 
 			const bool actorReleaseResult = NvBlastActorDeactivate(actors[i], nullptr);
@@ -388,7 +434,11 @@ public:
 			std::vector<bool> isSupport(asset.m_chunkCount, false);
 			for (uint32_t i = 0; i < asset.m_graph.m_nodeCount; ++i)
 			{
-				isSupport[asset.m_graph.getChunkIndices()[i]] = true;
+				const uint32_t chunkIndex = asset.m_graph.getChunkIndices()[i];
+				if (!Nv::Blast::isInvalidIndex(chunkIndex))
+				{
+					isSupport[chunkIndex] = true;
+				}
 			}
 
 			// Climb hierarchy to find support chunk
@@ -416,7 +466,7 @@ public:
 			// Mark visible nodes representing graph chunks
 			std::vector<bool> visibleChunkFound(asset.m_chunkCount, false);
 
-			// Make sure every graph chunk is represented by a visible chunk
+			// Make sure every graph chunk is represented by a visible chunk, or represents the world
 			for (Nv::Blast::Actor::GraphNodeIt i = actor; (bool)i; ++i)
 			{
 				const uint32_t graphNodeIndex = (uint32_t)i;
@@ -433,7 +483,7 @@ public:
 					}
 					chunkIndex = chunks[chunkIndex].parentChunkIndex;
 				}
-				EXPECT_FALSE(Nv::Blast::isInvalidIndex(chunkIndex));
+				EXPECT_TRUE(!Nv::Blast::isInvalidIndex(chunkIndex) || (graphNodeIndex == asset.m_graph.m_nodeCount-1 && actor.isBoundToWorld()));
 			}
 
 			// Check that all visible chunks are accounted for
@@ -564,7 +614,7 @@ public:
 			{
 				const uint32_t actorCountExpected = NvBlastFamilyGetActorCount(storageFamily, logFn);
 				std::vector<NvBlastActor*> blockActors(actorCountExpected);
-				const uint32_t actorCountReturned = NvBlastFamilyGetActors(&blockActors[0], actorCountExpected, storageFamily, logFn);
+				const uint32_t actorCountReturned = NvBlastFamilyGetActors(blockActors.data(), actorCountExpected, storageFamily, logFn);
 				EXPECT_EQ(actorCountExpected, actorCountReturned);
 			}
 			compareFamilies(storageFamily, actorFamily, size, logFn);
@@ -591,7 +641,7 @@ public:
 			EXPECT_GE(serSizeBound, serSize);
 			std::vector<char>& stream = streams[i];
 			stream.resize(serSize);
-			const uint32_t bytesWritten = NvBlastActorSerialize(&stream[0], serSize, actors[i], logFn);
+			const uint32_t bytesWritten = NvBlastActorSerialize(stream.data(), serSize, actors[i], logFn);
 			EXPECT_EQ(serSize, bytesWritten);
 		}
 
@@ -607,7 +657,7 @@ public:
 
 		for (size_t i = 0; i < actors.size(); ++i)
 		{
-			NvBlastActor* newActor = NvBlastFamilyDeserializeActor(newFamily, &streams[order[i]][0], logFn);
+			NvBlastActor* newActor = NvBlastFamilyDeserializeActor(newFamily, streams[order[i]].data(), logFn);
 			EXPECT_TRUE(newActor != nullptr);
 		}
 
@@ -632,7 +682,7 @@ public:
 		const NvBlastFamily* oldFamily = NvBlastActorGetFamily(&a, logFn);
 		const uint32_t size = NvBlastFamilyGetSize(oldFamily, logFn);
 		std::vector<char> buffer((char*)oldFamily, (char*)oldFamily + size);
-		NvBlastFamily* familyCopy = reinterpret_cast<NvBlastFamily*>(&buffer[0]);
+		NvBlastFamily* familyCopy = reinterpret_cast<NvBlastFamily*>(buffer.data());
 
 		const uint32_t serCount = 1 + (rand() % actors.size() - 1);
 
@@ -661,7 +711,7 @@ public:
 
 		for (uint32_t i = 0; i < serCount; ++i)
 		{
-			NvBlastActor* newActor = NvBlastFamilyDeserializeActor(familyCopy, &streams[i][0], logFn);
+			NvBlastActor* newActor = NvBlastFamilyDeserializeActor(familyCopy, streams[i].data(), logFn);
 			EXPECT_TRUE(newActor != nullptr);
 		}
 
@@ -676,7 +726,7 @@ public:
 	bool simple,
 	void (*actorTest)(const Nv::Blast::Actor&, NvBlastLog),
 	void (*postDamageTest)(std::vector<NvBlastActor*>&, NvBlastLog),
-	CubeAssetGenerator::BondFlags bondFlags = CubeAssetGenerator::BondFlags::ALL_BONDS
+	CubeAssetGenerator::BondFlags bondFlags = CubeAssetGenerator::BondFlags::ALL_INTERNAL_BONDS
 	)
 	{
 		const float relativeDamageRadius = simple ? 0.75f : 0.2f;
@@ -729,7 +779,6 @@ public:
 			desc.chunkCount = (uint32_t)testAsset.solverChunks.size();
 			desc.bondDescs = testAsset.solverBonds.data();
 			desc.bondCount = (uint32_t)testAsset.solverBonds.size();
-
 			NvBlastAsset* asset = buildAsset(desc);
 			NvBlastID assetID = NvBlastAssetGetID(asset, messageLog);
 
@@ -784,7 +833,7 @@ public:
 							const uint32_t actorsWritten = NvBlastFamilyGetActors(&buffer1[0], actorCount, family, messageLog);
 							EXPECT_EQ(actorsWritten, actorCount);
 							std::vector<NvBlastActor*> buffer2(actors.begin(), actors.end());
-							EXPECT_EQ(0, memcmp(&buffer1[0], &buffer2[0], actorCount*sizeof(NvBlastActor*)));
+							EXPECT_EQ(0, memcmp(&buffer1[0], buffer2.data(), actorCount*sizeof(NvBlastActor*)));
 						}
 					}
 					// Test individual actors
@@ -925,7 +974,7 @@ TEST_F(ActorTestAllowWarnings, ActorHealthInitialization)
 				void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
 				NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, nullptr);
 				std::vector<char> scratch((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, messageLog));
-				NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, &scratch[0], messageLog);
+				NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), messageLog);
 				EXPECT_TRUE(actor != nullptr);
 
 				Nv::Blast::Actor& actorInt = static_cast<Nv::Blast::Actor&>(*actor);
@@ -1053,7 +1102,20 @@ TEST_F(ActorTestStrict, DamageLeafSupportActorTestActorSerializationPartialBlock
 
 TEST_F(ActorTestStrict, DamageMultipleIslandLeafSupportActorsTestVisibility)
 {
-	damageLeafSupportActors(4, 4, 5, false, testActorVisibleChunks, nullptr, CubeAssetGenerator::BondFlags::Y_BONDS | CubeAssetGenerator::BondFlags::Z_BONDS);	// Only connect y-z plane islands
-	damageLeafSupportActors(4, 4, 5, false, testActorVisibleChunks, nullptr, CubeAssetGenerator::BondFlags::Z_BONDS);	// Only connect z-direction islands
-	damageLeafSupportActors(4, 4, 5, false, testActorVisibleChunks, nullptr, CubeAssetGenerator::BondFlags::NO_BONDS);	// All support chunks disconnected (single-chunk islands)
+	typedef CubeAssetGenerator::BondFlags BF;
+	damageLeafSupportActors(4, 4, 5, false, testActorVisibleChunks, nullptr, BF::Y_BONDS | BF::Z_BONDS);	// Only connect y-z plane islands
+	damageLeafSupportActors(4, 4, 5, false, testActorVisibleChunks, nullptr, BF::Z_BONDS);	// Only connect z-direction islands
+	damageLeafSupportActors(4, 4, 5, false, testActorVisibleChunks, nullptr, BF::NO_BONDS);	// All support chunks disconnected (single-chunk islands)
+}
+
+TEST_F(ActorTestStrict, DamageBoundToWorldLeafSupportActorsTestVisibility)
+{
+	typedef CubeAssetGenerator::BondFlags BF;
+	damageLeafSupportActors(4, 4, 5, false, testActorVisibleChunks, nullptr, BF::ALL_INTERNAL_BONDS | BF::X_MINUS_WORLD_BONDS);
+	damageLeafSupportActors(4, 4, 5, false, testActorVisibleChunks, nullptr, BF::ALL_INTERNAL_BONDS | BF::Y_PLUS_WORLD_BONDS);
+	damageLeafSupportActors(4, 4, 5, false, testActorVisibleChunks, nullptr, BF::ALL_INTERNAL_BONDS | BF::Z_MINUS_WORLD_BONDS);
+ 	damageLeafSupportActors(4, 4, 5, false, testActorVisibleChunks, nullptr, BF::ALL_INTERNAL_BONDS | BF::X_PLUS_WORLD_BONDS | BF::Y_MINUS_WORLD_BONDS);
+	damageLeafSupportActors(4, 4, 5, false, testActorVisibleChunks, nullptr, BF::ALL_INTERNAL_BONDS | BF::X_PLUS_WORLD_BONDS | BF::X_MINUS_WORLD_BONDS
+																									| BF::Y_PLUS_WORLD_BONDS | BF::Y_MINUS_WORLD_BONDS
+																									| BF::Z_PLUS_WORLD_BONDS | BF::Z_MINUS_WORLD_BONDS);
 }

@@ -1,3 +1,31 @@
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
+
 #include "AssetGenerator.h"
 #include <cstring>
 
@@ -53,11 +81,9 @@ void CubeAssetGenerator::generate(GeneratorAsset& asset, const Settings& setting
 					chunkDesc.parentChunkIndex = parentID;
 					asset.solverChunks.push_back(chunkDesc);
 
-					//bool isStatic = false;
-
 					if (settings.depths[depth].flag & NvBlastChunkDesc::Flags::SupportFlag)
 					{
-						//isStatic = position.y - (extents.y - extents_.y) / 2 <= m_staticHeight;
+						// Internal bonds
 
 						// x-neighbor
 						if (x > 0 && (settings.bondFlags & BondFlags::X_BONDS))
@@ -82,6 +108,45 @@ void CubeAssetGenerator::generate(GeneratorAsset& asset, const Settings& setting
 							uint32_t neighborID = chunkDesc.userData - (uint32_t)slicesPerAxisTotal.x*(uint32_t)slicesPerAxisTotal.y;
 							fillBondDesc(asset.solverBonds, chunkDesc.userData, neighborID, position, zNeighborPosition, extents, extents.x * extents.y);
 						}
+
+						// World bonds (only one per chunk is enough, otherwise they will be removed as duplicated, thus 'else if')
+
+						// -x world bond
+						if (x == 0 && (settings.bondFlags & BondFlags::X_MINUS_WORLD_BONDS))
+						{
+							GeneratorAsset::Vec3 xNeighborPosition = position - GeneratorAsset::Vec3(extents.x, 0, 0);
+							fillBondDesc(asset.solverBonds, chunkDesc.userData, UINT32_MAX, position, xNeighborPosition, extents, extents.y * extents.z);
+						}
+						// +x world bond
+						else if (x == slicesPerAxisTotal.x - 1 && (settings.bondFlags & BondFlags::X_PLUS_WORLD_BONDS))
+						{
+							GeneratorAsset::Vec3 xNeighborPosition = position + GeneratorAsset::Vec3(extents.x, 0, 0);
+							fillBondDesc(asset.solverBonds, chunkDesc.userData, UINT32_MAX, position, xNeighborPosition, extents, extents.y * extents.z);
+						}
+						// -y world bond
+						else if (y == 0 && (settings.bondFlags & BondFlags::Y_MINUS_WORLD_BONDS))
+						{
+							GeneratorAsset::Vec3 yNeighborPosition = position - GeneratorAsset::Vec3(0, extents.y, 0);
+							fillBondDesc(asset.solverBonds, chunkDesc.userData, UINT32_MAX, position, yNeighborPosition, extents, extents.z * extents.x);
+						}
+						// +y world bond
+						else if (y == slicesPerAxisTotal.y - 1 && (settings.bondFlags & BondFlags::Y_PLUS_WORLD_BONDS))
+						{
+							GeneratorAsset::Vec3 yNeighborPosition = position + GeneratorAsset::Vec3(0, extents.y, 0);
+							fillBondDesc(asset.solverBonds, chunkDesc.userData, UINT32_MAX, position, yNeighborPosition, extents, extents.z * extents.x);
+						}
+						// -z world bond
+						else if (z == 0 && (settings.bondFlags & BondFlags::Z_MINUS_WORLD_BONDS))
+						{
+							GeneratorAsset::Vec3 zNeighborPosition = position - GeneratorAsset::Vec3(0, 0, extents.z);
+							fillBondDesc(asset.solverBonds, chunkDesc.userData, UINT32_MAX, position, zNeighborPosition, extents, extents.x * extents.y);
+						}
+						// +z world bond
+						else if (z == slicesPerAxisTotal.z - 1 && (settings.bondFlags & BondFlags::Z_PLUS_WORLD_BONDS))
+						{
+							GeneratorAsset::Vec3 zNeighborPosition = position + GeneratorAsset::Vec3(0, 0, extents.z);
+							fillBondDesc(asset.solverBonds, chunkDesc.userData, UINT32_MAX, position, zNeighborPosition, extents, extents.x * extents.y);
+						}
 					}
 
 					asset.chunks.push_back(GeneratorAsset::BlastChunkCube(position, extents/*isStatic*/));
@@ -100,7 +165,7 @@ void CubeAssetGenerator::generate(GeneratorAsset& asset, const Settings& setting
 	{
 		asset.chunks[chunkReorderMap[i]] = chunksTemp[i];
 	}
-	NvBlastApplyAssetDescChunkReorderMapInplace(asset.solverChunks.data(), (uint32_t)asset.solverChunks.size(), asset.solverBonds.data(), (uint32_t)asset.solverBonds.size(), chunkReorderMap.data(), scratch.data(), nullptr);
+	NvBlastApplyAssetDescChunkReorderMapInPlace(asset.solverChunks.data(), (uint32_t)asset.solverChunks.size(), asset.solverBonds.data(), (uint32_t)asset.solverBonds.size(), chunkReorderMap.data(), true, scratch.data(), nullptr);
 }
 
 void CubeAssetGenerator::fillBondDesc(std::vector<NvBlastBondDesc>& bondDescs, uint32_t id0, uint32_t id1, GeneratorAsset::Vec3 pos0, GeneratorAsset::Vec3 pos1, GeneratorAsset::Vec3 size, float area)

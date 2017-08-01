@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/extensions/import/source/NvBlastExtApexDestruction.h Source File</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/extensions/import/source/NvBlastExtApexDestruction.h Source File</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -35,83 +35,101 @@
       <li><a href="globals.html"><span>File&nbsp;Members</span></a></li>
     </ul>
   </div>
-<h1>sdk/extensions/import/source/NvBlastExtApexDestruction.h</h1><a href="_nv_blast_ext_apex_destruction_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment">* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.</span>
-<a name="l00003"></a>00003 <span class="comment">*</span>
-<a name="l00004"></a>00004 <span class="comment">* NVIDIA CORPORATION and its licensors retain all intellectual property</span>
-<a name="l00005"></a>00005 <span class="comment">* and proprietary rights in and to this software, related documentation</span>
-<a name="l00006"></a>00006 <span class="comment">* and any modifications thereto.  Any use, reproduction, disclosure or</span>
-<a name="l00007"></a>00007 <span class="comment">* distribution of this software and related documentation without an express</span>
-<a name="l00008"></a>00008 <span class="comment">* license agreement from NVIDIA CORPORATION is strictly prohibited.</span>
-<a name="l00009"></a>00009 <span class="comment">*/</span>
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef NVBLASTEXTAPEXDESTRUCTION_H</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTEXTAPEXDESTRUCTION_H</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
-<a name="l00014"></a>00014 <span class="preprocessor">#include "ApexUsingNamespace.h"</span>
-<a name="l00015"></a>00015 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_scoped_resource_8h.html">NvBlastExtScopedResource.h</a>"</span>
-<a name="l00016"></a>00016 <span class="preprocessor">#include "PsUtilities.h"</span>
-<a name="l00017"></a>00017 <span class="preprocessor">#include &lt;string&gt;</span>
-<a name="l00018"></a>00018 <span class="preprocessor">#include &lt;<a class="code" href="_nv_blast_types_8h.html">NvBlastTypes.h</a>&gt;</span>
-<a name="l00019"></a>00019 <span class="preprocessor">#include &lt;PxFileBuf.h&gt;</span>
-<a name="l00020"></a>00020 
-<a name="l00021"></a>00021 <span class="keyword">namespace </span>physx
-<a name="l00022"></a>00022 {
-<a name="l00023"></a>00023     <span class="keyword">class </span>PxFoundation;
-<a name="l00024"></a>00024 }
-<a name="l00025"></a>00025 
-<a name="l00026"></a>00026 
-<a name="l00027"></a>00027 <span class="keyword">namespace </span>Nv
-<a name="l00028"></a>00028 {
-<a name="l00029"></a>00029 <span class="keyword">namespace </span>Blast
-<a name="l00030"></a>00030 {
-<a name="l00031"></a>00031 
-<a name="l00032"></a>00032 <span class="keyword">namespace </span>ApexImporter
-<a name="l00033"></a>00033 {
-<a name="l00037"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html">00037</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html">ApexDestruction</a>
-<a name="l00038"></a>00038 {
-<a name="l00039"></a>00039     PX_NOCOPY(<a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html">ApexDestruction</a>)
-<a name="l00040"></a>00040 
-<a name="l00041"></a>00041 <span class="keyword">public</span>:
-<a name="l00042"></a>00042     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#651c712654a4d5649b4b3c22fcef10d0">ApexDestruction</a>(<a class="code" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> log = NULL);
+<h1>sdk/extensions/import/source/NvBlastExtApexDestruction.h</h1><a href="_nv_blast_ext_apex_destruction_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">// This code contains NVIDIA Confidential Information and is disclosed to you</span>
+<a name="l00002"></a>00002 <span class="comment">// under a form of NVIDIA software license agreement provided separately to you.</span>
+<a name="l00003"></a>00003 <span class="comment">//</span>
+<a name="l00004"></a>00004 <span class="comment">// Notice</span>
+<a name="l00005"></a>00005 <span class="comment">// NVIDIA Corporation and its licensors retain all intellectual property and</span>
+<a name="l00006"></a>00006 <span class="comment">// proprietary rights in and to this software and related documentation and</span>
+<a name="l00007"></a>00007 <span class="comment">// any modifications thereto. Any use, reproduction, disclosure, or</span>
+<a name="l00008"></a>00008 <span class="comment">// distribution of this software and related documentation without an express</span>
+<a name="l00009"></a>00009 <span class="comment">// license agreement from NVIDIA Corporation is strictly prohibited.</span>
+<a name="l00010"></a>00010 <span class="comment">//</span>
+<a name="l00011"></a>00011 <span class="comment">// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES</span>
+<a name="l00012"></a>00012 <span class="comment">// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO</span>
+<a name="l00013"></a>00013 <span class="comment">// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,</span>
+<a name="l00014"></a>00014 <span class="comment">// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.</span>
+<a name="l00015"></a>00015 <span class="comment">//</span>
+<a name="l00016"></a>00016 <span class="comment">// Information and code furnished is believed to be accurate and reliable.</span>
+<a name="l00017"></a>00017 <span class="comment">// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such</span>
+<a name="l00018"></a>00018 <span class="comment">// information or for any infringement of patents or other rights of third parties that may</span>
+<a name="l00019"></a>00019 <span class="comment">// result from its use. No license is granted by implication or otherwise under any patent</span>
+<a name="l00020"></a>00020 <span class="comment">// or patent rights of NVIDIA Corporation. Details are subject to change without notice.</span>
+<a name="l00021"></a>00021 <span class="comment">// This code supersedes and replaces all information previously supplied.</span>
+<a name="l00022"></a>00022 <span class="comment">// NVIDIA Corporation products are not authorized for use as critical</span>
+<a name="l00023"></a>00023 <span class="comment">// components in life support devices or systems without express written approval of</span>
+<a name="l00024"></a>00024 <span class="comment">// NVIDIA Corporation.</span>
+<a name="l00025"></a>00025 <span class="comment">//</span>
+<a name="l00026"></a>00026 <span class="comment">// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.</span>
+<a name="l00027"></a>00027 
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 <span class="preprocessor">#ifndef NVBLASTEXTAPEXDESTRUCTION_H</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTEXTAPEXDESTRUCTION_H</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include "ApexUsingNamespace.h"</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_scoped_resource_8h.html">NvBlastExtScopedResource.h</a>"</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include "PsUtilities.h"</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &lt;string&gt;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &lt;<a class="code" href="_nv_blast_types_8h.html">NvBlastTypes.h</a>&gt;</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include &lt;PxFileBuf.h&gt;</span>
+<a name="l00038"></a>00038 
+<a name="l00039"></a>00039 <span class="keyword">namespace </span>physx
+<a name="l00040"></a>00040 {
+<a name="l00041"></a>00041     <span class="keyword">class </span>PxFoundation;
+<a name="l00042"></a>00042 }
 <a name="l00043"></a>00043 
-<a name="l00044"></a>00044     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#651c712654a4d5649b4b3c22fcef10d0">ApexDestruction</a>(nvidia::apex::ApexSDK* apexSdk, nvidia::apex::ModuleDestructible* moduleDestructible, <a class="code" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> log = NULL);
-<a name="l00045"></a>00045     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#3f87ccaa411f75beae6e148144f12103">~ApexDestruction</a>();
-<a name="l00046"></a>00046 
-<a name="l00048"></a>00048 
-<a name="l00052"></a>00052     <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#9fe5ebe9eeb2f7dc99c88018544f9b89">initialize</a>();
-<a name="l00053"></a>00053 
-<a name="l00057"></a>00057     <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#009feac4115aca2ed5a60d57a985c74b">isValid</a>();
+<a name="l00044"></a>00044 
+<a name="l00045"></a>00045 <span class="keyword">namespace </span>Nv
+<a name="l00046"></a>00046 {
+<a name="l00047"></a>00047 <span class="keyword">namespace </span>Blast
+<a name="l00048"></a>00048 {
+<a name="l00049"></a>00049 
+<a name="l00050"></a>00050 <span class="keyword">namespace </span>ApexImporter
+<a name="l00051"></a>00051 {
+<a name="l00055"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html">00055</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html">ApexDestruction</a>
+<a name="l00056"></a>00056 {
+<a name="l00057"></a>00057     PX_NOCOPY(<a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html">ApexDestruction</a>)
 <a name="l00058"></a>00058 
-<a name="l00064"></a>00064     nvidia::apex::DestructibleAsset*    <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#1f891bb64e5e1d8d3ae62a4671e0730a">loadAsset</a>(physx::PxFileBuf* stream);
-<a name="l00065"></a>00065 
-<a name="l00069"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#48205b5d17d063156b2b536a7c2544e5">00069</a>     physx::PxFoundation*                <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#48205b5d17d063156b2b536a7c2544e5">foundation</a>() { <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#9a9186f677d73f78b8640250588d63e5">m_Foundation</a>.<a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html#cdddccd548cb835e84adca9110bdcd0f">get</a>(); }
-<a name="l00073"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#2a3c9b26a4ac6083f38aa10fb8a4d046">00073</a>     physx::PxPhysics*                   <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#2a3c9b26a4ac6083f38aa10fb8a4d046">physxSDK</a>() { <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#0483af4c671c834ab6143416232630fa">m_PhysxSDK</a>.<a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html#cdddccd548cb835e84adca9110bdcd0f">get</a>(); }
-<a name="l00077"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#aee7e399931d172c6e64358765ad88d3">00077</a>     physx::PxCooking*                   <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#aee7e399931d172c6e64358765ad88d3">cooking</a>() { <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#4fc4935745a30523b295dafa929e3d16">m_Cooking</a>.<a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html#cdddccd548cb835e84adca9110bdcd0f">get</a>(); }
-<a name="l00081"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#d87af9099f74d07bb49cf8440e4eee3f">00081</a>     nvidia::apex::ApexSDK*              <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#d87af9099f74d07bb49cf8440e4eee3f">apexSDK</a>() { <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#4fc159725d22e3509ec57db5600eb98b">m_ApexSDK</a>.<a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html#cdddccd548cb835e84adca9110bdcd0f">get</a>(); }
-<a name="l00082"></a>00082 
-<a name="l00086"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#245bc8d424c052bfb6fedeb5c082c0b6">00086</a>     nvidia::apex::ModuleDestructible*   <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#245bc8d424c052bfb6fedeb5c082c0b6">destructibleModule</a>() { <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#bc37ffbbb74e0f4d917c21f9363e84ce">m_DestructibleModule</a>.<a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html#cdddccd548cb835e84adca9110bdcd0f">get</a>(); }
-<a name="l00087"></a>00087 
-<a name="l00088"></a>00088 <span class="keyword">private</span>:
-<a name="l00089"></a>00089     <span class="keywordtype">bool</span> hasLegacyModule;
-<a name="l00090"></a>00090     <a class="code" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>                                                      m_log;
-<a name="l00092"></a>00092 
-<a name="l00093"></a>00093 <span class="keyword">protected</span>:
-<a name="l00094"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#9a9186f677d73f78b8640250588d63e5">00094</a>     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html">ScopedResource&lt;physx::PxFoundation&gt;</a>                             <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#9a9186f677d73f78b8640250588d63e5">m_Foundation</a>;
-<a name="l00095"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#0483af4c671c834ab6143416232630fa">00095</a>     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html">ScopedResource&lt;physx::PxPhysics&gt;</a>                                <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#0483af4c671c834ab6143416232630fa">m_PhysxSDK</a>;
-<a name="l00096"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#4fc4935745a30523b295dafa929e3d16">00096</a>     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html">ScopedResource&lt;physx::PxCooking&gt;</a>                                <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#4fc4935745a30523b295dafa929e3d16">m_Cooking</a>;
-<a name="l00097"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#4fc159725d22e3509ec57db5600eb98b">00097</a>     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html">ScopedResource&lt;nvidia::apex::ApexSDK&gt;</a>                           <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#4fc159725d22e3509ec57db5600eb98b">m_ApexSDK</a>;
-<a name="l00098"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#bc37ffbbb74e0f4d917c21f9363e84ce">00098</a>     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html">ScopedResource&lt;nvidia::apex::ModuleDestructible, ApexReleaser&gt;</a>  <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#bc37ffbbb74e0f4d917c21f9363e84ce">m_DestructibleModule</a>;
-<a name="l00099"></a>00099 
-<a name="l00100"></a>00100 };
-<a name="l00101"></a>00101 
-<a name="l00102"></a>00102 } <span class="comment">// namespace ApexImporter</span>
-<a name="l00103"></a>00103 
-<a name="l00104"></a>00104 } <span class="comment">// namespace Blast</span>
-<a name="l00105"></a>00105 } <span class="comment">// namespace Nv</span>
-<a name="l00106"></a>00106 
-<a name="l00107"></a>00107 
-<a name="l00108"></a>00108 <span class="preprocessor">#endif // NVBLASTEXTAPEXDESTRUCTION_H</span>
+<a name="l00059"></a>00059 <span class="keyword">public</span>:
+<a name="l00060"></a>00060     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#651c712654a4d5649b4b3c22fcef10d0">ApexDestruction</a>(<a class="code" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> log = NULL);
+<a name="l00061"></a>00061 
+<a name="l00062"></a>00062     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#651c712654a4d5649b4b3c22fcef10d0">ApexDestruction</a>(nvidia::apex::ApexSDK* apexSdk, nvidia::apex::ModuleDestructible* moduleDestructible, <a class="code" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> log = NULL);
+<a name="l00063"></a>00063     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#3f87ccaa411f75beae6e148144f12103">~ApexDestruction</a>();
+<a name="l00064"></a>00064 
+<a name="l00066"></a>00066 
+<a name="l00070"></a>00070     <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#9fe5ebe9eeb2f7dc99c88018544f9b89">initialize</a>();
+<a name="l00071"></a>00071 
+<a name="l00075"></a>00075     <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#009feac4115aca2ed5a60d57a985c74b">isValid</a>();
+<a name="l00076"></a>00076 
+<a name="l00082"></a>00082     nvidia::apex::DestructibleAsset*    <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#1f891bb64e5e1d8d3ae62a4671e0730a">loadAsset</a>(physx::PxFileBuf* stream);
+<a name="l00083"></a>00083 
+<a name="l00087"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#48205b5d17d063156b2b536a7c2544e5">00087</a>     physx::PxFoundation*                <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#48205b5d17d063156b2b536a7c2544e5">foundation</a>() { <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#9a9186f677d73f78b8640250588d63e5">m_Foundation</a>.<a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html#cdddccd548cb835e84adca9110bdcd0f">get</a>(); }
+<a name="l00091"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#2a3c9b26a4ac6083f38aa10fb8a4d046">00091</a>     physx::PxPhysics*                   <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#2a3c9b26a4ac6083f38aa10fb8a4d046">physxSDK</a>() { <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#0483af4c671c834ab6143416232630fa">m_PhysxSDK</a>.<a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html#cdddccd548cb835e84adca9110bdcd0f">get</a>(); }
+<a name="l00095"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#aee7e399931d172c6e64358765ad88d3">00095</a>     physx::PxCooking*                   <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#aee7e399931d172c6e64358765ad88d3">cooking</a>() { <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#4fc4935745a30523b295dafa929e3d16">m_Cooking</a>.<a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html#cdddccd548cb835e84adca9110bdcd0f">get</a>(); }
+<a name="l00099"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#d87af9099f74d07bb49cf8440e4eee3f">00099</a>     nvidia::apex::ApexSDK*              <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#d87af9099f74d07bb49cf8440e4eee3f">apexSDK</a>() { <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#4fc159725d22e3509ec57db5600eb98b">m_ApexSDK</a>.<a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html#cdddccd548cb835e84adca9110bdcd0f">get</a>(); }
+<a name="l00100"></a>00100 
+<a name="l00104"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#245bc8d424c052bfb6fedeb5c082c0b6">00104</a>     nvidia::apex::ModuleDestructible*   <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#245bc8d424c052bfb6fedeb5c082c0b6">destructibleModule</a>() { <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#bc37ffbbb74e0f4d917c21f9363e84ce">m_DestructibleModule</a>.<a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html#cdddccd548cb835e84adca9110bdcd0f">get</a>(); }
+<a name="l00105"></a>00105 
+<a name="l00106"></a>00106 <span class="keyword">private</span>:
+<a name="l00107"></a>00107     <span class="keywordtype">bool</span> hasLegacyModule;
+<a name="l00108"></a>00108     <a class="code" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>                                                      m_log;
+<a name="l00110"></a>00110 
+<a name="l00111"></a>00111 <span class="keyword">protected</span>:
+<a name="l00112"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#9a9186f677d73f78b8640250588d63e5">00112</a>     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html">ScopedResource&lt;physx::PxFoundation&gt;</a>                             <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#9a9186f677d73f78b8640250588d63e5">m_Foundation</a>;
+<a name="l00113"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#0483af4c671c834ab6143416232630fa">00113</a>     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html">ScopedResource&lt;physx::PxPhysics&gt;</a>                                <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#0483af4c671c834ab6143416232630fa">m_PhysxSDK</a>;
+<a name="l00114"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#4fc4935745a30523b295dafa929e3d16">00114</a>     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html">ScopedResource&lt;physx::PxCooking&gt;</a>                                <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#4fc4935745a30523b295dafa929e3d16">m_Cooking</a>;
+<a name="l00115"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#4fc159725d22e3509ec57db5600eb98b">00115</a>     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html">ScopedResource&lt;nvidia::apex::ApexSDK&gt;</a>                           <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#4fc159725d22e3509ec57db5600eb98b">m_ApexSDK</a>;
+<a name="l00116"></a><a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#bc37ffbbb74e0f4d917c21f9363e84ce">00116</a>     <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_scoped_resource.html">ScopedResource&lt;nvidia::apex::ModuleDestructible, ApexReleaser&gt;</a>  <a class="code" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html#bc37ffbbb74e0f4d917c21f9363e84ce">m_DestructibleModule</a>;
+<a name="l00117"></a>00117 
+<a name="l00118"></a>00118 };
+<a name="l00119"></a>00119 
+<a name="l00120"></a>00120 } <span class="comment">// namespace ApexImporter</span>
+<a name="l00121"></a>00121 
+<a name="l00122"></a>00122 } <span class="comment">// namespace Blast</span>
+<a name="l00123"></a>00123 } <span class="comment">// namespace Nv</span>
+<a name="l00124"></a>00124 
+<a name="l00125"></a>00125 
+<a name="l00126"></a>00126 <span class="preprocessor">#endif // NVBLASTEXTAPEXDESTRUCTION_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

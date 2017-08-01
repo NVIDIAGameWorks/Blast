@@ -1,22 +1,52 @@
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
+
 #include "PxPhysicsAPI.h"
-#include "PxAllocatorCallback.h"
-#include "PxErrorCallback.h"
 #include "PsFileBuffer.h"
 #include "NvBlast.h"
-#include "NvBlastExtAuthoringCollisionBuilder.h"
-#include "NvBlastExtSerializationLLInterface.h"
-#include "NvBlastExtSerializationInterface.h"
-#include "NvBlastExtAuthoringBondGenerator.h"
-#include "NvBlastExtAuthoringFractureTool.h"
+#include "NvBlastGlobals.h"
+#include "NvBlastExtExporter.h"
+#include "NvBlastPxCallbacks.h"
+#include "NvBlastTkAsset.h"
+#include "NvBlastExtLlSerialization.h"
+#include "NvBlastExtTkSerialization.h"
+#include "NvBlastExtPxSerialization.h"
+#include "NvBlastExtAuthoring.h"
 #include "NvBlastExtAuthoringMesh.h"
-#include "SimpleRandomGenerator.h"
-#include "FbxFileReader.h"
-#include "ObjFileReader.h"
-#include "FractureProcessor.h"
-#include "FbxFileWriter.h"
-#include "ObjFileWriter.h"
+#include "NvBlastExtAuthoringBondGenerator.h"
+#include "NvBlastExtAuthoringCollisionBuilder.h"
+#include "NvBlastExtAuthoringFractureTool.h"
 #include "BlastDataExporter.h"
+#include "SimpleRandomGenerator.h"
+#include "NvBlastExtAuthoringMeshCleaner.h"
+
 #include <string>
+#include <memory>
 #include <iostream>
 #include <vector>
 #include <cctype>
@@ -30,8 +60,11 @@ using physx::PxVec2;
 
 #define DEFAULT_ASSET_NAME "AuthoringTest"
 
-
 using namespace Nv::Blast;
+
+physx::PxFoundation*	gFoundation = nullptr;
+physx::PxPhysics*		gPhysics = nullptr;
+physx::PxCooking*		gCooking = nullptr;
 
 struct TCLAPint3
 {
@@ -80,6 +113,32 @@ bool mkDirRecursively(std::string path)
 	return isDirectoryExist(path);
 }
 
+bool initPhysX()
+{
+	gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
+	if (!gFoundation)
+	{
+		std::cout << "Can't init PhysX foundation" << std::endl;
+		return false;
+	}
+	physx::PxTolerancesScale scale;
+	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, scale, true);
+	if (!gPhysics)
+	{
+		std::cout << "Can't create Physics" << std::endl;
+		return false;
+	}
+	physx::PxCookingParams cookingParams(scale);
+	cookingParams.buildGPUData = true;
+	gCooking = PxCreateCooking(PX_PHYSICS_VERSION, gPhysics->getFoundation(), cookingParams);
+	if (!gCooking)
+	{
+		std::cout << "Can't create Cooking" << std::endl;
+		return false;
+	}
+	return true;
+}
+
 int main(int argc, const char* const* argv)
 {
 	// setup cmd line
@@ -94,6 +153,9 @@ int main(int argc, const char* const* argv)
 	TCLAP::ValueArg<std::string> outDirArg("", "outputDir", "Output directory", false, ".", "by default directory of the input file");
 	cmd.add(outDirArg);
 
+	TCLAP::SwitchArg cleanArg("", "clean", "Try clean mesh before fracturing", false);
+	cmd.add(cleanArg);
+
 	// The output modes
 	//NOTE: Fun TCLAP quirk here - if you set the default to true and specify this switch on the command line, the value will be false!
 	TCLAP::SwitchArg bpxaOutputArg("", "bpxa", "Output ExtPxAsset to the output directory (ext: bpxa)", false);
@@ -104,9 +166,6 @@ int main(int argc, const char* const* argv)
 
 	TCLAP::SwitchArg llOutputArg("", "ll", "Output LL Blast asset to the output directory (ext: llasset)", false);
 	cmd.add(llOutputArg);
-
-	TCLAP::SwitchArg ue4OutputArg("", "ue4", "Output FBX with UE4 coordinate system", false);
-	cmd.add(ue4OutputArg);
 
 	TCLAP::SwitchArg fbxAsciiArg("", "fbxascii", "Output FBX as an ascii file (defaults to binary output)", false);
 	cmd.add(fbxAsciiArg);
@@ -123,6 +182,11 @@ int main(int argc, const char* const* argv)
 	TCLAP::SwitchArg blockSer("", "block", "Serialize Blast data as block of memory", false);
 	cmd.add(blockSer);
 
+	TCLAP::SwitchArg fbxCollision("", "fbxcollision", "Add collision geometry to FBX file", false);
+	cmd.add(fbxCollision);
+
+	TCLAP::SwitchArg nonSkinnedFBX("", "nonskinned", "Output a non-skinned FBX file", false);
+	cmd.add(nonSkinnedFBX);
 
 
 
@@ -210,15 +274,10 @@ int main(int argc, const char* const* argv)
 	bool bOutputTK = tkOutputArg.getValue();
 	bool bOutputLL = llOutputArg.getValue();
 
-	bool bUE4CoordSystem = ue4OutputArg.getValue();
 	bool bOutputFBXAscii = fbxAsciiArg.getValue();
 
 	bool bOutputObjFile = objOutputArg.isSet();
 	bool bOutputFbxFile = fbxOutputArg.isSet();
-
-	bool bOutputProtobufSer = protoSer.isSet();
-	bool bOutputBlockSer = blockSer.isSet();
-	
 
 	// Did we specify no output formats?
 	if (!bpxaOutputArg.isSet() && !tkOutputArg.isSet() && !llOutputArg.isSet())
@@ -232,72 +291,144 @@ int main(int argc, const char* const* argv)
 		std::cout << "Didn't specify an output geometry format on the command line, so defaulting to outputting .FBX" << std::endl;
 		bOutputFbxFile = true;
 	}
-	// Did we specify no serialization type?
-	if (!bOutputBlockSer && !bOutputProtobufSer)
-	{
-		std::cout << "Didn't specify an serialization type on the command line, so defaulting to block serialization type" << std::endl;
-		bOutputBlockSer = true;
-	}
 
 	std::shared_ptr<IMeshFileReader> fileReader;
 
 	if (extension.compare("FBX")==0)
 	{
-		fileReader = std::make_shared<FbxFileReader>();
+		fileReader = std::shared_ptr<IMeshFileReader>(NvBlastExtExporterCreateFbxFileReader(), [](IMeshFileReader* p) {p->release(); });
 	}
 	else if (extension.compare("OBJ")==0)
 	{
-		fileReader = std::make_shared<ObjFileReader>();
+		fileReader = std::shared_ptr<IMeshFileReader>(NvBlastExtExporterCreateObjFileReader(), [](IMeshFileReader* p) {p->release(); });
 	}
 	else
 	{
 		std::cout << "Unsupported file extension " << extension << std::endl;
 		return -1;
 	}
-
-	fileReader->setConvertToUE4(bUE4CoordSystem);
-
+	
 	// Load the asset
-	std::shared_ptr<Mesh> loadedMesh = fileReader->loadFromFile(infile);
+	fileReader->loadFromFile(infile.c_str());
 
-	if (loadedMesh == nullptr)
+	uint32_t vcount = fileReader->getVerticesCount();
+	//uint32_t ncount = (uint32_t)fileReader->getNormalsArray().size();
+	//uint32_t uvcount = (uint32_t)fileReader->getUvArray().size();
+
+	if (!initPhysX())
 	{
-		std::cout << "Failed to load mesh " << infile << std::endl;
+		std::cout << "Failed to initialize PhysX" << std::endl;
+		return -1;
+	}
+	Nv::Blast::FractureTool* fTool = NvBlastExtAuthoringCreateFractureTool();
+
+	PxVec3* pos = fileReader->getPositionArray();
+	PxVec3* norm = fileReader->getNormalsArray();
+	PxVec2* uv = fileReader->getUvArray();
+
+	Nv::Blast::Mesh* mesh = NvBlastExtAuthoringCreateMesh(pos, norm, uv, vcount, fileReader->getIndexArray(), fileReader->getIdicesCount());
+
+	if (cleanArg.isSet())
+	{
+		MeshCleaner* clr = NvBlastExtAuthoringCreateMeshCleaner();
+		Nv::Blast::Mesh* nmesh;
+		nmesh = clr->cleanMesh(mesh);
+		clr->release();
+		mesh->release();
+		mesh = nmesh;
+	}
+	mesh->setMaterialId(fileReader->getMaterialIds());
+	fTool->setSourceMesh(mesh);
+	
+
+	SimpleRandomGenerator rng;
+	Nv::Blast::VoronoiSitesGenerator* voronoiSitesGenerator = NvBlastExtAuthoringCreateVoronoiSitesGenerator(mesh, &rng);
+	if (voronoiSitesGenerator == nullptr)
+	{
+		std::cout << "Failed to create Voronoi sites generator" << std::endl;
 		return -1;
 	}
 
 	// Send it to the fracture processor
-	FractureProcessor processor;
-	FractureSettings settings;
-	settings.mode = fracturingMode.getValue();
-	settings.cellsCount = cellsCount.getValue();
-	settings.clusterCount = clusterCount.getValue();
-	settings.slicingX = slicingNumber.getValue().x;
-	settings.slicingY = slicingNumber.getValue().y;
-	settings.slicingZ = slicingNumber.getValue().z;
-	settings.angleVariation = angleVariation.getValue();
-	settings.offsetVariation = offsetVariation.getValue();
-	settings.clusterRadius = clusterRad.getValue();
+	switch (fracturingMode.getValue())
+	{
+		case 'v':
+		{
+			voronoiSitesGenerator->uniformlyGenerateSitesInMesh(cellsCount.getValue());
+			const physx::PxVec3* sites = nullptr;
+			uint32_t sitesCount = voronoiSitesGenerator->getVoronoiSites(sites);
+			if (fTool->voronoiFracturing(0, sitesCount, sites, false) != 0)
+			{
+				std::cout << "Failed to fracture with Voronoi" << std::endl;
+				return -1;
+			}
+			break;
+		}
+		case 'c':
+		{
+			voronoiSitesGenerator->clusteredSitesGeneration(cellsCount.getValue(), clusterCount.getValue(), clusterRad.getValue());
+			const physx::PxVec3* sites = nullptr;
+			uint32_t sitesCount = voronoiSitesGenerator->getVoronoiSites(sites);
+			if (fTool->voronoiFracturing(0, sitesCount, sites, false) != 0)
+			{
+				std::cout << "Failed to fracture with Clustered Voronoi" << std::endl;
+				return -1;
+			}
+			break;
+		}
+		case 's':
+		{
+			SlicingConfiguration slConfig;
+			slConfig.x_slices = slicingNumber.getValue().x;
+			slConfig.y_slices = slicingNumber.getValue().y;
+			slConfig.z_slices = slicingNumber.getValue().z;
+			slConfig.angle_variations = angleVariation.getValue();
+			slConfig.offset_variations = offsetVariation.getValue();
+			if (fTool->slicing(0, slConfig, false, &rng) != 0)
+			{
+				std::cout << "Failed to fracture with Slicing" << std::endl;
+				return -1;
+			}
+			break;
+		}
+		default:
+			std::cout << "Not supported mode" << std::endl;
+			break;
+	}
+	voronoiSitesGenerator->release();
+	mesh->release();
 
-	std::shared_ptr<FractureResult> result = processor.fractureMesh(loadedMesh, settings);
-	
+	Nv::Blast::BlastBondGenerator* bondGenerator = NvBlastExtAuthoringCreateBondGenerator(gCooking, &gPhysics->getPhysicsInsertionCallback());
+	Nv::Blast::ConvexMeshBuilder* collisionBuilder = NvBlastExtAuthoringCreateConvexMeshBuilder(gCooking, &gPhysics->getPhysicsInsertionCallback());
+	Nv::Blast::AuthoringResult* result = NvBlastExtAuthoringProcessFracture(*fTool, *bondGenerator, *collisionBuilder);
+	NvBlastTkFrameworkCreate();
+
+	collisionBuilder->release();
+	bondGenerator->release();
+	fTool->release();
+
 	// Output the results
 	// NOTE: Writing to FBX by default. 
-	std::shared_ptr<IMeshFileWriter> fileWriter;
+
+	std::vector<char*> matNames;
+	for (int32_t i = 0; i < fileReader->getMaterialCount(); ++i)
+	{
+		matNames.push_back(fileReader->getMaterialName(i));
+	}
+	result->materialNames = matNames.data();
+	result->materialCount = static_cast<uint32_t>(matNames.size());
 	
 
-	auto assetLL = result->resultPhysicsAsset->getTkAsset().getAssetLL();
-
+	if (!fbxCollision.isSet())
+	{
+		result->releaseCollisionHulls();
+	}
 
 	if (bOutputObjFile)
 	{
-		if (bUE4CoordSystem)
-		{
-			std::cout << "OBJ output doesn't support UE4 coordinate conversion." << std::endl;
-		}
-		fileWriter = std::make_shared<ObjFileWriter>();
-		bool writeResult = fileWriter->saveToFile(assetLL, result->resultGeometry, assetName, outDir);
-		if (!writeResult)
+		std::shared_ptr<IMeshFileWriter> fileWriter(NvBlastExtExporterCreateObjFileWriter(), [](IMeshFileWriter* p) {p->release(); });
+		fileWriter->appendMesh(*result, assetName.c_str());
+		if (!fileWriter->saveToFile(assetName.c_str(), outDir.c_str()))
 		{
 			std::cerr << "Can't write geometry to OBJ file." << std::endl;
 			return -1;
@@ -305,99 +436,46 @@ int main(int argc, const char* const* argv)
 	}
 	if (bOutputFbxFile)
 	{
-		fileWriter = std::make_shared<FbxFileWriter>();
-		fileWriter->setConvertToUE4(bUE4CoordSystem);
-		{
-			auto fbxWriter = static_cast<FbxFileWriter *>(fileWriter.get());
-			fbxWriter->bOutputFBXAscii = bOutputFBXAscii;
-		}
-
-		bool writeResult = fileWriter->saveToFile(assetLL, result->resultGeometry, assetName, outDir);
-		if (!writeResult)
+		std::shared_ptr<IMeshFileWriter> fileWriter(NvBlastExtExporterCreateFbxFileWriter(bOutputFBXAscii), [](IMeshFileWriter* p) {p->release(); });
+		fileWriter->appendMesh(*result, assetName.c_str(), nonSkinnedFBX.isSet());
+		if (!fileWriter->saveToFile(assetName.c_str(), outDir.c_str()))
 		{
 			std::cerr << "Can't write geometry to FBX file." << std::endl;
 			return -1;
 		}
 	}
-
-	if (bOutputProtobufSer)
+	
+	auto saveBlastData = [&](BlastDataExporter& blExpr)
 	{
-		if (bOutputBPXA)
-		{
-			std::ostringstream outBlastFilePathStream;
-			outBlastFilePathStream << outDir << "/" << assetName << ".pbpxa";
-			std::string outBlastFilePath = outBlastFilePathStream.str();
-
-			std::ofstream myFile(outBlastFilePath, std::ios::out | std::ios::binary);
-
-			setPhysXSDK(processor.getPhysics());
-
-			serializeExtPxAssetIntoStream(result->resultPhysicsAsset.get(), myFile);
-
-			myFile.flush();
-
-			std::cout << "Wrote ExtPxAsset to " << outBlastFilePath << std::endl;
-		}
-
-		if (bOutputTK)
-		{
-			std::ostringstream outBlastFilePathStream;
-			outBlastFilePathStream << outDir << "/" << assetName << ".ptkasset";
-			std::string outBlastFilePath = outBlastFilePathStream.str();
-
-			std::ofstream myFile(outBlastFilePath, std::ios::out | std::ios::binary);
-
-			serializeTkAssetIntoStream(&result->resultPhysicsAsset->getTkAsset(), myFile);
-
-			myFile.flush();
-
-			std::cout << "Wrote TkAsset to " << outBlastFilePath << std::endl;
-		}
-
 		if (bOutputLL)
 		{
-			std::ostringstream outBlastFilePathStream;
-			outBlastFilePathStream << outDir << "/" << assetName << ".pllasset";
-			std::string outBlastFilePath = outBlastFilePathStream.str();
-
-			std::ofstream myFile(outBlastFilePath, std::ios::out | std::ios::binary);
-
-			serializeAssetIntoStream(result->resultPhysicsAsset->getTkAsset().getAssetLL(), myFile);
-
-			myFile.flush();
-
-			std::cout << "Wrote NvBlastAsset to " << outBlastFilePath << std::endl;
+			blExpr.saveBlastObject(outDir, assetName, result->asset, LlObjectTypeID::Asset);
 		}
-	}
-
-	if (bOutputBlockSer)
-	{
-		BlastDataExporter blExpr(NvBlastTkFrameworkGet(), processor.getCooking(), NvBlastTkFrameworkGet()->getLogFn());
-			if (bOutputLL)
-			{
-				std::ostringstream outBlastFilePathStream;
-				outBlastFilePathStream << outDir << "/" << assetName << ".llasset";
-				std::string outBlastFilePath = outBlastFilePathStream.str();
-				blExpr.saveBlastLLAsset(outBlastFilePath, result->resultPhysicsAsset->getTkAsset().getAssetLL());
-				std::cout << "Wrote NvBlastAsset to " << outBlastFilePath << std::endl;
-			}
+		if (bOutputTK || bOutputBPXA)
+		{
+			Nv::Blast::TkAssetDesc descriptor;
+			descriptor.bondCount = result->bondCount;
+			descriptor.bondDescs = result->bondDescs;
+			descriptor.bondFlags = nullptr;
+			descriptor.chunkCount = result->chunkCount;
+			descriptor.chunkDescs = result->chunkDescs;
+			Nv::Blast::ExtPxAsset* physicsAsset = Nv::Blast::ExtPxAsset::create(descriptor, result->physicsChunks, result->physicsSubchunks, *NvBlastTkFrameworkGet());
 			if (bOutputTK)
 			{
-				std::ostringstream outBlastFilePathStream;
-				outBlastFilePathStream << outDir << "/" << assetName << ".tkasset";
-				std::string outBlastFilePath = outBlastFilePathStream.str();
-				blExpr.saveBlastTkAsset(outBlastFilePath, &result->resultPhysicsAsset->getTkAsset());
-				std::cout << "Wrote TkAsset to " << outBlastFilePath << std::endl;
+				blExpr.saveBlastObject(outDir, assetName, &physicsAsset->getTkAsset(), TkObjectTypeID::Asset);
 			}
 			if (bOutputBPXA)
 			{
-				std::ostringstream outBlastFilePathStream;
-				outBlastFilePathStream << outDir << "/" << assetName << ".bpxa";
-				std::string outBlastFilePath = outBlastFilePathStream.str();
-				blExpr.saveBlastExtAsset(outBlastFilePath, result->resultPhysicsAsset.get());
-				std::cout << "Wrote ExtPxAsset to " << outBlastFilePath << std::endl;
+				blExpr.saveBlastObject(outDir, assetName, physicsAsset, ExtPxObjectTypeID::Asset);
 			}
-	}
+			physicsAsset->release();
+		}
+	};
+	
+	BlastDataExporter blExpr(NvBlastTkFrameworkGet(), gPhysics, gCooking);
+	saveBlastData(blExpr);
+
+	result->release();
 
 	return 0;
 }

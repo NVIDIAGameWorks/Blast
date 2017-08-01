@@ -30,6 +30,8 @@ public:
 	CORELIB_EXPORT void on_btnShowSkinnedOnly_stateChanged(int state);
 	CORELIB_EXPORT void on_btnSkinningDQ_stateChanged(int state);
 	CORELIB_EXPORT void on_checkBoxGizmoWithLocal_stateChanged(int state);
+	CORELIB_EXPORT void on_checkBoxGizmoWithDepthTest_stateChanged(int state);
+	CORELIB_EXPORT void on_checkBoxShowPlane_stateChanged(int state);
 
 
 private:

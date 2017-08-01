@@ -1,9 +1,9 @@
 #include "MaterialAssignmentsPanel.h"
 #include "ui_MaterialAssignmentsPanel.h"
 #include "ProjectParams.h"
-#include "RenderMaterial.h"
 #include "SampleManager.h"
 #include "MaterialLibraryPanel.h"
+#include <assert.h>
 
 MaterialAssignmentsPanel* pMaterialAssignmentsPanel = nullptr;
 MaterialAssignmentsPanel* MaterialAssignmentsPanel::ins()
@@ -37,7 +37,11 @@ void MaterialAssignmentsPanel::getMaterialNameAndPaths(std::vector<std::string>&
 	{
 		BPPGraphicsMaterial& item = theArray.buf[i];
 		std::string name = item.name.buf;
-		std::string path = item.diffuseTextureFilePath.buf;
+		std::string path = "";
+		if (item.diffuseTextureFilePath.buf != nullptr)
+		{
+			path = item.diffuseTextureFilePath.buf;
+		}
 		if (name1 == name)
 		{
 			path1 = path;
@@ -52,10 +56,23 @@ void MaterialAssignmentsPanel::getMaterialNameAndPaths(std::vector<std::string>&
 		}
 	}
 
-	materialNames.push_back(name1);
-	materialNames.push_back(name2);
-	materialPaths.push_back(path1);
-	materialPaths.push_back(path2);
+	materialNames[0] = name1;
+	materialPaths[0] = path1;
+
+	BPPFractureGeneral& fractureGeneral = BlastProject::ins().getParams().fracture.general;
+	int32_t nMaterialIndex = fractureGeneral.applyMaterial;
+	assert(theArray.buf != nullptr);
+	if (nMaterialIndex > 0 && theArray.buf)
+	{
+		BPPGraphicsMaterial& item = theArray.buf[nMaterialIndex - 1];
+		name2 = item.name.buf;
+		if (item.diffuseTextureFilePath.buf)
+		{
+			path2 = item.diffuseTextureFilePath.buf;
+		}
+	}
+	materialNames[1] = name2;
+	materialPaths[1] = path2;
 }
 
 MaterialAssignmentsPanel::~MaterialAssignmentsPanel()
@@ -68,7 +85,26 @@ void MaterialAssignmentsPanel::updateValues()
 	m_bValid = false;
 	ui->comboBoxMaterialID1->clear();
 	ui->comboBoxMaterialID2->clear();
+	ui->comboBoxMaterialID1->setEnabled(false);
+	ui->comboBoxMaterialID2->setEnabled(false);
 	m_bValid = true;
+
+	SampleManager* pSampleManager = SampleManager::ins();
+	if (pSampleManager == nullptr)
+	{
+		return;
+	}
+
+	BlastAsset* pBlastAsset = nullptr;
+	int index = -1;
+	pSampleManager->getCurrentSelectedInstance(&pBlastAsset, index);
+	if (pBlastAsset == nullptr || index == -1)
+	{
+		return;
+	}
+
+	ui->comboBoxMaterialID1->setEnabled(true);
+	ui->comboBoxMaterialID2->setEnabled(true);
 
 	QStringList materialNames;
 	materialNames.append("None");
@@ -85,35 +121,12 @@ void MaterialAssignmentsPanel::updateValues()
 	ui->comboBoxMaterialID1->insertItems(0, materialNames);
 	ui->comboBoxMaterialID2->insertItems(0, materialNames);
 	m_bValid = true;
-	
-	SampleManager* pSampleManager = SampleManager::ins();
-	if (pSampleManager == nullptr)
-	{
-		return;
-	}
 
-	BlastAsset* pBlastAsset = nullptr;
-	int index = -1;
-	pSampleManager->getCurrentSelectedInstance(&pBlastAsset, index);
-	if (pBlastAsset == nullptr || index == -1)
-	{
-		return;
-	}
-
-	RenderMaterial* pRenderMaterial[] = { nullptr, nullptr };
-	std::string strMaterialNames[] = { "None", "None" };
+	std::string strMaterialNames[] = { "", "" };
 	bool ex[] = { true, false };
 	for (int i = 0; i < 2; i++)
 	{
-		pSampleManager->getMaterialForCurrentFamily(&pRenderMaterial[i], ex[i]);
-		if (pRenderMaterial[i] != nullptr)
-		{
-			std::string m = pRenderMaterial[i]->getMaterialName();
-			if (m != "")
-			{
-				strMaterialNames[i] = m;
-			}
-		}
+		pSampleManager->getMaterialForCurrentFamily(strMaterialNames[i], ex[i]);
 	}
 
 	m_bValid = false;
@@ -129,33 +142,31 @@ void MaterialAssignmentsPanel::updateValues()
 		BPPBlast& blast = projectParams.blast;
 		BPPGraphicsMaterialArray& graphicsMaterialsArray = projectParams.graphicsMaterials;
 
-		BPPMaterialAssignments& assignment = blast.graphicsMeshes.buf[_selectedGraphicsMesh].materialAssignments;
+		//BPPMaterialAssignmentsArray& assignment = blast.graphicsMeshes.buf[_selectedGraphicsMesh].materialAssignments;
 
-		ui->comboBoxMaterialID1->clear();
-		ui->comboBoxMaterialID2->clear();
-		ui->comboBoxMaterialID3->clear();
-		ui->comboBoxMaterialID4->clear();
+		//ui->comboBoxMaterialID1->clear();
+		//ui->comboBoxMaterialID2->clear();
+		//ui->comboBoxMaterialID3->clear();
+		//ui->comboBoxMaterialID4->clear();
 
-		QStringList materialNames;
-		materialNames.append("None");
-		int count = graphicsMaterialsArray.arraySizes[0];
-		for (int i = 0; i < count; ++i)
-		{
-			materialNames.append(graphicsMaterialsArray.buf[i].name.buf);
-		}
+		//QStringList materialNames;
+		//materialNames.append("None");
+		//int count = graphicsMaterialsArray.arraySizes[0];
+		//for (int i = 0; i < count; ++i)
+		//{
+		//	materialNames.append(graphicsMaterialsArray.buf[i].name.buf);
+		//}
 
-		ui->comboBoxMaterialID1->insertItems(0, materialNames);
-		ui->comboBoxMaterialID2->insertItems(0, materialNames);
-		ui->comboBoxMaterialID3->insertItems(0, materialNames);
-		ui->comboBoxMaterialID4->insertItems(0, materialNames);
+		//ui->comboBoxMaterialID1->insertItems(0, materialNames);
+		//ui->comboBoxMaterialID2->insertItems(0, materialNames);
+		//ui->comboBoxMaterialID3->insertItems(0, materialNames);
+		//ui->comboBoxMaterialID4->insertItems(0, materialNames);
 
-		ui->comboBoxMaterialID1->setCurrentIndex(assignment.materialIndexes[0] + 1);
-		ui->comboBoxMaterialID2->setCurrentIndex(assignment.materialIndexes[1] + 1);
-		ui->comboBoxMaterialID3->setCurrentIndex(assignment.materialIndexes[2] + 1);
-		ui->comboBoxMaterialID4->setCurrentIndex(assignment.materialIndexes[3] + 1);
+		//ui->comboBoxMaterialID1->setCurrentIndex(assignment.materialIndexes[0] + 1);
+		//ui->comboBoxMaterialID2->setCurrentIndex(assignment.materialIndexes[1] + 1);
+		//ui->comboBoxMaterialID3->setCurrentIndex(assignment.materialIndexes[2] + 1);
+		//ui->comboBoxMaterialID4->setCurrentIndex(assignment.materialIndexes[3] + 1);
 	}
-
-
 }
 
 void MaterialAssignmentsPanel::on_comboBoxMaterialID1_currentIndexChanged(int index)
@@ -173,24 +184,8 @@ void MaterialAssignmentsPanel::on_comboBoxMaterialID1_currentIndexChanged(int in
 	{
 		return;
 	}
-	std::map<std::string, RenderMaterial*>& renderMaterials = pSampleManager->getRenderMaterials();
-	std::map<std::string, RenderMaterial*>::iterator it = renderMaterials.find(name);
-	if (it != renderMaterials.end())
-	{
-		pRenderMaterial = it->second;
-	}
-	else
-	{
-		MaterialLibraryPanel* pMaterialLibraryPanel = MaterialLibraryPanel::ins();
-		std::map<std::string, RenderMaterial*>& renderMaterials2 = pMaterialLibraryPanel->getRenderMaterials();
-		it = renderMaterials2.find(name);
-		if (it != renderMaterials2.end())
-		{
-			pRenderMaterial = it->second;
-		}
-	}
 
-	pSampleManager->setMaterialForCurrentFamily(pRenderMaterial, true);
+	pSampleManager->setMaterialForCurrentFamily(name, true);
 	
 	return;
 	assignMaterialToMaterialID(0, index - 1);
@@ -211,24 +206,8 @@ void MaterialAssignmentsPanel::on_comboBoxMaterialID2_currentIndexChanged(int in
 	{
 		return;
 	}
-	std::map<std::string, RenderMaterial*>& renderMaterials = pSampleManager->getRenderMaterials();
-	std::map<std::string, RenderMaterial*>::iterator it = renderMaterials.find(name);
-	if (it != renderMaterials.end())
-	{
-		pRenderMaterial = it->second;
-	}
-	else
-	{
-		MaterialLibraryPanel* pMaterialLibraryPanel = MaterialLibraryPanel::ins();
-		std::map<std::string, RenderMaterial*>& renderMaterials2 = pMaterialLibraryPanel->getRenderMaterials();
-		it = renderMaterials2.find(name);
-		if (it != renderMaterials2.end())
-		{
-			pRenderMaterial = it->second;
-		}
-	}
 
-	pSampleManager->setMaterialForCurrentFamily(pRenderMaterial, false);
+	pSampleManager->setMaterialForCurrentFamily(name, false);
 
 	return;
 	assignMaterialToMaterialID(1, index - 1);
@@ -256,10 +235,10 @@ void MaterialAssignmentsPanel::assignMaterialToMaterialID(int materialID, int ma
 	if (materialIndex >= graphicsMaterialArray.arraySizes[0])
 		return;
 
-	BPPGraphicsMeshArray& graphicsMeshArray = blast.graphicsMeshes;
+	//BPPGraphicsMeshArray& graphicsMeshArray = blast.graphicsMeshes;
 
-	if (_selectedGraphicsMesh > -1 && _selectedGraphicsMesh < graphicsMeshArray.arraySizes[0])
-	{
-		graphicsMeshArray.buf[_selectedGraphicsMesh].materialAssignments.materialIndexes[materialID] = materialIndex;
-	}
+	//if (_selectedGraphicsMesh > -1 && _selectedGraphicsMesh < graphicsMeshArray.arraySizes[0])
+	//{
+	//	graphicsMeshArray.buf[_selectedGraphicsMesh].materialAssignments.materialIndexes[materialID] = materialIndex;
+	//}
 }

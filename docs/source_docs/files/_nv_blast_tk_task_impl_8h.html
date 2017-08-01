@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/toolkit/source/NvBlastTkTaskImpl.h File Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/toolkit/source/NvBlastTkTaskImpl.h File Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -40,11 +40,10 @@
 <h1>sdk/toolkit/source/NvBlastTkTaskImpl.h File Reference</h1><code>#include &quot;<a class="el" href="_nv_blast_8h-source.html">NvBlast.h</a>&quot;</code><br>
 <code>#include &quot;<a class="el" href="_nv_blast_tk_framework_impl_8h-source.html">NvBlastTkFrameworkImpl.h</a>&quot;</code><br>
 <code>#include &quot;<a class="el" href="_nv_blast_tk_event_queue_8h-source.html">NvBlastTkEventQueue.h</a>&quot;</code><br>
-<code>#include &quot;<a class="el" href="_nv_blast_tk_array_8h-source.html">NvBlastTkArray.h</a>&quot;</code><br>
+<code>#include &quot;<a class="el" href="_nv_blast_array_8h-source.html">NvBlastArray.h</a>&quot;</code><br>
 <code>#include &lt;atomic&gt;</code><br>
 <code>#include &lt;mutex&gt;</code><br>
 <code>#include &lt;condition_variable&gt;</code><br>
-<code>#include &quot;task/PxTask.h&quot;</code><br>
 <code>#include &quot;<a class="el" href="_nv_blast_assert_8h-source.html">NvBlastAssert.h</a>&quot;</code><br>
 <code>#include &quot;<a class="el" href="_nv_blast_tk_group_8h-source.html">NvBlastTkGroup.h</a>&quot;</code><br>
 
@@ -52,6 +51,8 @@
 <a href="_nv_blast_tk_task_impl_8h-source.html">Go to the source code of this file.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Classes</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1final.html">Nv::Blast::final</a></td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_local_buffer.html">Nv::Blast::LocalBuffer&lt; T &gt;</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_shared_block.html">Nv::Blast::SharedBlock&lt; T &gt;</a></td></tr>
@@ -60,22 +61,12 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_shared_memory.html">Nv::Blast::SharedMemory</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_task_sync.html">Nv::Blast::TaskSync</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_atomic_queue.html">Nv::Blast::TkAtomicQueue&lt; T &gt;</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_worker.html">Nv::Blast::TkWorker</a></td></tr>
-
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_tk_worker_job.html">Nv::Blast::TkWorkerJob</a></td></tr>
 
 <tr><td colspan="2"><br><h2>Namespaces</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv.html">Nv</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html">Nv::Blast</a></td></tr>
-
-<tr><td colspan="2"><br><h2>Typedefs</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">typedef TkAtomicQueue<br class="typebreak">
-&lt; TkWorkerJob &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#7110958e335a81b5acfc144e4adf80f3">Nv::Blast::TkAtomicJobQueue</a></td></tr>
 
 </table>
 </div>

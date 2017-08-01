@@ -1,0 +1,28 @@
+/*! \page pageconverter LegacyConverter
+
+\verbatim
+
+USAGE:
+
+   LegacyConverter <infile> [-t <type>] [-o <outfile>] [-e <encoding>]
+
+Where:
+
+   <infile>  (required)  Input legacy format file.
+
+   -t <type>
+     (optional)  The file format of <infile>.  Must be one of: {llasset, tkasset, bpxa, pllasset, ptkasset, pbpxa} (case insensitive).
+     If not given, the file extension of <infile> is used.
+   
+   -outfile <outfile>
+     (optional)  Filename (including path) of the output converted file.
+	 If not given, the filename <infile> is used, with extension (if it has one) changed to .blast.
+
+   -e <encoding>
+     (optional)  Encoding to use for output file.  Must be one of: {cpnb, raw} (case insensitive).
+	 If not given, cpnb (Cap'n Proto binary) is used.
+
+\endverbatim
+
+<br>
+*/

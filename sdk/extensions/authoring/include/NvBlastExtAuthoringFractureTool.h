@@ -1,19 +1,35 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTAUTHORINGFRACTURETOOL_H
 #define NVBLASTAUTHORINGFRACTURETOOL_H
 
-#include "NvBlastExtAuthoringMesh.h"
-#include "NvBlastTypes.h"
-
+#include "NvBlastExtAuthoringTypes.h"
 
 namespace Nv
 {
@@ -21,8 +37,8 @@ namespace Blast
 {
 
 class SpatialAccelerator;
-class ChunkPostProcessor;
-
+class Triangulator;
+class Mesh;
 
 /*
 	Chunk data, chunk with chunkId == 0 is always source mesh.
@@ -38,80 +54,46 @@ struct ChunkInfo
 
 /*
 	Slicing fracturing configuration
-
-
-	default:
-	x_slices = 1;
-	y_slices = 1;
-	z_slices = 1;
-
-	offset_variations	= 0.f;
-	angle_variations	= 0.f;
-	noiseAmplitude		= 0.f;
-	noiseFrequency		= 1.f;
-	noiseOctaveNumber	= 1;
-	surfaceResolution	= 1;
 */
 struct SlicingConfiguration
 {
 	/** 
 		Number of slices in each direction
 	*/
-	int32_t	x_slices, y_slices, z_slices;
+	int32_t	x_slices = 1, y_slices = 1, z_slices = 1;
 	
 	/** 
 		Offset variation, value in [0, 1]
 	*/
-	float	offset_variations;
+	float	offset_variations = 0.f;
+	
 	/** 
 		Angle variation, value in [0, 1]
 	*/
-	float	angle_variations;
-
+	float	angle_variations = 0.f;
 
 	/**
 		Noisy slicing configutaion:
 
 		Amplitude of cutting surface noise. If it is 0 - noise is disabled.
 	*/
-	float noiseAmplitude;
+	float	noiseAmplitude = 0.f;
+	
 	/**
 		Frequencey of cutting surface noise. 
 	*/
-	float noiseFrequency;
+	float	noiseFrequency = 1.f;
+
 	/**
 		Octave number in slicing surface noise.
 	*/
-	uint32_t noiseOctaveNumber;
+	uint32_t noiseOctaveNumber = 1;
+
 	/**
 		Cutting surface resolution.
 	*/
-	int32_t surfaceResolution;
-
-
-	SlicingConfiguration()
-	{
-		reset();
-	}
-	/**
-		Set default params.
-	*/
-	void reset()
-	{
-		x_slices = 1;
-		y_slices = 1;
-		z_slices = 1;
-
-		offset_variations	= 0.f;
-		angle_variations	= 0.f;
-		noiseAmplitude		= 0.f;
-		noiseFrequency		= 1.f;
-		noiseOctaveNumber	= 1;
-		surfaceResolution	= 1;
-	}
-
+	int32_t surfaceResolution = 1;
 };
-
 
 
 /**
@@ -120,37 +102,35 @@ struct SlicingConfiguration
 class VoronoiSitesGenerator
 {
 public:
-	
-	/** 
-		Voronoi sites should not be generated outside of the fractured mesh, so VoronoiSitesGenerator
-		should be supplied with fracture mesh.
-		\param[in] mesh			Fracture mesh
-		\param[in] rnd			User supplied random value generator.
-		\return
+	virtual ~VoronoiSitesGenerator() {}
+
+	/**
+		Release VoronoiSitesGenerator memory
 	*/
-	VoronoiSitesGenerator(Mesh* mesh, RandomGeneratorBase* rnd);
-	~VoronoiSitesGenerator();
+	virtual void						release() = 0;
 
 	/**
 		Set base fracture mesh
 	*/
-	void						setBaseMesh(Mesh* m);
+	virtual void						setBaseMesh(const Mesh* mesh) = 0;
 
 	/**
-		Returns reference on vector of generated voronoi sites.
+		Access to generated voronoi sites.
+		\param[out]				Pointer to generated voronoi sites
+		\return					Count of generated voronoi sites.
 	*/
-	std::vector<physx::PxVec3>& getVoronoiSites();
+	virtual uint32_t					getVoronoiSites(const physx::PxVec3*& sites) = 0;
 	
 	/**
 		Add site in particular point
 		\param[in] site		Site coordinates
 	*/
-	void						addSite(const physx::PxVec3& site);
+	virtual void						addSite(const physx::PxVec3& site) = 0;
 	/**
 		Uniformly generate sites inside the mesh
 		\param[in] numberOfSites	Number of generated sites
 	*/
-	void						uniformlyGenerateSitesInMesh(const uint32_t numberOfSites);
+	virtual void						uniformlyGenerateSitesInMesh(uint32_t numberOfSites) = 0;
 
 	/**
 		Generate sites in clustered fashion
@@ -158,7 +138,7 @@ public:
 		\param[in] sitesPerCluster	Number of sites in each cluster
 		\param[in] clusterRadius	Voronoi cells cluster radius
 	*/
-	void						clusteredSitesGeneration(const uint32_t numberOfClusters, const uint32_t sitesPerCluster, float clusterRadius);
+	virtual void						clusteredSitesGeneration(uint32_t numberOfClusters, uint32_t sitesPerCluster, float clusterRadius) = 0;
 
 	/**
 		Radial pattern of sites generation
@@ -170,7 +150,7 @@ public:
 		\param[in] angleOffset	Angle offset at each radial step
 		\param[in] variability	Randomness of sites distribution 
 	*/
-	void						radialPattern(const physx::PxVec3& center, const physx::PxVec3& normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset = 0.0f, float variability = 0.0f);
+	virtual void						radialPattern(const physx::PxVec3& center, const physx::PxVec3& normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset = 0.0f, float variability = 0.0f) = 0;
 
 	/**
 		Generate sites inside sphere
@@ -178,16 +158,16 @@ public:
 		\param[in] radius		Radius of sphere
 		\param[in] center		Center of sphere
 	*/
-	void						generateInSphere(const uint32_t count, const float radius, const physx::PxVec3& center);
+	virtual void						generateInSphere(const uint32_t count, const float radius, const physx::PxVec3& center) = 0;
 	/**
 		Set stencil mesh. With stencil mesh sites are generated only inside both of fracture and stencil meshes. 
 		\param[in] stencil		Stencil mesh.
 	*/
-	void						setStencil(Mesh* stencil);
+	virtual void						setStencil(const Mesh* stencil) = 0;
 	/**
 		Removes stencil mesh
 	*/
-	void						clearStencil();
+	virtual void						clearStencil() = 0;
 
 	/** 
 		Deletes sites inside supplied sphere
@@ -195,17 +175,8 @@ public:
 		\param[in] center				Center of sphere
 		\param[in] eraserProbability	Probability of removing some particular site
 	*/
-	void						deleteInSphere(const float radius, const physx::PxVec3& center, const float eraserProbability = 1);
-
-private:
-	std::vector<physx::PxVec3>	mGeneratedSites;
-	Mesh*						mMesh;
-	Mesh*						mStencil;
-	RandomGeneratorBase*		mRnd;
-	SpatialAccelerator*			mAccelerator;
+	virtual void						deleteInSphere(const float radius, const physx::PxVec3& center, const float eraserProbability = 1) = 0;
 };
-
-
 
 /**
 	FractureTool class provides methods to fracture provided mesh and generate Blast asset data
@@ -214,44 +185,34 @@ class FractureTool
 {
 
 public:
+	virtual ~FractureTool() {}
 
 	/**
-		FractureTool can log asset creation info if logCallback is provided.
+		Release FractureTool memory
 	*/
-	FractureTool(NvBlastLog logCallback = nullptr)
-	{
-		mPlaneIndexerOffset = 1;
-		mChunkIdCounter = 0;
-		mRemoveIslands = false;
-		mLoggingCallback = logCallback;
-	}
-
-	~FractureTool()
-	{
-		reset();
-	}
+	virtual void									release() = 0;
 
 	/**
 		Reset FractureTool state.
 	*/
-	void									reset();
+	virtual void									reset() = 0;
 	
 	
 	/**
 		Set input mesh wich will be fractured, FractureTool will be reseted.
 	*/
-	void									setSourceMesh(Mesh* mesh);
+	virtual void									setSourceMesh(const Mesh* mesh) = 0;
 
 	/**
-		Get chunk mesh in polygonal representation
+		Get chunk mesh in polygonal representation. User's code should release it after usage.
 	*/
-	Mesh									getChunkMesh(int32_t chunkId);
+	virtual Mesh*									createChunkMesh(int32_t chunkId) = 0;
 
 	/**
 		Input mesh is scaled and transformed internally to fit unit cube centered in origin.
 		Method provides offset vector and scale parameter;
 	*/
-	void									getTransformation(physx::PxVec3& offset, float& scale);
+	virtual void									getTransformation(physx::PxVec3& offset, float& scale) = 0;
 
 
 	/**
@@ -262,7 +223,7 @@ public:
 										Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
 		\return   If 0, fracturing is successful.
 	*/
-	int32_t									voronoiFracturing(uint32_t chunkId, const std::vector<physx::PxVec3>& cellPoints, bool replaceChunk);
+	virtual int32_t									voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3* cellPoints, bool replaceChunk) = 0;
 
 	/**
 		Fractures specified chunk with voronoi method. Cells can be scaled along x,y,z axes.
@@ -274,7 +235,7 @@ public:
 									    Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
 		\return   If 0, fracturing is successful.
 	*/
-	int32_t									voronoiFracturing(uint32_t chunkId, const std::vector<physx::PxVec3>& cellPoints, const physx::PxVec3& scale, bool replaceChunk);
+	virtual int32_t									voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3* cellPoints, const physx::PxVec3& scale, bool replaceChunk) = 0;
 
 
 	/**
@@ -287,37 +248,20 @@ public:
 
 		\return   If 0, fracturing is successful.
 	*/
-	int32_t									slicing(uint32_t chunkId, SlicingConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd);
+	virtual int32_t									slicing(uint32_t chunkId, SlicingConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd) = 0;
 
 
 	/**
 		Creates resulting fractured mesh geometry from intermediate format
 	*/
-	void									finalizeFracturing();
+	virtual void									finalizeFracturing() = 0;
 	
+	virtual uint32_t								getChunkCount() const = 0;
+
 	/**
 		Get chunk information
 	*/
-	const std::vector<ChunkInfo>&    		getChunkList();
-
-
-	/**
-		Tesselate interior surfaces
-		\param[in] averageEdgeLength - Average length of edge on internal surface.
-	*/
-	void									tesselate(float averageEdgeLength);
-	
-	/**
-		Apply noise to interior surfaces. Must be called only after tesselation!
-		\param[in] amplitude Amplitude of noise
-		\param[in] frequency Frequency of noise
-		\param[in] octaves Number of noise octaves
-		\param[in] falloff - damping of noise around of external surface
-		\param[in] relaxIterations - number of smoothing iterations before applying noise
-		\param[in] relaxFactor - amount of smoothing before applying noise.
-		\param[in] seed Random seed value
-	*/
-	void									applyNoise(float amplitude, float frequency, int32_t octaves, float falloff, int32_t relaxIterations, float relaxFactor, int32_t seed = 0);
+	virtual const ChunkInfo&    					getChunkInfo(int32_t chunkIndex) = 0;
 
 	/**
 		Get percentage of mesh overlap.
@@ -326,110 +270,78 @@ public:
 		\param[in] meshB Mesh B
 		\return mesh overlap percentage
 	*/
-	static float							getMeshOverlap(Mesh& meshA, Mesh& meshB);
+	virtual float									getMeshOverlap(const Mesh& meshA, const Mesh& meshB) = 0;
 
 	/**
 		Get chunk base mesh
 		\param[in] chunkIndex Chunk index
 		\param[out] output Array of triangles to be filled
+		\return number of triangles in base mesh
 	*/
-	void									getBaseMesh(int32_t chunkIndex, std::vector<Triangle>& output);
-
-	/**
-		Get chunk mesh with noise
-		\param[in] chunkIndex Chunk index
-		\param[out] output Array of triangles to be filled
-	*/
-	void									getNoisedMesh(int32_t chunkIndex, std::vector<Triangle>& output);
-
+	virtual uint32_t								getBaseMesh(int32_t chunkIndex, Triangle*& output) = 0;
 
 	/**
 		Return index of chunk with specified chunkId
 		\param[in] chunkId Chunk ID
 		\return Chunk index in internal buffer, if not exist -1 is returned.
 	*/
-	int32_t									getChunkIndex(int32_t chunkId);
+	virtual int32_t									getChunkIndex(int32_t chunkId) = 0;
 
 	/**
 		Return id of chunk with specified index.
 		\param[in] chunkIndex Chunk index
 		\return Chunk id or -1 if there is no such chunk.
 	*/
-	int32_t									getChunkId(int32_t chunkIndex);
+	virtual int32_t									getChunkId(int32_t chunkIndex) = 0;
 
 	/**
 		Return depth level of the given chunk
 		\param[in] chunkId Chunk ID
 		\return Chunk depth or -1 if there is no such chunk.
 	*/
-	int32_t									getChunkDepth(int32_t chunkId);
+	virtual int32_t									getChunkDepth(int32_t chunkId) = 0;
 
 	/**
 		Return array of chunks IDs with given depth.
-		\param[in] depth Chunk depth
-		\return Array of chunk IDs
+		\param[in]  depth Chunk depth
+		\param[out] Pointer to array of chunk IDs
+		\return Number of chunks in array
 	*/
-	std::vector<int32_t>					getChunksIdAtDepth(uint32_t depth);
+	virtual uint32_t								getChunksIdAtDepth(uint32_t depth, int32_t*& chunkIds) = 0;
 
 
 	/**
 		Get result geometry without noise as vertex and index buffers, where index buffers contain series of triplets
 		which represent triangles.
 		\param[out] vertexBuffer Array of vertices to be filled
-		\param[out] indexBuffer Array of arrays of indices to be filled
+		\param[out] indexBuffer Array of indices to be filled
+		\param[out] indexBufferOffsets Array of offsets in indexBuffer for each base mesh. 
+					Contains getChunkCount() + 1 elements. Last one is indexBuffer size
+		\return Number of vertices in vertexBuffer
 	*/
-	void									getBufferedBaseMeshes(std::vector<Vertex>& vertexBuffer, std::vector<std::vector<uint32_t> >& indexBuffer);
-
-	/**
-		Get result geometry after tesselation and application of noise as vertex and index buffers, where index buffers contain series of triplets
-		which represent triangles.
-		\param[out] vertexBuffer Array of vertices to be filled
-		\param[out] indexBuffer Array of arrays of indices to be filled
-	*/
-	void									getBufferedNoiseMeshes(std::vector<Vertex>& vertexBuffer, std::vector<std::vector<uint32_t> >& indexBuffer);
+	virtual uint32_t								getBufferedBaseMeshes(Vertex*& vertexBuffer, uint32_t*& indexBuffer, uint32_t*& indexBufferOffsets) = 0;
 
 	/**
 		Set automatic islands removing. May cause instabilities.
 		\param[in] isRemoveIslands Flag whether remove or not islands.
 	*/
-	void									setRemoveIslands(bool isRemoveIslands);
+	virtual void									setRemoveIslands(bool isRemoveIslands) = 0;
 
 	/**
 		Try find islands and remove them on some specifical chunk. If chunk has childs, island removing can lead to wrong results! Apply it before further chunk splitting.
 		\param[in] chunkId Chunk ID which should be checked for islands
 		\return Number of found islands is returned
 	*/
-	int32_t									islandDetectionAndRemoving(int32_t chunkId);
+	virtual int32_t									islandDetectionAndRemoving(int32_t chunkId) = 0;
 
-private:	
-	void									eraseChunk(int32_t chunkId);	
-	bool									isAncestorForChunk(int32_t ancestorId, int32_t chunkId);
-	void									deleteAllChildsOfChunk(int32_t chunkId);
-	int32_t									slicingNoisy(uint32_t chunkId, SlicingConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd);
-
-protected:
 	/**
-	Mesh scaled to unite-cube and translated to the origin
+		Check if input mesh contains open edges. Open edges can lead to wrong fracturing results.
+		\return true if mesh contains open edges
 	*/
-	float								mScaleFactor;
-	physx::PxVec3						mOffset;
-
-	/* Chunk mesh wrappers */
-	std::vector<ChunkPostProcessor*>	mChunkPostprocessors;
-
-
-	
-	int32_t								mPlaneIndexerOffset;
-	int32_t								mChunkIdCounter;
-	std::vector<ChunkInfo>				mChunkData;
-
-	bool								mRemoveIslands;
-
-	NvBlastLog							mLoggingCallback;
+	virtual bool									isMeshContainOpenEdges(const Mesh* input) = 0;
 };
 
 } // namespace Blast
 } // namespace Nv
-
 
 #endif // ifndef NVBLASTAUTHORINGFRACTURETOOL_H

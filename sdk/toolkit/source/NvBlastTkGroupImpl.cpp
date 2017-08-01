@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "NvPreprocessor.h"
 
@@ -20,17 +38,11 @@
 #include "NvBlastTkAssetImpl.h"
 #include "NvBlastTkTaskImpl.h"
 
-#include "Px.h"
-#include "PxFileBuf.h"
-#include "PxAllocatorCallback.h"
-#include "task/PxCpuDispatcher.h"
-
 #undef max
 #undef min
 #include <algorithm>
 
 using namespace physx;
-using namespace physx::general_PxIOStream2;
 
 
 namespace Nv
@@ -43,19 +55,9 @@ namespace Blast
 NVBLASTTK_DEFINE_TYPE_IDENTIFIABLE(Group);
 
 
-//////// Local (static) functions ////////
-
-static uint32_t getNumThreads(PxTaskManager* tm)
-{
-	if (tm == nullptr) return 0;
-	if (tm->getCpuDispatcher() == nullptr) return 0;
-	return tm->getCpuDispatcher()->getWorkerCount();
-}
-
-
 //////// Member functions ////////
 
-TkGroupImpl::TkGroupImpl() : m_actorCount(0), m_isProcessing(false), m_sync(0)
+TkGroupImpl::TkGroupImpl() : m_actorCount(0), m_isProcessing(false)
 {
 #if NV_PROFILE
 	memset(&m_stats, 0, sizeof(TkGroupStats)); 
@@ -75,7 +77,7 @@ void TkGroupImpl::release()
 	if (isProcessing())
 	{
 		// abort all processing? 
-		NVBLASTTK_LOG_ERROR("TkGroup::release: cannot release Group while processing.");
+		NVBLAST_LOG_ERROR("TkGroup::release: cannot release Group while processing.");
 		NVBLAST_ALWAYS_ASSERT_MESSAGE("TkGroup::release: cannot release Group while processing.");
 		return;
 	}
@@ -92,7 +94,7 @@ void TkGroupImpl::release()
 		}
 		SharedMemory* mem = it->second;
 		mem->release();
-		NVBLASTTK_DELETE(mem, SharedMemory);
+		NVBLAST_DELETE(mem, SharedMemory);
 	}
 	m_sharedMemory.clear();
 
@@ -102,7 +104,7 @@ void TkGroupImpl::release()
 	m_chunkEventDataBlock.release();
 	m_splitScratchBlock.release();
 
-	NVBLASTTK_DELETE(this, TkGroupImpl);
+	NVBLAST_DELETE(this, TkGroupImpl);
 }
 
 
@@ -128,13 +130,13 @@ bool TkGroupImpl::addActor(TkActor& actor)
 	TkActorImpl& tkActor = static_cast<TkActorImpl&>(actor);
 	if (tkActor.getGroup() != nullptr)
 	{
-		NVBLASTTK_LOG_ERROR("TkGroup::addActor: actor already belongs to a Group.  Remove from current group first.");
+		NVBLAST_LOG_ERROR("TkGroup::addActor: actor already belongs to a Group.  Remove from current group first.");
 		return false;
 	}
 
 	if (isProcessing())
 	{
-		NVBLASTTK_LOG_ERROR("TkGroup::addActor: cannot alter Group while processing.");
+		NVBLAST_LOG_ERROR("TkGroup::addActor: cannot alter Group while processing.");
 		return false;
 	}
 
@@ -155,29 +157,24 @@ bool TkGroupImpl::addActor(TkActor& actor)
 		// the actor belongs to a family not involved in this group yet
 		// shared memory must be allocated and temporary buffers adjusted accordingly
 
-		PERF_ZONE_BEGIN("family memory");
-		mem = NVBLASTTK_NEW(SharedMemory);
+		BLAST_PROFILE_ZONE_BEGIN("family memory");
+		mem = NVBLAST_NEW(SharedMemory);
 		mem->allocate(family);
 		m_sharedMemory[&family] = mem;
-		PERF_ZONE_END("family memory");
+		BLAST_PROFILE_ZONE_END("family memory");
 
-		PERF_ZONE_BEGIN("group memory");
+		BLAST_PROFILE_ZONE_BEGIN("group memory");
 		
-		const uint32_t numThreads = getNumThreads(m_pxTaskManager);
-		// one worker always exists, even if it is the main thread (when numThreads is 0)
-		const uint32_t numWorkers = std::max(numThreads, (uint32_t)1);
+		const uint32_t workerCount = m_workers.size();
 
-		// the number of threads could have changed, however this is unexpected and handled in process()
-
-
-		NvBlastLog theLog = TkFrameworkImpl::get()->log;
+		NvBlastLog theLog = logLL;
 
 		// this group's tasks will use one temporary buffer each, which is of max size of, for all families involved
 		const size_t requiredScratch = NvBlastActorGetRequiredScratchForSplit(tkActor.getActorLL(), theLog);
 		if (static_cast<size_t>(m_splitScratchBlock.numElementsPerBlock()) < requiredScratch)
 		{
 			m_splitScratchBlock.release();
-			m_splitScratchBlock.allocate(static_cast<uint32_t>(requiredScratch), numWorkers);
+			m_splitScratchBlock.allocate(static_cast<uint32_t>(requiredScratch), workerCount);
 		}
 		
 		// generate and apply fracture may create an entry for each bond
@@ -185,9 +182,9 @@ bool TkGroupImpl::addActor(TkActor& actor)
 		if (m_bondTempDataBlock.numElementsPerBlock() < bondCount)
 		{
 			m_bondTempDataBlock.release();
-			m_bondTempDataBlock.allocate(bondCount, numWorkers);
+			m_bondTempDataBlock.allocate(bondCount, workerCount);
 			m_bondEventDataBlock.release();
-			m_bondEventDataBlock.allocate(bondCount, numWorkers);
+			m_bondEventDataBlock.allocate(bondCount, workerCount);
 		}
 
 		// apply fracture may create an entry for each lower-support chunk
@@ -199,11 +196,11 @@ bool TkGroupImpl::addActor(TkActor& actor)
 		if (m_chunkTempDataBlock.numElementsPerBlock() < chunkCount)
 		{
 			m_chunkTempDataBlock.release();
-			m_chunkTempDataBlock.allocate(chunkCount, numWorkers);
+			m_chunkTempDataBlock.allocate(chunkCount, workerCount);
 			m_chunkEventDataBlock.release();
-			m_chunkEventDataBlock.allocate(chunkCount, numWorkers);
+			m_chunkEventDataBlock.allocate(chunkCount, workerCount);
 		}
-		PERF_ZONE_END("group memory");
+		BLAST_PROFILE_ZONE_END("group memory");
 	}
 	mem->addReference();
 
@@ -213,12 +210,12 @@ bool TkGroupImpl::addActor(TkActor& actor)
 
 uint32_t TkGroupImpl::getActors(TkActor** buffer, uint32_t bufferSize, uint32_t indexStart /* = 0 */) const
 {
-	PERF_SCOPE_L("TkGroup::getActors");
+	BLAST_PROFILE_SCOPE_L("TkGroup::getActors");
 
 	uint32_t actorCount = m_actorCount;
 	if (actorCount <= indexStart)
 	{
-		NVBLASTTK_LOG_WARNING("TkGroup::getActors: indexStart beyond end of actor list.");
+		NVBLAST_LOG_WARNING("TkGroup::getActors: indexStart beyond end of actor list.");
 		return 0;
 	}
 
@@ -269,7 +266,7 @@ void TkGroupImpl::releaseSharedMemory(TkFamilyImpl* fam, SharedMemory* mem)
 	NVBLAST_ASSERT(mem != nullptr && m_sharedMemory[fam] == mem);
 	mem->release();
 	m_sharedMemory.erase(fam);
-	NVBLASTTK_DELETE(mem, SharedMemory);
+	NVBLAST_DELETE(mem, SharedMemory);
 }
 
 
@@ -279,13 +276,13 @@ bool TkGroupImpl::removeActor(TkActor& actor)
 
 	if (tkActor.getGroup() != this)
 	{
-		NVBLASTTK_LOG_ERROR("TkGroup::removeActor: actor does not belong to this Group.");
+		NVBLAST_LOG_ERROR("TkGroup::removeActor: actor does not belong to this Group.");
 		return false;
 	}
 
 	if (isProcessing())
 	{
-		NVBLASTTK_LOG_ERROR("TkGroup::removeActor: cannot alter Group while processing.");
+		NVBLAST_LOG_ERROR("TkGroup::removeActor: cannot alter Group while processing.");
 		return false;
 	}
 
@@ -320,65 +317,86 @@ bool TkGroupImpl::removeActor(TkActor& actor)
 
 TkGroupImpl* TkGroupImpl::create(const TkGroupDesc& desc)
 {
-	if (desc.pxTaskManager == nullptr)
-	{
-		NVBLASTTK_LOG_WARNING("TkGroup::create: attempting to create a Group with a NULL pxTaskManager.");
-	}
+	TkGroupImpl* group = NVBLAST_NEW(TkGroupImpl);
 
-	TkGroupImpl* group = NVBLASTTK_NEW(TkGroupImpl);
-
-	group->m_pxTaskManager = desc.pxTaskManager;
-	group->m_initialNumThreads = getNumThreads(group->m_pxTaskManager);
+	group->setWorkerCount(desc.workerCount);
 
 	return group;
 }
 
 
-bool TkGroupImpl::process()
+void TkGroupImpl::setWorkerCount(uint32_t workerCount)
 {
-	PERF_SCOPE_L("TkGroup::process");
+	if (isProcessing())
+	{
+		NVBLAST_LOG_WARNING("TkGroup::setWorkerCount: Group is still processing, call TkGroup::endProcess first.");
+		return;
+	}
+
+	if (workerCount == 0)
+	{
+		NVBLAST_LOG_WARNING("TkGroup: attempting to create a Group with 0 workers. Forced to 1.");
+		workerCount = 1;
+	}
+
+	if (workerCount != m_workers.size())
+	{
+		m_workers.resize(workerCount);
+
+		uint32_t workerId = 0;
+		for (auto& worker : m_workers)
+		{
+			worker.m_id = workerId++;
+			worker.m_group = this;
+		}
+
+		const uint32_t bondCount = m_bondTempDataBlock.numElementsPerBlock();
+		if (bondCount > 0)
+		{
+			m_bondTempDataBlock.release();
+			m_bondTempDataBlock.allocate(bondCount, workerCount);
+			m_bondEventDataBlock.release();
+			m_bondEventDataBlock.allocate(bondCount, workerCount);
+		}
+		const uint32_t chunkCount = m_chunkTempDataBlock.numElementsPerBlock();
+		if (chunkCount > 0)
+		{
+			m_chunkTempDataBlock.release();
+			m_chunkTempDataBlock.allocate(chunkCount, workerCount);
+			m_chunkEventDataBlock.release();
+			m_chunkEventDataBlock.allocate(chunkCount, workerCount);
+		}
+		const uint32_t scratchSize = m_splitScratchBlock.numElementsPerBlock();
+		if (scratchSize > 0)
+		{
+			m_splitScratchBlock.release();
+			m_splitScratchBlock.allocate(scratchSize, workerCount);
+		}
+	}
+}
+
+
+NV_INLINE uint32_t TkGroupImpl::getWorkerCount() const
+{
+	return m_workers.size();
+}
+
+
+uint32_t TkGroupImpl::startProcess()
+{
+	BLAST_PROFILE_SCOPE_L("TkGroup::startProcess");
 
 	if (!setProcessing(true))
 	{
-		NVBLASTTK_LOG_WARNING("TkGroup::process: Group is still processing, call TkGroup::sync first.");
-		return false;
+		NVBLAST_LOG_WARNING("TkGroup::process: Group is still processing, call TkGroup::endProcess first.");
+		return 0;
 	}
 
 	if (m_jobs.size() > 0)
 	{
-		PERF_ZONE_BEGIN("task setup");
+		BLAST_PROFILE_ZONE_BEGIN("task setup");
 
-		PERF_ZONE_BEGIN("task memory");
-		const uint32_t numThreads = getNumThreads(m_pxTaskManager);
-		// one worker always exists, even if it is the main thread (when numThreads is 0)
-		const uint32_t numWorkers = std::max(numThreads, (uint32_t)1);
-
-		if (numThreads != m_initialNumThreads)
-		{
-			NVBLASTTK_LOG_WARNING("TkGroup::process: number of threads has changed, memory is being reallocated.");
-			m_initialNumThreads = numThreads;
-
-			const uint32_t bondCount = m_bondTempDataBlock.numElementsPerBlock();
-			if (bondCount > 0)
-			{
-				m_bondTempDataBlock.release();
-				m_bondTempDataBlock.allocate(bondCount, numWorkers);
-				m_bondEventDataBlock.release();
-				m_bondEventDataBlock.allocate(bondCount, numWorkers);
-			}
-			const uint32_t chunkCount = m_chunkTempDataBlock.numElementsPerBlock();
-			m_chunkTempDataBlock.release();
-			m_chunkTempDataBlock.allocate(chunkCount, numWorkers);
-			m_chunkEventDataBlock.release();
-			m_chunkEventDataBlock.allocate(chunkCount, numWorkers);
-			const uint32_t scratchSize = m_splitScratchBlock.numElementsPerBlock();
-			m_splitScratchBlock.release();
-			m_splitScratchBlock.allocate(scratchSize, numWorkers);
-		}
-		PERF_ZONE_END("task memory");
-
-
-		PERF_ZONE_BEGIN("setup job queue");
+		BLAST_PROFILE_ZONE_BEGIN("setup job queue");
 		for (const auto& job : m_jobs)
 		{
 			const TkActorImpl* a = job.m_tkActor;
@@ -400,9 +418,9 @@ bool TkGroupImpl::process()
 			// (two TkFracture* events per damage plus one TkSplitEvent)
 			mem->m_eventsCount += 2 * damageCount + 1;
 		}
-		PERF_ZONE_END("setup job queue");
+		BLAST_PROFILE_ZONE_END("setup job queue");
 
-		PERF_ZONE_BEGIN("memory protect");
+		BLAST_PROFILE_ZONE_BEGIN("memory protect");
 		for (auto it = m_sharedMemory.getIterator(); !it.done(); ++it)
 		{
 			// preallocate the event memory for TkWorkers
@@ -418,67 +436,38 @@ bool TkGroupImpl::process()
 			// switch to parallel mode
 			mem->m_events.protect(true);
 		}
-		PERF_ZONE_END("memory protect");
+		BLAST_PROFILE_ZONE_END("memory protect");
 
-		PERF_ZONE_END("task setup");
+		BLAST_PROFILE_ZONE_END("task setup");
 
-		// ready queue for the workers
-		const uint32_t numJobs = m_jobs.size();
-		m_jobQueue.init(m_jobs.begin(), numJobs);
 
-		// do not start more workers than there are jobs
-		const uint32_t workersToRun = std::min(numWorkers, numJobs);
-		m_workers.resize(workersToRun);
-		m_sync.setCount(workersToRun);
-
-		uint32_t workerId = 0;
-		if (numThreads > 0)
+		for (auto&worker : m_workers)
 		{
-			for (auto& task : m_workers)
-			{
-				PERF_SCOPE_M("task release");
-				task.m_id = workerId++;
-				task.m_group = this;
-				task.setContinuation(*m_pxTaskManager, nullptr);
-				// mind m_sync.setCount above, immediately removing reference would not work with a continuation task
-				task.removeReference();
-			}
+			worker.initialize();
 		}
-		else
-		{
-			// let this thread do the work
-			NVBLAST_ASSERT(m_workers.size() == 1);
-			for (auto& task : m_workers)
-			{
-				task.m_id = workerId++;
-				task.m_group = this;
-				task.run();
-				task.release();
-			}
-		}
+
+		return m_jobs.size();
 	}
-
-
-	return true;
+	else
+	{
+		bool success = setProcessing(false);
+		NVBLAST_ASSERT(success);
+		NV_UNUSED(success);
+		return 0;
+	}
 }
 
 
-bool TkGroupImpl::sync(bool block /*= true*/)
+bool TkGroupImpl::endProcess()
 {
-	if (!m_sync.isDone() && block)
+	if (isProcessing())
 	{
-		PERF_SCOPE_L("TkGroupImpl::sync wait");
-		m_sync.wait();
-	}
-
-	if (isProcessing() && m_sync.isDone())
-	{
-		PERF_SCOPE_L("TkGroupImpl::sync finalize");
+		BLAST_PROFILE_SCOPE_L("TkGroupImpl::endProcess");
 
 		if (m_jobs.size() > 0)
 		{
 #if NV_PROFILE
-			PERF_ZONE_BEGIN("accumulate timers");
+			BLAST_PROFILE_ZONE_BEGIN("accumulate timers");
 			NvBlastTimers accumulated;
 			NvBlastTimersReset(&accumulated);
 			uint32_t jobCount = 0;
@@ -492,10 +481,10 @@ bool TkGroupImpl::sync(bool block /*= true*/)
 			m_stats.timers = accumulated;
 			m_stats.processedActorsCount = jobCount;
 			m_stats.workerTime = workerTime;
-			PERF_ZONE_END("accumulate timers");
+			BLAST_PROFILE_ZONE_END("accumulate timers");
 #endif
 
-			PERF_ZONE_BEGIN("job update");
+			BLAST_PROFILE_ZONE_BEGIN("job update");
 			for (auto& j : m_jobs)
 			{
 				if (j.m_newActorsCount)
@@ -511,21 +500,26 @@ bool TkGroupImpl::sync(bool block /*= true*/)
 					
 					// Update joints
 					mem->m_events.protect(false); // allow allocations again
+					BLAST_PROFILE_ZONE_BEGIN("updateJoints");
 					fam->updateJoints(j.m_tkActor, &mem->m_events);
+					BLAST_PROFILE_ZONE_END("updateJoints");
 				}
 
 				// virtually dequeue the actor
 				// the queue itself is cleared right after this loop
 				j.m_tkActor->m_flags.clear(TkActorFlag::PENDING);
 				j.m_tkActor->m_groupJobIndex = invalidIndex<uint32_t>();
+				BLAST_PROFILE_ZONE_BEGIN("damageBuffer.clear");
 				j.m_tkActor->m_damageBuffer.clear();
+				BLAST_PROFILE_ZONE_END("damageBuffer.clear");
 			}
 			m_jobs.clear();
-			PERF_ZONE_END("job update");
+			BLAST_PROFILE_ZONE_END("job update");
 
-			PERF_ZONE_BEGIN("event dispatch");
+			BLAST_PROFILE_ZONE_BEGIN("event dispatch");
 			for (auto it = m_sharedMemory.getIterator(); !it.done(); ++it)
 			{
+				BLAST_PROFILE_SCOPE_L("event dispatch");
 				TkFamilyImpl* family = it->first;
 				SharedMemory* mem = it->second;
 
@@ -542,15 +536,15 @@ bool TkGroupImpl::sync(bool block /*= true*/)
 				mem->m_events.reset();
 				mem->reset();
 			}
-			PERF_ZONE_END("event dispatch");
+			BLAST_PROFILE_ZONE_END("event dispatch");
 
-			PERF_ZONE_BEGIN("event memory release");
+			BLAST_PROFILE_ZONE_BEGIN("event memory release");
 			for (auto& worker : m_workers)
 			{
 				worker.m_bondBuffer.clear();
 				worker.m_chunkBuffer.clear();
 			}
-			PERF_ZONE_END("event memory release");
+			BLAST_PROFILE_ZONE_END("event memory release");
 		}
 
 		bool success = setProcessing(false);
@@ -585,6 +579,32 @@ void TkGroupImpl::enqueue(TkActorImpl* tkActor)
 	tkActor->m_groupJobIndex = m_jobs.size();
 	TkWorkerJob& j = m_jobs.insert();
 	j.m_tkActor = tkActor;
+}
+
+
+TkGroupWorker* TkGroupImpl::acquireWorker()
+{
+	BLAST_PROFILE_SCOPE_L("TkGroupImpl::acquireWorker");
+	std::unique_lock<std::mutex> lk(m_workerMtx);
+	for (auto& worker:m_workers)
+	{
+		if (!worker.m_isBusy)
+		{
+			worker.m_isBusy = true;
+			return &worker;
+		}
+	}
+	return nullptr;
+}
+
+
+void TkGroupImpl::returnWorker(TkGroupWorker* worker)
+{
+	BLAST_PROFILE_SCOPE_L("TkGroupImpl::returnWorker");
+	std::unique_lock<std::mutex> lk(m_workerMtx);
+	auto w = static_cast<TkWorker*>(worker);
+	NVBLAST_CHECK_WARNING(w->m_group == this, "TkGroup::returnWorker worker does not belong to this group.", return);
+	w->m_isBusy = false;
 }
 
 

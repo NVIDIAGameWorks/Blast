@@ -61,16 +61,15 @@ In Append mode (the other radio button), selecting a new asset will insert its a
 You may also select actors in the Scene Actors list,  and remove (or reload) the actor using the buttons below the list.  Reloading an actor will restore it to its
 unfractured state.
 
-Note, in addition to destructible actors, the Scene Actors list shows the boxes that were fired into the scene using the 'F' key.  You may remove those using this
-UI as well.
+Note, in addition to destructible actors, the Scene Actors list shows the boxes that were fired into the scene using the 'F' key.  Holding down the 'F' key "charges"
+the throw, increasing the cube's speed the longer you hold down the kye.  You may remove the cubes using the scene controls.  All cubes will be removed when the scene
+is reset.
 
 The Blast Material properties are used by the various damage tools available.
 
-- singleChunkThreadhold = the damage a single lower-support chunk must take in order to fracture
-- graphChunkThreshold = the damage a support chunk must take in order to fracture
-- bondNormalThreshold = the damage a bond must take using compressive (e.g. radial damage) in order to break
-- bondTangentialThreshold = the damage a bond must take using shear (e.g. from directional damage) in order to break
-- damageAttenuation = how fast damage falls off in the materal from an impact location
+- Health = the value which damage must exceed to break a bond or chunk
+- Min Damage Threshold = a fraction of Health, below which damage has no effect
+- Max Damage Threshold = a fraction of Health, equal to the maximum damage that can be applied per damage event
 
 A stress solver may be enabled by selcting the Stress Solver Enabled checkbox.  When enabled you will be presented with several options.  
 NOTE: you must then select the Stress Damage Enabled checkbox in order to allow stress to do damage to the actors in the scene.

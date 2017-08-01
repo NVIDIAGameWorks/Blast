@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -41,7 +41,7 @@
   </div>
 </div>
 <div class="contents">
-<h1>Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader Class Reference</h1><!-- doxytag: class="Nv::Blast::Serialization::ExtPxAsset::Reader" --><code>#include &lt;<a class="el" href="_nv_blast_ext_serialization_8capn_8h-source.html">NvBlastExtSerialization.capn.h</a>&gt;</code>
+<h1>Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader Class Reference</h1><!-- doxytag: class="Nv::Blast::Serialization::ExtPxAsset::Reader" --><code>#include &lt;<a class="el" href="_nv_blast_ext_px_serialization_8capn_8h-source.html">NvBlastExtPxSerialization.capn.h</a>&gt;</code>
 <p>
 
 <p>
@@ -51,21 +51,35 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">typedef <a class="el" href="struct_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset.html">ExtPxAsset</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#1c52a7fb4ed4a49ff0c63b7f83b3fef4">Reads</a></td></tr>
 
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">inline::Nv::Blast::Serialization::TkAsset::Reader&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#64db7509200c4d77e91fb60e96801794">getAsset</a> () const </td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">inline::Nv::Blast::Serialization::TkAsset::Reader&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#bd0f99947ed59d951a1c8958dde0368b">getAsset</a> () const </td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">inline::capnp::List&lt; float &gt;<br class="typebreak">
+::<a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html">Reader</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#5a73073624527e075c82822e2e650775">getBondHealths</a> () const </td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">inline::capnp::List<br class="typebreak">
 &lt; ::<a class="el" href="struct_nv_1_1_blast_1_1_serialization_1_1_ext_px_chunk.html">Nv::Blast::Serialization::ExtPxChunk</a> &gt;<br class="typebreak">
-::<a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html">Reader</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#dac38a64ec18df7205794d0b11656320">getChunks</a> () const </td></tr>
+::<a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html">Reader</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#9d3489a7e6c2dd2c520d97f9759f8d03">getChunks</a> () const </td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">inline::capnp::List<br class="typebreak">
 &lt; ::<a class="el" href="struct_nv_1_1_blast_1_1_serialization_1_1_ext_px_subchunk.html">Nv::Blast::Serialization::ExtPxSubchunk</a> &gt;<br class="typebreak">
 ::<a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html">Reader</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#b1686332544cedf984bb4223e2eca4ac">getSubchunks</a> () const </td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">inline::capnp::List&lt; float &gt;<br class="typebreak">
+::<a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html">Reader</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#c9d3617ad3a5e07813838cbd9eab5127">getSupportChunkHealths</a> () const </td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#302fe584daa8529b35d20fa40e23ebc6">getUniformInitialBondHealth</a> () const </td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#36bd658192e23ff79099a6e85af5ef25">getUniformInitialLowerSupportChunkHealth</a> () const </td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#94422c2165f8a6cedf654ab956911996">hasAsset</a> () const </td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#36828e0d132f5e5463d04e54bdb9ab51">hasBondHealths</a> () const </td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#2cb4a2a76c2d43127f4dbacf3c65cd5f">hasChunks</a> () const </td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#034163be2a22426ee494af3d5b8e9d4f">hasSubchunks</a> () const </td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#cdbc4022d99f752dfd615703bc6ec62d">hasSupportChunkHealths</a> () const </td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html#d9c7f1d18730f1538a3ef6359a8c49e7">Reader</a> (::capnp::_::StructReader base)</td></tr>
 
@@ -144,12 +158,31 @@
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="64db7509200c4d77e91fb60e96801794"></a><!-- doxytag: member="Nv::Blast::Serialization::ExtPxAsset::Reader::getAsset" ref="64db7509200c4d77e91fb60e96801794" args="() const " -->
+<a class="anchor" name="bd0f99947ed59d951a1c8958dde0368b"></a><!-- doxytag: member="Nv::Blast::Serialization::ExtPxAsset::Reader::getAsset" ref="bd0f99947ed59d951a1c8958dde0368b" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">inline ::<a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1_reader.html">Nv::Blast::Serialization::TkAsset::Reader</a> Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader::getAsset           </td>
+          <td class="memname"><a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1_reader.html">Nv::Blast::Serialization::TkAsset::Reader</a> Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader::getAsset           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="5a73073624527e075c82822e2e650775"></a><!-- doxytag: member="Nv::Blast::Serialization::ExtPxAsset::Reader::getBondHealths" ref="5a73073624527e075c82822e2e650775" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">inline ::capnp::List&lt;float&gt;::<a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html">Reader</a> Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader::getBondHealths           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
@@ -163,16 +196,16 @@
 
 </div>
 </div><p>
-<a class="anchor" name="dac38a64ec18df7205794d0b11656320"></a><!-- doxytag: member="Nv::Blast::Serialization::ExtPxAsset::Reader::getChunks" ref="dac38a64ec18df7205794d0b11656320" args="() const " -->
+<a class="anchor" name="9d3489a7e6c2dd2c520d97f9759f8d03"></a><!-- doxytag: member="Nv::Blast::Serialization::ExtPxAsset::Reader::getChunks" ref="9d3489a7e6c2dd2c520d97f9759f8d03" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">inline ::capnp::List&lt; ::<a class="el" href="struct_nv_1_1_blast_1_1_serialization_1_1_ext_px_chunk.html">Nv::Blast::Serialization::ExtPxChunk</a>&gt;::<a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html">Reader</a> Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader::getChunks           </td>
+          <td class="memname">capnp::List&lt;::<a class="el" href="struct_nv_1_1_blast_1_1_serialization_1_1_ext_px_chunk.html">Nv::Blast::Serialization::ExtPxChunk</a> &gt;::<a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html">Reader</a> Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader::getChunks           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td> const</td>
+          <td> const<code> [inline]</code></td>
         </tr>
       </table>
 </div>
@@ -201,12 +234,88 @@
 
 </div>
 </div><p>
+<a class="anchor" name="c9d3617ad3a5e07813838cbd9eab5127"></a><!-- doxytag: member="Nv::Blast::Serialization::ExtPxAsset::Reader::getSupportChunkHealths" ref="c9d3617ad3a5e07813838cbd9eab5127" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">inline ::capnp::List&lt;float&gt;::<a class="el" href="class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html">Reader</a> Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader::getSupportChunkHealths           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="302fe584daa8529b35d20fa40e23ebc6"></a><!-- doxytag: member="Nv::Blast::Serialization::ExtPxAsset::Reader::getUniformInitialBondHealth" ref="302fe584daa8529b35d20fa40e23ebc6" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader::getUniformInitialBondHealth           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="36bd658192e23ff79099a6e85af5ef25"></a><!-- doxytag: member="Nv::Blast::Serialization::ExtPxAsset::Reader::getUniformInitialLowerSupportChunkHealth" ref="36bd658192e23ff79099a6e85af5ef25" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader::getUniformInitialLowerSupportChunkHealth           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="94422c2165f8a6cedf654ab956911996"></a><!-- doxytag: member="Nv::Blast::Serialization::ExtPxAsset::Reader::hasAsset" ref="94422c2165f8a6cedf654ab956911996" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">bool Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader::hasAsset           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="36828e0d132f5e5463d04e54bdb9ab51"></a><!-- doxytag: member="Nv::Blast::Serialization::ExtPxAsset::Reader::hasBondHealths" ref="36828e0d132f5e5463d04e54bdb9ab51" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader::hasBondHealths           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
@@ -245,6 +354,25 @@
       <table class="memname">
         <tr>
           <td class="memname">bool Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader::hasSubchunks           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="cdbc4022d99f752dfd615703bc6ec62d"></a><!-- doxytag: member="Nv::Blast::Serialization::ExtPxAsset::Reader::hasSupportChunkHealths" ref="cdbc4022d99f752dfd615703bc6ec62d" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Nv::Blast::Serialization::ExtPxAsset::ExtPxAsset::Reader::hasSupportChunkHealths           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
@@ -373,7 +501,7 @@
 </div>
 </div><p>
 <hr>The documentation for this class was generated from the following file:<ul>
-<li>sdk/extensions/serialization/source/generated/<a class="el" href="_nv_blast_ext_serialization_8capn_8h-source.html">NvBlastExtSerialization.capn.h</a></ul>
+<li>sdk/extensions/serialization/source/generated/<a class="el" href="_nv_blast_ext_px_serialization_8capn_8h-source.html">NvBlastExtPxSerialization.capn.h</a></ul>
 </div>
 <!-- start footer part -->
 <div class="footer">

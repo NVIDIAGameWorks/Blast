@@ -42,13 +42,17 @@
 #include <QtWidgets/QMessageBox>
 #include "AppMainWindow.h"
 #include "FoundationHolder.h"
+#include <limits> 
+#include "BlastSceneTree.h"
 
 using namespace nvidia;
 using namespace nvidia::parameterized;
-
+using namespace nvidia::parameterized::BlastProjectParametersNS;
 
 struct ProjectParamsContext*	g_projectParamsContext = nullptr;
-const char* USER_PRESET_PATH = ".\\BlastUserPreset.userPreset";
+const char* USER_PRESET = "UserPreset.userPreset";
+const char* FRACTURE_PRESET = "FracturePreset.fracturePreset";
+const char* FILTER_PRESET = "FilterPreset.filterPreset";
 
 struct ProjectParamsContext
 {
@@ -65,56 +69,103 @@ void freeString(NvParameterized::DummyStringStruct& str)
 
 void freeBlast(BPPGraphicsMesh& data)
 {
-	freeString(data.name);
+	delete[] data.materialAssignments.buf;
+	data.materialAssignments.buf = nullptr;
+	data.materialAssignments.arraySizes[0] = 0;
+
+	delete[] data.positions.buf;
+	data.positions.buf = nullptr;
+	data.positions.arraySizes[0] = 0;
+
+	delete[] data.normals.buf;
+	data.normals.buf = nullptr;
+	data.normals.arraySizes[0] = 0;
+
+	delete[] data.tangents.buf;
+	data.tangents.buf = nullptr;
+	data.tangents.arraySizes[0] = 0;
+
+	delete[] data.texcoords.buf;
+	data.texcoords.buf = nullptr;
+	data.texcoords.arraySizes[0] = 0;
+
+	delete data.positions.buf;
+	data.positions.buf = nullptr;
+	data.positions.arraySizes[0] = 0;
+
+	delete[] data.positionIndexes.buf;
+	data.positionIndexes.buf = nullptr;
+	data.positionIndexes.arraySizes[0] = 0;
+
+	delete[] data.normalIndexes.buf;
+	data.normalIndexes.buf = nullptr;
+	data.normalIndexes.arraySizes[0] = 0;
+
+	delete[] data.tangentIndexes.buf;
+	data.tangentIndexes.buf = nullptr;
+	data.tangentIndexes.arraySizes[0] = 0;
+
+	delete[] data.texcoordIndexes.buf;
+	data.texcoordIndexes.buf = nullptr;
+	data.texcoordIndexes.arraySizes[0] = 0;
+
+	delete[] data.materialIDs.buf;
+	data.materialIDs.buf = nullptr;
+	data.materialIDs.arraySizes[0] = 0;
 }
 
 void freeBlast(BPPChunk& data)
 {
 	freeString(data.name);
-	freeString(data.asset);
+	freeBlast(data.graphicsMesh);
 }
 
 void freeBlast(BPPBond& data)
 {
 	freeString(data.name);
-	freeString(data.asset);
 }
 
 void freeBlast(BPPAsset& data)
 {
-	freeString(data.path);
+	freeString(data.name);
+	freeString(data.fbx);
+	freeString(data.obj);
+	freeString(data.collision);
+	freeString(data.llasset);
+	freeString(data.tkasset);
+	freeString(data.bpxa);
 }
 
 void freeBlast(BPPAssetInstance& data)
 {
 	freeString(data.name);
-	freeString(data.source);
-}
-
-void freeBlast(BPPComposite& data)
-{
-	freeString(data.composite);
-
-	freeBlast(data.blastAssetInstances);
-	freeBlast(data.landmarks);
+	freeString(data.exMaterial);
+	freeString(data.inMaterial);
 }
 
 void freeBlast(BPPBlast& data)
 {
 	freeString(data.fileReferences.fbxSourceAsset);
-	freeString(data.fileReferences.fbx);
-	freeString(data.fileReferences.blast);
-	freeString(data.fileReferences.collision);
 
-	freeBlast(data.composite);
 	freeBlast(data.blastAssets);
+	freeBlast(data.blastAssetInstances);
 	freeBlast(data.chunks);
 	freeBlast(data.bonds);
 }
 
-void freeBlast(BPPLandmark& data)
+void freeBlast(BPPGraphicsMaterial& data)
 {
 	freeString(data.name);
+	freeString(data.diffuseTextureFilePath);
+	freeString(data.specularTextureFilePath);
+	freeString(data.normalTextureFilePath);
+}
+
+void freeBlast(BPPDefaultDamage& data)
+{
+	delete[] data.damageStructs.buf;
+	data.damageStructs.buf = nullptr;
+	data.damageStructs.arraySizes[0] = 0;
 }
 
 void freeBlast(BPPStringArray& data)
@@ -122,18 +173,6 @@ void freeBlast(BPPStringArray& data)
 	for (int i = 0; i < data.arraySizes[0]; ++i)
 	{
 		freeString(data.buf[i]);
-	}
-
-	delete[] data.buf;
-	data.buf = nullptr;
-	data.arraySizes[0] = 0;
-}
-
-void freeBlast(BPPGraphicsMeshArray& data)
-{
-	for (int i = 0; i < data.arraySizes[0]; ++i)
-	{
-		freeBlast(data.buf[i]);
 	}
 
 	delete[] data.buf;
@@ -189,7 +228,7 @@ void freeBlast(BPPAssetInstanceArray& data)
 	data.arraySizes[0] = 0;
 }
 
-void freeBlast(BPPLandmarkArray& data)
+void freeBlast(BPPGraphicsMaterialArray& data)
 {
 	for (int i = 0; i < data.arraySizes[0]; ++i)
 	{
@@ -218,6 +257,70 @@ void copy(NvParameterized::DummyStringStruct& dest, const char* source)
 void copy(NvParameterized::DummyStringStruct& dest, NvParameterized::DummyStringStruct& source)
 {
 	copy(dest, source.buf);
+}
+
+bool isItemExist(BPPStringArray& dest, const char* item)
+{
+	if (nullptr == item || 0 == strlen(item))
+	{
+		return false;
+	}
+
+	for (int i = 0; i < dest.arraySizes[0]; ++i)
+	{
+		NvParameterized::DummyStringStruct& curItem = dest.buf[i];
+
+		if (nvidia::shdfnd::strcmp(curItem.buf, item) == 0)
+			return true;
+	}
+
+	return false;
+}
+
+void addItem(BPPStringArray& dest, const char* item)
+{
+	if (nullptr == item || 0 == strlen(item))
+	{
+		return;
+	}
+
+	NvParameterized::DummyStringStruct* oldBuf = dest.buf;
+	dest.buf = new NvParameterized::DummyStringStruct[dest.arraySizes[0] + 1];
+	int i = 0;
+	for (; i < dest.arraySizes[0]; ++i)
+	{
+		copy(dest.buf[i], oldBuf[i]);
+	}
+
+	NvParameterized::DummyStringStruct& newItem = dest.buf[i];
+	copy(newItem, item);
+	dest.arraySizes[0] += 1;
+
+	delete[] oldBuf;
+}
+
+void removeItem(BPPStringArray& dest, const char* item)
+{
+	if (!isItemExist(dest, item))
+	{
+		return;
+	}
+
+	NvParameterized::DummyStringStruct* oldBuf = dest.buf;
+	dest.buf = new NvParameterized::DummyStringStruct[dest.arraySizes[0] - 1];
+
+	int index = 0;
+	for (int i = 0; i < dest.arraySizes[0]; ++i)
+	{
+		if (nvidia::shdfnd::strcmp(oldBuf[i].buf, item) != 0)
+		{
+			NvParameterized::DummyStringStruct& newItem = dest.buf[index++];
+			NvParameterized::DummyStringStruct& oldItem = oldBuf[i];
+			copy(newItem, oldItem);
+		}
+	}
+	dest.arraySizes[0] -= 1;
+	delete[] oldBuf;
 }
 
 void copy(BPPStringArray& dest, BPPStringArray& source)
@@ -272,7 +375,7 @@ void copy(BPPGraphicsMaterialArray& dest, BPPGraphicsMaterialArray& source)
 	}
 }
 
-void copy(BPPGraphicsMeshArray& dest, BPPGraphicsMeshArray& source)
+void copy(BPPMaterialAssignmentsArray& dest, BPPMaterialAssignmentsArray& source)
 {
 	delete[] dest.buf;
 	dest.buf = nullptr;
@@ -280,17 +383,13 @@ void copy(BPPGraphicsMeshArray& dest, BPPGraphicsMeshArray& source)
 
 	if (source.arraySizes[0] > 0)
 	{
-		dest.buf = new BPPGraphicsMesh[source.arraySizes[0]];
+		dest.buf = new BPPMaterialAssignments[source.arraySizes[0]];
 		for (int i = 0; i < source.arraySizes[0]; ++i)
 		{
-			BPPGraphicsMesh& destItem = dest.buf[i];
-			BPPGraphicsMesh& sourceItem = source.buf[i];
+			BPPMaterialAssignments& destItem = dest.buf[i];
+			BPPMaterialAssignments& sourceItem = source.buf[i];
 
-			destItem.name.buf = nullptr;
-
-			copy(destItem.name, sourceItem.name);
-			destItem.visible = sourceItem.visible;
-			copy(destItem.materialAssignments, sourceItem.materialAssignments);
+			copy(destItem, sourceItem);
 		}
 		dest.arraySizes[0] = source.arraySizes[0];
 	}
@@ -364,8 +463,7 @@ void copy(BPPChunkArray& dest, BPPChunkArray& source)
 			BPPChunk& destItem = dest.buf[i];
 			BPPChunk& sourceItem = source.buf[i];
 
-			destItem.name.buf = nullptr;
-			destItem.asset.buf = nullptr;
+			init(destItem);
 
 			copy(destItem, sourceItem);
 		}
@@ -385,31 +483,7 @@ void copy(BPPBondArray& dest, BPPBondArray& source)
 			BPPBond& destItem = dest.buf[i];
 			BPPBond& sourceItem = source.buf[i];
 
-			destItem.name.buf = nullptr;
-			destItem.asset.buf = nullptr;
-			destItem.support.healthMask.buf = nullptr;
-
-			copy(destItem, sourceItem);
-		}
-		dest.arraySizes[0] = source.arraySizes[0];
-	}
-}
-
-void copy(BPPProjectileArray& dest, BPPProjectileArray& source)
-{
-	delete[] dest.buf;
-	dest.buf = nullptr;
-	dest.arraySizes[0] = 0;
-
-	if (source.arraySizes[0] > 0)
-	{
-		dest.buf = new BPPProjectile[source.arraySizes[0]];
-		for (int i = 0; i < source.arraySizes[0]; ++i)
-		{
-			BPPProjectile& destItem = dest.buf[i];
-			BPPProjectile& sourceItem = source.buf[i];
-
-			destItem.name.buf = nullptr;
+			init(destItem);
 
 			copy(destItem, sourceItem);
 		}
@@ -431,8 +505,7 @@ void copy(BPPAssetArray& dest, BPPAssetArray& source)
 			BPPAsset& destItem = dest.buf[i];
 			BPPAsset& sourceItem = source.buf[i];
 
-			destItem.path.buf = nullptr;
-			destItem.activePreset.buf = nullptr;
+			init(destItem);
 
 			copy(destItem, sourceItem);
 		}
@@ -454,8 +527,7 @@ void copy(BPPAssetInstanceArray& dest, BPPAssetInstanceArray& source)
 			BPPAssetInstance& destItem = dest.buf[i];
 			BPPAssetInstance& sourceItem = source.buf[i];
 
-			destItem.name.buf = nullptr;
-			destItem.source.buf = nullptr;
+			init(destItem);
 
 			copy(destItem, sourceItem);
 		}
@@ -463,7 +535,7 @@ void copy(BPPAssetInstanceArray& dest, BPPAssetInstanceArray& source)
 	}
 }
 
-void copy(BPPLandmarkArray& dest, BPPLandmarkArray& source)
+void copy(BPPI32Array& dest, BPPI32Array& source)
 {
 	delete[] dest.buf;
 	dest.buf = nullptr;
@@ -471,33 +543,11 @@ void copy(BPPLandmarkArray& dest, BPPLandmarkArray& source)
 
 	if (source.arraySizes[0] > 0)
 	{
-		dest.buf = new BPPLandmark[source.arraySizes[0]];
+		dest.buf = new int32_t[source.arraySizes[0]];
 		for (int i = 0; i < source.arraySizes[0]; ++i)
 		{
-			BPPLandmark& destItem = dest.buf[i];
-			BPPLandmark& sourceItem = source.buf[i];
-
-			destItem.name.buf = nullptr;
-
-			copy(destItem, sourceItem);
-		}
-		dest.arraySizes[0] = source.arraySizes[0];
-	}
-}
-
-void copy(BPPU32Array& dest, BPPU32Array& source)
-{
-	delete[] dest.buf;
-	dest.buf = nullptr;
-	dest.arraySizes[0] = 0;
-
-	if (source.arraySizes[0] > 0)
-	{
-		dest.buf = new uint32_t[source.arraySizes[0]];
-		for (int i = 0; i < source.arraySizes[0]; ++i)
-		{
-			uint32_t& destItem = dest.buf[i];
-			uint32_t& sourceItem = source.buf[i];
+			int32_t& destItem = dest.buf[i];
+			int32_t& sourceItem = source.buf[i];
 
 			destItem = sourceItem;
 		}
@@ -505,7 +555,7 @@ void copy(BPPU32Array& dest, BPPU32Array& source)
 	}
 }
 
-void copy(BPPFilterPresetArray& dest, BPPFilterPresetArray& source)
+void copy(BPPVEC3Array& dest, BPPVEC3Array& source)
 {
 	delete[] dest.buf;
 	dest.buf = nullptr;
@@ -513,16 +563,33 @@ void copy(BPPFilterPresetArray& dest, BPPFilterPresetArray& source)
 
 	if (source.arraySizes[0] > 0)
 	{
-		dest.buf = new BPPFilterPreset[source.arraySizes[0]];
+		dest.buf = new nvidia::NvVec3[source.arraySizes[0]];
 		for (int i = 0; i < source.arraySizes[0]; ++i)
 		{
-			BPPFilterPreset& destItem = dest.buf[i];
-			BPPFilterPreset& sourceItem = source.buf[i];
+			nvidia::NvVec3& destItem = dest.buf[i];
+			nvidia::NvVec3& sourceItem = source.buf[i];
 
-			destItem.name.buf = nullptr;
-			destItem.depthFilters.buf = nullptr;
+			destItem = sourceItem;
+		}
+		dest.arraySizes[0] = source.arraySizes[0];
+	}
+}
 
-			copy(destItem, sourceItem);
+void copy(BPPVEC2Array& dest, BPPVEC2Array& source)
+{
+	delete[] dest.buf;
+	dest.buf = nullptr;
+	dest.arraySizes[0] = 0;
+
+	if (source.arraySizes[0] > 0)
+	{
+		dest.buf = new nvidia::NvVec2[source.arraySizes[0]];
+		for (int i = 0; i < source.arraySizes[0]; ++i)
+		{
+			nvidia::NvVec2& destItem = dest.buf[i];
+			nvidia::NvVec2& sourceItem = source.buf[i];
+
+			destItem = sourceItem;
 		}
 		dest.arraySizes[0] = source.arraySizes[0];
 	}
@@ -565,23 +632,23 @@ void copy(BPPGraphicsMaterial& dest, BPPGraphicsMaterial& source)
 
 void copy(BPPGraphicsMesh& dest, BPPGraphicsMesh& source)
 {
-	copy(dest.name, source.name);
-	dest.visible = source.visible;
 	copy(dest.materialAssignments, source.materialAssignments);
+	copy(dest.positions, source.positions);
+	copy(dest.normals, source.normals);
+	copy(dest.tangents, source.tangents);
+	copy(dest.texcoords, source.texcoords);
+	dest.vertextCountInFace = source.vertextCountInFace;
+	copy(dest.positionIndexes, source.positionIndexes);
+	copy(dest.normalIndexes, source.normalIndexes);
+	copy(dest.tangentIndexes, source.tangentIndexes);
+	copy(dest.texcoordIndexes, source.texcoordIndexes);
+	copy(dest.materialIDs, source.materialIDs);
 }
 
 void copy(BPPMaterialAssignments& dest, BPPMaterialAssignments& source)
 {
-	dest.materialIndexes[0] = source.materialIndexes[0];
-	dest.materialIndexes[1] = source.materialIndexes[1];
-	dest.materialIndexes[2] = source.materialIndexes[2];
-	dest.materialIndexes[3] = source.materialIndexes[3];
-}
-
-void copy(BPPProjectile& dest, BPPProjectile& source)
-{
-	copy(dest.name, source.name);
-	dest.visible = source.visible;
+	dest.libraryMaterialID = source.libraryMaterialID;
+	dest.faceMaterialID = source.faceMaterialID;
 }
 
 void copy(BPPSupportStructure& dest, BPPSupportStructure& source)
@@ -596,28 +663,21 @@ void copy(BPPChunk& dest, BPPChunk& source)
 	dest.ID = source.ID;
 	dest.parentID = source.parentID;
 	copy(dest.name, source.name);
-	copy(dest.asset, source.asset);
+	dest.asset = source.asset;
 	dest.visible = source.visible;
 	dest.support = source.support;
 	dest.staticFlag = source.staticFlag;
+	copy(dest.graphicsMesh, source.graphicsMesh);
 }
 
 void copy(BPPBond& dest, BPPBond& source)
 {
 	copy(dest.name, source.name);
-	copy(dest.asset, source.asset);
+	dest.asset = source.asset;
 	dest.visible = source.visible;
 	dest.fromChunk = source.fromChunk;
 	dest.toChunk = source.toChunk;
 	copy(dest.support, source.support);
-}
-
-void copy(BPPLandmark& dest, BPPLandmark& source)
-{
-	copy(dest.name, source.name);
-	dest.visible = source.visible;
-	dest.enable = source.enable;
-	dest.radius = source.radius;
 }
 
 void copy(BPPRenderer& dest, BPPRenderer& source)
@@ -656,110 +716,120 @@ void copy(BPPRenderer& dest, BPPRenderer& source)
 
 void copy(BPPStressSolver& dest, BPPStressSolver& source)
 {
-	dest.solverMode = source.solverMode;
+	dest.hardness = source.hardness;
 	dest.linearFactor = source.linearFactor;
 	dest.angularFactor = source.angularFactor;
-	dest.meanError = source.meanError;
-	dest.varianceError = source.varianceError;
-	dest.bondsPerFrame = source.bondsPerFrame;
-	dest.bondsIterations = source.bondsIterations;
+	dest.bondIterationsPerFrame = source.bondIterationsPerFrame;
+	dest.graphReductionLevel = source.graphReductionLevel;
 }
 
 void copy(BPPAsset& dest, BPPAsset& source)
 {
-	copy(dest.path, source.path);
+	dest.ID = source.ID;
+	copy(dest.name, source.name);
 	dest.visible = source.visible;
 	dest.stressSolver = source.stressSolver;
-	copy(dest.activePreset, source.activePreset);
-	dest.defaultDamage = source.defaultDamage;
+	copy(dest.activeUserPreset, source.activeUserPreset);
+	copy(dest.fbx, source.fbx);
+	copy(dest.obj, source.obj);
+	copy(dest.collision, source.collision);
+	copy(dest.llasset, source.llasset);
+	copy(dest.tkasset, source.tkasset);
+	copy(dest.bpxa, source.bpxa);
+	dest.exportFBX = source.exportFBX;
+	dest.exportOBJ = source.exportOBJ;
+	dest.exportCollision = source.exportCollision;
+	dest.exportLLAsset = source.exportLLAsset;
+	dest.exportTKAsset = source.exportTKAsset;
+	dest.exportBPXA = source.exportBPXA;
 }
 
 void copy(BPPAssetInstance& dest, BPPAssetInstance& source)
 {
 	copy(dest.name, source.name);
 	dest.visible = source.visible;
-	copy(dest.source, source.source);
+	dest.asset = source.asset;
 	dest.transform = source.transform;
-}
-
-void copy(BPPComposite& dest, BPPComposite& source)
-{
-	copy(dest.composite, source.composite);
-	dest.visible = source.visible;
-	copy(dest.blastAssetInstances, source.blastAssetInstances);
-	dest.bondThreshold = source.bondThreshold;
-	dest.bondStrength = source.bondStrength;
-	copy(dest.landmarks, source.landmarks);
+	copy(dest.exMaterial, source.exMaterial);
+	copy(dest.inMaterial, source.inMaterial);
 }
 
 void copy(BPPBlast& dest, BPPBlast& source)
 {
 	copy(dest.fileReferences.fbxSourceAsset, source.fileReferences.fbxSourceAsset);
-	copy(dest.fileReferences.fbx, source.fileReferences.fbx);
-	copy(dest.fileReferences.blast, source.fileReferences.blast);
-	copy(dest.fileReferences.collision, source.fileReferences.collision);
 
-	copy(dest.composite, source.composite);
 	copy(dest.blastAssets, source.blastAssets);
+	copy(dest.blastAssetInstances, source.blastAssetInstances);
 	copy(dest.chunks, source.chunks);
 	copy(dest.bonds, source.bonds);
-	copy(dest.projectiles, source.projectiles);
-	copy(dest.graphicsMeshes, source.graphicsMeshes);
-
-	copy(dest.userPreset, source.userPreset);
 	copy(dest.healthMask, source.healthMask);
 }
 
-void copy(BPPFilter& dest, BPPFilter& source)
+void copy(BPPFractureGeneral& dest, BPPFractureGeneral& source)
 {
-	dest.activeFilter = source.activeFilter;
-	copy(dest.filters, source.filters);
+	copy(dest.fracturePreset, source.fracturePreset);
+	dest.fractureType = source.fractureType;
+	dest.applyMaterial = source.applyMaterial;
+	dest.autoSelectNewChunks = source.autoSelectNewChunks;
+	dest.selectionDepthTest = source.selectionDepthTest;
 }
 
 void copy(BPPVoronoi& dest, BPPVoronoi& source)
 {
-	dest.numSites = source.numSites;
 	dest.siteGeneration = source.siteGeneration;
-	dest.gridSize = source.gridSize;
-	dest.gridScale = source.gridScale;
-	dest.amplitude = source.amplitude;
-
-	dest.frequency = source.frequency;
-	copy(dest.paintMasks, source.paintMasks);
-	dest.activePaintMask = source.activePaintMask;
-	copy(dest.meshCutters, source.meshCutters);
-	dest.activeMeshCutter = source.activeMeshCutter;
-	dest.fractureInsideCutter = source.fractureInsideCutter;
-	dest.fractureOutsideCutter = source.fractureOutsideCutter;
-	copy(dest.textureSites, source.textureSites);
-	dest.numTextureSites = source.numTextureSites;
-}
-
-void copy(BPPCutoutProjection& dest, BPPCutoutProjection& source)
-{
-	copy(dest.textures, source.textures);
-	dest.cutoutType = source.cutoutType;
-	dest.pixelThreshold = source.pixelThreshold;
-	dest.tiled = source.tiled;
-	dest.invertU = source.invertU;
-	dest.invertV = source.invertV;
+	dest.numSites = source.numSites;
+	dest.numberOfClusters = source.numberOfClusters;
+	dest.sitesPerCluster = source.sitesPerCluster;
+	dest.clusterRadius = source.clusterRadius;
 }
 
 void copy(BPPFracture& dest, BPPFracture& source)
 {
-	dest.activeFractureMethod = source.activeFractureMethod;
-	dest.general = source.general;
+	copy(dest.general, source.general);
 	dest.visualization = source.visualization;
-	dest.shellCut = source.shellCut;
 	copy(dest.voronoi, source.voronoi);
 	dest.slice = source.slice;
-	copy(dest.cutoutProjection, source.cutoutProjection);
 }
 
-void copy(BPPFilterPreset& dest, BPPFilterPreset& source)
+void copy(BPPDefaultDamage& dest, BPPDefaultDamage& source)
 {
-	copy(dest.name, source.name);
-	copy(dest.depthFilters, source.depthFilters);
+	dest.damageAmount = source.damageAmount;
+	dest.explosiveImpulse = source.explosiveImpulse;
+	dest.stressDamageForce = source.stressDamageForce;
+	dest.damageProfile = source.damageProfile;
+
+	int count = source.damageStructs.arraySizes[0];
+
+	if(dest.damageStructs.buf != nullptr && dest.damageStructs.arraySizes[0] != count)
+	{
+		delete[] dest.damageStructs.buf;
+		dest.damageStructs.buf = nullptr;
+		dest.damageStructs.arraySizes[0] = 0;
+	}
+
+	if (count == 0)
+		return;
+
+	if (dest.damageStructs.buf == nullptr)
+	{
+		dest.damageStructs.buf = new BPPDamageStruct[count];
+		dest.damageStructs.arraySizes[0] = count;
+	}
+
+	for (int i = 0; i < count; ++i)
+	{
+		BPPDamageStruct& destItem = dest.damageStructs.buf[i];
+		BPPDamageStruct& sourceItem = source.damageStructs.buf[i];
+
+		destItem.damageRadius = sourceItem.damageRadius;
+		destItem.continuously = sourceItem.continuously;
+	}
+}
+
+void copy(BPPFilter& dest, BPPFilter& source)
+{
+	copy(dest.activeFilter, source.activeFilter);
+	copy(dest.filterRestrictions, source.filterRestrictions);
 }
 
 void copy(BPParams& dest, BPParams& source)
@@ -772,10 +842,83 @@ void copy(BPParams& dest, BPParams& source)
 	dest.scene = source.scene;
 	copy(dest.renderer, source.renderer);
 	copy(dest.blast, source.blast);
-	copy(dest.filter, source.filter);
 	copy(dest.fracture, source.fracture);
+	copy(dest.defaultDamage, source.defaultDamage);
+	copy(dest.filter, source.filter);
+}
 
-	copy(dest.blast.userPreset, USER_PRESET_PATH);
+void merge(BPPAssetArray& dest, BPPAssetArray& source)
+{
+	if (source.arraySizes[0] > 0)
+	{
+		BPPAsset* oriDestArray = dest.buf;
+		int oriCount = dest.arraySizes[0];
+		int srcCount = source.arraySizes[0];
+		dest.buf = new BPPAsset[oriCount + srcCount];
+		int i = 0;
+//		std::map<BPPAsset*, BPPAsset*> changeMap;
+		for (; i < oriCount; ++i)
+		{
+			BPPAsset& destItem = dest.buf[i];
+			BPPAsset& oriItem = oriDestArray[i];
+
+			init(destItem);
+			copy(destItem, oriItem);
+//			changeMap[&oriItem] = &destItem;
+		}
+//		BlastTreeData::ins().refreshProjectDataToNodeMap(changeMap);
+		for (int j = 0; j < srcCount; ++j, ++i)
+		{
+			BPPAsset& destItem = dest.buf[i];
+			BPPAsset& sourceItem = source.buf[j];
+
+			init(destItem);
+			copy(destItem, sourceItem);
+		}
+		for (int m = 0; m < oriCount; ++m)
+		{
+			freeBlast(oriDestArray[m]);
+		}
+		delete[] oriDestArray;
+		dest.arraySizes[0] = oriCount + srcCount;
+	}
+}
+
+void merge(BPPAssetInstanceArray& dest, BPPAssetInstanceArray& source)
+{
+	if (source.arraySizes[0] > 0)
+	{
+		BPPAssetInstance* oriDestArray = dest.buf;
+		int oriCount = dest.arraySizes[0];
+		int srcCount = source.arraySizes[0];
+		dest.buf = new BPPAssetInstance[oriCount + srcCount];
+		int i = 0;
+//		std::map<BPPAssetInstance*, BPPAssetInstance*> changeMap;
+		for (; i < oriCount; ++i)
+		{
+			BPPAssetInstance& destItem = dest.buf[i];
+			BPPAssetInstance& oriItem = oriDestArray[i];
+
+			init(destItem);
+			copy(destItem, oriItem);
+//			changeMap[&oriItem] = &destItem;
+		}
+//		BlastTreeData::ins().refreshProjectDataToNodeMap(changeMap);
+		for (int j = 0; j < srcCount; ++j, ++i)
+		{
+			BPPAssetInstance& destItem = dest.buf[i];
+			BPPAssetInstance& sourceItem = source.buf[j];
+
+			init(destItem);
+			copy(destItem, sourceItem);
+		}
+		for (int m = 0; m < oriCount; ++m)
+		{
+			freeBlast(oriDestArray[m]);
+		}
+		delete[] oriDestArray;
+		dest.arraySizes[0] = oriCount + srcCount;
+	}
 }
 
 void merge(BPPChunkArray& dest, BPPChunkArray& source)
@@ -792,8 +935,7 @@ void merge(BPPChunkArray& dest, BPPChunkArray& source)
 			BPPChunk& destItem = dest.buf[i];
 			BPPChunk& oriItem = oriDestArray[i];
 
-			destItem.name.buf = nullptr;
-			destItem.asset.buf = nullptr;
+			init(destItem);
 			copy(destItem, oriItem);
 		}
 		for (int j = 0; j < srcCount; ++j, ++i)
@@ -801,8 +943,7 @@ void merge(BPPChunkArray& dest, BPPChunkArray& source)
 			BPPChunk& destItem = dest.buf[i];
 			BPPChunk& sourceItem = source.buf[j];
 
-			destItem.name.buf = nullptr;
-			destItem.asset.buf = nullptr;
+			init(destItem);
 			copy(destItem, sourceItem);
 		}
 		for (int m = 0; m < oriCount; ++m)
@@ -828,9 +969,7 @@ void merge(BPPBondArray& dest, BPPBondArray& source)
 			BPPBond& destItem = dest.buf[i];
 			BPPBond& oriItem = oriDestArray[i];
 
-			destItem.name.buf = nullptr;
-			destItem.asset.buf = nullptr;
-			destItem.support.healthMask.buf = nullptr;
+			init(destItem);
 			copy(destItem, oriItem);
 		}
 		for (int j = 0; j < srcCount; ++j, ++i)
@@ -838,9 +977,7 @@ void merge(BPPBondArray& dest, BPPBondArray& source)
 			BPPBond& destItem = dest.buf[i];
 			BPPBond& sourceItem = source.buf[j];
 
-			destItem.name.buf = nullptr;
-			destItem.asset.buf = nullptr;
-			destItem.support.healthMask.buf = nullptr;
+			init(destItem);
 			copy(destItem, sourceItem);
 		}
 		for (int m = 0; m < oriCount; ++m)
@@ -852,25 +989,536 @@ void merge(BPPBondArray& dest, BPPBondArray& source)
 	}
 }
 
+/*
+void apart(BPPAssetArray& dest, BPPAssetArray& source)
+{
+	if (source.arraySizes[0] == 0)
+		return;
+
+	int destCount = dest.arraySizes[0];
+	int srcCount = source.arraySizes[0];
+	std::vector<int> indexes;
+	for (int i = 0; i < destCount; ++i)
+	{
+		bool find = false;
+		for (int j = 0; j < srcCount; ++j)
+		{
+			if (dest.buf[i].ID == source.buf[j].ID)
+			{
+				find = true;
+				break;
+			}
+		}
+
+		if (!find)
+		{
+			indexes.push_back(i);
+		}
+	}
+
+	int newSize = indexes.size();
+	BPPAsset* newArray = nullptr;
+	if (newSize > 0)
+	{
+		newArray = new BPPAsset[newSize];
+		std::map<BPPAsset*, BPPAsset*> changeMap;
+		for (int n = 0; n < newSize; ++n)
+		{
+			BPPAsset& newItem = newArray[n];
+			BPPAsset& oriItem = dest.buf[indexes[n]];
+			init(newItem);
+			copy(newItem, oriItem);
+			changeMap[&oriItem] = &newItem;
+		}
+		BlastTreeData::ins().refreshProjectDataToNodeMap(changeMap);
+	}
+
+	freeBlast(dest);
+	dest.buf = newArray;
+	dest.arraySizes[0] = newSize;
+}
+
+void apart(BPPAssetInstanceArray& dest, BPPAssetInstanceArray& source)
+{
+	if (source.arraySizes[0] == 0)
+		return;
+
+	int destCount = dest.arraySizes[0];
+	int srcCount = source.arraySizes[0];
+	std::vector<int> indexes;
+	for (int i = 0; i < destCount; ++i)
+	{
+		bool find = false;
+		for (int j = 0; j < srcCount; ++j)
+		{
+			if (::strcmp(dest.buf[i].name.buf, source.buf[j].name.buf) == 0
+				&& dest.buf[i].asset == source.buf[j].asset)
+			{
+				find = true;
+				break;
+			}
+		}
+
+		if (!find)
+		{
+			indexes.push_back(i);
+		}
+	}
+
+	int newSize = indexes.size();
+	BPPAssetInstance* newArray = nullptr;
+	if (newSize > 0)
+	{
+		newArray = new BPPAssetInstance[newSize];
+		std::map<BPPAssetInstance*, BPPAssetInstance*> changeMap;
+		for (int n = 0; n < newSize; ++n)
+		{
+			BPPAssetInstance& newItem = newArray[n];
+			BPPAssetInstance& oriItem = dest.buf[indexes[n]];
+			init(newItem);
+			copy(newItem, oriItem);
+			changeMap[&oriItem] = &newItem;
+		}
+		BlastTreeData::ins().refreshProjectDataToNodeMap(changeMap);
+	}
+
+	freeBlast(dest);
+	dest.buf = newArray;
+	dest.arraySizes[0] = newSize;
+}
+
+void apart(BPPChunkArray& dest, BPPChunkArray& source)
+{
+	if (source.arraySizes[0] == 0)
+		return;
+
+	int destCount = dest.arraySizes[0];
+	int srcCount = source.arraySizes[0];
+	std::vector<int> indexes;
+	for (int i = 0; i < destCount; ++i)
+	{
+		bool find = false;
+		for (int j = 0; j < srcCount; ++j)
+		{
+			if (::strcmp(dest.buf[i].name.buf, source.buf[j].name.buf) == 0
+				&& dest.buf[i].asset == source.buf[j].asset)
+			{
+				find = true;
+				break;
+			}
+		}
+
+		if (!find)
+		{
+			indexes.push_back(i);
+		}
+	}
+
+	int newSize = indexes.size();
+	BPPChunk* newArray = nullptr;
+	if (newSize > 0)
+	{
+		newArray = new BPPChunk[newSize];
+
+		for (int n = 0; n < newSize; ++n)
+		{
+			BPPChunk& newItem = newArray[n];
+			init(newItem);
+			copy(newItem, dest.buf[indexes[n]]);
+		}
+	}
+
+	freeBlast(dest);
+	dest.buf = newArray;
+	dest.arraySizes[0] = newSize;
+}
+
+void apart(BPPBondArray& dest, BPPBondArray& source)
+{
+	if (source.arraySizes[0] == 0)
+		return;
+
+	int destCount = dest.arraySizes[0];
+	int srcCount = source.arraySizes[0];
+	std::vector<int> indexes;
+	for (int i = 0; i < destCount; ++i)
+	{
+		bool find = false;
+		for (int j = 0; j < srcCount; ++j)
+		{
+			if (::strcmp(dest.buf[i].name.buf, source.buf[j].name.buf) == 0
+				&& dest.buf[i].asset == source.buf[j].asset)
+			{
+				find = true;
+				break;
+			}
+		}
+
+		if (!find)
+		{
+			indexes.push_back(i);
+		}
+	}
+
+	int newSize = indexes.size();
+	BPPBond* newArray = nullptr;
+	if (newSize > 0)
+	{
+		newArray = new BPPBond[newSize];
+
+		for (int n = 0; n < newSize; ++n)
+		{
+			BPPBond& newItem = newArray[n];
+			init(newItem);
+			copy(newItem, dest.buf[indexes[n]]);
+		}
+	}
+
+	freeBlast(dest);
+	dest.buf = newArray;
+	dest.arraySizes[0] = newSize;
+}
+
+*/
+void apart(BPPAssetArray& dest, int32_t assetId)
+{
+	if (assetId < 0)
+	{
+		return;
+	}
+
+	int destCount = dest.arraySizes[0];
+	std::vector<int> indexes;
+	for (int i = 0; i < destCount; ++i)
+	{
+		if (dest.buf[i].ID == assetId)
+		{
+			continue;
+		}
+
+		indexes.push_back(i);
+	}
+
+	int newSize = indexes.size();
+	BPPAsset* newArray = nullptr;
+	if (newSize > 0)
+	{
+		newArray = new BPPAsset[newSize];
+//		std::map<BPPAsset*, BPPAsset*> changeMap;
+		for (int n = 0; n < newSize; ++n)
+		{
+			BPPAsset& newItem = newArray[n];
+			BPPAsset& oriItem = dest.buf[indexes[n]];
+			init(newItem);
+			copy(newItem, oriItem);
+//			changeMap[&oriItem] = &newItem;
+		}
+//		BlastTreeData::ins().refreshProjectDataToNodeMap(changeMap);
+	}
+
+	freeBlast(dest);
+	dest.buf = newArray;
+	dest.arraySizes[0] = newSize;
+}
+
+void apart(BPPAssetInstanceArray& dest, int32_t assetId)
+{
+	if (assetId < 0)
+	{
+		return;
+	}
+
+	int destCount = dest.arraySizes[0];
+	std::vector<int> indexes;
+	for (int i = 0; i < destCount; ++i)
+	{
+		if (dest.buf[i].asset == assetId)
+		{
+			continue;
+		}
+
+		indexes.push_back(i);
+	}
+
+	int newSize = indexes.size();
+	BPPAssetInstance* newArray = nullptr;
+	if (newSize > 0)
+	{
+		newArray = new BPPAssetInstance[newSize];
+//		std::map<BPPAssetInstance*, BPPAssetInstance*> changeMap;
+		for (int n = 0; n < newSize; ++n)
+		{
+			BPPAssetInstance& newItem = newArray[n];
+			BPPAssetInstance& oriItem = dest.buf[indexes[n]];
+			init(newItem);
+			copy(newItem, oriItem);
+//			changeMap[&oriItem] = &newItem;
+		}
+//		BlastTreeData::ins().refreshProjectDataToNodeMap(changeMap);
+	}
+
+	freeBlast(dest);
+	dest.buf = newArray;
+	dest.arraySizes[0] = newSize;
+}
+
+void apart(BPPAssetInstanceArray& dest, int32_t assetId, const char* instanceName)
+{
+	if (assetId < 0 || instanceName == nullptr)
+	{
+		return;
+	}
+
+	int destCount = dest.arraySizes[0];
+	std::vector<int> indexes;
+	for (int i = 0; i < destCount; ++i)
+	{
+		if (dest.buf[i].asset == assetId &&
+			::strcmp(dest.buf[i].name.buf, instanceName) == 0)
+		{
+			continue;
+		}
+
+		indexes.push_back(i);
+	}
+
+	int newSize = indexes.size();
+	BPPAssetInstance* newArray = nullptr;
+	if (newSize > 0)
+	{
+		newArray = new BPPAssetInstance[newSize];
+//		std::map<BPPAssetInstance*, BPPAssetInstance*> changeMap;
+		for (int n = 0; n < newSize; ++n)
+		{
+			BPPAssetInstance& newItem = newArray[n];
+			BPPAssetInstance& oriItem = dest.buf[indexes[n]];
+			init(newItem);
+			copy(newItem, oriItem);
+//			changeMap[&oriItem] = &newItem;
+		}
+//		BlastTreeData::ins().refreshProjectDataToNodeMap(changeMap);
+	}
+
+	freeBlast(dest);
+	dest.buf = newArray;
+	dest.arraySizes[0] = newSize;
+}
+
+void apart(BPPChunkArray& dest, int32_t assetId)
+{
+	if (assetId < 0)
+	{
+		return;
+	}
+
+	int destCount = dest.arraySizes[0];
+	std::vector<int> indexes;
+	for (int i = 0; i < destCount; ++i)
+	{
+		if (dest.buf[i].asset == assetId)
+		{
+			continue;
+		}
+
+		indexes.push_back(i);
+	}
+
+	int newSize = indexes.size();
+	BPPChunk* newArray = nullptr;
+	if (newSize > 0)
+	{
+		newArray = new BPPChunk[newSize];
+//		std::map<BPPChunk*, BPPChunk*> changeMap;
+		for (int n = 0; n < newSize; ++n)
+		{
+			BPPChunk& newItem = newArray[n];
+			BPPChunk& oriItem = dest.buf[indexes[n]];
+			init(newItem);
+			copy(newItem, oriItem);
+//			changeMap[&oriItem] = &newItem;
+		}
+//		BlastTreeData::ins().refreshProjectDataToNodeMap(changeMap);
+	}
+
+	freeBlast(dest);
+	dest.buf = newArray;
+	dest.arraySizes[0] = newSize;
+}
+
+void apart(BPPBondArray& dest, int32_t assetId)
+{
+	if (assetId < 0)
+	{
+		return;
+	}
+
+	int destCount = dest.arraySizes[0];
+	std::vector<int> indexes;
+	for (int i = 0; i < destCount; ++i)
+	{
+		if (dest.buf[i].asset == assetId)
+		{
+			continue;
+		}
+
+		indexes.push_back(i);
+	}
+
+	int newSize = indexes.size();
+	BPPBond* newArray = nullptr;
+	if (newSize > 0)
+	{
+		newArray = new BPPBond[newSize];
+//		std::map<BPPBond*, BPPBond*> changeMap;
+		for (int n = 0; n < newSize; ++n)
+		{
+			BPPBond& newItem = newArray[n];
+			BPPBond& oriItem = dest.buf[indexes[n]];
+			init(newItem);
+			copy(newItem, oriItem);
+//			changeMap[&oriItem] = &newItem;
+		}
+//		BlastTreeData::ins().refreshProjectDataToNodeMap(changeMap);
+	}
+
+	freeBlast(dest);
+	dest.buf = newArray;
+	dest.arraySizes[0] = newSize;
+}
+
 void init(BPPStressSolver& param)
 {
-	param.solverMode = -1;
-	param.linearFactor = 0;
-	param.angularFactor = 0;
-	param.meanError = 0;
-	param.varianceError = 0;
-	param.bondsPerFrame = 0;
-	param.bondsIterations = 0;
+	param.hardness = 1000.0f;
+	param.linearFactor = 0.25f;
+	param.angularFactor = 0.75f;
+	param.bondIterationsPerFrame = 18000;
+	param.graphReductionLevel = 3;
 }
 
 void init(BPPGraphicsMaterial& param)
 {
+	param.ID = -1;
 	param.name.buf = nullptr;
 	param.useTextures = false;
 	param.diffuseTextureFilePath.buf = nullptr;
 	param.specularTextureFilePath.buf = nullptr;
 	param.normalTextureFilePath.buf = nullptr;
-	param.specularShininess = 0.0;
+	param.specularShininess = 20.0;
+}
+
+void init(BPPGraphicsMesh& param)
+{
+	param.materialAssignments.buf = 0;
+	param.materialAssignments.arraySizes[0];
+
+	param.positions.buf = nullptr;
+	param.positions.arraySizes[0] = 0;
+
+	param.normals.buf = nullptr;
+	param.normals.arraySizes[0] = 0;
+
+	param.tangents.buf = nullptr;
+	param.tangents.arraySizes[0] = 0;
+
+	param.texcoords.buf = nullptr;
+	param.texcoords.arraySizes[0] = 0;
+
+	init<I32_DynamicArray1D_Type>(param.positionIndexes);
+	init<I32_DynamicArray1D_Type>(param.normalIndexes);
+	init<I32_DynamicArray1D_Type>(param.tangentIndexes);
+	init<I32_DynamicArray1D_Type>(param.texcoordIndexes);
+	init<I32_DynamicArray1D_Type>(param.materialIDs);
+}
+
+void init(BPPBond& param)
+{
+	param.name.buf = nullptr;
+	param.asset = -1;
+	param.visible = true;
+	param.support.healthMask.buf = nullptr;
+	param.support.bondStrength = 1.0;
+	param.support.enableJoint = false;
+}
+
+void init(BPPChunk& param)
+{
+	param.name.buf = nullptr;
+	param.asset = -1;
+	param.visible = true;
+
+	init(param.graphicsMesh);
+}
+
+void init(BPPDefaultDamage& param)
+{
+	/*
+	param.compressiveDamage = 1.0f;
+	param.explosiveImpulse = 100.0f;
+	param.damageRadius = 5.0f;
+	param.stressDamageForce = 1.0f;
+	param.damageProfile = 0;
+	*/
+	param.damageStructs.buf = nullptr;
+	param.damageStructs.arraySizes[0] = 0;
+	param.damageProfile = -1;
+}
+
+void init(BPPAsset& param)
+{
+	param.ID = -1;
+	param.name.buf = nullptr;
+	param.activeUserPreset.buf = nullptr;
+	init(param.stressSolver);
+	param.obj.buf = nullptr;
+	param.fbx.buf = nullptr;
+	param.collision.buf = nullptr;
+	param.llasset.buf = nullptr;
+	param.tkasset.buf = nullptr;
+	param.bpxa.buf = nullptr;
+	param.exportFBX = false;
+	param.exportOBJ = false;
+	param.exportCollision = false;
+	param.exportLLAsset = false;
+	param.exportTKAsset = false;
+	param.exportBPXA = false;
+}
+
+void init(BPPAssetInstance& param)
+{
+	param.name.buf = nullptr;
+	param.asset = -1;
+	param.visible = true;
+	param.exMaterial.buf = nullptr;
+	param.inMaterial.buf = nullptr;
+}
+
+void init(BPPVoronoi& param)
+{
+	param.siteGeneration = 0;
+	param.numSites = 5;
+	param.numberOfClusters = 1;
+	param.sitesPerCluster = 1.0f;
+	param.clusterRadius = 1.0f;
+}
+
+void init(BPPSlice& param)
+{
+	param.numSlicesX = 1;
+	param.numSlicesY = 1;
+	param.numSlicesZ = 1;
+	param.offsetVariation = 0.0f;
+	param.rotationVariation = 0.0f;
+	param.noiseAmplitude = 0.0f;
+	param.noiseFrequency = 1.0f;
+	param.noiseOctaveNumber = 1;
+	param.noiseSeed = 1;
+	param.surfaceResolution = 1;
+}
+
+void init(BPPFractureVisualization& param)
+{
+	param.displayFractureWidget = false;
+	param.fracturePreview = false;
 }
 
 void init(BPParams& params)
@@ -882,17 +1530,134 @@ void init(BPParams& params)
 	//	params.renderer.lights.buf[i].name.buf = 
 }
 
+const char* convertFilterRestrictionToString(EFilterRestriction& restriction)
+{
+	switch (restriction)
+	{
+	case eFilterRestriction_AllDescendants:
+		return "AllDescendants";
+	case eFilterRestriction_AllParents:
+		return "AllParents";
+	case eFilterRestriction_DepthAll:
+		return "DepthAll";
+	case eFilterRestriction_Depth0:
+		return "Depth0";
+	case eFilterRestriction_Depth1:
+		return "Depth1";
+	case eFilterRestriction_Depth2:
+		return "Depth2";
+	case eFilterRestriction_Depth3:
+		return "Depth3";
+	case eFilterRestriction_Depth4:
+		return "Depth4";
+	case eFilterRestriction_Depth5:
+		return "Depth5";
+	case eFilterRestriction_ItemTypeAll:
+		return "ItemTypeAll";
+	case eFilterRestriction_Chunk:
+		return "Chunk";
+	case eFilterRestriction_SupportChunk:
+		return "SupportChunk";
+	case eFilterRestriction_StaticSupportChunk:
+		return "StaticSupportChunk";
+	case eFilterRestriction_Bond:
+		return "Bond";
+	case eFilterRestriction_WorldBond:
+		return "WorldBond";
+	case eFilterRestriction_EqualTo:
+		return "EqualTo";
+	case eFilterRestriction_NotEquaTo:
+		return "NotEqualTo";
+	}
+
+	return "";
+}
+
+EFilterRestriction convertStringToFilterRestriction(const char* restriction)
+{
+	static std::map<std::string, EFilterRestriction> stringRestrictionMap;
+	if (0 == stringRestrictionMap.size())
+	{
+		stringRestrictionMap["AllDescendants"]	= eFilterRestriction_AllDescendants;
+		stringRestrictionMap["AllParents"]		= eFilterRestriction_AllParents;
+		stringRestrictionMap["DepthAll"]		= eFilterRestriction_DepthAll;
+		stringRestrictionMap["Depth0"]			= eFilterRestriction_Depth0;
+		stringRestrictionMap["Depth1"]			= eFilterRestriction_Depth1;
+		stringRestrictionMap["Depth2"]			= eFilterRestriction_Depth2;
+		stringRestrictionMap["Depth3"]			= eFilterRestriction_Depth3;
+		stringRestrictionMap["Depth4"]			= eFilterRestriction_Depth4;
+		stringRestrictionMap["Depth5"]			= eFilterRestriction_Depth5;
+		stringRestrictionMap["ItemTypeAll"]		= eFilterRestriction_ItemTypeAll;
+		stringRestrictionMap["Chunk"]			= eFilterRestriction_Chunk;
+		stringRestrictionMap["SupportChunk"]	= eFilterRestriction_SupportChunk;
+		stringRestrictionMap["StaticSupportChunk"] = eFilterRestriction_StaticSupportChunk;
+		stringRestrictionMap["Bond"]			= eFilterRestriction_Bond;
+		stringRestrictionMap["WorldBond"]		= eFilterRestriction_WorldBond;
+		stringRestrictionMap["EqualTo"]			= eFilterRestriction_EqualTo;
+		stringRestrictionMap["NotEqualTo"]		= eFilterRestriction_NotEquaTo;
+	}
+
+	if (nullptr == restriction || 0 == strlen(restriction))
+		return eFilterRestriction_Invalid;
+
+	for (std::map<std::string, EFilterRestriction>::iterator itr = stringRestrictionMap.begin(); itr != stringRestrictionMap.end(); ++itr)
+	{
+		if (0 == nvidia::shdfnd::stricmp(itr->first.c_str(), restriction))
+			return itr->second;
+	}
+
+	return eFilterRestriction_Invalid;
+}
+
+FilterPreset::FilterPreset(const char* inName)
+{
+	name = inName;
+}
+
 StressSolverUserPreset::StressSolverUserPreset(const char* inName)
 	: name(inName)
 {
 	name = name;
-	stressSolver.solverMode = -1;
-	stressSolver.linearFactor = 0;
-	stressSolver.angularFactor = 0;
-	stressSolver.meanError = 0;
-	stressSolver.varianceError = 0;
-	stressSolver.bondsPerFrame = 0;
-	stressSolver.bondsIterations = 0;
+	init(stressSolver);
+}
+
+FracturePreset::FracturePreset(const char* inName, FractureType inType)
+	: name(inName)
+	, type(inType)
+{
+	init();
+}
+
+void FracturePreset::setType(FractureType inType)
+{
+	type = inType;
+
+	if (eFractureType_Voronoi == type)
+	{
+		BPPVoronoi& voronoi = fracture.voronoi;
+		::init(voronoi);
+	}
+	else if (eFractureType_Slice == type)
+	{
+		BPPSlice& slice = fracture.slice;
+		::init(slice);
+	}
+}
+
+void FracturePreset::init()
+{
+	if (eFractureType_Voronoi == type)
+	{
+		BPPVoronoi& voronoi = fracture.voronoi;
+		::init(voronoi);
+	}
+	else if (eFractureType_Slice == type)
+	{
+		BPPSlice& slice = fracture.slice;
+		::init(slice);
+	}
+
+	::init(visualization);
 }
 
 BlastProject& BlastProject::ins()
@@ -909,6 +1674,78 @@ BlastProject::~BlastProject()
 void BlastProject::clear()
 {
 	freeBlast(_projectParams.blast);
+	freeBlast(_projectParams.graphicsMaterials);
+	_projectParams.fracture.general.applyMaterial = -1;
+	_projectParams.fracture.general.autoSelectNewChunks = false;
+	_projectParams.fracture.general.selectionDepthTest = true;
+}
+
+std::string BlastProject::getAseetNameByID(int assetID)
+{
+	BPPAssetArray& assetArray = _projectParams.blast.blastAssets;
+	for (int i = 0; i < assetArray.arraySizes[0]; ++i)
+	{
+		if (assetArray.buf[i].ID == assetID)
+			return assetArray.buf[i].name.buf;
+	}
+	return "";
+}
+
+int BlastProject::getAssetIDByName(const char* name)
+{
+	if (name == nullptr || strlen(name) == 0)
+		return -1;
+
+	BPPAssetArray& assetArray = _projectParams.blast.blastAssets;
+	for (int i = 0; i < assetArray.arraySizes[0]; ++i)
+	{
+		if (nvidia::shdfnd::strcmp(assetArray.buf[i].name, name) == 0)
+			return assetArray.buf[i].ID;
+	}
+	return -1;
+}
+
+BPPAsset* BlastProject::getAsset(const char* name)
+{
+	if (name == nullptr || strlen(name) == 0)
+		return nullptr;
+
+	BPPAssetArray& assetArray = _projectParams.blast.blastAssets;
+	for (int i = 0; i < assetArray.arraySizes[0]; ++i)
+	{
+		if (nvidia::shdfnd::strcmp(assetArray.buf[i].name, name) == 0)
+			return assetArray.buf + i;
+	}
+	return nullptr;
+}
+
+int BlastProject::generateNewAssetID()
+{
+	int id = 0;
+	for (; id < (std::numeric_limits<int>::max)(); ++id)
+	{
+		BPPAssetArray& assetArray = _projectParams.blast.blastAssets;
+		bool find = false;
+
+		if (assetArray.arraySizes[0] == 0)
+			find = false;
+
+		for (int i = 0; i < assetArray.arraySizes[0]; ++i)
+		{
+			if (assetArray.buf[i].ID == id)
+			{
+				find = true;
+				break;
+			}
+		}
+
+		if (!find)
+		{
+			break;
+		}
+	}
+
+	return id;
 }
 
 bool BlastProject::isGraphicsMaterialNameExist(const char* name)
@@ -927,7 +1764,7 @@ bool BlastProject::isGraphicsMaterialNameExist(const char* name)
 	return false;
 }
 
-BPPGraphicsMaterial* BlastProject::addGraphicsMaterial(const char* name, const char* diffuseTexture)
+BPPGraphicsMaterial* BlastProject::addGraphicsMaterial(const char* name)
 {
 	if (name == nullptr || strlen(name) == 0)
 		return nullptr;
@@ -941,27 +1778,13 @@ BPPGraphicsMaterial* BlastProject::addGraphicsMaterial(const char* name, const c
 	{
 		BPPGraphicsMaterial& newItem = theArray.buf[i];
 		BPPGraphicsMaterial& oldItem = oldBuf[i];
-		newItem.useTextures = false;
-		newItem.name.buf = nullptr;
-		newItem.diffuseTextureFilePath.buf = nullptr;
-		newItem.specularTextureFilePath.buf = nullptr;
-		newItem.normalTextureFilePath.buf = nullptr;
-		newItem.specularShininess = 0.0;
+		init(newItem);
 		copy(newItem, oldItem);
 	}
 
 	BPPGraphicsMaterial& newItem = theArray.buf[i];
-	newItem.name.buf = nullptr;
-	newItem.useTextures = false;
-	newItem.diffuseTextureFilePath.buf = nullptr;
-	newItem.specularTextureFilePath.buf = nullptr;
-	newItem.normalTextureFilePath.buf = nullptr;
-	newItem.specularShininess = 0.0;
+	init(newItem);
 	copy(newItem.name, name);
-	if (diffuseTexture != nullptr)
-	{
-		copy(newItem.diffuseTextureFilePath, diffuseTexture);
-	}
 	theArray.arraySizes[0] += 1;
 
 	delete[] oldBuf;
@@ -985,11 +1808,7 @@ void BlastProject::removeGraphicsMaterial(const char* name)
 		{
 			BPPGraphicsMaterial& newItem = theArray.buf[index++];
 			BPPGraphicsMaterial& oldItem = oldBuf[i];
-			newItem.useTextures = false;
-			newItem.name.buf = nullptr;
-			newItem.diffuseTextureFilePath.buf = nullptr;
-			newItem.specularTextureFilePath.buf = nullptr;
-			newItem.normalTextureFilePath.buf = nullptr;
+			init(newItem);
 			copy(newItem, oldItem);
 		}
 	}
@@ -1014,10 +1833,167 @@ void BlastProject::renameGraphicsMaterial(const char* oldName, const char* newNa
 	}
 }
 
-std::vector<BPPAsset*> BlastProject::getSelectedBlastAssets(void)
+void BlastProject::reloadDiffuseColor(const char* name, float r, float g, float b, float a)
 {
-	std::vector<BPPAsset*> assets;
-	return assets;
+	if (name == nullptr)
+		return;
+
+	BPPGraphicsMaterialArray& theArray = _projectParams.graphicsMaterials;
+
+	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	{
+		if (nvidia::shdfnd::strcmp(theArray.buf[i].name.buf, name) == 0)
+		{
+			theArray.buf[i].diffuseColor[0] = r;
+			theArray.buf[i].diffuseColor[1] = g;
+			theArray.buf[i].diffuseColor[2] = b;
+			theArray.buf[i].diffuseColor[3] = a;
+			return;
+		}
+	}
+}
+
+void BlastProject::reloadSpecularColor(const char* name, float r, float g, float b, float a)
+{
+	if (name == nullptr)
+		return;
+
+	BPPGraphicsMaterialArray& theArray = _projectParams.graphicsMaterials;
+
+	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	{
+		if (nvidia::shdfnd::strcmp(theArray.buf[i].name.buf, name) == 0)
+		{
+			theArray.buf[i].specularColor[0] = r;
+			theArray.buf[i].specularColor[1] = g;
+			theArray.buf[i].specularColor[2] = b;
+			theArray.buf[i].specularColor[3] = a;
+			return;
+		}
+	}
+}
+
+void BlastProject::reloadSpecularShininess(const char* name, float specularShininess)
+{
+	if (name == nullptr)
+		return;
+
+	BPPGraphicsMaterialArray& theArray = _projectParams.graphicsMaterials;
+
+	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	{
+		if (nvidia::shdfnd::strcmp(theArray.buf[i].name.buf, name) == 0)
+		{
+			theArray.buf[i].specularShininess = specularShininess;
+			return;
+		}
+	}
+}
+
+void BlastProject::reloadDiffuseTexture(const char* name, const char* diffuseTexture)
+{
+	if (name == nullptr)
+		return;
+
+	BPPGraphicsMaterialArray& theArray = _projectParams.graphicsMaterials;
+
+	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	{
+		if (nvidia::shdfnd::strcmp(theArray.buf[i].name.buf, name) == 0)
+		{
+			copy(theArray.buf[i].diffuseTextureFilePath, diffuseTexture);
+			return;
+		}
+	}
+}
+
+void BlastProject::reloadSpecularTexture(const char* name, const char* specularTexture)
+{
+	if (name == nullptr)
+		return;
+
+	BPPGraphicsMaterialArray& theArray = _projectParams.graphicsMaterials;
+
+	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	{
+		if (nvidia::shdfnd::strcmp(theArray.buf[i].name.buf, name) == 0)
+		{
+			copy(theArray.buf[i].specularTextureFilePath, specularTexture);
+			return;
+		}
+	}
+}
+
+void BlastProject::reloadNormalTexture(const char* name, const char* normalTexture)
+{
+	if (name == nullptr)
+		return;
+
+	BPPGraphicsMaterialArray& theArray = _projectParams.graphicsMaterials;
+
+	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	{
+		if (nvidia::shdfnd::strcmp(theArray.buf[i].name.buf, name) == 0)
+		{
+			copy(theArray.buf[i].normalTextureFilePath, normalTexture);
+			return;
+		}
+	}
+}
+
+void BlastProject::reloadEnvTexture(const char* name, const char* envTexture)
+{
+	// to do
+}
+
+BPPGraphicsMaterial* BlastProject::getGraphicsMaterial(const char* name)
+{
+	if (name == nullptr || strlen(name) == 0)
+		return nullptr;
+
+	BPPGraphicsMaterialArray& theArray = _projectParams.graphicsMaterials;
+
+	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	{
+		if (nvidia::shdfnd::strcmp(theArray.buf[i].name.buf, name) == 0)
+		{
+			return &theArray.buf[i];
+		}
+	}
+
+	return nullptr;
+}
+
+std::string BlastProject::generateNewMaterialName(const char* name)
+{
+	std::string nName = "";
+	if (name != nullptr)
+		nName = name;
+
+	char materialName[MAX_PATH];
+
+	BPPGraphicsMaterialArray& theArray = _projectParams.graphicsMaterials;
+	for (int m = 0; ;m++)
+	{
+		sprintf(materialName, "%s_%d", nName.c_str(), m);
+
+		bool exist = false;
+		for (int i = 0; i < theArray.arraySizes[0]; ++i)
+		{
+			BPPGraphicsMaterial& item = theArray.buf[i];
+			if (nvidia::shdfnd::strcmp(item.name.buf, materialName) == 0)
+			{
+				exist = true;
+				break;
+			}
+		}
+		if (!exist)
+		{
+			break;
+		}
+	}
+
+	return materialName;
 }
 
 bool BlastProject::isAssetInstanceNameExist(const char* name)
@@ -1025,7 +2001,7 @@ bool BlastProject::isAssetInstanceNameExist(const char* name)
 	if (name == nullptr || strlen(name) == 0)
 		return false;
 
-	BPPAssetInstanceArray& theArray = _projectParams.blast.composite.blastAssetInstances;
+	BPPAssetInstanceArray& theArray = _projectParams.blast.blastAssetInstances;
 
 	for (int i = 0; i < theArray.arraySizes[0]; ++i)
 	{
@@ -1036,22 +2012,77 @@ bool BlastProject::isAssetInstanceNameExist(const char* name)
 	return false;
 }
 
-BPPAssetInstance* BlastProject::getAssetInstance(const char* assetPath, int instanceIndex)
+int BlastProject::getAssetInstanceCount(int assetID)
 {
-	if (assetPath == nullptr || strlen(assetPath) == 0 || instanceIndex < 0)
+	std::vector<BPPAssetInstance*> instances;
+	getAssetInstances(assetID, instances);
+	return instances.size();
+}
+
+void BlastProject::getAssetInstances(int assetID, std::vector<BPPAssetInstance*>& instances)
+{
+	instances.clear();
+
+	if (assetID < 0)
+	{
+		return;
+	}
+
+	/*
+	assetID may not less than assetArray.arraySizes[0]
+	for example : there is only one asset and its id is two
+
+	BPPAssetArray& assetArray = _projectParams.blast.blastAssets;
+	if (assetID >= assetArray.arraySizes[0])
+	{
+		return;
+	}
+	*/
+
+	BPPAssetInstanceArray& instanceArray = _projectParams.blast.blastAssetInstances;
+	for (int i = 0; i < instanceArray.arraySizes[0]; i++)
+	{
+		BPPAssetInstance& instance = instanceArray.buf[i];
+		if (assetID == instance.asset)
+			instances.push_back(&instance);
+	}
+}
+
+BPPAssetInstance* BlastProject::getAssetInstance(int assetID, int instanceIndex)
+{
+	std::vector<BPPAssetInstance*> instances;
+	getAssetInstances(assetID, instances);
+
+	int instanceSize = instances.size();
+	if (instanceSize == 0 || instanceSize <= instanceIndex)
 	{
 		return nullptr;
 	}
 
-	BPPAssetInstanceArray& instanceArray = _projectParams.blast.composite.blastAssetInstances;
-	if (instanceIndex < instanceArray.arraySizes[0])
+	return instances[instanceIndex];
+}
+
+BPPAssetInstance* BlastProject::getAssetInstance(int assetID, const char* instanceName)
+{
+	std::vector<BPPAssetInstance*> instances;
+	getAssetInstances(assetID, instances);
+
+	int instanceSize = instances.size();
+	if (instanceSize == 0)
 	{
-		BPPAssetInstance& assetInstance = instanceArray.buf[instanceIndex];
-		if (nvidia::shdfnd::strcmp(assetPath, assetInstance.source.buf) == 0)
-			return &assetInstance;
+		return nullptr;
 	}
 
-	return nullptr;
+	BPPAssetInstance* instance = nullptr;
+	for (int is = 0; is < instanceSize; is++)
+	{
+		if (::strcmp(instanceName, instances[is]->name.buf) == 0)
+		{
+			instance = instances[is];
+			break;
+		}
+	}
+	return instance;
 }
 
 BPPAssetInstance* BlastProject::addAssetInstance(int blastAssetIndex, const char* instanceName)
@@ -1063,8 +2094,7 @@ BPPAssetInstance* BlastProject::addAssetInstance(int blastAssetIndex, const char
 	if (blastAssetIndex < 0 && blastAssetIndex > assetArray.arraySizes[0])
 		return nullptr;
 
-	BPPComposite& composite = _projectParams.blast.composite;
-	BPPAssetInstanceArray& theArray = composite.blastAssetInstances;
+	BPPAssetInstanceArray& theArray = _projectParams.blast.blastAssetInstances;
 
 	BPPAssetInstance* oldBuf = theArray.buf;
 	theArray.buf = new BPPAssetInstance[theArray.arraySizes[0] + 1];
@@ -1075,16 +2105,14 @@ BPPAssetInstance* BlastProject::addAssetInstance(int blastAssetIndex, const char
 		BPPAssetInstance& newItem = theArray.buf[i];
 		BPPAssetInstance& oldItem = oldBuf[i];
 
-		newItem.name.buf = nullptr;
-		newItem.source.buf = nullptr;
+		init(newItem);
 		copy(newItem, oldItem);
 	}
 
 	BPPAssetInstance& newItem = theArray.buf[i];
-	newItem.name.buf = nullptr;
-	newItem.source.buf = nullptr;
+	init(newItem);
 	copy(newItem.name, instanceName);
-	copy(newItem.source, assetArray.buf[blastAssetIndex].path);
+	newItem.asset = -1;
 	newItem.visible = true;
 
 	delete[] oldBuf;
@@ -1097,7 +2125,7 @@ void BlastProject::removeAssetInstance(const char* name)
 	if (name == nullptr || strlen(name) == 0 || !isAssetInstanceNameExist(name))
 		return;
 
-	BPPAssetInstanceArray& theArray = _projectParams.blast.composite.blastAssetInstances;
+	BPPAssetInstanceArray& theArray = _projectParams.blast.blastAssetInstances;
 	BPPAssetInstance* oldBuf = theArray.buf;
 
 	theArray.buf = new BPPAssetInstance[theArray.arraySizes[0] - 1];
@@ -1108,8 +2136,7 @@ void BlastProject::removeAssetInstance(const char* name)
 		{
 			BPPAssetInstance& newItem = theArray.buf[index++];
 			BPPAssetInstance& oldItem = oldBuf[i];
-			newItem.name.buf = nullptr;
-			newItem.source.buf = nullptr;
+			init(newItem);
 			copy(newItem, oldItem);
 		}
 	}
@@ -1117,7 +2144,7 @@ void BlastProject::removeAssetInstance(const char* name)
 	delete[] oldBuf;
 }
 
-BPPChunk* BlastProject::getChunk(BPPAsset& asset, int id)
+BPPChunk* BlastProject::getChunk(BPPAsset& asset, int chunkID)
 {
 	BPPChunkArray& chunkArray = _projectParams.blast.chunks;
 
@@ -1125,7 +2152,7 @@ BPPChunk* BlastProject::getChunk(BPPAsset& asset, int id)
 	for (int i = 0; i < count; ++i)
 	{
 		BPPChunk& chunk = chunkArray.buf[i];
-		if (chunk.ID == id && (nvidia::shdfnd::strcmp(chunk.asset.buf, asset.path.buf) == 0))
+		if (chunk.ID == chunkID && chunk.asset == asset.ID)
 			return &chunk;
 	}
 
@@ -1142,7 +2169,7 @@ std::vector<BPPChunk*> BlastProject::getChildrenChunks(BPPAsset& asset, int pare
 	for (int i = 0; i < count; ++i)
 	{
 		BPPChunk& chunk = chunkArray.buf[i];
-		if (chunk.parentID == parentID && (nvidia::shdfnd::strcmp(chunk.asset.buf, asset.path.buf) == 0))
+		if (chunk.parentID == parentID && chunk.asset == asset.ID)
 			chunks.push_back(&chunk);
 	}
 
@@ -1150,6 +2177,11 @@ std::vector<BPPChunk*> BlastProject::getChildrenChunks(BPPAsset& asset, int pare
 }
 
 std::vector<BPPChunk*> BlastProject::getChildrenChunks(BPPAsset& asset)
+{
+	return getChildrenChunks(asset.ID);
+}
+
+std::vector<BPPChunk*> BlastProject::getChildrenChunks(int assetID)
 {
 	std::vector<BPPChunk*> chunks;
 
@@ -1159,7 +2191,7 @@ std::vector<BPPChunk*> BlastProject::getChildrenChunks(BPPAsset& asset)
 	for (int i = 0; i < count; ++i)
 	{
 		BPPChunk& chunk = chunkArray.buf[i];
-		if (nvidia::shdfnd::strcmp(chunk.asset.buf, asset.path.buf) == 0)
+		if (chunk.asset == assetID)
 			chunks.push_back(&chunk);
 	}
 
@@ -1174,7 +2206,7 @@ std::vector<BPPBond*> BlastProject::getBondsByChunk(BPPAsset& asset, int chunkID
 	for (int i = 0; i < count; ++i)
 	{
 		BPPBond&  bond = bondArray.buf[i];
-		if ((nvidia::shdfnd::strcmp(bond.asset.buf, asset.path.buf) == 0))
+		if (bond.asset == asset.ID)
 		{
 			if (bond.fromChunk == chunkID)
 				bonds.push_back(&bond);
@@ -1186,109 +2218,21 @@ std::vector<BPPBond*> BlastProject::getBondsByChunk(BPPAsset& asset, int chunkID
 	return bonds;
 }
 
-bool BlastProject::isLandmarkNameExist(const char* name)
+std::vector<BPPBond*> BlastProject::getChildrenBonds(BPPAsset& asset)
 {
-	if (name == nullptr || strlen(name) == 0)
-		return false;
+	std::vector<BPPBond*> bonds;
 
-	BPPLandmarkArray& theArray = _projectParams.blast.composite.landmarks;
+	BPPBondArray& bondArray = _projectParams.blast.bonds;
 
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	int count = bondArray.arraySizes[0];
+	for (int i = 0; i < count; ++i)
 	{
-		BPPLandmark& item = theArray.buf[i];
-		if (nvidia::shdfnd::strcmp(item.name.buf, name) == 0)
-			return true;
-	}
-	return false;
-}
-
-BPPLandmark* BlastProject::addLandmark(const char* name)
-{
-	if (name == nullptr)
-		return nullptr;
-
-	BPPLandmarkArray& theArray = _projectParams.blast.composite.landmarks;
-	BPPLandmark* oldBuf = theArray.buf;
-	theArray.buf = new BPPLandmark[theArray.arraySizes[0] + 1];
-
-	int i = 0;
-	for (; i < theArray.arraySizes[0]; ++i)
-	{
-		BPPLandmark& newItem = theArray.buf[i];
-		BPPLandmark& oldItem = oldBuf[i];
-
-		newItem.name.buf = nullptr;
-		copy(newItem, oldItem);
+		BPPBond& bond = bondArray.buf[i];
+		if (bond.asset == asset.ID)
+			bonds.push_back(&bond);
 	}
 
-	BPPLandmark& newItem = theArray.buf[i];
-	newItem.name.buf = nullptr;
-	copy(newItem.name, name);
-	newItem.visible = true;
-	newItem.enable = true;
-	newItem.radius = 0.0;
-	theArray.arraySizes[0] += 1;
-
-	delete[] oldBuf;
-
-	return &newItem;
-}
-
-void BlastProject::removeLandmark(const char* name)
-{
-	if (name == nullptr || strlen(name) == 0 || !isLandmarkNameExist(name))
-		return ;
-
-	BPPLandmarkArray& theArray = _projectParams.blast.composite.landmarks;
-	BPPLandmark* oldBuf = theArray.buf;
-	
-	theArray.buf = new BPPLandmark[theArray.arraySizes[0] - 1];
-	int index = 0;
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
-	{
-		if (nvidia::shdfnd::strcmp(oldBuf[i].name.buf, name) != 0)
-		{
-			BPPLandmark& newItem = theArray.buf[index++];
-			BPPLandmark& oldItem = oldBuf[i];
-			newItem.name.buf = nullptr;
-			copy(newItem, oldItem);
-		}
-	}
-	theArray.arraySizes[0] -= 1;
-	delete[] oldBuf;
-}
-
-BPPLandmark* BlastProject::getLandmark(const char* name)
-{
-	if (name == nullptr)
-		return nullptr;
-
-	BPPLandmarkArray& theArray = _projectParams.blast.composite.landmarks;
-
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
-	{
-		if (nvidia::shdfnd::strcmp(theArray.buf[i].name.buf, name) == 0)
-			return &theArray.buf[i];
-	}
-
-	return nullptr;
-}
-
-void BlastProject::renameLandmark(const char* oldName, const char* newName)
-{
-	if (oldName == nullptr || newName == nullptr)
-		return ;
-
-	BPPLandmarkArray& theArray = _projectParams.blast.composite.landmarks;
-
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
-	{
-		if (nvidia::shdfnd::strcmp(theArray.buf[i].name.buf, oldName) == 0)
-		{
-			copy(theArray.buf[i].name, newName);
-			return;
-		}
-	}
+	return bonds;
 }
 
 bool BlastProject::isUserPresetNameExist(const char* name)
@@ -1318,7 +2262,15 @@ void BlastProject::addUserPreset(const char* name)
 
 void BlastProject::saveUserPreset()
 {
-	QFile file(_projectParams.blast.userPreset.buf);
+	QString presetFolder = QCoreApplication::applicationDirPath() + "/Preset/";
+	QDir presetDir(presetFolder);
+	QString presetFilePath = presetFolder + USER_PRESET;
+	if (!presetDir.exists())
+	{
+		if (!presetDir.mkdir(presetFolder))
+			return;
+	}
+	QFile file(presetFilePath);
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
 	{
 		return;
@@ -1326,7 +2278,7 @@ void BlastProject::saveUserPreset()
 	QTextStream out(&file);
 
 	QDomDocument    xmlDoc;
-	QDomElement rootElm = xmlDoc.createElement(QObject::tr("UserPreSet"));
+	QDomElement rootElm = xmlDoc.createElement(QObject::tr("UserPreset"));
 	xmlDoc.appendChild(rootElm);
 
 	for (size_t i = 0; i < _userPresets.size(); ++i)
@@ -1340,7 +2292,9 @@ void BlastProject::saveUserPreset()
 
 void BlastProject::loadUserPreset()
 {
-	QFile file(_projectParams.blast.userPreset.buf);
+	QString presetFilePath = QCoreApplication::applicationDirPath() + "/Preset/" + USER_PRESET;
+
+	QFile file(presetFilePath);
 
 	if (!file.open(QIODevice::ReadOnly))
 	{
@@ -1355,7 +2309,7 @@ void BlastProject::loadUserPreset()
 	}
 	file.close();
 
-	if (xmlDoc.isNull() || xmlDoc.documentElement().tagName() != QObject::tr("UserPreSet"))
+	if (xmlDoc.isNull() || xmlDoc.documentElement().tagName() != QObject::tr("UserPreset"))
 	{
 		QMessageBox::warning(&AppMainWindow::Inst(), QObject::tr("Warning"), QObject::tr("The file you selected is empty or not a blast user preset file."));
 		return;
@@ -1368,7 +2322,94 @@ void BlastProject::loadUserPreset()
 		_userPresets.push_back(preset);
 		_loadStressSolverPreset(elms.at(i).toElement(), _userPresets[i]);
 	}
+}
 
+bool BlastProject::isFracturePresetNameExist(const char* name)
+{
+	if (name == nullptr || strlen(name) == 0)
+		return false;
+
+	for (size_t i = 0; i < _fracturePresets.size(); ++i)
+	{
+		FracturePreset& item = _fracturePresets[i];
+		if (item.name == name)
+			return true;
+	}
+
+	return false;
+}
+
+std::vector<FracturePreset>& BlastProject::getFracturePresets()
+{
+	return _fracturePresets;
+}
+
+void BlastProject::addFracturePreset(const char* name, FractureType type)
+{
+	_fracturePresets.push_back(FracturePreset(name, type));
+}
+
+void BlastProject::saveFracturePreset()
+{
+	QString presetFolder = QCoreApplication::applicationDirPath() + "/Preset/";
+	QDir presetDir(presetFolder);
+	QString presetFilePath = presetFolder + FRACTURE_PRESET;
+	if (!presetDir.exists())
+	{
+		if (!presetDir.mkdir(presetFolder))
+			return;
+	}
+	QFile file(presetFilePath);
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+	{
+		return;
+	}
+	QTextStream out(&file);
+
+	QDomDocument    xmlDoc;
+	QDomElement rootElm = xmlDoc.createElement(QObject::tr("FracturePresets"));
+	xmlDoc.appendChild(rootElm);
+
+	for (size_t i = 0; i < _fracturePresets.size(); ++i)
+	{
+		_saveFracturePreset(rootElm, _fracturePresets[i]);
+	}
+
+	// 4 is count of indent
+	xmlDoc.save(out, 4);
+}
+
+void BlastProject::loadFracturePreset()
+{
+	QString presetFilePath = QCoreApplication::applicationDirPath() + "/Preset/" + FRACTURE_PRESET;
+	QFile file(presetFilePath);
+
+	if (!file.open(QIODevice::ReadOnly))
+	{
+		return;
+	}
+
+	QDomDocument	xmlDoc;
+	if (!xmlDoc.setContent(&file))
+	{
+		file.close();
+		return;
+	}
+	file.close();
+
+	if (xmlDoc.isNull() || xmlDoc.documentElement().tagName() != QObject::tr("FracturePresets"))
+	{
+		QMessageBox::warning(&AppMainWindow::Inst(), QObject::tr("Warning"), QObject::tr("The file you selected is empty or not a blast user preset file."));
+		return;
+	}
+
+	QDomNodeList elms = xmlDoc.documentElement().elementsByTagName(QObject::tr("FracturePreset"));
+	for (int i = 0; i < elms.count(); ++i)
+	{
+		FracturePreset preset("", eFractureType_Voronoi);
+		_fracturePresets.push_back(preset);
+		_loadFracturePreset(elms.at(i).toElement(), _fracturePresets[i]);
+	}
 }
 
 bool BlastProject::isFilterPresetNameExist(const char* name)
@@ -1376,21 +2417,18 @@ bool BlastProject::isFilterPresetNameExist(const char* name)
 	if (name == nullptr || strlen(name) == 0)
 		return false;
 
-	BPPFilterPresetArray& theArray = _projectParams.filter.filters;
-
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	for (FilterPreset preset : _filterPresets)
 	{
-		BPPFilterPreset& item = theArray.buf[i];
-		if (nvidia::shdfnd::strcmp(item.name.buf, name) == 0)
+		if (preset.name == name)
 			return true;
 	}
+
 	return false;
 }
 
-std::vector<BPPFilterPreset*> BlastProject::getFilterPresets()
+std::vector<FilterPreset>& BlastProject::getFilterPresets()
 {
-	std::vector<BPPFilterPreset*> presets;
-	return presets;
+	return _filterPresets;
 }
 
 void BlastProject::addFilterPreset(const char* name)
@@ -1398,30 +2436,7 @@ void BlastProject::addFilterPreset(const char* name)
 	if (name == nullptr)
 		return;
 
-	BPPFilterPresetArray& theArray = _projectParams.filter.filters;
-	BPPFilterPreset* oldBuf = theArray.buf;
-	theArray.buf = new BPPFilterPreset[theArray.arraySizes[0] + 1];
-
-	int i = 0;
-	for (; i < theArray.arraySizes[0]; ++i)
-	{
-		BPPFilterPreset& newItem = theArray.buf[i];
-		BPPFilterPreset& oldItem = oldBuf[i];
-
-		newItem.name.buf = nullptr;
-		newItem.depthFilters.buf = nullptr;
-		newItem.depthFilters.arraySizes[0] = 0;
-		copy(newItem, oldItem);
-	}
-
-	BPPFilterPreset& newItem = theArray.buf[i];
-	newItem.name.buf = nullptr;
-	newItem.depthFilters.buf = nullptr;
-	newItem.depthFilters.arraySizes[0] = 0;
-	copy(newItem.name, name);
-	theArray.arraySizes[0] += 1;
-
-	delete[] oldBuf;
+	_filterPresets.push_back(FilterPreset(name));
 }
 
 void BlastProject::removeFilterPreset(const char* name)
@@ -1429,38 +2444,27 @@ void BlastProject::removeFilterPreset(const char* name)
 	if (name == nullptr || strlen(name) == 0 || !isFilterPresetNameExist(name))
 		return;
 
-	BPPFilterPresetArray& theArray = _projectParams.filter.filters;
-	BPPFilterPreset* oldBuf = theArray.buf;
-
-	theArray.buf = new BPPFilterPreset[theArray.arraySizes[0] - 1];
-	int index = 0;
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	for (std::vector<FilterPreset>::iterator itr = _filterPresets.begin(); itr != _filterPresets.end(); ++itr)
 	{
-		if (nvidia::shdfnd::strcmp(oldBuf[i].name.buf, name) != 0)
+		if (itr->name == name)
 		{
-			BPPFilterPreset& newItem = theArray.buf[index++];
-			BPPFilterPreset& oldItem = oldBuf[i];
-			newItem.name.buf = nullptr;
-			newItem.depthFilters.buf = nullptr;
-			newItem.depthFilters.arraySizes[0] = 0;
-			copy(newItem, oldItem);
+			_filterPresets.erase(itr);
+			return;
 		}
 	}
-	theArray.arraySizes[0] -= 1;
-	delete[] oldBuf;
 }
 
-BPPFilterPreset* BlastProject::getFilterPreset(const char* name)
+FilterPreset* BlastProject::getFilterPreset(const char* name)
 {
 	if (name == nullptr)
 		return nullptr;
 
-	BPPFilterPresetArray& theArray = _projectParams.filter.filters;
-
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	for (std::vector<FilterPreset>::iterator itr = _filterPresets.begin(); itr != _filterPresets.end(); ++itr)
 	{
-		if (nvidia::shdfnd::strcmp(theArray.buf[i].name.buf, name) == 0)
-			return &theArray.buf[i];
+		if (itr->name == name)
+		{
+			return &(*itr);
+		}
 	}
 
 	return nullptr;
@@ -1471,244 +2475,112 @@ void BlastProject::renameFilterPreset(const char* oldName, const char* newName)
 	if (oldName == nullptr || newName == nullptr)
 		return;
 
-	BPPFilterPresetArray& theArray = _projectParams.filter.filters;
-
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	for (std::vector<FilterPreset>::iterator itr = _filterPresets.begin(); itr != _filterPresets.end(); ++itr)
 	{
-		if (nvidia::shdfnd::strcmp(theArray.buf[i].name.buf, oldName) == 0)
+		if (itr->name == oldName)
 		{
-			copy(theArray.buf[i].name, newName);
+			(*itr).name = newName;
 			return;
 		}
 	}
 }
 
-void BlastProject::addFilterDepth(const char* filterName, int depth)
+void BlastProject::addFilterRestriction(const char* filterName, EFilterRestriction restriction)
 {
-	if (filterName == nullptr || depth < 0)
+	if (filterName == nullptr || strlen(filterName) == 0 || !isFilterPresetNameExist(filterName))
 		return;
 
-	BPPFilterPresetArray& theArray = _projectParams.filter.filters;
-
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	for (std::vector<FilterPreset>::iterator itr = _filterPresets.begin(); itr != _filterPresets.end(); ++itr)
 	{
-		if (nvidia::shdfnd::strcmp(theArray.buf[i].name.buf, filterName) == 0)
+		if (itr->name == filterName)
 		{
-			BPPU32Array& depthArray = theArray.buf[i].depthFilters;
-			for (int j = 0; j < depthArray.arraySizes[0]; ++j)
-			{
-				if (depthArray.buf[j] == depth)
-					return;
-			}
-
-			uint32_t* oldBuf = depthArray.buf;
-			depthArray.buf = new uint32_t[theArray.arraySizes[0] + 1];
-
-			int m = 0, n = 0;
-			for (; n < depthArray.arraySizes[0];)
-			{
-				if (oldBuf[n] < depth)
-				{
-					depthArray.buf[m++] = oldBuf[n++];
-				}
-				else
-				{
-					if (m == n)
-						depthArray.buf[m++] = depth;
-					else
-						depthArray.buf[m++] = oldBuf[n++];
-				}
-			}
-
-			if (m == n)
-			{
-				depthArray.buf[m] = depth;
-			}
-			depthArray.arraySizes[0] += 1;
+			(*itr).filters.push_back(restriction);
 			return;
 		}
 	}
 }
 
-void BlastProject::removeFilterDepth(const char* filterName, int depth)
+void BlastProject::removeFilterRestriction(const char* filterName, EFilterRestriction restriction)
 {
-	if (filterName == nullptr || depth < 0)
+	if (filterName == nullptr || strlen(filterName) == 0 || !isFilterPresetNameExist(filterName))
 		return;
 
-	BPPFilterPresetArray& theArray = _projectParams.filter.filters;
-
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	for (std::vector<FilterPreset>::iterator itr = _filterPresets.begin(); itr != _filterPresets.end(); ++itr)
 	{
-		if (nvidia::shdfnd::strcmp(theArray.buf[i].name.buf, filterName) == 0)
+		if (itr->name == filterName)
 		{
-			bool foundDepth = false;
-			BPPU32Array& depthArray = theArray.buf[i].depthFilters;
-			for (int j = 0; j < depthArray.arraySizes[0]; ++j)
-			{
-				if (depthArray.buf[j] == depth)
-				{
-					foundDepth = true;
-					break;
-				}
-			}
-
-			if (!foundDepth)
-				return;
-
-			uint32_t* oldBuf = depthArray.buf;
-			depthArray.buf = new uint32_t[theArray.arraySizes[0] - 1];
-
-			int m = 0, n = 0;
-			for (; n < depthArray.arraySizes[0];)
-			{
-				if (oldBuf[n] != depth)
-				{
-					depthArray.buf[m++] = oldBuf[n++];
-				}
-				else
-				{
-					depthArray.buf[m] = depthArray.buf[n++];
-				}
-			}
-
-			depthArray.arraySizes[0] -= 1;
+			std::vector<EFilterRestriction>& filters = (*itr).filters;
+			filters.erase(std::find(filters.begin(), filters.end(), restriction));
 			return;
 		}
 	}
 }
 
-bool BlastProject::isCutoutTextureNameExist(const char* name)
+void BlastProject::saveFilterPreset()
 {
-	if (name == nullptr || strlen(name) == 0)
-		return false;
-
-	BPPStringArray& theArray = BlastProject::ins().getParams().fracture.cutoutProjection.textures;
-
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	QString presetFolder = QCoreApplication::applicationDirPath() + "/Preset/";
+	QDir presetDir(presetFolder);
+	QString presetFilePath = presetFolder + FILTER_PRESET;
+	if (!presetDir.exists())
 	{
-		NvParameterized::DummyStringStruct& item = theArray.buf[i];
-		if (nvidia::shdfnd::strcmp(item.buf, name) == 0)
-			return true;
+		if (!presetDir.mkdir(presetFolder))
+			return;
 	}
-	return false;
-}
-
-void BlastProject::addCutoutTexture(const char* name)
-{
-	BPPStringArray& theArray = BlastProject::ins().getParams().fracture.cutoutProjection.textures;
-	_addStringItem(theArray, name);
-}
-
-void BlastProject::removeCutoutTexture(const char* name)
-{
-	if (name == nullptr || strlen(name) == 0 || !isCutoutTextureNameExist(name))
-		return;
-
-	BPPStringArray& theArray = BlastProject::ins().getParams().fracture.cutoutProjection.textures;
-	_removeStringItem(theArray, name);
-}
-
-bool BlastProject::isPaintMaskNameExist(const char* name)
-{
-	if (name == nullptr || strlen(name) == 0)
-		return false;
-
-	BPPStringArray& theArray = BlastProject::ins().getParams().fracture.voronoi.paintMasks;
-
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	QFile file(presetFilePath);
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
 	{
-		NvParameterized::DummyStringStruct& item = theArray.buf[i];
-		if (nvidia::shdfnd::strcmp(item.buf, name) == 0)
-			return true;
-	}
-	return false;
-}
-
-void BlastProject::addPaintMasks(const char* name)
-{
-	BPPStringArray& theArray = BlastProject::ins().getParams().fracture.voronoi.paintMasks;
-	_addStringItem(theArray, name);
-}
-
-void BlastProject::removePaintMasks(const char* name)
-{
-	if (name == nullptr || strlen(name) == 0 || !isPaintMaskNameExist(name))
 		return;
+	}
+	QTextStream out(&file);
 
-	BPPStringArray& theArray = BlastProject::ins().getParams().fracture.voronoi.paintMasks;
-	_removeStringItem(theArray, name);
-}
+	QDomDocument    xmlDoc;
+	QDomElement rootElm = xmlDoc.createElement(QObject::tr("FilterPresets"));
+	xmlDoc.appendChild(rootElm);
 
-bool BlastProject::isMeshCutterNameExist(const char* name)
-{
-	if (name == nullptr || strlen(name) == 0)
-		return false;
-
-	BPPStringArray& theArray = BlastProject::ins().getParams().fracture.voronoi.meshCutters;
-
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	for (size_t i = 0; i < _filterPresets.size(); ++i)
 	{
-		NvParameterized::DummyStringStruct& item = theArray.buf[i];
-		if (nvidia::shdfnd::strcmp(item.buf, name) == 0)
-			return true;
+		_saveFilterPreset(rootElm, _filterPresets[i]);
 	}
-	return false;
+
+	// 4 is count of indent
+	xmlDoc.save(out, 4);
 }
 
-void BlastProject::addMeshCutter(const char* name)
+void BlastProject::loadFilterPreset()
 {
-	BPPStringArray& theArray = BlastProject::ins().getParams().fracture.voronoi.meshCutters;
-	_addStringItem(theArray, name);
-}
+	QString presetFilePath = QCoreApplication::applicationDirPath() + "/Preset/" + FILTER_PRESET;
+	QFile file(presetFilePath);
 
-void BlastProject::removeMeshCutter(const char* name)
-{
-	if (name == nullptr || strlen(name) == 0 || !isMeshCutterNameExist(name))
-		return;
-
-	BPPStringArray& theArray = BlastProject::ins().getParams().fracture.voronoi.meshCutters;
-	_removeStringItem(theArray, name);
-}
-
-bool BlastProject::isVoronoiTextureNameExist(const char* name)
-{
-	if (name == nullptr || strlen(name) == 0)
-		return false;
-
-	BPPStringArray& theArray = BlastProject::ins().getParams().fracture.voronoi.textureSites;
-
-	for (int i = 0; i < theArray.arraySizes[0]; ++i)
+	if (!file.open(QIODevice::ReadOnly))
 	{
-		NvParameterized::DummyStringStruct& item = theArray.buf[i];
-		if (nvidia::shdfnd::strcmp(item.buf, name) == 0)
-			return true;
-	}
-	return false;
-}
-
-void BlastProject::addVoronoiTexture(const char* name)
-{
-	BPPStringArray& theArray = BlastProject::ins().getParams().fracture.voronoi.textureSites;
-	_addStringItem(theArray, name);
-}
-
-void BlastProject::removeVoronoiTexture(const char* name)
-{
-	if (name == nullptr || strlen(name) == 0 || !isVoronoiTextureNameExist(name))
 		return;
+	}
 
-	BPPStringArray& theArray = BlastProject::ins().getParams().fracture.voronoi.textureSites;
-	_removeStringItem(theArray, name);
+	QDomDocument	xmlDoc;
+	if (!xmlDoc.setContent(&file))
+	{
+		file.close();
+		return;
+	}
+	file.close();
+
+	if (xmlDoc.isNull() || xmlDoc.documentElement().tagName() != QObject::tr("FilterPresets"))
+	{
+		QMessageBox::warning(&AppMainWindow::Inst(), QObject::tr("Warning"), QObject::tr("The file you selected is empty or not a blast user preset file."));
+		return;
+	}
+
+	QDomNodeList elms = xmlDoc.documentElement().elementsByTagName(QObject::tr("FilterPreset"));
+	for (int i = 0; i < elms.count(); ++i)
+	{
+		FilterPreset preset("");
+		_filterPresets.push_back(preset);
+		_loadFilterPreset(elms.at(i).toElement(), _filterPresets[i]);
+	}
 }
 
 BlastProject::BlastProject()
 {
-	_projectParams.cameraBookmarks.buf = nullptr;
-	_projectParams.cameraBookmarks.arraySizes[0] = 0;
-
-	_projectParams.graphicsMaterials.buf = nullptr;
-	_projectParams.graphicsMaterials.arraySizes[0] = 0;
-
 	_projectParams.renderer.textureFilePath.buf = nullptr;
 
 	_projectParams.renderer.lights.buf = new BPPLight[4];
@@ -1719,44 +2591,19 @@ BlastProject::BlastProject()
 		_projectParams.renderer.lights.buf[i].name.buf = nullptr;
 	}
 
-	_projectParams.blast.fileReferences.blast.buf = nullptr;
-	_projectParams.blast.fileReferences.fbx.buf = nullptr;
 	_projectParams.blast.fileReferences.fbxSourceAsset.buf = nullptr;
-	_projectParams.blast.fileReferences.collision.buf = nullptr;
 
-	_projectParams.blast.composite.composite.buf = nullptr;
-	_projectParams.blast.composite.blastAssetInstances.buf = nullptr;
-	_projectParams.blast.composite.blastAssetInstances.arraySizes[0] = 0;
-
-	_projectParams.blast.composite.landmarks.buf = nullptr;
-	_projectParams.blast.composite.landmarks.arraySizes[0] = 0;
-
-	_projectParams.blast.blastAssets.buf = nullptr;
-	_projectParams.blast.blastAssets.arraySizes[0] = 0;
-
-	_projectParams.blast.projectiles.buf = nullptr;
-	_projectParams.blast.projectiles.arraySizes[0] = 0;
-
-	_projectParams.blast.graphicsMeshes.buf = nullptr;
-	_projectParams.blast.graphicsMeshes.arraySizes[0] = 0;
-
-	_projectParams.blast.userPreset.buf = nullptr;
 	_projectParams.blast.healthMask.buf = nullptr;
 
-	_projectParams.filter.filters.buf = nullptr;
-	_projectParams.filter.filters.arraySizes[0] = 0;
+	_projectParams.fracture.general.fracturePreset.buf = nullptr;
 
-	_projectParams.fracture.voronoi.paintMasks.buf = nullptr;
-	_projectParams.fracture.voronoi.paintMasks.arraySizes[0] = 0;
+	init(_projectParams.fracture.slice);
+	init(_projectParams.fracture.voronoi);
 
-	_projectParams.fracture.voronoi.meshCutters.buf = nullptr;
-	_projectParams.fracture.voronoi.meshCutters.arraySizes[0] = 0;
+	init(_projectParams.defaultDamage);
 
-	_projectParams.fracture.voronoi.textureSites.buf = nullptr;
-	_projectParams.fracture.voronoi.textureSites.arraySizes[0] = 0;
-
-	_projectParams.fracture.cutoutProjection.textures.buf = nullptr;
-	_projectParams.fracture.cutoutProjection.textures.arraySizes[0] = 0;
+	_projectParams.fracture.general.autoSelectNewChunks = false;
+	_projectParams.fracture.general.selectionDepthTest = true;
 }
 
 void BlastProject::_saveStressSolverPreset(QDomElement& parentElm, StressSolverUserPreset& stressSolverUserPreset)
@@ -1771,13 +2618,11 @@ void BlastProject::_saveStressSolver(QDomElement& parentElm, BPPStressSolver& st
 {
 	QDomElement newElm = parentElm.ownerDocument().createElement(QObject::tr("StressSolver"));
 	parentElm.appendChild(newElm);
-	newElm.setAttribute(QObject::tr("SolverMode"), stressSolver.solverMode);
+	newElm.setAttribute(QObject::tr("Hardness"), stressSolver.hardness);
 	newElm.setAttribute(QObject::tr("LinearFactor"), stressSolver.linearFactor);
 	newElm.setAttribute(QObject::tr("AngularFactor"), stressSolver.angularFactor);
-	newElm.setAttribute(QObject::tr("MeanError"), stressSolver.meanError);
-	newElm.setAttribute(QObject::tr("VarianceError"), stressSolver.varianceError);
-	newElm.setAttribute(QObject::tr("BondsPerFrame"), stressSolver.bondsPerFrame);
-	newElm.setAttribute(QObject::tr("BondsIterations"), stressSolver.bondsIterations);
+	newElm.setAttribute(QObject::tr("BondIterationsPerFrame"), stressSolver.bondIterationsPerFrame);
+	newElm.setAttribute(QObject::tr("GraphReductionLevel"), stressSolver.graphReductionLevel);
 }
 
 void BlastProject::_loadStressSolverPreset(QDomElement& parentElm, StressSolverUserPreset& stressSolverUserPreset)
@@ -1790,13 +2635,153 @@ void BlastProject::_loadStressSolverPreset(QDomElement& parentElm, StressSolverU
 
 void BlastProject::_loadStressSolver(QDomElement& parentElm, BPPStressSolver& stressSolver)
 {
-	stressSolver.solverMode = parentElm.attribute(QObject::tr("SolverMode")).toInt();
+	stressSolver.hardness = parentElm.attribute(QObject::tr("Hardness")).toFloat();
 	stressSolver.linearFactor = parentElm.attribute(QObject::tr("LinearFactor")).toFloat();
 	stressSolver.angularFactor = parentElm.attribute(QObject::tr("AngularFactor")).toFloat();
-	stressSolver.meanError = parentElm.attribute(QObject::tr("MeanError")).toFloat();
-	stressSolver.varianceError = parentElm.attribute(QObject::tr("VarianceError")).toFloat();
-	stressSolver.bondsPerFrame = parentElm.attribute(QObject::tr("BondsPerFrame")).toUInt();
-	stressSolver.bondsIterations = parentElm.attribute(QObject::tr("BondsIterations")).toUInt();
+	stressSolver.bondIterationsPerFrame = parentElm.attribute(QObject::tr("BondIterationsPerFrame")).toUInt();
+	stressSolver.graphReductionLevel = parentElm.attribute(QObject::tr("GraphReductionLevel")).toUInt();
+}
+
+void BlastProject::_saveFracturePreset(QDomElement& parentElm, FracturePreset& fracturePreset)
+{
+	QDomElement newElm = parentElm.ownerDocument().createElement(QObject::tr("FracturePreset"));
+	parentElm.appendChild(newElm);
+	newElm.setAttribute(QObject::tr("Name"), fracturePreset.name.c_str());
+
+	if (eFractureType_Voronoi == fracturePreset.type)
+	{
+		_saveFracture(newElm, fracturePreset.fracture.voronoi);
+	}
+	else if (eFractureType_Slice == fracturePreset.type)
+	{
+		_saveFracture(newElm, fracturePreset.fracture.slice);
+	}
+
+	QDomElement visualizationElm = parentElm.ownerDocument().createElement(QObject::tr("Visualization"));
+	newElm.appendChild(visualizationElm);
+	visualizationElm.setAttribute(QObject::tr("FracturePreview"), fracturePreset.visualization.fracturePreview);
+	visualizationElm.setAttribute(QObject::tr("DisplayFractureWidget"), fracturePreset.visualization.displayFractureWidget);
+}
+
+void BlastProject::_saveFracture(QDomElement& parentElm, BPPVoronoi& voronoi)
+{
+	QDomElement newElm = parentElm.ownerDocument().createElement(QObject::tr("Voronoi"));
+	parentElm.appendChild(newElm);
+	newElm.setAttribute(QObject::tr("SiteGeneration"), voronoi.siteGeneration);
+	newElm.setAttribute(QObject::tr("NumSites"), voronoi.numSites);
+	newElm.setAttribute(QObject::tr("NumberOfClusters"), voronoi.numberOfClusters);
+	newElm.setAttribute(QObject::tr("SitesPerCluster"), voronoi.sitesPerCluster);
+	newElm.setAttribute(QObject::tr("ClusterRadius"), voronoi.clusterRadius);
+}
+
+void BlastProject::_saveFracture(QDomElement& parentElm, BPPSlice& slice)
+{
+	QDomElement newElm = parentElm.ownerDocument().createElement(QObject::tr("Slice"));
+	parentElm.appendChild(newElm);
+	newElm.setAttribute(QObject::tr("NumSlicesX"), slice.numSlicesX);
+	newElm.setAttribute(QObject::tr("NumSlicesY"), slice.numSlicesY);
+	newElm.setAttribute(QObject::tr("NumSlicesZ"), slice.numSlicesZ);
+	newElm.setAttribute(QObject::tr("OffsetVariation"), slice.offsetVariation);
+	newElm.setAttribute(QObject::tr("RotationVariation"), slice.rotationVariation);
+	newElm.setAttribute(QObject::tr("NoiseAmplitude"), slice.noiseAmplitude);
+	newElm.setAttribute(QObject::tr("NoiseFrequency"), slice.noiseFrequency);
+	newElm.setAttribute(QObject::tr("NoiseOctaveNumber"), slice.noiseOctaveNumber);
+	newElm.setAttribute(QObject::tr("NoiseSeed"), slice.noiseSeed);
+	newElm.setAttribute(QObject::tr("SurfaceResolution"), slice.surfaceResolution);
+}
+
+void BlastProject::_loadFracturePreset(QDomElement& parentElm, FracturePreset& fracturePreset)
+{
+	fracturePreset.name = parentElm.attribute(QObject::tr("Name")).toUtf8().data();
+
+	QDomElement elm = parentElm.firstChildElement(QObject::tr("Voronoi"));
+	if (!elm.isNull())
+	{
+		fracturePreset.type = eFractureType_Voronoi;
+		_loadFracture(elm, fracturePreset.fracture.voronoi);
+	}
+	elm = parentElm.firstChildElement(QObject::tr("Slice"));
+	if (!elm.isNull())
+	{
+		fracturePreset.type = eFractureType_Slice;
+		_loadFracture(elm, fracturePreset.fracture.slice);
+	}
+
+	elm = parentElm.firstChildElement(QObject::tr("Visualization"));
+	if (!elm.isNull())
+	{
+		/*
+		std::string str0 = parentElm.attribute(QObject::tr("FracturePreview")).toStdString();
+		std::string str1 = parentElm.attribute(QObject::tr("DisplayFractureWidget")).toStdString();
+		uint val0 = parentElm.attribute(QObject::tr("FracturePreview")).toUInt();
+		uint val1 = parentElm.attribute(QObject::tr("DisplayFractureWidget")).toUInt();
+		*/
+		fracturePreset.visualization.fracturePreview = elm.attribute(QObject::tr("FracturePreview")).toUInt();
+		fracturePreset.visualization.displayFractureWidget = elm.attribute(QObject::tr("DisplayFractureWidget")).toUInt();
+	}
+}
+
+void BlastProject::_loadFracture(QDomElement& parentElm, BPPVoronoi& voronoi)
+{
+	voronoi.siteGeneration = parentElm.attribute(QObject::tr("SiteGeneration")).toInt();
+	voronoi.numSites = parentElm.attribute(QObject::tr("NumSites")).toUInt();
+	voronoi.numberOfClusters = parentElm.attribute(QObject::tr("NumberOfClusters")).toUInt();
+	voronoi.sitesPerCluster = parentElm.attribute(QObject::tr("SitesPerCluster")).toFloat();
+	voronoi.clusterRadius = parentElm.attribute(QObject::tr("ClusterRadius")).toFloat();
+}
+
+void BlastProject::_loadFracture(QDomElement& parentElm, BPPSlice& slice)
+{
+	slice.numSlicesX = parentElm.attribute(QObject::tr("NumSlicesX")).toUInt();
+	slice.numSlicesY = parentElm.attribute(QObject::tr("NumSlicesY")).toUInt();
+	slice.numSlicesZ = parentElm.attribute(QObject::tr("NumSlicesZ")).toUInt();
+	slice.offsetVariation = parentElm.attribute(QObject::tr("OffsetVariation")).toFloat();
+	slice.rotationVariation = parentElm.attribute(QObject::tr("RotationVariation")).toFloat();
+	slice.noiseAmplitude = parentElm.attribute(QObject::tr("NoiseAmplitude")).toFloat();
+	slice.noiseFrequency = parentElm.attribute(QObject::tr("NoiseFrequency")).toFloat();
+	slice.noiseOctaveNumber = parentElm.attribute(QObject::tr("NoiseOctaveNumber")).toUInt();
+	slice.noiseSeed = parentElm.attribute(QObject::tr("NoiseSeed")).toUInt();
+	slice.surfaceResolution = parentElm.attribute(QObject::tr("SurfaceResolution")).toUInt();
+}
+
+void BlastProject::_saveFilterPreset(QDomElement& parentElm, FilterPreset& filterPreset)
+{
+	QDomElement newElm = parentElm.ownerDocument().createElement(QObject::tr("FilterPreset"));
+	parentElm.appendChild(newElm);
+	newElm.setAttribute(QObject::tr("Name"), filterPreset.name.c_str());
+
+	for (EFilterRestriction restriction : filterPreset.filters)
+		_saveRestriction(newElm, restriction);
+}
+
+void BlastProject::_saveRestriction(QDomElement& parentElm, EFilterRestriction& restriction)
+{
+	QDomElement newElm = parentElm.ownerDocument().createElement(QObject::tr("Restriction"));
+	parentElm.appendChild(newElm);
+	newElm.setAttribute(QObject::tr("Value"), convertFilterRestrictionToString(restriction));
+}
+
+void BlastProject::_loadFilterPreset(QDomElement& parentElm, FilterPreset& filterPreset)
+{
+	filterPreset.name = parentElm.attribute(QObject::tr("Name")).toUtf8().data();
+
+	QDomNodeList nodeList = parentElm.childNodes();
+	for (int i = 0; i < nodeList.count(); ++i)
+	{
+		QDomNode& node = nodeList.at(i);
+		QDomElement elm = node.toElement();
+		if (elm.isNull() || elm.nodeName() != "Restriction")
+			continue;
+
+		EFilterRestriction restriction;
+		_loadRestriction(elm, restriction);
+		filterPreset.filters.push_back(restriction);
+	}
+}
+
+void BlastProject::_loadRestriction(QDomElement& parentElm, EFilterRestriction& restriction)
+{
+	restriction = (EFilterRestriction)(convertStringToFilterRestriction(parentElm.attribute(QObject::tr("Value")).toUtf8().data()));
 }
 
 void BlastProject::_addStringItem(BPPStringArray& theArray, const char* name)
@@ -2101,7 +3086,7 @@ bool ProjectParamsLoad(const char* filePath,
 		return false;
 	}
 
-	scene->Clear();
+//	scene->Clear();
 
 	for (int idx = 0; idx < (int)data.size(); ++idx) {
 		NvParameterized::Interface* iface = data[idx];

@@ -34,6 +34,7 @@ class QDragMoveEvent;
 class QDragLeaveEvent;
 class QDropEvent;
 class QContextMenuEvent;
+class QAction;
 
 class PluginInterface
 {
@@ -62,7 +63,7 @@ public:
 	virtual bool Gamepad_ToggleSimulation() = 0;
 	virtual bool Gamepad_ResetScene() = 0;
 	NV_AT_UNUSED virtual bool Gamepad_LoadSamples(QString fn) = 0;
-	virtual bool Gamepad_StartAnimation() = 0;
+	virtual bool Gamepad_PlaySample() = 0;
 	virtual bool GamepadHandler_ShowHair() = 0;
 	virtual bool GamepadHandler_SpinWindStrength(float windStrength) = 0;
 	virtual bool Gamepad_ResetAnimation() = 0;
@@ -71,6 +72,7 @@ public:
 	virtual bool Light_loadParameters(NvParameterized::Handle& handle, Light* pLight) = 0;
 	virtual bool Light_saveParameters(NvParameterized::Handle& handle, Light* pLight) = 0;
 
+	virtual void SimpleScene_OpenFilesByDrop(const QStringList& fileNames) = 0;
 	virtual bool SimpleScene_SimpleScene() = 0;
 	virtual bool SimpleScene_Initialize(int backdoor) = 0;
 	virtual bool SimpleScene_Shutdown() = 0;
@@ -78,6 +80,7 @@ public:
 	virtual bool SimpleScene_Draw_DX12() = 0;
 	virtual bool SimpleScene_Draw_DX11() = 0;
 	virtual bool SimpleScene_FitCamera(atcore_float3& center, atcore_float3& extents) = 0;
+	virtual bool SimpleScene_UpdateCamera() = 0;
 	virtual bool SimpleScene_LoadSceneFromFbx(const char* dir, const char* fbxName) = 0;
 	virtual bool SimpleScene_LoadProject(const char* dir, const char* file) = 0;
 	virtual bool SimpleScene_SaveProject(const char* dir, const char* file) = 0;
@@ -118,6 +121,7 @@ public:
 	virtual bool AppMainWindow_shortcut_expert(bool mode) = 0;
 	virtual bool AppMainWindow_updateMainToolbar() = 0;
 
+	virtual bool AppMainWindow_menu_item_triggered(QAction* action) = 0;
 	virtual bool AppMainWindow_menu_about() = 0;
 	virtual bool AppMainWindow_menu_opendoc() = 0;
 #if USE_CURVE_EDITOR

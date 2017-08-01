@@ -1,28 +1,46 @@
-/*
-* Copyright (c) 2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTEXTAUTHORINGBONDGENERATOR_H
 #define NVBLASTEXTAUTHORINGBONDGENERATOR_H
 
 #include "NvBlastExtAuthoringTypes.h"
-#include "NvBlastExtAuthoringFractureTool.h"
-#include "NvBlastTypes.h"
-#include "../cooking/PxCooking.h"
-#include <PxPlane.h>
-#include <NvBlastExtAuthoringCollisionBuilder.h>
+
+namespace physx
+{
+class PxPlane;
+class PxCooking;
+class PxPhysicsInsertionCallback;
+}
+
 struct NvBlastBondDesc;
 struct NvBlastChunkDesc;
 struct NvBlastBond;
-
-using namespace physx;
-
 
 namespace Nv
 {
@@ -30,6 +48,7 @@ namespace Blast
 {
 
 // Forward declarations
+class FractureTool;
 class TriangleProcessor;
 struct PlaneChunkIndexer;
 
@@ -61,73 +80,75 @@ struct PlaneChunkIndexer
 class BlastBondGenerator
 {
 public:
-				
-	BlastBondGenerator(physx::PxCooking* cooking, physx::PxPhysicsInsertionCallback* insertionCallback) : mPxCooking(cooking), mPxInsertionCallback(insertionCallback){};
+	virtual ~BlastBondGenerator() {}
+
+	/**
+		Release BlastBondGenerator memory
+	*/
+	virtual void release() = 0;
 
 	/**
 		This method based on marking triangles during fracture process, so can be used only with internally fractured meshes.
-		\param[in] tool				FractureTool which contains chunks representation, tool->finalizeFracturing() should be called before.
-		\param[in] chunkIsSupport	Array of flags, if true - chunk is support. Array size should be equal to chunk count in tool.
-		\param[out] resultBondDescs	Array of created bond descriptors.
-		\param[out] resultChunkDescriptors	Array of created chunk descriptors.
-		\return 0 if success
+		\note User should call NVBLAST_FREE for resultBondDescs when it not needed anymore
+		\param[in]  tool					FractureTool which contains chunks representation, tool->finalizeFracturing() should be called before.
+		\param[in]  chunkIsSupport			Pointer to array of flags, if true - chunk is support. Array size should be equal to chunk count in tool.
+		\param[out] resultBondDescs			Pointer to array of created bond descriptors.
+		\param[out] resultChunkDescriptors	Pointer to array of created chunk descriptors.
+		\return								Number of created bonds
 	*/
-	int32_t	buildDescFromInternalFracture(FractureTool* tool, const std::vector<bool>& chunkIsSupport, std::vector<NvBlastBondDesc>& resultBondDescs, std::vector<NvBlastChunkDesc>& resultChunkDescriptors);
+	virtual int32_t	buildDescFromInternalFracture(FractureTool* tool, const bool* chunkIsSupport, 
+		NvBlastBondDesc*& resultBondDescs, NvBlastChunkDesc*& resultChunkDescriptors) = 0;
 
 
 	/**
 		Creates bond description between two meshes
-		\param[in] meshA	Array of triangles of mesh A.
-		\param[in] meshB	Array of triangles of mesh B.
-		\param[out] resultBond	Result bond description.
-		\param[in] conf	Bond creation mode.
-		\return 0 if success
+		\param[in] meshACount		Number of triangles in mesh A
+		\param[in] meshA			Pointer to array of triangles of mesh A.
+		\param[in] meshBCount		Number of triangles in mesh B
+		\param[in] meshB			Pointer to array of triangles of mesh B.
+		\param[out] resultBond		Result bond description.
+		\param[in] conf				Bond creation mode.
+		\return						0 if success
 	*/
-	int32_t	createBondBetweenMeshes(const std::vector<Triangle>& meshA, const std::vector<Triangle>& meshB, NvBlastBond& resultBond, BondGenerationConfig conf = BondGenerationConfig());
+	virtual int32_t	createBondBetweenMeshes(uint32_t meshACount, const Triangle* meshA, uint32_t meshBCount, const Triangle* meshB, 
+		NvBlastBond& resultBond, BondGenerationConfig conf = BondGenerationConfig()) = 0;
 
 	/**
 		Creates bond description between number of meshes
-		\param[in] geometry	Array of arrays of triangles for each chunk.
-		\param[out] resultBond	Array of result bonds.
-		\param[in] overlaps	Array of pairs - indexes of chunks, for which bond should be created.
-		\param[in] cfg	Bond creation mode.
-		\return 0 if success
+		\note User should call NVBLAST_FREE for resultBondDescs when it not needed anymore
+		\param[in] meshCount		Number of meshes
+		\param[in] geometryOffset	Pointer to array of triangle offsets for each mesh. 
+									Containts meshCount + 1 element, last one is total number of triangles in geometry
+		\param[in] geometry			Pointer to array of triangles. 
+									Triangles from geometryOffset[i] to geometryOffset[i+1] correspond to i-th mesh.
+		\param[in] overlapsCount	Number of overlaps
+		\param[in] overlaps			Pointer to array of pairs - indexes of chunks, for which bond should be created.
+		\param[out] resultBond		Pointer to array of result bonds.
+		\param[in] cfg				Bond creation mode.
+		\return						Number of created bonds
 	*/
-	int32_t	createBondBetweenMeshes(const std::vector<std::vector<Triangle> >& geometry, std::vector<NvBlastBondDesc>& resultBond, const std::vector<std::pair<uint32_t, uint32_t> >& overlaps, BondGenerationConfig cfg);
+	virtual int32_t	createBondBetweenMeshes(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
+		uint32_t overlapsCount, const uint32_t* overlapsA, const uint32_t* overlapsB, 
+		NvBlastBondDesc*& resultBond, BondGenerationConfig cfg) = 0;
 
 
 	/**
 		Creates bond description for prefractured meshes, when there is no info about which chunks should be connected with bond.
-		\param[in] geometry	Array of arrays of triangles for each chunk.
-		\param[in] chunkIsSupport Array of flags, if true - chunk is support. Array size should be equal to chunk count in tool.
-		\param[out] resultBondDescs	Array of result bonds.
-		\param[in] conf	Bond creation mode.
-		\return 0 if success
+		\note User should call NVBLAST_FREE for resultBondDescs when it not needed anymore
+		\param[in] meshCount		Number of meshes
+		\param[in] geometryOffset	Pointer to array of triangle offsets for each mesh. 
+									Containts meshCount + 1 element, last one is total number of triangles in geometry
+		\param[in] geometry			Pointer to array of triangles. 
+									Triangles from geometryOffset[i] to geometryOffset[i+1] correspond to i-th mesh.
+		\param[in] chunkIsSupport	Pointer to array of flags, if true - chunk is support. Array size should be equal to chunk count in tool.
+		\param[out] resultBondDescs	Pointer to array of result bonds.
+		\param[in] conf				Bond creation mode.
+		\return						Number of created bonds
 	*/
-	int32_t	bondsFromPrefractured(const std::vector<std::vector<Triangle>>& geometry, const std::vector<bool>& chunkIsSupport, std::vector<NvBlastBondDesc>& resultBondDescs, BondGenerationConfig conf = BondGenerationConfig());
+	virtual int32_t	bondsFromPrefractured(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
+		const bool*& chunkIsSupport, NvBlastBondDesc*& resultBondDescs,
+		BondGenerationConfig conf = BondGenerationConfig()) = 0;
 				
-private:
-	float	processWithMidplanes(TriangleProcessor* trProcessor, const std::vector<physx::PxVec3>& chunk1Points, const std::vector<physx::PxVec3>& chunk2Points,
-								 const std::vector<physx::PxVec3>& hull1p,const std::vector<physx::PxVec3>& hull2p, physx::PxVec3& normal, physx::PxVec3& centroid);
-
-	int32_t	createFullBondListAveraged(const std::vector<std::vector<Triangle>>& chunksGeometry, const std::vector<bool>& supportFlags, std::vector<NvBlastBondDesc>& mResultBondDescs, BondGenerationConfig conf);
-	int32_t	createFullBondListExact(const std::vector<std::vector<Triangle>>& chunksGeometry, const std::vector<bool>& supportFlags, std::vector<NvBlastBondDesc>& mResultBondDescs, BondGenerationConfig conf);
-	int32_t	createFullBondListExactInternal(const std::vector<std::vector<Triangle>>& chunksGeometry, std::vector < PlaneChunkIndexer >& planeTriangleMapping , std::vector<NvBlastBondDesc>& mResultBondDescs);
-	int32_t	createBondForcedInternal(const std::vector<PxVec3>& hull0, const std::vector<PxVec3>& hull1,const CollisionHull& cHull0, const CollisionHull& cHull1,PxBounds3 bound0, PxBounds3 bound1, NvBlastBond& resultBond, float overlapping);
-
-	void	buildGeometryCache(const std::vector<std::vector<Triangle> >& geometry);
-	void	resetGeometryCache();
-
-	physx::PxCooking*							mPxCooking;
-	physx::PxPhysicsInsertionCallback*			mPxInsertionCallback;
-
-
-	std::vector<std::vector<Triangle> >			mGeometryCache;
-
-	std::vector<PlaneChunkIndexer>				mPlaneCache;
-	std::vector<CollisionHull>					mCHullCache;
-	std::vector<std::vector<physx::PxVec3> >	mHullsPointsCache;
-	std::vector<physx::PxBounds3 >				mBoundsCache;
 };
 
 }	// namespace Blast

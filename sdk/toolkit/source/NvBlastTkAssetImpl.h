@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTTKASSETIMPL_H
 #define NVBLASTTKASSETIMPL_H
@@ -16,7 +34,7 @@
 #include "NvBlastTkJoint.h"
 #include "NvBlastTkAsset.h"
 #include "NvBlastTkTypeImpl.h"
-#include "NvBlastTkArray.h"
+#include "NvBlastArray.h"
 
 
 // Forward declarations
@@ -34,28 +52,11 @@ Implementation of TkAsset
 NVBLASTTK_IMPL_DECLARE(Asset)
 {
 public:
-	/**
-	Enum which keeps track of the serialized data format.
-	*/
-	enum Version
-	{
-		/** Initial version */
-		Initial,
-
-		//	New formats must come before Count.  They should be given descriptive names with more information in comments.
-
-		/** The number of serialized formats. */
-		Count,
-
-		/** The current version.  This should always be Count-1 */
-		Current = Count - 1
-	};
-
 	TkAssetImpl();
 	TkAssetImpl(const NvBlastID& id);
 	~TkAssetImpl();
 
-	NVBLASTTK_IMPL_DEFINE_SERIALIZABLE('A', 'S', 'S', 'T');
+	NVBLASTTK_IMPL_DEFINE_IDENTIFIABLE('A', 'S', 'S', 'T');
 
 	// Public methods
 
@@ -131,7 +132,7 @@ private:
 	bool								addJointDesc(uint32_t chunkIndex0, uint32_t chunkIndex1);
 
 	NvBlastAsset*					m_assetLL;		//!< The underlying low-level asset.
-	TkArray<TkAssetJointDesc>::type	m_jointDescs;	//!< The array of internal joint descriptors.
+	Array<TkAssetJointDesc>::type	m_jointDescs;	//!< The array of internal joint descriptors.
 	bool							m_ownsAsset;	//!< Whether or not this asset should release its low-level asset upon its own release.
 };
 

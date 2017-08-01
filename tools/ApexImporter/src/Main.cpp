@@ -1,3 +1,30 @@
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #if NV_VC
 #pragma warning(push)
@@ -13,14 +40,19 @@
 #include "Log.h"
 #include <string>
 #include <iostream>
+#include <fstream>
 #include "tclap/CmdLine.h"
 #include "ApexDestructibleObjExporter.h"
 #include "NvBlastTkFramework.h"
+#include "NvBlastGlobals.h"
 #include "NvBlastExtPxAsset.h"
 #include "NvBlastExtPxManager.h"
-#include <BlastDataExporter.h>
+#include "BlastDataExporter.h"
 #include "windows.h"
 #include <NvBlastTkAsset.h>
+#include "NvBlastExtLlSerialization.h"
+#include "NvBlastExtTkSerialization.h"
+#include "NvBlastExtPxSerialization.h"
 #define DEFAULT_INPUT_FILE "../../../tools/ApexImporter/resources/assets/table.apb"
 #define DEFAULT_OUTPUT_DIR "C:/TestFracturer/"
 #define DEFAULT_ASSET_NAME "table"
@@ -63,12 +95,12 @@ bool mkDirRecursively(std::string path)
 }
 
 // Create an Asset from the APEX destructible asset
-void run(const std::string& inFilepath, const std::string& outDir, const std::string& assetName, uint32_t mode, bool llFlag, bool tkFlag, bool extPxFlag, bool obj, bool fbx, bool fbxascii, bool ue4)
+void run(const std::string& inFilepath, const std::string& outDir, const std::string& assetName, uint32_t mode, bool llFlag, bool tkFlag, bool extPxFlag, bool obj, bool fbx, bool fbxascii, bool fbxCollision, bool nonSkinned)
 {
 	std::string inputDir = inFilepath.substr(0, inFilepath.find_last_of("/\\"));
 
 	// load APEX
-	ApexImportTool blast(loggingCallback);
+	ApexImportTool blast;
 
 	lout() << Log::TYPE_INFO << "ApexImportTool initialization" << std::endl;
 	blast.initialize();
@@ -92,12 +124,7 @@ void run(const std::string& inFilepath, const std::string& outDir, const std::st
 	config.infSearchMode = static_cast<ApexImporterConfig::InterfaceSearchMode>(mode);
 
 	std::vector<uint32_t> chunkReorderInvMap;
-	TkFrameworkDesc frameworkDesc =
-	{
-		nvidia::apex::GetApexSDK()->getErrorCallback(),
-		nvidia::apex::GetApexSDK()->getAllocator()
-	};
-	TkFramework* framework = NvBlastTkFrameworkCreate(frameworkDesc);
+	TkFramework* framework = NvBlastTkFrameworkCreate();
 	if (framework == nullptr)
 	{
 		lout() << Log::TYPE_ERROR << "Failed to create TkFramework" << std::endl;
@@ -117,8 +144,8 @@ void run(const std::string& inFilepath, const std::string& outDir, const std::st
 		lout() << Log::TYPE_ERROR << "Failed to build Blast asset data" << std::endl;
 		return;
 	};
-
-	result = blast.getCollisionGeometry(apexAsset, static_cast<uint32_t>(chunkDesc.size()), chunkReorderInvMap, flags, physicsChunks, physicsSubchunks);
+	std::vector<std::vector<CollisionHull*>> hulls;
+	result = blast.getCollisionGeometry(apexAsset, static_cast<uint32_t>(chunkDesc.size()), chunkReorderInvMap, flags, physicsChunks, physicsSubchunks, hulls);
 	if (!result)
 	{
 		lout() << Log::TYPE_ERROR << "Failed to build physics data" << std::endl;
@@ -128,7 +155,7 @@ void run(const std::string& inFilepath, const std::string& outDir, const std::st
 
 	// save asset
 	lout() << Log::TYPE_INFO << "Saving blast asset: " << outDir << std::endl;
-	BlastDataExporter blExpr(framework, nvidia::apex::GetApexSDK()->getCookingInterface(), loggingCallback);
+	BlastDataExporter blExpr(framework, nvidia::apex::GetApexSDK()->getPhysXSDK(), nvidia::apex::GetApexSDK()->getCookingInterface());
 	NvBlastAsset* llAsset = blExpr.createLlBlastAsset(bondDescs, chunkDesc);
 
 	std::cout <<"Chunk count: " << NvBlastAssetGetChunkCount(llAsset, NULL) << std::endl;
@@ -141,37 +168,32 @@ void run(const std::string& inFilepath, const std::string& outDir, const std::st
 
 	if (llFlag)
 	{
-		std::ostringstream outBlastFilePathStream;
-		outBlastFilePathStream << outDir << "/" << assetName << ".llasset";
-		std::string outBlastFilePath = outBlastFilePathStream.str();
-		blExpr.saveBlastLLAsset(outBlastFilePath, llAsset);
-		std::cout << "Wrote NvBlastAsset to " << outBlastFilePath << std::endl;
+		blExpr.saveBlastObject(outDir, assetName, llAsset, LlObjectTypeID::Asset);
 	}
 	if (tkFlag)
 	{
 		TkAsset* tkAsset = blExpr.createTkBlastAsset(bondDescs, chunkDesc);
-		std::ostringstream outBlastFilePathStream;
-		outBlastFilePathStream << outDir << "/" << assetName << ".tkasset";
-		std::string outBlastFilePath = outBlastFilePathStream.str();
-		blExpr.saveBlastTkAsset(outBlastFilePath, tkAsset);
-		std::cout << "Wrote TkAsset to " << outBlastFilePath << std::endl;
+		blExpr.saveBlastObject(outDir, assetName, tkAsset, TkObjectTypeID::Asset);
 		tkAsset->release();
 	}
 	if (extPxFlag)
 	{
 		ExtPxAsset* pxAsset = blExpr.createExtBlastAsset(bondDescs, chunkDesc, physicsChunks);
-		std::ostringstream outBlastFilePathStream;
-		outBlastFilePathStream << outDir << "/" << assetName << ".bpxa";
-		std::string outBlastFilePath = outBlastFilePathStream.str();
-		blExpr.saveBlastExtAsset(outBlastFilePath, pxAsset);
-		std::cout << "Wrote ExtPxAsset to " << outBlastFilePath << std::endl;
+		blExpr.saveBlastObject(outDir, assetName, pxAsset, ExtPxObjectTypeID::Asset);
 		pxAsset->release();
 	}	
 	
 	lout() << Log::TYPE_INFO << "Saving model file: " << outDir << std::endl;
 	ApexDestructibleGeometryExporter objSaver(inputDir, outDir);
-	objSaver.exportToFile(llAsset, *apexAsset, assetName, chunkReorderInvMap, fbx, obj, fbxascii, ue4);
-	_aligned_free(llAsset);
+	if (fbxCollision)
+	{
+		objSaver.exportToFile(llAsset, *apexAsset, assetName, chunkReorderInvMap, fbx, obj, fbxascii, nonSkinned, hulls);
+	}
+	else
+	{
+		objSaver.exportToFile(llAsset, *apexAsset, assetName, chunkReorderInvMap, fbx, obj, fbxascii, nonSkinned);
+	}
+	NVBLAST_FREE(llAsset);
 }
 
 
@@ -206,9 +228,6 @@ int main(int argc, const char* const* argv)
 		TCLAP::SwitchArg llOutputArg("", "ll", "Output LL Blast asset to the output directory (ext: llasset)", false);
 		cmd.add(llOutputArg);
 
-		TCLAP::SwitchArg ue4OutputArg("", "ue4", "Output FBX with UE4 coordinate system", false);
-		cmd.add(ue4OutputArg);
-
 		TCLAP::SwitchArg fbxAsciiArg("", "fbxascii", "Output FBX as an ascii file (defaults to binary output)", false);
 		cmd.add(fbxAsciiArg);
 
@@ -218,6 +237,11 @@ int main(int argc, const char* const* argv)
 		TCLAP::SwitchArg fbxOutputArg("", "fbx", "Output a FBX mesh to the output directory", false);
 		cmd.add(fbxOutputArg);
 
+		TCLAP::SwitchArg fbxcollision("", "fbxcollision", "Append collision geometry to FBX file", false);
+		cmd.add(fbxcollision);
+
+		TCLAP::SwitchArg nonSkinnedFBX("", "nonskinned", "Output a non-skinned FBX file", false);
+		cmd.add(nonSkinnedFBX);
 
 		// parse cmd input
 		cmd.parse(argc, argv);
@@ -226,12 +250,13 @@ int main(int argc, const char* const* argv)
 		bool bOutputTK = tkOutputArg.getValue();
 		bool bOutputLL = llOutputArg.getValue();
 
-		bool bUE4CoordSystem = ue4OutputArg.isSet();
 		bool bOutputFBXAscii = fbxAsciiArg.isSet();
 
 		bool bOutputObjFile = objOutputArg.isSet();
 		bool bOutputFbxFile = fbxOutputArg.isSet();
 
+		bool bFbxCollision = fbxcollision.isSet();
+		bool bNonSkinned = nonSkinnedFBX.isSet();
 
 		// Did we specify no output formats?
 		if (!bpxaOutputArg.isSet() && !tkOutputArg.isSet() && !llOutputArg.isSet())
@@ -287,7 +312,7 @@ int main(int argc, const char* const* argv)
 		if (debug)
 			lout().setMinVerbosity(Log::MOST_VERBOSE);
 
-		run(infile, outDir, assetName, mode, bOutputLL, bOutputTK, bOutputBPXA, bOutputObjFile, bOutputFbxFile, bOutputFBXAscii, bUE4CoordSystem);
+		run(infile, outDir, assetName, mode, bOutputLL, bOutputTK, bOutputBPXA, bOutputObjFile, bOutputFbxFile, bOutputFBXAscii, bFbxCollision, bNonSkinned);
 	}
 	catch (TCLAP::ArgException &e)  // catch any exceptions
 	{

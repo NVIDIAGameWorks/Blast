@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::FractureTool Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::FractureTool Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -43,110 +43,77 @@
 <div class="contents">
 <h1>Nv::Blast::FractureTool Class Reference</h1><!-- doxytag: class="Nv::Blast::FractureTool" --><code>#include &lt;<a class="el" href="_nv_blast_ext_authoring_fracture_tool_8h-source.html">NvBlastExtAuthoringFractureTool.h</a>&gt;</code>
 <p>
+<div class="dynheader">
+Inheritance diagram for Nv::Blast::FractureTool:</div>
+<div class="dynsection">
+
+<p><center><img src="class_nv_1_1_blast_1_1_fracture_tool.png" usemap="#Nv::Blast::FractureTool_map" border="0" alt=""></center>
+<map name="Nv::Blast::FractureTool_map">
+<area href="class_nv_1_1_blast_1_1_fracture_tool_impl.html" alt="Nv::Blast::FractureToolImpl" shape="rect" coords="0,56,162,80">
+</map>
+</div>
 
 <p>
 <a href="class_nv_1_1_blast_1_1_fracture_tool-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#d0c6f3a0fec13d41c6bfcb25dbcced17">applyNoise</a> (float amplitude, float frequency, int32_t octaves, float falloff, int32_t relaxIterations, float relaxFactor, int32_t seed=0)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#04bb5dd940274a9c8b097cc9f06d0708">createChunkMesh</a> (int32_t chunkId)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#fb7df3f578765c0aa89c53a4bb76f1b7">finalizeFracturing</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#8830959a8f7e4babc1983ea31c61ef5d">finalizeFracturing</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#f79e372569843977cbe424a9b38df148">FractureTool</a> (<a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logCallback=nullptr)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#ea8f1d386c70af0ea67bed2c353e57a1">getBaseMesh</a> (int32_t chunkIndex, <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *&amp;output)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#1e7f708d0eeda1cb51b0383f959a3e7f">getBaseMesh</a> (int32_t chunkIndex, std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> &gt; &amp;output)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#7959339df1bf17419cde2428c257af1d">getBufferedBaseMeshes</a> (<a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *&amp;vertexBuffer, uint32_t *&amp;indexBuffer, uint32_t *&amp;indexBufferOffsets)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#da51a493fd343b4e0621d9336f8d7b6c">getBufferedBaseMeshes</a> (std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> &gt; &amp;vertexBuffer, std::vector&lt; std::vector&lt; uint32_t &gt; &gt; &amp;indexBuffer)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#f07eb7960687cd912df496640bec8876">getChunkCount</a> () const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#d937332a22281bc1d323c17f64e75a86">getBufferedNoiseMeshes</a> (std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> &gt; &amp;vertexBuffer, std::vector&lt; std::vector&lt; uint32_t &gt; &gt; &amp;indexBuffer)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c99cb91a13255929a52d9a2623ac207b">getChunkDepth</a> (int32_t chunkId)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#413baff99c101a039c2c88b7ba275917">getChunkDepth</a> (int32_t chunkId)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#1d2f1ce4db5aab0ac6a075db607c6b2f">getChunkId</a> (int32_t chunkIndex)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#797a2df6fd54ef2f7936687e2cd26b45">getChunkId</a> (int32_t chunkIndex)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#0277f85b5f3ab9c3f60118895c289031">getChunkIndex</a> (int32_t chunkId)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#f3a691a58d96b46b1beec74374c0090b">getChunkIndex</a> (int32_t chunkId)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_chunk_info.html">ChunkInfo</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#9a113cc771fac30fd14a9c7b5b073e99">getChunkInfo</a> (int32_t chunkIndex)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">const std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_chunk_info.html">ChunkInfo</a> &gt; &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#81b8b46cfdc65f353105ee4f10642c87">getChunkList</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#7bcaeda929fdcc29a7db12676cf0984a">getChunksIdAtDepth</a> (uint32_t depth, int32_t *&amp;chunkIds)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#6b6ffeecdda65a6aa69d052b6de29e83">getChunkMesh</a> (int32_t chunkId)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#dc4037818bdb9424fe0543b59c1e2eac">getMeshOverlap</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> &amp;meshA, const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> &amp;meshB)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">std::vector&lt; int32_t &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#fc15c9f59844897c8578a723be6eefd3">getChunksIdAtDepth</a> (uint32_t depth)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#6bea973a4818678affb3ca13e6dc5328">getTransformation</a> (physx::PxVec3 &amp;offset, float &amp;scale)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#fff6f96adcdbda34ba531c6839448a8a">getNoisedMesh</a> (int32_t chunkIndex, std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> &gt; &amp;output)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#7ce2d9ab0cf8d3f03982b53bb4dc3d81">islandDetectionAndRemoving</a> (int32_t chunkId)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#ef282114ea80063e1f1bf0cace00b5bd">getTransformation</a> (physx::PxVec3 &amp;offset, float &amp;scale)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#5710c73457bcceba3f20d130e231a028">isMeshContainOpenEdges</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *input)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#1e797d15f364ce9b90476ea56987d37d">islandDetectionAndRemoving</a> (int32_t chunkId)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#78da4a0d726ec1b541166cd3c46df67e">release</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#adfcf4d0baed0714c2eb4a0bcd69e579">reset</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#b462c92fa47a5359bf3d19cf44af80f4">reset</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#22e7a8ffa07034217965945afe56a6fd">setRemoveIslands</a> (bool isRemoveIslands)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#251738022e498b819e88536577470735">setRemoveIslands</a> (bool isRemoveIslands)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#2ab8176dc470afd284c9e2ba84dc8227">setSourceMesh</a> (<a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *mesh)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c14c1ff1d50756694be24c34476af965">setSourceMesh</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *mesh)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#7a391757f600a3dbe11bbb5050fe1dc5">slicing</a> (uint32_t chunkId, <a class="el" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a> conf, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c61aa65dde3c085450e8256a838a487f">slicing</a> (uint32_t chunkId, <a class="el" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a> conf, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#37a628f472b1c4c7b652d9e8c84fb9a2">tesselate</a> (float averageEdgeLength)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#685b39f2892d8be70dd74cdc30cb5361">voronoiFracturing</a> (uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, const physx::PxVec3 &amp;scale, bool replaceChunk)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#e79bfbccaba765dac8db79e58b768d7c">voronoiFracturing</a> (uint32_t chunkId, const std::vector&lt; physx::PxVec3 &gt; &amp;cellPoints, const physx::PxVec3 &amp;scale, bool replaceChunk)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c4fc3be233311be7daf7471fcea21285">voronoiFracturing</a> (uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, bool replaceChunk)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#a6baa5cbc239efe276f494cbfb0a1e60">voronoiFracturing</a> (uint32_t chunkId, const std::vector&lt; physx::PxVec3 &gt; &amp;cellPoints, bool replaceChunk)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#aa7e9a0e2df9e4f0fbb41b371d7ae043">~FractureTool</a> ()</td></tr>
-
-<tr><td colspan="2"><br><h2>Static Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#55fb5c36921cce1c3cefd8dfb144b35e">getMeshOverlap</a> (<a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> &amp;meshA, <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> &amp;meshB)</td></tr>
-
-<tr><td colspan="2"><br><h2>Protected Attributes</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_chunk_info.html">ChunkInfo</a> &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#8134b25e19315f97d272d3f5235a7a9f">mChunkData</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#ca889aa8a47d15e70a9fa6d785c43abd">mChunkIdCounter</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">std::vector&lt; <a class="el" href="class_nv_1_1_blast_1_1_chunk_post_processor.html">ChunkPostProcessor</a> * &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#a639bb0f468e28f81db056498d48c744">mChunkPostprocessors</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#d62ff06b71e4cd76f8786b97b7352c99">mLoggingCallback</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxVec3&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#e173a14dc0bcc66f1bfff39a790f0474">mOffset</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#6a930f1347b0ce7d307efaac5feaf4b5">mPlaneIndexerOffset</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#bfe913470d8e1a879e076195fd71878d">mRemoveIslands</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#59e25b8094a7896f3d071dd8de49a58e">mScaleFactor</a></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#4d00c3d53ba51d966de58ff533435cc2">~FractureTool</a> ()</td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> class provides methods to fracture provided mesh and generate <a class="el" href="namespace_nv_1_1_blast.html">Blast</a> asset data <hr><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" name="f79e372569843977cbe424a9b38df148"></a><!-- doxytag: member="Nv::Blast::FractureTool::FractureTool" ref="f79e372569843977cbe424a9b38df148" args="(NvBlastLog logCallback=nullptr)" -->
+<a class="anchor" name="4d00c3d53ba51d966de58ff533435cc2"></a><!-- doxytag: member="Nv::Blast::FractureTool::~FractureTool" ref="4d00c3d53ba51d966de58ff533435cc2" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Nv::Blast::FractureTool::FractureTool           </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td>
-          <td class="paramname"> <em>logCallback</em> = <code>nullptr</code>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [inline]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-<a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> can log asset creation info if logCallback is provided. 
-</div>
-</div><p>
-<a class="anchor" name="aa7e9a0e2df9e4f0fbb41b371d7ae043"></a><!-- doxytag: member="Nv::Blast::FractureTool::~FractureTool" ref="aa7e9a0e2df9e4f0fbb41b371d7ae043" args="()" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Nv::Blast::FractureTool::~FractureTool           </td>
+          <td class="memname">virtual Nv::Blast::FractureTool::~FractureTool           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td><code> [inline]</code></td>
+          <td><code> [inline, virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -157,86 +124,38 @@
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="d0c6f3a0fec13d41c6bfcb25dbcced17"></a><!-- doxytag: member="Nv::Blast::FractureTool::applyNoise" ref="d0c6f3a0fec13d41c6bfcb25dbcced17" args="(float amplitude, float frequency, int32_t octaves, float falloff, int32_t relaxIterations, float relaxFactor, int32_t seed=0)" -->
+<a class="anchor" name="04bb5dd940274a9c8b097cc9f06d0708"></a><!-- doxytag: member="Nv::Blast::FractureTool::createChunkMesh" ref="04bb5dd940274a9c8b097cc9f06d0708" args="(int32_t chunkId)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::FractureTool::applyNoise           </td>
+          <td class="memname">virtual <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* Nv::Blast::FractureTool::createChunkMesh           </td>
           <td>(</td>
-          <td class="paramtype">float&nbsp;</td>
-          <td class="paramname"> <em>amplitude</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float&nbsp;</td>
-          <td class="paramname"> <em>frequency</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">int32_t&nbsp;</td>
-          <td class="paramname"> <em>octaves</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float&nbsp;</td>
-          <td class="paramname"> <em>falloff</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int32_t&nbsp;</td>
-          <td class="paramname"> <em>relaxIterations</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float&nbsp;</td>
-          <td class="paramname"> <em>relaxFactor</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int32_t&nbsp;</td>
-          <td class="paramname"> <em>seed</em> = <code>0</code></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
+          <td class="paramname"> <em>chunkId</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-Apply noise to interior surfaces. Must be called only after tesselation! <dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>amplitude</em>&nbsp;</td><td>Amplitude of noise </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>frequency</em>&nbsp;</td><td>Frequency of noise </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>octaves</em>&nbsp;</td><td>Number of noise octaves </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>falloff</em>&nbsp;</td><td>- damping of noise around of external surface </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>relaxIterations</em>&nbsp;</td><td>- number of smoothing iterations before applying noise </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>relaxFactor</em>&nbsp;</td><td>- amount of smoothing before applying noise. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>seed</em>&nbsp;</td><td>Random seed value </td></tr>
-  </table>
-</dl>
+Get chunk mesh in polygonal representation. User's code should release it after usage. 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#7ffacc77ed102a8cd52c080055a08c3f">Nv::Blast::FractureToolImpl</a>.</p>
 
 </div>
 </div><p>
-<a class="anchor" name="fb7df3f578765c0aa89c53a4bb76f1b7"></a><!-- doxytag: member="Nv::Blast::FractureTool::finalizeFracturing" ref="fb7df3f578765c0aa89c53a4bb76f1b7" args="()" -->
+<a class="anchor" name="8830959a8f7e4babc1983ea31c61ef5d"></a><!-- doxytag: member="Nv::Blast::FractureTool::finalizeFracturing" ref="8830959a8f7e4babc1983ea31c61ef5d" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::FractureTool::finalizeFracturing           </td>
+          <td class="memname">virtual void Nv::Blast::FractureTool::finalizeFracturing           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -244,14 +163,16 @@ Apply noise to interior surfaces. Must be called only after tesselation! <dl com
 
 <p>
 Creates resulting fractured mesh geometry from intermediate format 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#9a93aab1c2f46963ae406964b639cb82">Nv::Blast::FractureToolImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="1e7f708d0eeda1cb51b0383f959a3e7f"></a><!-- doxytag: member="Nv::Blast::FractureTool::getBaseMesh" ref="1e7f708d0eeda1cb51b0383f959a3e7f" args="(int32_t chunkIndex, std::vector&lt; Triangle &gt; &amp;output)" -->
+<a class="anchor" name="ea8f1d386c70af0ea67bed2c353e57a1"></a><!-- doxytag: member="Nv::Blast::FractureTool::getBaseMesh" ref="ea8f1d386c70af0ea67bed2c353e57a1" args="(int32_t chunkIndex, Triangle *&amp;output)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::FractureTool::getBaseMesh           </td>
+          <td class="memname">virtual uint32_t Nv::Blast::FractureTool::getBaseMesh           </td>
           <td>(</td>
           <td class="paramtype">int32_t&nbsp;</td>
           <td class="paramname"> <em>chunkIndex</em>, </td>
@@ -259,13 +180,13 @@ Creates resulting fractured mesh geometry from intermediate format
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> &gt; &amp;&nbsp;</td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *&amp;&nbsp;</td>
           <td class="paramname"> <em>output</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -275,32 +196,41 @@ Creates resulting fractured mesh geometry from intermediate format
 Get chunk base mesh <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIndex</em>&nbsp;</td><td>Chunk index </td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>output</em>&nbsp;</td><td>Array of triangles to be filled </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>output</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of triangles to be filled </td></tr>
   </table>
 </dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>number of triangles in base mesh </dd></dl>
+
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#5e5a23242da3d034f64335dd1739e551">Nv::Blast::FractureToolImpl</a>.</p>
 
 </div>
 </div><p>
-<a class="anchor" name="da51a493fd343b4e0621d9336f8d7b6c"></a><!-- doxytag: member="Nv::Blast::FractureTool::getBufferedBaseMeshes" ref="da51a493fd343b4e0621d9336f8d7b6c" args="(std::vector&lt; Vertex &gt; &amp;vertexBuffer, std::vector&lt; std::vector&lt; uint32_t &gt; &gt; &amp;indexBuffer)" -->
+<a class="anchor" name="7959339df1bf17419cde2428c257af1d"></a><!-- doxytag: member="Nv::Blast::FractureTool::getBufferedBaseMeshes" ref="7959339df1bf17419cde2428c257af1d" args="(Vertex *&amp;vertexBuffer, uint32_t *&amp;indexBuffer, uint32_t *&amp;indexBufferOffsets)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::FractureTool::getBufferedBaseMeshes           </td>
+          <td class="memname">virtual uint32_t Nv::Blast::FractureTool::getBufferedBaseMeshes           </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> &gt; &amp;&nbsp;</td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *&amp;&nbsp;</td>
           <td class="paramname"> <em>vertexBuffer</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; std::vector&lt; uint32_t &gt; &gt; &amp;&nbsp;</td>
-          <td class="paramname"> <em>indexBuffer</em></td><td>&nbsp;</td>
+          <td class="paramtype">uint32_t *&amp;&nbsp;</td>
+          <td class="paramname"> <em>indexBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&amp;&nbsp;</td>
+          <td class="paramname"> <em>indexBufferOffsets</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -309,59 +239,49 @@ Get chunk base mesh <dl compact><dt><b>Parameters:</b></dt><dd>
 <p>
 Get result geometry without noise as vertex and index buffers, where index buffers contain series of triplets which represent triangles. <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>vertexBuffer</em>&nbsp;</td><td>Array of vertices to be filled </td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>indexBuffer</em>&nbsp;</td><td>Array of arrays of indices to be filled </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>vertexBuffer</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of vertices to be filled </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>indexBuffer</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of indices to be filled </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>indexBufferOffsets</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of offsets in indexBuffer for each base mesh. Contains <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#f07eb7960687cd912df496640bec8876">getChunkCount()</a> + 1 elements. Last one is indexBuffer size </td></tr>
   </table>
 </dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>Number of vertices in vertexBuffer </dd></dl>
+
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#1ffac81bb04e7674e77940183854d352">Nv::Blast::FractureToolImpl</a>.</p>
 
 </div>
 </div><p>
-<a class="anchor" name="d937332a22281bc1d323c17f64e75a86"></a><!-- doxytag: member="Nv::Blast::FractureTool::getBufferedNoiseMeshes" ref="d937332a22281bc1d323c17f64e75a86" args="(std::vector&lt; Vertex &gt; &amp;vertexBuffer, std::vector&lt; std::vector&lt; uint32_t &gt; &gt; &amp;indexBuffer)" -->
+<a class="anchor" name="f07eb7960687cd912df496640bec8876"></a><!-- doxytag: member="Nv::Blast::FractureTool::getChunkCount" ref="f07eb7960687cd912df496640bec8876" args="() const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::FractureTool::getBufferedNoiseMeshes           </td>
+          <td class="memname">virtual uint32_t Nv::Blast::FractureTool::getChunkCount           </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> &gt; &amp;&nbsp;</td>
-          <td class="paramname"> <em>vertexBuffer</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; std::vector&lt; uint32_t &gt; &gt; &amp;&nbsp;</td>
-          <td class="paramname"> <em>indexBuffer</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-Get result geometry after tesselation and application of noise as vertex and index buffers, where index buffers contain series of triplets which represent triangles. <dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>vertexBuffer</em>&nbsp;</td><td>Array of vertices to be filled </td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>indexBuffer</em>&nbsp;</td><td>Array of arrays of indices to be filled </td></tr>
-  </table>
-</dl>
+
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#0d1af8c17f922acd54bf3b69bdff54e7">Nv::Blast::FractureToolImpl</a>.</p>
 
 </div>
 </div><p>
-<a class="anchor" name="413baff99c101a039c2c88b7ba275917"></a><!-- doxytag: member="Nv::Blast::FractureTool::getChunkDepth" ref="413baff99c101a039c2c88b7ba275917" args="(int32_t chunkId)" -->
+<a class="anchor" name="c99cb91a13255929a52d9a2623ac207b"></a><!-- doxytag: member="Nv::Blast::FractureTool::getChunkDepth" ref="c99cb91a13255929a52d9a2623ac207b" args="(int32_t chunkId)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t Nv::Blast::FractureTool::getChunkDepth           </td>
+          <td class="memname">virtual int32_t Nv::Blast::FractureTool::getChunkDepth           </td>
           <td>(</td>
           <td class="paramtype">int32_t&nbsp;</td>
           <td class="paramname"> <em>chunkId</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -375,19 +295,21 @@ Return depth level of the given chunk <dl compact><dt><b>Parameters:</b></dt><dd
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>Chunk depth or -1 if there is no such chunk. </dd></dl>
 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#5904628e466fa8cbb5016b08fb7708b8">Nv::Blast::FractureToolImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="797a2df6fd54ef2f7936687e2cd26b45"></a><!-- doxytag: member="Nv::Blast::FractureTool::getChunkId" ref="797a2df6fd54ef2f7936687e2cd26b45" args="(int32_t chunkIndex)" -->
+<a class="anchor" name="1d2f1ce4db5aab0ac6a075db607c6b2f"></a><!-- doxytag: member="Nv::Blast::FractureTool::getChunkId" ref="1d2f1ce4db5aab0ac6a075db607c6b2f" args="(int32_t chunkIndex)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t Nv::Blast::FractureTool::getChunkId           </td>
+          <td class="memname">virtual int32_t Nv::Blast::FractureTool::getChunkId           </td>
           <td>(</td>
           <td class="paramtype">int32_t&nbsp;</td>
           <td class="paramname"> <em>chunkIndex</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -401,19 +323,21 @@ Return id of chunk with specified index. <dl compact><dt><b>Parameters:</b></dt>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>Chunk id or -1 if there is no such chunk. </dd></dl>
 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#7500f7cd8e670745e74ee83eed10c1ba">Nv::Blast::FractureToolImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="f3a691a58d96b46b1beec74374c0090b"></a><!-- doxytag: member="Nv::Blast::FractureTool::getChunkIndex" ref="f3a691a58d96b46b1beec74374c0090b" args="(int32_t chunkId)" -->
+<a class="anchor" name="0277f85b5f3ab9c3f60118895c289031"></a><!-- doxytag: member="Nv::Blast::FractureTool::getChunkIndex" ref="0277f85b5f3ab9c3f60118895c289031" args="(int32_t chunkId)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t Nv::Blast::FractureTool::getChunkIndex           </td>
+          <td class="memname">virtual int32_t Nv::Blast::FractureTool::getChunkIndex           </td>
           <td>(</td>
           <td class="paramtype">int32_t&nbsp;</td>
           <td class="paramname"> <em>chunkId</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -427,18 +351,21 @@ Return index of chunk with specified chunkId <dl compact><dt><b>Parameters:</b><
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>Chunk index in internal buffer, if not exist -1 is returned. </dd></dl>
 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#2a7de5296d9fc03ae9d4d510a5314d9a">Nv::Blast::FractureToolImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="81b8b46cfdc65f353105ee4f10642c87"></a><!-- doxytag: member="Nv::Blast::FractureTool::getChunkList" ref="81b8b46cfdc65f353105ee4f10642c87" args="()" -->
+<a class="anchor" name="9a113cc771fac30fd14a9c7b5b073e99"></a><!-- doxytag: member="Nv::Blast::FractureTool::getChunkInfo" ref="9a113cc771fac30fd14a9c7b5b073e99" args="(int32_t chunkIndex)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const std::vector&lt;<a class="el" href="struct_nv_1_1_blast_1_1_chunk_info.html">ChunkInfo</a>&gt;&amp; Nv::Blast::FractureTool::getChunkList           </td>
+          <td class="memname">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_chunk_info.html">ChunkInfo</a>&amp; Nv::Blast::FractureTool::getChunkInfo           </td>
           <td>(</td>
-          <td class="paramname">          </td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkIndex</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -446,39 +373,30 @@ Return index of chunk with specified chunkId <dl compact><dt><b>Parameters:</b><
 
 <p>
 Get chunk information 
-</div>
-</div><p>
-<a class="anchor" name="6b6ffeecdda65a6aa69d052b6de29e83"></a><!-- doxytag: member="Nv::Blast::FractureTool::getChunkMesh" ref="6b6ffeecdda65a6aa69d052b6de29e83" args="(int32_t chunkId)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> Nv::Blast::FractureTool::getChunkMesh           </td>
-          <td>(</td>
-          <td class="paramtype">int32_t&nbsp;</td>
-          <td class="paramname"> <em>chunkId</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#820e9829bb02425ae53e47eb6be0b1c3">Nv::Blast::FractureToolImpl</a>.</p>
 
-<p>
-Get chunk mesh in polygonal representation 
 </div>
 </div><p>
-<a class="anchor" name="fc15c9f59844897c8578a723be6eefd3"></a><!-- doxytag: member="Nv::Blast::FractureTool::getChunksIdAtDepth" ref="fc15c9f59844897c8578a723be6eefd3" args="(uint32_t depth)" -->
+<a class="anchor" name="7bcaeda929fdcc29a7db12676cf0984a"></a><!-- doxytag: member="Nv::Blast::FractureTool::getChunksIdAtDepth" ref="7bcaeda929fdcc29a7db12676cf0984a" args="(uint32_t depth, int32_t *&amp;chunkIds)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;int32_t&gt; Nv::Blast::FractureTool::getChunksIdAtDepth           </td>
+          <td class="memname">virtual uint32_t Nv::Blast::FractureTool::getChunksIdAtDepth           </td>
           <td>(</td>
           <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>depth</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
+          <td class="paramname"> <em>depth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int32_t *&amp;&nbsp;</td>
+          <td class="paramname"> <em>chunkIds</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -488,32 +406,35 @@ Get chunk mesh in polygonal representation
 Return array of chunks IDs with given depth. <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>depth</em>&nbsp;</td><td>Chunk depth </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>Pointer</em>&nbsp;</td><td>to array of chunk IDs </td></tr>
   </table>
 </dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>Array of chunk IDs </dd></dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>Number of chunks in array </dd></dl>
+
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#b5cc06434628c2b5be10f755edcbe1da">Nv::Blast::FractureToolImpl</a>.</p>
 
 </div>
 </div><p>
-<a class="anchor" name="55fb5c36921cce1c3cefd8dfb144b35e"></a><!-- doxytag: member="Nv::Blast::FractureTool::getMeshOverlap" ref="55fb5c36921cce1c3cefd8dfb144b35e" args="(Mesh &amp;meshA, Mesh &amp;meshB)" -->
+<a class="anchor" name="dc4037818bdb9424fe0543b59c1e2eac"></a><!-- doxytag: member="Nv::Blast::FractureTool::getMeshOverlap" ref="dc4037818bdb9424fe0543b59c1e2eac" args="(const Mesh &amp;meshA, const Mesh &amp;meshB)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">static float Nv::Blast::FractureTool::getMeshOverlap           </td>
+          <td class="memname">virtual float Nv::Blast::FractureTool::getMeshOverlap           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>meshA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>meshB</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td><code> [static]</code></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -528,49 +449,16 @@ Get percentage of mesh overlap. percentage computed as volume(intersection(meshA
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>mesh overlap percentage </dd></dl>
 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#4e51dd47edda8a9e7de8df2354b451e3">Nv::Blast::FractureToolImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="fff6f96adcdbda34ba531c6839448a8a"></a><!-- doxytag: member="Nv::Blast::FractureTool::getNoisedMesh" ref="fff6f96adcdbda34ba531c6839448a8a" args="(int32_t chunkIndex, std::vector&lt; Triangle &gt; &amp;output)" -->
+<a class="anchor" name="6bea973a4818678affb3ca13e6dc5328"></a><!-- doxytag: member="Nv::Blast::FractureTool::getTransformation" ref="6bea973a4818678affb3ca13e6dc5328" args="(physx::PxVec3 &amp;offset, float &amp;scale)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::FractureTool::getNoisedMesh           </td>
-          <td>(</td>
-          <td class="paramtype">int32_t&nbsp;</td>
-          <td class="paramname"> <em>chunkIndex</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> &gt; &amp;&nbsp;</td>
-          <td class="paramname"> <em>output</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Get chunk mesh with noise <dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIndex</em>&nbsp;</td><td>Chunk index </td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>output</em>&nbsp;</td><td>Array of triangles to be filled </td></tr>
-  </table>
-</dl>
-
-</div>
-</div><p>
-<a class="anchor" name="ef282114ea80063e1f1bf0cace00b5bd"></a><!-- doxytag: member="Nv::Blast::FractureTool::getTransformation" ref="ef282114ea80063e1f1bf0cace00b5bd" args="(physx::PxVec3 &amp;offset, float &amp;scale)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Nv::Blast::FractureTool::getTransformation           </td>
+          <td class="memname">virtual void Nv::Blast::FractureTool::getTransformation           </td>
           <td>(</td>
           <td class="paramtype">physx::PxVec3 &amp;&nbsp;</td>
           <td class="paramname"> <em>offset</em>, </td>
@@ -584,7 +472,7 @@ Get chunk mesh with noise <dl compact><dt><b>Parameters:</b></dt><dd>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -592,19 +480,21 @@ Get chunk mesh with noise <dl compact><dt><b>Parameters:</b></dt><dd>
 
 <p>
 Input mesh is scaled and transformed internally to fit unit cube centered in origin. Method provides offset vector and scale parameter; 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#7232e09ecf355b69de518cd5067deb3d">Nv::Blast::FractureToolImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="1e797d15f364ce9b90476ea56987d37d"></a><!-- doxytag: member="Nv::Blast::FractureTool::islandDetectionAndRemoving" ref="1e797d15f364ce9b90476ea56987d37d" args="(int32_t chunkId)" -->
+<a class="anchor" name="7ce2d9ab0cf8d3f03982b53bb4dc3d81"></a><!-- doxytag: member="Nv::Blast::FractureTool::islandDetectionAndRemoving" ref="7ce2d9ab0cf8d3f03982b53bb4dc3d81" args="(int32_t chunkId)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t Nv::Blast::FractureTool::islandDetectionAndRemoving           </td>
+          <td class="memname">virtual int32_t Nv::Blast::FractureTool::islandDetectionAndRemoving           </td>
           <td>(</td>
           <td class="paramtype">int32_t&nbsp;</td>
           <td class="paramname"> <em>chunkId</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -618,18 +508,64 @@ Try find islands and remove them on some specifical chunk. If chunk has childs, 
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>Number of found islands is returned </dd></dl>
 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#838245cfdcbf3897bd79b80ecd9e167b">Nv::Blast::FractureToolImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="adfcf4d0baed0714c2eb4a0bcd69e579"></a><!-- doxytag: member="Nv::Blast::FractureTool::reset" ref="adfcf4d0baed0714c2eb4a0bcd69e579" args="()" -->
+<a class="anchor" name="5710c73457bcceba3f20d130e231a028"></a><!-- doxytag: member="Nv::Blast::FractureTool::isMeshContainOpenEdges" ref="5710c73457bcceba3f20d130e231a028" args="(const Mesh *input)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::FractureTool::reset           </td>
+          <td class="memname">virtual bool Nv::Blast::FractureTool::isMeshContainOpenEdges           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td>
+          <td class="paramname"> <em>input</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Check if input mesh contains open edges. Open edges can lead to wrong fracturing results. <dl class="return" compact><dt><b>Returns:</b></dt><dd>true if mesh contains open edges </dd></dl>
+
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#41b5acb435a88c4cd06912ac75bc7f19">Nv::Blast::FractureToolImpl</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="78da4a0d726ec1b541166cd3c46df67e"></a><!-- doxytag: member="Nv::Blast::FractureTool::release" ref="78da4a0d726ec1b541166cd3c46df67e" args="()=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::FractureTool::release           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Release <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> memory 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#05d2e5fd981d54d55ee5dbc5bf454a50">Nv::Blast::FractureToolImpl</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="b462c92fa47a5359bf3d19cf44af80f4"></a><!-- doxytag: member="Nv::Blast::FractureTool::reset" ref="b462c92fa47a5359bf3d19cf44af80f4" args="()=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::FractureTool::reset           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -637,19 +573,21 @@ Try find islands and remove them on some specifical chunk. If chunk has childs, 
 
 <p>
 Reset <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> state. 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#1ccbcbfde4e58f8357a589ae56ff043f">Nv::Blast::FractureToolImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="22e7a8ffa07034217965945afe56a6fd"></a><!-- doxytag: member="Nv::Blast::FractureTool::setRemoveIslands" ref="22e7a8ffa07034217965945afe56a6fd" args="(bool isRemoveIslands)" -->
+<a class="anchor" name="251738022e498b819e88536577470735"></a><!-- doxytag: member="Nv::Blast::FractureTool::setRemoveIslands" ref="251738022e498b819e88536577470735" args="(bool isRemoveIslands)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::FractureTool::setRemoveIslands           </td>
+          <td class="memname">virtual void Nv::Blast::FractureTool::setRemoveIslands           </td>
           <td>(</td>
           <td class="paramtype">bool&nbsp;</td>
           <td class="paramname"> <em>isRemoveIslands</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -662,19 +600,21 @@ Set automatic islands removing. May cause instabilities. <dl compact><dt><b>Para
   </table>
 </dl>
 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#92dec92822ab9e0807400a7d63bfc553">Nv::Blast::FractureToolImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="2ab8176dc470afd284c9e2ba84dc8227"></a><!-- doxytag: member="Nv::Blast::FractureTool::setSourceMesh" ref="2ab8176dc470afd284c9e2ba84dc8227" args="(Mesh *mesh)" -->
+<a class="anchor" name="c14c1ff1d50756694be24c34476af965"></a><!-- doxytag: member="Nv::Blast::FractureTool::setSourceMesh" ref="c14c1ff1d50756694be24c34476af965" args="(const Mesh *mesh)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::FractureTool::setSourceMesh           </td>
+          <td class="memname">virtual void Nv::Blast::FractureTool::setSourceMesh           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td>
           <td class="paramname"> <em>mesh</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td></td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -682,14 +622,16 @@ Set automatic islands removing. May cause instabilities. <dl compact><dt><b>Para
 
 <p>
 Set input mesh wich will be fractured, <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> will be reseted. 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#04d3620e1e76d15accb8a08039398680">Nv::Blast::FractureToolImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="7a391757f600a3dbe11bbb5050fe1dc5"></a><!-- doxytag: member="Nv::Blast::FractureTool::slicing" ref="7a391757f600a3dbe11bbb5050fe1dc5" args="(uint32_t chunkId, SlicingConfiguration conf, bool replaceChunk, RandomGeneratorBase *rnd)" -->
+<a class="anchor" name="c61aa65dde3c085450e8256a838a487f"></a><!-- doxytag: member="Nv::Blast::FractureTool::slicing" ref="c61aa65dde3c085450e8256a838a487f" args="(uint32_t chunkId, SlicingConfiguration conf, bool replaceChunk, RandomGeneratorBase *rnd)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t Nv::Blast::FractureTool::slicing           </td>
+          <td class="memname">virtual int32_t Nv::Blast::FractureTool::slicing           </td>
           <td>(</td>
           <td class="paramtype">uint32_t&nbsp;</td>
           <td class="paramname"> <em>chunkId</em>, </td>
@@ -715,7 +657,7 @@ Set input mesh wich will be fractured, <a class="el" href="class_nv_1_1_blast_1_
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -732,39 +674,16 @@ Fractures specified chunk with slicing method. <dl compact><dt><b>Parameters:</b
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>If 0, fracturing is successful. </dd></dl>
 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#2664c30433f3670fdae610aaec303a55">Nv::Blast::FractureToolImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="37a628f472b1c4c7b652d9e8c84fb9a2"></a><!-- doxytag: member="Nv::Blast::FractureTool::tesselate" ref="37a628f472b1c4c7b652d9e8c84fb9a2" args="(float averageEdgeLength)" -->
+<a class="anchor" name="685b39f2892d8be70dd74cdc30cb5361"></a><!-- doxytag: member="Nv::Blast::FractureTool::voronoiFracturing" ref="685b39f2892d8be70dd74cdc30cb5361" args="(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, const physx::PxVec3 &amp;scale, bool replaceChunk)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::FractureTool::tesselate           </td>
-          <td>(</td>
-          <td class="paramtype">float&nbsp;</td>
-          <td class="paramname"> <em>averageEdgeLength</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Tesselate interior surfaces <dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>averageEdgeLength</em>&nbsp;</td><td>- Average length of edge on internal surface. </td></tr>
-  </table>
-</dl>
-
-</div>
-</div><p>
-<a class="anchor" name="e79bfbccaba765dac8db79e58b768d7c"></a><!-- doxytag: member="Nv::Blast::FractureTool::voronoiFracturing" ref="e79bfbccaba765dac8db79e58b768d7c" args="(uint32_t chunkId, const std::vector&lt; physx::PxVec3 &gt; &amp;cellPoints, const physx::PxVec3 &amp;scale, bool replaceChunk)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int32_t Nv::Blast::FractureTool::voronoiFracturing           </td>
+          <td class="memname">virtual int32_t Nv::Blast::FractureTool::voronoiFracturing           </td>
           <td>(</td>
           <td class="paramtype">uint32_t&nbsp;</td>
           <td class="paramname"> <em>chunkId</em>, </td>
@@ -772,7 +691,13 @@ Tesselate interior surfaces <dl compact><dt><b>Parameters:</b></dt><dd>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; physx::PxVec3 &gt; &amp;&nbsp;</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>cellCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
           <td class="paramname"> <em>cellPoints</em>, </td>
         </tr>
         <tr>
@@ -790,7 +715,7 @@ Tesselate interior surfaces <dl compact><dt><b>Parameters:</b></dt><dd>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -800,22 +725,24 @@ Tesselate interior surfaces <dl compact><dt><b>Parameters:</b></dt><dd>
 Fractures specified chunk with voronoi method. Cells can be scaled along x,y,z axes. <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkId</em>&nbsp;</td><td>Chunk to fracture </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>cellPoints</em>&nbsp;</td><td>Array of voronoi sites </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>cellPoints</em>&nbsp;</td><td>Array of voronoi sites </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>cellPoints</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of voronoi sites </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>cellPoints</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of voronoi sites </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>scale</em>&nbsp;</td><td>Voronoi cells scaling factor </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>replaceChunk</em>&nbsp;</td><td>if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them. Case replaceChunk == true &amp;&amp; chunkId == 0 considered as wrong input parameters </td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>If 0, fracturing is successful. </dd></dl>
 
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#bdb34e565cfd944125309bfe663377d3">Nv::Blast::FractureToolImpl</a>.</p>
+
 </div>
 </div><p>
-<a class="anchor" name="a6baa5cbc239efe276f494cbfb0a1e60"></a><!-- doxytag: member="Nv::Blast::FractureTool::voronoiFracturing" ref="a6baa5cbc239efe276f494cbfb0a1e60" args="(uint32_t chunkId, const std::vector&lt; physx::PxVec3 &gt; &amp;cellPoints, bool replaceChunk)" -->
+<a class="anchor" name="c4fc3be233311be7daf7471fcea21285"></a><!-- doxytag: member="Nv::Blast::FractureTool::voronoiFracturing" ref="c4fc3be233311be7daf7471fcea21285" args="(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, bool replaceChunk)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32_t Nv::Blast::FractureTool::voronoiFracturing           </td>
+          <td class="memname">virtual int32_t Nv::Blast::FractureTool::voronoiFracturing           </td>
           <td>(</td>
           <td class="paramtype">uint32_t&nbsp;</td>
           <td class="paramname"> <em>chunkId</em>, </td>
@@ -823,7 +750,13 @@ Fractures specified chunk with voronoi method. Cells can be scaled along x,y,z a
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; physx::PxVec3 &gt; &amp;&nbsp;</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>cellCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
           <td class="paramname"> <em>cellPoints</em>, </td>
         </tr>
         <tr>
@@ -835,7 +768,7 @@ Fractures specified chunk with voronoi method. Cells can be scaled along x,y,z a
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td></td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -845,133 +778,14 @@ Fractures specified chunk with voronoi method. Cells can be scaled along x,y,z a
 Fractures specified chunk with voronoi method. <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkId</em>&nbsp;</td><td>Chunk to fracture </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>cellPoints</em>&nbsp;</td><td>Array of voronoi sites </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>cellPoints</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of voronoi sites </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>replaceChunk</em>&nbsp;</td><td>if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them. Case replaceChunk == true &amp;&amp; chunkId == 0 considered as wrong input parameters </td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>If 0, fracturing is successful. </dd></dl>
 
-</div>
-</div><p>
-<hr><h2>Member Data Documentation</h2>
-<a class="anchor" name="8134b25e19315f97d272d3f5235a7a9f"></a><!-- doxytag: member="Nv::Blast::FractureTool::mChunkData" ref="8134b25e19315f97d272d3f5235a7a9f" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="struct_nv_1_1_blast_1_1_chunk_info.html">ChunkInfo</a>&gt; <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#8134b25e19315f97d272d3f5235a7a9f">Nv::Blast::FractureTool::mChunkData</a><code> [protected]</code>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#f7fd215d495bd93428a5075abad44d09">Nv::Blast::FractureToolImpl</a>.</p>
 
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="ca889aa8a47d15e70a9fa6d785c43abd"></a><!-- doxytag: member="Nv::Blast::FractureTool::mChunkIdCounter" ref="ca889aa8a47d15e70a9fa6d785c43abd" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int32_t <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#ca889aa8a47d15e70a9fa6d785c43abd">Nv::Blast::FractureTool::mChunkIdCounter</a><code> [protected]</code>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="a639bb0f468e28f81db056498d48c744"></a><!-- doxytag: member="Nv::Blast::FractureTool::mChunkPostprocessors" ref="a639bb0f468e28f81db056498d48c744" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="class_nv_1_1_blast_1_1_chunk_post_processor.html">ChunkPostProcessor</a>*&gt; <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#a639bb0f468e28f81db056498d48c744">Nv::Blast::FractureTool::mChunkPostprocessors</a><code> [protected]</code>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="d62ff06b71e4cd76f8786b97b7352c99"></a><!-- doxytag: member="Nv::Blast::FractureTool::mLoggingCallback" ref="d62ff06b71e4cd76f8786b97b7352c99" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#d62ff06b71e4cd76f8786b97b7352c99">Nv::Blast::FractureTool::mLoggingCallback</a><code> [protected]</code>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="e173a14dc0bcc66f1bfff39a790f0474"></a><!-- doxytag: member="Nv::Blast::FractureTool::mOffset" ref="e173a14dc0bcc66f1bfff39a790f0474" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">physx::PxVec3 <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#e173a14dc0bcc66f1bfff39a790f0474">Nv::Blast::FractureTool::mOffset</a><code> [protected]</code>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="6a930f1347b0ce7d307efaac5feaf4b5"></a><!-- doxytag: member="Nv::Blast::FractureTool::mPlaneIndexerOffset" ref="6a930f1347b0ce7d307efaac5feaf4b5" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int32_t <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#6a930f1347b0ce7d307efaac5feaf4b5">Nv::Blast::FractureTool::mPlaneIndexerOffset</a><code> [protected]</code>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="bfe913470d8e1a879e076195fd71878d"></a><!-- doxytag: member="Nv::Blast::FractureTool::mRemoveIslands" ref="bfe913470d8e1a879e076195fd71878d" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#bfe913470d8e1a879e076195fd71878d">Nv::Blast::FractureTool::mRemoveIslands</a><code> [protected]</code>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="59e25b8094a7896f3d071dd8de49a58e"></a><!-- doxytag: member="Nv::Blast::FractureTool::mScaleFactor" ref="59e25b8094a7896f3d071dd8de49a58e" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">float <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#59e25b8094a7896f3d071dd8de49a58e">Nv::Blast::FractureTool::mScaleFactor</a><code> [protected]</code>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-<a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> scaled to unite-cube and translated to the origin 
 </div>
 </div><p>
 <hr>The documentation for this class was generated from the following file:<ul>

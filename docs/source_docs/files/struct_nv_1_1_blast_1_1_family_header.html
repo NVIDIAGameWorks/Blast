@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv::Blast::FamilyHeader Struct Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv::Blast::FamilyHeader Struct Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -57,9 +57,31 @@ Inheritance diagram for Nv::Blast::FamilyHeader:</div>
 <a href="struct_nv_1_1_blast_1_1_family_header-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#5361b8667e8a10f440f04248e232cd2f">applyFracture</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *eventBuffers, const <a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commands, <a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> *filterActor, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn, <a class="el" href="struct_nv_blast_timers.html">NvBlastTimers</a> *timers)</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#6dde29ddbcaa4e7f85d3d5339db300ad">borrowActor</a> (uint32_t index)</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#44bed5d2801cd48c30141d21e1852816">fractureInPlaceEvents</a> (uint32_t chunkFractureCount, <a class="el" href="struct_nv_blast_chunk_fracture_data.html">NvBlastChunkFractureData</a> *inoutbuffer, uint32_t eventsSize, uint32_t *count, <a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> *filterActor, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#8c8dbf18c71bfd84c101542fce8498ff">fractureNoEvents</a> (uint32_t chunkFractureCount, const <a class="el" href="struct_nv_blast_chunk_fracture_data.html">NvBlastChunkFractureData</a> *chunkFractures, <a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> *filterActor, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#2a8ef3805c7eaa784d181c5af6021eaa">fractureSubSupport</a> (uint32_t chunkIndex, uint32_t suboffset, float healthDamage, float *chunkHealths, const <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a> *chunks, <a class="el" href="struct_nv_blast_chunk_fracture_data.html">NvBlastChunkFractureData</a> *outBuffer, uint32_t *currentIndex, const uint32_t maxCount)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#db022b7eb3444d2ac3a8a2d5de98a9b5">fractureSubSupportNoEvents</a> (uint32_t chunkIndex, uint32_t suboffset, float healthDamage, float *chunkHealths, const <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a> *chunks)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#89f293e52b88ad129c5f202ed2205dd8">fractureWithEvents</a> (uint32_t chunkFractureCount, const <a class="el" href="struct_nv_blast_chunk_fracture_data.html">NvBlastChunkFractureData</a> *commands, <a class="el" href="struct_nv_blast_chunk_fracture_data.html">NvBlastChunkFractureData</a> *events, uint32_t eventsSize, uint32_t *count, <a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> *filterActor, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#4fbb4b47a687a49e22432439f3443ba6">getActorBufferSize</a> () const </td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#6ec386c3cb8070eb817220027ffd07c0">getActorByIndex</a> (uint32_t index) const </td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#d9b51b0e92f2e76180b1255e409b7b85">getGetChunkActor</a> (uint32_t chunkIndex) const </td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#be6d9f7b17ef96f60ea83df86fa03116">getGetChunkActorIndex</a> (uint32_t chunkIndex) const </td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#9db44be2558e6dcc1ec74950daebc282">getGetNodeActor</a> (uint32_t nodeIndex) const </td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#20daa09c2621c982d27e36d8d3841302">getGetNodeActorIndex</a> (uint32_t nodeIndex) const </td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">float *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_family_header.html#ddfc84d59d9a0b65f3f6b89d895b2041">getSubsupportChunkHealths</a> () const </td></tr>
 
@@ -98,6 +120,64 @@ Inheritance diagram for Nv::Blast::FamilyHeader:</div>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Data header at the beginning of every <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> family<p>
 The block address may be cast to a valid <a class="el" href="struct_nv_1_1_blast_1_1_family_header.html">FamilyHeader</a> pointer. <hr><h2>Member Function Documentation</h2>
+<a class="anchor" name="5361b8667e8a10f440f04248e232cd2f"></a><!-- doxytag: member="Nv::Blast::FamilyHeader::applyFracture" ref="5361b8667e8a10f440f04248e232cd2f" args="(NvBlastFractureBuffers *eventBuffers, const NvBlastFractureBuffers *commands, Actor *filterActor, NvBlastLog logFn, NvBlastTimers *timers)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Nv::Blast::FamilyHeader::applyFracture           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *&nbsp;</td>
+          <td class="paramname"> <em>eventBuffers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *&nbsp;</td>
+          <td class="paramname"> <em>commands</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> *&nbsp;</td>
+          <td class="paramname"> <em>filterActor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td>
+          <td class="paramname"> <em>logFn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_timers.html">NvBlastTimers</a> *&nbsp;</td>
+          <td class="paramname"> <em>timers</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+See NvBlastActorApplyFracture<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>eventBuffers</em>&nbsp;</td><td>Target buffers to hold applied fracture events. May be NULL, in which case events are not reported. To avoid data loss, provide an entry for every lower-support chunk and every bond in the original actor. </td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>actor</em>&nbsp;</td><td>The <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> to apply fracture to. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>commands</em>&nbsp;</td><td>The fracture commands to process. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>filterActor</em>&nbsp;</td><td>pointer to the actor to filter commands that target other actors. May be NULL to apply all commands </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>logFn</em>&nbsp;</td><td>User-supplied message function (see NvBlastLog definition). May be NULL. </td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>timers</em>&nbsp;</td><td>If non-NULL this struct will be filled out with profiling information for the step, in profile build configurations. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
 <a class="anchor" name="6dde29ddbcaa4e7f85d3d5339db300ad"></a><!-- doxytag: member="Nv::Blast::FamilyHeader::borrowActor" ref="6dde29ddbcaa4e7f85d3d5339db300ad" args="(uint32_t index)" -->
 <div class="memitem">
 <div class="memproto">
@@ -125,6 +205,332 @@ Gets an actor from the actor array and validates it if it is not already valid. 
 
 </div>
 </div><p>
+<a class="anchor" name="44bed5d2801cd48c30141d21e1852816"></a><!-- doxytag: member="Nv::Blast::FamilyHeader::fractureInPlaceEvents" ref="44bed5d2801cd48c30141d21e1852816" args="(uint32_t chunkFractureCount, NvBlastChunkFractureData *inoutbuffer, uint32_t eventsSize, uint32_t *count, Actor *filterActor, NvBlastLog logFn)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Nv::Blast::FamilyHeader::fractureInPlaceEvents           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkFractureCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_chunk_fracture_data.html">NvBlastChunkFractureData</a> *&nbsp;</td>
+          <td class="paramname"> <em>inoutbuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>eventsSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> *&nbsp;</td>
+          <td class="paramname"> <em>filterActor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td>
+          <td class="paramname"> <em>logFn</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Apply chunk fracture commands hierarchically, recording a fracture event for each health damage applied.<p>
+In-Place version: fracture commands are replaced by fracture events.<p>
+If inoutbuffer array is too small, events are dropped but the chunks are still damaged.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>chunkFractureCount</em>&nbsp;</td><td>number of chunk fracture commands to apply </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>inoutbuffer</em>&nbsp;</td><td>array of chunk fracture commands to be replaced by events </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>eventsSize</em>&nbsp;</td><td>number of available entries in inoutbuffer </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>count</em>&nbsp;</td><td>returns the number of damaged chunks </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>filterActor</em>&nbsp;</td><td>pointer to the actor to filter commands that target other actors. May be NULL to apply all commands </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>logFn</em>&nbsp;</td><td>User-supplied message function (see NvBlastLog definition). May be NULL. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="8c8dbf18c71bfd84c101542fce8498ff"></a><!-- doxytag: member="Nv::Blast::FamilyHeader::fractureNoEvents" ref="8c8dbf18c71bfd84c101542fce8498ff" args="(uint32_t chunkFractureCount, const NvBlastChunkFractureData *chunkFractures, Actor *filterActor, NvBlastLog logFn)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Nv::Blast::FamilyHeader::fractureNoEvents           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkFractureCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_chunk_fracture_data.html">NvBlastChunkFractureData</a> *&nbsp;</td>
+          <td class="paramname"> <em>chunkFractures</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> *&nbsp;</td>
+          <td class="paramname"> <em>filterActor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td>
+          <td class="paramname"> <em>logFn</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Apply chunk fracture commands hierarchically.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>chunkFractureCount</em>&nbsp;</td><td>number of chunk fracture commands to apply </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>chunkFractures</em>&nbsp;</td><td>array of chunk fracture commands </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>filterActor</em>&nbsp;</td><td>pointer to the actor to filter commands corresponding to other actors. May be NULL to apply all commands </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>logFn</em>&nbsp;</td><td>User-supplied message function (see NvBlastLog definition). May be NULL. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="2a8ef3805c7eaa784d181c5af6021eaa"></a><!-- doxytag: member="Nv::Blast::FamilyHeader::fractureSubSupport" ref="2a8ef3805c7eaa784d181c5af6021eaa" args="(uint32_t chunkIndex, uint32_t suboffset, float healthDamage, float *chunkHealths, const NvBlastChunk *chunks, NvBlastChunkFractureData *outBuffer, uint32_t *currentIndex, const uint32_t maxCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Nv::Blast::FamilyHeader::fractureSubSupport           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>suboffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>healthDamage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramname"> <em>chunkHealths</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a> *&nbsp;</td>
+          <td class="paramname"> <em>chunks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_chunk_fracture_data.html">NvBlastChunkFractureData</a> *&nbsp;</td>
+          <td class="paramname"> <em>outBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>currentIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t&nbsp;</td>
+          <td class="paramname"> <em>maxCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Hierarchically distribute damage to child chunks, recording a fracture event for each health damage applied.<p>
+If outBuffer is too small, events are dropped but the chunks are still damaged.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>chunkIndex</em>&nbsp;</td><td>asset chunk index to hierarchically damage </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>suboffset</em>&nbsp;</td><td>index of the first sub-support health </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>healthDamage</em>&nbsp;</td><td>damage strength to apply </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>chunkHealths</em>&nbsp;</td><td>instance chunk healths </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>chunks</em>&nbsp;</td><td>asset chunk collection </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>outBuffer</em>&nbsp;</td><td>target buffer for fracture events </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>currentIndex</em>&nbsp;</td><td>current position in outBuffer - returns the number of damaged chunks </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>maxCount</em>&nbsp;</td><td>capacity of outBuffer </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>filterActor</em>&nbsp;</td><td>pointer to the actor to filter commands that target other actors. May be NULL to apply all commands </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>logFn</em>&nbsp;</td><td>User-supplied message function (see NvBlastLog definition). May be NULL. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="db022b7eb3444d2ac3a8a2d5de98a9b5"></a><!-- doxytag: member="Nv::Blast::FamilyHeader::fractureSubSupportNoEvents" ref="db022b7eb3444d2ac3a8a2d5de98a9b5" args="(uint32_t chunkIndex, uint32_t suboffset, float healthDamage, float *chunkHealths, const NvBlastChunk *chunks)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Nv::Blast::FamilyHeader::fractureSubSupportNoEvents           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>suboffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>healthDamage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramname"> <em>chunkHealths</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a> *&nbsp;</td>
+          <td class="paramname"> <em>chunks</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Hierarchically distribute damage to child chunks.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>chunkIndex</em>&nbsp;</td><td>asset chunk index to hierarchically damage </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>suboffset</em>&nbsp;</td><td>index of the first sub-support health </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>healthDamage</em>&nbsp;</td><td>damage strength to apply </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>chunkHealths</em>&nbsp;</td><td>instance chunk healths </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>chunks</em>&nbsp;</td><td>asset chunk collection </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="89f293e52b88ad129c5f202ed2205dd8"></a><!-- doxytag: member="Nv::Blast::FamilyHeader::fractureWithEvents" ref="89f293e52b88ad129c5f202ed2205dd8" args="(uint32_t chunkFractureCount, const NvBlastChunkFractureData *commands, NvBlastChunkFractureData *events, uint32_t eventsSize, uint32_t *count, Actor *filterActor, NvBlastLog logFn)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Nv::Blast::FamilyHeader::fractureWithEvents           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkFractureCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_chunk_fracture_data.html">NvBlastChunkFractureData</a> *&nbsp;</td>
+          <td class="paramname"> <em>commands</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_chunk_fracture_data.html">NvBlastChunkFractureData</a> *&nbsp;</td>
+          <td class="paramname"> <em>events</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>eventsSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> *&nbsp;</td>
+          <td class="paramname"> <em>filterActor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a>&nbsp;</td>
+          <td class="paramname"> <em>logFn</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Apply chunk fracture commands hierarchically, recording a fracture event for each health damage applied.<p>
+If events array is too small, events are dropped but the chunks are still damaged.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>chunkFractureCount</em>&nbsp;</td><td>number of chunk fracture commands to apply </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>commands</em>&nbsp;</td><td>array of chunk fracture commands </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>events</em>&nbsp;</td><td>target buffer for fracture events </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>eventsSize</em>&nbsp;</td><td>number of available entries in 'events' </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>count</em>&nbsp;</td><td>returns the number of damaged chunks </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>filterActor</em>&nbsp;</td><td>pointer to the actor to filter commands that target other actors. May be NULL to apply all commands </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>logFn</em>&nbsp;</td><td>User-supplied message function (see NvBlastLog definition). May be NULL. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
 <a class="anchor" name="4fbb4b47a687a49e22432439f3443ba6"></a><!-- doxytag: member="Nv::Blast::FamilyHeader::getActorBufferSize" ref="4fbb4b47a687a49e22432439f3443ba6" args="() const " -->
 <div class="memitem">
 <div class="memproto">
@@ -143,6 +549,141 @@ Gets an actor from the actor array and validates it if it is not already valid. 
 <p>
 Returns the total number of actors in the <a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> buffer, active and inactive.<p>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>the number of Actors in the actor buffer. See borrowActor. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="6ec386c3cb8070eb817220027ffd07c0"></a><!-- doxytag: member="Nv::Blast::FamilyHeader::getActorByIndex" ref="6ec386c3cb8070eb817220027ffd07c0" args="(uint32_t index) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_INLINE <a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> * Nv::Blast::FamilyHeader::getActorByIndex           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>index</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Retrieve the actor from an index. If actor is inactive nullptr is returned.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>index</em>&nbsp;</td><td>The index of an actor.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>A pointer to the indexed actor if the actor is active, nullptr otherwise. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="d9b51b0e92f2e76180b1255e409b7b85"></a><!-- doxytag: member="Nv::Blast::FamilyHeader::getGetChunkActor" ref="d9b51b0e92f2e76180b1255e409b7b85" args="(uint32_t chunkIndex) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_INLINE <a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> * Nv::Blast::FamilyHeader::getGetChunkActor           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkIndex</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Retrieve an actor associated with the given chunk.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIndex</em>&nbsp;</td><td>The index of chunk.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>A pointer to the actor if the actor is active, nullptr otherwise. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="be6d9f7b17ef96f60ea83df86fa03116"></a><!-- doxytag: member="Nv::Blast::FamilyHeader::getGetChunkActorIndex" ref="be6d9f7b17ef96f60ea83df86fa03116" args="(uint32_t chunkIndex) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_INLINE uint32_t Nv::Blast::FamilyHeader::getGetChunkActorIndex           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkIndex</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Retrieve the index of an actor associated with the given chunk.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIndex</em>&nbsp;</td><td>The index of chunk.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the index of associated actor in the FamilyHeader's getActors() array. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="9db44be2558e6dcc1ec74950daebc282"></a><!-- doxytag: member="Nv::Blast::FamilyHeader::getGetNodeActor" ref="9db44be2558e6dcc1ec74950daebc282" args="(uint32_t nodeIndex) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_INLINE <a class="el" href="class_nv_1_1_blast_1_1_actor.html">Actor</a> * Nv::Blast::FamilyHeader::getGetNodeActor           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>nodeIndex</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Retrieve an actor associated with the given node.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nodeIndex</em>&nbsp;</td><td>The index of node.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>A pointer to the actor if the actor is active, nullptr otherwise. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="20daa09c2621c982d27e36d8d3841302"></a><!-- doxytag: member="Nv::Blast::FamilyHeader::getGetNodeActorIndex" ref="20daa09c2621c982d27e36d8d3841302" args="(uint32_t nodeIndex) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_INLINE uint32_t Nv::Blast::FamilyHeader::getGetNodeActorIndex           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>nodeIndex</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Retrieve the index of an actor associated with the given node.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>nodeIndex</em>&nbsp;</td><td>The index of node.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the index of associated actor in the FamilyHeader's getActors() array. </dd></dl>
 
 </div>
 </div><p>

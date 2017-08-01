@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 API Reference: Nv::Blast::ExtPxAsset Class Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 API Reference: Nv::Blast::ExtPxAsset Class Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -33,6 +33,10 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#0cd345a19090b1a5b332650f976041e2">getChunks</a> () const =0</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#4269cec8490e4cdb34ca46f24ce630f2">getDefaultActorDesc</a> () const =0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#bd8250a0fd3bb8430eb6a61be57569b0">getDefaultActorDesc</a> ()=0</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#bc114b7a8b70f862a47942b25b89faed">getSubchunkCount</a> () const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#a301356979e3eefaf81438214a990e20">getSubchunks</a> () const =0</td></tr>
@@ -41,14 +45,16 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#2d2e7f6418c5faa72daca12816ce1e14">release</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#d745be4048e685f7428406daae003544">serialize</a> (physx::general_PxIOStream2::PxFileBuf &amp;stream, physx::PxCooking &amp;cooking) const =0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#0fff64440baf6cd557941d79a9f53d1a">setUniformHealth</a> (bool enabled)=0</td></tr>
 
 <tr><td colspan="2"><br><h2>Static Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#8918f4cd232d7844dee1a3a4d4d9d6ea">create</a> (<a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> *asset, <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">ExtPxAssetDesc::ChunkDesc</a> *chunks, uint32_t chunkCount)</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#6514c543e6df14d77ef660bafa8c4fb3">create</a> (<a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> *asset)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#b899763ad22b77d5d99cdd60bf008cd3">create</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html">ExtPxAssetDesc</a> &amp;desc, <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> &amp;framework)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#b2de9bf320ffa4c0a777d5c9e72d1803">create</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_tk_asset_desc.html">TkAssetDesc</a> &amp;desc, <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a> *pxChunks, <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a> *pxSubchunks, <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> &amp;framework)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#99f92b8fda910a8496bb2889344b7199">deserialize</a> (physx::general_PxIOStream2::PxFileBuf &amp;stream, <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> &amp;framework, physx::PxPhysics &amp;physics)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#b899763ad22b77d5d99cdd60bf008cd3">create</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html">ExtPxAssetDesc</a> &amp;desc, <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> &amp;framework)</td></tr>
 
 <tr><td colspan="2"><br><h2>Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#adbfad94aec1aaf6e431482cc4d659f9">userData</a></td></tr>
@@ -57,6 +63,41 @@
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Asset.<p>
 Keeps all the static data needed for physics. <hr><h2>Member Function Documentation</h2>
+<a class="anchor" name="8918f4cd232d7844dee1a3a4d4d9d6ea"></a><!-- doxytag: member="Nv::Blast::ExtPxAsset::create" ref="8918f4cd232d7844dee1a3a4d4d9d6ea" args="(TkAsset *asset, ExtPxAssetDesc::ChunkDesc *chunks, uint32_t chunkCount)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>* Nv::Blast::ExtPxAsset::create           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> *&nbsp;</td>
+          <td class="paramname"> <em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">ExtPxAssetDesc::ChunkDesc</a> *&nbsp;</td>
+          <td class="paramname"> <em>chunks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkCount</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [static]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="6514c543e6df14d77ef660bafa8c4fb3"></a><!-- doxytag: member="Nv::Blast::ExtPxAsset::create" ref="6514c543e6df14d77ef660bafa8c4fb3" args="(TkAsset *asset)" -->
 <div class="memitem">
 <div class="memproto">
@@ -74,6 +115,60 @@ Keeps all the static data needed for physics. <hr><h2>Member Function Documentat
 <div class="memdoc">
 
 <p>
+
+</div>
+</div><p>
+<a class="anchor" name="b2de9bf320ffa4c0a777d5c9e72d1803"></a><!-- doxytag: member="Nv::Blast::ExtPxAsset::create" ref="b2de9bf320ffa4c0a777d5c9e72d1803" args="(const TkAssetDesc &amp;desc, ExtPxChunk *pxChunks, ExtPxSubchunk *pxSubchunks, TkFramework &amp;framework)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>* Nv::Blast::ExtPxAsset::create           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_tk_asset_desc.html">TkAssetDesc</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>desc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a> *&nbsp;</td>
+          <td class="paramname"> <em>pxChunks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a> *&nbsp;</td>
+          <td class="paramname"> <em>pxSubchunks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>framework</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [static]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Create a new <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>desc</em>&nbsp;</td><td>The <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html">ExtPxAssetDesc</a> descriptor to be used, </td></tr>
+  </table>
+</dl>
+<dl class="see" compact><dt><b>See also:</b></dt><dd><a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html">ExtPxAssetDesc</a>. </dd></dl>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>framework</em>&nbsp;</td><td>The <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> instance to be used to create <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a>.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the new <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a> if successful, NULL otherwise. </dd></dl>
 
 </div>
 </div><p>
@@ -119,50 +214,6 @@ Create a new <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPx
 
 </div>
 </div><p>
-<a class="anchor" name="99f92b8fda910a8496bb2889344b7199"></a><!-- doxytag: member="Nv::Blast::ExtPxAsset::deserialize" ref="99f92b8fda910a8496bb2889344b7199" args="(physx::general_PxIOStream2::PxFileBuf &amp;stream, TkFramework &amp;framework, physx::PxPhysics &amp;physics)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>* Nv::Blast::ExtPxAsset::deserialize           </td>
-          <td>(</td>
-          <td class="paramtype">physx::general_PxIOStream2::PxFileBuf &amp;&nbsp;</td>
-          <td class="paramname"> <em>stream</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> &amp;&nbsp;</td>
-          <td class="paramname"> <em>framework</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">physx::PxPhysics &amp;&nbsp;</td>
-          <td class="paramname"> <em>physics</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Deserialize an <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a> object from the given stream.<p>
-<dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>stream</em>&nbsp;</td><td>User-defined stream object. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>framework</em>&nbsp;</td><td>The <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> instance to be used to deserialize <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a>. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>physics</em>&nbsp;</td><td>The PxPhysics instance to be to deserialize PxConvexMesh(s).</td></tr>
-  </table>
-</dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>pointer the deserialized <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a> object if successful, or NULL if unsuccessful. </dd></dl>
-
-</div>
-</div><p>
 <a class="anchor" name="b1c8b490b88f68d7a11f08aa23a49fc4"></a><!-- doxytag: member="Nv::Blast::ExtPxAsset::getChunkCount" ref="b1c8b490b88f68d7a11f08aa23a49fc4" args="() const =0" -->
 <div class="memitem">
 <div class="memproto">
@@ -202,6 +253,48 @@ Get the number of chunks for this asset. May be used in conjunction with <a clas
 <p>
 Access asset's array of chunks. Use <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#b1c8b490b88f68d7a11f08aa23a49fc4">getChunkCount()</a> to get the size of this array.<p>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>a pointer to an array of chunk of an asset. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="4269cec8490e4cdb34ca46f24ce630f2"></a><!-- doxytag: member="Nv::Blast::ExtPxAsset::getDefaultActorDesc" ref="4269cec8490e4cdb34ca46f24ce630f2" args="() const =0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>&amp; Nv::Blast::ExtPxAsset::getDefaultActorDesc           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="bd8250a0fd3bb8430eb6a61be57569b0"></a><!-- doxytag: member="Nv::Blast::ExtPxAsset::getDefaultActorDesc" ref="bd8250a0fd3bb8430eb6a61be57569b0" args="()=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>&amp; Nv::Blast::ExtPxAsset::getDefaultActorDesc           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Get the default <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a> to be used when creating family from this asset. It is called 'default', because it can be overwritten in <a class="el" href="class_nv_1_1_blast_1_1_ext_px_manager.html#4f76548a36265c068f6080cde0ef674a">ExtPxManager::createFamily</a>(...) function.<p>
+Initially default <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a> contains only uniform health values, and 'nullptr' is set in arrays of health. Call setUniformHealth(false) in order to set health per bond/chunk. You can then access directly values stored in <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>, change them and they will be serialized/deserialized as withing asset itself.<p>
+NOTE: do not change actual pointers in <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>: initialBondHealths and initialSupportChunkHealths. You can change actual values in those arrays or if they are 'nullptr' call setUniformHealth(false) before. Or call setUniformHealth(true) to make them 'nullptr'.<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the default <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>. </dd></dl>
 
 </div>
 </div><p>
@@ -286,40 +379,24 @@ Every <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</
 Release this <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>. 
 </div>
 </div><p>
-<a class="anchor" name="d745be4048e685f7428406daae003544"></a><!-- doxytag: member="Nv::Blast::ExtPxAsset::serialize" ref="d745be4048e685f7428406daae003544" args="(physx::general_PxIOStream2::PxFileBuf &amp;stream, physx::PxCooking &amp;cooking) const =0" -->
+<a class="anchor" name="0fff64440baf6cd557941d79a9f53d1a"></a><!-- doxytag: member="Nv::Blast::ExtPxAsset::setUniformHealth" ref="0fff64440baf6cd557941d79a9f53d1a" args="(bool enabled)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">virtual bool Nv::Blast::ExtPxAsset::serialize           </td>
+          <td class="memname">virtual void Nv::Blast::ExtPxAsset::setUniformHealth           </td>
           <td>(</td>
-          <td class="paramtype">physx::general_PxIOStream2::PxFileBuf &amp;&nbsp;</td>
-          <td class="paramname"> <em>stream</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">physx::PxCooking &amp;&nbsp;</td>
-          <td class="paramname"> <em>cooking</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td> const<code> [pure virtual]</code></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>enabled</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-Write the asset's data to the user-defined PxFileBuf stream. Underlying <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> would be also serialized.<p>
-<dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>stream</em>&nbsp;</td><td>User-defined stream object. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>cooking</em>&nbsp;</td><td>The PxCooking instance to be used to serialize PxConvexMesh(s).</td></tr>
-  </table>
-</dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>true if serialization was successful, false otherwise. </dd></dl>
+Set if uniform health values should be used in <a class="el" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a> or per bond/chunk ones. <dl class="see" compact><dt><b>See also:</b></dt><dd><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#bd8250a0fd3bb8430eb6a61be57569b0">getDefaultActorDesc</a>. </dd></dl>
 
 </div>
 </div><p>

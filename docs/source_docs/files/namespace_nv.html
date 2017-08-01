@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: Nv Namespace Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: Nv Namespace Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -37,6 +37,16 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html">Blast</a></td></tr>
 
 </table>
+<hr><a name="_details"></a><h2>Detailed Description</h2>
+FractureTool has requirements to input meshes to fracture them successfully: 1) Mesh should be closed (watertight) 2) There should not be self-intersections and open-edges. Mesh cleaner input is closed mesh with self-intersections and open-edges (only in the interior). It tries to track outer hull to make input mesh solid and meet requierements of FractureTool. If mesh contained some internal cavities they will be removed.<p>
+<a class="el" href="namespace_nv_1_1_blast.html">Blast</a> serialization support for the ExtPhysX extension. Contains serializers which can be used by the ExtSerialization manager.<p>
+<a class="el" href="namespace_nv_1_1_blast.html">Blast</a> High-level serialization support. Contains serializers which can be used by the ExtSerialization manager.<p>
+Specializations of ExtSerializationCAPN for <a class="el" href="namespace_nv_1_1_blast.html">Blast</a> LL<p>
+Specializations of ExtSerializationCAPN for BlastExtPx<p>
+Specializations of ExtSerializationCAPN for BlastTk<p>
+Raw serialization function declarations for BlastTk<p>
+This file contains AllocatorCallback wrappers compatible with PxShared containers. 
+<p>
 </div>
 <!-- start footer part -->
 <div class="footer">

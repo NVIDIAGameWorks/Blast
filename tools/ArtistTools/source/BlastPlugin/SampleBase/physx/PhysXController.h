@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef PHYSX_CONTROLLER_H
 #define PHYSX_CONTROLLER_H
@@ -15,10 +33,11 @@
 #include <DirectXMath.h>
 #include "DebugRenderBuffer.h"
 #include "PxFiltering.h"
-#include "PxDefaultAllocator.h"
-#include "PxDefaultErrorCallback.h"
 #include <set>
 #include <map>
+// Add By Lixu Begin
+#include "BlastModel.h"
+// Add By Lixu End
 
 
 using namespace physx;
@@ -27,13 +46,14 @@ class PerformanceDataWriter;
 class RenderMaterial;
 class Renderable;
 class IRenderMesh;
+// Add By Lixu Begin
+class SimpleMesh;
+// Add By Lixu End
 
 namespace physx
 {
 class PxCpuDispatcher;
 class PxFoundation;
-class PxDefaultAllocator;
-class PxDefaultErrorCallback;
 class PxPhysics;
 class PxCooking;
 class PxPvd;
@@ -95,15 +115,16 @@ class PhysXController : public ISampleController
 
 	//////// virtual callbacks ////////
 
-	virtual void onInitialize();
-	virtual void onTerminate();
-
-	virtual void Animate(double dt);
+	virtual void onInitialize() override;
+	virtual void onTerminate() override;
 
 	virtual LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 
 	//////// public API ////////
+
+	void simulationBegin(float dt);
+	void simualtionSyncEnd();
 
 	void getEyePoseAndPickDir(float mouseX, float mouseY, PxVec3& eyePos, PxVec3& pickDir);
 
@@ -138,6 +159,9 @@ class PhysXController : public ISampleController
 
 	void notifyRigidDynamicDestroyed(PxRigidDynamic*);
 
+	void explode(PxVec3 worldPos, float damageRadius, float explosiveImpulse);
+	void explodeDelayed(PxVec3 worldPos, float damageRadius, float explosiveImpulse);
+
 	void drawUI();
 
 	//////// public getters ////////
@@ -159,7 +183,16 @@ class PhysXController : public ISampleController
 	{
 		return m_physXPlaneRenderMaterial;
 	}
-	bool m_bForce;
+	bool m_bFirstTime;
+	bool isPlaneVisible();
+	void setPlaneVisible(bool bVisible);
+
+	PxScene& getEditPhysXScene() const
+	{
+		return *m_editPhysicsScene;
+	}
+
+	PxRigidDynamic* createEditPhysXActor(const std::vector<BlastModel::Chunk::Mesh>& meshes, const PxTransform& pos);
 // Add By Lixu End
 
 	PxPhysics& getPhysics() const
@@ -229,6 +262,7 @@ class PhysXController : public ISampleController
 	void releasePhysXPrimitives();
 	void updateActorTransforms();
 	void updateDragging(double dt);
+	void processExplosionQueue();
 
 	
 	//////// used controllers ////////
@@ -243,8 +277,6 @@ class PhysXController : public ISampleController
 
 	// PhysX 
 	PxFoundation*                               m_foundation;
-	PxDefaultAllocator                          m_allocator;
-	PxDefaultErrorCallback                      m_errorCallback;
 	PxPhysics*                                  m_physics;
 	PxCooking*                                  m_cooking;
 	PxPvd*                                      m_pvd;
@@ -253,6 +285,9 @@ class PhysXController : public ISampleController
 	PxMaterial*                                 m_defaultMaterial;
 	PxSimulationFilterShader                    m_filterShader;
 	PxScene*                                    m_physicsScene;
+	// Add By Lixu Begin
+	PxScene*                                    m_editPhysicsScene;
+	// Add By Lixu End
 
 	// PhysX API related
 	std::vector<PxActor*>                       m_physXActorsToRemove;
@@ -265,9 +300,10 @@ class PhysXController : public ISampleController
 	RenderMaterial*                             m_physXPrimitiveTransparentRenderMaterial;
 
 	// simulation
+	bool										m_isSimulating;
 	bool										m_gpuPhysicsAvailable;
 	bool										m_useGPUPhysics;
-	double                                       m_lastSimulationTime;
+	double                                      m_lastSimulationTime;
 	LARGE_INTEGER                               m_performanceFreq;
 	bool                                        m_paused;
 	bool										m_useFixedTimeStep;
@@ -290,6 +326,15 @@ class PhysXController : public ISampleController
 	// Performance writer
 	PerformanceDataWriter*						m_perfWriter;
 
+	// explosion
+	struct ExplosionData
+	{
+		PxVec3 worldPos;
+		float damageRadius;
+		float explosiveImpulse;
+	};
+
+	std::vector<ExplosionData>					m_explosionQueue;
 
 };
 

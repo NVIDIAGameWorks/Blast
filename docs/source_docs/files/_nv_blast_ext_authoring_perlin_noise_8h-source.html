@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/extensions/authoring/source/NvBlastExtAuthoringPerlinNoise.h Source File</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/extensions/authoring/source/NvBlastExtAuthoringPerlinNoise.h Source File</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -35,344 +35,362 @@
       <li><a href="globals.html"><span>File&nbsp;Members</span></a></li>
     </ul>
   </div>
-<h1>sdk/extensions/authoring/source/NvBlastExtAuthoringPerlinNoise.h</h1><a href="_nv_blast_ext_authoring_perlin_noise_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment">* Copyright (c) 2017, NVIDIA CORPORATION.  All rights reserved.</span>
-<a name="l00003"></a>00003 <span class="comment">*</span>
-<a name="l00004"></a>00004 <span class="comment">* NVIDIA CORPORATION and its licensors retain all intellectual property</span>
-<a name="l00005"></a>00005 <span class="comment">* and proprietary rights in and to this software, related documentation</span>
-<a name="l00006"></a>00006 <span class="comment">* and any modifications thereto.  Any use, reproduction, disclosure or</span>
-<a name="l00007"></a>00007 <span class="comment">* distribution of this software and related documentation without an express</span>
-<a name="l00008"></a>00008 <span class="comment">* license agreement from NVIDIA CORPORATION is strictly prohibited.</span>
-<a name="l00009"></a>00009 <span class="comment">*/</span>
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef NVBLASTEXTAUTHORINGPERLINNOISE_H</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTEXTAUTHORINGPERLINNOISE_H</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
-<a name="l00014"></a>00014 
-<a name="l00015"></a>00015 <span class="preprocessor">#include &lt;<a class="code" href="_nv_blast_ext_authoring_types_8h.html">NvBlastExtAuthoringTypes.h</a>&gt;</span>
-<a name="l00016"></a>00016 
-<a name="l00017"></a>00017 <span class="preprocessor">#include &lt;PxVec4.h&gt;</span>
-<a name="l00018"></a>00018 <span class="preprocessor">#include &lt;PxVec3.h&gt;</span>
-<a name="l00019"></a>00019 
-<a name="l00020"></a><a class="code" href="_nv_blast_ext_authoring_perlin_noise_8h.html#a5c89172703d702a397d064f704953d5">00020</a> <span class="preprocessor">#define PERLIN_NOISE_SAMPLE_TABLE 512</span>
-<a name="l00021"></a>00021 <span class="preprocessor"></span><span class="keyword">using</span> physx::PxVec3;
-<a name="l00022"></a>00022 <span class="keyword">namespace </span>Nv
-<a name="l00023"></a>00023 {
-<a name="l00024"></a>00024 <span class="keyword">namespace </span>Blast
-<a name="l00025"></a>00025 {
-<a name="l00026"></a>00026 
-<a name="l00027"></a>00027 <span class="comment">/***********</span>
-<a name="l00028"></a>00028 <span class="comment">    Noise generation routines, copied from Apex.    </span>
-<a name="l00029"></a>00029 <span class="comment">*/</span>
-<a name="l00030"></a>00030 
-<a name="l00031"></a>00031 
-<a name="l00032"></a><a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">00032</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">float</span> <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(<span class="keyword">const</span> <span class="keywordtype">float</span>&amp; rx, <span class="keyword">const</span> <span class="keywordtype">float</span>&amp; ry, <span class="keyword">const</span> <span class="keywordtype">float</span>&amp; rz, <span class="keyword">const</span> PxVec3 q)
-<a name="l00033"></a>00033 {
-<a name="l00034"></a>00034     <span class="keywordflow">return</span> rx * q[0] + ry * q[1] + rz * q[2];
-<a name="l00035"></a>00035 }
-<a name="l00036"></a>00036 
-<a name="l00037"></a><a class="code" href="namespace_nv_1_1_blast.html#d4dfea75a2d880846c407692135b6dab">00037</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">float</span> <a class="code" href="namespace_nv_1_1_blast.html#d4dfea75a2d880846c407692135b6dab">fade</a>(<span class="keywordtype">float</span> t) { <span class="keywordflow">return</span> t * t * t * (t * (t  * 6.0f - 15.0f) + 10.0f); }
-<a name="l00038"></a>00038 
-<a name="l00039"></a><a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">00039</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">float</span> <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(<span class="keywordtype">float</span> t, <span class="keywordtype">float</span> a, <span class="keywordtype">float</span> b) { <span class="keywordflow">return</span> a + t * (b - a); }
-<a name="l00040"></a>00040 
-<a name="l00041"></a><a class="code" href="namespace_nv_1_1_blast.html#c13586ad5f58085610f3ae2feda2469a">00041</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">void</span> <a class="code" href="namespace_nv_1_1_blast.html#c13586ad5f58085610f3ae2feda2469a">setup</a>(<span class="keywordtype">int</span> i, PxVec3 point, <span class="keywordtype">float</span>&amp; t, <span class="keywordtype">int</span>&amp; b0, <span class="keywordtype">int</span>&amp; b1, <span class="keywordtype">float</span>&amp; r0, <span class="keywordtype">float</span>&amp; r1)
-<a name="l00042"></a>00042 {
-<a name="l00043"></a>00043     t = point[i] + (0x1000);
-<a name="l00044"></a>00044     b0 = ((int)t) &amp; (<a class="code" href="_nv_blast_ext_authoring_perlin_noise_8h.html#a5c89172703d702a397d064f704953d5">PERLIN_NOISE_SAMPLE_TABLE</a> - 1);
-<a name="l00045"></a>00045     b1 = (b0 + 1)   &amp; (<a class="code" href="_nv_blast_ext_authoring_perlin_noise_8h.html#a5c89172703d702a397d064f704953d5">PERLIN_NOISE_SAMPLE_TABLE</a> - 1);
-<a name="l00046"></a>00046     r0 = t - (int)t;
-<a name="l00047"></a>00047     r1 = r0 - 1.0f;
-<a name="l00048"></a>00048 }
+<h1>sdk/extensions/authoring/source/NvBlastExtAuthoringPerlinNoise.h</h1><a href="_nv_blast_ext_authoring_perlin_noise_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">// This code contains NVIDIA Confidential Information and is disclosed to you</span>
+<a name="l00002"></a>00002 <span class="comment">// under a form of NVIDIA software license agreement provided separately to you.</span>
+<a name="l00003"></a>00003 <span class="comment">//</span>
+<a name="l00004"></a>00004 <span class="comment">// Notice</span>
+<a name="l00005"></a>00005 <span class="comment">// NVIDIA Corporation and its licensors retain all intellectual property and</span>
+<a name="l00006"></a>00006 <span class="comment">// proprietary rights in and to this software and related documentation and</span>
+<a name="l00007"></a>00007 <span class="comment">// any modifications thereto. Any use, reproduction, disclosure, or</span>
+<a name="l00008"></a>00008 <span class="comment">// distribution of this software and related documentation without an express</span>
+<a name="l00009"></a>00009 <span class="comment">// license agreement from NVIDIA Corporation is strictly prohibited.</span>
+<a name="l00010"></a>00010 <span class="comment">//</span>
+<a name="l00011"></a>00011 <span class="comment">// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES</span>
+<a name="l00012"></a>00012 <span class="comment">// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO</span>
+<a name="l00013"></a>00013 <span class="comment">// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,</span>
+<a name="l00014"></a>00014 <span class="comment">// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.</span>
+<a name="l00015"></a>00015 <span class="comment">//</span>
+<a name="l00016"></a>00016 <span class="comment">// Information and code furnished is believed to be accurate and reliable.</span>
+<a name="l00017"></a>00017 <span class="comment">// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such</span>
+<a name="l00018"></a>00018 <span class="comment">// information or for any infringement of patents or other rights of third parties that may</span>
+<a name="l00019"></a>00019 <span class="comment">// result from its use. No license is granted by implication or otherwise under any patent</span>
+<a name="l00020"></a>00020 <span class="comment">// or patent rights of NVIDIA Corporation. Details are subject to change without notice.</span>
+<a name="l00021"></a>00021 <span class="comment">// This code supersedes and replaces all information previously supplied.</span>
+<a name="l00022"></a>00022 <span class="comment">// NVIDIA Corporation products are not authorized for use as critical</span>
+<a name="l00023"></a>00023 <span class="comment">// components in life support devices or systems without express written approval of</span>
+<a name="l00024"></a>00024 <span class="comment">// NVIDIA Corporation.</span>
+<a name="l00025"></a>00025 <span class="comment">//</span>
+<a name="l00026"></a>00026 <span class="comment">// Copyright (c) 2017 NVIDIA Corporation. All rights reserved.</span>
+<a name="l00027"></a>00027 
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 <span class="preprocessor">#ifndef NVBLASTEXTAUTHORINGPERLINNOISE_H</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTEXTAUTHORINGPERLINNOISE_H</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span>
+<a name="l00032"></a>00032 
+<a name="l00033"></a>00033 <span class="preprocessor">#include &lt;<a class="code" href="_nv_blast_ext_authoring_types_8h.html">NvBlastExtAuthoringTypes.h</a>&gt;</span>
+<a name="l00034"></a>00034 
+<a name="l00035"></a>00035 <span class="preprocessor">#include &lt;PxVec4.h&gt;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &lt;PxVec3.h&gt;</span>
+<a name="l00037"></a>00037 
+<a name="l00038"></a><a class="code" href="_nv_blast_ext_authoring_perlin_noise_8h.html#a5c89172703d702a397d064f704953d5">00038</a> <span class="preprocessor">#define PERLIN_NOISE_SAMPLE_TABLE 512</span>
+<a name="l00039"></a>00039 <span class="preprocessor"></span><span class="keyword">using</span> physx::PxVec3;
+<a name="l00040"></a>00040 <span class="keyword">namespace </span>Nv
+<a name="l00041"></a>00041 {
+<a name="l00042"></a>00042 <span class="keyword">namespace </span>Blast
+<a name="l00043"></a>00043 {
+<a name="l00044"></a>00044 
+<a name="l00045"></a>00045 <span class="comment">/***********</span>
+<a name="l00046"></a>00046 <span class="comment">    Noise generation routines, copied from Apex.    </span>
+<a name="l00047"></a>00047 <span class="comment">*/</span>
+<a name="l00048"></a>00048 
 <a name="l00049"></a>00049 
-<a name="l00050"></a>00050 
-<a name="l00051"></a><a class="code" href="namespace_nv_1_1_blast.html#92d505a07c6038f564445af249ff5158">00051</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">float</span> <a class="code" href="namespace_nv_1_1_blast.html#92d505a07c6038f564445af249ff5158">noiseSample</a>(PxVec3 point, <span class="keywordtype">int</span>* p, PxVec3* g)
-<a name="l00052"></a>00052 {
-<a name="l00053"></a>00053     <span class="keywordtype">int</span> bx0, bx1, by0, by1, bz0, bz1, b00, b10, b01, b11;
-<a name="l00054"></a>00054     <span class="keywordtype">float</span> rx0, rx1, ry0, ry1, rz0, rz1, sy, sz, a, b, c, d, t, u, v;
-<a name="l00055"></a>00055     PxVec3 q;
-<a name="l00056"></a>00056     <span class="keywordtype">int</span> i, j;
-<a name="l00057"></a>00057 
-<a name="l00058"></a>00058     <a class="code" href="namespace_nv_1_1_blast.html#c13586ad5f58085610f3ae2feda2469a">setup</a>(0, point, t, bx0, bx1, rx0, rx1);
-<a name="l00059"></a>00059     <a class="code" href="namespace_nv_1_1_blast.html#c13586ad5f58085610f3ae2feda2469a">setup</a>(1, point, t, by0, by1, ry0, ry1);
-<a name="l00060"></a>00060     <a class="code" href="namespace_nv_1_1_blast.html#c13586ad5f58085610f3ae2feda2469a">setup</a>(2, point, t, bz0, bz1, rz0, rz1);
-<a name="l00061"></a>00061 
-<a name="l00062"></a>00062     i = p[bx0];
-<a name="l00063"></a>00063     j = p[bx1];
-<a name="l00064"></a>00064 
-<a name="l00065"></a>00065     b00 = p[i + by0];
-<a name="l00066"></a>00066     b10 = p[j + by0];
-<a name="l00067"></a>00067     b01 = p[i + by1];
-<a name="l00068"></a>00068     b11 = p[j + by1];
-<a name="l00069"></a>00069 
-<a name="l00070"></a>00070     t = <a class="code" href="namespace_nv_1_1_blast.html#d4dfea75a2d880846c407692135b6dab">fade</a>(rx0);
-<a name="l00071"></a>00071     sy = <a class="code" href="namespace_nv_1_1_blast.html#d4dfea75a2d880846c407692135b6dab">fade</a>(ry0);
-<a name="l00072"></a>00072     sz = <a class="code" href="namespace_nv_1_1_blast.html#d4dfea75a2d880846c407692135b6dab">fade</a>(rz0);
-<a name="l00073"></a>00073 
-<a name="l00074"></a>00074     q = g[b00 + bz0]; u = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx0, ry0, rz0, q);
-<a name="l00075"></a>00075     q = g[b10 + bz0]; v = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx1, ry0, rz0, q);
-<a name="l00076"></a>00076     a = <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(t, u, v);
-<a name="l00077"></a>00077 
-<a name="l00078"></a>00078     q = g[b01 + bz0]; u = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx0, ry1, rz0, q);
-<a name="l00079"></a>00079     q = g[b11 + bz0]; v = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx1, ry1, rz0, q);
-<a name="l00080"></a>00080     b = <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(t, u, v);
-<a name="l00081"></a>00081 
-<a name="l00082"></a>00082     c = <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(sy, a, b);
-<a name="l00083"></a>00083 
-<a name="l00084"></a>00084     q = g[b00 + bz1]; u = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx0, ry0, rz1, q);
-<a name="l00085"></a>00085     q = g[b10 + bz1]; v = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx1, ry0, rz1, q);
-<a name="l00086"></a>00086     a = <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(t, u, v);
+<a name="l00050"></a><a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">00050</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">float</span> <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(<span class="keyword">const</span> <span class="keywordtype">float</span>&amp; rx, <span class="keyword">const</span> <span class="keywordtype">float</span>&amp; ry, <span class="keyword">const</span> <span class="keywordtype">float</span>&amp; rz, <span class="keyword">const</span> PxVec3 q)
+<a name="l00051"></a>00051 {
+<a name="l00052"></a>00052     <span class="keywordflow">return</span> rx * q[0] + ry * q[1] + rz * q[2];
+<a name="l00053"></a>00053 }
+<a name="l00054"></a>00054 
+<a name="l00055"></a><a class="code" href="namespace_nv_1_1_blast.html#d4dfea75a2d880846c407692135b6dab">00055</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">float</span> <a class="code" href="namespace_nv_1_1_blast.html#d4dfea75a2d880846c407692135b6dab">fade</a>(<span class="keywordtype">float</span> t) { <span class="keywordflow">return</span> t * t * t * (t * (t  * 6.0f - 15.0f) + 10.0f); }
+<a name="l00056"></a>00056 
+<a name="l00057"></a><a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">00057</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">float</span> <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(<span class="keywordtype">float</span> t, <span class="keywordtype">float</span> a, <span class="keywordtype">float</span> b) { <span class="keywordflow">return</span> a + t * (b - a); }
+<a name="l00058"></a>00058 
+<a name="l00059"></a><a class="code" href="namespace_nv_1_1_blast.html#c13586ad5f58085610f3ae2feda2469a">00059</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">void</span> <a class="code" href="namespace_nv_1_1_blast.html#c13586ad5f58085610f3ae2feda2469a">setup</a>(<span class="keywordtype">int</span> i, PxVec3 point, <span class="keywordtype">float</span>&amp; t, <span class="keywordtype">int</span>&amp; b0, <span class="keywordtype">int</span>&amp; b1, <span class="keywordtype">float</span>&amp; r0, <span class="keywordtype">float</span>&amp; r1)
+<a name="l00060"></a>00060 {
+<a name="l00061"></a>00061     t = point[i] + (0x1000);
+<a name="l00062"></a>00062     b0 = ((int)t) &amp; (<a class="code" href="_nv_blast_ext_authoring_perlin_noise_8h.html#a5c89172703d702a397d064f704953d5">PERLIN_NOISE_SAMPLE_TABLE</a> - 1);
+<a name="l00063"></a>00063     b1 = (b0 + 1)   &amp; (<a class="code" href="_nv_blast_ext_authoring_perlin_noise_8h.html#a5c89172703d702a397d064f704953d5">PERLIN_NOISE_SAMPLE_TABLE</a> - 1);
+<a name="l00064"></a>00064     r0 = t - (int)t;
+<a name="l00065"></a>00065     r1 = r0 - 1.0f;
+<a name="l00066"></a>00066 }
+<a name="l00067"></a>00067 
+<a name="l00068"></a>00068 
+<a name="l00069"></a><a class="code" href="namespace_nv_1_1_blast.html#92d505a07c6038f564445af249ff5158">00069</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">float</span> <a class="code" href="namespace_nv_1_1_blast.html#92d505a07c6038f564445af249ff5158">noiseSample</a>(PxVec3 point, <span class="keywordtype">int</span>* p, PxVec3* g)
+<a name="l00070"></a>00070 {
+<a name="l00071"></a>00071     <span class="keywordtype">int</span> bx0, bx1, by0, by1, bz0, bz1, b00, b10, b01, b11;
+<a name="l00072"></a>00072     <span class="keywordtype">float</span> rx0, rx1, ry0, ry1, rz0, rz1, sy, sz, a, b, c, d, t, u, v;
+<a name="l00073"></a>00073     PxVec3 q;
+<a name="l00074"></a>00074     <span class="keywordtype">int</span> i, j;
+<a name="l00075"></a>00075 
+<a name="l00076"></a>00076     <a class="code" href="namespace_nv_1_1_blast.html#c13586ad5f58085610f3ae2feda2469a">setup</a>(0, point, t, bx0, bx1, rx0, rx1);
+<a name="l00077"></a>00077     <a class="code" href="namespace_nv_1_1_blast.html#c13586ad5f58085610f3ae2feda2469a">setup</a>(1, point, t, by0, by1, ry0, ry1);
+<a name="l00078"></a>00078     <a class="code" href="namespace_nv_1_1_blast.html#c13586ad5f58085610f3ae2feda2469a">setup</a>(2, point, t, bz0, bz1, rz0, rz1);
+<a name="l00079"></a>00079 
+<a name="l00080"></a>00080     i = p[bx0];
+<a name="l00081"></a>00081     j = p[bx1];
+<a name="l00082"></a>00082 
+<a name="l00083"></a>00083     b00 = p[i + by0];
+<a name="l00084"></a>00084     b10 = p[j + by0];
+<a name="l00085"></a>00085     b01 = p[i + by1];
+<a name="l00086"></a>00086     b11 = p[j + by1];
 <a name="l00087"></a>00087 
-<a name="l00088"></a>00088     q = g[b01 + bz1]; u = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx0, ry1, rz1, q);
-<a name="l00089"></a>00089     q = g[b11 + bz1]; v = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx1, ry1, rz1, q);
-<a name="l00090"></a>00090     b = <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(t, u, v);
+<a name="l00088"></a>00088     t = <a class="code" href="namespace_nv_1_1_blast.html#d4dfea75a2d880846c407692135b6dab">fade</a>(rx0);
+<a name="l00089"></a>00089     sy = <a class="code" href="namespace_nv_1_1_blast.html#d4dfea75a2d880846c407692135b6dab">fade</a>(ry0);
+<a name="l00090"></a>00090     sz = <a class="code" href="namespace_nv_1_1_blast.html#d4dfea75a2d880846c407692135b6dab">fade</a>(rz0);
 <a name="l00091"></a>00091 
-<a name="l00092"></a>00092     d = <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(sy, a, b);
-<a name="l00093"></a>00093 
-<a name="l00094"></a>00094     <span class="keywordflow">return</span> <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(sz, c, d);
-<a name="l00095"></a>00095 }
-<a name="l00096"></a>00096 
-<a name="l00100"></a><a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html">00100</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html">PerlinNoise</a>
-<a name="l00101"></a>00101 {
-<a name="l00102"></a>00102 <span class="keyword">public</span>:
-<a name="l00109"></a><a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html#b0d02c5cf13b1ee7440c685e1383e5f4">00109</a>     <a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html#b0d02c5cf13b1ee7440c685e1383e5f4">PerlinNoise</a>(<a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html">Nv::Blast::RandomGeneratorBase</a>* rnd, <span class="keywordtype">int</span> octaves = 1, <span class="keywordtype">float</span> frequency = 1., <span class="keywordtype">float</span> amplitude = 1.)
-<a name="l00110"></a>00110         : mRnd(rnd),
-<a name="l00111"></a>00111         mOctaves(octaves),
-<a name="l00112"></a>00112         mFrequency(frequency),
-<a name="l00113"></a>00113         mAmplitude(amplitude),
-<a name="l00114"></a>00114         mbInit(false)
-<a name="l00115"></a>00115     {
-<a name="l00116"></a>00116 
-<a name="l00117"></a>00117     }
-<a name="l00118"></a>00118 
-<a name="l00119"></a>00119     <span class="comment">/*</span>
-<a name="l00120"></a>00120 <span class="comment">        Reset state of noise generator</span>
-<a name="l00121"></a>00121 <span class="comment">        \param[in] octaves Number of noise octaves</span>
-<a name="l00122"></a>00122 <span class="comment">        \param[in] frequency Frequency of noise</span>
-<a name="l00123"></a>00123 <span class="comment">        \param[in] amplitude Amplitude of noise</span>
-<a name="l00124"></a>00124 <span class="comment">    */</span>
-<a name="l00125"></a><a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html#f1e84d0a824753474d6508fa6603cafb">00125</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html#f1e84d0a824753474d6508fa6603cafb">reset</a>(<span class="keywordtype">int</span> octaves = 1, <span class="keywordtype">float</span> frequency = 1.f, <span class="keywordtype">float</span> amplitude = 1.f)
-<a name="l00126"></a>00126     {
-<a name="l00127"></a>00127         mOctaves = octaves;
-<a name="l00128"></a>00128         mFrequency = frequency;
-<a name="l00129"></a>00129         mAmplitude = amplitude;
-<a name="l00130"></a>00130         init();
-<a name="l00131"></a>00131     }
-<a name="l00132"></a>00132 
-<a name="l00136"></a><a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html#c4cfcb441356dbbb7217e92f561335e9">00136</a>     <span class="keywordtype">float</span> <a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html#c4cfcb441356dbbb7217e92f561335e9">sample</a>(<span class="keyword">const</span> physx::PxVec3&amp; point)
-<a name="l00137"></a>00137     {
-<a name="l00138"></a>00138         <span class="keywordflow">return</span> perlinNoise(point);
-<a name="l00139"></a>00139     }
-<a name="l00140"></a>00140 
-<a name="l00141"></a>00141 <span class="keyword">private</span>:
-<a name="l00142"></a>00142     <a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html">PerlinNoise</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html">PerlinNoise</a>&amp;);
-<a name="l00143"></a>00143 
-<a name="l00144"></a>00144     <span class="keywordtype">float</span> perlinNoise(physx::PxVec3 point)
-<a name="l00145"></a>00145     {
-<a name="l00146"></a>00146         <span class="keywordflow">if</span> (!mbInit)
-<a name="l00147"></a>00147             init();
-<a name="l00148"></a>00148 
-<a name="l00149"></a>00149         <span class="keyword">const</span> <span class="keywordtype">int</span> octaves = mOctaves;
-<a name="l00150"></a>00150         <span class="keyword">const</span> <span class="keywordtype">float</span> frequency = mFrequency;
-<a name="l00151"></a>00151         <span class="keywordtype">float</span> amplitude = mAmplitude;
-<a name="l00152"></a>00152         <span class="keywordtype">float</span> result = 0.0f;
-<a name="l00153"></a>00153 
-<a name="l00154"></a>00154         point *= frequency;
-<a name="l00155"></a>00155 
-<a name="l00156"></a>00156         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; octaves; ++i)
-<a name="l00157"></a>00157         {
-<a name="l00158"></a>00158             PxVec3 lpnt;
-<a name="l00159"></a>00159             lpnt[0] = point.x;
-<a name="l00160"></a>00160             lpnt[1] = point.y;
-<a name="l00161"></a>00161             lpnt[2] = point.z;
-<a name="l00162"></a>00162             result += (<a class="code" href="namespace_nv_1_1_blast.html#92d505a07c6038f564445af249ff5158">noiseSample</a>(lpnt, p, g)) * amplitude;
-<a name="l00163"></a>00163             point *= 2.0f;
-<a name="l00164"></a>00164             amplitude *= 0.5f;
-<a name="l00165"></a>00165         }
-<a name="l00166"></a>00166         <span class="keywordflow">return</span> result;
-<a name="l00167"></a>00167     }
-<a name="l00168"></a>00168 
-<a name="l00169"></a>00169     <span class="keywordtype">void</span> init(<span class="keywordtype">void</span>)
-<a name="l00170"></a>00170     {
-<a name="l00171"></a>00171         mbInit = <span class="keyword">true</span>;
-<a name="l00172"></a>00172 
-<a name="l00173"></a>00173         <span class="keywordtype">unsigned</span>  i, j;
-<a name="l00174"></a>00174         <span class="keywordtype">int</span> k;
-<a name="l00175"></a>00175 
-<a name="l00176"></a>00176         <span class="keywordflow">for</span> (i = 0; i &lt; (unsigned)<a class="code" href="_nv_blast_ext_authoring_perlin_noise_8h.html#a5c89172703d702a397d064f704953d5">PERLIN_NOISE_SAMPLE_TABLE</a>; i++)
-<a name="l00177"></a>00177         {
-<a name="l00178"></a>00178             p[i] = (int)i;
-<a name="l00179"></a>00179             <span class="keywordflow">for</span> (j = 0; j &lt; 3; ++j)
-<a name="l00180"></a>00180                 g[i][j] = mRnd-&gt;<a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html#bc19897d708ea7c691c1325b14eff198">getRandomValue</a>();
-<a name="l00181"></a>00181             g[i].normalize();
-<a name="l00182"></a>00182         }
-<a name="l00183"></a>00183 
-<a name="l00184"></a>00184         <span class="keywordflow">while</span> (--i)
-<a name="l00185"></a>00185         {
-<a name="l00186"></a>00186             k = p[i];
-<a name="l00187"></a>00187             j = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(mRnd-&gt;<a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html#bc19897d708ea7c691c1325b14eff198">getRandomValue</a>() * <a class="code" href="_nv_blast_ext_authoring_perlin_noise_8h.html#a5c89172703d702a397d064f704953d5">PERLIN_NOISE_SAMPLE_TABLE</a>);
-<a name="l00188"></a>00188             p[i] = p[j];
-<a name="l00189"></a>00189             p[j] = k;
-<a name="l00190"></a>00190         }
-<a name="l00191"></a>00191 
-<a name="l00192"></a>00192         <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="_nv_blast_ext_authoring_perlin_noise_8h.html#a5c89172703d702a397d064f704953d5">PERLIN_NOISE_SAMPLE_TABLE</a> + 2; ++i)
-<a name="l00193"></a>00193         {
-<a name="l00194"></a>00194             p[(unsigned)PERLIN_NOISE_SAMPLE_TABLE + i] = p[i];
-<a name="l00195"></a>00195             <span class="keywordflow">for</span> (j = 0; j &lt; 3; ++j)
-<a name="l00196"></a>00196                 g[(<span class="keywordtype">unsigned</span>)PERLIN_NOISE_SAMPLE_TABLE + i][j] = g[i][j];
-<a name="l00197"></a>00197         }
-<a name="l00198"></a>00198 
-<a name="l00199"></a>00199     }
-<a name="l00200"></a>00200 
-<a name="l00201"></a>00201     <a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html">Nv::Blast::RandomGeneratorBase</a>* mRnd;
-<a name="l00202"></a>00202     <span class="keywordtype">int</span>                             mOctaves;
-<a name="l00203"></a>00203     <span class="keywordtype">float</span>                           mFrequency;
-<a name="l00204"></a>00204     <span class="keywordtype">float</span>                           mAmplitude;
-<a name="l00205"></a>00205 
-<a name="l00206"></a>00206     <span class="comment">// Permutation vector</span>
-<a name="l00207"></a>00207     <span class="keywordtype">int</span>                             p[(unsigned)(PERLIN_NOISE_SAMPLE_TABLE + PERLIN_NOISE_SAMPLE_TABLE + 2)];
-<a name="l00208"></a>00208     <span class="comment">// Gradient vector</span>
-<a name="l00209"></a>00209     PxVec3                          g[(unsigned)(PERLIN_NOISE_SAMPLE_TABLE + PERLIN_NOISE_SAMPLE_TABLE + 2)];
-<a name="l00210"></a>00210 
-<a name="l00211"></a>00211     <span class="keywordtype">bool</span>                            mbInit;
-<a name="l00212"></a>00212 };
-<a name="l00213"></a>00213 
-<a name="l00214"></a>00214 
-<a name="l00218"></a><a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html">00218</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html">SimplexNoise</a>
-<a name="l00219"></a>00219 {
-<a name="l00220"></a>00220 
-<a name="l00221"></a>00221     int32_t             mOctaves;
-<a name="l00222"></a>00222     <span class="keywordtype">float</span>               mAmplitude;
-<a name="l00223"></a>00223     <span class="keywordtype">float</span>               mFrequency;
-<a name="l00224"></a>00224     int32_t             mSeed;
-<a name="l00225"></a>00225 
-<a name="l00226"></a>00226     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    X_NOISE_GEN = 1619;
-<a name="l00227"></a>00227     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    Y_NOISE_GEN = 31337;
-<a name="l00228"></a>00228     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    Z_NOISE_GEN = 6971;
-<a name="l00229"></a>00229     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    W_NOISE_GEN = 1999;
-<a name="l00230"></a>00230     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    SEED_NOISE_GEN = 1013;
-<a name="l00231"></a>00231     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    SHIFT_NOISE_GEN = 8;
+<a name="l00092"></a>00092     q = g[b00 + bz0]; u = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx0, ry0, rz0, q);
+<a name="l00093"></a>00093     q = g[b10 + bz0]; v = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx1, ry0, rz0, q);
+<a name="l00094"></a>00094     a = <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(t, u, v);
+<a name="l00095"></a>00095 
+<a name="l00096"></a>00096     q = g[b01 + bz0]; u = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx0, ry1, rz0, q);
+<a name="l00097"></a>00097     q = g[b11 + bz0]; v = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx1, ry1, rz0, q);
+<a name="l00098"></a>00098     b = <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(t, u, v);
+<a name="l00099"></a>00099 
+<a name="l00100"></a>00100     c = <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(sy, a, b);
+<a name="l00101"></a>00101 
+<a name="l00102"></a>00102     q = g[b00 + bz1]; u = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx0, ry0, rz1, q);
+<a name="l00103"></a>00103     q = g[b10 + bz1]; v = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx1, ry0, rz1, q);
+<a name="l00104"></a>00104     a = <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(t, u, v);
+<a name="l00105"></a>00105 
+<a name="l00106"></a>00106     q = g[b01 + bz1]; u = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx0, ry1, rz1, q);
+<a name="l00107"></a>00107     q = g[b11 + bz1]; v = <a class="code" href="namespace_nv_1_1_blast.html#912cbb50647c139350162e1070c3dd67">at3</a>(rx1, ry1, rz1, q);
+<a name="l00108"></a>00108     b = <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(t, u, v);
+<a name="l00109"></a>00109 
+<a name="l00110"></a>00110     d = <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(sy, a, b);
+<a name="l00111"></a>00111 
+<a name="l00112"></a>00112     <span class="keywordflow">return</span> <a class="code" href="namespace_nv_1_1_blast.html#d41f8229622157366118b4942119641c">lerp</a>(sz, c, d);
+<a name="l00113"></a>00113 }
+<a name="l00114"></a>00114 
+<a name="l00118"></a><a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html">00118</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html">PerlinNoise</a>
+<a name="l00119"></a>00119 {
+<a name="l00120"></a>00120 <span class="keyword">public</span>:
+<a name="l00127"></a><a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html#b0d02c5cf13b1ee7440c685e1383e5f4">00127</a>     <a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html#b0d02c5cf13b1ee7440c685e1383e5f4">PerlinNoise</a>(<a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html">Nv::Blast::RandomGeneratorBase</a>* rnd, <span class="keywordtype">int</span> octaves = 1, <span class="keywordtype">float</span> frequency = 1., <span class="keywordtype">float</span> amplitude = 1.)
+<a name="l00128"></a>00128         : mRnd(rnd),
+<a name="l00129"></a>00129         mOctaves(octaves),
+<a name="l00130"></a>00130         mFrequency(frequency),
+<a name="l00131"></a>00131         mAmplitude(amplitude),
+<a name="l00132"></a>00132         mbInit(false)
+<a name="l00133"></a>00133     {
+<a name="l00134"></a>00134 
+<a name="l00135"></a>00135     }
+<a name="l00136"></a>00136 
+<a name="l00137"></a>00137     <span class="comment">/*</span>
+<a name="l00138"></a>00138 <span class="comment">        Reset state of noise generator</span>
+<a name="l00139"></a>00139 <span class="comment">        \param[in] octaves Number of noise octaves</span>
+<a name="l00140"></a>00140 <span class="comment">        \param[in] frequency Frequency of noise</span>
+<a name="l00141"></a>00141 <span class="comment">        \param[in] amplitude Amplitude of noise</span>
+<a name="l00142"></a>00142 <span class="comment">    */</span>
+<a name="l00143"></a><a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html#f1e84d0a824753474d6508fa6603cafb">00143</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html#f1e84d0a824753474d6508fa6603cafb">reset</a>(<span class="keywordtype">int</span> octaves = 1, <span class="keywordtype">float</span> frequency = 1.f, <span class="keywordtype">float</span> amplitude = 1.f)
+<a name="l00144"></a>00144     {
+<a name="l00145"></a>00145         mOctaves = octaves;
+<a name="l00146"></a>00146         mFrequency = frequency;
+<a name="l00147"></a>00147         mAmplitude = amplitude;
+<a name="l00148"></a>00148         init();
+<a name="l00149"></a>00149     }
+<a name="l00150"></a>00150 
+<a name="l00154"></a><a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html#c4cfcb441356dbbb7217e92f561335e9">00154</a>     <span class="keywordtype">float</span> <a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html#c4cfcb441356dbbb7217e92f561335e9">sample</a>(<span class="keyword">const</span> physx::PxVec3&amp; point)
+<a name="l00155"></a>00155     {
+<a name="l00156"></a>00156         <span class="keywordflow">return</span> perlinNoise(point);
+<a name="l00157"></a>00157     }
+<a name="l00158"></a>00158 
+<a name="l00159"></a>00159 <span class="keyword">private</span>:
+<a name="l00160"></a>00160     <a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html">PerlinNoise</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_perlin_noise.html">PerlinNoise</a>&amp;);
+<a name="l00161"></a>00161 
+<a name="l00162"></a>00162     <span class="keywordtype">float</span> perlinNoise(physx::PxVec3 point)
+<a name="l00163"></a>00163     {
+<a name="l00164"></a>00164         <span class="keywordflow">if</span> (!mbInit)
+<a name="l00165"></a>00165             init();
+<a name="l00166"></a>00166 
+<a name="l00167"></a>00167         <span class="keyword">const</span> <span class="keywordtype">int</span> octaves = mOctaves;
+<a name="l00168"></a>00168         <span class="keyword">const</span> <span class="keywordtype">float</span> frequency = mFrequency;
+<a name="l00169"></a>00169         <span class="keywordtype">float</span> amplitude = mAmplitude;
+<a name="l00170"></a>00170         <span class="keywordtype">float</span> result = 0.0f;
+<a name="l00171"></a>00171 
+<a name="l00172"></a>00172         point *= frequency;
+<a name="l00173"></a>00173 
+<a name="l00174"></a>00174         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; octaves; ++i)
+<a name="l00175"></a>00175         {
+<a name="l00176"></a>00176             PxVec3 lpnt;
+<a name="l00177"></a>00177             lpnt[0] = point.x;
+<a name="l00178"></a>00178             lpnt[1] = point.y;
+<a name="l00179"></a>00179             lpnt[2] = point.z;
+<a name="l00180"></a>00180             result += (<a class="code" href="namespace_nv_1_1_blast.html#92d505a07c6038f564445af249ff5158">noiseSample</a>(lpnt, p, g)) * amplitude;
+<a name="l00181"></a>00181             point *= 2.0f;
+<a name="l00182"></a>00182             amplitude *= 0.5f;
+<a name="l00183"></a>00183         }
+<a name="l00184"></a>00184         <span class="keywordflow">return</span> result;
+<a name="l00185"></a>00185     }
+<a name="l00186"></a>00186 
+<a name="l00187"></a>00187     <span class="keywordtype">void</span> init(<span class="keywordtype">void</span>)
+<a name="l00188"></a>00188     {
+<a name="l00189"></a>00189         mbInit = <span class="keyword">true</span>;
+<a name="l00190"></a>00190 
+<a name="l00191"></a>00191         <span class="keywordtype">unsigned</span>  i, j;
+<a name="l00192"></a>00192         <span class="keywordtype">int</span> k;
+<a name="l00193"></a>00193 
+<a name="l00194"></a>00194         <span class="keywordflow">for</span> (i = 0; i &lt; (unsigned)<a class="code" href="_nv_blast_ext_authoring_perlin_noise_8h.html#a5c89172703d702a397d064f704953d5">PERLIN_NOISE_SAMPLE_TABLE</a>; i++)
+<a name="l00195"></a>00195         {
+<a name="l00196"></a>00196             p[i] = (int)i;
+<a name="l00197"></a>00197             <span class="keywordflow">for</span> (j = 0; j &lt; 3; ++j)
+<a name="l00198"></a>00198                 g[i][j] = mRnd-&gt;<a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html#bc19897d708ea7c691c1325b14eff198">getRandomValue</a>();
+<a name="l00199"></a>00199             g[i].normalize();
+<a name="l00200"></a>00200         }
+<a name="l00201"></a>00201 
+<a name="l00202"></a>00202         <span class="keywordflow">while</span> (--i)
+<a name="l00203"></a>00203         {
+<a name="l00204"></a>00204             k = p[i];
+<a name="l00205"></a>00205             j = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(mRnd-&gt;<a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html#bc19897d708ea7c691c1325b14eff198">getRandomValue</a>() * <a class="code" href="_nv_blast_ext_authoring_perlin_noise_8h.html#a5c89172703d702a397d064f704953d5">PERLIN_NOISE_SAMPLE_TABLE</a>);
+<a name="l00206"></a>00206             p[i] = p[j];
+<a name="l00207"></a>00207             p[j] = k;
+<a name="l00208"></a>00208         }
+<a name="l00209"></a>00209 
+<a name="l00210"></a>00210         <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="_nv_blast_ext_authoring_perlin_noise_8h.html#a5c89172703d702a397d064f704953d5">PERLIN_NOISE_SAMPLE_TABLE</a> + 2; ++i)
+<a name="l00211"></a>00211         {
+<a name="l00212"></a>00212             p[(unsigned)PERLIN_NOISE_SAMPLE_TABLE + i] = p[i];
+<a name="l00213"></a>00213             <span class="keywordflow">for</span> (j = 0; j &lt; 3; ++j)
+<a name="l00214"></a>00214                 g[(<span class="keywordtype">unsigned</span>)PERLIN_NOISE_SAMPLE_TABLE + i][j] = g[i][j];
+<a name="l00215"></a>00215         }
+<a name="l00216"></a>00216 
+<a name="l00217"></a>00217     }
+<a name="l00218"></a>00218 
+<a name="l00219"></a>00219     <a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html">Nv::Blast::RandomGeneratorBase</a>* mRnd;
+<a name="l00220"></a>00220     <span class="keywordtype">int</span>                             mOctaves;
+<a name="l00221"></a>00221     <span class="keywordtype">float</span>                           mFrequency;
+<a name="l00222"></a>00222     <span class="keywordtype">float</span>                           mAmplitude;
+<a name="l00223"></a>00223 
+<a name="l00224"></a>00224     <span class="comment">// Permutation vector</span>
+<a name="l00225"></a>00225     <span class="keywordtype">int</span>                             p[(unsigned)(PERLIN_NOISE_SAMPLE_TABLE + PERLIN_NOISE_SAMPLE_TABLE + 2)];
+<a name="l00226"></a>00226     <span class="comment">// Gradient vector</span>
+<a name="l00227"></a>00227     PxVec3                          g[(unsigned)(PERLIN_NOISE_SAMPLE_TABLE + PERLIN_NOISE_SAMPLE_TABLE + 2)];
+<a name="l00228"></a>00228 
+<a name="l00229"></a>00229     <span class="keywordtype">bool</span>                            mbInit;
+<a name="l00230"></a>00230 };
+<a name="l00231"></a>00231 
 <a name="l00232"></a>00232 
-<a name="l00233"></a>00233     <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">int</span> fastfloor(<span class="keywordtype">float</span> x)
-<a name="l00234"></a>00234     {
-<a name="l00235"></a>00235         <span class="keywordflow">return</span> (x &gt;= 0) ? (int)x : (<span class="keywordtype">int</span>)(x - 1);
-<a name="l00236"></a>00236     }
-<a name="l00237"></a>00237 
-<a name="l00238"></a>00238     <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html">SimplexNoise</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html">SimplexNoise</a>&amp;)
-<a name="l00239"></a>00239     {
-<a name="l00240"></a>00240         <span class="keywordflow">return</span> *<span class="keyword">this</span>;
-<a name="l00241"></a>00241     }
-<a name="l00242"></a>00242 
-<a name="l00243"></a>00243 <span class="keyword">public</span>:
-<a name="l00250"></a><a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#99d15601661901924a2470a0a002884f">00250</a>     <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#99d15601661901924a2470a0a002884f">SimplexNoise</a>(<span class="keywordtype">float</span> ampl, <span class="keywordtype">float</span> freq, int32_t octaves, int32_t seed) : mOctaves(octaves), mAmplitude(ampl), mFrequency(freq), mSeed(seed) {};
-<a name="l00251"></a>00251     <span class="comment">// 4D simplex noise</span>
-<a name="l00252"></a>00252     <span class="comment">// returns: (x,y,z) = noise grad, w = noise value</span>
-<a name="l00253"></a>00253 
-<a name="l00263"></a><a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#4651bada29932a13dc3808ce94f22219">00263</a>     physx::PxVec4 <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#4651bada29932a13dc3808ce94f22219">eval4D</a>(<span class="keywordtype">float</span> x, <span class="keywordtype">float</span> y, <span class="keywordtype">float</span> z, <span class="keywordtype">float</span> w, <span class="keywordtype">int</span> seed)
-<a name="l00264"></a>00264     {
-<a name="l00265"></a>00265         <span class="comment">// The skewing and unskewing factors are hairy again for the 4D case</span>
-<a name="l00266"></a>00266         <span class="keyword">const</span> <span class="keywordtype">float</span> F4 = (physx::PxSqrt(5.0f) - 1.0f) / 4.0f;
-<a name="l00267"></a>00267         <span class="keyword">const</span> <span class="keywordtype">float</span> G4 = (5.0f - physx::PxSqrt(5.0f)) / 20.0f;
-<a name="l00268"></a>00268         <span class="comment">// Skew the (x,y,z,w) space to determine which cell of 24 simplices we're in</span>
-<a name="l00269"></a>00269         <span class="keywordtype">float</span> s = (x + y + z + w) * F4; <span class="comment">// Factor for 4D skewing</span>
-<a name="l00270"></a>00270         <span class="keywordtype">int</span> ix = fastfloor(x + s);
-<a name="l00271"></a>00271         <span class="keywordtype">int</span> iy = fastfloor(y + s);
-<a name="l00272"></a>00272         <span class="keywordtype">int</span> iz = fastfloor(z + s);
-<a name="l00273"></a>00273         <span class="keywordtype">int</span> iw = fastfloor(w + s);
-<a name="l00274"></a>00274         <span class="keywordtype">float</span> tu = (ix + iy + iz + iw) * G4; <span class="comment">// Factor for 4D unskewing</span>
-<a name="l00275"></a>00275                                             <span class="comment">// Unskew the cell origin back to (x,y,z,w) space</span>
-<a name="l00276"></a>00276         <span class="keywordtype">float</span> x0 = x - (ix - tu); <span class="comment">// The x,y,z,w distances from the cell origin</span>
-<a name="l00277"></a>00277         <span class="keywordtype">float</span> y0 = y - (iy - tu);
-<a name="l00278"></a>00278         <span class="keywordtype">float</span> z0 = z - (iz - tu);
-<a name="l00279"></a>00279         <span class="keywordtype">float</span> w0 = w - (iw - tu);
-<a name="l00280"></a>00280 
-<a name="l00281"></a>00281         <span class="keywordtype">int</span> c = (x0 &gt; y0) ? (1 &lt;&lt; 0) : (1 &lt;&lt; 2);
-<a name="l00282"></a>00282         c += (x0 &gt; z0) ? (1 &lt;&lt; 0) : (1 &lt;&lt; 4);
-<a name="l00283"></a>00283         c += (x0 &gt; w0) ? (1 &lt;&lt; 0) : (1 &lt;&lt; 6);
-<a name="l00284"></a>00284         c += (y0 &gt; z0) ? (1 &lt;&lt; 2) : (1 &lt;&lt; 4);
-<a name="l00285"></a>00285         c += (y0 &gt; w0) ? (1 &lt;&lt; 2) : (1 &lt;&lt; 6);
-<a name="l00286"></a>00286         c += (z0 &gt; w0) ? (1 &lt;&lt; 4) : (1 &lt;&lt; 6);
-<a name="l00287"></a>00287 
-<a name="l00288"></a>00288         physx::PxVec4 res;
-<a name="l00289"></a>00289         res.setZero();
-<a name="l00290"></a>00290 
-<a name="l00291"></a>00291         <span class="comment">// Calculate the contribution from the five corners</span>
-<a name="l00292"></a>00292         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> p = 4; p &gt;= 0; --p)
-<a name="l00293"></a>00293         {
-<a name="l00294"></a>00294             <span class="keywordtype">int</span> ixp = ((c &gt;&gt; 0) &amp; 3) &gt;= p ? 1 : 0;
-<a name="l00295"></a>00295             <span class="keywordtype">int</span> iyp = ((c &gt;&gt; 2) &amp; 3) &gt;= p ? 1 : 0;
-<a name="l00296"></a>00296             <span class="keywordtype">int</span> izp = ((c &gt;&gt; 4) &amp; 3) &gt;= p ? 1 : 0;
-<a name="l00297"></a>00297             <span class="keywordtype">int</span> iwp = ((c &gt;&gt; 6) &amp; 3) &gt;= p ? 1 : 0;
+<a name="l00236"></a><a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html">00236</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html">SimplexNoise</a>
+<a name="l00237"></a>00237 {
+<a name="l00238"></a>00238 
+<a name="l00239"></a>00239     int32_t             mOctaves;
+<a name="l00240"></a>00240     <span class="keywordtype">float</span>               mAmplitude;
+<a name="l00241"></a>00241     <span class="keywordtype">float</span>               mFrequency;
+<a name="l00242"></a>00242     int32_t             mSeed;
+<a name="l00243"></a>00243 
+<a name="l00244"></a>00244     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    X_NOISE_GEN = 1619;
+<a name="l00245"></a>00245     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    Y_NOISE_GEN = 31337;
+<a name="l00246"></a>00246     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    Z_NOISE_GEN = 6971;
+<a name="l00247"></a>00247     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    W_NOISE_GEN = 1999;
+<a name="l00248"></a>00248     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    SEED_NOISE_GEN = 1013;
+<a name="l00249"></a>00249     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    SHIFT_NOISE_GEN = 8;
+<a name="l00250"></a>00250 
+<a name="l00251"></a>00251     <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">int</span> fastfloor(<span class="keywordtype">float</span> x)
+<a name="l00252"></a>00252     {
+<a name="l00253"></a>00253         <span class="keywordflow">return</span> (x &gt;= 0) ? (int)x : (<span class="keywordtype">int</span>)(x - 1);
+<a name="l00254"></a>00254     }
+<a name="l00255"></a>00255 
+<a name="l00256"></a>00256     <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html">SimplexNoise</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html">SimplexNoise</a>&amp;)
+<a name="l00257"></a>00257     {
+<a name="l00258"></a>00258         <span class="keywordflow">return</span> *<span class="keyword">this</span>;
+<a name="l00259"></a>00259     }
+<a name="l00260"></a>00260 
+<a name="l00261"></a>00261 <span class="keyword">public</span>:
+<a name="l00268"></a><a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#99d15601661901924a2470a0a002884f">00268</a>     <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#99d15601661901924a2470a0a002884f">SimplexNoise</a>(<span class="keywordtype">float</span> ampl, <span class="keywordtype">float</span> freq, int32_t octaves, int32_t seed) : mOctaves(octaves), mAmplitude(ampl), mFrequency(freq), mSeed(seed) {};
+<a name="l00269"></a>00269     <span class="comment">// 4D simplex noise</span>
+<a name="l00270"></a>00270     <span class="comment">// returns: (x,y,z) = noise grad, w = noise value</span>
+<a name="l00271"></a>00271 
+<a name="l00281"></a><a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#4651bada29932a13dc3808ce94f22219">00281</a>     physx::PxVec4 <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#4651bada29932a13dc3808ce94f22219">eval4D</a>(<span class="keywordtype">float</span> x, <span class="keywordtype">float</span> y, <span class="keywordtype">float</span> z, <span class="keywordtype">float</span> w, <span class="keywordtype">int</span> seed)
+<a name="l00282"></a>00282     {
+<a name="l00283"></a>00283         <span class="comment">// The skewing and unskewing factors are hairy again for the 4D case</span>
+<a name="l00284"></a>00284         <span class="keyword">const</span> <span class="keywordtype">float</span> F4 = (physx::PxSqrt(5.0f) - 1.0f) / 4.0f;
+<a name="l00285"></a>00285         <span class="keyword">const</span> <span class="keywordtype">float</span> G4 = (5.0f - physx::PxSqrt(5.0f)) / 20.0f;
+<a name="l00286"></a>00286         <span class="comment">// Skew the (x,y,z,w) space to determine which cell of 24 simplices we're in</span>
+<a name="l00287"></a>00287         <span class="keywordtype">float</span> s = (x + y + z + w) * F4; <span class="comment">// Factor for 4D skewing</span>
+<a name="l00288"></a>00288         <span class="keywordtype">int</span> ix = fastfloor(x + s);
+<a name="l00289"></a>00289         <span class="keywordtype">int</span> iy = fastfloor(y + s);
+<a name="l00290"></a>00290         <span class="keywordtype">int</span> iz = fastfloor(z + s);
+<a name="l00291"></a>00291         <span class="keywordtype">int</span> iw = fastfloor(w + s);
+<a name="l00292"></a>00292         <span class="keywordtype">float</span> tu = (ix + iy + iz + iw) * G4; <span class="comment">// Factor for 4D unskewing</span>
+<a name="l00293"></a>00293                                             <span class="comment">// Unskew the cell origin back to (x,y,z,w) space</span>
+<a name="l00294"></a>00294         <span class="keywordtype">float</span> x0 = x - (ix - tu); <span class="comment">// The x,y,z,w distances from the cell origin</span>
+<a name="l00295"></a>00295         <span class="keywordtype">float</span> y0 = y - (iy - tu);
+<a name="l00296"></a>00296         <span class="keywordtype">float</span> z0 = z - (iz - tu);
+<a name="l00297"></a>00297         <span class="keywordtype">float</span> w0 = w - (iw - tu);
 <a name="l00298"></a>00298 
-<a name="l00299"></a>00299             <span class="keywordtype">float</span> xp = x0 - ixp + (4 - p) * G4;
-<a name="l00300"></a>00300             <span class="keywordtype">float</span> yp = y0 - iyp + (4 - p) * G4;
-<a name="l00301"></a>00301             <span class="keywordtype">float</span> zp = z0 - izp + (4 - p) * G4;
-<a name="l00302"></a>00302             <span class="keywordtype">float</span> wp = w0 - iwp + (4 - p) * G4;
-<a name="l00303"></a>00303 
-<a name="l00304"></a>00304             <span class="keywordtype">float</span> t = 0.6f - xp * xp - yp * yp - zp * zp - wp * wp;
-<a name="l00305"></a>00305             <span class="keywordflow">if</span> (t &gt; 0)
-<a name="l00306"></a>00306             {
-<a name="l00307"></a>00307                 <span class="comment">//get index</span>
-<a name="l00308"></a>00308                 <span class="keywordtype">int</span> gradIndex = int((
-<a name="l00309"></a>00309                     X_NOISE_GEN    * (ix + ixp)
-<a name="l00310"></a>00310                     + Y_NOISE_GEN    * (iy + iyp)
-<a name="l00311"></a>00311                     + Z_NOISE_GEN    * (iz + izp)
-<a name="l00312"></a>00312                     + W_NOISE_GEN    * (iw + iwp)
-<a name="l00313"></a>00313                     + SEED_NOISE_GEN * seed)
-<a name="l00314"></a>00314                     &amp; 0xffffffff);
-<a name="l00315"></a>00315                 gradIndex ^= (gradIndex &gt;&gt; SHIFT_NOISE_GEN);
-<a name="l00316"></a>00316                 gradIndex &amp;= 31;
-<a name="l00317"></a>00317 
-<a name="l00318"></a>00318                 physx::PxVec4 g;
-<a name="l00319"></a>00319                 {
-<a name="l00320"></a>00320                     <span class="keyword">const</span> <span class="keywordtype">int</span> h = gradIndex;
-<a name="l00321"></a>00321                     <span class="keyword">const</span> <span class="keywordtype">int</span> hs = 2 - (h &gt;&gt; 4);
-<a name="l00322"></a>00322                     <span class="keyword">const</span> <span class="keywordtype">int</span> h1 = (h &gt;&gt; 3);
-<a name="l00323"></a>00323                     g.x = (h1 == 0) ? 0.0f : ((h &amp; 4) ? -1.0f : 1.0f);
-<a name="l00324"></a>00324                     g.y = (h1 == 1) ? 0.0f : ((h &amp; (hs &lt;&lt; 1)) ? -1.0f : 1.0f);
-<a name="l00325"></a>00325                     g.z = (h1 == 2) ? 0.0f : ((h &amp; hs) ? -1.0f : 1.0f);
-<a name="l00326"></a>00326                     g.w = (h1 == 3) ? 0.0f : ((h &amp; 1) ? -1.0f : 1.0f);
-<a name="l00327"></a>00327                 }
-<a name="l00328"></a>00328                 <span class="keywordtype">float</span> gdot = (g.x * xp + g.y * yp + g.z * zp + g.w * wp);
-<a name="l00329"></a>00329 
-<a name="l00330"></a>00330                 <span class="keywordtype">float</span> t2 = t * t;
-<a name="l00331"></a>00331                 <span class="keywordtype">float</span> t3 = t2 * t;
-<a name="l00332"></a>00332                 <span class="keywordtype">float</span> t4 = t3 * t;
-<a name="l00333"></a>00333 
-<a name="l00334"></a>00334                 <span class="keywordtype">float</span> dt4gdot = 8 * t3 * gdot;
+<a name="l00299"></a>00299         <span class="keywordtype">int</span> c = (x0 &gt; y0) ? (1 &lt;&lt; 0) : (1 &lt;&lt; 2);
+<a name="l00300"></a>00300         c += (x0 &gt; z0) ? (1 &lt;&lt; 0) : (1 &lt;&lt; 4);
+<a name="l00301"></a>00301         c += (x0 &gt; w0) ? (1 &lt;&lt; 0) : (1 &lt;&lt; 6);
+<a name="l00302"></a>00302         c += (y0 &gt; z0) ? (1 &lt;&lt; 2) : (1 &lt;&lt; 4);
+<a name="l00303"></a>00303         c += (y0 &gt; w0) ? (1 &lt;&lt; 2) : (1 &lt;&lt; 6);
+<a name="l00304"></a>00304         c += (z0 &gt; w0) ? (1 &lt;&lt; 4) : (1 &lt;&lt; 6);
+<a name="l00305"></a>00305 
+<a name="l00306"></a>00306         physx::PxVec4 res;
+<a name="l00307"></a>00307         res.setZero();
+<a name="l00308"></a>00308 
+<a name="l00309"></a>00309         <span class="comment">// Calculate the contribution from the five corners</span>
+<a name="l00310"></a>00310         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> p = 4; p &gt;= 0; --p)
+<a name="l00311"></a>00311         {
+<a name="l00312"></a>00312             <span class="keywordtype">int</span> ixp = ((c &gt;&gt; 0) &amp; 3) &gt;= p ? 1 : 0;
+<a name="l00313"></a>00313             <span class="keywordtype">int</span> iyp = ((c &gt;&gt; 2) &amp; 3) &gt;= p ? 1 : 0;
+<a name="l00314"></a>00314             <span class="keywordtype">int</span> izp = ((c &gt;&gt; 4) &amp; 3) &gt;= p ? 1 : 0;
+<a name="l00315"></a>00315             <span class="keywordtype">int</span> iwp = ((c &gt;&gt; 6) &amp; 3) &gt;= p ? 1 : 0;
+<a name="l00316"></a>00316 
+<a name="l00317"></a>00317             <span class="keywordtype">float</span> xp = x0 - ixp + (4 - p) * G4;
+<a name="l00318"></a>00318             <span class="keywordtype">float</span> yp = y0 - iyp + (4 - p) * G4;
+<a name="l00319"></a>00319             <span class="keywordtype">float</span> zp = z0 - izp + (4 - p) * G4;
+<a name="l00320"></a>00320             <span class="keywordtype">float</span> wp = w0 - iwp + (4 - p) * G4;
+<a name="l00321"></a>00321 
+<a name="l00322"></a>00322             <span class="keywordtype">float</span> t = 0.6f - xp * xp - yp * yp - zp * zp - wp * wp;
+<a name="l00323"></a>00323             <span class="keywordflow">if</span> (t &gt; 0)
+<a name="l00324"></a>00324             {
+<a name="l00325"></a>00325                 <span class="comment">//get index</span>
+<a name="l00326"></a>00326                 <span class="keywordtype">int</span> gradIndex = int((
+<a name="l00327"></a>00327                     X_NOISE_GEN    * (ix + ixp)
+<a name="l00328"></a>00328                     + Y_NOISE_GEN    * (iy + iyp)
+<a name="l00329"></a>00329                     + Z_NOISE_GEN    * (iz + izp)
+<a name="l00330"></a>00330                     + W_NOISE_GEN    * (iw + iwp)
+<a name="l00331"></a>00331                     + SEED_NOISE_GEN * seed)
+<a name="l00332"></a>00332                     &amp; 0xffffffff);
+<a name="l00333"></a>00333                 gradIndex ^= (gradIndex &gt;&gt; SHIFT_NOISE_GEN);
+<a name="l00334"></a>00334                 gradIndex &amp;= 31;
 <a name="l00335"></a>00335 
-<a name="l00336"></a>00336                 res.x += t4 * g.x - dt4gdot * xp;
-<a name="l00337"></a>00337                 res.y += t4 * g.y - dt4gdot * yp;
-<a name="l00338"></a>00338                 res.z += t4 * g.z - dt4gdot * zp;
-<a name="l00339"></a>00339                 res.w += t4 * gdot;
-<a name="l00340"></a>00340             }
-<a name="l00341"></a>00341         }
-<a name="l00342"></a>00342         <span class="comment">// scale the result to cover the range [-1,1]</span>
-<a name="l00343"></a>00343         res *= 27;
-<a name="l00344"></a>00344         <span class="keywordflow">return</span> res;
-<a name="l00345"></a>00345     }
-<a name="l00346"></a>00346 
-<a name="l00352"></a><a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#6dd8a1fbea3071eb3012cc342248b843">00352</a>     <span class="keywordtype">float</span> <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#6dd8a1fbea3071eb3012cc342248b843">sample</a>(physx::PxVec3 p)
-<a name="l00353"></a>00353     {
-<a name="l00354"></a>00354         p *= mFrequency;
-<a name="l00355"></a>00355         <span class="keywordtype">float</span> result = 0.0f;
-<a name="l00356"></a>00356         <span class="keywordtype">float</span> alpha = 1;
-<a name="l00357"></a>00357         <span class="keywordflow">for</span> (int32_t i = 1; i &lt;= mOctaves; ++i)
-<a name="l00358"></a>00358         {
-<a name="l00359"></a>00359             result += <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#4651bada29932a13dc3808ce94f22219">eval4D</a>(p.x * i, p.y * i, p.z * i, i * 5.0f, mSeed).w * alpha;
-<a name="l00360"></a>00360             alpha *= 0.45;
-<a name="l00361"></a>00361         }
-<a name="l00362"></a>00362         <span class="keywordflow">return</span> result * mAmplitude;
+<a name="l00336"></a>00336                 physx::PxVec4 g;
+<a name="l00337"></a>00337                 {
+<a name="l00338"></a>00338                     <span class="keyword">const</span> <span class="keywordtype">int</span> h = gradIndex;
+<a name="l00339"></a>00339                     <span class="keyword">const</span> <span class="keywordtype">int</span> hs = 2 - (h &gt;&gt; 4);
+<a name="l00340"></a>00340                     <span class="keyword">const</span> <span class="keywordtype">int</span> h1 = (h &gt;&gt; 3);
+<a name="l00341"></a>00341                     g.x = (h1 == 0) ? 0.0f : ((h &amp; 4) ? -1.0f : 1.0f);
+<a name="l00342"></a>00342                     g.y = (h1 == 1) ? 0.0f : ((h &amp; (hs &lt;&lt; 1)) ? -1.0f : 1.0f);
+<a name="l00343"></a>00343                     g.z = (h1 == 2) ? 0.0f : ((h &amp; hs) ? -1.0f : 1.0f);
+<a name="l00344"></a>00344                     g.w = (h1 == 3) ? 0.0f : ((h &amp; 1) ? -1.0f : 1.0f);
+<a name="l00345"></a>00345                 }
+<a name="l00346"></a>00346                 <span class="keywordtype">float</span> gdot = (g.x * xp + g.y * yp + g.z * zp + g.w * wp);
+<a name="l00347"></a>00347 
+<a name="l00348"></a>00348                 <span class="keywordtype">float</span> t2 = t * t;
+<a name="l00349"></a>00349                 <span class="keywordtype">float</span> t3 = t2 * t;
+<a name="l00350"></a>00350                 <span class="keywordtype">float</span> t4 = t3 * t;
+<a name="l00351"></a>00351 
+<a name="l00352"></a>00352                 <span class="keywordtype">float</span> dt4gdot = 8 * t3 * gdot;
+<a name="l00353"></a>00353 
+<a name="l00354"></a>00354                 res.x += t4 * g.x - dt4gdot * xp;
+<a name="l00355"></a>00355                 res.y += t4 * g.y - dt4gdot * yp;
+<a name="l00356"></a>00356                 res.z += t4 * g.z - dt4gdot * zp;
+<a name="l00357"></a>00357                 res.w += t4 * gdot;
+<a name="l00358"></a>00358             }
+<a name="l00359"></a>00359         }
+<a name="l00360"></a>00360         <span class="comment">// scale the result to cover the range [-1,1]</span>
+<a name="l00361"></a>00361         res *= 27;
+<a name="l00362"></a>00362         <span class="keywordflow">return</span> res;
 <a name="l00363"></a>00363     }
 <a name="l00364"></a>00364 
-<a name="l00365"></a>00365 };
-<a name="l00366"></a>00366 
-<a name="l00367"></a>00367 
-<a name="l00368"></a>00368     } <span class="comment">// Blast namespace</span>
-<a name="l00369"></a>00369 } <span class="comment">// Nv namespace</span>
-<a name="l00370"></a>00370 
-<a name="l00371"></a>00371 
-<a name="l00372"></a>00372 
-<a name="l00373"></a>00373 <span class="preprocessor">#endif</span>
+<a name="l00370"></a><a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#6dd8a1fbea3071eb3012cc342248b843">00370</a>     <span class="keywordtype">float</span> <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#6dd8a1fbea3071eb3012cc342248b843">sample</a>(physx::PxVec3 p)
+<a name="l00371"></a>00371     {
+<a name="l00372"></a>00372         p *= mFrequency;
+<a name="l00373"></a>00373         <span class="keywordtype">float</span> result = 0.0f;
+<a name="l00374"></a>00374         <span class="keywordtype">float</span> alpha = 1;
+<a name="l00375"></a>00375         <span class="keywordflow">for</span> (int32_t i = 1; i &lt;= mOctaves; ++i)
+<a name="l00376"></a>00376         {
+<a name="l00377"></a>00377             result += <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#4651bada29932a13dc3808ce94f22219">eval4D</a>(p.x * i, p.y * i, p.z * i, i * 5.0f, mSeed).w * alpha;
+<a name="l00378"></a>00378             alpha *= 0.45;
+<a name="l00379"></a>00379         }
+<a name="l00380"></a>00380         <span class="keywordflow">return</span> result * mAmplitude;
+<a name="l00381"></a>00381     }
+<a name="l00382"></a>00382 
+<a name="l00383"></a>00383 };
+<a name="l00384"></a>00384 
+<a name="l00385"></a>00385 
+<a name="l00386"></a>00386     } <span class="comment">// Blast namespace</span>
+<a name="l00387"></a>00387 } <span class="comment">// Nv namespace</span>
+<a name="l00388"></a>00388 
+<a name="l00389"></a>00389 
+<a name="l00390"></a>00390 
+<a name="l00391"></a>00391 <span class="preprocessor">#endif</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

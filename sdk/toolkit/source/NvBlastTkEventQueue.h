@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTTKEVENTQUEUE_H
 #define NVBLASTTKEVENTQUEUE_H
@@ -17,7 +35,6 @@
 #include <mutex>
 #include <atomic>
 
-#include "PxAllocatorCallback.h"
 #include "NvBlastTkFrameworkImpl.h"
 #include "NvBlastAssert.h"
 
@@ -50,7 +67,7 @@ public:
 	Peek events queue for dispatch.
 	Do not use in protected state.
 	*/
-	operator const TkArray<TkEvent>::type&() 
+	operator const Array<TkEvent>::type&() 
 	{
 		NVBLAST_ASSERT(m_allowAllocs);
 		NVBLAST_ASSERT(m_currentEvent == m_events.size());
@@ -83,7 +100,7 @@ public:
 		m_currentEvent = 0;
 		for (void* mem : m_memory)
 		{
-			NVBLASTTK_FREE(mem);
+			NVBLAST_FREE(mem);
 		}
 		m_memory.clear();
 		m_currentData = 0;
@@ -186,13 +203,13 @@ public:
 	/**
 	Proxy function to dispatch events to this queue's listeners.
 	*/
-	void dispatch(const TkArray<TkEvent>::type& events) const
+	void dispatch(const Array<TkEvent>::type& events) const
 	{
 		if (events.size())
 		{
 			for (TkEventListener* l : m_listeners)
 			{
-				PERF_SCOPE_M("TkEventQueue::dispatch");
+				BLAST_PROFILE_SCOPE_M("TkEventQueue::dispatch");
 				l->receive(events.begin(), events.size());
 			}
 		}
@@ -207,21 +224,21 @@ private:
 		void* memory = nullptr;
 		if (size > 0)
 		{
-			memory = NVBLASTTK_ALLOC(size, "TkEventQueue Data");
+			memory = NVBLAST_ALLOC_NAMED(size, "TkEventQueue Data");
 			m_memory.pushBack(memory);
 		}
 		return memory;
 	}
 
 
-	TkArray<TkEvent>::type					m_events;		//!< holds events
-	TkArray<void*>::type					m_memory;		//!< holds allocated data memory blocks
+	Array<TkEvent>::type					m_events;		//!< holds events
+	Array<void*>::type						m_memory;		//!< holds allocated data memory blocks
 	std::atomic<uint32_t>					m_currentEvent;	//!< reference index for event insertion
 	std::atomic<uint32_t>					m_currentData;	//!< reference index for data insertion
 	size_t									m_poolCapacity;	//!< size of the currently active memory block (m_pool)
 	uint8_t*								m_pool;			//!< the current memory block allocData() uses
 	bool									m_allowAllocs;	//!< assert guard
-	TkInlineArray<TkEventListener*,4>::type	m_listeners;	//!< objects to dispatch to
+	InlineArray<TkEventListener*,4>::type	m_listeners;	//!< objects to dispatch to
 };
 
 }	// namespace Blast

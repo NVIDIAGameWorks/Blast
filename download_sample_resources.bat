@@ -3,7 +3,7 @@
 
 :: Run packman to pull resources
 @echo Running packman to pull resources...
-@call "%~dp0buildtools\packman\windows\packman.cmd" %PM_OPTIONS_EXT% pull "%~dp0\samples\resources\configs\resources.xml" --platform win
+@call "%~dp0buildtools\packman\packman.cmd" pull "%~dp0\samples\resources\configs\resources.xml" --platform win
 @if %ERRORLEVEL% neq 0 (
     @exit /b %errorlevel%
 ) else (

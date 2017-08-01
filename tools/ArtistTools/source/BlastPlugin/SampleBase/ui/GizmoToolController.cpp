@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "GizmoToolController.h"
 #include "RenderUtils.h"
@@ -15,6 +33,7 @@
 #include "Renderer.h"
 #include "PhysXController.h"
 #include "SampleProfiler.h"
+#include "ViewerOutput.h"
 
 #include <imgui.h>
 
@@ -23,9 +42,12 @@
 
 #include "PxRigidDynamic.h"
 #include "PxScene.h"
+#include "PxPhysics.h"
+#include "cooking/PxCooking.h"
+#include "NvBlastExtPxActor.h"
 #include <AppMainWindow.h>
-
-
+#include "BlastSceneTree.h"
+#include "SimpleScene.h"
 using namespace Nv::Blast;
 using namespace physx;
 
@@ -43,65 +65,123 @@ const physx::PxU32 Y_DIRECTION_COLOR_U = XMFLOAT4ToU32Color(Y_DIRECTION_COLOR_F)
 const physx::PxU32 Z_DIRECTION_COLOR_U = XMFLOAT4ToU32Color(Z_DIRECTION_COLOR_F);
 const physx::PxU32 HIGHLIGHT_COLOR_U = XMFLOAT4ToU32Color(HIGHLIGHT_COLOR_F);
 
-const float defaultAxisLength = 10.0;
+float defaultAxisLength = 10.0;
 const float defaultAxisModifier = -1.0;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void modifyPxActorByLocalWay(PxScene& pxScene, PxRigidDynamic& actor, PxTransform& gp_old, PxTransform& gp_new)
+{
+	uint32_t shapesCount = actor.getNbShapes();
+	if (shapesCount > 0)
+	{
+		PxTransform gp_newInv = gp_new.getInverse();
+
+		PxTransform lp_old;
+		PxTransform lp_new;
+
+		std::vector<PxShape*> shapes(shapesCount);
+		actor.getShapes(&shapes[0], shapesCount);
+
+		pxScene.removeActor(actor);
+		for (uint32_t i = 0; i < shapesCount; i++)
+		{
+			PxShape* shape = shapes[i];
+
+			actor.detachShape(*shape);
+
+			lp_old = shape->getLocalPose();
+			lp_new = gp_newInv * gp_old * lp_old;
+			shape->setLocalPose(lp_new);
+
+			actor.attachShape(*shape);
+		}
+		pxScene.addActor(actor);
+	}
+}
+
+void scalePxActor(PxScene& pxScene, PxRigidDynamic& actor, PxMat44& scale)
+{
+	uint32_t shapesCount = actor.getNbShapes();
+	if (shapesCount == 0)
+	{
+		return;
+	}
+
+	std::vector<PxShape*> shapes(shapesCount);
+	actor.getShapes(&shapes[0], shapesCount);
+
+	pxScene.removeActor(actor);
+
+	for (uint32_t i = 0; i < shapesCount; i++)
+	{
+		PxShape* shape = shapes[i];
+
+		PxConvexMeshGeometry mesh;
+		bool valid = shape->getConvexMeshGeometry(mesh);
+		if (!valid)
+		{
+			continue;
+		}
+
+		PxConvexMesh* pMesh = mesh.convexMesh;
+		if (NULL == pMesh)
+		{
+			continue;
+		}
+
+		PxU32 numVertex = pMesh->getNbVertices();
+		if (numVertex == 0)
+		{
+			continue;
+		}
+
+		const PxVec3* pVertex = pMesh->getVertices();
+		PxVec3* pVertexNew = new PxVec3[numVertex];
+		for (PxU32 v = 0; v < numVertex; v++)
+		{
+			pVertexNew[v] = scale.transform(pVertex[v]);
+		}
+
+		PxConvexMeshDesc convexMeshDesc;
+		convexMeshDesc.points.count = numVertex;
+		convexMeshDesc.points.data = pVertexNew;
+		convexMeshDesc.points.stride = sizeof(PxVec3);
+		convexMeshDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
+		SampleManager* manager = SampleManager::ins();
+		PxPhysics& physics = manager->getPhysXController().getPhysics();
+		PxCooking& cooking = manager->getPhysXController().getCooking();
+		PxConvexMesh* convexMesh = cooking.createConvexMesh(convexMeshDesc, physics.getPhysicsInsertionCallback());
+		if (NULL == convexMesh)
+		{
+			delete[] pVertexNew;
+			continue;
+		}
+
+		mesh.convexMesh = convexMesh;
+
+		actor.detachShape(*shape);
+		shape->setGeometry(mesh);
+		actor.attachShape(*shape);
+
+		pMesh->release();
+		delete[] pVertexNew;
+	}
+
+	pxScene.addActor(actor);
+}
 
 GizmoToolController::GizmoToolController()
 {
 	m_bGizmoFollowed = false;
 
-	int segment = 36;
-	double span = PxTwoPi / segment;
-	PxVec3* vertex = new PxVec3[segment];
-
-	for (int i = 0; i < segment; i++)
-	{
-		vertex[i].x = 0;
-		vertex[i].y = 10 * PxSin(i * span);
-		vertex[i].z = 10 * PxCos(i * span);
-	}
-	// x
-	for (int i = 0; i < segment - 1; i++)
-	{
-		m_CircleRenderData.push_back(PxDebugLine(vertex[i], vertex[i + 1], X_DIRECTION_COLOR_U));
-	}
-	m_CircleRenderData.push_back(PxDebugLine(vertex[segment - 1], vertex[0], X_DIRECTION_COLOR_U));
-
-	for (int i = 0; i < segment; i++)
-	{
-		vertex[i].x = 10 * PxCos(i * span);
-		vertex[i].y = 0;
-		vertex[i].z = 10 * PxSin(i * span);
-	}
-	// y
-	for (int i = 0; i < segment - 1; i++)
-	{
-		m_CircleRenderData.push_back(PxDebugLine(vertex[i], vertex[i + 1], Y_DIRECTION_COLOR_U));
-	}
-	m_CircleRenderData.push_back(PxDebugLine(vertex[segment - 1], vertex[0], Y_DIRECTION_COLOR_U));
-
-	for (int i = 0; i < segment; i++)
-	{
-		vertex[i].x = 10 * PxCos(i * span);
-		vertex[i].y = 10 * PxSin(i * span);
-		vertex[i].z = 0;
-	}
-	// z
-	for (int i = 0; i < segment - 1; i++)
-	{
-		m_CircleRenderData.push_back(PxDebugLine(vertex[i], vertex[i + 1], Z_DIRECTION_COLOR_U));
-	}
-	m_CircleRenderData.push_back(PxDebugLine(vertex[segment - 1], vertex[0], Z_DIRECTION_COLOR_U));
-
-	delete[] vertex;
-	vertex = NULL;
+	UpdateCircleRenderData(defaultAxisLength);
 
 	resetPos();
+
+	BlastSceneTree::ins()->addObserver(this);
 }
 
 GizmoToolController::~GizmoToolController()
@@ -154,6 +234,37 @@ void GizmoToolController::onSampleStop()
 {
 }
 
+void GizmoToolController::dataSelected(std::vector<BlastNode*> selections)
+{
+	if (!IsEnabled())
+		return;
+
+	BlastController& blastController = getBlastController();
+	std::vector<BlastFamilyPtr>& families = blastController.getFamilies();
+
+	std::set<PxActor*> selectedActors;
+	PxActor* targetActor = nullptr;
+	for (BlastFamily* family : families)
+	{
+		std::vector<uint32_t> selectedChunks = family->getSelectedChunks();
+		for (uint32_t chunkIndex : selectedChunks)
+		{
+			PxActor* actor = nullptr;
+			family->getPxActorByChunkIndex(chunkIndex, &actor);
+
+			if (actor)
+			{
+				selectedActors.insert(actor);
+				targetActor = actor;
+			}
+		}
+	}
+
+	if (targetActor)
+		setTargetActor(targetActor);
+	getSelectionToolController().setTargetActors(selectedActors);
+}
+
 void GizmoToolController::Animate(double dt)
 {
 	PROFILER_SCOPED_FUNCTION();
@@ -169,6 +280,9 @@ void GizmoToolController::Animate(double dt)
 
 		return;
 	}
+
+	m_TargetPos = m_CurrentActor->getGlobalPose().p;
+	m_bNeedResetPos = true;
 
 	bool isTranslation = m_GizmoToolMode == GTM_Translate;
 	bool isScale = m_GizmoToolMode == GTM_Scale;
@@ -186,6 +300,8 @@ void GizmoToolController::Animate(double dt)
 	m_AxisBoxRenderable[AT_X]->setHidden(!isScale);
 	m_AxisBoxRenderable[AT_Y]->setHidden(!isScale);
 	m_AxisBoxRenderable[AT_Z]->setHidden(!isScale);
+
+	syncRenderableState();
 
 	if (showLine)
 	{
@@ -430,8 +546,6 @@ void GizmoToolController::Animate(double dt)
 	m_bNeedResetColor = false;
 }
 
-#include "PxPhysics.h"
-#include "cooking/PxCooking.h"
 LRESULT GizmoToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	PROFILER_SCOPED_FUNCTION();
@@ -439,145 +553,290 @@ LRESULT GizmoToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 	if (uMsg == WM_LBUTTONDOWN || uMsg == WM_MOUSEMOVE || uMsg == WM_LBUTTONUP)
 	{
 		float mouseX = (short)LOWORD(lParam) / getRenderer().getScreenWidth();
-		float mouseY = (short)HIWORD(lParam) / getRenderer().getScreenHeight();
-		bool press = uMsg == WM_LBUTTONDOWN;
-
-		if (m_GizmoToolMode == GTM_Translate)
+		if (!SimpleScene::Inst()->m_pCamera->_lhs)
 		{
-			if (uMsg == WM_LBUTTONDOWN)
+			mouseX = 1 - mouseX;
+		}
+		float mouseY = (short)HIWORD(lParam) / getRenderer().getScreenHeight();
+
+		PxVec3 eyePos, pickDir;
+		getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
+		pickDir = pickDir.getNormalized();
+
+		if (uMsg == WM_LBUTTONDOWN)
+		{
+			if (m_AxisSelected == AT_Num)
 			{
-				if (m_AxisSelected == AT_Num)
+				PxRaycastBufferN<32> hits;
+				GetPhysXScene().raycast(eyePos, pickDir, PX_MAX_F32, hits, PxHitFlag::ePOSITION | PxHitFlag::eMESH_MULTIPLE);
+
+				PxU32 nbThouches = hits.getNbTouches();
+				const PxRaycastHit* touches = hits.getTouches();
+
+				PxRigidActor* actor = NULL;
+				for (PxU32 u = 0; u < nbThouches; ++u)
 				{
-					PxVec3 eyePos, pickDir;
-					getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
-					pickDir = pickDir.getNormalized();
-
-					PxRaycastHit hit; hit.shape = NULL;
-					PxRaycastBuffer hit1;
-					getPhysXController().getPhysXScene().raycast(eyePos, pickDir, PX_MAX_F32, hit1, PxHitFlag::ePOSITION | PxHitFlag::eNORMAL);
-					hit = hit1.block;
-
-					if (hit.shape)
+					const PxRaycastHit& t = touches[u];
+					if (t.shape && getBlastController().isActorVisible(*(t.actor)))
 					{
-						PxRigidActor* actor = hit.actor;
-						PxRigidDynamic* rigidDynamic = actor->is<PxRigidDynamic>();
-						if (NULL != rigidDynamic)
-						{
-							m_CurrentActor = actor;
-							getSelectionToolController().pointSelect(m_CurrentActor);
-
-							PxTransform gp = m_CurrentActor->getGlobalPose();
-
-							m_TargetPos = gp.p;
-							m_Axis[AT_X] = gp.q.rotate(PxVec3(defaultAxisLength, 0, 0));
-							m_Axis[AT_Y] = gp.q.rotate(PxVec3(0, defaultAxisLength, 0));
-							m_Axis[AT_Z] = gp.q.rotate(PxVec3(0, 0, defaultAxisLength));
-
-							m_bNeedResetPos = true;
-						}
-						else
-						{
-							m_CurrentActor = NULL;
-							getSelectionToolController().clearSelect();
-						}
+						actor = t.actor;
 					}
 				}
-				else
+
+				if (actor)
 				{
-					m_bGizmoFollowed = (m_CurrentActor != NULL);
+					PxRigidDynamic* rigidDynamic = actor->is<PxRigidDynamic>();
+					if (NULL != rigidDynamic)
+					{
+						m_CurrentActor = rigidDynamic;
+						getSelectionToolController().pointSelect(m_CurrentActor);
+
+						PxTransform gp = m_CurrentActor->getGlobalPose();
+
+						m_TargetPos = gp.p;
+						m_Axis[AT_X] = gp.q.rotate(PxVec3(defaultAxisLength, 0, 0));
+						m_Axis[AT_Y] = gp.q.rotate(PxVec3(0, defaultAxisLength, 0));
+						m_Axis[AT_Z] = gp.q.rotate(PxVec3(0, 0, defaultAxisLength));
+
+						m_bNeedResetPos = true;
+					}
+					else
+					{
+						m_CurrentActor = NULL;
+						getSelectionToolController().clearSelect();
+					}
 				}
 			}
-			else if (uMsg == WM_MOUSEMOVE)
+			else
 			{
-				if (m_bGizmoFollowed)
+				m_bGizmoFollowed = (m_CurrentActor != NULL);
+
+				if (m_GizmoToolMode == GTM_Scale)
 				{
-					PxVec3 eyePos, pickDir;
-					getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
-					pickDir = pickDir.getNormalized();
-
-					PxVec3 axis = m_Axis[m_AxisSelected];
-					axis = axis.getNormalized();
-					PxVec3 samplepoint = eyePos + pickDir;
-					PxVec3 normal = m_LastEyeRay.cross(axis);
-					normal = normal.getNormalized();
-					PxVec3 foot;
-					GetFootFromPointToPlane(samplepoint, eyePos, normal, foot);
-					PxVec3 direction = foot - eyePos;
-					direction = direction.getNormalized();
-					PxVec3 target;
-					GetIntersectBetweenLines(m_LastFoot, axis, eyePos, direction, target);
-					PxVec3 delta = target - m_LastFoot;
-
-					m_LastEyeRay = direction;
-					m_LastFoot = target;
-
-					PxTransform gp_old = m_CurrentActor->getGlobalPose();
-					PxTransform gp_new(gp_old.p + delta, gp_old.q);;
-					m_CurrentActor->setGlobalPose(gp_new);
-
-					m_TargetPos = gp_new.p;
-
-					bool local = AppMainWindow::Inst().m_bGizmoWithLocal;
-					if (local)
-					{
-						uint32_t shapesCount = m_CurrentActor->getNbShapes();
-						if (shapesCount > 0)
-						{
-							PxTransform gp_newInv = gp_new.getInverse();
-
-							PxTransform lp_old;
-							PxTransform lp_new;
-
-							std::vector<PxShape*> shapes(shapesCount);
-							m_CurrentActor->getShapes(&shapes[0], shapesCount);
-							getPhysXController().getPhysXScene().removeActor(*m_CurrentActor);
-							for (uint32_t i = 0; i < shapesCount; i++)
-							{
-								PxShape* shape = shapes[i];
-
-								m_CurrentActor->detachShape(*shape);
-
-								lp_old = shape->getLocalPose();
-								lp_new = gp_newInv * gp_old * lp_old;
-								shape->setLocalPose(lp_new);
-
-								m_CurrentActor->attachShape(*shape);
-							}
-							getPhysXController().getPhysXScene().addActor(*m_CurrentActor);
-						}
-					}
-
-					m_bNeedResetPos = true;
-					m_bNeedResetColor = true;
+					m_LastAxis[AT_X] = m_Axis[AT_X].getNormalized();
+					m_LastAxis[AT_Y] = m_Axis[AT_Y].getNormalized();
+					m_LastAxis[AT_Z] = m_Axis[AT_Z].getNormalized();
 				}
-				else if(m_CurrentActor != NULL)
+			}
+		}
+		else if (uMsg == WM_MOUSEMOVE)
+		{
+			if (m_bGizmoFollowed)
+			{
+				switch (m_GizmoToolMode)
 				{
-					PxVec3 eyePos, pickDir;
-					getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
-					pickDir = pickDir.getNormalized();
-
-					m_LastEyeRay = pickDir;
-
-					// get axis which intersect with this eye ray
-					AxisType as = AT_Num;
+				case GTM_Translate:
 					{
-						double distanceMin = PX_MAX_F32;
-						double tolerance = 1;
-						int line_index = -1;
-						PxVec3 foot;
-						std::vector<PxDebugLine>& lines = m_AxisRenderBuffer.m_lines;
-						int linesize = lines.size();
-						for (int l = 0; l < linesize; l++)
+						if (AppMainWindow::Inst().m_bGizmoWithLocal && !CanModifyLocal(m_CurrentActor))
 						{
-							PxVec3 start = lines[l].pos0;
-							PxVec3 end = lines[l].pos1;
-							PxVec3 dir = end - start;
-							double length = dir.magnitude();
-							// separate the line to 10 segment
-							double delta = length * 0.1;
-							for (int segment = 0; segment <= 10; segment++)
+							char message[1024];
+							sprintf(message, "Only unfractured model can be modify in local way in edit mode!");
+							viewer_warn(message);
+							return 1;
+						}
+
+						PxVec3 axis = m_Axis[m_AxisSelected];
+						axis = axis.getNormalized();
+						PxVec3 samplepoint = eyePos + pickDir;
+						PxVec3 normal = m_LastEyeRay.cross(axis);
+						normal = normal.getNormalized();
+						PxVec3 foot;
+						GetFootFromPointToPlane(samplepoint, eyePos, normal, foot);
+						PxVec3 direction = foot - eyePos;
+						direction = direction.getNormalized();
+						PxVec3 target;
+						GetIntersectBetweenLines(m_LastFoot, axis, eyePos, direction, target);
+						PxVec3 delta = target - m_LastFoot;
+
+						m_LastEyeRay = direction;
+						m_LastFoot = target;
+
+						PxTransform gp_old = m_CurrentActor->getGlobalPose();
+						PxTransform gp_new(gp_old.p + delta, gp_old.q);
+						m_CurrentActor->setGlobalPose(gp_new);
+
+						bool modifyLocal = AppMainWindow::Inst().m_bGizmoWithLocal && CanModifyLocal(m_CurrentActor);
+
+						if (!SampleManager::ins()->IsSimulating())
+						{
+							getBlastController().updateActorRenderableTransform(*m_CurrentActor, gp_new, modifyLocal);
+							if (CanMapToRootChunk(m_CurrentActor) && !modifyLocal)
+								UpdateAssetInstanceTransform(gp_new);
+						}
+
+						m_TargetPos = gp_new.p;
+
+						if (modifyLocal)
+						{
+							modifyPxActorByLocalWay(GetPhysXScene(), *m_CurrentActor, gp_old, gp_new);
+						}
+
+						m_bNeedResetPos = true;
+						m_bNeedResetColor = true;
+					}
+					break;
+				case GTM_Scale:
+					{
+						if (AppMainWindow::Inst().m_bGizmoWithLocal && !CanModifyLocal(m_CurrentActor))
+						{
+							char message[1024];
+							sprintf(message, "Only unfractured model can be modify in local way in edit mode!");
+							viewer_warn(message);
+							return 1;
+						}
+
+						PxVec3 axis = m_LastAxis[m_AxisSelected];
+						PxVec3 samplepoint = eyePos + pickDir;
+						PxVec3 normal = m_LastEyeRay.cross(axis);
+						normal = normal.getNormalized();
+						PxVec3 foot;
+						GetFootFromPointToPlane(samplepoint, eyePos, normal, foot);
+						PxVec3 direction = foot - eyePos;
+						direction = direction.getNormalized();
+						PxVec3 target;
+						GetIntersectBetweenLines(m_LastFoot, axis, eyePos, direction, target);
+						PxVec3 delta = target - m_LastFoot;
+
+						if (m_AxisSelected == AT_X)
+						{
+							delta *= defaultAxisModifier;
+						}
+						m_Axis[m_AxisSelected] = m_LastAxis[m_AxisSelected] * defaultAxisLength + delta;
+
+						bool isShift = (GetAsyncKeyState(VK_SHIFT) && 0x8000);
+						if (isShift)
+						{
+							float length = m_Axis[m_AxisSelected].magnitude();
+							m_Axis[AT_X] = m_LastAxis[AT_X] * length;
+							m_Axis[AT_Y] = m_LastAxis[AT_Y] * length;
+							m_Axis[AT_Z] = m_LastAxis[AT_Z] * length;
+						}
+
+						ScaleActor(false);
+
+						m_bNeedResetPos = true;
+						m_bNeedResetColor = true;
+					}
+					break;
+
+				case GTM_Rotation:
+					{
+						if (AppMainWindow::Inst().m_bGizmoWithLocal && !CanModifyLocal(m_CurrentActor))
+						{
+							char message[1024];
+							sprintf(message, "Only unfractured model can be modify in local way in edit mode!");
+							viewer_warn(message);
+							return 1;
+						}
+
+						PxVec3 planenormal = m_Axis[m_AxisSelected];
+						planenormal = planenormal.getNormalized();
+
+						PxVec3 from, to;
+						CalPlaneLineIntersectPoint(from, planenormal, m_TargetPos, m_LastEyeRay, eyePos);
+						CalPlaneLineIntersectPoint(to, planenormal, m_TargetPos, pickDir, eyePos);
+						from = from - m_TargetPos;
+						to = to - m_TargetPos;
+						from = from.getNormalized();
+						to = to.getNormalized();
+						float cosangle = from.dot(to);
+						float angle = PxAcos(cosangle);
+						PxVec3 cross = from.cross(to);
+						cross = cross.getNormalized();
+
+						PxQuat q(angle, cross);
+						if (m_AxisSelected == AT_X)
+						{
+							m_Axis[AT_Y] = q.rotate(m_Axis[AT_Y]);
+							m_Axis[AT_Z] = q.rotate(m_Axis[AT_Z]);
+						}
+						else if (m_AxisSelected == AT_Y)
+						{
+							m_Axis[AT_X] = q.rotate(m_Axis[AT_X]);
+							m_Axis[AT_Z] = q.rotate(m_Axis[AT_Z]);
+						}
+						else if (m_AxisSelected == AT_Z)
+						{
+							m_Axis[AT_X] = q.rotate(m_Axis[AT_X]);
+							m_Axis[AT_Y] = q.rotate(m_Axis[AT_Y]);
+						}
+
+						m_LastEyeRay = pickDir;
+
+						PxTransform gp_old = m_CurrentActor->getGlobalPose();
+						PxTransform gp_new = PxTransform(gp_old.p, CalConvertQuat());
+						m_CurrentActor->setGlobalPose(gp_new);
+						bool modifyLocal = AppMainWindow::Inst().m_bGizmoWithLocal && CanModifyLocal(m_CurrentActor);
+
+						if (!SampleManager::ins()->IsSimulating())
+						{
+							getBlastController().updateActorRenderableTransform(*m_CurrentActor, gp_new, modifyLocal);
+							if (CanMapToRootChunk(m_CurrentActor))
+								UpdateAssetInstanceTransform(gp_new);
+						}
+
+						if (modifyLocal)
+						{
+							modifyPxActorByLocalWay(GetPhysXScene(), *m_CurrentActor, gp_old, gp_new);
+						}
+
+						m_bNeedResetPos = true;
+						m_bNeedResetColor = true;
+					}
+					break;
+				}
+			}
+			else if(m_CurrentActor != NULL)
+			{
+				m_LastEyeRay = pickDir;
+
+				// get axis which intersect with this eye ray
+				AxisType as = AT_Num;
+				{
+					double distanceMin = PX_MAX_F32;
+					double tolerance = defaultAxisLength / 20.0f;
+					int line_index = -1;
+					PxVec3 foot;
+					switch (m_GizmoToolMode)
+					{
+					case GTM_Translate:
+						{
+							std::vector<PxDebugLine>& lines = m_AxisRenderBuffer.m_lines;
+							int linesize = lines.size();
+							for (int l = 0; l < linesize; l++)
 							{
-								PxVec3 vertex = start + 0.1 * segment * dir;
+								PxVec3 start = lines[l].pos0;
+								PxVec3 end = lines[l].pos1;
+								PxVec3 dir = end - start;
+
+								// separate the line to 10 segment
+								for (int segment = 0; segment <= 10; segment++)
+								{
+									PxVec3 vertex = start + 0.1 * segment * dir;
+									double distance = DistanceFromPointToLine(vertex, eyePos, pickDir, foot);
+
+									if (distance < distanceMin)
+									{
+										distanceMin = distance;
+										line_index = l;
+										m_LastFoot = foot;
+									}
+								}
+							}
+							if (distanceMin < tolerance)
+							{
+								int axis_index = line_index * 3 / linesize;
+								as = (AxisType)axis_index;
+							}
+						}
+						break;
+					case GTM_Scale:
+						{
+							std::vector<PxDebugLine>& lines = m_AxisRenderBuffer.m_lines;
+							int linesize = lines.size();
+							for (int l = 0; l < linesize; l++)
+							{
+								PxVec3 vertex = lines[l].pos1;
 								double distance = DistanceFromPointToLine(vertex, eyePos, pickDir, foot);
 
 								if (distance < distanceMin)
@@ -587,149 +846,45 @@ LRESULT GizmoToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 									m_LastFoot = foot;
 								}
 							}
-						}
-						if (distanceMin < tolerance)
-						{
-							int axis_index = line_index * 3 / linesize;
-							as = (AxisType)axis_index;
-						}
-					}
-					setAxisSelected(as);
-				}
-			}
-			else if (uMsg == WM_LBUTTONUP)
-			{
-				m_bNeedResetPos = true;
-				m_bNeedResetColor = true;
-				m_bGizmoFollowed = false;
-			}
-		}
-		else if (m_GizmoToolMode == GTM_Scale)
-		{
-			if (uMsg == WM_LBUTTONDOWN)
-			{
-				if (m_AxisSelected == AT_Num)
-				{
-					PxVec3 eyePos, pickDir;
-					getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
-					pickDir = pickDir.getNormalized();
-
-					PxRaycastHit hit; hit.shape = NULL;
-					PxRaycastBuffer hit1;
-					getPhysXController().getPhysXScene().raycast(eyePos, pickDir, PX_MAX_F32, hit1, PxHitFlag::ePOSITION | PxHitFlag::eNORMAL);
-					hit = hit1.block;
-
-					if (hit.shape)
-					{
-						PxRigidActor* actor = hit.actor;
-						PxRigidDynamic* rigidDynamic = actor->is<PxRigidDynamic>();
-						if (NULL != rigidDynamic)
-						{
-							m_CurrentActor = actor;
-							getSelectionToolController().pointSelect(m_CurrentActor);
-
-							PxTransform gp = m_CurrentActor->getGlobalPose();
-
-							m_TargetPos = gp.p;
-							m_Axis[AT_X] = gp.q.rotate(PxVec3(defaultAxisLength, 0, 0));
-							m_Axis[AT_Y] = gp.q.rotate(PxVec3(0, defaultAxisLength, 0));
-							m_Axis[AT_Z] = gp.q.rotate(PxVec3(0, 0, defaultAxisLength));
-
-							m_bNeedResetPos = true;
-						}
-						else
-						{
-							m_CurrentActor = NULL;
-							getSelectionToolController().clearSelect();
-						}
-					}
-				}
-				else
-				{
-					m_bGizmoFollowed = (m_CurrentActor != NULL);
-					m_LastAxis[AT_X] = m_Axis[AT_X].getNormalized();
-					m_LastAxis[AT_Y] = m_Axis[AT_Y].getNormalized();
-					m_LastAxis[AT_Z] = m_Axis[AT_Z].getNormalized();
-				}
-			}
-			else if (uMsg == WM_MOUSEMOVE)
-			{
-				if (m_bGizmoFollowed)
-				{
-					PxVec3 eyePos, pickDir;
-					getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
-					pickDir = pickDir.getNormalized();
-
-					PxVec3 axis = m_LastAxis[m_AxisSelected];
-					PxVec3 samplepoint = eyePos + pickDir;
-					PxVec3 normal = m_LastEyeRay.cross(axis);
-					normal = normal.getNormalized();
-					PxVec3 foot;
-					GetFootFromPointToPlane(samplepoint, eyePos, normal, foot);
-					PxVec3 direction = foot - eyePos;
-					direction = direction.getNormalized();
-					PxVec3 target;
-					GetIntersectBetweenLines(m_LastFoot, axis, eyePos, direction, target);
-					PxVec3 delta = target - m_LastFoot;
-
-					if (m_AxisSelected == AT_X)
-					{
-						delta *= defaultAxisModifier;
-					}
-					m_Axis[m_AxisSelected] = m_LastAxis[m_AxisSelected] * defaultAxisLength + delta;
-
-					bool isShift = (GetAsyncKeyState(VK_SHIFT) && 0x8000);
-					if (isShift)
-					{
-						float length = m_Axis[m_AxisSelected].magnitude();						
-						m_Axis[AT_X] = m_LastAxis[AT_X] * length;
-						m_Axis[AT_Y] = m_LastAxis[AT_Y] * length;
-						m_Axis[AT_Z] = m_LastAxis[AT_Z] * length;
-					}
-
-					ScaleActor(false);
-
-					m_bNeedResetPos = true;
-					m_bNeedResetColor = true;
-				}
-				else if (m_CurrentActor != NULL)
-				{
-					PxVec3 eyePos, pickDir;
-					getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
-					pickDir = pickDir.getNormalized();
-
-					m_LastEyeRay = pickDir;
-
-					// get axis which intersect with this eye ray
-					AxisType as = AT_Num;
-					{
-						double distanceMin = PX_MAX_F32;
-						double tolerance = 1;
-						int line_index = -1;
-						std::vector<PxDebugLine>& lines = m_AxisRenderBuffer.m_lines;
-						int linesize = lines.size();
-						PxVec3 foot;
-						for (int l = 0; l < linesize; l++)
-						{
-							PxVec3 vertex = lines[l].pos1;
-							double distance = DistanceFromPointToLine(vertex, eyePos, pickDir, foot);
-
-							if (distance < distanceMin)
+							if (distanceMin < tolerance)
 							{
-								distanceMin = distance;
-								line_index = l;
-								m_LastFoot = foot;
+								as = (AxisType)line_index;
 							}
 						}
-						if (distanceMin < tolerance)
+						break;
+					case GTM_Rotation:
 						{
-							as = (AxisType)line_index;
+							std::vector<PxDebugLine>& lines = m_CircleRenderBuffer.m_lines;
+							int linesize = lines.size();
+							for (int l = 0; l < linesize; l++)
+							{
+								PxVec3 vertex = lines[l].pos0;
+								double distance = DistanceFromPointToLine(vertex, eyePos, pickDir, foot);
+
+								if (distance < distanceMin)
+								{
+									distanceMin = distance;
+									line_index = l;
+									m_LastFoot = foot;
+								}
+							}
+							if (distanceMin < tolerance)
+							{
+								int axis_index = line_index * 3 / linesize;
+								as = (AxisType)axis_index;
+							}
 						}
+						break;
+					default:
+						break;
 					}
-					setAxisSelected(as);
 				}
+				setAxisSelected(as);
 			}
-			else if (uMsg == WM_LBUTTONUP)
+		}
+		else if (uMsg == WM_LBUTTONUP)
+		{
+			if (m_GizmoToolMode == GTM_Scale)
 			{
 				if (m_AxisSelected != AT_Num)
 				{
@@ -742,180 +897,16 @@ LRESULT GizmoToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 					m_Axis[AT_Y] = m_LastAxis[AT_Y] * defaultAxisLength;
 					m_Axis[AT_Z] = m_LastAxis[AT_Z] * defaultAxisLength;
 				}
-
-				m_bNeedResetPos = true;
-				m_bNeedResetColor = true;
-				m_bGizmoFollowed = false;
 			}
-		}
-		else if (m_GizmoToolMode == GTM_Rotation)
-		{
-			if (uMsg == WM_LBUTTONDOWN)
+
+			if (m_AxisSelected != AT_Num && AppMainWindow::Inst().m_bGizmoWithLocal)
 			{
-				if (m_AxisSelected == AT_Num)
-				{
-					PxVec3 eyePos, pickDir;
-					getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
-					pickDir = pickDir.getNormalized();
-
-					PxRaycastHit hit; hit.shape = NULL;
-					PxRaycastBuffer hit1;
-					getPhysXController().getPhysXScene().raycast(eyePos, pickDir, PX_MAX_F32, hit1, PxHitFlag::ePOSITION | PxHitFlag::eNORMAL);
-					hit = hit1.block;
-
-					if (hit.shape)
-					{
-						PxRigidActor* actor = hit.actor;
-						PxRigidDynamic* rigidDynamic = actor->is<PxRigidDynamic>();
-						if (NULL != rigidDynamic)
-						{
-							m_CurrentActor = actor;
-							getSelectionToolController().pointSelect(m_CurrentActor);
-
-							PxTransform gp = m_CurrentActor->getGlobalPose();
-
-							m_TargetPos = gp.p;
-							m_Axis[AT_X] = gp.q.rotate(PxVec3(defaultAxisLength, 0, 0));
-							m_Axis[AT_Y] = gp.q.rotate(PxVec3(0, defaultAxisLength, 0));
-							m_Axis[AT_Z] = gp.q.rotate(PxVec3(0, 0, defaultAxisLength));
-
-							m_bNeedResetPos = true;
-						}
-						else
-						{
-							m_CurrentActor = NULL;
-							getSelectionToolController().clearSelect();
-						}
-					}
-				}
-				else
-				{
-					m_bGizmoFollowed = (m_CurrentActor != NULL);
-				}
+				getBlastController().updateModelMeshToProjectParam(*m_CurrentActor);
 			}
-			else if (uMsg == WM_MOUSEMOVE)
-			{
-				if (m_bGizmoFollowed)
-				{
-					PxVec3 eyePos, pickDir;
-					getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
-					pickDir = pickDir.getNormalized();
 
-					PxVec3 planenormal = m_Axis[m_AxisSelected];
-					planenormal = planenormal.getNormalized();
-
-					PxVec3 from, to;
-					CalPlaneLineIntersectPoint(from, planenormal, m_TargetPos, m_LastEyeRay, eyePos);
-					CalPlaneLineIntersectPoint(to, planenormal, m_TargetPos, pickDir, eyePos);
-					from = from - m_TargetPos;
-					to = to - m_TargetPos;
-					from = from.getNormalized();
-					to = to.getNormalized();					
-					float cosangle = from.dot(to);
-					float angle = PxAcos(cosangle);
-					PxVec3 cross = from.cross(to);
-					cross = cross.getNormalized();
-
-					PxQuat q(angle, cross);
-					if (m_AxisSelected == AT_X)
-					{
-						m_Axis[AT_Y] = q.rotate(m_Axis[AT_Y]);
-						m_Axis[AT_Z] = q.rotate(m_Axis[AT_Z]);
-					}
-					else if (m_AxisSelected == AT_Y)
-					{
-						m_Axis[AT_X] = q.rotate(m_Axis[AT_X]);
-						m_Axis[AT_Z] = q.rotate(m_Axis[AT_Z]);
-					}
-					else if (m_AxisSelected == AT_Z)
-					{
-						m_Axis[AT_X] = q.rotate(m_Axis[AT_X]);
-						m_Axis[AT_Y] = q.rotate(m_Axis[AT_Y]);
-					}
-
-					m_LastEyeRay = pickDir;
-					
-					PxTransform gp_old = m_CurrentActor->getGlobalPose();
-					PxTransform gp_new = PxTransform(gp_old.p, CalConvertQuat());
-					m_CurrentActor->setGlobalPose(gp_new);
-
-					bool local = AppMainWindow::Inst().m_bGizmoWithLocal;
-					if (local)
-					{
-						uint32_t shapesCount = m_CurrentActor->getNbShapes();
-						if (shapesCount > 0)
-						{
-							PxTransform gp_newInv = gp_new.getInverse();
-
-							PxTransform lp_old;
-							PxTransform lp_new;
-
-							std::vector<PxShape*> shapes(shapesCount);
-							m_CurrentActor->getShapes(&shapes[0], shapesCount);
-							getPhysXController().getPhysXScene().removeActor(*m_CurrentActor);
-							for (uint32_t i = 0; i < shapesCount; i++)
-							{
-								PxShape* shape = shapes[i];
-
-								m_CurrentActor->detachShape(*shape);
-
-								lp_old = shape->getLocalPose();
-								lp_new = gp_newInv * gp_old * lp_old;
-								shape->setLocalPose(lp_new);
-
-								m_CurrentActor->attachShape(*shape);
-							}
-							getPhysXController().getPhysXScene().addActor(*m_CurrentActor);
-						}
-					}
-
-					m_bNeedResetPos = true;
-					m_bNeedResetColor = true;
-				}
-				else if (m_CurrentActor != NULL)
-				{
-					PxVec3 eyePos, pickDir;
-					getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
-					pickDir = pickDir.getNormalized();
-
-					m_LastEyeRay = pickDir;
-
-					// get axis which intersect with this eye ray
-					AxisType as = AT_Num;
-					{
-						double distanceMin = PX_MAX_F32;
-						double tolerance = 1;
-						int line_index = -1;
-						std::vector<PxDebugLine>& lines = m_CircleRenderBuffer.m_lines;
-						int linesize = lines.size();
-						PxVec3 foot;
-						for (int l = 0; l < linesize; l++)
-						{
-							PxVec3 vertex = lines[l].pos0;
-							double distance = DistanceFromPointToLine(vertex, eyePos, pickDir, foot);
-
-							if (distance < distanceMin)
-							{
-								distanceMin = distance;
-								line_index = l;
-								m_LastFoot = foot;
-							}
-						}
-						if (distanceMin < tolerance)
-						{
-							int axis_index = line_index * 3 / linesize;
-							as = (AxisType)axis_index;
-						}
-					}
-					setAxisSelected(as);
-				}
-			}
-			else if (uMsg == WM_LBUTTONUP)
-			{
-				m_bNeedResetPos = true;
-				m_bNeedResetColor = true;
-				m_bGizmoFollowed = false;
-			}
+			m_bNeedResetPos = true;
+			m_bNeedResetColor = true;
+			m_bGizmoFollowed = false;
 		}
 	}
 
@@ -937,6 +928,8 @@ void GizmoToolController::setGizmoToolMode(GizmoToolMode mode)
 
 	m_bNeedResetPos = true;
 	m_bNeedResetColor = true;
+
+	showAxisRenderables(true);
 }
 
 void GizmoToolController::setAxisSelected(AxisType type)
@@ -948,6 +941,23 @@ void GizmoToolController::setAxisSelected(AxisType type)
 
 	m_AxisSelected = type;
 	m_bNeedResetColor = true;
+}
+
+void GizmoToolController::setAxisLength(float axisLength)
+{
+	defaultAxisLength = axisLength;
+	UpdateCircleRenderData(axisLength);
+
+	float scale = axisLength / 10.f * 0.2f;
+	m_AxisConeRenderable[AT_X]->setScale(PxVec3(scale, 2 * scale, scale));
+	m_AxisConeRenderable[AT_Y]->setScale(PxVec3(scale, 2 * scale, scale));
+	m_AxisConeRenderable[AT_Z]->setScale(PxVec3(scale, 2 * scale, scale));
+
+	m_AxisBoxRenderable[AT_X]->setScale(PxVec3(scale, scale, scale));
+	m_AxisBoxRenderable[AT_Y]->setScale(PxVec3(scale, scale, scale));
+	m_AxisBoxRenderable[AT_Z]->setScale(PxVec3(scale, scale, scale));
+
+	m_bNeedResetPos = true;
 }
 
 void GizmoToolController::showAxisRenderables(bool show)
@@ -972,6 +982,98 @@ void GizmoToolController::resetPos()
 	m_bNeedResetColor = true;
 
 	m_CurrentActor = NULL;
+}
+
+void GizmoToolController::setTargetActor(PxActor* actor)
+{
+	m_bNeedResetPos = true;
+	m_CurrentActor = nullptr;
+	if (actor == nullptr)
+	{
+		return;
+	}
+	PxRigidDynamic* rigidDynamic = actor->is<PxRigidDynamic>();
+	if (rigidDynamic == nullptr)
+	{
+		return;
+	}
+
+	m_CurrentActor = rigidDynamic;
+	getSelectionToolController().pointSelect(m_CurrentActor);
+
+	PxTransform gp = m_CurrentActor->getGlobalPose();
+
+	m_TargetPos = gp.p;
+	m_Axis[AT_X] = gp.q.rotate(PxVec3(defaultAxisLength, 0, 0));
+	m_Axis[AT_Y] = gp.q.rotate(PxVec3(0, defaultAxisLength, 0));
+	m_Axis[AT_Z] = gp.q.rotate(PxVec3(0, 0, defaultAxisLength));
+}
+
+PxActor* GizmoToolController::getTargetActor()
+{
+	return m_CurrentActor;
+}
+
+physx::PxScene& GizmoToolController::GetPhysXScene()
+{
+	if (getManager()->IsSimulating())
+	{
+		return getPhysXController().getPhysXScene();
+	}
+	else
+	{
+		return getPhysXController().getEditPhysXScene();
+	}
+}
+
+void GizmoToolController::UpdateCircleRenderData(float axisLength)
+{
+	int segment = 36;
+	double span = PxTwoPi / segment;
+	PxVec3* vertex = new PxVec3[segment];
+	m_CircleRenderData.clear();
+
+	for (int i = 0; i < segment; i++)
+	{
+		vertex[i].x = 0;
+		vertex[i].y = axisLength * PxSin(i * span);
+		vertex[i].z = axisLength * PxCos(i * span);
+	}
+	// x
+	for (int i = 0; i < segment - 1; i++)
+	{
+		m_CircleRenderData.push_back(PxDebugLine(vertex[i], vertex[i + 1], X_DIRECTION_COLOR_U));
+	}
+	m_CircleRenderData.push_back(PxDebugLine(vertex[segment - 1], vertex[0], X_DIRECTION_COLOR_U));
+
+	for (int i = 0; i < segment; i++)
+	{
+		vertex[i].x = axisLength * PxCos(i * span);
+		vertex[i].y = 0;
+		vertex[i].z = axisLength * PxSin(i * span);
+	}
+	// y
+	for (int i = 0; i < segment - 1; i++)
+	{
+		m_CircleRenderData.push_back(PxDebugLine(vertex[i], vertex[i + 1], Y_DIRECTION_COLOR_U));
+	}
+	m_CircleRenderData.push_back(PxDebugLine(vertex[segment - 1], vertex[0], Y_DIRECTION_COLOR_U));
+
+	for (int i = 0; i < segment; i++)
+	{
+		vertex[i].x = axisLength * PxCos(i * span);
+		vertex[i].y = axisLength * PxSin(i * span);
+		vertex[i].z = 0;
+	}
+	// z
+	for (int i = 0; i < segment - 1; i++)
+	{
+		m_CircleRenderData.push_back(PxDebugLine(vertex[i], vertex[i + 1], Z_DIRECTION_COLOR_U));
+	}
+	m_CircleRenderData.push_back(PxDebugLine(vertex[segment - 1], vertex[0], Z_DIRECTION_COLOR_U));
+
+	delete[] vertex;
+	vertex = NULL;
 }
 
 bool GizmoToolController::CalPlaneLineIntersectPoint(PxVec3& result, PxVec3 planeNormal, PxVec3 planePoint, PxVec3 linedirection, PxVec3 linePoint)
@@ -1008,6 +1110,16 @@ bool GizmoToolController::GetFootFromPointToPlane(PxVec3& point, PxVec3& origin,
 
 bool GizmoToolController::GetIntersectBetweenLines(PxVec3& origin1, PxVec3& direction1, PxVec3& origin2, PxVec3& direction2, PxVec3& intersect)
 {
+	float test = ((origin2 - origin1).getNormalized()).dot(direction1.cross(direction2));
+	if (direction1.cross(direction2).isZero())
+	{// if two lines are parallel
+		return false;
+	}
+	else if (abs(test) >= 0.001)
+	{// if two lines aren't in the same plane
+		return false;
+	}
+
 	PxVec3 normal1 = direction1.cross(direction2);
 	PxVec3 normal2 = normal1.cross(direction1);
 	normal2 = normal2.getNormalized();
@@ -1062,38 +1174,22 @@ PxQuat GizmoToolController::CalConvertQuat()
 
 void GizmoToolController::ScaleActor(bool replace)
 {
-	if (NULL == m_CurrentActor)
-	{
-		return;
-	}
-	ExtPxActor* extActor = NULL;
-	PxRigidDynamic* rigidDynamic = m_CurrentActor->is<PxRigidDynamic>();
-	if (NULL != rigidDynamic)
-	{
-		extActor = getBlastController().getExtPxManager().getActorFromPhysXActor(*rigidDynamic);
-	}
-	if (NULL == extActor)
+	if (nullptr == m_CurrentActor)
 	{
 		return;
 	}
 
-	std::vector<BlastFamilyPtr>& families = getBlastController().getFamilies();
-	if (families.size() == 0)
+	bool isLocal = AppMainWindow::Inst().m_bGizmoWithLocal;
+
+	if (isLocal && !CanModifyLocal(m_CurrentActor))
 	{
+		char message[1024];
+		sprintf(message, "Only unfractured model can be modify in local way in edit mode!");
+		viewer_warn(message);
 		return;
 	}
 
-	BlastFamilyPtr pBlastFamily = NULL;
-	std::vector<BlastFamilyPtr>::iterator it = families.begin();
-	for (; it != families.end(); it++)
-	{
-		BlastFamilyPtr f = *it;
-		if (f->find(extActor))
-		{
-			pBlastFamily = f;
-			break;
-		}
-	}
+	BlastFamilyPtr pBlastFamily = getBlastController().getFamilyByPxActor(*m_CurrentActor);
 	if (NULL == pBlastFamily)
 	{
 		return;
@@ -1116,7 +1212,6 @@ void GizmoToolController::ScaleActor(bool replace)
 	}
 	PxMat44 scale = PxMat44(PxVec4(delta, 1));
 
-	bool isLocal = AppMainWindow::Inst().m_bGizmoWithLocal;
 	if (!isLocal)
 	{
 		PxTransform gp = m_CurrentActor->getGlobalPose();
@@ -1134,77 +1229,87 @@ void GizmoToolController::ScaleActor(bool replace)
 		scale = world * scale * worldInv;
 	}
 
-	pBlastFamily->setActorScale(*extActor, scale, replace);
+	pBlastFamily->setActorScale(*m_CurrentActor, scale, replace);
 
 	if (!replace)
 	{
 		return;
 	}
 
-	uint32_t shapesCount = m_CurrentActor->getNbShapes();
-	if (shapesCount == 0)
+	scalePxActor(GetPhysXScene(), *m_CurrentActor, scale);
+}
+
+bool GizmoToolController::CanMapToRootChunk(PxActor* actor)
+{
+	if (actor)
 	{
+		BlastFamily* family = getBlastController().getFamilyByPxActor(*actor);
+		if (family == nullptr)
+			return false;
+
+		const BlastAsset& asset = family->getBlastAsset();
+		uint32_t chunkIndex = family->getChunkIndexByPxActor(*actor);
+
+		std::vector<uint32_t> chunkIndexes;
+		chunkIndexes.push_back(chunkIndex);
+		std::vector<BlastChunkNode*> chunkNodes = BlastTreeData::ins().getChunkNodeByBlastChunk(&asset, chunkIndexes);
+		if (chunkNodes.size() > 0)
+			return BlastTreeData::isRoot(chunkNodes[0]);
+	}
+	return false;
+}
+
+bool GizmoToolController::CanModifyLocal(PxActor* actor)
+{
+	if (nullptr != actor 
+		&& !SampleManager::ins()->IsSimulating()
+		&& !getBlastController().isAssetFractrued(*actor))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+void GizmoToolController::UpdateAssetInstanceTransform(const PxTransform& position)
+{
+	if (!m_CurrentActor)
 		return;
-	}
 
-	std::vector<PxShape*> shapes(shapesCount);
-	m_CurrentActor->getShapes(&shapes[0], shapesCount);
-
-	getPhysXController().getPhysXScene().removeActor(*m_CurrentActor);
-
-	for (uint32_t i = 0; i < shapesCount; i++)
+	BlastFamily* family = getBlastController().getFamilyByPxActor(*m_CurrentActor);
+	if (family)
 	{
-		PxShape* shape = shapes[i];
+		BPPAssetInstance* bppInstance = SampleManager::ins()->getInstanceByFamily(family);
 
-		PxConvexMeshGeometry mesh;
-		bool valid = shape->getConvexMeshGeometry(mesh);
-		if (!valid)
+		if (bppInstance)
 		{
-			continue;
+			bppInstance->transform.position = *((nvidia::NvVec3*)(&position.p));
+			bppInstance->transform.rotation = *((nvidia::NvVec4*)(&position.q));
+
+			family->initTransform(position);
+			// modify corresponding asset's transform, it's need to modify in future
+			{
+				const BlastAsset& asset = family->getBlastAsset();
+				SampleManager* sampleManager = SampleManager::ins();
+				std::map<BlastAsset*, std::vector<BlastFamily*>>& AssetFamiliesMap = sampleManager->getAssetFamiliesMap();
+				std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = sampleManager->getAssetDescMap();
+
+				BlastAsset* pBlastAsset = (BlastAsset*)&asset;
+
+				AssetList::ModelAsset& m = AssetDescMap[pBlastAsset];
+				m.transform = position;
+			}
 		}
-
-		PxConvexMesh* pMesh = mesh.convexMesh;
-		if (NULL == pMesh)
-		{
-			continue;
-		}
-
-		PxU32 numVertex = pMesh->getNbVertices();
-		if (numVertex == 0)
-		{
-			continue;
-		}
-
-		const PxVec3* pVertex = pMesh->getVertices();
-		PxVec3* pVertexNew = new PxVec3[numVertex];
-		for (PxU32 v = 0; v < numVertex; v++)
-		{
-			pVertexNew[v] = scale.transform(pVertex[v]);
-		}
-
-		PxConvexMeshDesc convexMeshDesc;
-		convexMeshDesc.points.count = numVertex;
-		convexMeshDesc.points.data = pVertexNew;
-		convexMeshDesc.points.stride = sizeof(PxVec3);
-		convexMeshDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
-		PxPhysics& physics = getManager()->getPhysXController().getPhysics();
-		PxCooking& cooking = getManager()->getPhysXController().getCooking();
-		PxConvexMesh* convexMesh = cooking.createConvexMesh(convexMeshDesc, physics.getPhysicsInsertionCallback());
-		if (NULL == convexMesh)
-		{
-			delete[] pVertexNew;
-			continue;
-		}
-
-		mesh.convexMesh = convexMesh;
-
-		m_CurrentActor->detachShape(*shape);
-		shape->setGeometry(mesh);
-		m_CurrentActor->attachShape(*shape);
-
-		pMesh->release();
-		delete[] pVertexNew;
 	}
+}
 
-	getPhysXController().getPhysXScene().addActor(*m_CurrentActor);
+void GizmoToolController::syncRenderableState()
+{
+	bool depthTest = AppMainWindow::Inst().m_bGizmoWithDepthTest;
+	m_AxisConeRenderable[AT_X]->setDepthTest(depthTest);
+	m_AxisConeRenderable[AT_Y]->setDepthTest(depthTest);
+	m_AxisConeRenderable[AT_Z]->setDepthTest(depthTest);
+	m_AxisBoxRenderable[AT_X]->setDepthTest(depthTest);
+	m_AxisBoxRenderable[AT_Y]->setDepthTest(depthTest);
+	m_AxisBoxRenderable[AT_Z]->setDepthTest(depthTest);
 }

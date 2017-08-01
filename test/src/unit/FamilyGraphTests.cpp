@@ -1,3 +1,31 @@
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
+
 #include "BlastBaseTest.h"
 
 #include "NvBlastSupportGraph.h"
@@ -108,7 +136,7 @@ protected:
 		uint32_t familyGraphMemorySize = (uint32_t)FamilyGraph::requiredMemorySize(m_graph->m_nodeCount, bondIndex);
 		m_memoryBlock.resize(familyGraphMemorySize);
 		// placement new family graph
-		FamilyGraph* familyGraph = new(&m_memoryBlock[0]) FamilyGraph(m_graph);
+		FamilyGraph* familyGraph = new(m_memoryBlock.data()) FamilyGraph(m_graph);
 
 		return familyGraph;
 	}
@@ -220,10 +248,10 @@ TEST_F(FamilyGraphTestStrict, Graph0FindIslands0)
 	EXPECT_EQ(9, graph->getEdgesCount(m_graph));
 	graph->notifyEdgeRemoved(DEFAULT_ACTOR_INDEX, 0, 4, m_graph);
 	EXPECT_EQ(8, graph->getEdgesCount(m_graph));
-	EXPECT_EQ(1, graph->findIslands(DEFAULT_ACTOR_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(1, graph->findIslands(DEFAULT_ACTOR_INDEX, scratch.data(), m_graph));
 
 	graph->notifyEdgeRemoved(DEFAULT_ACTOR_INDEX, 1, 2, m_graph);
-	EXPECT_EQ(1, graph->findIslands(DEFAULT_ACTOR_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(1, graph->findIslands(DEFAULT_ACTOR_INDEX, scratch.data(), m_graph));
 
 	std::vector<IslandInfo> info;
 	getIslandsInfo(*graph, info);
@@ -244,7 +272,7 @@ TEST_F(FamilyGraphTestStrict, Graph0FindIslands1)
 	graph->notifyEdgeRemoved(DEFAULT_ACTOR_INDEX, 4, 5, m_graph);
 	graph->notifyEdgeRemoved(DEFAULT_ACTOR_INDEX, 1, 2, m_graph);
 	EXPECT_EQ(6, graph->getEdgesCount(m_graph));
-	EXPECT_EQ(3, graph->findIslands(DEFAULT_ACTOR_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(3, graph->findIslands(DEFAULT_ACTOR_INDEX, scratch.data(), m_graph));
 
 	std::vector<IslandInfo> info;
 	getIslandsInfo(*graph, info);
@@ -265,21 +293,21 @@ TEST_F(FamilyGraphTestStrict, Graph0FindIslandsDifferentActors)
 	std::vector<char> scratch;
 	scratch.resize((size_t)FamilyGraph::findIslandsRequiredScratch(chunkCount0));
 
-	EXPECT_EQ(0, graph->findIslands(ACTOR_1_INDEX, &scratch[0], m_graph));
-	EXPECT_EQ(1, graph->findIslands(ACTOR_0_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(0, graph->findIslands(ACTOR_1_INDEX, scratch.data(), m_graph));
+	EXPECT_EQ(1, graph->findIslands(ACTOR_0_INDEX, scratch.data(), m_graph));
 
 	graph->notifyEdgeRemoved(ACTOR_0_INDEX, 2, 1, m_graph);
 	EXPECT_EQ(8, graph->getEdgesCount(m_graph));
 
-	EXPECT_EQ(1, graph->findIslands(ACTOR_0_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(1, graph->findIslands(ACTOR_0_INDEX, scratch.data(), m_graph));
 
 	graph->notifyEdgeRemoved(ACTOR_1_INDEX, 2, 6, m_graph);
 	graph->notifyEdgeRemoved(ACTOR_1_INDEX, 7, 3, m_graph);
-	EXPECT_EQ(1, graph->findIslands(ACTOR_1_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(1, graph->findIslands(ACTOR_1_INDEX, scratch.data(), m_graph));
 
 	graph->notifyEdgeRemoved(ACTOR_0_INDEX, 0, 1, m_graph);
 	graph->notifyEdgeRemoved(ACTOR_0_INDEX, 4, 5, m_graph);
-	EXPECT_EQ(1, graph->findIslands(ACTOR_0_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(1, graph->findIslands(ACTOR_0_INDEX, scratch.data(), m_graph));
 
 
 	std::vector<IslandInfo> info;
@@ -306,7 +334,7 @@ TEST_F(FamilyGraphTestStrict, Graph1FindIslands0)
 	graph->notifyEdgeRemoved(DEFAULT_ACTOR_INDEX, 5, 6, m_graph);
 	graph->notifyEdgeRemoved(DEFAULT_ACTOR_INDEX, 9, 10, m_graph);
 	EXPECT_EQ(11, graph->getEdgesCount(m_graph));
-	EXPECT_EQ(3, graph->findIslands(DEFAULT_ACTOR_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(3, graph->findIslands(DEFAULT_ACTOR_INDEX, scratch.data(), m_graph));
 
 	std::vector<IslandInfo> info;
 	getIslandsInfo(*graph, info);
@@ -326,17 +354,17 @@ TEST_F(FamilyGraphTestStrict, Graph1FindIslands1)
 	scratch.resize((size_t)FamilyGraph::findIslandsRequiredScratch(chunkCount1));
 
 	graph->notifyEdgeRemoved(DEFAULT_ACTOR_INDEX, 0, 4, m_graph);
-	EXPECT_EQ(1, graph->findIslands(DEFAULT_ACTOR_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(1, graph->findIslands(DEFAULT_ACTOR_INDEX, scratch.data(), m_graph));
 	graph->notifyEdgeRemoved(DEFAULT_ACTOR_INDEX, 1, 5, m_graph);
-	EXPECT_EQ(0, graph->findIslands(DEFAULT_ACTOR_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(0, graph->findIslands(DEFAULT_ACTOR_INDEX, scratch.data(), m_graph));
 	graph->notifyEdgeRemoved(DEFAULT_ACTOR_INDEX, 2, 6, m_graph);
-	EXPECT_EQ(0, graph->findIslands(DEFAULT_ACTOR_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(0, graph->findIslands(DEFAULT_ACTOR_INDEX, scratch.data(), m_graph));
 	graph->notifyEdgeRemoved(DEFAULT_ACTOR_INDEX, 3, 7, m_graph);
-	EXPECT_EQ(1, graph->findIslands(DEFAULT_ACTOR_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(1, graph->findIslands(DEFAULT_ACTOR_INDEX, scratch.data(), m_graph));
 	graph->notifyEdgeRemoved(DEFAULT_ACTOR_INDEX, 5, 6, m_graph);
-	EXPECT_EQ(0, graph->findIslands(DEFAULT_ACTOR_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(0, graph->findIslands(DEFAULT_ACTOR_INDEX, scratch.data(), m_graph));
 	graph->notifyEdgeRemoved(DEFAULT_ACTOR_INDEX, 9, 10, m_graph);
-	EXPECT_EQ(1, graph->findIslands(DEFAULT_ACTOR_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(1, graph->findIslands(DEFAULT_ACTOR_INDEX, scratch.data(), m_graph));
 
 	std::vector<IslandInfo> info;
 	getIslandsInfo(*graph, info);
@@ -368,7 +396,7 @@ TEST_F(FamilyGraphTestStrict, Graph1FindIslandsRemoveAllEdges)
 	}
 	EXPECT_EQ(0, graph->getEdgesCount(m_graph));
 
-	EXPECT_EQ(12, graph->findIslands(DEFAULT_ACTOR_INDEX, &scratch[0], m_graph));
+	EXPECT_EQ(12, graph->findIslands(DEFAULT_ACTOR_INDEX, scratch.data(), m_graph));
 
 	for (uint32_t node0 = 0; node0 < chunkCount1; node0++)
 	{

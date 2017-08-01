@@ -16,9 +16,9 @@ find_path(PHYSXSDK_PATH Include/PxActor.h
 if (TARGET_BUILD_PLATFORM STREQUAL "Windows")
 	# If the project pulling in this dependency needs the static crt, then append that to the path.
 	if (STATIC_WINCRT)
-		SET(PXSHARED_CRT_SUFFIX "-staticcrt")
+		SET(PHYSX_CRT_SUFFIX "-staticcrt")
 	else()
-		SET(PXSHARED_CRT_SUFFIX "")
+		SET(PHYSX_CRT_SUFFIX "")
 	endif()
 
 	if (CMAKE_CL_64)

@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/lowlevel/source/NvBlastFamilyGraph.h Source File</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/lowlevel/source/NvBlastFamilyGraph.h Source File</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -35,167 +35,184 @@
       <li><a href="globals.html"><span>File&nbsp;Members</span></a></li>
     </ul>
   </div>
-<h1>sdk/lowlevel/source/NvBlastFamilyGraph.h</h1><a href="_nv_blast_family_graph_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment">* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.</span>
-<a name="l00003"></a>00003 <span class="comment">*</span>
-<a name="l00004"></a>00004 <span class="comment">* NVIDIA CORPORATION and its licensors retain all intellectual property</span>
-<a name="l00005"></a>00005 <span class="comment">* and proprietary rights in and to this software, related documentation</span>
-<a name="l00006"></a>00006 <span class="comment">* and any modifications thereto.  Any use, reproduction, disclosure or</span>
-<a name="l00007"></a>00007 <span class="comment">* distribution of this software and related documentation without an express</span>
-<a name="l00008"></a>00008 <span class="comment">* license agreement from NVIDIA CORPORATION is strictly prohibited.</span>
-<a name="l00009"></a>00009 <span class="comment">*/</span>
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef NVBLASTFAMILYGRAPH_H</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTFAMILYGRAPH_H</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
-<a name="l00014"></a>00014 
-<a name="l00015"></a>00015 <span class="preprocessor">#include "<a class="code" href="_nv_blast_support_graph_8h.html">NvBlastSupportGraph.h</a>"</span>
-<a name="l00016"></a>00016 <span class="preprocessor">#include "<a class="code" href="_nv_blast_fixed_array_8h.html">NvBlastFixedArray.h</a>"</span>
-<a name="l00017"></a>00017 <span class="preprocessor">#include "<a class="code" href="_nv_blast_fixed_bitmap_8h.html">NvBlastFixedBitmap.h</a>"</span>
-<a name="l00018"></a>00018 <span class="preprocessor">#include "<a class="code" href="_nv_blast_fixed_bool_array_8h.html">NvBlastFixedBoolArray.h</a>"</span>
-<a name="l00019"></a>00019 <span class="preprocessor">#include "<a class="code" href="_nv_blast_math_8h.html">NvBlastMath.h</a>"</span>
-<a name="l00020"></a>00020 <span class="preprocessor">#include "<a class="code" href="_nv_blast_fixed_priority_queue_8h.html">NvBlastFixedPriorityQueue.h</a>"</span>
-<a name="l00021"></a>00021 <span class="preprocessor">#include "<a class="code" href="_nv_blast_preprocessor_internal_8h.html">NvBlastPreprocessorInternal.h</a>"</span>
-<a name="l00022"></a>00022 <span class="preprocessor">#include "<a class="code" href="_nv_blast_memory_8h.html">NvBlastMemory.h</a>"</span>
-<a name="l00023"></a>00023 
-<a name="l00024"></a>00024 
-<a name="l00025"></a>00025 <span class="keyword">namespace </span>Nv
-<a name="l00026"></a>00026 {
-<a name="l00027"></a>00027 <span class="keyword">namespace </span>Blast
-<a name="l00028"></a>00028 {
-<a name="l00029"></a>00029 
-<a name="l00030"></a>00030 
-<a name="l00031"></a><a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">00031</a> <span class="keyword">typedef</span> uint32_t <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a>;
-<a name="l00032"></a><a class="code" href="namespace_nv_1_1_blast.html#085b488e62b111ada7f5201a0275c7b9">00032</a> <span class="keyword">typedef</span> <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> <a class="code" href="namespace_nv_1_1_blast.html#085b488e62b111ada7f5201a0275c7b9">IslandId</a>;
-<a name="l00033"></a><a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">00033</a> <span class="keyword">typedef</span> uint32_t <a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a>;
-<a name="l00034"></a>00034 
-<a name="l00041"></a><a class="code" href="class_nv_1_1_blast_1_1_family_graph.html">00041</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_family_graph.html">FamilyGraph</a>
-<a name="l00042"></a>00042 {
-<a name="l00043"></a>00043 <span class="keyword">public</span>:
-<a name="l00044"></a>00044 
+<h1>sdk/lowlevel/source/NvBlastFamilyGraph.h</h1><a href="_nv_blast_family_graph_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">// This code contains NVIDIA Confidential Information and is disclosed to you</span>
+<a name="l00002"></a>00002 <span class="comment">// under a form of NVIDIA software license agreement provided separately to you.</span>
+<a name="l00003"></a>00003 <span class="comment">//</span>
+<a name="l00004"></a>00004 <span class="comment">// Notice</span>
+<a name="l00005"></a>00005 <span class="comment">// NVIDIA Corporation and its licensors retain all intellectual property and</span>
+<a name="l00006"></a>00006 <span class="comment">// proprietary rights in and to this software and related documentation and</span>
+<a name="l00007"></a>00007 <span class="comment">// any modifications thereto. Any use, reproduction, disclosure, or</span>
+<a name="l00008"></a>00008 <span class="comment">// distribution of this software and related documentation without an express</span>
+<a name="l00009"></a>00009 <span class="comment">// license agreement from NVIDIA Corporation is strictly prohibited.</span>
+<a name="l00010"></a>00010 <span class="comment">//</span>
+<a name="l00011"></a>00011 <span class="comment">// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES</span>
+<a name="l00012"></a>00012 <span class="comment">// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO</span>
+<a name="l00013"></a>00013 <span class="comment">// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,</span>
+<a name="l00014"></a>00014 <span class="comment">// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.</span>
+<a name="l00015"></a>00015 <span class="comment">//</span>
+<a name="l00016"></a>00016 <span class="comment">// Information and code furnished is believed to be accurate and reliable.</span>
+<a name="l00017"></a>00017 <span class="comment">// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such</span>
+<a name="l00018"></a>00018 <span class="comment">// information or for any infringement of patents or other rights of third parties that may</span>
+<a name="l00019"></a>00019 <span class="comment">// result from its use. No license is granted by implication or otherwise under any patent</span>
+<a name="l00020"></a>00020 <span class="comment">// or patent rights of NVIDIA Corporation. Details are subject to change without notice.</span>
+<a name="l00021"></a>00021 <span class="comment">// This code supersedes and replaces all information previously supplied.</span>
+<a name="l00022"></a>00022 <span class="comment">// NVIDIA Corporation products are not authorized for use as critical</span>
+<a name="l00023"></a>00023 <span class="comment">// components in life support devices or systems without express written approval of</span>
+<a name="l00024"></a>00024 <span class="comment">// NVIDIA Corporation.</span>
+<a name="l00025"></a>00025 <span class="comment">//</span>
+<a name="l00026"></a>00026 <span class="comment">// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.</span>
+<a name="l00027"></a>00027 
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 <span class="preprocessor">#ifndef NVBLASTFAMILYGRAPH_H</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTFAMILYGRAPH_H</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span>
+<a name="l00032"></a>00032 
+<a name="l00033"></a>00033 <span class="preprocessor">#include "<a class="code" href="_nv_blast_support_graph_8h.html">NvBlastSupportGraph.h</a>"</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include "<a class="code" href="_nv_blast_fixed_array_8h.html">NvBlastFixedArray.h</a>"</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include "<a class="code" href="_nv_blast_fixed_bitmap_8h.html">NvBlastFixedBitmap.h</a>"</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include "<a class="code" href="_nv_blast_fixed_bool_array_8h.html">NvBlastFixedBoolArray.h</a>"</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include "<a class="code" href="_nv_blast_math_8h.html">NvBlastMath.h</a>"</span>
+<a name="l00038"></a>00038 <span class="preprocessor">#include "<a class="code" href="_nv_blast_fixed_priority_queue_8h.html">NvBlastFixedPriorityQueue.h</a>"</span>
+<a name="l00039"></a>00039 <span class="preprocessor">#include "<a class="code" href="_nv_blast_memory_8h.html">NvBlastMemory.h</a>"</span>
+<a name="l00040"></a>00040 
+<a name="l00041"></a>00041 
+<a name="l00042"></a>00042 <span class="keyword">namespace </span>Nv
+<a name="l00043"></a>00043 {
+<a name="l00044"></a>00044 <span class="keyword">namespace </span>Blast
+<a name="l00045"></a>00045 {
 <a name="l00046"></a>00046 
-<a name="l00052"></a>00052     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#ff8871001503dc6b1a7c872c01578dca">FamilyGraph</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
-<a name="l00053"></a>00053 
-<a name="l00054"></a>00054 
-<a name="l00063"></a><a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#6cbe86b66715aeaf932fa83192d54216">00063</a>     <span class="keyword">static</span> <span class="keywordtype">size_t</span>   <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#6cbe86b66715aeaf932fa83192d54216">requiredMemorySize</a>(uint32_t nodeCount, uint32_t bondCount)
-<a name="l00064"></a>00064     {
-<a name="l00065"></a>00065         <span class="keywordflow">return</span> fillMemory(<span class="keyword">nullptr</span>, nodeCount, bondCount);
-<a name="l00066"></a>00066     }
-<a name="l00067"></a>00067 
-<a name="l00068"></a>00068 
+<a name="l00047"></a>00047 
+<a name="l00048"></a><a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">00048</a> <span class="keyword">typedef</span> uint32_t <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a>;
+<a name="l00049"></a><a class="code" href="namespace_nv_1_1_blast.html#085b488e62b111ada7f5201a0275c7b9">00049</a> <span class="keyword">typedef</span> <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> <a class="code" href="namespace_nv_1_1_blast.html#085b488e62b111ada7f5201a0275c7b9">IslandId</a>;
+<a name="l00050"></a><a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">00050</a> <span class="keyword">typedef</span> uint32_t <a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a>;
+<a name="l00051"></a>00051 
+<a name="l00058"></a><a class="code" href="class_nv_1_1_blast_1_1_family_graph.html">00058</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_family_graph.html">FamilyGraph</a>
+<a name="l00059"></a>00059 {
+<a name="l00060"></a>00060 <span class="keyword">public</span>:
+<a name="l00061"></a>00061 
+<a name="l00063"></a>00063 
+<a name="l00069"></a>00069     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#ff8871001503dc6b1a7c872c01578dca">FamilyGraph</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
 <a name="l00070"></a>00070 
-<a name="l00077"></a>00077     <span class="keywordtype">void</span>            <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#4914e92e8f2aaf4fda371bfc9daba35c">initialize</a>(<a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a> actorIndex, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
-<a name="l00078"></a>00078 
-<a name="l00087"></a>00087     <span class="keywordtype">bool</span>            <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#17c044a082bdc849eebc9f76e21c6177">notifyEdgeRemoved</a>(<a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a> actorIndex, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node0, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node1, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
-<a name="l00088"></a>00088     <span class="keywordtype">bool</span>            <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#17c044a082bdc849eebc9f76e21c6177">notifyEdgeRemoved</a>(<a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a> actorIndex, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node0, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node1, uint32_t bondIndex, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
-<a name="l00089"></a>00089 
-<a name="l00090"></a>00090     <span class="keywordtype">bool</span>            <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#4822fb5f51e39a36e01d070a79b76497">notifyNodeRemoved</a>(<a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a> actorIndex, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> nodeIndex, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
-<a name="l00091"></a>00091 
-<a name="l00102"></a>00102     uint32_t        <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#167fe452bc2d1774c22eb18a3aed77f2">findIslands</a>(<a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a> actorIndex, <span class="keywordtype">void</span>* scratch, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
-<a name="l00103"></a>00103 
-<a name="l00111"></a>00111     <span class="keyword">static</span> <span class="keywordtype">size_t</span>   <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#4eb099c1eb38d13f411a2832a50a60ef">findIslandsRequiredScratch</a>(uint32_t graphNodeCount);
-<a name="l00112"></a>00112 
-<a name="l00113"></a>00113 
-<a name="l00115"></a>00115 
-<a name="l00122"></a>00122     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(<a class="code" href="namespace_nv_1_1_blast.html#085b488e62b111ada7f5201a0275c7b9">IslandId</a>, m_islandIdsOffset, getIslandIds);
-<a name="l00123"></a>00123 
-<a name="l00127"></a>00127     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a>, m_dirtyNodeLinksOffset, getDirtyNodeLinks);
-<a name="l00128"></a>00128 
-<a name="l00132"></a>00132     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(uint32_t, m_firstDirtyNodeIndicesOffset, getFirstDirtyNodeIndices);
-<a name="l00133"></a>00133 
-<a name="l00137"></a>00137     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a>, m_fastRouteOffset, getFastRoute);
-<a name="l00138"></a>00138 
-<a name="l00142"></a>00142     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(uint32_t, m_hopCountsOffset, getHopCounts);
-<a name="l00143"></a>00143 
-<a name="l00147"></a>00147     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(<a class="code" href="class_nv_1_1_blast_1_1_fixed_bool_array.html">FixedBoolArray</a>, m_isEdgeRemovedOffset, getIsEdgeRemoved);
-<a name="l00148"></a>00148 
-<a name="l00152"></a>00152     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(<a class="code" href="class_nv_1_1_blast_1_1_fixed_bool_array.html">FixedBoolArray</a>, m_isNodeInDirtyListOffset, getIsNodeInDirtyList);
-<a name="l00153"></a>00153 
-<a name="l00154"></a>00154 
-<a name="l00156"></a>00156 
-<a name="l00157"></a>00157     uint32_t    <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#fd993be589a7f0671654d9ffa8242197">getEdgesCount</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph) <span class="keyword">const</span>;
-<a name="l00158"></a>00158     <span class="keywordtype">bool</span>        <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#2ebe4f50b1d77b36fe2fead2efc376ae">hasEdge</a>(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node0, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node1, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph) <span class="keyword">const</span>;
-<a name="l00159"></a>00159     <span class="keywordtype">bool</span>        <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#522082e2bf8c1b793cf37655f92bab72">canFindRoot</a>(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> startNode, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> targetNode, <a class="code" href="class_nv_1_1_blast_1_1_fixed_array.html">FixedArray&lt;NodeIndex&gt;</a>* visitedNodes, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
+<a name="l00071"></a>00071 
+<a name="l00080"></a><a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#6cbe86b66715aeaf932fa83192d54216">00080</a>     <span class="keyword">static</span> <span class="keywordtype">size_t</span>   <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#6cbe86b66715aeaf932fa83192d54216">requiredMemorySize</a>(uint32_t nodeCount, uint32_t bondCount)
+<a name="l00081"></a>00081     {
+<a name="l00082"></a>00082         <span class="keywordflow">return</span> fillMemory(<span class="keyword">nullptr</span>, nodeCount, bondCount);
+<a name="l00083"></a>00083     }
+<a name="l00084"></a>00084 
+<a name="l00085"></a>00085 
+<a name="l00087"></a>00087 
+<a name="l00094"></a>00094     <span class="keywordtype">void</span>            <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#4914e92e8f2aaf4fda371bfc9daba35c">initialize</a>(<a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a> actorIndex, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
+<a name="l00095"></a>00095 
+<a name="l00104"></a>00104     <span class="keywordtype">bool</span>            <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#17c044a082bdc849eebc9f76e21c6177">notifyEdgeRemoved</a>(<a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a> actorIndex, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node0, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node1, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
+<a name="l00105"></a>00105     <span class="keywordtype">bool</span>            <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#17c044a082bdc849eebc9f76e21c6177">notifyEdgeRemoved</a>(<a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a> actorIndex, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node0, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node1, uint32_t bondIndex, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
+<a name="l00106"></a>00106 
+<a name="l00107"></a>00107     <span class="keywordtype">bool</span>            <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#4822fb5f51e39a36e01d070a79b76497">notifyNodeRemoved</a>(<a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a> actorIndex, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> nodeIndex, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
+<a name="l00108"></a>00108 
+<a name="l00119"></a>00119     uint32_t        <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#167fe452bc2d1774c22eb18a3aed77f2">findIslands</a>(<a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a> actorIndex, <span class="keywordtype">void</span>* scratch, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
+<a name="l00120"></a>00120 
+<a name="l00128"></a>00128     <span class="keyword">static</span> <span class="keywordtype">size_t</span>   <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#4eb099c1eb38d13f411a2832a50a60ef">findIslandsRequiredScratch</a>(uint32_t graphNodeCount);
+<a name="l00129"></a>00129 
+<a name="l00130"></a>00130 
+<a name="l00132"></a>00132 
+<a name="l00139"></a>00139     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(<a class="code" href="namespace_nv_1_1_blast.html#085b488e62b111ada7f5201a0275c7b9">IslandId</a>, m_islandIdsOffset, getIslandIds);
+<a name="l00140"></a>00140 
+<a name="l00144"></a>00144     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a>, m_dirtyNodeLinksOffset, getDirtyNodeLinks);
+<a name="l00145"></a>00145 
+<a name="l00149"></a>00149     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(uint32_t, m_firstDirtyNodeIndicesOffset, getFirstDirtyNodeIndices);
+<a name="l00150"></a>00150 
+<a name="l00154"></a>00154     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a>, m_fastRouteOffset, getFastRoute);
+<a name="l00155"></a>00155 
+<a name="l00159"></a>00159     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(uint32_t, m_hopCountsOffset, getHopCounts);
 <a name="l00160"></a>00160 
-<a name="l00161"></a>00161 
-<a name="l00162"></a>00162 <span class="keyword">private</span>:
-<a name="l00163"></a>00163 
-<a name="l00164"></a>00164     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html">FamilyGraph</a>&amp; operator = (<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html">FamilyGraph</a>&amp;);
+<a name="l00164"></a>00164     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(<a class="code" href="class_nv_1_1_blast_1_1_fixed_bool_array.html">FixedBoolArray</a>, m_isEdgeRemovedOffset, getIsEdgeRemoved);
 <a name="l00165"></a>00165 
-<a name="l00167"></a>00167 
-<a name="l00171"></a>00171     <span class="keyword">struct </span>TraversalState
-<a name="l00172"></a>00172     {
-<a name="l00173"></a>00173         <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> mNodeIndex;
-<a name="l00174"></a>00174         uint32_t mCurrentIndex;
-<a name="l00175"></a>00175         uint32_t mPrevIndex;
-<a name="l00176"></a>00176         uint32_t mDepth;
+<a name="l00169"></a>00169     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#5257a8052b6cc1e57babdbbdf49b4e78">NvBlastBlockData</a>(<a class="code" href="class_nv_1_1_blast_1_1_fixed_bool_array.html">FixedBoolArray</a>, m_isNodeInDirtyListOffset, getIsNodeInDirtyList);
+<a name="l00170"></a>00170 
+<a name="l00171"></a>00171 
+<a name="l00173"></a>00173 
+<a name="l00174"></a>00174     uint32_t    <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#fd993be589a7f0671654d9ffa8242197">getEdgesCount</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph) <span class="keyword">const</span>;
+<a name="l00175"></a>00175     <span class="keywordtype">bool</span>        <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#2ebe4f50b1d77b36fe2fead2efc376ae">hasEdge</a>(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node0, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node1, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph) <span class="keyword">const</span>;
+<a name="l00176"></a>00176     <span class="keywordtype">bool</span>        <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#522082e2bf8c1b793cf37655f92bab72">canFindRoot</a>(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> startNode, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> targetNode, <a class="code" href="class_nv_1_1_blast_1_1_fixed_array.html">FixedArray&lt;NodeIndex&gt;</a>* visitedNodes, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>* graph);
 <a name="l00177"></a>00177 
-<a name="l00178"></a>00178         TraversalState()
-<a name="l00179"></a>00179         {
-<a name="l00180"></a>00180         }
-<a name="l00181"></a>00181 
-<a name="l00182"></a>00182         TraversalState(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> nodeIndex, uint32_t currentIndex, uint32_t prevIndex, uint32_t depth) :
-<a name="l00183"></a>00183             mNodeIndex(nodeIndex), mCurrentIndex(currentIndex), mPrevIndex(prevIndex), mDepth(depth)
-<a name="l00184"></a>00184         {
-<a name="l00185"></a>00185         }
-<a name="l00186"></a>00186     };
-<a name="l00187"></a>00187 
-<a name="l00191"></a>00191     <span class="keyword">struct </span>QueueElement
-<a name="l00192"></a>00192     {
-<a name="l00193"></a>00193         TraversalState* mState;
-<a name="l00194"></a>00194         uint32_t mHopCount;
-<a name="l00195"></a>00195 
-<a name="l00196"></a>00196         QueueElement()
-<a name="l00197"></a>00197         {
-<a name="l00198"></a>00198         }
-<a name="l00199"></a>00199 
-<a name="l00200"></a>00200         QueueElement(TraversalState* state, uint32_t hopCount) : mState(state), mHopCount(hopCount)
+<a name="l00178"></a>00178 
+<a name="l00179"></a>00179 <span class="keyword">private</span>:
+<a name="l00180"></a>00180 
+<a name="l00181"></a>00181     <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html">FamilyGraph</a>&amp; operator = (<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_family_graph.html">FamilyGraph</a>&amp;);
+<a name="l00182"></a>00182 
+<a name="l00184"></a>00184 
+<a name="l00188"></a>00188     <span class="keyword">struct </span>TraversalState
+<a name="l00189"></a>00189     {
+<a name="l00190"></a>00190         <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> mNodeIndex;
+<a name="l00191"></a>00191         uint32_t mCurrentIndex;
+<a name="l00192"></a>00192         uint32_t mPrevIndex;
+<a name="l00193"></a>00193         uint32_t mDepth;
+<a name="l00194"></a>00194 
+<a name="l00195"></a>00195         TraversalState()
+<a name="l00196"></a>00196         {
+<a name="l00197"></a>00197         }
+<a name="l00198"></a>00198 
+<a name="l00199"></a>00199         TraversalState(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> nodeIndex, uint32_t currentIndex, uint32_t prevIndex, uint32_t depth) :
+<a name="l00200"></a>00200             mNodeIndex(nodeIndex), mCurrentIndex(currentIndex), mPrevIndex(prevIndex), mDepth(depth)
 <a name="l00201"></a>00201         {
 <a name="l00202"></a>00202         }
 <a name="l00203"></a>00203     };
 <a name="l00204"></a>00204 
-<a name="l00208"></a>00208     <span class="keyword">struct </span>NodeComparator
+<a name="l00208"></a>00208     <span class="keyword">struct </span>QueueElement
 <a name="l00209"></a>00209     {
-<a name="l00210"></a>00210         NodeComparator()
-<a name="l00211"></a>00211         {
-<a name="l00212"></a>00212         }
-<a name="l00213"></a>00213 
-<a name="l00214"></a>00214         <span class="keywordtype">bool</span> operator() (<span class="keyword">const</span> QueueElement&amp; node0, <span class="keyword">const</span> QueueElement&amp; node1)<span class="keyword"> const</span>
-<a name="l00215"></a>00215 <span class="keyword">        </span>{
-<a name="l00216"></a>00216             <span class="keywordflow">return</span> node0.mHopCount &lt; node1.mHopCount;
-<a name="l00217"></a>00217         }
-<a name="l00218"></a>00218     <span class="keyword">private</span>:
-<a name="l00219"></a>00219         NodeComparator&amp; operator = (<span class="keyword">const</span> NodeComparator&amp;);
+<a name="l00210"></a>00210         TraversalState* mState;
+<a name="l00211"></a>00211         uint32_t mHopCount;
+<a name="l00212"></a>00212 
+<a name="l00213"></a>00213         QueueElement()
+<a name="l00214"></a>00214         {
+<a name="l00215"></a>00215         }
+<a name="l00216"></a>00216 
+<a name="l00217"></a>00217         QueueElement(TraversalState* state, uint32_t hopCount) : mState(state), mHopCount(hopCount)
+<a name="l00218"></a>00218         {
+<a name="l00219"></a>00219         }
 <a name="l00220"></a>00220     };
 <a name="l00221"></a>00221 
-<a name="l00225"></a>00225     <span class="keyword">typedef</span> FixedPriorityQueue&lt;QueueElement, NodeComparator&gt; NodePriorityQueue;
-<a name="l00226"></a>00226 
-<a name="l00227"></a>00227 
-<a name="l00229"></a>00229 
-<a name="l00240"></a>00240     <span class="keyword">static</span> <span class="keywordtype">size_t</span>   fillMemory(<a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#ff8871001503dc6b1a7c872c01578dca">FamilyGraph</a>* familyGraph, uint32_t nodeCount, uint32_t bondCount);
-<a name="l00241"></a>00241 
-<a name="l00245"></a>00245     <span class="keywordtype">bool</span>            findRoute(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> startNode, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> targetNode, <a class="code" href="namespace_nv_1_1_blast.html#085b488e62b111ada7f5201a0275c7b9">IslandId</a> islandId, FixedArray&lt;TraversalState&gt;* visitedNodes, FixedBitmap* isNodeWitness, NodePriorityQueue* priorityQueue, <span class="keyword">const</span> SupportGraph* graph);
+<a name="l00225"></a>00225     <span class="keyword">struct </span>NodeComparator
+<a name="l00226"></a>00226     {
+<a name="l00227"></a>00227         NodeComparator()
+<a name="l00228"></a>00228         {
+<a name="l00229"></a>00229         }
+<a name="l00230"></a>00230 
+<a name="l00231"></a>00231         <span class="keywordtype">bool</span> operator() (<span class="keyword">const</span> QueueElement&amp; node0, <span class="keyword">const</span> QueueElement&amp; node1)<span class="keyword"> const</span>
+<a name="l00232"></a>00232 <span class="keyword">        </span>{
+<a name="l00233"></a>00233             <span class="keywordflow">return</span> node0.mHopCount &lt; node1.mHopCount;
+<a name="l00234"></a>00234         }
+<a name="l00235"></a>00235     <span class="keyword">private</span>:
+<a name="l00236"></a>00236         NodeComparator&amp; operator = (<span class="keyword">const</span> NodeComparator&amp;);
+<a name="l00237"></a>00237     };
+<a name="l00238"></a>00238 
+<a name="l00242"></a>00242     <span class="keyword">typedef</span> FixedPriorityQueue&lt;QueueElement, NodeComparator&gt; NodePriorityQueue;
+<a name="l00243"></a>00243 
+<a name="l00244"></a>00244 
 <a name="l00246"></a>00246 
-<a name="l00250"></a>00250     <span class="keywordtype">bool</span>            tryFastPath(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> startNode, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> targetNode, <a class="code" href="namespace_nv_1_1_blast.html#085b488e62b111ada7f5201a0275c7b9">IslandId</a> islandId, FixedArray&lt;TraversalState&gt;* visitedNodes, FixedBitmap* isNodeWitness, <span class="keyword">const</span> SupportGraph* graph);
-<a name="l00251"></a>00251 
-<a name="l00257"></a>00257     <span class="keywordtype">void</span>            unwindRoute(uint32_t traversalIndex, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> lastNode, uint32_t hopCount, <a class="code" href="namespace_nv_1_1_blast.html#085b488e62b111ada7f5201a0275c7b9">IslandId</a> <span class="keywordtype">id</span>, FixedArray&lt;TraversalState&gt;* visitedNodes);
+<a name="l00257"></a>00257     <span class="keyword">static</span> <span class="keywordtype">size_t</span>   fillMemory(<a class="code" href="class_nv_1_1_blast_1_1_family_graph.html#ff8871001503dc6b1a7c872c01578dca">FamilyGraph</a>* familyGraph, uint32_t nodeCount, uint32_t bondCount);
 <a name="l00258"></a>00258 
-<a name="l00262"></a>00262     <span class="keywordtype">void</span>            addToDirtyNodeList(<a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a> actorIndex, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node);
+<a name="l00262"></a>00262     <span class="keywordtype">bool</span>            findRoute(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> startNode, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> targetNode, <a class="code" href="namespace_nv_1_1_blast.html#085b488e62b111ada7f5201a0275c7b9">IslandId</a> islandId, FixedArray&lt;TraversalState&gt;* visitedNodes, FixedBitmap* isNodeWitness, NodePriorityQueue* priorityQueue, <span class="keyword">const</span> SupportGraph* graph);
 <a name="l00263"></a>00263 
-<a name="l00267"></a>00267     <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a>       getAdjacentNode(uint32_t adjacencyIndex, <span class="keyword">const</span> SupportGraph* graph)<span class="keyword"> const</span>
-<a name="l00268"></a>00268 <span class="keyword">    </span>{
-<a name="l00269"></a>00269         <span class="keyword">const</span> uint32_t bondIndex = graph-&gt;getAdjacentBondIndices()[adjacencyIndex];
-<a name="l00270"></a>00270         <span class="keywordflow">return</span> getIsEdgeRemoved()-&gt;test(bondIndex) ? invalidIndex&lt;uint32_t&gt;() : graph-&gt;getAdjacentNodeIndices()[adjacencyIndex];
-<a name="l00271"></a>00271     }
-<a name="l00272"></a>00272 
-<a name="l00273"></a>00273 };
-<a name="l00274"></a>00274 
+<a name="l00267"></a>00267     <span class="keywordtype">bool</span>            tryFastPath(<a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> startNode, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> targetNode, <a class="code" href="namespace_nv_1_1_blast.html#085b488e62b111ada7f5201a0275c7b9">IslandId</a> islandId, FixedArray&lt;TraversalState&gt;* visitedNodes, FixedBitmap* isNodeWitness, <span class="keyword">const</span> SupportGraph* graph);
+<a name="l00268"></a>00268 
+<a name="l00274"></a>00274     <span class="keywordtype">void</span>            unwindRoute(uint32_t traversalIndex, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> lastNode, uint32_t hopCount, <a class="code" href="namespace_nv_1_1_blast.html#085b488e62b111ada7f5201a0275c7b9">IslandId</a> <span class="keywordtype">id</span>, FixedArray&lt;TraversalState&gt;* visitedNodes);
 <a name="l00275"></a>00275 
-<a name="l00276"></a>00276 } <span class="comment">// namespace Blast</span>
-<a name="l00277"></a>00277 } <span class="comment">// namespace Nv</span>
-<a name="l00278"></a>00278 
-<a name="l00279"></a>00279 
-<a name="l00280"></a>00280 <span class="preprocessor">#endif // ifndef NVBLASTFAMILYGRAPH_H</span>
+<a name="l00279"></a>00279     <span class="keywordtype">void</span>            addToDirtyNodeList(<a class="code" href="namespace_nv_1_1_blast.html#752c6d0048c1c381bceb31504031baae">ActorIndex</a> actorIndex, <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a> node);
+<a name="l00280"></a>00280 
+<a name="l00284"></a>00284     <a class="code" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a>       getAdjacentNode(uint32_t adjacencyIndex, <span class="keyword">const</span> SupportGraph* graph)<span class="keyword"> const</span>
+<a name="l00285"></a>00285 <span class="keyword">    </span>{
+<a name="l00286"></a>00286         <span class="keyword">const</span> uint32_t bondIndex = graph-&gt;getAdjacentBondIndices()[adjacencyIndex];
+<a name="l00287"></a>00287         <span class="keywordflow">return</span> getIsEdgeRemoved()-&gt;test(bondIndex) ? invalidIndex&lt;uint32_t&gt;() : graph-&gt;getAdjacentNodeIndices()[adjacencyIndex];
+<a name="l00288"></a>00288     }
+<a name="l00289"></a>00289 
+<a name="l00290"></a>00290 };
+<a name="l00291"></a>00291 
+<a name="l00292"></a>00292 
+<a name="l00293"></a>00293 } <span class="comment">// namespace Blast</span>
+<a name="l00294"></a>00294 } <span class="comment">// namespace Nv</span>
+<a name="l00295"></a>00295 
+<a name="l00296"></a>00296 
+<a name="l00297"></a>00297 <span class="preprocessor">#endif // ifndef NVBLASTFAMILYGRAPH_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

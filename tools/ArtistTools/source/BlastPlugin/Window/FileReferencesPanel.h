@@ -16,7 +16,9 @@ public:
     ~FileReferencesPanel();
 	void updateValues();
 
-private slots:
+	static FileReferencesPanel* ins();
+
+public slots:
     void on_btnOpenFile_clicked();
 
     void on_btnReload_clicked();
@@ -25,17 +27,21 @@ private slots:
 
     void on_checkBoxFBX_stateChanged(int arg1);
 
-    void on_checkBoxBlast_stateChanged(int arg1);
+    void on_checkBoxObj_stateChanged(int arg1);
 
     void on_checkBoxCollision_stateChanged(int arg1);
+	
+	void on_checkBoxLLAsset_stateChanged(int arg1);
+	
+	void on_checkBoxTKAsset_stateChanged(int arg1);
+	
+	void on_checkBoxBPXA_stateChanged(int arg1);
 
     void on_btnSave_clicked();
 
 private:
     Ui::FileReferencesPanel *ui;
-	bool					_saveFBX;
-	bool					_saveBlast;
-	bool					_saveCollision;
+	bool bValid;
 };
 
 #endif // FILEREFERENCESPANEL_H

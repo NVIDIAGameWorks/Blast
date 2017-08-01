@@ -1,3 +1,31 @@
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
+
 #include "TkBaseTest.h"
 
 #include <map>
@@ -5,8 +33,6 @@
 #include <algorithm>
 
 #include "PsMemoryBuffer.h"
-
-#include "NvBlastTkSerializable.h"
 
 #include "NvBlastTime.h"
 
@@ -40,17 +66,6 @@ template<int FailLevel, int Verbosity>
 class TkCompositeTest : public TkBaseTest<FailLevel, Verbosity>
 {
 public:
-	virtual void* allocate(size_t size, const char* typeName, const char* filename, int line) override
-	{
-		void* ptr = TkBaseTest<FailLevel, Verbosity>::allocate(size, typeName, filename, line);
-		return ptr;
-	}
-
-	virtual void deallocate(void* ptr) override
-	{
-		return TkBaseTest<FailLevel, Verbosity>::deallocate(ptr);
-	}
-
 
 	// Composite/joint tests
 	void createAssembly(std::vector<TkActor*>& actors, std::vector<TkJoint*>& joints, bool createNRFJoints)
@@ -125,6 +140,10 @@ public:
 
 	void familySerialization(std::vector<TkFamily*>& families, TestFamilyTracker& tracker)
 	{
+#if 1
+		NV_UNUSED(families);
+		NV_UNUSED(tracker);
+#else
 		TkFramework* fw = NvBlastTkFrameworkGet();
 
 		PsMemoryBuffer* membuf = PX_NEW(PsMemoryBuffer);
@@ -138,7 +157,8 @@ public:
 
 		for (size_t familyNum = 0; familyNum < families.size(); ++familyNum)
 		{
-			families[familyNum]->serialize(*membuf);
+			GTEST_FATAL_FAILURE_("Serialization of families needs to be put into extensions.");
+//			families[familyNum]->serialize(*membuf);
 		}
 
 		for (size_t familyNum = 0; familyNum < families.size(); ++familyNum)
@@ -158,9 +178,10 @@ public:
 
 		for (size_t familyNum = 0; familyNum < families.size(); ++familyNum)
 		{
-			TkFamily* f = reinterpret_cast<TkFamily*>(fw->deserialize(*membuf));
-			f->addListener(tracker);
-			families[familyNum] = f;
+			GTEST_FATAL_FAILURE_("Deserialization of families needs to be put into extensions.");
+//			TkFamily* f = reinterpret_cast<TkFamily*>(fw->deserialize(*membuf));
+//			f->addListener(tracker);
+//			families[familyNum] = f;
 		}
 
 		for (size_t familyNum = 0; familyNum < families.size(); ++familyNum)
@@ -188,6 +209,7 @@ public:
 		}
 
 		membuf->release();
+#endif
 	}
 
 	void recollectActors(std::vector<TkFamily*>& families, std::vector<TkActor*>& actors)
@@ -287,9 +309,11 @@ public:
 		TestFamilyTracker tracker;
 
 		TkGroupDesc gdesc;
-		gdesc.pxTaskManager = m_taskman;
+		gdesc.workerCount = m_taskman->getCpuDispatcher()->getWorkerCount();
 		TkGroup* group = fw->createGroup(gdesc);
 		EXPECT_TRUE(group != nullptr);
+
+		m_groupTM->setGroup(group);
 
 		TkActorDesc adesc(testAssets[0]);
 
@@ -308,8 +332,8 @@ public:
 
 		EXPECT_EQ((size_t)0, tracker.joints.size());
 
-		group->process();
-		group->sync();
+		m_groupTM->process();
+		m_groupTM->wait();
 
 		if (testAssemblySerialization)
 		{
@@ -344,8 +368,8 @@ public:
 			actor->damage(getFalloffProgram(), &radialDamage, sizeof(radialDamage), getDefaultMaterial());
 		}
 
-		group->process();
-		group->sync();
+		m_groupTM->process();
+		m_groupTM->wait();
 
 		if (testAssemblySerialization)
 		{
@@ -409,9 +433,11 @@ public:
 		tracker.joints.insert(joints.begin(), joints.end());
 
 		TkGroupDesc gdesc;
-		gdesc.pxTaskManager = m_taskman;
+		gdesc.workerCount = m_taskman->getCpuDispatcher()->getWorkerCount();
 		TkGroup* group = fw->createGroup(gdesc);
 		EXPECT_TRUE(group != nullptr);
+
+		m_groupTM->setGroup(group);
 
 		for (size_t i = 0; i < actors.size(); ++i)
 		{
@@ -444,8 +470,8 @@ public:
 			CSParams p(2, 0.0f);
 			actors[i]->damage(getCubeSlicerProgram(), &p, sizeof(p), getDefaultMaterial());
 
-			group->process();
-			group->sync();
+			m_groupTM->process();
+			m_groupTM->wait();
 
 			if (serializationTest)
 			{
@@ -494,8 +520,8 @@ public:
 			actor->damage(getFalloffProgram(), &radialDamage, sizeof(radialDamage), getDefaultMaterial());
 		}
 
-		group->process();
-		group->sync();
+		m_groupTM->process();
+		m_groupTM->wait();
 
 		totalActorCount = 0;
 		for (int i = 0; i < 4; ++i)
@@ -547,8 +573,8 @@ public:
 		};
 
 		const NvBlastBondDesc bondDesc =
-//		  chunks      normal                area  centroid              userData
-		{ { 1, 2 },{ { 0.0f, 1.0f, 0.0f }, 1.0f,{ 0.0f, 0.0f, 0.0f }, 0 } };
+//		    normal                area  centroid              userData chunks
+		{ { { 0.0f, 1.0f, 0.0f }, 1.0f, { 0.0f, 0.0f, 0.0f }, 0 }, { 1, 2 } };
 
 		TkFramework* framework = NvBlastTkFrameworkGet();
 
@@ -564,9 +590,11 @@ public:
 		EXPECT_TRUE(asset != nullptr);
 
 		TkGroupDesc gdesc;
-		gdesc.pxTaskManager = m_taskman;
+		gdesc.workerCount = m_taskman->getCpuDispatcher()->getWorkerCount();
 		TkGroup* group = framework->createGroup(gdesc);
 		EXPECT_TRUE(group != nullptr);
+
+		m_groupTM->setGroup(group);
 
 		TkActorDesc adesc(asset);
 		TkActor* actor1 = framework->createActor(adesc);
@@ -601,8 +629,8 @@ public:
 		NvBlastExtRadialDamageDesc radialDamage2 = getRadialDamageDesc(0, -1, 0, 2, 2);
 		actor2->damage(getFalloffProgram(), &radialDamage2, sizeof(radialDamage2), getDefaultMaterial());
 
-		group->process();
-		group->sync();
+		m_groupTM->process();
+		m_groupTM->wait();
 
 		TkActor* actors1[2];
 		TkActor* actors2[2];
@@ -640,6 +668,7 @@ protected:
 
 	using TkBaseTest<FailLevel, Verbosity>::testAssets;
 	using TkBaseTest<FailLevel, Verbosity>::m_taskman;
+	using TkBaseTest<FailLevel, Verbosity>::m_groupTM;
 	using TkBaseTest<FailLevel, Verbosity>::createFramework;
 	using TkBaseTest<FailLevel, Verbosity>::releaseFramework;
 	using TkBaseTest<FailLevel, Verbosity>::createTestAssets;
@@ -664,7 +693,7 @@ TEST_F(TkCompositeTestStrict, AssemblyCreateAndRelease_NoNRFJoints_NoSerializati
 	assemblyCreateAndRelease(false, false);
 }
 
-TEST_F(TkCompositeTestStrict, AssemblyCreateAndRelease_NoNRFJoints_AssemblySerialization)
+TEST_F(TkCompositeTestStrict, DISABLED_AssemblyCreateAndRelease_NoNRFJoints_AssemblySerialization)
 {
 	assemblyCreateAndRelease(false, true);
 }
@@ -674,7 +703,7 @@ TEST_F(TkCompositeTestStrict, AssemblyCreateAndRelease_WithNRFJoints_NoSerializa
 	assemblyCreateAndRelease(true, false);
 }
 
-TEST_F(TkCompositeTestStrict, AssemblyCreateAndRelease_WithNRFJoints_AssemblySerialization)
+TEST_F(TkCompositeTestStrict, DISABLED_AssemblyCreateAndRelease_WithNRFJoints_AssemblySerialization)
 {
 	assemblyCreateAndRelease(true, true);
 }
@@ -693,7 +722,7 @@ TEST_F(TkCompositeTestStrict, AssemblyInternalJoints_NoSerialization)
 	assemblyInternalJoints(false);
 }
 
-TEST_F(TkCompositeTestStrict, AssemblyInternalJoints_AssemblySerialization)
+TEST_F(TkCompositeTestStrict, DISABLED_AssemblyInternalJoints_AssemblySerialization)
 {
 	assemblyInternalJoints(true);
 }
@@ -708,7 +737,7 @@ TEST_F(TkCompositeTestStrict, AssemblyCompositeWithInternalJoints_NoNRFJoints_No
 	assemblyCompositeWithInternalJoints(false, false);
 }
 
-TEST_F(TkCompositeTestStrict, AssemblyCompositeWithInternalJoints_NoNRFJoints_AssemblySerialization)
+TEST_F(TkCompositeTestStrict, DISABLED_AssemblyCompositeWithInternalJoints_NoNRFJoints_AssemblySerialization)
 {
 	assemblyCompositeWithInternalJoints(false, true);
 }
@@ -718,7 +747,7 @@ TEST_F(TkCompositeTestStrict, AssemblyCompositeWithInternalJoints_WithNRFJoints_
 	assemblyCompositeWithInternalJoints(true, false);
 }
 
-TEST_F(TkCompositeTestStrict, AssemblyCompositeWithInternalJoints_WithNRFJoints_AssemblySerialization)
+TEST_F(TkCompositeTestStrict, DISABLED_AssemblyCompositeWithInternalJoints_WithNRFJoints_AssemblySerialization)
 {
 	assemblyCompositeWithInternalJoints(true, true);
 }

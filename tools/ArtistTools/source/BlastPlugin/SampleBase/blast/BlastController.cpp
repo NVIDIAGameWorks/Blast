@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "BlastController.h"
 #include "BlastFamily.h"
@@ -18,10 +36,16 @@
 #include "Utils.h"
 #include "Renderer.h"
 
+#include "NvBlastExtPxTask.h"
+
 #include "NvBlast.h"
+#include "NvBlastPxCallbacks.h"
 #include "NvBlastExtPxManager.h"
 #include "NvBlastExtPxFamily.h"
 #include "NvBlastExtPxActor.h"
+#include "NvBlastExtSerialization.h"
+#include "NvBlastExtTkSerialization.h"
+#include "NvBlastExtPxSerialization.h"
 
 #include "NvBlastTkFramework.h"
 
@@ -43,65 +67,6 @@
 #include "BlastSceneTree.h"
 // Add By Lixu End
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//											   AllocatorCallback
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class BlastAllocatorCallback : public PxAllocatorCallback
-{
-public:
-	virtual void* allocate(size_t size, const char* typeName, const char* filename, int line) override
-	{
-		NV_UNUSED(typeName);
-		NV_UNUSED(filename);
-		NV_UNUSED(line);
-		return malloc(size);
-	}
-
-	virtual void deallocate(void* ptr) override
-	{
-		free(ptr);
-	}
-};
-BlastAllocatorCallback g_allocatorCallback;
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//												ErrorCallback
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class BlastErrorCallback : public PxErrorCallback
-{
-public:
-	virtual void reportError(PxErrorCode::Enum code, const char* msg, const char* file, int line) override
-	{
-		std::stringstream str;
-		str << "NvBlastTk ";
-		bool critical = false;
-		switch (code)
-		{
-		case PxErrorCode::eNO_ERROR:											critical = false; break;
-		case PxErrorCode::eDEBUG_INFO:			str << "[Debug Info]";			critical = false; break;
-		case PxErrorCode::eDEBUG_WARNING:		str << "[Debug Warning]";		critical = false; break;
-		case PxErrorCode::eINVALID_PARAMETER:	str << "[Invalid Parameter]";	critical = true;  break;
-		case PxErrorCode::eINVALID_OPERATION:	str << "[Invalid Operation]";	critical = true;  break;
-		case PxErrorCode::eOUT_OF_MEMORY:		str << "[Out of] Memory";		critical = true;  break;
-		case PxErrorCode::eINTERNAL_ERROR:		str << "[Internal Error]";		critical = true;  break;
-		case PxErrorCode::eABORT:				str << "[Abort]";				critical = true;  break;
-		case PxErrorCode::ePERF_WARNING:		str << "[Perf Warning]";		critical = false; break;
-		default:								PX_ALWAYS_ASSERT();
-		}
-		str << file << "(" << line << "): " << msg << "\n";
-
-		std::string message = str.str();
-		shdfnd::printString(message.c_str());
-		PX_ASSERT_WITH_MESSAGE(!critical, message.c_str());
-	}
-};
-BlastErrorCallback g_errorCallback;
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //												Joint creation
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120,10 +85,9 @@ static physx::PxJoint* createPxJointCallback(ExtPxActor* actor0, const physx::Px
 
 BlastController::BlastController() 
 : m_eventCallback(nullptr), debugRenderMode(BlastFamily::DEBUG_RENDER_DISABLED), m_impactDamageEnabled(true), 
-m_impactDamageToStressEnabled(false), m_rigidBodyLimitEnabled(true), m_rigidBodyLimit(40000), m_blastAssetsSize(0), debugRenderScale(0.01f)
+m_impactDamageToStressEnabled(false), m_rigidBodyLimitEnabled(true), m_rigidBodyLimit(40000), m_blastAssetsSize(0), debugRenderScale(0.01f),
+m_taskManager(nullptr), m_extGroupTaskManager(nullptr)
 {
-	m_extImpactDamageManagerSettings.fragility = 500.0f;
-
 	m_impactDamageToStressFactor = 0.01f;
 	m_draggingToStressFactor = 100.0f;
 }
@@ -141,17 +105,14 @@ void BlastController::reinitialize()
 
 void BlastController::onSampleStart()
 {
-	TkFrameworkDesc desc;
-	desc.allocatorCallback = &g_allocatorCallback;
-	desc.errorCallback = &g_errorCallback;
-	m_tkFramework = NvBlastTkFrameworkCreate(desc);
+	m_tkFramework = NvBlastTkFrameworkCreate();
 
 	m_replay = new BlastReplay();
 
-	m_taskManager = PxTaskManager::createTaskManager(g_errorCallback, getPhysXController().getCPUDispatcher(), 0);
+	m_taskManager = PxTaskManager::createTaskManager(NvBlastGetPxErrorCallback(), getPhysXController().getCPUDispatcher(), 0);
 
 	TkGroupDesc gdesc;
-	gdesc.pxTaskManager = m_taskManager;
+	gdesc.workerCount = m_taskManager->getCpuDispatcher()->getWorkerCount();
 	m_tkGroup = m_tkFramework->createGroup(gdesc);
 
 	m_extPxManager = ExtPxManager::create(getPhysXController().getPhysics(), *m_tkFramework, createPxJointCallback);
@@ -159,12 +120,24 @@ void BlastController::onSampleStart()
 	m_extImpactDamageManager = ExtImpactDamageManager::create(m_extPxManager, m_extImpactDamageManagerSettings);
 	m_eventCallback = new EventCallback(m_extImpactDamageManager);
 
+	m_extGroupTaskManager = ExtGroupTaskManager::create(*m_taskManager);
+	m_extGroupTaskManager->setGroup(m_tkGroup);
+
 	setImpactDamageEnabled(m_impactDamageEnabled, true);
+
+	m_extSerialization = NvBlastExtSerializationCreate();
+	if (m_extSerialization != nullptr)
+	{
+		NvBlastExtTkSerializerLoadSet(*m_tkFramework, *m_extSerialization);
+		NvBlastExtPxSerializerLoadSet(*m_tkFramework, getPhysXController().getPhysics(), getPhysXController().getCooking(), *m_extSerialization);
+	}
 }
 
 
 void BlastController::onSampleStop()
 {
+	getPhysXController().simualtionSyncEnd();
+
 	removeAllFamilies();
 
 	m_extImpactDamageManager->release();
@@ -177,20 +150,54 @@ void BlastController::onSampleStop()
 
 	m_tkFramework->release();
 
-	m_taskManager->release();
+	if (m_extGroupTaskManager != nullptr)
+	{
+		m_extGroupTaskManager->release();
+		m_extGroupTaskManager = nullptr;
+	}
+
+	if (m_taskManager != nullptr)
+	{
+		m_taskManager->release();
+	}
+}
+
+
+void BlastController::notifyPhysXControllerRelease()
+{
+	if (m_extGroupTaskManager != nullptr)
+	{
+		m_extGroupTaskManager->release();
+		m_extGroupTaskManager = nullptr;
+	}
+
+	if (m_taskManager != nullptr)
+	{
+		m_taskManager->release();
+		m_taskManager = nullptr;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //												Impact damage
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void BlastController::updateImpactDamage()
+{
+	if (m_impactDamageUpdatePending)
+	{
+		getPhysXController().getPhysXScene().setSimulationEventCallback(m_impactDamageEnabled ? m_eventCallback : nullptr);
+		refreshImpactDamageSettings();
+		m_impactDamageUpdatePending = false;
+	}
+}
+
 void BlastController::setImpactDamageEnabled(bool enabled, bool forceUpdate)
 {
 	if (m_impactDamageEnabled != enabled || forceUpdate)
 	{
 		m_impactDamageEnabled = enabled;
-		getPhysXController().getPhysXScene().setSimulationEventCallback(m_impactDamageEnabled ? m_eventCallback : nullptr);
-		refreshImpactDamageSettings();
+		m_impactDamageUpdatePending = true;
 	}
 }
 
@@ -206,8 +213,8 @@ bool BlastController::stressDamage(ExtPxActor *actor, physx::PxVec3 position, ph
 		void* userData = actor->getFamily().userData;
 		if (userData)
 		{
-			ExtStressSolver* solver = reinterpret_cast<ExtStressSolver*>(userData);
-			solver->applyImpulse(*actor, position, force * m_impactDamageToStressFactor);
+			ExtPxStressSolver* solver = reinterpret_cast<ExtPxStressSolver*>(userData);
+			solver->getSolver().addForce(*actor->getTkActor().getActorLL(), position, force * m_impactDamageToStressFactor);
 			return true;
 		}
 	}
@@ -222,6 +229,78 @@ void BlastController::refreshImpactDamageSettings()
 	m_extImpactDamageManager->setSettings(m_extImpactDamageManagerSettings);
 }
 
+// Add By Lixu Begin
+BlastFamily* BlastController::getFamilyByPxActor(const PxActor& actor)
+{
+	for (BlastFamilyPtr family : m_families)
+	{
+		if (family->find(actor))
+		{
+			return family;
+		}
+	}
+	return nullptr;
+}
+
+std::vector<PxActor*> BlastController::getActor(BlastAsset* asset, int chunkId)
+{
+	std::vector<PxActor*> actors;
+	for (BlastFamilyPtr family : m_families)
+	{
+		if (&(family->getBlastAsset()) == asset)
+		{
+			PxActor* actor = nullptr;
+			family->getPxActorByChunkIndex(chunkId, &actor);
+			if (actor)
+				actors.push_back(actor);
+		}
+	}
+	return actors;
+}
+
+void BlastController::updateActorRenderableTransform(const PxActor& actor, physx::PxTransform& pos, bool local)
+{
+	BlastFamily* family = getFamilyByPxActor(actor);
+	if (family == nullptr)
+		return;
+
+	family->updateActorRenderableTransform(actor, pos, local);
+}
+
+bool BlastController::isActorVisible(const PxActor& actor)
+{
+	BlastFamily* family = getFamilyByPxActor(actor);
+	if (family == nullptr)
+		return false;
+
+	return family->isActorVisible(actor);
+}
+
+bool BlastController::isAssetFractrued(const PxActor& actor)
+{
+	BlastFamily* family = getFamilyByPxActor(actor);
+	if (family == nullptr)
+		return false;
+
+	const BlastAsset& asset = family->getBlastAsset();
+	if (asset.getChunkIndexesByDepth(1).size() > 0)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+void BlastController::updateModelMeshToProjectParam(const PxActor& actor)
+{
+	BlastFamily* family = getFamilyByPxActor(actor);
+	if (family == nullptr)
+		return;
+
+	const BlastAsset& asset = family->getBlastAsset();
+	SampleManager::ins()->updateModelMeshToProjectParam(const_cast<BlastAsset*>(&asset));
+}
+// Add By Lixu End
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //													Stress
@@ -239,11 +318,11 @@ void BlastController::updateDraggingStress()
 			void* userData = pxActor->getFamily().userData;
 			if (userData)
 			{
-				ExtStressSolver* solver = reinterpret_cast<ExtStressSolver*>(userData);
+				ExtPxStressSolver* solver = reinterpret_cast<ExtPxStressSolver*>(userData);
 				PxTransform t(pxActor->getPhysXActor().getGlobalPose().getInverse());
 				PxVec3 dragVector = t.rotate(physxController.getDragVector());
 				const float factor = dragVector.magnitudeSquared() * m_draggingToStressFactor;
-				solver->applyImpulse(*pxActor, physxController.getDragActorHookLocalPoint(), dragVector.getNormalized() * factor);
+				solver->getSolver().addForce(*pxActor->getTkActor().getActorLL(), physxController.getDragActorHookLocalPoint(), dragVector.getNormalized() * factor);
 			}
 		}
 	}
@@ -300,7 +379,11 @@ void BlastController::Animate(double dt)
 
 	updateDraggingStress();
 
-	m_replay->update();
+	fillDebugRender();
+
+	getPhysXController().simualtionSyncEnd();
+
+	updateImpactDamage();
 
 	Time blastTime;
 	for (uint32_t i = 0; i < m_families.size(); ++i)
@@ -311,12 +394,24 @@ void BlastController::Animate(double dt)
 		}
 	}
 
-	fillDebugRender();
+	m_replay->update();
 
 	PROFILER_BEGIN("Tk Group Process/Sync");
+
+#if 1
+
+	m_extGroupTaskManager->process();
+	m_extGroupTaskManager->wait();
+
+#else // process group on main thread
+
 	m_tkGroup->process();
-	m_tkGroup->sync(true);
+
+#endif
+
 	PROFILER_END();
+
+	getPhysXController().simulationBegin(dt);
 
 	TkGroupStats gstats;
 	m_tkGroup->getStats(gstats);
@@ -365,7 +460,8 @@ void BlastController::Animate(double dt)
 
 	if (needUpdateUI)
 	{
-		pBlastSceneTree->updateValues(false);
+		//pBlastSceneTree->updateValues(false);
+		SampleManager::ins()->m_bNeedRefreshTree = true;
 	}
 // Add By Lixu End
 }
@@ -379,15 +475,20 @@ void BlastController::drawUI()
 	{
 		setImpactDamageEnabled(impactEnabled);
 	}
-
-	if (ImGui::DragFloat("Fragility", &m_extImpactDamageManagerSettings.fragility))
 	{
-		refreshImpactDamageSettings();
-	}
+		bool refresh = false;
+		refresh |= ImGui::Checkbox("Use Shear Damage", &m_extImpactDamageManagerSettings.shearDamage);
+		refresh |= ImGui::DragFloat("Impulse Threshold (Min)", &m_extImpactDamageManagerSettings.impulseMinThreshold);
+		refresh |= ImGui::DragFloat("Impulse Threshold (Max)", &m_extImpactDamageManagerSettings.impulseMaxThreshold);
+		refresh |= ImGui::DragFloat("Damage (Max)", &m_extImpactDamageManagerSettings.damageMax);
+		refresh |= ImGui::DragFloat("Damage Radius (Max)", &m_extImpactDamageManagerSettings.damageRadiusMax);
+		refresh |= ImGui::DragFloat("Damage Attenuation", &m_extImpactDamageManagerSettings.damageAttenuation, 1.0f, 0.0f, 1.0f);
+		refresh |= ImGui::Checkbox("Impact Damage To Stress Solver", &m_impactDamageToStressEnabled);
 
-	if (ImGui::Checkbox("Impact Damage To Stress Solver", &m_impactDamageToStressEnabled))
-	{
-		refreshImpactDamageSettings();
+		if (refresh)
+		{
+			refreshImpactDamageSettings();
+		}
 	}
 
 	ImGui::DragFloat("Impact Damage To Stress Factor", &m_impactDamageToStressFactor, 0.001f, 0.0f, 1000.0f, "%.4f");
@@ -435,45 +536,8 @@ void BlastController::removeAllFamilies()
 	m_replay->reset();
 }
 
-// Add By Lixu Begin
-#include "SceneController.h"
-// Add By Lixu End
 void BlastController::recalculateAssetsSize()
 {
-
-// Add By Lixu Begin
-	std::map<BlastAsset*, std::vector<BlastFamily*>>& AssetFamiliesMap = getManager()->getAssetFamiliesMap();
-	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = getManager()->getAssetDescMap();
-	std::map<BlastAsset*, std::vector<BlastFamily*>>::iterator it;
-	for (it = AssetFamiliesMap.begin(); it != AssetFamiliesMap.end(); it++)
-	{
-		std::vector<BlastFamily*>& fs = it->second;
-		fs.clear();
-	}
-	AssetFamiliesMap.clear();
-	AssetDescMap.clear();
-
-	SceneController& sceneController = getManager()->getSceneController();
-	int familiesSize = m_families.size();
-	for (int i = 0; i < familiesSize; i++)
-	{
-		BlastFamilyPtr pBlastFamily = m_families[i];
-		BlastAsset* pBlastAsset = (BlastAsset*)&pBlastFamily->getBlastAsset();
-		AssetFamiliesMap[pBlastAsset].push_back(&*m_families[i]);
-		if (AssetDescMap.find(pBlastAsset) == AssetDescMap.end())
-		{
-			AssetList::ModelAsset desc;
-			if (sceneController.GetAssetDesc(pBlastAsset, desc))
-			{
-				AssetDescMap[pBlastAsset] = desc;
-			}
-		}
-
-		AssetList::ModelAsset& m = AssetDescMap[pBlastAsset];
-		pBlastFamily->initTransform(m.transform);
-	}
-// Add By Lixu End
-
 	std::set<const BlastAsset*> uniquedAssets;
 	m_blastAssetsSize = 0;
 	for (uint32_t i = 0; i < m_families.size(); ++i)
@@ -486,40 +550,19 @@ void BlastController::recalculateAssetsSize()
 	}
 }
 
-void BlastController::blast(PxVec3 worldPos, float damageRadius, float explosiveImpulse, std::function<void(ExtPxActor*)> damageFunction)
+bool BlastController::overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*)> hitCall)
 {
 	PROFILER_SCOPED_FUNCTION();
 
+	bool anyHit = false;
 	for (uint32_t i = 0; i < m_families.size(); ++i)
 	{
 		if (m_families[i])
 		{
-			m_families[i]->blast(worldPos, damageRadius, explosiveImpulse, damageFunction);
+			anyHit |= m_families[i]->overlap(geometry, pose, hitCall);
 		}
 	}
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//													context/log
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void BlastController::blastLog(int type, const char* msg, const char* file, int line)
-{
-	std::stringstream str;
-	bool critical = false;
-	switch (type)
-	{
-		case NvBlastMessage::Error:		str << "[NvBlast ERROR] ";   critical = true;  break;
-		case NvBlastMessage::Warning:	str << "[NvBlast WARNING] "; critical = true;  break;
-		case NvBlastMessage::Info:		str << "[NvBlast INFO] ";    critical = false; break;
-		case NvBlastMessage::Debug:		str << "[NvBlast DEBUG] ";   critical = false; break;
-	}
-	str << file << "(" << line << "): " << msg << "\n";
-
-	std::string message = str.str();
-	shdfnd::printString(message.c_str());
-	PX_ASSERT_WITH_MESSAGE(!critical, message.c_str());
+	return anyHit;
 }
 
 

@@ -5,6 +5,7 @@
 #include <QtCore/QtPlugin>
 #include "PluginInterface.h"
 #include "UIGlobal.h"
+#include "XMLHelper.h"
 
 class QMenu;
 class QAction;
@@ -13,15 +14,13 @@ class QComboBox;
 class QCheckBox;
 class QVBoxLayout;
 class BlastToolbar;
+class ExpandablePanel;
 class FileReferencesPanel;
 class GeneralPanel;
-class BlastCompositePanel;
 class DefaultDamagePanel;
 class MaterialLibraryPanel;
 class MaterialAssignmentsPanel;
-class FractureCutoutSettingsPanel;
 class FractureGeneralPanel;
-class FractureShellCutSettingsPanel;
 class FractureSliceSettingsPanel;
 class FractureVisualizersPanel;
 class FractureVoronoiSettingsPanel;
@@ -47,6 +46,8 @@ class BlastPlugin : public QObject, public PluginInterface
 		Q_INTERFACES(PluginInterface)
 
 public:
+	BlastPlugin();
+	~BlastPlugin();
 	virtual QString GetPluginName();
 
 	virtual bool CoreLib_RunApp();
@@ -69,7 +70,7 @@ public:
 	virtual bool Gamepad_ToggleSimulation();
 	virtual bool Gamepad_LoadSamples(QString fn);
 	virtual bool Gamepad_ResetScene();
-	virtual bool Gamepad_StartAnimation();
+	virtual bool Gamepad_PlaySample();
 	virtual bool GamepadHandler_ShowHair();
 	virtual bool GamepadHandler_SpinWindStrength(float windStrength);
 	virtual bool Gamepad_ResetAnimation();
@@ -78,6 +79,7 @@ public:
 	virtual bool Light_loadParameters(NvParameterized::Handle& handle, Light* pLight);
 	virtual bool Light_saveParameters(NvParameterized::Handle& handle, Light* pLight);
 
+	virtual void SimpleScene_OpenFilesByDrop(const QStringList& fileNames);
 	virtual bool SimpleScene_SimpleScene();
 	virtual bool SimpleScene_Initialize(int backdoor);
 	virtual bool SimpleScene_Shutdown();
@@ -85,6 +87,7 @@ public:
 	virtual bool SimpleScene_Draw_DX12();
 	virtual bool SimpleScene_Draw_DX11();
 	virtual bool SimpleScene_FitCamera(atcore_float3& center, atcore_float3& extents);
+	virtual bool SimpleScene_UpdateCamera();
 	virtual bool SimpleScene_DrawGround();
 	virtual bool SimpleScene_DrawWind();
 	virtual bool SimpleScene_DrawAxis();
@@ -125,6 +128,7 @@ public:
 	virtual bool AppMainWindow_shortcut_expert(bool mode);
 	virtual bool AppMainWindow_updateMainToolbar();
 
+	virtual bool AppMainWindow_menu_item_triggered(QAction* action);
 	virtual bool AppMainWindow_menu_about();
 	virtual bool AppMainWindow_menu_opendoc();
 #if USE_CURVE_EDITOR
@@ -139,11 +143,18 @@ public:
 public:
 	static void DrawHUD();
 
+	static BlastPlugin& Inst();
+
 	/////////////////////////////////////////////////////////////////////
 	// profiler and timer
 	static void ResetFrameTimer();
-	
+	static void OpenBpxa(const char* dir, const char* fn);
+
+	FileReferencesPanel* GetFileReferencesPanel() { return _fileReferencesPanel; }
+
 public slots:
+	void slot_Gamepad_PlaySample();
+
 	bool menu_openProject();
 	bool menu_saveProject();
 	bool menu_saveProjectAs();
@@ -153,6 +164,7 @@ public slots:
 	bool shortcut_Rotation();
 	bool shortcut_Scale();
 	bool shortcut_edittool();
+	bool shortcut_addFamily();
 
 	bool slot_Make_Support();
 	bool slot_Make_Static_Support();
@@ -162,25 +174,34 @@ public slots:
 	bool slot_Remove_all_Bonds();
 
 private:
+	bool _openProject(const QString project);
+	void _addRecentProject(const QString project);
+	void _resetRecentProject(const QString project);
+	void _loadRecentProject();
+	void _saveRecentProject();
+
+private:
 	BlastToolbar*					_mainToolbar;
 	MaterialLibraryPanel*			_materialLibraryPanel;
 	MaterialAssignmentsPanel*		_materialAssignmentsPanel;
 	FileReferencesPanel*			_fileReferencesPanel;
 	GeneralPanel*					_generalPanel;
-	BlastCompositePanel*			_blastCompositePanel;
 	DefaultDamagePanel*				_defaultDamagePanel;
-	FractureCutoutSettingsPanel*	_fractureCutoutSettingsPanel;
 	FractureGeneralPanel*			_fractureGeneralPanel;
-	FractureShellCutSettingsPanel*	_fractureShellCutSettingPanel;
+	FractureVoronoiSettingsPanel*	_fractureVoronoiSettingsPanel;
 	FractureSliceSettingsPanel*		_fractureSliceSettingsPanel;
 	FractureVisualizersPanel*		_fractureVisualizersPanel;
-	FractureVoronoiSettingsPanel*	_fractureVoronoiSettingsPanel;
 	SupportPanel*					_supportPanel;
+	ExpandablePanel*				_fractureVoronoiSettingsExpandlePanel;
+	ExpandablePanel*				_fractureSliceSettingsExpandlePanel;
 	BlastSceneTree*					_blastSceneTree;
 	FiltersDockWidget*				_filtersDockWidget;
 
-	QMenu*	 _chunkContextMenu;
-	QMenu*	 _bondContextMenu;
+	QMenu*							_recentProjectMenu;
+	QList<QAction*>					_recentProjectActions;
+	SingleItemKindFile				_recentProjectRecordFile;
+
+	QMenu*	 _contextMenu;
 	QAction* action_Make_Support;
 	QAction* action_Make_Static_Support;
 	QAction* action_Remove_Support;

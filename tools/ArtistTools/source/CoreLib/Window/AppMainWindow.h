@@ -6,6 +6,7 @@
 
 #include "ui_AppMainWindow.h"
 #include "UIGlobal.h"
+#include "XMLHelper.h"
 
 class StyleMaterialPanel;
 class AssetControlPanel;
@@ -72,7 +73,7 @@ public:
 	CORELIB_EXPORT void quit();
 
 	CORELIB_EXPORT void updateMainToolbar();
-	CORELIB_EXPORT void processDragAndDrop(QString fname);
+	CORELIB_EXPORT void processDragAndDrop(const QStringList& fileNames);
 	CORELIB_EXPORT bool openProject(QString fileName);
 
 	CORELIB_EXPORT static void setConnectionMode(int);
@@ -96,6 +97,7 @@ signals:
 	void aboutToQuit();
 
 	public slots:
+		CORELIB_EXPORT void menu_item_triggered(QAction* action);
 		CORELIB_EXPORT void menu_clearScene();
 		CORELIB_EXPORT bool menu_openfbx();
 		CORELIB_EXPORT void menu_addBookmark();
@@ -125,8 +127,13 @@ signals:
 		CORELIB_EXPORT void onReloadColorAttributeTexture(nvidia::CurveEditor::ColorAttribute* attribute, bool reloadColorTex, int selectedCtrlPntIndex);
 #endif
 
+		CORELIB_EXPORT void addRecentFile(const QString filePath);
 private:
 	char TestDragCamera(Qt::KeyboardModifiers modifiers, Qt::MouseButtons buttons);
+
+	void _resetRecentFile(const QString filePath);
+	void _loadRecentFile();
+	void _saveRecentFile();
 
 public:
 	void InitMenuItems();
@@ -140,6 +147,10 @@ public:
 	Ui::AppMainWindowClass ui;
 
 	D3DWidget* _d3dWidget;
+	QMenu*					_recentMenu;
+	QList<QAction*>			_recentFileActions;
+	SingleItemKindFile		_recentFileRecordFile;
+
 	QMenu*					_bookmarksMenu;
 
 	DisplayMeshesPanel*			_displayMeshesPanel;
@@ -203,6 +214,8 @@ private:
 #endif // NV_ARTISTTOOLS
 
 	bool m_bGizmoWithLocal;
+	bool m_bGizmoWithDepthTest;
+	bool m_bShowPlane;
 };
 
 #endif // APPMAINWINDOW_H

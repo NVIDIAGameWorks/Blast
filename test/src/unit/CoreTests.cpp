@@ -1,3 +1,31 @@
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
+
 #include <algorithm>
 #include "gtest/gtest.h"
 
@@ -5,7 +33,7 @@
 #include "NvBlastActor.h"
 #include "NvBlastIndexFns.h"
 
-#include "AlignedAllocator.h"
+#include "NvBlastGlobals.h"
 
 #include "TestAssets.h"
 #include "NvBlastActor.h"
@@ -41,13 +69,50 @@ TEST(CoreTests, IndexStartLookup)
 
 #include "NvBlastGeometry.h"
 
+int findClosestNodeByBonds(const float point[4], const NvBlastActor* actor)
+{
+	const Nv::Blast::Actor* a = static_cast<const Nv::Blast::Actor*>(actor);
+	const NvBlastFamily* family = NvBlastActorGetFamily(actor, messageLog);
+	const NvBlastAsset* asset = NvBlastFamilyGetAsset(family, messageLog);
+	const NvBlastSupportGraph graph = NvBlastAssetGetSupportGraph(asset, messageLog);
+	return Nv::Blast::findClosestNode(
+		point,
+		a->getFirstGraphNodeIndex(),
+		a->getFamilyHeader()->getGraphNodeIndexLinks(),
+		graph.adjacencyPartition,
+		graph.adjacentNodeIndices,
+		graph.adjacentBondIndices,
+		NvBlastAssetGetBonds(asset, messageLog),
+		NvBlastActorGetBondHealths(actor, messageLog),
+		graph.chunkIndices
+		);
+}
+
+int findClosestNodeByChunks(const float point[4], const NvBlastActor* actor)
+{
+	const Nv::Blast::Actor* a = static_cast<const Nv::Blast::Actor*>(actor);
+	return Nv::Blast::findClosestNode(
+		point,
+		a->getFirstGraphNodeIndex(),
+		a->getFamilyHeader()->getGraphNodeIndexLinks(),
+		a->getAsset()->m_graph.getAdjacencyPartition(),
+		a->getAsset()->m_graph.getAdjacentNodeIndices(),
+		a->getAsset()->m_graph.getAdjacentBondIndices(),
+		a->getAsset()->getBonds(),
+		a->getFamilyHeader()->getBondHealths(),
+		a->getAsset()->getChunks(),
+		a->getFamilyHeader()->getLowerSupportChunkHealths(),
+		a->getAsset()->m_graph.getChunkIndices()
+		);
+}
+
 TEST(CoreTests, FindChunkByPosition)
 {
 	std::vector<char> scratch;
 	const NvBlastAssetDesc& desc = g_assetDescs[0]; // 1-cube
 	scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(&desc, nullptr));
-	void* amem = alignedAlloc<malloc>(NvBlastGetAssetMemorySize(&desc, nullptr));
-	NvBlastAsset* asset = NvBlastCreateAsset(amem, &desc, &scratch[0], nullptr);
+	void* amem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&desc, nullptr));
+	NvBlastAsset* asset = NvBlastCreateAsset(amem, &desc, scratch.data(), nullptr);
 	ASSERT_TRUE(asset != nullptr);
 
 	uint32_t expectedNode[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
@@ -66,28 +131,21 @@ TEST(CoreTests, FindChunkByPosition)
 	NvBlastActorDesc actorDesc;
 	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-	void* fmem = alignedAlloc<malloc>(NvBlastAssetGetFamilyMemorySize(asset, nullptr));
+	void* fmem = NVBLAST_ALLOC(NvBlastAssetGetFamilyMemorySize(asset, nullptr));
 	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, nullptr);
 	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, nullptr));
-	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, &scratch[0], nullptr);
+	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), nullptr);
 	ASSERT_TRUE(actor != nullptr);
 
-	std::vector<uint32_t> graphNodeIndices;
-	graphNodeIndices.resize(NvBlastActorGetGraphNodeCount(actor, nullptr));
-	const float* bondHealths = NvBlastActorGetBondHealths(actor, messageLog);
-	uint32_t graphNodesCount = NvBlastActorGetGraphNodeIndices(graphNodeIndices.data(), (uint32_t)graphNodeIndices.size(), actor, nullptr);
-
-	const NvBlastBond* bonds = NvBlastAssetGetBonds(asset, nullptr);
-	NvBlastSupportGraph graph = NvBlastAssetGetSupportGraph(asset, nullptr);
 	for (int i = 0; i < 8; ++i, pos += 3)
 	{
-		EXPECT_EQ(expectedNode[i], Nv::Blast::findNodeByPosition(pos, graphNodesCount, graphNodeIndices.data(), graph, bonds, bondHealths));
-		EXPECT_EQ(expectedNode[i] + 1, NvBlastActorClosestChunk(pos, actor, nullptr));	// Works because (chunk index) = (node index) + 1 in these cases
+		EXPECT_EQ(expectedNode[i], findClosestNodeByBonds(pos, actor));
+		EXPECT_EQ(expectedNode[i], findClosestNodeByChunks(pos, actor));	
 	}
 
 	EXPECT_TRUE(NvBlastActorDeactivate(actor, nullptr));
-	alignedFree<free>(family);
-	alignedFree<free>(asset);
+	NVBLAST_FREE(family);
+	NVBLAST_FREE(asset);
 }
 
 TEST(CoreTests, FindChunkByPositionUShape)
@@ -105,47 +163,40 @@ TEST(CoreTests, FindChunkByPositionUShape)
 	const NvBlastChunkDesc uchunks[7] =
 	{
 		// centroid           volume parent idx		flags                         ID
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, UINT32_MAX, NvBlastChunkDesc::NoFlags, 0 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 1 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 2 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 3 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 4 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 5 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 6 }
+		{ {3.0f, 2.0f, 0.0f}, 0.0f, UINT32_MAX, NvBlastChunkDesc::NoFlags, 0 },
+		{ {1.0f, 1.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 1 },
+		{ {3.0f, 1.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 2 },
+		{ {5.0f, 1.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 3 },
+		{ {1.0f, 3.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 4 },
+		{ {3.0f, 3.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 5 },
+		{ {5.0f, 3.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 6 }
 	};
 
 	const NvBlastBondDesc ubonds[5] =
 	{
-		// chunks      normal                area  centroid              userData
-		{ { 2, 1 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 1.0f, 0.0f }, 0 } }, // index swap should not matter
-		{ { 2, 3 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 4.0f, 1.0f, 0.0f }, 0 } },
-		{ { 1, 4 }, { { 0.0f, 1.0f, 0.0f }, 1.0f, { 1.0f, 2.0f, 0.0f }, 0 } },
-		{ { 4, 5 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 3.0f, 0.0f }, 0 } },
-		{ { 5, 6 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 4.0f, 3.0f, 0.0f }, 0 } },
+//			normal                area  centroid              userData chunks      
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 1.0f, 0.0f }, 0 }, { 2, 1 } }, // index swap should not matter
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 4.0f, 1.0f, 0.0f }, 0 }, { 2, 3 } },
+		{ { { 0.0f, 1.0f, 0.0f }, 1.0f, { 1.0f, 2.0f, 0.0f }, 0 }, { 1, 4 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 3.0f, 0.0f }, 0 }, { 4, 5 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 4.0f, 3.0f, 0.0f }, 0 }, { 5, 6 } },
 	};
 
 	const NvBlastAssetDesc desc = { 7, uchunks, 5, ubonds };
 	std::vector<char> scratch;
 	scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(&desc, messageLog));
-	void* amem = alignedAlloc<malloc>(NvBlastGetAssetMemorySize(&desc, messageLog));
-	NvBlastAsset* asset = NvBlastCreateAsset(amem, &desc, &scratch[0], messageLog);
+	void* amem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&desc, messageLog));
+	NvBlastAsset* asset = NvBlastCreateAsset(amem, &desc, scratch.data(), messageLog);
 	ASSERT_TRUE(asset != nullptr);
 
 	NvBlastActorDesc actorDesc;
 	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-	void* fmem = alignedAlloc<malloc>(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
+	void* fmem = NVBLAST_ALLOC(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
 	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, nullptr);
 	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, messageLog));
-	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, &scratch[0], nullptr);
+	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), nullptr);
 	ASSERT_TRUE(actor != nullptr);
-
-	std::vector<uint32_t> graphNodeIndices;
-	graphNodeIndices.resize(NvBlastActorGetGraphNodeCount(actor, nullptr));
-	uint32_t graphNodesCount = NvBlastActorGetGraphNodeIndices(graphNodeIndices.data(), (uint32_t)graphNodeIndices.size(), actor, nullptr);
-
-	const NvBlastBond* bonds = NvBlastAssetGetBonds(asset, nullptr);
-	NvBlastSupportGraph graph = NvBlastAssetGetSupportGraph(asset, nullptr);
 
 	srand(100);
 	for (uint32_t i = 0; i < 100000; i++)
@@ -162,90 +213,88 @@ TEST(CoreTests, FindChunkByPositionUShape)
 
 		//printf("iteration %i: %.1f %.1f %.1f expected: %d\n", i, rpos[0], rpos[1], rpos[2], expectedNode);
 		{
-			uint32_t returnedNode = Nv::Blast::findNodeByPosition(rpos, graphNodesCount, graphNodeIndices.data(), graph, bonds, NvBlastActorGetBondHealths(actor, messageLog));
+			uint32_t returnedNode = findClosestNodeByBonds(rpos, actor);
 			if (expectedNode != returnedNode)
-				Nv::Blast::findNodeByPosition(rpos, graphNodesCount, graphNodeIndices.data(), graph, bonds, NvBlastActorGetBondHealths(actor, messageLog));
+				findClosestNodeByBonds(rpos, actor);
 			EXPECT_EQ(expectedNode, returnedNode);
 		}
 		{
-			// +1 to account for graph vs. asset indices
-			uint32_t expectedChunk = expectedNode + 1;
-			uint32_t returnedChunk = NvBlastActorClosestChunk(rpos, actor, nullptr);
-			if (expectedChunk != returnedChunk)
-				NvBlastActorClosestChunk(rpos, actor, nullptr);
-			EXPECT_EQ(expectedChunk, returnedChunk);
+			uint32_t returnedNode = findClosestNodeByChunks(rpos, actor);
+			if (expectedNode != returnedNode)
+				findClosestNodeByChunks(rpos, actor);
+			EXPECT_EQ(expectedNode, returnedNode);
 		}
 
 	}
 
 	EXPECT_TRUE(NvBlastActorDeactivate(actor, messageLog));
 
-	alignedFree<free>(family);
-	alignedFree<free>(asset);
+	NVBLAST_FREE(family);
+	NVBLAST_FREE(asset);
 }
 
 TEST(CoreTests, FindChunkByPositionLandlocked)
 {
+	// 7 > 8 > 9
+	// ^   ^   ^
+	// 4 > 5 > 6
+	// ^   ^   ^
+	// 1 > 2 > 3
+
+	// chunk 5 (node 4) is broken out (landlocked)
+	// find closest chunk/node on the two new actors
+
 	const NvBlastChunkDesc chunks[10] =
 	{
 		// centroid           volume parent idx		flags                         ID
 		{ {0.0f, 0.0f, 0.0f}, 0.0f, UINT32_MAX, NvBlastChunkDesc::NoFlags, 0 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 1 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 2 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 3 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 4 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 5 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 6 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 7 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 8 },
-		{ {0.0f, 0.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 9 },
+		{ {1.0f, 1.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 1 },
+		{ {3.0f, 1.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 2 },
+		{ {5.0f, 1.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 3 },
+		{ {1.0f, 3.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 4 },
+		{ {3.0f, 3.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 5 },
+		{ {5.0f, 3.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 6 },
+		{ {1.0f, 5.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 7 },
+		{ {3.0f, 5.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 8 },
+		{ {5.0f, 5.0f, 0.0f}, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 9 },
 	};
 
 	const NvBlastBondDesc bonds[12] =
 	{
-		// chunks      normal                area  centroid              userData
-		{ { 1, 2 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 1.0f, 0.0f }, 0 } },
-		{ { 2, 3 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 4.0f, 1.0f, 0.0f }, 0 } },
-		{ { 4, 5 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 3.0f, 0.0f }, 0 } },
-		{ { 5, 6 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 4.0f, 3.0f, 0.0f }, 0 } },
-		{ { 7, 8 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 5.0f, 0.0f }, 0 } },
-		{ { 8, 9 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 4.0f, 5.0f, 0.0f }, 0 } },
-		{ { 1, 4 }, { { 0.0f, 1.0f, 0.0f }, 1.0f, { 1.0f, 2.0f, 0.0f }, 0 } },
-		{ { 2, 5 }, { { 0.0f, 1.0f, 0.0f }, 1.0f, { 3.0f, 2.0f, 0.0f }, 0 } },
-		{ { 3, 6 }, { { 0.0f, 1.0f, 0.0f }, 1.0f, { 5.0f, 2.0f, 0.0f }, 0 } },
-		{ { 4, 7 }, { { 0.0f, 1.0f, 0.0f }, 1.0f, { 1.0f, 4.0f, 0.0f }, 0 } },
-		{ { 5, 8 }, { { 0.0f, 1.0f, 0.0f }, 1.0f, { 3.0f, 4.0f, 0.0f }, 0 } },
-		{ { 6, 9 }, { { 0.0f, 1.0f, 0.0f }, 1.0f, { 5.0f, 4.0f, 0.0f }, 0 } },
+//          normal                area  centroid              userData chunks
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 1.0f, 0.0f }, 0 }, { 1, 2 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 4.0f, 1.0f, 0.0f }, 0 }, { 2, 3 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 3.0f, 0.0f }, 0 }, { 4, 5 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 4.0f, 3.0f, 0.0f }, 0 }, { 5, 6 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 5.0f, 0.0f }, 0 }, { 7, 8 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 4.0f, 5.0f, 0.0f }, 0 }, { 8, 9 } },
+		{ { { 0.0f, 1.0f, 0.0f }, 1.0f, { 1.0f, 2.0f, 0.0f }, 0 }, { 1, 4 } },
+		{ { { 0.0f, 1.0f, 0.0f }, 1.0f, { 3.0f, 2.0f, 0.0f }, 0 }, { 2, 5 } },
+		{ { { 0.0f, 1.0f, 0.0f }, 1.0f, { 5.0f, 2.0f, 0.0f }, 0 }, { 3, 6 } },
+		{ { { 0.0f, 1.0f, 0.0f }, 1.0f, { 1.0f, 4.0f, 0.0f }, 0 }, { 4, 7 } },
+		{ { { 0.0f, 1.0f, 0.0f }, 1.0f, { 3.0f, 4.0f, 0.0f }, 0 }, { 5, 8 } },
+		{ { { 0.0f, 1.0f, 0.0f }, 1.0f, { 5.0f, 4.0f, 0.0f }, 0 }, { 6, 9 } },
 	};
 
 	const NvBlastAssetDesc desc = { 10, chunks, 12, bonds };
 	std::vector<char> scratch;
 	scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(&desc, messageLog));
-	void* amem = alignedAlloc<malloc>(NvBlastGetAssetMemorySize(&desc, messageLog));
-	NvBlastAsset* asset = NvBlastCreateAsset(amem, &desc, &scratch[0], messageLog);
+	void* amem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&desc, messageLog));
+	NvBlastAsset* asset = NvBlastCreateAsset(amem, &desc, scratch.data(), messageLog);
 	ASSERT_TRUE(asset != nullptr);
 
 	NvBlastActorDesc actorDesc;
 	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-	void* fmem = alignedAlloc<malloc>(NvBlastAssetGetFamilyMemorySize(asset, nullptr));
+	void* fmem = NVBLAST_ALLOC(NvBlastAssetGetFamilyMemorySize(asset, nullptr));
 	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, nullptr);
 	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, nullptr));
-	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, &scratch[0], nullptr);
+	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), nullptr);
 	ASSERT_TRUE(actor != nullptr);
 
-	const NvBlastBond* assetBonds = NvBlastAssetGetBonds(asset, nullptr);
-	NvBlastSupportGraph graph = NvBlastAssetGetSupportGraph(asset, nullptr);
-
 	float point[4] = { 3.0f, 3.0f, 0.0f };
-	EXPECT_EQ(5, NvBlastActorClosestChunk(point, actor, nullptr));
-	{
-		std::vector<uint32_t> graphNodeIndices;
-		graphNodeIndices.resize(NvBlastActorGetGraphNodeCount(actor, nullptr));
-		uint32_t graphNodesCount = NvBlastActorGetGraphNodeIndices(graphNodeIndices.data(), (uint32_t)graphNodeIndices.size(), actor, nullptr);
-
-		EXPECT_EQ(4, Nv::Blast::findNodeByPosition(point, graphNodesCount, graphNodeIndices.data(), graph, assetBonds, NvBlastActorGetBondHealths(actor, messageLog)));
-	}
+	EXPECT_EQ(4, findClosestNodeByChunks(point, actor));
+	EXPECT_EQ(4, findClosestNodeByBonds(point, actor));
 
 	NvBlastChunkFractureData chunkBuffer[1];
 	NvBlastFractureBuffers events = { 0, 1, nullptr, chunkBuffer };
@@ -263,31 +312,122 @@ TEST(CoreTests, FindChunkByPositionLandlocked)
 
 	ASSERT_EQ(actor, newActors[1]);
 
-	EXPECT_NE(5, NvBlastActorClosestChunk(point, actor, nullptr));
+	EXPECT_NE(4, findClosestNodeByChunks(point, actor));
+	EXPECT_NE(4, findClosestNodeByBonds(point, actor));
 
 	float point2[4] = { 80.0f, 80.0f, 80.0f };
-	EXPECT_EQ(5, NvBlastActorClosestChunk(point2, newActors[0], nullptr));
-
-	{
-		const float* bondHealths = NvBlastActorGetBondHealths(actor, messageLog);
-		std::vector<uint32_t> graphNodeIndices;
-		graphNodeIndices.resize(NvBlastActorGetGraphNodeCount(actor, nullptr));
-		uint32_t graphNodesCount = NvBlastActorGetGraphNodeIndices(graphNodeIndices.data(), (uint32_t)graphNodeIndices.size(), actor, nullptr);
-
-		EXPECT_NE(4, Nv::Blast::findNodeByPosition(point, graphNodesCount, graphNodeIndices.data(), graph, assetBonds, bondHealths));
-
-		graphNodeIndices.resize(NvBlastActorGetGraphNodeCount(newActors[0], nullptr));
-		graphNodesCount = NvBlastActorGetGraphNodeIndices(graphNodeIndices.data(), (uint32_t)graphNodeIndices.size(), newActors[0], nullptr);
-
-		EXPECT_EQ(4, Nv::Blast::findNodeByPosition(point, graphNodesCount, graphNodeIndices.data(), graph, assetBonds, bondHealths));
-	}
-
+	EXPECT_EQ(4, findClosestNodeByChunks(point2, newActors[0]));
+	EXPECT_EQ(4, findClosestNodeByBonds(point, newActors[0]));
 
 	for (uint32_t i = 0; i < newActorsCount; ++i)
 	{
 		EXPECT_TRUE(NvBlastActorDeactivate(newActors[i], nullptr));
 	}
 
-	alignedFree<free>(family);
-	alignedFree<free>(asset);
+	NVBLAST_FREE(family);
+	NVBLAST_FREE(asset);
+}
+
+TEST(CoreTests, FindClosestByChunkAccuracy)
+{
+	//	(0,0) +---+-------+
+	//	      |   |   1   |
+	//	      | 2 +---+---+
+	//	      |   | 5 |   |
+	//	      +---+---+ 4 |
+	//	      |   3   |   |
+	//        +-------+---+ (6,6)
+
+	// random point lookup over the actor's space
+	// tests would fail if findClosestNodeByChunks didn't improve accuracy with the help of bonds
+
+	const NvBlastChunkDesc chunks[6] =
+	{
+		// centroid           volume parent idx		flags                         ID
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, UINT32_MAX,	NvBlastChunkDesc::NoFlags, 0 },
+		{ { 4.0f, 1.0f, 0.0f }, 0.0f, 0,			NvBlastChunkDesc::SupportFlag, 1 },
+		{ { 1.0f, 2.0f, 0.0f }, 0.0f, 0,			NvBlastChunkDesc::SupportFlag, 2 },
+		{ { 2.0f, 5.0f, 0.0f }, 0.0f, 0,			NvBlastChunkDesc::SupportFlag, 3 },
+		{ { 5.0f, 4.0f, 0.0f }, 0.0f, 0,			NvBlastChunkDesc::SupportFlag, 4 },
+		{ { 3.0f, 3.0f, 0.0f }, 0.0f, 0,			NvBlastChunkDesc::SupportFlag, 5 },
+	};
+
+	const NvBlastBondDesc bonds[8] =
+	{
+		//          normal        area  centroid          userData chunks
+		{ { { -1.0f,  0.0f, 0.0f }, 1.0f,{ 2.0f, 1.0f, 0.0f }, 0 },{ 1, 2 } },
+		{ { {  0.0f,  1.0f, 0.0f }, 1.0f,{ 5.0f, 2.0f, 0.0f }, 0 },{ 1, 4 } },
+		{ { {  0.0f,  1.0f, 0.0f }, 1.0f,{ 3.0f, 2.0f, 0.0f }, 0 },{ 5, 1 } },
+
+		{ { {  0.0f,  1.0f, 0.0f }, 1.0f,{ 1.0f, 4.0f, 0.0f }, 0 },{ 2, 3 } },
+		{ { {  1.0f,  0.0f, 0.0f }, 1.0f,{ 2.0f, 3.0f, 0.0f }, 0 },{ 2, 5 } },
+
+		{ { {  1.0f,  0.0f, 0.0f }, 1.0f,{ 4.0f, 5.0f, 0.0f }, 0 },{ 3, 4 } },
+		{ { {  0.0f, -1.0f, 0.0f }, 1.0f,{ 3.0f, 4.0f, 0.0f }, 0 },{ 3, 5 } },
+
+		{ { { -1.0f,  0.0f, 0.0f }, 1.0f,{ 4.0f, 3.0f, 0.0f }, 0 },{ 4, 5 } },
+	};
+
+	const NvBlastAssetDesc desc = { 6, chunks, 8, bonds };
+	std::vector<char> scratch;
+	scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(&desc, messageLog));
+	void* amem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&desc, messageLog));
+	NvBlastAsset* asset = NvBlastCreateAsset(amem, &desc, scratch.data(), messageLog);
+	ASSERT_TRUE(asset != nullptr);
+
+	NvBlastActorDesc actorDesc;
+	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
+	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
+	void* fmem = NVBLAST_ALLOC(NvBlastAssetGetFamilyMemorySize(asset, nullptr));
+	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, nullptr);
+	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, nullptr));
+	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), nullptr);
+	ASSERT_TRUE(actor != nullptr);
+
+	srand(0xb007);
+	for (uint32_t i = 0; i < 100000; i++)
+	{
+		float rx = 8 * (float)(rand()) / RAND_MAX - 1;
+		float ry = 8 * (float)(rand()) / RAND_MAX - 1;
+		float rz = 0.0f;
+		float rpos[] = { rx, ry, rz };
+
+		EXPECT_LE(-1.0f, rx);	EXPECT_GE(7.0f, rx);
+		EXPECT_LE(-1.0f, ry);	EXPECT_GE(7.0f, ry);
+
+		uint32_t expectedNode = 0xdefec7;
+
+		if (rx < 2.0f) {
+			if (ry < 4.0f) { expectedNode = 1; }
+			else { expectedNode = 2; }
+		}
+		else if (rx < 4.0f) {
+			if (ry < 2.0f) { expectedNode = 0; }
+			else if (ry < 4.0f) { expectedNode = 4; }
+			else { expectedNode = 2; }
+		}
+		else {
+			if (ry < 2.0f) { expectedNode = 0; }
+			else { expectedNode = 3; }
+		}
+
+		uint32_t nodeByBonds = findClosestNodeByBonds(rpos, actor);
+		if (nodeByBonds != expectedNode)
+		{
+			printf("%.1f %.1f %.1f\n", rx, ry, rz);
+		}
+		EXPECT_EQ(expectedNode, nodeByBonds);
+
+		uint32_t nodeByChunks = findClosestNodeByChunks(rpos, actor);
+		if (nodeByChunks != expectedNode)
+		{
+			printf("%.1f %.1f %.1f\n", rx, ry, rz);
+		}
+		EXPECT_EQ(expectedNode, nodeByChunks);
+	}
+
+	EXPECT_TRUE(NvBlastActorDeactivate(actor, messageLog));
+
+	NVBLAST_FREE(family);
+	NVBLAST_FREE(asset);
 }

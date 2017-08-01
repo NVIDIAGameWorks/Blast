@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>NVIDIA(R) Blast(R) SDK 1.0 Source Reference: sdk/extensions/authoring/source/NvBlastExtAuthoringInternalCommon.h File Reference</title>
+		<title>NVIDIA(R) Blast(R) SDK 1.1 Source Reference: sdk/extensions/authoring/source/NvBlastExtAuthoringInternalCommon.h File Reference</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<LINK HREF="NVIDIA.css" REL="stylesheet" TYPE="text/css">
 	</head>
@@ -38,6 +38,7 @@
 </div>
 <div class="contents">
 <h1>sdk/extensions/authoring/source/NvBlastExtAuthoringInternalCommon.h File Reference</h1><code>#include &quot;<a class="el" href="_nv_blast_ext_authoring_types_8h-source.html">NvBlastExtAuthoringTypes.h</a>&quot;</code><br>
+<code>#include &lt;algorithm&gt;</code><br>
 
 <p>
 <a href="_nv_blast_ext_authoring_internal_common_8h-source.html">Go to the source code of this file.</a><table border="0" cellpadding="0" cellspacing="0">
@@ -46,6 +47,10 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_edge_comparator.html">Nv::Blast::EdgeComparator</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">Nv::Blast::EdgeWithParent</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_vrt_comp.html">Nv::Blast::VrtComp</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_vrt_position_comparator.html">Nv::Blast::VrtPositionComparator</a></td></tr>
 
 <tr><td colspan="2"><br><h2>Namespaces</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv.html">Nv</a></td></tr>
@@ -56,6 +61,8 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_internal_common_8h.html#1278adb36f840dc5e957ce2b34b46322">BBOX_TEST_EPS</a>&nbsp;&nbsp;&nbsp;1e-5f</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_internal_common_8h.html#a8f38c265574616c9326504a5d9919f7">MAXIMUM_EXTENT</a>&nbsp;&nbsp;&nbsp;1000 * 1000 * 1000</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_internal_common_8h.html#435b074c8a7e0562d9729721a645b88a">VEC_COMPARISON_OFFSET</a>&nbsp;&nbsp;&nbsp;1e-5f</td></tr>
 
 <tr><td colspan="2"><br><h2>Enumerations</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">enum &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">Nv::Blast::ProjectionDirections</a> { <a class="el" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7d1627b65f07422426fe4a478c7836a66">Nv::Blast::YZ_PLANE</a> =  1 &lt;&lt; 1, 
@@ -99,6 +106,21 @@ ProjectionDirections&nbsp;</td><td class="memItemRight" valign="bottom"><a class
       <table class="memname">
         <tr>
           <td class="memname">#define MAXIMUM_EXTENT&nbsp;&nbsp;&nbsp;1000 * 1000 * 1000          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="435b074c8a7e0562d9729721a645b88a"></a><!-- doxytag: member="NvBlastExtAuthoringInternalCommon.h::VEC_COMPARISON_OFFSET" ref="435b074c8a7e0562d9729721a645b88a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define VEC_COMPARISON_OFFSET&nbsp;&nbsp;&nbsp;1e-5f          </td>
         </tr>
       </table>
 </div>

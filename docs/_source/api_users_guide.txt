@@ -6,6 +6,8 @@ Blast&tm; User's Guide
 
 \subpage pagellapi
 
+\subpage pageglobalsapi
+
 \subpage pagehlapi
 
 \subpage pageextapi

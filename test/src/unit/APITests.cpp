@@ -1,8 +1,37 @@
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
+
 #include "BlastBaseTest.h"
 #include "NvBlastIndexFns.h"
 #include "NvBlastExtDamageShaders.h"
 
 #include <algorithm>
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //													Utils / Tests Common
@@ -24,7 +53,7 @@ TEST_F(APITest, Basic)
 	const NvBlastAssetDesc& assetDesc = g_assetDescs[0];
 
 	std::vector<char> scratch((size_t)NvBlastGetRequiredScratchForCreateAsset(&assetDesc, messageLog));
-	void* amem = alloc(NvBlastGetAssetMemorySize(&assetDesc, messageLog));
+	void* amem = alignedZeroedAlloc(NvBlastGetAssetMemorySize(&assetDesc, messageLog));
 	NvBlastAsset* asset = NvBlastCreateAsset(amem, &assetDesc, scratch.data(), messageLog);
 	EXPECT_TRUE(asset != nullptr);
 
@@ -32,7 +61,7 @@ TEST_F(APITest, Basic)
 	NvBlastActorDesc actorDesc;
 	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-	void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
+	void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
 	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, messageLog);
 	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, messageLog));
 	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), messageLog);
@@ -66,6 +95,7 @@ TEST_F(APITest, Basic)
 
 	NvBlastActorGenerateFracture(&events, actor, program, &programParams, messageLog, nullptr);
 	NvBlastActorApplyFracture(&events, actor, &events, messageLog, nullptr);
+	EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
 	EXPECT_EQ(12, events.bondFractureCount);
 
 	NvBlastActor* newActors[8]; /* num lower-support chunks? plus space for deletedActor */
@@ -82,8 +112,8 @@ TEST_F(APITest, Basic)
 		const bool actorReleaseResult = NvBlastActorDeactivate(result.newActors[i], messageLog);
 		EXPECT_TRUE(actorReleaseResult);
 	}
-	free(family);
-	free(asset);
+	alignedFree(family);
+	alignedFree(asset);
 }
 
 TEST_F(APITest, DamageBondsCompressive)
@@ -105,19 +135,19 @@ TEST_F(APITest, DamageBondsCompressive)
 
 	const NvBlastBondDesc c_bonds[bondsCount] =
 	{
-		{ { 1, 2 }, { { -1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 2.0f, 0.0f }, 0 } },
-		{ { 2, 3 }, { { -1.0f, 0.0f, 0.0f }, 1.0f, { -1.0f, 2.0f, 0.0f }, 0 } },
-		{ { 3, 4 }, { { 0.0f, -1.0f, 0.0f }, 1.0f, { -2.0f, 1.0f, 0.0f }, 0 } },
-		{ { 4, 5 }, { { 0.0f, -1.0f, 0.0f }, 1.0f, { -2.0f, -1.0f, 0.0f }, 0 } },
-		{ { 5, 6 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { -1.0f, -2.0f, 0.0f }, 0 } },
-		{ { 6, 7 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, -2.0f, 0.0f }, 0 } }
+		{ { {-1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 2.0f, 0.0f }, 0 }, { 1, 2 } },
+		{ { {-1.0f, 0.0f, 0.0f }, 1.0f, {-1.0f, 2.0f, 0.0f }, 0 }, { 2, 3 } },
+		{ { { 0.0f,-1.0f, 0.0f }, 1.0f, {-2.0f, 1.0f, 0.0f }, 0 }, { 3, 4 } },
+		{ { { 0.0f,-1.0f, 0.0f }, 1.0f, {-2.0f,-1.0f, 0.0f }, 0 }, { 4, 5 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, {-1.0f,-2.0f, 0.0f }, 0 }, { 5, 6 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f,-2.0f, 0.0f }, 0 }, { 6, 7 } }
 	};
 
 	// create asset
 	const NvBlastAssetDesc assetDesc = { 8, c_chunks, bondsCount, c_bonds };
 
 	std::vector<char> scratch((size_t)NvBlastGetRequiredScratchForCreateAsset(&assetDesc, messageLog));
-	void* amem = alloc(NvBlastGetAssetMemorySize(&assetDesc, messageLog));
+	void* amem = alignedZeroedAlloc(NvBlastGetAssetMemorySize(&assetDesc, messageLog));
 	NvBlastAsset* asset = NvBlastCreateAsset(amem, &assetDesc, scratch.data(), messageLog);
 	EXPECT_TRUE(asset != nullptr);
 
@@ -125,7 +155,7 @@ TEST_F(APITest, DamageBondsCompressive)
 	NvBlastActorDesc actorDesc;
 	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-	void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
+	void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
 	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, messageLog);
 	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, messageLog));
 	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), messageLog);
@@ -187,8 +217,8 @@ TEST_F(APITest, DamageBondsCompressive)
 
 	const bool actorReleaseResult = NvBlastActorDeactivate(actor, messageLog);
 	EXPECT_TRUE(actorReleaseResult);
-	free(family);
-	free(asset);
+	alignedFree(family);
+	alignedFree(asset);
 }
 
 TEST_F(APITest, DirectFractureKillsChunk)
@@ -213,10 +243,10 @@ TEST_F(APITest, DirectFractureKillsChunk)
 
 	const NvBlastBondDesc c_bonds[4] =
 	{
-		{ { 1, 2 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 0.0f, +1.0f, 0.0f }, 0 } },
-		{ { 3, 4 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 0.0f, -1.0f, 0.0f }, 0 } },
-		{ { 1, 3 }, { { 0.0f, -1.0f, 0.0f }, 1.0f, { -1.0f, 0.0f, 0.0f }, 0 } },
-		{ { 2, 4 }, { { 0.0f, -1.0f, 0.0f }, 1.0f, { +1.0f, 0.0f, 0.0f }, 0 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 0.0f, 1.0f, 0.0f }, 0 }, { 1, 2 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 0.0f,-1.0f, 0.0f }, 0 }, { 3, 4 } },
+		{ { { 0.0f,-1.0f, 0.0f }, 1.0f, {-1.0f, 0.0f, 0.0f }, 0 }, { 1, 3 } },
+		{ { { 0.0f,-1.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 }, { 2, 4 } },
 	};
 
 	NvBlastAssetDesc assetDesc;
@@ -227,7 +257,7 @@ TEST_F(APITest, DirectFractureKillsChunk)
 
 	// create asset
 	std::vector<char> scratch((size_t)NvBlastGetRequiredScratchForCreateAsset(&assetDesc, messageLog));
-	void* amem = alloc(NvBlastGetAssetMemorySize(&assetDesc, messageLog));
+	void* amem = alignedZeroedAlloc(NvBlastGetAssetMemorySize(&assetDesc, messageLog));
 	NvBlastAsset* asset = NvBlastCreateAsset(amem, &assetDesc, scratch.data(), messageLog);
 	EXPECT_TRUE(asset != nullptr);
 
@@ -235,7 +265,7 @@ TEST_F(APITest, DirectFractureKillsChunk)
 	NvBlastActorDesc actorDesc;
 	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-	void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
+	void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
 	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, messageLog);
 	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, messageLog));
 	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), messageLog);
@@ -251,6 +281,7 @@ TEST_F(APITest, DirectFractureKillsChunk)
 	NvBlastFractureBuffers events = { 0, 1, nullptr, &fractureEvt };
 
 	NvBlastActorApplyFracture(&events, actor, &commands, messageLog, nullptr);
+	EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
 	EXPECT_EQ(1, events.chunkFractureCount);
 
 	scratch.resize((size_t)NvBlastActorGetRequiredScratchForSplit(actor, messageLog));
@@ -271,8 +302,8 @@ TEST_F(APITest, DirectFractureKillsChunk)
 		const bool actorReleaseResult = NvBlastActorDeactivate(result.newActors[i], messageLog);
 		EXPECT_TRUE(actorReleaseResult);
 	}
-	free(family);
-	free(asset);
+	alignedFree(family);
+	alignedFree(asset);
 }
 
 TEST_F(APITest, DirectFractureKillsIslandRootChunk)
@@ -297,10 +328,10 @@ TEST_F(APITest, DirectFractureKillsIslandRootChunk)
 
 	const NvBlastBondDesc c_bonds[4] =
 	{
-		{ { 1, 2 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 0.0f, +1.0f, 0.0f }, 0 } },
-		{ { 3, 4 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 0.0f, -1.0f, 0.0f }, 0 } },
-		{ { 1, 3 }, { { 0.0f, -1.0f, 0.0f }, 1.0f, { -1.0f, 0.0f, 0.0f }, 0 } },
-		{ { 2, 4 }, { { 0.0f, -1.0f, 0.0f }, 1.0f, { +1.0f, 0.0f, 0.0f }, 0 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 0.0f, 1.0f, 0.0f }, 0 }, { 1, 2 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 0.0f,-1.0f, 0.0f }, 0 }, { 3, 4 } },
+		{ { { 0.0f,-1.0f, 0.0f }, 1.0f, {-1.0f, 0.0f, 0.0f }, 0 }, { 1, 3 } },
+		{ { { 0.0f,-1.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 }, { 2, 4 } },
 	};
 
 	NvBlastAssetDesc assetDesc;
@@ -311,7 +342,7 @@ TEST_F(APITest, DirectFractureKillsIslandRootChunk)
 
 	// create asset
 	std::vector<char> scratch((size_t)NvBlastGetRequiredScratchForCreateAsset(&assetDesc, messageLog));
-	void* amem = alloc(NvBlastGetAssetMemorySize(&assetDesc, messageLog));
+	void* amem = alignedZeroedAlloc(NvBlastGetAssetMemorySize(&assetDesc, messageLog));
 	NvBlastAsset* asset = NvBlastCreateAsset(amem, &assetDesc, scratch.data(), messageLog);
 	EXPECT_TRUE(asset != nullptr);
 
@@ -319,7 +350,7 @@ TEST_F(APITest, DirectFractureKillsIslandRootChunk)
 	NvBlastActorDesc actorDesc;
 	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-	void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
+	void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
 	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, messageLog);
 	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, messageLog));
 	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), messageLog);
@@ -335,6 +366,7 @@ TEST_F(APITest, DirectFractureKillsIslandRootChunk)
 	NvBlastFractureBuffers events = { 0, 1, nullptr, &fractureEvt };
 
 	NvBlastActorApplyFracture(&events, actor, &commands, messageLog, nullptr);
+	EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
 	EXPECT_EQ(1, events.chunkFractureCount);
 
 	scratch.resize((size_t)NvBlastActorGetRequiredScratchForSplit(actor, messageLog));
@@ -355,8 +387,8 @@ TEST_F(APITest, DirectFractureKillsIslandRootChunk)
 		const bool actorReleaseResult = NvBlastActorDeactivate(result.newActors[i], messageLog);
 		EXPECT_TRUE(actorReleaseResult);
 	}
-	free(family);
-	free(asset);
+	alignedFree(family);
+	alignedFree(asset);
 }
 
 TEST_F(APITest, SubsupportFracture)
@@ -365,7 +397,7 @@ TEST_F(APITest, SubsupportFracture)
 
 	// create asset with chunk map
 	std::vector<char> scratch((size_t)NvBlastGetRequiredScratchForCreateAsset(&assetDesc, messageLog));
-	void* amem = alloc(NvBlastGetAssetMemorySize(&assetDesc, messageLog));
+	void* amem = alignedZeroedAlloc(NvBlastGetAssetMemorySize(&assetDesc, messageLog));
 	NvBlastAsset* asset = NvBlastCreateAsset(amem, &assetDesc, scratch.data(), messageLog);
 	EXPECT_TRUE(asset != nullptr);
 
@@ -373,7 +405,7 @@ TEST_F(APITest, SubsupportFracture)
 	NvBlastActorDesc actorDesc;
 	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-	void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
+	void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
 	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, messageLog);
 	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, messageLog));
 	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), messageLog);
@@ -399,6 +431,7 @@ TEST_F(APITest, SubsupportFracture)
 		NvBlastFractureBuffers events = target;
 		NvBlastFractureBuffers commands = { 0, static_cast<uint32_t>(chunkFractureData.size()), nullptr, chunkFractureData.data() };
 		NvBlastActorApplyFracture(&events, actor, &commands, messageLog, nullptr);
+		EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
 		ASSERT_EQ(4 + 8, events.chunkFractureCount); // all requested chunks take damage, and the children of one of them
 	}
 
@@ -416,6 +449,7 @@ TEST_F(APITest, SubsupportFracture)
 		NvBlastFractureBuffers events = target;
 		NvBlastFractureBuffers commands = { 0, static_cast<uint32_t>(chunkFractureData.size()), nullptr, chunkFractureData.data() };
 		NvBlastActorApplyFracture(&events, actor, &commands, messageLog, nullptr);
+		EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
 		ASSERT_EQ(1, events.chunkFractureCount); // f3 has broken the chunk
 	}
 
@@ -443,6 +477,7 @@ TEST_F(APITest, SubsupportFracture)
 	{
 		NvBlastFractureBuffers commands = { 0, static_cast<uint32_t>(chunkFractureData.size()), nullptr, chunkFractureData.data() };
 		NvBlastActorApplyFracture(&events, actor, &commands, messageLog, nullptr);
+		EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
 		ASSERT_EQ(4 + 8 + 8, events.chunkFractureCount); // the new fracture commands all apply, plus two of them damage their children too
 	}
 
@@ -477,8 +512,8 @@ TEST_F(APITest, SubsupportFracture)
 		const bool actorReleaseResult = NvBlastActorDeactivate(result.newActors[i], messageLog);
 		EXPECT_TRUE(actorReleaseResult);
 	}
-	free(family);
-	free(asset);
+	alignedFree(family);
+	alignedFree(asset);
 }
 
 static bool hasWarned = false;
@@ -522,17 +557,17 @@ TEST_F(APITest, FractureNoEvents)
 
 	const NvBlastBondDesc c_bonds[3] =
 	{
-		// chunks, normal, area, centroid, userdata
-		{ { 1, 2 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 } },
-		{ { 2, 3 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 0.0f, 0.0f }, 0 } },
-		{ { 3, 4 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 3.0f, 0.0f, 0.0f }, 0 } },
+		// normal, area, centroid, userdata, chunks
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 }, { 1, 2 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 0.0f, 0.0f }, 0 }, { 2, 3 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 3.0f, 0.0f, 0.0f }, 0 }, { 3, 4 } },
 	};
 
 	NvBlastAssetDesc assetDesc = { chunksCount, c_chunks, 3, c_bonds };
 
 	// create asset with chunk map
 	std::vector<char> scratch((size_t)NvBlastGetRequiredScratchForCreateAsset(&assetDesc, myLog));
-	void* amem = alloc(NvBlastGetAssetMemorySize(&assetDesc, myLog));
+	void* amem = alignedZeroedAlloc(NvBlastGetAssetMemorySize(&assetDesc, myLog));
 	NvBlastAsset* asset = NvBlastCreateAsset(amem, &assetDesc, scratch.data(), myLog);
 	EXPECT_TRUE(asset != nullptr);
 
@@ -540,7 +575,7 @@ TEST_F(APITest, FractureNoEvents)
 	NvBlastActorDesc actorDesc;
 	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-	void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
+	void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
 	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, myLog);
 	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, myLog));
 	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), myLog);
@@ -559,6 +594,7 @@ TEST_F(APITest, FractureNoEvents)
 
 	NvBlastFractureBuffers commands = { 0, 2, nullptr, command };
 	NvBlastActorApplyFracture(nullptr, actor, &commands, myLog, nullptr);
+	EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
 
 	EXPECT_NO_WARNING; // events can be null
 	EXPECT_EQ(GUARD, cfData[cfData.size() - 1].userdata);
@@ -578,8 +614,8 @@ TEST_F(APITest, FractureNoEvents)
 		EXPECT_TRUE(actorReleaseResult);
 	}
 	
-	free(family);
-	free(asset);
+	alignedFree(family);
+	alignedFree(asset);
 
 	EXPECT_NO_WARNING;
 }
@@ -616,17 +652,17 @@ TEST_F(APITest, FractureBufferLimits)
 
 	const NvBlastBondDesc c_bonds[3] =
 	{
-		// chunks, normal, area, centroid, userdata
-		{ { 1, 2 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 } },
-		{ { 2, 3 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 0.0f, 0.0f }, 0 } },
-		{ { 3, 4 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 3.0f, 0.0f, 0.0f }, 0 } },
+		// normal, area, centroid, userdata, chunks
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 }, { 1, 2 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 0.0f, 0.0f }, 0 }, { 2, 3 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 3.0f, 0.0f, 0.0f }, 0 }, { 3, 4 } },
 	};
 
 	NvBlastAssetDesc assetDesc = { chunksCount, c_chunks, 3, c_bonds };
 	{
 		// create asset with chunk map
 		std::vector<char> scratch((size_t)NvBlastGetRequiredScratchForCreateAsset(&assetDesc, myLog));
-		void* amem = alloc(NvBlastGetAssetMemorySize(&assetDesc, myLog));
+		void* amem = alignedZeroedAlloc(NvBlastGetAssetMemorySize(&assetDesc, myLog));
 		NvBlastAsset* asset = NvBlastCreateAsset(amem, &assetDesc, scratch.data(), myLog);
 		EXPECT_TRUE(asset != nullptr);
 
@@ -636,7 +672,7 @@ TEST_F(APITest, FractureBufferLimits)
 			NvBlastActorDesc actorDesc;
 			actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 			actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-			void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
+			void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
 			NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, myLog);
 			scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, myLog));
 			NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), myLog);
@@ -667,7 +703,7 @@ TEST_F(APITest, FractureBufferLimits)
 			}
 
 			EXPECT_TRUE(NvBlastActorDeactivate(actor, myLog));
-			free(family);
+			alignedFree(family);
 		}
 
 		{
@@ -675,7 +711,7 @@ TEST_F(APITest, FractureBufferLimits)
 			NvBlastActorDesc actorDesc;
 			actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 			actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-			void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
+			void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
 			NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, myLog);
 			scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, myLog));
 			NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), myLog);
@@ -696,6 +732,7 @@ TEST_F(APITest, FractureBufferLimits)
 			NvBlastFractureBuffers events = { static_cast<uint32_t>(bfData.size()), static_cast<uint32_t>(cfData.size()) - 1, bfData.data(), cfData.data() };
 
 			NvBlastActorApplyFracture(&events, actor, &commands, myLog, nullptr);
+			EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
 
 			EXPECT_NO_WARNING;
 			EXPECT_EQ(14, events.chunkFractureCount);
@@ -720,10 +757,10 @@ TEST_F(APITest, FractureBufferLimits)
 				EXPECT_TRUE(actorReleaseResult);
 			}
 
-			free(family);
+			alignedFree(family);
 		}
 
-		free(asset);
+		alignedFree(asset);
 	}
 	EXPECT_NO_WARNING;
 }
@@ -760,17 +797,17 @@ TEST_F(APITest, FractureBufferLimitsInSitu)
 
 	const NvBlastBondDesc c_bonds[3] =
 	{
-		// chunks, normal, area, centroid, userdata
-		{ { 1, 2 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 } },
-		{ { 2, 3 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 0.0f, 0.0f }, 0 } },
-		{ { 3, 4 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 3.0f, 0.0f, 0.0f }, 0 } },
+		// normal, area, centroid, userdata, chunks
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 }, { 1, 2 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 2.0f, 0.0f, 0.0f }, 0 }, { 2, 3 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 3.0f, 0.0f, 0.0f }, 0 }, { 3, 4 } },
 	};
 
 	NvBlastAssetDesc assetDesc = { chunksCount, c_chunks, 3, c_bonds };
 	{
 		// create asset with chunk map
 		std::vector<char> scratch((size_t)NvBlastGetRequiredScratchForCreateAsset(&assetDesc, myLog));
-		void* amem = alloc(NvBlastGetAssetMemorySize(&assetDesc, myLog));
+		void* amem = alignedZeroedAlloc(NvBlastGetAssetMemorySize(&assetDesc, myLog));
 		NvBlastAsset* asset = NvBlastCreateAsset(amem, &assetDesc, scratch.data(), myLog);
 		EXPECT_TRUE(asset != nullptr);
 
@@ -780,7 +817,7 @@ TEST_F(APITest, FractureBufferLimitsInSitu)
 			NvBlastActorDesc actorDesc;
 			actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 			actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-			void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
+			void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
 			NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, myLog);
 			scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, myLog));
 			NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), myLog);
@@ -805,6 +842,7 @@ TEST_F(APITest, FractureBufferLimitsInSitu)
 			NvBlastFractureBuffers events = { static_cast<uint32_t>(bfData.size()), static_cast<uint32_t>(cfData.size()) - 1, bfData.data(), cfData.data() };
 
 			NvBlastActorApplyFracture(&events, actor, &commands, myLog, nullptr);
+			EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
 
 			EXPECT_WARNING;
 			EXPECT_EQ(GUARD, cfData[cfData.size() - 1].userdata);
@@ -816,7 +854,7 @@ TEST_F(APITest, FractureBufferLimitsInSitu)
 
 			EXPECT_TRUE(NvBlastActorDeactivate(actor, myLog));
 
-			free(family);
+			alignedFree(family);
 		}
 
 		{
@@ -824,7 +862,7 @@ TEST_F(APITest, FractureBufferLimitsInSitu)
 			NvBlastActorDesc actorDesc;
 			actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 			actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-			void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
+			void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
 			NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, myLog);
 			scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, myLog));
 			NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), myLog);
@@ -849,6 +887,7 @@ TEST_F(APITest, FractureBufferLimitsInSitu)
 			NvBlastFractureBuffers events = { static_cast<uint32_t>(bfData.size()), static_cast<uint32_t>(cfData.size()) - 1, bfData.data(), cfData.data() };
 
 			NvBlastActorApplyFracture(&events, actor, &commands, myLog, nullptr);
+			EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
 
 			EXPECT_NO_WARNING;
 			EXPECT_EQ(14, events.chunkFractureCount);
@@ -872,11 +911,350 @@ TEST_F(APITest, FractureBufferLimitsInSitu)
 				const bool actorReleaseResult = NvBlastActorDeactivate(result.newActors[i], myLog);
 				EXPECT_TRUE(actorReleaseResult);
 			}
-			free(family);
+			alignedFree(family);
 		}
 
-		free(asset);
+		alignedFree(asset);
 	}
+	EXPECT_NO_WARNING;
+}
+
+/*
+This test checks if bond or chunk fracture commands passed to NvBlastActorApplyFracture do not correspond to 
+the actor passed in they (commands) will be ignored and warning message will be fired.
+*/
+TEST_F(APITest, FractureWarnAndFilterOtherActorCommands)
+{
+	const uint32_t chunksCount = 17;
+	const NvBlastChunkDesc c_chunks[chunksCount] =
+	{
+		// centroid           volume parent idx		flags                         ID
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, UINT32_MAX, NvBlastChunkDesc::NoFlags, 0 },
+
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 1 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 2 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 3 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 4 },
+
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 1, NvBlastChunkDesc::NoFlags, 5 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 1, NvBlastChunkDesc::NoFlags, 6 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 2, NvBlastChunkDesc::NoFlags, 7 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 2, NvBlastChunkDesc::NoFlags, 8 },
+
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 5, NvBlastChunkDesc::NoFlags, 9 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 5, NvBlastChunkDesc::NoFlags, 10 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 6, NvBlastChunkDesc::NoFlags, 11 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 6, NvBlastChunkDesc::NoFlags, 12 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 7, NvBlastChunkDesc::NoFlags, 13 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 7, NvBlastChunkDesc::NoFlags, 14 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 8, NvBlastChunkDesc::NoFlags, 15 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 8, NvBlastChunkDesc::NoFlags, 16 },
+	};
+
+	const NvBlastBondDesc c_bonds[4] =
+	{
+		// normal, area, centroid, userdata, chunks
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 }, { 1, 2 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 }, { 2, 3 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 }, { 3, 4 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 }, { 1, 3 } }
+	};
+
+	NvBlastAssetDesc assetDesc = { chunksCount, c_chunks, 4, c_bonds };
+
+	// create asset with chunk map
+	std::vector<char> scratch((size_t)NvBlastGetRequiredScratchForCreateAsset(&assetDesc, myLog));
+	void* amem = alignedZeroedAlloc(NvBlastGetAssetMemorySize(&assetDesc, myLog));
+ 	NvBlastAsset* asset = NvBlastCreateAsset(amem, &assetDesc, scratch.data(), myLog);
+	EXPECT_TRUE(asset != nullptr);
+
+	// create actor
+	NvBlastActorDesc actorDesc;
+	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
+	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
+	void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
+	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, myLog);
+	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, myLog));
+	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), myLog);
+	EXPECT_TRUE(actor != nullptr);
+
+	// split in 2
+	std::vector<NvBlastActor*> actors;
+	{
+		NvBlastBondFractureData command[] =
+		{
+			{ 0, 0, 2, 10.0f },
+			{ 0, 1, 2, 10.0f }
+		};
+
+		NvBlastFractureBuffers commands = { 2, 0, command, nullptr };
+		NvBlastActorApplyFracture(nullptr, actor, &commands, myLog, nullptr);
+		EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
+
+		scratch.resize((size_t)NvBlastActorGetRequiredScratchForSplit(actor, myLog));
+		std::vector<NvBlastActor*> newActors(NvBlastActorGetMaxActorCountForSplit(actor, myLog));
+		NvBlastActorSplitEvent result;
+		result.deletedActor = nullptr;
+		result.newActors = newActors.data();
+		size_t newActorsCount = NvBlastActorSplit(&result, actor, static_cast<uint32_t>(newActors.size()), scratch.data(), myLog, nullptr);
+
+		EXPECT_EQ(2, newActorsCount);
+		EXPECT_EQ(actor, result.deletedActor);
+
+		actors.insert(actors.begin(), result.newActors, result.newActors + newActorsCount);
+	}
+
+	// damage bonds belonging to other actors, nothing expected to be broken
+	{
+		for (uint32_t i = 0; i < actors.size(); ++i)
+		{
+			NvBlastActor* actor = actors[i];
+			NvBlastActor* otherActor = actors[(i + 1) % 2];
+
+			// get graph nodes check
+			std::vector<uint32_t> graphNodeIndices;
+			graphNodeIndices.resize(NvBlastActorGetGraphNodeCount(otherActor, nullptr));
+			uint32_t graphNodesCount = NvBlastActorGetGraphNodeIndices(graphNodeIndices.data(), (uint32_t)graphNodeIndices.size(), otherActor, nullptr);
+			EXPECT_EQ(graphNodesCount, 2);
+
+			NvBlastBondFractureData command[] =
+			{
+				{ 0, graphNodeIndices[0], graphNodeIndices[1], 10.0f }
+			};
+
+			NvBlastFractureBuffers commands = { 1, 0, command, nullptr };
+			NvBlastActorApplyFracture(nullptr, actor, &commands, myLog, nullptr);
+			EXPECT_WARNING;
+			EXPECT_FALSE(NvBlastActorIsSplitRequired(actor, messageLog));
+
+			scratch.resize((size_t)NvBlastActorGetRequiredScratchForSplit(actor, myLog));
+			std::vector<NvBlastActor*> newActors(NvBlastActorGetMaxActorCountForSplit(actor, myLog));
+			NvBlastActorSplitEvent result;
+			result.deletedActor = nullptr;
+			result.newActors = newActors.data();
+			size_t newActorsCount = NvBlastActorSplit(&result, actor, static_cast<uint32_t>(newActors.size()), scratch.data(), myLog, nullptr);
+
+			EXPECT_EQ(0, newActorsCount);
+			EXPECT_EQ(nullptr, result.deletedActor);
+		}
+	}
+
+	// damage bonds, split actors in 2 each
+	std::vector<NvBlastActor*> actors2;
+	{
+		for (uint32_t i = 0; i < 2; ++i)
+		{
+			NvBlastActor* actor = actors[i];
+
+			// get graph nodes check
+			std::vector<uint32_t> graphNodeIndices;
+			graphNodeIndices.resize(NvBlastActorGetGraphNodeCount(actor, nullptr));
+			uint32_t graphNodesCount = NvBlastActorGetGraphNodeIndices(graphNodeIndices.data(), (uint32_t)graphNodeIndices.size(), actor, nullptr);
+			EXPECT_EQ(graphNodesCount, 2);
+
+			NvBlastBondFractureData command[] =
+			{
+				{ 0, graphNodeIndices[0], graphNodeIndices[1], 10.0f }
+			};
+
+			NvBlastFractureBuffers commands = { 1, 0, command, nullptr };
+			NvBlastActorApplyFracture(nullptr, actor, &commands, myLog, nullptr);
+			EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
+
+			scratch.resize((size_t)NvBlastActorGetRequiredScratchForSplit(actor, myLog));
+			std::vector<NvBlastActor*> newActors(NvBlastActorGetMaxActorCountForSplit(actor, myLog));
+			NvBlastActorSplitEvent result;
+			result.deletedActor = nullptr;
+			result.newActors = newActors.data();
+			size_t newActorsCount = NvBlastActorSplit(&result, actor, static_cast<uint32_t>(newActors.size()), scratch.data(), myLog, nullptr);
+
+			EXPECT_EQ(2, newActorsCount);
+			EXPECT_EQ(actor, result.deletedActor);
+
+			actors2.insert(actors2.begin(), result.newActors, result.newActors + newActorsCount);
+		}
+	}
+
+	// damage chunk belonging to other actor (expect no split or damage taken)
+	{
+		for (uint32_t i = 0; i < actors.size(); ++i)
+		{
+			NvBlastActor* actor = actors[i];
+			NvBlastActor* otherActor = actors[(i + 1) % 2];
+
+			uint32_t chunkToDamage;
+			NvBlastActorGetVisibleChunkIndices(&chunkToDamage, 1, otherActor, myLog);
+
+			NvBlastChunkFractureData command[] =
+			{
+				{ 0, chunkToDamage, 0.9f },
+			};
+
+			NvBlastFractureBuffers commands = { 0, 1, nullptr, command };
+			NvBlastActorApplyFracture(nullptr, actor, &commands, myLog, nullptr);
+			EXPECT_WARNING;
+			EXPECT_FALSE(NvBlastActorIsSplitRequired(actor, messageLog));
+
+			scratch.resize((size_t)NvBlastActorGetRequiredScratchForSplit(actor, myLog));
+			std::vector<NvBlastActor*> newActors(NvBlastActorGetMaxActorCountForSplit(actor, myLog));
+			NvBlastActorSplitEvent result;
+			result.deletedActor = nullptr;
+			result.newActors = newActors.data();
+			size_t newActorsCount = NvBlastActorSplit(&result, actor, static_cast<uint32_t>(newActors.size()), scratch.data(), myLog, nullptr);
+
+			EXPECT_EQ(0, newActorsCount);
+			EXPECT_EQ(nullptr, result.deletedActor);
+
+			EXPECT_EQ(1, NvBlastActorGetVisibleChunkCount(actor, myLog));
+			uint32_t chunkIndex;
+			NvBlastActorGetVisibleChunkIndices(&chunkIndex, 1, actor, myLog);
+			EXPECT_NE(chunkToDamage, chunkIndex);
+		}
+	}
+
+	for (NvBlastActor* actor : actors2)
+	{
+		NvBlastActorDeactivate(actor, myLog);
+	}
+
+	alignedFree(family);
+	alignedFree(asset);
+
+	EXPECT_NO_WARNING;
+}
+
+/**
+If duplicate bonds are passed asset create routine will ignore them (but fire warning)
+We pass duplicated bonds to world chunk and fully fracture actor once.
+*/
+TEST_F(APITest, FractureWithBondDuplicates)
+{
+	const uint32_t chunksCount = 17;
+	const NvBlastChunkDesc c_chunks[chunksCount] =
+	{
+		// centroid           volume parent idx		flags                         ID
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, UINT32_MAX, NvBlastChunkDesc::NoFlags, 0 },
+
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 1 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 2 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 3 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 4 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 5 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 6 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 7 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 0, NvBlastChunkDesc::SupportFlag, 8 },
+
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 5, NvBlastChunkDesc::NoFlags, 9 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 5, NvBlastChunkDesc::NoFlags, 10 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 6, NvBlastChunkDesc::NoFlags, 11 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 6, NvBlastChunkDesc::NoFlags, 12 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 7, NvBlastChunkDesc::NoFlags, 13 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 7, NvBlastChunkDesc::NoFlags, 14 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 8, NvBlastChunkDesc::NoFlags, 15 },
+		{ { 0.0f, 0.0f, 0.0f }, 0.0f, 8, NvBlastChunkDesc::NoFlags, 16 },
+	};
+
+	const uint32_t bondCount = 20;
+	const uint32_t world = ~(uint32_t)0; // world chunk => invalid index
+	const NvBlastBondDesc c_bonds[bondCount] =
+	{
+		// normal, area, centroid, userdata, chunks
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 1, world } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 2, 1 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 2, world } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 2, world } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 3, 1 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 4, 3 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 4, 2 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 4, world } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 5, 1 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 5, world } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 6, 5 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 6, 2 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 6, world } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 6, world } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 7, 5 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 7, 3 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 8, 7 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 8, 6 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 8, 4 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 },{ 8, world } }
+	};
+
+	NvBlastAssetDesc assetDesc = { chunksCount, c_chunks, bondCount, c_bonds };
+
+	// create asset 
+	std::vector<char> scratch((size_t)NvBlastGetRequiredScratchForCreateAsset(&assetDesc, myLog));
+	void* amem = alignedZeroedAlloc(NvBlastGetAssetMemorySize(&assetDesc, myLog));
+	NvBlastAsset* asset = NvBlastCreateAsset(amem, &assetDesc, scratch.data(), myLog);
+	EXPECT_WARNING;
+	EXPECT_TRUE(asset != nullptr);
+
+	// create actor
+	NvBlastActorDesc actorDesc;
+	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
+	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
+	void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
+	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, myLog);
+	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, myLog));
+	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), myLog);
+	EXPECT_TRUE(actor != nullptr);
+
+	// split in 2
+	std::vector<NvBlastActor*> actors;
+	{
+		NvBlastExtRadialDamageDesc damage[] = {
+			{
+				10.0f,					// compressive
+				{ 0.0f, 0.0f, 0.0f },	// position
+				100.0f,					// min radius - maximum damage
+				100.0f					// max radius - zero damage
+			}							//				linear falloff
+		};
+
+		NvBlastBondFractureData outBondFracture[bondCount];
+		NvBlastChunkFractureData outChunkFracture[chunksCount];
+
+		NvBlastFractureBuffers events;
+		events.bondFractureCount = 2;
+		events.bondFractures = outBondFracture;
+		events.chunkFractureCount = 2;
+		events.chunkFractures = outChunkFracture;
+
+		NvBlastProgramParams programParams;
+		programParams.damageDescCount = 1;
+		programParams.damageDescBuffer = &damage;
+
+		NvBlastDamageProgram program = {
+			NvBlastExtFalloffGraphShader,
+			NvBlastExtFalloffSubgraphShader
+		};
+
+		NvBlastActorGenerateFracture(&events, actor, program, &programParams, myLog, nullptr);
+		NvBlastActorApplyFracture(nullptr, actor, &events, myLog, nullptr);
+		EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
+
+		scratch.resize((size_t)NvBlastActorGetRequiredScratchForSplit(actor, myLog));
+		std::vector<NvBlastActor*> newActors(NvBlastActorGetMaxActorCountForSplit(actor, myLog));
+		NvBlastActorSplitEvent result;
+		result.deletedActor = nullptr;
+		result.newActors = newActors.data();
+		size_t newActorsCount = NvBlastActorSplit(&result, actor, static_cast<uint32_t>(newActors.size()), scratch.data(), myLog, nullptr);
+
+		EXPECT_EQ(8, newActorsCount);
+		EXPECT_EQ(actor, result.deletedActor);
+
+		actors.insert(actors.begin(), result.newActors, result.newActors + newActorsCount);
+	}
+
+	for (NvBlastActor* actor : actors)
+	{
+		NvBlastActorDeactivate(actor, myLog);
+	}
+
+	alignedFree(family);
+	alignedFree(asset);
+
 	EXPECT_NO_WARNING;
 }
 
@@ -964,7 +1342,7 @@ TEST_F(APITest, NoBondsSausage)
 	assetDesc.bondDescs = nullptr;
 
 	std::vector<char> scratch((size_t)NvBlastGetRequiredScratchForCreateAsset(&assetDesc, messageLog));
-	void* amem = alloc(NvBlastGetAssetMemorySize(&assetDesc, messageLog));
+	void* amem = alignedZeroedAlloc(NvBlastGetAssetMemorySize(&assetDesc, messageLog));
 	NvBlastAsset* asset = NvBlastCreateAsset(amem, &assetDesc, scratch.data(), messageLog);
 	const NvBlastChunk* chunks = NvBlastAssetGetChunks(asset, messageLog);
 	EXPECT_TRUE(asset != nullptr);
@@ -973,7 +1351,7 @@ TEST_F(APITest, NoBondsSausage)
 	NvBlastActorDesc actorDesc;
 	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-	void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
+	void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, messageLog));
 	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, messageLog);
 	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, messageLog));
 	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), messageLog);
@@ -1017,6 +1395,7 @@ TEST_F(APITest, NoBondsSausage)
 
 	NvBlastActorGenerateFracture(&events, actor, program, &programParams, messageLog, nullptr);
 	NvBlastActorApplyFracture(&events, actor, &events, messageLog, nullptr);
+	EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
 	EXPECT_EQ(0, events.bondFractureCount);
 	EXPECT_EQ(1, events.chunkFractureCount);
 
@@ -1045,8 +1424,8 @@ TEST_F(APITest, NoBondsSausage)
 		EXPECT_TRUE(actorReleaseResult);
 	}
 
-	free(family);
-	free(asset);
+	alignedFree(family);
+	alignedFree(asset);
 }
 
 TEST_F(APITest, SplitOnlyWhenNecessary)
@@ -1081,18 +1460,18 @@ TEST_F(APITest, SplitOnlyWhenNecessary)
 
 	const NvBlastBondDesc c_bonds[4] =
 	{
-		// chunks, normal, area, centroid, userdata
-		{ { 1, 2 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 } },
-		{ { 2, 3 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 } },
-		{ { 3, 4 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 } },
-		{ { 1, 3 }, { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 } }
+		// normal, area, centroid, userdata, chunks
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 }, { 1, 2 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 }, { 2, 3 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 }, { 3, 4 } },
+		{ { { 1.0f, 0.0f, 0.0f }, 1.0f, { 1.0f, 0.0f, 0.0f }, 0 }, { 1, 3 } }
 	};
 
 	NvBlastAssetDesc assetDesc = { chunksCount, c_chunks, 4, c_bonds };
 
 	// create asset with chunk map
 	std::vector<char> scratch((size_t)NvBlastGetRequiredScratchForCreateAsset(&assetDesc, myLog));
-	void* amem = alloc(NvBlastGetAssetMemorySize(&assetDesc, myLog));
+	void* amem = alignedZeroedAlloc(NvBlastGetAssetMemorySize(&assetDesc, myLog));
 	NvBlastAsset* asset = NvBlastCreateAsset(amem, &assetDesc, scratch.data(), myLog);
 	EXPECT_TRUE(asset != nullptr);
 
@@ -1100,7 +1479,7 @@ TEST_F(APITest, SplitOnlyWhenNecessary)
 	NvBlastActorDesc actorDesc;
 	actorDesc.initialBondHealths = actorDesc.initialSupportChunkHealths = nullptr;
 	actorDesc.uniformInitialBondHealth = actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
-	void* fmem = alloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
+	void* fmem = alignedZeroedAlloc(NvBlastAssetGetFamilyMemorySize(asset, myLog));
 	NvBlastFamily* family = NvBlastAssetCreateFamily(fmem, asset, myLog);
 	scratch.resize((size_t)NvBlastFamilyGetRequiredScratchForCreateFirstActor(family, myLog));
 	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), myLog);
@@ -1118,6 +1497,7 @@ TEST_F(APITest, SplitOnlyWhenNecessary)
 
 		NvBlastFractureBuffers commands = { 3, 0, command, nullptr };
 		NvBlastActorApplyFracture(nullptr, actor, &commands, myLog, nullptr);
+		EXPECT_FALSE(NvBlastActorIsSplitRequired(actor, messageLog));
 
 		scratch.resize((size_t)NvBlastActorGetRequiredScratchForSplit(actor, myLog));
 		std::vector<NvBlastActor*> newActors(NvBlastActorGetMaxActorCountForSplit(actor, myLog));
@@ -1144,6 +1524,7 @@ TEST_F(APITest, SplitOnlyWhenNecessary)
 
 		NvBlastFractureBuffers commands = { 1, 0, command, nullptr };
 		NvBlastActorApplyFracture(nullptr, actor, &commands, myLog, nullptr);
+		EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
 
 		scratch.resize((size_t)NvBlastActorGetRequiredScratchForSplit(actor, myLog));
 		std::vector<NvBlastActor*> newActors(NvBlastActorGetMaxActorCountForSplit(actor, myLog));
@@ -1173,6 +1554,7 @@ TEST_F(APITest, SplitOnlyWhenNecessary)
 
 		NvBlastFractureBuffers commands = { 3, 0, command, nullptr };
 		NvBlastActorApplyFracture(nullptr, actor, &commands, myLog, nullptr);
+		EXPECT_TRUE(NvBlastActorIsSplitRequired(actor, messageLog));
 
 		scratch.resize((size_t)NvBlastActorGetRequiredScratchForSplit(actor, myLog));
 		std::vector<NvBlastActor*> newActors(NvBlastActorGetMaxActorCountForSplit(actor, myLog));
@@ -1201,6 +1583,7 @@ TEST_F(APITest, SplitOnlyWhenNecessary)
 
 			NvBlastFractureBuffers commands = { 0, 1, nullptr, command };
 			NvBlastActorApplyFracture(nullptr, actor, &commands, myLog, nullptr);
+			EXPECT_FALSE(NvBlastActorIsSplitRequired(actor, messageLog));
 
 			scratch.resize((size_t)NvBlastActorGetRequiredScratchForSplit(actor, myLog));
 			std::vector<NvBlastActor*> newActors(NvBlastActorGetMaxActorCountForSplit(actor, myLog));
@@ -1224,8 +1607,8 @@ TEST_F(APITest, SplitOnlyWhenNecessary)
 		NvBlastActorDeactivate(actor, myLog);
 	}
 
-	free(family);
-	free(asset);
+	alignedFree(family);
+	alignedFree(asset);
 
 	EXPECT_NO_WARNING;
 }
@@ -1325,12 +1708,12 @@ TEST_F(APITest,CExportsNoNameMangling)
 	{
 		size_t requiredsize = assetCreateRequiredScratch(&assetDesc);
 		std::vector<char>scratch(requiredsize);
-		void* mem = alloc(assetGetMemorySize(&assetDesc));
+		void* mem = alignedZeroedAlloc(assetGetMemorySize(&assetDesc));
 		asset = assetCreate(mem, &assetDesc, scratch.data(), myLog);
 		ASSERT_TRUE(asset != nullptr);
 	}
 
-	void* fmem = alloc(familyGetMemorySize(asset));
+	void* fmem = alignedZeroedAlloc(familyGetMemorySize(asset));
 	NvBlastFamily* family = familyCreate(fmem, asset, myLog);
 
 	{
@@ -1346,8 +1729,8 @@ TEST_F(APITest,CExportsNoNameMangling)
 		ASSERT_TRUE(actorRelease(actor));
 	}
 
-	free(family);
-	free(asset);
+	alignedFree(family);
+	alignedFree(asset);
 
 	EXPECT_NO_WARNING;
 }

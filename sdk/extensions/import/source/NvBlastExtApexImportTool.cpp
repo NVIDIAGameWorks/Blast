@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "NvBlastExtApexImportTool.h"
 
@@ -16,18 +34,20 @@
 #endif
 
 #include "PxFoundation.h"
-#include "PxErrorCallback.h"
-#include "PxAllocatorCallback.h"
 
 #include "NvBlastIndexFns.h"
+#include "NvBlastGlobals.h"
 #include "DestructibleAsset.h"
 #include "NvBlastExtApexDestruction.h"
 #include <PxConvexMesh.h>
 #include "PxPhysics.h"
 #include "NvBlastExtAuthoringCollisionBuilder.h"
 #include "NvBlastExtPxAsset.h"
-#include "NvBlastExtAuthoringTypes.h"
+#include "NvBlastExtAuthoring.h"
 #include "NvBlastExtAuthoringBondGenerator.h"
+
+#include <algorithm>
+#include <memory>
 
 using namespace nvidia;
 using namespace apex;
@@ -59,8 +79,8 @@ namespace ApexImporter
 		}
 	};
 
-ApexImportTool::ApexImportTool(NvBlastLog log)
-	: m_apexDestruction(NULL), m_log(log)
+ApexImportTool::ApexImportTool()
+	: m_apexDestruction(NULL)
 {
 }
 
@@ -77,8 +97,8 @@ bool ApexImportTool::initialize()
 	{
 		return true;
 	}
-	m_log(NvBlastMessage::Info, "APEX initialization \n", __FILE__, __LINE__);
-	m_apexDestruction = new ApexDestruction(m_log);
+	NVBLAST_LOG_INFO("APEX initialization");
+	m_apexDestruction = new ApexDestruction();
 	return isValid();
 }
 
@@ -89,8 +109,8 @@ bool ApexImportTool::initialize(nvidia::apex::ApexSDK* apexSdk, nvidia::apex::Mo
 	{
 		return true;
 	}
-	m_log(NvBlastMessage::Info, "APEX initialization \n", __FILE__, __LINE__);
-	m_apexDestruction = new ApexDestruction(apexSdk, moduleDestructible, m_log);
+	NVBLAST_LOG_INFO("APEX initialization");
+	m_apexDestruction = new ApexDestruction(apexSdk, moduleDestructible);
 	return isValid();
 }
 
@@ -102,12 +122,15 @@ DestructibleAsset* ApexImportTool::loadAssetFromFile(physx::PxFileBuf* stream)
 
 bool ApexImportTool::getCollisionGeometry(const nvidia::apex::DestructibleAsset* apexAsset, uint32_t chunkCount, std::vector<uint32_t>& chunkReorderInvMap,
 						const std::vector<uint32_t>& apexChunkFlags, std::vector<ExtPxAssetDesc::ChunkDesc>& physicsChunks,
-						std::vector<ExtPxAssetDesc::SubchunkDesc>& physicsSubchunks)
+						std::vector<ExtPxAssetDesc::SubchunkDesc>& physicsSubchunks, std::vector<std::vector<CollisionHull*> >& hullsDesc)
 {
 	physicsChunks.clear();
 	physicsChunks.resize(chunkCount);
 	// prepare physics asset desc (convexes, transforms)
-	ConvexMeshBuilder collisionBuilder(m_apexDestruction->cooking(), &m_apexDestruction->apexSDK()->getPhysXSDK()->getPhysicsInsertionCallback());
+	std::shared_ptr<ConvexMeshBuilder> collisionBuilder(
+		NvBlastExtAuthoringCreateConvexMeshBuilder(m_apexDestruction->cooking(), &m_apexDestruction->apexSDK()->getPhysXSDK()->getPhysicsInsertionCallback()),
+		[](ConvexMeshBuilder* cmb) { cmb->release(); });
+
 	int32_t apexHullCount = 0;
 	const uint32_t apexChunkCount = apexAsset->getChunkCount();
 	for (uint32_t chunkIndex = 0; chunkIndex < chunkCount; ++chunkIndex)
@@ -121,6 +144,8 @@ bool ApexImportTool::getCollisionGeometry(const nvidia::apex::DestructibleAsset*
 	}
 	physicsSubchunks.reserve(chunkCount);
 	{
+		hullsDesc.clear();
+		hullsDesc.resize(chunkCount);
 		for (uint32_t chunkIndex = 0; chunkIndex < chunkCount; ++chunkIndex)
 		{
 			uint32_t apexChunkIndex = chunkReorderInvMap[chunkIndex];
@@ -138,9 +163,10 @@ bool ApexImportTool::getCollisionGeometry(const nvidia::apex::DestructibleAsset*
 					paramHandle.getArraySize(verticesCount);
 					std::vector<PxVec3> vertexData(verticesCount);
 					paramHandle.getParamVec3Array(vertexData.data(), verticesCount);
-
-					PxConvexMesh* convexMesh = collisionBuilder.buildConvexMesh(vertexData);
-
+					hullsDesc[chunkIndex].push_back(nullptr);
+					hullsDesc[chunkIndex].back() = collisionBuilder.get()->buildCollisionGeometry(verticesCount, vertexData.data());
+					PxConvexMesh* convexMesh = collisionBuilder.get()->buildConvexMesh(verticesCount, vertexData.data());
+					
 					const ExtPxAssetDesc::SubchunkDesc subchunk =
 					{
 						PxTransform(PxIdentity),
@@ -155,8 +181,7 @@ bool ApexImportTool::getCollisionGeometry(const nvidia::apex::DestructibleAsset*
 			}
 			else
 			{
-				// this is earth chunk
-				physicsChunks[chunkIndex].isStatic = true;
+				NVBLAST_LOG_ERROR("Error: chunk index is invalid.");
 			}
 		}
 	}
@@ -164,7 +189,7 @@ bool ApexImportTool::getCollisionGeometry(const nvidia::apex::DestructibleAsset*
 	// check that vector didn't grow
 	if (static_cast<int32_t>(physicsSubchunks.size()) > apexHullCount)
 	{
-		m_log(NvBlastMessage::Error, "Error: sub chunk count seems to be wrong.  \n", __FILE__, __LINE__);
+		NVBLAST_LOG_ERROR("Error: sub chunk count seems to be wrong.");
 		return false;
 	}
 	return true;
@@ -189,13 +214,14 @@ void gatherChunkHullPoints(const DestructibleAsset* apexAsset, std::vector<std::
 		}
 	}
 }
-PxBounds3 gatherChunkTriangles(const DestructibleAsset* apexAsset, std::vector<std::vector<Nv::Blast::Triangle> >& chunkTriangles, int32_t posBufferIndex, float scale, PxVec3 offset )
+PxBounds3 gatherChunkTriangles(const DestructibleAsset* apexAsset, std::vector<uint32_t>& chunkTrianglesOffsets, std::vector<Nv::Blast::Triangle>& chunkTriangles, int32_t posBufferIndex, float scale, PxVec3 offset )
 {
 
 	PxBounds3 bnd;
 	bnd.setEmpty();
-	chunkTriangles.clear();
-	chunkTriangles.resize(apexAsset->getChunkCount());
+	chunkTrianglesOffsets.clear();
+	chunkTrianglesOffsets.resize(apexAsset->getChunkCount() + 1);
+	chunkTrianglesOffsets[0] = 0;
 	for (uint32_t chunkIndex = 0; chunkIndex < apexAsset->getChunkCount(); ++chunkIndex)
 	{
 		uint32_t part = apexAsset->getPartIndex(chunkIndex);
@@ -223,9 +249,10 @@ PxBounds3 gatherChunkTriangles(const DestructibleAsset* apexAsset, std::vector<s
 				a.p *= scale;
 				b.p *= scale;
 				c.p *= scale;
-				chunkTriangles[chunkIndex].push_back(Nv::Blast::Triangle(a, b, c));
+				chunkTriangles.push_back(Nv::Blast::Triangle(a, b, c));
 			}
 		}
+		chunkTrianglesOffsets[chunkIndex + 1] = chunkTriangles.size();
 	}
 	return bnd;
 }
@@ -252,10 +279,7 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 
 	if (!apexAsset)
 	{
-		if (m_log != NULL)
-		{
-			m_log(NvBlastMessage::Error, "Error: attempting to import NULL Apex asset.\n", __FILE__, __LINE__);
-		}
+		NVBLAST_LOG_ERROR("Error: attempting to import NULL Apex asset.");
 		return false;
 	}
 	
@@ -339,14 +363,18 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 	bondsDescriptors.clear();
 	bondsDescriptors.resize(overlapsBuffer.size());
 
-	Nv::Blast::BlastBondGenerator bondGenTool(GetApexSDK()->getCookingInterface(), &GetApexSDK()->getPhysXSDK()->getPhysicsInsertionCallback());
-	std::vector<std::vector<Nv::Blast::Triangle> > chunkTriangles;
+	std::shared_ptr<Nv::Blast::BlastBondGenerator> bondGenTool(
+		NvBlastExtAuthoringCreateBondGenerator(GetApexSDK()->getCookingInterface(), &GetApexSDK()->getPhysXSDK()->getPhysicsInsertionCallback()),
+		[](Nv::Blast::BlastBondGenerator* bg) {bg->release(); });
+
+	std::vector<uint32_t> chunkTrianglesOffsets;
+	std::vector<Nv::Blast::Triangle> chunkTriangles;
 	
 	PxBounds3 bnds = apexAsset->getRenderMeshAsset()->getBounds();
 	PxVec3 offset = bnds.getCenter();
 	float scale = 1.0f / PxMax(PxAbs(bnds.getExtents(0)), PxMax(PxAbs(bnds.getExtents(1)), PxAbs(bnds.getExtents(2))));
 
-	bnds = gatherChunkTriangles(apexAsset, chunkTriangles, 0, scale, offset);
+	bnds = gatherChunkTriangles(apexAsset, chunkTrianglesOffsets, chunkTriangles, 0, scale, offset);
 
 
 	BondGenerationConfig cf;
@@ -355,9 +383,17 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 	{
 		cf.bondMode = BondGenerationConfig::EXACT;
 	}
-
-	bondGenTool.createBondBetweenMeshes(chunkTriangles, bondsDescriptors, overlapsBuffer, cf);
-	
+	NvBlastBondDesc* bondsDesc;
+	std::vector<uint32_t> overlapsA, overlapsB;
+	for (auto it : overlapsBuffer)
+	{
+		overlapsA.push_back(it.first);
+		overlapsB.push_back(it.second);
+	}
+	bondGenTool.get()->createBondBetweenMeshes(chunkTrianglesOffsets.size() - 1, chunkTrianglesOffsets.data(), chunkTriangles.data(), 
+		overlapsBuffer.size(), overlapsA.data(), overlapsB.data(), bondsDesc, cf);
+	memcpy(bondsDescriptors.data(), bondsDesc, sizeof(NvBlastBondDesc) * bondsDescriptors.size());
+	delete[] bondsDesc;
 
 
 	float inverScale = 1.0f / scale;
@@ -392,16 +428,8 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 
 	apexChunkFlags.clear();
 	apexChunkFlags.resize(chunkDescriptors.size());
-	// special 'earth chunk'
+	// externally supported chunks
 	{
-		uint32_t earthChunkIndex = (uint32_t)chunkDescriptors.size();
-		NvBlastChunkDesc earthChunk;
-		memset(earthChunk.centroid, 0, 3 * sizeof(float));
-		earthChunk.volume = 0.0f;
-		earthChunk.parentChunkIndex = rootChunkIndex;
-		earthChunk.flags = NvBlastChunkDesc::SupportFlag;
-		earthChunk.userData = earthChunkIndex;
-		uint32_t chunksConnectedToEarth = 0;
 		for (uint32_t i = 0; i < chunkDescriptors.size(); i++)
 		{
 			uint32_t chunkID = i;
@@ -420,19 +448,14 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 			{
 				NvBlastBondDesc bond;
 				bond.chunkIndices[0] = i;
-				bond.chunkIndices[1] = earthChunkIndex;
+				bond.chunkIndices[1] = UINT32_MAX;	// invalid index for "world"
 				bond.bond.area = 0.1f; // ???
 				PxVec3 center = apexAsset->getChunkActorLocalBounds(chunkID).getCenter();
 				memcpy(&bond.bond.centroid, &center.x, sizeof(PxVec3));
 				PxVec3 normal = PxVec3(0, 0, 1);
 				memcpy(&bond.bond.normal, &normal.x, sizeof(PxVec3));
 				bondsDescriptors.push_back(bond);
-				chunksConnectedToEarth++;
 			}
-		}
-		if (chunksConnectedToEarth > 0)
-		{
-			chunkDescriptors.push_back(earthChunk);
 		}
 	}
 
@@ -440,9 +463,9 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 	const uint32_t bondCount = static_cast<uint32_t>(bondsDescriptors.size());
 	std::vector<uint32_t> chunkReorderMap(chunkCount);
 	std::vector<NvBlastChunkDesc> scratch(chunkCount);
-	NvBlastEnsureAssetExactSupportCoverage(chunkDescriptors.data(), chunkCount, scratch.data(), m_log);
-	NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), chunkDescriptors.data(), chunkCount, scratch.data(), m_log);
-	NvBlastApplyAssetDescChunkReorderMapInplace(chunkDescriptors.data(), chunkCount, bondsDescriptors.data(), bondCount, chunkReorderMap.data(), scratch.data(), m_log);
+	NvBlastEnsureAssetExactSupportCoverage(chunkDescriptors.data(), chunkCount, scratch.data(), logLL);
+	NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), chunkDescriptors.data(), chunkCount, scratch.data(), logLL);
+	NvBlastApplyAssetDescChunkReorderMapInPlace(chunkDescriptors.data(), chunkCount, bondsDescriptors.data(), bondCount, chunkReorderMap.data(), true, scratch.data(), logLL);
 	chunkReorderInvMap.resize(chunkReorderMap.size());
 	Nv::Blast::invertMap(chunkReorderInvMap.data(), chunkReorderMap.data(), static_cast<uint32_t>(chunkReorderMap.size()));
 	return true;
@@ -453,28 +476,19 @@ bool ApexImportTool::saveAsset(const NvBlastAsset* asset, PxFileBuf* stream)
 {
 	if (!asset)
 	{
-		if (m_log != NULL)
-		{
-			m_log(NvBlastMessage::Error, "Error: attempting to serialize NULL asset.\n", __FILE__, __LINE__);
-		}
+		NVBLAST_LOG_ERROR("Error: attempting to serialize NULL asset.");
 		return false;
 	}
 	if (!stream)
 	{
-		if (m_log != NULL)
-		{
-			m_log(NvBlastMessage::Error, "Error: bad output stream.\n", __FILE__, __LINE__);
-		}
+		NVBLAST_LOG_ERROR("Error: bad output stream.");
 		return false;
 	}
 	const void* assetData = asset;
-	uint32_t assetDataSize = NvBlastAssetGetSize(asset, m_log);
+	uint32_t assetDataSize = NvBlastAssetGetSize(asset, logLL);
 	stream->write(assetData, assetDataSize);
 	stream->close();
-	if (m_log != NULL)
-	{
-		m_log(NvBlastMessage::Info, "Saving finished... \n", __FILE__, __LINE__);
-	}
+	NVBLAST_LOG_INFO("Saving finished.");
 	return true;
 }
 

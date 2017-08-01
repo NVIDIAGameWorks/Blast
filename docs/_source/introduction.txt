@@ -29,20 +29,26 @@ asset is initially instanced.  Subsequent fracturing has the effect of breaking 
 \section support_model Support Model
 
 Blast&tm; requires that support chunks form an <em>exact cover</em> (see the definition of exact coverage in \ref pagedefinitions).
-However, it is quite forgiving with respect to user input when creating an asset.  The geometric interpretation of exact coverage is that
-the support chunks fill the space of the root (unfractured) chunk, without any volume being covered by more than one chunk.  Upon
-asset creation, missing coverage will be filled in by Blast&tm;, by assigning support to chunks at the highest place possible (closest
-to root) in the hierarchy.  If support is redundant, that is a chunk and one of its descendant chunks are both marked as support
-by the user, then Blast&tm; will remove support from the descendant chunk.
+The geometric interpretation of exact coverage is that the support chunks fill the space of the root (unfractured) chunk, without
+any volume being covered by more than one chunk.  A helper function are provided to modify a set of chunk descriptors so that they
+have exact coverage.  This function fills in missing coverage by assigning support to chunks at the highest place possible (closest
+to root) in the hierarchy, and redundant support is removed: if a chunk and one of its descendant chunks are both marked as support,
+the function will remove support from the descendant chunk.
 
-Support chunks that are joined by bonds will be grouped together in the same actor when fracturing occurs.  In order to take
-advantage of the chunk hieararchy to reduce the number of chunks which represent an actor physically and graphically, Blast&tm;
-calculates a list of <em>visible chunks</em> from the support chunks in an actor.  These may be the support chunks, or they may
-be ancestors of support chunks if all descendant support chunks are in the actor.
+Support chunks that are joined by bonds will be grouped together in the same actor when fracturing occurs.  Bonds may be defined
+between any two support chunks, or between a support chunk and "the world."  There is no corresponding "world chunk," but the bond
+represents a connection between the chunk and its external environment.  All chunks with a support graph connected to the world
+will be put into the same actor.  An expected use case is to make this actor static (or kinematic).  Actors may be queried to
+determine if they are "world-bound."
+
+In order to take advantage of the chunk hieararchy to reduce the number of chunks which represent an actor physically and
+graphically, Blast&tm; calculates a list of <em>visible chunks</em> from the support chunks in an actor.  These may be the support
+chunks, or they may be ancestors of support chunks if all descendant support chunks are in the actor.
 
 Support chunks do not have to be leaves in the chunk hierarchy, nor do they have to be at the same depth in the hierarchy.  Children
-of support chunks will always be the sole chunk in their actor, since there is no bond defined between them.  If an actor consists of
-of a <em>subsupport chunk</em> (see \ref pagedefinitions), the visible chunk is the same chunk.
+of support chunks will always be the sole chunk in their actor, since there are no bonds defined between them.  If an actor consists
+of a <em>subsupport chunk</em> (see \ref pagedefinitions), the visible chunk is the same chunk.  The same is true if an actor consists
+of a <em>single</em> support chunk.
 
 \section damage_model Damage Model
 
@@ -51,9 +57,9 @@ chunks in the support graph.  The user applies damage to an actor at a given loc
 loss of bond and chunk health is determined by a user-defined <em>material function</em>.  In this way the user can customize the
 effect of damage based upon the bonds' properties such as normal and area, as well as distance from impact location.
 
-Damage is applied from a damage event buffer.  After all damage events are processed, bonds with non-positive healths are considered
-to be broken.  Blast&tm; performs island detection on the support graph to find all groups of support chunks that are connected by unbroken
-bonds, and any new islands found result in new actors.
+Damage is applied during the processing of a damage event buffer.  After all damage events are processed, bonds with non-positive
+healths are considered to be broken.  Blast&tm; performs island detection on the support graph to find all groups of support chunks
+that are connected by unbroken bonds, and any new islands found result in new actors.
 
 If an actor is composed of a single support or subsupport chunk with subsupport descendants, then there is no bond structure to model
 damage.  Instead, such a chunk is considered to have its own health value, which may be decreased by damage.  When such a lower-support

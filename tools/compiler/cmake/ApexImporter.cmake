@@ -4,11 +4,13 @@
 
 SET(APEXIMPORTER_SOURCE_DIR ${PROJECT_SOURCE_DIR}/ApexImporter/src)
 SET(TOOLS_COMMON_DIR ${BLAST_ROOT_DIR}/tools/common)
+SET(TOOLS_COMMON_DIR ${BLAST_ROOT_DIR}/tools/common)
 FIND_PACKAGE(PhysXSDK $ENV{PM_PhysX_VERSION} REQUIRED)
 FIND_PACKAGE(ApexSDK $ENV{PM_Apex_VERSION} REQUIRED)
 FIND_PACKAGE(PxSharedSDK $ENV{PM_PxShared_VERSION} REQUIRED)
 FIND_PACKAGE(tclap $ENV{PM_tclap_VERSION} REQUIRED)
 FIND_PACKAGE(FBXSDK $ENV{PM_FBXSDK_VERSION} REQUIRED)
+
 
 # Include here after the directories are defined so that the platform specific file can use the variables.
 include(${PROJECT_CMAKE_FILES_DIR}/${TARGET_BUILD_PLATFORM}/ApexImporter.cmake)
@@ -21,13 +23,6 @@ SET(COMMON_FILES
 	${APEXIMPORTER_SOURCE_DIR}/ApexDestructibleObjExporter.h
 	${BLAST_ROOT_DIR}/tools/common/BlastDataExporter.cpp
 	${BLAST_ROOT_DIR}/tools/common/BlastDataExporter.h
-	${TOOLS_COMMON_DIR}/IMeshFileWriter.h
-	${TOOLS_COMMON_DIR}/ObjFileWriter.h
-	${TOOLS_COMMON_DIR}/ObjFileWriter.cpp
-	${TOOLS_COMMON_DIR}/FbxFileWriter.h
-	${TOOLS_COMMON_DIR}/FbxFileWriter.cpp
-	${TOOLS_COMMON_DIR}/FbxUtils.h
-	${TOOLS_COMMON_DIR}/FbxUtils.cpp
 )
 
 ADD_EXECUTABLE(ApexImporter 
@@ -71,7 +66,7 @@ SET_TARGET_PROPERTIES(ApexImporter PROPERTIES
 
 # Do final direct sets after the target has been defined
 TARGET_LINK_LIBRARIES(ApexImporter 
-	PRIVATE NvBlast NvBlastExtPhysX NvBlastExtAuthoring NvBlastExtImport Rpcrt4 $<$<OR:$<CONFIG:debug>,$<CONFIG:checked>,$<CONFIG:profile>>:${NVTOOLSEXT_LIB}> 
+	PRIVATE NvBlast NvBlastExtPhysX NvBlastExtAuthoring NvBlastExtImport NvBlastExtExporter NvBlastExtSerialization NvBlastExtTkSerialization NvBlastExtPxSerialization Rpcrt4 $<$<OR:$<CONFIG:debug>,$<CONFIG:checked>,$<CONFIG:profile>>:${NVTOOLSEXT_LIB}> 
 	PRIVATE ${FBXSDK_LIBRARIES}
 )
 

@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTTKFRAMEWORK_H
 #define NVBLASTTKFRAMEWORK_H
@@ -24,13 +42,7 @@
 // Forward declarations
 namespace physx
 {
-class PxErrorCallback;
-class PxAllocatorCallback;
 class PxTransform;
-namespace general_PxIOStream2
-{
-class PxFileBuf;
-}
 }
 
 
@@ -47,22 +59,9 @@ struct TkGroupDesc;
 class TkGroup;
 class TkActor;
 class TkJoint;
-class TkSerializable;
 class TkIdentifiable;
 struct TkAssetJointDesc;
 
-
-
-/**
-Descriptor for framework creation.
-
-The TkFramework uses PxShared callbacks for messages and allocation.
-*/
-struct TkFrameworkDesc
-{
-	physx::PxErrorCallback*		errorCallback;		//!< User-defined message callback (see PxErrorCallback)
-	physx::PxAllocatorCallback*	allocatorCallback;	//!< User-defined allocation callback (see PxAllocatorCallback)
-};
 
 
 /**
@@ -165,41 +164,7 @@ public:
 	Release this framework and all contained objects.
 	Global singleton is set to NULL.
 	*/
-	virtual void						release() = 0;
-
-	/**
-	Access to the error callback set by the user.
-	*/
-	virtual physx::PxErrorCallback&		getErrorCallback() const = 0;
-
-	/**
-	Access to the allocator callback set by the user.
-	*/
-	virtual physx::PxAllocatorCallback&	getAllocatorCallback() const = 0;
-
-	/**
-	Access to a log function which can be used in Blast low-level calls.
-	This function uses the user-supplied PxErrorCallback (see TkFrameworkDesc).
-	*/
-	virtual NvBlastLog					getLogFn() const = 0;
-
-	/**
-	Deserialize an object from the given stream.  Only objects derived from TkSerializable may be serialized and
-	deserialized.  Use the parent class method TkIdentifiable::getType() to know the type to which to cast the object.
-
-	Notes for different classes:
-
-	TkAsset: deserializing a serialized TkAsset will recreate the asset in memory with the same NvBlastID (see
-	TkIdentifiable::getID()) as the original asset.
-
-	TkFamily: deserializing a serialized TkFamily will generate all TkActor and TkJoint objects that were originally
-	contained in the family.  The TkAsset which generated the family must exist at the time the family is deserialized.
-
-	\param[in]	stream	User-defined stream object.
-
-	\return pointer the deserialized object if successful, or NULL if unsuccessful.
-	*/
-	virtual TkSerializable*				deserialize(physx::general_PxIOStream2::PxFileBuf& stream) = 0;
+	virtual void			release() = 0;
 
 	/**
 	To find the type information for a given TkIdentifiable-derived class, use this funtion with the TkTypeIndex::Enum
@@ -209,7 +174,7 @@ public:
 
 	\return type object associated with the object's class.
 	*/
-	virtual const TkType*				getType(TkTypeIndex::Enum typeIndex) const = 0;
+	virtual const TkType*	getType(TkTypeIndex::Enum typeIndex) const = 0;
 
 	/**
 	Look up an object derived from TkIdentifiable by its ID.
@@ -218,7 +183,7 @@ public:
 
 	\return pointer the object if it exists, NULL otherwise.
 	*/
-	virtual TkIdentifiable*				findObjectByID(const NvBlastID& id) const = 0;
+	virtual TkIdentifiable*	findObjectByID(const NvBlastID& id) const = 0;
 
 	/**
 	The number of TkIdentifiable-derived objects in the framework of the given type.
@@ -227,7 +192,7 @@ public:
 
 	\return the number of objects that currently exist of the given type.
 	*/
-	virtual uint32_t					getObjectCount(const TkType& type) const = 0;
+	virtual uint32_t		getObjectCount(const TkType& type) const = 0;
 
 	/**
 	Retrieve an array of pointers (into the user-supplied buffer) to TkIdentifiable-derived objects of the given type.
@@ -239,7 +204,7 @@ public:
 
 	\return the number of TkIdentifiable pointers written to the buffer.
 	*/
-	virtual uint32_t					getObjects(TkIdentifiable** buffer, uint32_t bufferSize, const TkType& type, uint32_t indexStart = 0) const = 0;
+	virtual uint32_t		getObjects(TkIdentifiable** buffer, uint32_t bufferSize, const TkType& type, uint32_t indexStart = 0) const = 0;
 
 	//////// Asset creation ////////
 	/**
@@ -249,15 +214,16 @@ public:
 
 	This function may modify both the chunkDescs and bondDescs array, since rearranging chunk descriptors requires re-indexing within the bond descriptors.
 
-	\param[in]  chunkDescs		Array of chunk descriptors of size chunkCount. It will be updated accordingly.
-	\param[in]  chunkCount		The number of chunk descriptors.
-	\param[in]  bondDescs		Array of bond descriptors of size chunkCount. It will be updated accordingly.
-	\param[in]  bondCount		The number of bond descriptors.
-	\param[in]	chunkReorderMap	If not NULL, must be a pointer to a uint32_t array of size desc.chunkCount.  Maps old chunk indices to the reordered chunk indices.
+	\param[in]  chunkDescs					Array of chunk descriptors of size chunkCount. It will be updated accordingly.
+	\param[in]  chunkCount					The number of chunk descriptors.
+	\param[in]  bondDescs					Array of bond descriptors of size chunkCount. It will be updated accordingly.
+	\param[in]  bondCount					The number of bond descriptors.
+	\param[in]	chunkReorderMap				If not NULL, must be a pointer to a uint32_t array of size desc.chunkCount.  Maps old chunk indices to the reordered chunk indices.
+	\param[in]	keepBondNormalChunkOrder	If true, bond normals will be flipped if their chunk index order was reveresed by the reorder map.
 
 	\return	true iff the chunks did not require reordering (chunkReorderMap is the identity map).
 	*/
-	virtual bool						reorderAssetDescChunks(NvBlastChunkDesc* chunkDescs, uint32_t chunkCount, NvBlastBondDesc* bondDescs, uint32_t bondCount, uint32_t* chunkReorderMap = nullptr) const = 0;
+	virtual bool			reorderAssetDescChunks(NvBlastChunkDesc* chunkDescs, uint32_t chunkCount, NvBlastBondDesc* bondDescs, uint32_t bondCount, uint32_t* chunkReorderMap = nullptr, bool keepBondNormalChunkOrder = false) const = 0;
 
 	/**
 	Helper function to ensure (check and update) support coverage of chunks, required for asset creation via the createAsset function.
@@ -271,7 +237,7 @@ public:
 
 	\return	true iff coverage was already exact.
 	*/
-	virtual bool						ensureAssetExactSupportCoverage(NvBlastChunkDesc* chunkDescs, uint32_t chunkCount) const = 0;
+	virtual bool			ensureAssetExactSupportCoverage(NvBlastChunkDesc* chunkDescs, uint32_t chunkCount) const = 0;
 
 	/**
 	Create an asset from the given descriptor.
@@ -280,7 +246,7 @@ public:
 
 	\return the created asset, if the descriptor was valid and memory was available for the operation.  Otherwise, returns NULL.
 	*/
-	virtual TkAsset*					createAsset(const TkAssetDesc& desc) = 0;
+	virtual TkAsset*		createAsset(const TkAssetDesc& desc) = 0;
 
 	/**
 	Create an asset from a low-level NvBlastAsset.
@@ -292,7 +258,7 @@ public:
 
 	\return the created asset, if memory was available for the operation.  Otherwise, returns NULL.
 	*/
-	virtual TkAsset*					createAsset(const NvBlastAsset* assetLL, Nv::Blast::TkAssetJointDesc* jointDescs = nullptr, uint32_t jointDescCount = 0, bool ownsAsset = false) = 0;
+	virtual TkAsset*		createAsset(const NvBlastAsset* assetLL, Nv::Blast::TkAssetJointDesc* jointDescs = nullptr, uint32_t jointDescCount = 0, bool ownsAsset = false) = 0;
 
 	//////// Group creation ////////
 	/**
@@ -304,7 +270,7 @@ public:
 
 	\return the created group, if the descriptor was valid and memory was available for the operation.  Otherwise, returns NULL.
 	*/
-	virtual TkGroup*					createGroup(const TkGroupDesc& desc) = 0;
+	virtual TkGroup*		createGroup(const TkGroupDesc& desc) = 0;
 
 	//////// Actor creation ////////
 	/**
@@ -314,7 +280,7 @@ public:
 
 	\return the created actor, if the descriptor was valid and memory was available for the operation.  Otherwise, returns NULL.
 	*/
-	virtual TkActor*					createActor(const TkActorDesc& desc) = 0;
+	virtual TkActor*		createActor(const TkActorDesc& desc) = 0;
 
 	//////// Joint creation ////////
 	/**
@@ -329,13 +295,13 @@ public:
 
 	\return the created joint, if the descriptor was valid and memory was available for the operation.  Otherwise, returns NULL.
 	*/
-	virtual TkJoint*					createJoint(const TkJointDesc& desc)  = 0;
+	virtual TkJoint*		createJoint(const TkJointDesc& desc)  = 0;
 
 protected:
 	/**
 	Destructor is virtual and not public - use the release() method instead of explicitly deleting the TkFramework
 	*/
-	virtual								~TkFramework() {}
+	virtual					~TkFramework() {}
 };
 
 } // namespace Blast
@@ -347,11 +313,9 @@ protected:
 /**
 Create a new TkFramework.  This creates a global singleton, and will fail if a TkFramework object already exists.
 
-\param[in]	desc	The descriptor used to create the new framework (see TkFrameworkDesc).
-
 \return the new TkFramework if successful, NULL otherwise.
 */
-NVBLAST_API Nv::Blast::TkFramework* NvBlastTkFrameworkCreate(const Nv::Blast::TkFrameworkDesc& desc);
+NVBLAST_API Nv::Blast::TkFramework* NvBlastTkFrameworkCreate();
 
 
 /**

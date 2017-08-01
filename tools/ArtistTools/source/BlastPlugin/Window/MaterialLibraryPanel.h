@@ -20,11 +20,6 @@ public:
 	void updateValues();
 
 	static MaterialLibraryPanel* ins();
-	void addMaterial(std::string materialName, std::string diffuseTexture);
-	void removeMaterial(std::string name);
-	std::map<std::string, RenderMaterial*>& getRenderMaterials(){ return m_RenderMaterialMap; }
-	void deleteMaterials();
-	void deleteMaterialMap();
 
 private slots:
     void on_btnAddMat_clicked();
@@ -62,9 +57,6 @@ private slots:
 private:
 	void _refreshMaterialValues(int idx);
 	BPPGraphicsMaterial* _getSelectedMaterial();
-
-	std::map<std::string, RenderMaterial*> m_RenderMaterialMap;
-	std::vector<std::string> m_NeedDeleteRenderMaterials;
 
 private:
     Ui::MaterialLibraryPanel *ui;

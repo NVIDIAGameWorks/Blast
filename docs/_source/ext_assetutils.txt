@@ -1,0 +1,94 @@
+/*! \page pageextassetutils Asset Utilities (NvBlastExtAssetUtils)
+
+NvBlastExtAssetUtils provides simple utility functions for modifying NvBlastAsset objects.  Three functions are provided, described in the following sections.
+
+<br>
+\section addworldbonds Add World Bonds
+
+The function NvBlastExtAssetUtilsAddWorldBonds allows the user to create an asset from an existing asset, with the addition of new bonds that connect
+support chunks to the world.  (See the documentation for NvBlastBondDesc.)
+
+For example, given an asset called <em>oldAsset</em>,
+
+\code
+const uint32_t worldBoundChunks[3] = { 1, 2, 3 };	// Chunks to bind to the world.  These must be support chunks.
+const NvcVec3 bondDirections[3] = { { -1, 0, 1 }, { 0, 0, -1}, { 1, 0, 0 } };	// Normal directions for the new bonds.
+
+// Create a new asset
+NvBlastAsset* newAsset = NvBlastExtAssetUtilsAddWorldBonds(oldAsset, worldBoundChunks, 3, bondDirections, NULL);
+\endcode
+
+Memory for the new asset is allocated using the allocator available through NvBlastGlobals (\ref pageglobalsapi).  Therefore the new asset may be freed using
+
+\code
+NVBLAST_FREE(newAsset);
+\endcode
+
+<br>
+\section mergeassets Merge Assets
+
+The NvBlastExtAssetUtilsMergeAssets function will combine any number of assets, generating an asset descriptor which may be passed to NvBlastCreateAsset.  This
+is done in order to allow the user to make adjustments to the descriptor before creating the merged asset.
+
+The geometric data in each asset to be merged may be transformed so that the assets will have desired relative poses.  In addition, the user may describe new
+bonds, in order to join support chunks of two different assets and create a larger support graph which spans the entire combined asset.  The reference frame for
+the new bonds' geometric data is that of the new asset.
+
+For example, if one wants to merge two wall assets together, with a relative translation between them of 10 units in the x-direction, the code might look something like this:
+
+\code
+const NvBlastAsset* components[2] = { asset0, asset1 };	// asset0 and asset1 are already created
+const NvcVec3 translations[2] = { { -5, 0, 0 }, { 5, 0, 0 } };	// Translate asset0 -5 in x, and asset1 +5 in x
+
+// New bonds:
+const uint32_t newBondCount = ...	// Some number of new bonds
+const NvBlastExtAssetUtilsBondDesc newBondDescs[newBondCount];
+newBondDesc[0].bond.normal.x = 1;	// Normal in the +x direction, pointing from asset0 to asset1
+newBondDesc[0].bond.normal.y = 0;
+newBondDesc[0].bond.normal.z = 0;
+newBondDesc[0].bond.area = 1;
+newBondDesc[0].bond.centroid.x = 0;
+newBondDesc[0].bond.centroid.y = 0;
+newBondDesc[0].bond.centroid.z = 2.5;	// Position is in the middle, off the ground
+newBondDesc[0].bond.userData = 0;
+newBondDesc[0].chunkIndices[0] = 5;		// Connect from chunk[5] in components[componentIndices[0]]
+newBondDesc[0].chunkIndices[1] = 13;	// .. to chunk[13] in  components[componentIndices[1]]
+newBondDesc[0].componentIndices[0] = 0;	// Connect asset in components[0]
+newBondDesc[0].componentIndices[1] = 1;	// .. to the asset in components[1]
+
+// Create merged asset descriptor
+NvBlastAssetDesc mergedDesc = NvBlastExtAssetUtilsMergeAssets(components, NULL, translations, 2, newBondDescs, newBondCount);
+\endcode
+
+Note, we passed in NULL for the list of relative rotations, meaning no asset will be rotated.
+
+Also note, the new bond descriptors can just as well apply to a single asset (by setting both component indices to the same index), allowing the user to create additional bonds within
+a single asset if desired.
+
+The chunk and bond arrays referenced by the returned NvBlastAssetDesc are allocated using the NvBlastGlobals allocator, and it is up to the user to free this memory when it is no
+longer needed:
+
+\code
+NVBLAST_FREE(mergedDesc.chunkDescs);
+NVBLAST_FREE(mergedDesc.bondDescs);
+\endcode
+
+<br>
+\section transforminplace Transform In-Place
+
+The NvBlastExtAssetTransformInPlace function will apply an affine transformation (given by scaling, rotation, translation components) to the geometric data within an asset.
+
+To use this function, simply pass in an NvcVec3 pointer to represent scale (which may be non-uniform), an NvcQuat pointer to represent rotation, and an NvcVec3 pointer to
+represent translation.  Any of these pointers may be NULL, in which case that transform component is implicitly considered to be the identity.  This transforms:
+
+- Chunk centroids
+- Chunk volumes
+- Bond normals
+- Bond areas
+- Bond centroids
+
+The transformation of position vectors is done in the following order: scale, followed by rotation, followed by translation.
+
+The transformation of normal vectors uses the cofactors of the scale matrix (diagonals given by {scale.y*scale.z, scale.z*scale.x, scale.x*scale.y}), followed by rotation.
+<br>
+*/

@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #ifndef NVBLASTTKFAMILYIMPL_H
 #define NVBLASTTKFAMILYIMPL_H
@@ -18,8 +36,8 @@
 #include "NvBlastTkActorImpl.h"
 
 #include "NvBlastTkEventQueue.h"
-#include "NvBlastTkHashSet.h"
-#include "NvBlastTkHashMap.h"
+#include "NvBlastHashSet.h"
+#include "NvBlastHashMap.h"
 
 #include "NvBlast.h"
 #include "NvBlastAssert.h"
@@ -42,28 +60,11 @@ class TkAssetImpl;
 NVBLASTTK_IMPL_DECLARE(Family)
 {
 public:
-	/**
-	Enum which keeps track of the serialized data format.
-	*/
-	enum Version
-	{
-		/** Initial version */
-		Initial,
-
-		//	New formats must come before Count.  They should be given descriptive names with more information in comments.
-
-		/** The number of serialized formats. */
-		Count,
-
-		/** The current version.  This should always be Count-1 */
-		Current = Count - 1
-	};
-
 	TkFamilyImpl();
 	TkFamilyImpl(const NvBlastID& id);
 	~TkFamilyImpl();
 
-	NVBLASTTK_IMPL_DEFINE_SERIALIZABLE('A', 'C', 'T', 'F');
+	NVBLASTTK_IMPL_DEFINE_IDENTIFIABLE('A', 'C', 'T', 'F');
 
 	// Begin TkFamily
 	virtual const NvBlastFamily*	getFamilyLL() const override;
@@ -108,7 +109,7 @@ public:
 
 	void							updateJoints(TkActorImpl* actor, TkEventQueue* alternateQueue = nullptr);
 
-	TkArray<TkActorImpl>::type&		getActorsInternal();
+	Array<TkActorImpl>::type&		getActorsInternal();
 
 	uint32_t						getInternalJointCount() const;
 
@@ -122,7 +123,7 @@ public:
 
 	TkActorImpl*					getActorByChunk(uint32_t chunkIndex);
 
-	typedef physx::shdfnd::Pair<uint32_t, uint32_t>	ExternalJointKey;	//!< The chunk indices within the TkFamily joined by the joint.  This chunks will be a supports chunks.
+	typedef physx::shdfnd::Pair<uint32_t, uint32_t>	ExternalJointKey;	//!< The chunk indices within the TkFamily objects joined by the joint.  These chunks will be support chunks.
 
 	TkJointImpl*					findExternalJoint(const TkFamilyImpl* otherFamily, ExternalJointKey key) const;
 
@@ -132,16 +133,16 @@ private:
 	struct JointSet
 	{
 		NvBlastID										m_familyID;
-		TkHashMap<ExternalJointKey, TkJointImpl*>::type	m_joints;
+		HashMap<ExternalJointKey, TkJointImpl*>::type	m_joints;
 	};
 
-	typedef TkHashMap<NvBlastID, uint32_t>::type	FamilyIDMap;
+	typedef HashMap<NvBlastID, uint32_t>::type	FamilyIDMap;
 
 	NvBlastFamily*				m_familyLL;
-	TkArray<TkActorImpl>::type	m_actors;
+	Array<TkActorImpl>::type	m_actors;
 	uint32_t					m_internalJointCount;
-	TkArray<uint8_t>::type		m_internalJointBuffer;
-	TkArray<JointSet*>::type	m_jointSets;
+	Array<uint8_t>::type		m_internalJointBuffer;
+	Array<JointSet*>::type		m_jointSets;
 	FamilyIDMap					m_familyIDMap;
 	const TkAssetImpl*			m_asset;
 	const void*					m_material;
@@ -168,7 +169,7 @@ NV_INLINE uint32_t TkFamilyImpl::getActorCountInternal() const
 {
 	NVBLAST_ASSERT(m_familyLL != nullptr);
 
-	return NvBlastFamilyGetActorCount(m_familyLL, TkFrameworkImpl::get()->log);
+	return NvBlastFamilyGetActorCount(m_familyLL, logLL);
 }
 
 
@@ -181,7 +182,7 @@ NV_INLINE TkActorImpl* TkFamilyImpl::getActorByIndex(uint32_t index)
 
 NV_INLINE TkActorImpl* TkFamilyImpl::getActorByActorLL(const NvBlastActor* actorLL)
 {
-	uint32_t index = NvBlastActorGetIndex(actorLL, TkFrameworkImpl::get()->log);
+	uint32_t index = NvBlastActorGetIndex(actorLL, logLL);
 	return getActorByIndex(index);
 }
 
@@ -198,7 +199,7 @@ NV_INLINE void TkFamilyImpl::setMaterial(const void* material)
 }
 
 
-NV_INLINE TkArray<TkActorImpl>::type& TkFamilyImpl::getActorsInternal()
+NV_INLINE Array<TkActorImpl>::type& TkFamilyImpl::getActorsInternal()
 {
 	return m_actors;
 }

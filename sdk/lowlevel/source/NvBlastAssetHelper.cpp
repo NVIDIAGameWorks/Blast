@@ -1,17 +1,37 @@
-/*
-* Copyright (c) 2016-2017, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "NvBlastAsset.h"
 #include "NvBlastIndexFns.h"
 #include "NvBlastAssert.h"
 #include "NvBlastMemory.h"
+#include "NvBlastMath.h"
+#include "NvBlastPreprocessorInternal.h"
 
 #include <algorithm>
 
@@ -62,9 +82,9 @@ extern "C"
 
 bool NvBlastBuildAssetDescChunkReorderMap(uint32_t* chunkReorderMap, const NvBlastChunkDesc* chunkDescs, uint32_t chunkCount, void* scratch, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(chunkCount == 0 || chunkDescs != nullptr, logFn, "NvBlastBuildAssetDescChunkReorderMap: NULL chunkDescs input with non-zero chunkCount", return false);
-	NVBLAST_CHECK(chunkReorderMap == nullptr || chunkCount != 0, logFn, "NvBlastBuildAssetDescChunkReorderMap: NULL chunkReorderMap input with non-zero chunkCount", return false);
-	NVBLAST_CHECK(chunkCount == 0 || scratch != nullptr, logFn, "NvBlastBuildAssetDescChunkReorderMap: NULL scratch input with non-zero chunkCount", return false);
+	NVBLASTLL_CHECK(chunkCount == 0 || chunkDescs != nullptr, logFn, "NvBlastBuildAssetDescChunkReorderMap: NULL chunkDescs input with non-zero chunkCount", return false);
+	NVBLASTLL_CHECK(chunkReorderMap == nullptr || chunkCount != 0, logFn, "NvBlastBuildAssetDescChunkReorderMap: NULL chunkReorderMap input with non-zero chunkCount", return false);
+	NVBLASTLL_CHECK(chunkCount == 0 || scratch != nullptr, logFn, "NvBlastBuildAssetDescChunkReorderMap: NULL scratch input with non-zero chunkCount", return false);
 
 	uint32_t* chunkMap = static_cast<uint32_t*>(scratch);	scratch = pointerOffset(scratch, chunkCount * sizeof(uint32_t));
 	char* chunkAnnotation = static_cast<char*>(scratch);	scratch = pointerOffset(scratch, chunkCount * sizeof(char));
@@ -73,7 +93,7 @@ bool NvBlastBuildAssetDescChunkReorderMap(uint32_t* chunkReorderMap, const NvBla
 	uint32_t leafChunkCount;
 	if (!Asset::ensureExactSupportCoverage(supportChunkCount, leafChunkCount, chunkAnnotation, chunkCount, const_cast<NvBlastChunkDesc*>(chunkDescs), true, logFn))
 	{
-		NVBLAST_LOG_ERROR(logFn, "NvBlastBuildAssetDescChunkReorderMap: chunk descriptors did not have exact coverage, map could not be built.  Use NvBlastEnsureAssetExactSupportCoverage to fix descriptors.");
+		NVBLASTLL_LOG_ERROR(logFn, "NvBlastBuildAssetDescChunkReorderMap: chunk descriptors did not have exact coverage, map could not be built.  Use NvBlastEnsureAssetExactSupportCoverage to fix descriptors.");
 		return false;
 	}
 
@@ -108,14 +128,15 @@ void NvBlastApplyAssetDescChunkReorderMap
 	NvBlastBondDesc* bondDescs,
 	uint32_t bondCount,
 	const uint32_t* chunkReorderMap,
+	bool keepBondNormalChunkOrder, 
 	NvBlastLog logFn
 )
 {
-	NVBLAST_CHECK(chunkCount == 0 || chunkDescs != nullptr, logFn, "NvBlastApplyAssetDescChunkReorderMap: NULL chunkDescs input with non-zero chunkCount", return);
-	NVBLAST_CHECK(reorderedChunkDescs == nullptr || chunkCount != 0, logFn, "NvBlastApplyAssetDescChunkReorderMap: NULL reorderedChunkDescs input with non-zero chunkCount", return);
-	NVBLAST_CHECK(chunkReorderMap == nullptr || chunkCount != 0, logFn, "NvBlastApplyAssetDescChunkReorderMap: NULL chunkReorderMap input with non-zero chunkCount", return);
-	NVBLAST_CHECK(bondCount == 0 || bondDescs != nullptr, logFn, "NvBlastApplyAssetDescChunkReorderMap: NULL bondDescs input with non-zero bondCount", return);
-	NVBLAST_CHECK(bondDescs == nullptr || chunkReorderMap != nullptr, logFn, "NvBlastApplyAssetDescChunkReorderMap: NULL bondDescs input with NULL chunkReorderMap", return);
+	NVBLASTLL_CHECK(chunkCount == 0 || chunkDescs != nullptr, logFn, "NvBlastApplyAssetDescChunkReorderMap: NULL chunkDescs input with non-zero chunkCount", return);
+	NVBLASTLL_CHECK(reorderedChunkDescs == nullptr || chunkCount != 0, logFn, "NvBlastApplyAssetDescChunkReorderMap: NULL reorderedChunkDescs input with non-zero chunkCount", return);
+	NVBLASTLL_CHECK(chunkReorderMap == nullptr || chunkCount != 0, logFn, "NvBlastApplyAssetDescChunkReorderMap: NULL chunkReorderMap input with non-zero chunkCount", return);
+	NVBLASTLL_CHECK(bondCount == 0 || bondDescs != nullptr, logFn, "NvBlastApplyAssetDescChunkReorderMap: NULL bondDescs input with non-zero bondCount", return);
+	NVBLASTLL_CHECK(bondDescs == nullptr || chunkReorderMap != nullptr, logFn, "NvBlastApplyAssetDescChunkReorderMap: NULL bondDescs input with NULL chunkReorderMap", return);
 
 	// Copy chunk descs 
 	if (reorderedChunkDescs)
@@ -135,35 +156,58 @@ void NvBlastApplyAssetDescChunkReorderMap
 	{
 		for (uint32_t i = 0; i < bondCount; ++i)
 		{
-			for (int j = 0; j < 2; ++j)
+			NvBlastBondDesc& bondDesc = bondDescs[i];
+			uint32_t& index0 = bondDesc.chunkIndices[0];
+			uint32_t& index1 = bondDesc.chunkIndices[1];
+			const uint32_t newIndex0 = index0 < chunkCount ? chunkReorderMap[index0] : index0;
+			const uint32_t newIndex1 = index1 < chunkCount ? chunkReorderMap[index1] : index1;
+			if (keepBondNormalChunkOrder && (index0 < index1) != (newIndex0 < newIndex1))
 			{
-				uint32_t& index = bondDescs[i].chunkIndices[j];
-				if (index < chunkCount)
-				{
-					index = chunkReorderMap[index];
-				}
+				VecMath::mul(bondDesc.bond.normal, -1);
 			}
+			index0 = newIndex0;
+			index1 = newIndex1;
 		}
 	}
 }
 
 
-void NvBlastApplyAssetDescChunkReorderMapInplace(NvBlastChunkDesc* chunkDescs, uint32_t chunkCount, NvBlastBondDesc* bondDescs, uint32_t bondCount, const uint32_t* chunkReorderMap, void* scratch, NvBlastLog logFn)
+void NvBlastApplyAssetDescChunkReorderMapInPlace
+(
+	NvBlastChunkDesc* chunkDescs,
+	uint32_t chunkCount,
+	NvBlastBondDesc* bondDescs,
+	uint32_t bondCount,
+	const uint32_t* chunkReorderMap,
+	bool keepBondNormalChunkOrder,
+	void* scratch,
+	NvBlastLog logFn
+)
 {
-	NVBLAST_CHECK(chunkCount == 0 || chunkDescs != nullptr, logFn, "NvBlastApplyAssetDescChunkReorderMapInplace: NULL chunkDescs input with non-zero chunkCount", return);
-	NVBLAST_CHECK(chunkCount == 0 || scratch != nullptr, logFn, "NvBlastApplyAssetDescChunkReorderMapInplace: NULL scratch input with non-zero chunkCount", return);
+	NVBLASTLL_CHECK(chunkCount == 0 || chunkDescs != nullptr, logFn, "NvBlastApplyAssetDescChunkReorderMapInPlace: NULL chunkDescs input with non-zero chunkCount", return);
+	NVBLASTLL_CHECK(chunkCount == 0 || scratch != nullptr, logFn, "NvBlastApplyAssetDescChunkReorderMapInPlace: NULL scratch input with non-zero chunkCount", return);
 
 	NvBlastChunkDesc* chunksTemp = static_cast<NvBlastChunkDesc*>(scratch);
 	memcpy(chunksTemp, chunkDescs, sizeof(NvBlastChunkDesc) * chunkCount);
-	NvBlastApplyAssetDescChunkReorderMap(chunkDescs, chunksTemp, chunkCount, bondDescs, bondCount, chunkReorderMap, logFn);
+	NvBlastApplyAssetDescChunkReorderMap(chunkDescs, chunksTemp, chunkCount, bondDescs, bondCount, chunkReorderMap, keepBondNormalChunkOrder, logFn);
 }
 
 
-bool NvBlastReorderAssetDescChunks(NvBlastChunkDesc* chunkDescs, uint32_t chunkCount, NvBlastBondDesc* bondDescs, uint32_t bondCount, uint32_t* chunkReorderMap, void* scratch, NvBlastLog logFn)
+bool NvBlastReorderAssetDescChunks
+(
+	NvBlastChunkDesc* chunkDescs,
+	uint32_t chunkCount,
+	NvBlastBondDesc* bondDescs,
+	uint32_t bondCount,
+	uint32_t* chunkReorderMap,
+	bool keepBondNormalChunkOrder,
+	void* scratch,
+	NvBlastLog logFn
+)
 {
 	if (!NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap, chunkDescs, chunkCount, scratch, logFn))
 	{
-		NvBlastApplyAssetDescChunkReorderMapInplace(chunkDescs, chunkCount, bondDescs, bondCount, chunkReorderMap, scratch, logFn);
+		NvBlastApplyAssetDescChunkReorderMapInPlace(chunkDescs, chunkCount, bondDescs, bondCount, chunkReorderMap, keepBondNormalChunkOrder, scratch, logFn);
 		return false;
 	}
 	return true;
@@ -172,8 +216,8 @@ bool NvBlastReorderAssetDescChunks(NvBlastChunkDesc* chunkDescs, uint32_t chunkC
 
 bool NvBlastEnsureAssetExactSupportCoverage(NvBlastChunkDesc* chunkDescs, uint32_t chunkCount, void* scratch, NvBlastLog logFn)
 {
-	NVBLAST_CHECK(chunkCount == 0 || chunkDescs != nullptr, logFn, "NvBlastEnsureAssetExactSupportCoverage: NULL chunkDescs input with non-zero chunkCount", return false);
-	NVBLAST_CHECK(chunkCount == 0 || scratch != nullptr, logFn, "NvBlastEnsureAssetExactSupportCoverage: NULL scratch input with non-zero chunkCount", return false);
+	NVBLASTLL_CHECK(chunkCount == 0 || chunkDescs != nullptr, logFn, "NvBlastEnsureAssetExactSupportCoverage: NULL chunkDescs input with non-zero chunkCount", return false);
+	NVBLASTLL_CHECK(chunkCount == 0 || scratch != nullptr, logFn, "NvBlastEnsureAssetExactSupportCoverage: NULL scratch input with non-zero chunkCount", return false);
 
 	uint32_t supportChunkCount;
 	uint32_t leafChunkCount;

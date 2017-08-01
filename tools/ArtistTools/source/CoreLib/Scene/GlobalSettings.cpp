@@ -250,11 +250,49 @@ void GlobalSettings::setSceneUnitIndex(int i)
 
 
 ///////////////////////////////////////////////////////////////////////////////
+bool GlobalSettings::isSupportedUnitByUnitInCm(float fUnitInCm)
+{
+	int unit = identifyUnitByUnitInCm(fUnitInCm);
+	return unit != SCENE_UNIT_UNKNOWN;
+}
+
+int GlobalSettings::identifyUnitByUnitInCm(float fUnitInCm)
+{
+	float fError = 0.001f;
+	if (fabs(fUnitInCm - 1.0f) < fError)
+	{
+		return SCENE_UNIT_CENTIMETER;
+	}
+	if (fabs(fUnitInCm - 2.54f) < fError)
+	{
+		return SCENE_UNIT_INCH;
+	}
+	if (fabs(fUnitInCm - 100.0f) < fError)
+	{
+		return SCENE_UNIT_METER;
+	}
+	if (fabs(fUnitInCm - 10.0f) < fError)
+	{
+		return SCENE_UNIT_DECIMETER;
+	}
+	return SCENE_UNIT_UNKNOWN;   // should never happen
+}
+
+void GlobalSettings::setSceneUnitByUnitInCm(float fUnitInCm)
+{
+	m_sceneUnitIndex = identifyUnitByUnitInCm(fUnitInCm);
+}
+
 float GlobalSettings::getSceneUnitInCentimeters()
+{
+	return getSceneUnitInCentimeters(m_sceneUnitIndex);
+}
+
+float GlobalSettings::getSceneUnitInCentimeters(int unitIndex)
 {
 	float unit = 1.0f;
 
-	switch (m_sceneUnitIndex)
+	switch (unitIndex)
 	{
 	case SCENE_UNIT_CENTIMETER:
 		unit = 1.0f;

@@ -1,12 +1,30 @@
-/*
-* Copyright (c) 2008-2015, NVIDIA CORPORATION.  All rights reserved.
-*
-* NVIDIA CORPORATION and its licensors retain all intellectual property
-* and proprietary rights in and to this software, related documentation
-* and any modifications thereto.  Any use, reproduction, disclosure or
-* distribution of this software and related documentation without an express
-* license agreement from NVIDIA CORPORATION is strictly prohibited.
-*/
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2008-2017 NVIDIA Corporation. All rights reserved.
+
 
 #include "Renderer.h"
 #include "RenderUtils.h"
@@ -16,6 +34,10 @@
 #include "PxRenderBuffer.h"
 
 #include <set>
+#include "SimpleScene.h"
+#include "GlobalSettings.h"
+#include "Light.h"
+#include "AppMainWindow.h"
 
 
 const float CAMERA_CLIP_NEAR = 1.0f;
@@ -36,6 +58,7 @@ Renderer::Renderer()
 , m_RSState(nullptr)
 , m_opaqueRenderDSState(nullptr)
 , m_transparencyRenderDSState(nullptr)
+, m_opaqueRenderNoDepthDSState(nullptr)
 , m_DSTexture(nullptr)
 , m_DSView(nullptr)
 , m_DSTextureSRV(nullptr)
@@ -152,6 +175,18 @@ HRESULT Renderer::DeviceCreated(ID3D11Device* device)
 		V(device->CreateDepthStencilState(&desc, &m_transparencyRenderDSState));
 	}
 
+	// Opaque Render Depth-Stencil state Without Depth Test
+	{
+		D3D11_DEPTH_STENCIL_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.StencilEnable = FALSE;
+		desc.DepthEnable = FALSE;
+		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+		V(device->CreateDepthStencilState(&desc, &m_opaqueRenderNoDepthDSState));
+	}
+
 	// Linear sampler
 	{
 		D3D11_SAMPLER_DESC desc;
@@ -210,6 +245,7 @@ void Renderer::DeviceDestroyed()
 	SAFE_RELEASE(m_RSState);
 	SAFE_RELEASE(m_opaqueRenderDSState);
 	SAFE_RELEASE(m_transparencyRenderDSState);
+	SAFE_RELEASE(m_opaqueRenderNoDepthDSState);
 	SAFE_RELEASE(m_pointSampler);
 	SAFE_RELEASE(m_linearSampler);
 	SAFE_RELEASE(m_debugPrimitiveVB);
@@ -226,12 +262,10 @@ void Renderer::DeviceDestroyed()
 void Renderer::onInitialize()
 {
 	// search paths
-	m_resourceManager.addSearchDir("..\\..\\samples\\resources");
-	m_resourceManager.addSearchDir("..\\..\\..\\samples\\resources");
-	for (const std::string& d : getManager()->getConfig().additionalResourcesDir)
-	{
-		m_resourceManager.addSearchDir(d.c_str());
-	}
+	m_resourceManager.addSearchDir("..\\resources");
+	m_resourceManager.addSearchDir("..\\..\\..\\..\\bin\\resources");
+	//m_resourceManager.addSearchDir("..\\..\\samples\\resources");
+	//m_resourceManager.addSearchDir("..\\..\\..\\samples\\resources");
 
 	// debug primitive render material and input layout
 	{
@@ -257,7 +291,8 @@ void Renderer::BackBufferResized(ID3D11Device* /*device*/, const DXGI_SURFACE_DE
 	m_screenWidth = sd->Width;
 	m_screenHeight = sd->Height;
 	float fAspectRatio = m_screenWidth / m_screenHeight;
-	m_camera.SetProjParams(DirectX::XM_PIDIV4, fAspectRatio, CAMERA_CLIP_NEAR, CAMERA_CLIP_FAR);
+	float fov = (GlobalSettings::Inst().m_fovAngle / 360.0f) * 3.141592653589793;
+	m_camera.SetProjParams(fov, fAspectRatio, CAMERA_CLIP_NEAR, CAMERA_CLIP_FAR);
 
 	SAFE_RELEASE(m_DSTexture);
 	SAFE_RELEASE(m_DSView);
@@ -329,13 +364,12 @@ void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11
 
 	m_context = ctx;
 
-	ctx->ClearRenderTargetView(pRTV, CLEAR_SCENE_COLOR);
 	ctx->ClearDepthStencilView(m_DSView, D3D11_CLEAR_DEPTH, 1.0, 0);
 	ctx->RSSetViewports(1, &m_viewport);
 
 	// needed matrices
-	DirectX::XMMATRIX viewMatrix = m_camera.GetViewMatrix();
-	DirectX::XMMATRIX projMatrix = m_camera.GetProjMatrix();
+	DirectX::XMMATRIX viewMatrix = SimpleScene::Inst()->GetViewMatrix();
+	DirectX::XMMATRIX projMatrix = SimpleScene::Inst()->GetProjMatrix();
 	DirectX::XMMATRIX projMatrixInv = DirectX::XMMatrixInverse(NULL, projMatrix);
 	DirectX::XMMATRIX viewProjMatrix = viewMatrix * projMatrix;
 
@@ -346,7 +380,7 @@ void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11
 		CBCamera* cameraBuffer = (CBCamera*)mappedResource.pData;
 		cameraBuffer->viewProjection = viewProjMatrix;
 		cameraBuffer->projectionInv = projMatrixInv;
-		DirectX::XMStoreFloat3(&(cameraBuffer->viewPos), m_camera.GetEyePt());
+		DirectX::XMStoreFloat3(&(cameraBuffer->viewPos), SimpleScene::Inst()->GetEyePt());
 		ctx->Unmap(m_cameraCB, 0);
 	}
 
@@ -355,6 +389,7 @@ void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ctx->Map(m_worldCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		CBWorld* worldBuffer = (CBWorld*)mappedResource.pData;
+		Light::FillLightShaderParam(m_worldCBData.lightParam);
 		memcpy(worldBuffer, &m_worldCBData, sizeof(m_worldCBData));
 		//worldBuffer->ambientColor = m_CBWorldData.ambientColor;
 		//worldBuffer->pointLightPos = m_CBWorldData.pointLightPos;
@@ -388,12 +423,28 @@ void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11
 			}
 		}
 
-		// render shadow map
-		m_shadow.renderShadowMaps(this);
+		m_shadow.clearBuffer();
 
-		// render shadow buffer
-		ctx->OMSetRenderTargets(0, nullptr, nullptr);
-		m_shadow.renderShadowBuffer(m_DSTextureSRV, nullptr);
+		std::vector<Light>& lights = Light::GetDefaultLights();
+		for (int l = 0; l < 3; l++)
+		{
+			if (!lights[l].m_useShadows)
+			{
+				continue;
+			}
+
+			atcore_float3 eye = lights[l].m_lightCamera._eye;
+			eye.x = -eye.x;
+			atcore_float3 at = lights[l].m_lightCamera._at;
+			at.x = -at.x;
+
+			ctx->OMSetRenderTargets(0, nullptr, m_DSView);
+			m_shadow.renderShadowMaps(this, eye, at);
+			ctx->OMSetRenderTargets(0, nullptr, nullptr);
+			m_shadow.renderShadowBuffer(m_DSTextureSRV, nullptr);
+		}
+
+		m_shadow.finalizeBuffer();
 	}
 
 	// Opaque render
@@ -413,9 +464,11 @@ void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11
 			CBCamera* cameraBuffer = (CBCamera*)mappedResource.pData;
 			cameraBuffer->viewProjection = viewProjMatrix;
 			cameraBuffer->projectionInv = projMatrixInv;
-			DirectX::XMStoreFloat3(&(cameraBuffer->viewPos), m_camera.GetEyePt());
+			DirectX::XMStoreFloat3(&(cameraBuffer->viewPos), SimpleScene::Inst()->GetEyePt());
 			ctx->Unmap(m_cameraCB, 0);
 		}
+
+		std::vector<Renderable*> renderablesWithoutDepthTest;
 
 		// Render opaque renderables
 		m_visibleOpaqueRenderablesCount = 0;
@@ -423,9 +476,25 @@ void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11
 		{
 			if (!(*it)->isTransparent() && !(*it)->isHidden())
 			{
+				if (!(*it)->isDepthTest())
+				{
+					renderablesWithoutDepthTest.push_back(*it);
+					continue;
+				}
 				(*it)->render(*this);
 				m_visibleOpaqueRenderablesCount++;
 			}
+		}
+
+		if (renderablesWithoutDepthTest.size() > 0)
+		{
+			ctx->OMSetDepthStencilState(m_opaqueRenderNoDepthDSState, 0xFF);
+			std::vector<Renderable*>::iterator itR;
+			for (itR = renderablesWithoutDepthTest.begin(); itR != renderablesWithoutDepthTest.end(); itR++)
+			{
+				(*itR)->render(*this);
+			}
+			ctx->OMSetDepthStencilState(m_opaqueRenderDSState, 0xFF);
 		}
 	}
 
@@ -444,6 +513,10 @@ void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11
 	ctx->RSSetViewports(1, &m_viewport);
 
 	// render debug render buffers
+	if (!AppMainWindow::Inst().m_bGizmoWithDepthTest)
+	{
+		ctx->OMSetDepthStencilState(m_opaqueRenderNoDepthDSState, 0xFF);
+	}
 	while (m_queuedRenderBuffers.size() > 0)
 	{
 		render(m_queuedRenderBuffers.back());
@@ -495,6 +568,10 @@ LRESULT Renderer::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			toggleCameraSpeed(uMsg == WM_KEYDOWN);
 		}
 	}
+
+	UpdateCamera();
+
+	return 0;
 
 	// Camera events
 	return m_camera.HandleMessages(hWnd, uMsg, wParam, lParam);
@@ -600,7 +677,7 @@ void Renderer::renderDebugPrimitive(const Renderer::RenderDebugVertex *vertices,
 	m_context->Map(m_objectCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	CBObject* objectBuffer = (CBObject*)mappedResource.pData;
 
-	objectBuffer->world = PxMat44ToXMMATRIX(PxMat44(PxIdentity));
+	objectBuffer->worldMatrix = PxMat44ToXMMATRIX(PxMat44(PxIdentity));
 
 	m_context->Unmap(m_objectCB, 0);
 
@@ -733,4 +810,13 @@ void Renderer::drawUI()
 
 		ImGui::TreePop();
 	}
+}
+
+void Renderer::UpdateCamera()
+{
+	Camera* pCamera = SimpleScene::Inst()->m_pCamera;
+	DirectX::XMVECTORF32 eyePt = { pCamera->_eye.x, pCamera->_eye.y, pCamera->_eye.z, 0 };
+	DirectX::XMVECTORF32 lookAtPt = { pCamera->_at.x, pCamera->_at.y, pCamera->_at.z, 0 };
+	m_camera.SetViewParams(eyePt, lookAtPt);
+	m_camera.SetProjParams(pCamera->_fov, pCamera->_aspectRatio, pCamera->_znear, pCamera->_zfar);
 }
