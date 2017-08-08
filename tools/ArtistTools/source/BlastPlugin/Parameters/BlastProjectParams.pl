@@ -1060,6 +1060,12 @@
 					hints => { shortDescription => "Is this blast asset export FBX" },
 				},
 				{
+					name => 'embedFBXCollision',
+					type => 'BOOL',
+					defaultValue => 'false',
+					hints => { shortDescription => "Whether embed collisio in export FBX" },
+				},
+				{
 					name => 'obj',
 					type => 'STRING',
 					hints => { shortDescription => "OBJ export asset path" },
@@ -1069,17 +1075,6 @@
 					type => 'BOOL',
 					defaultValue => 'false',
 					hints => { shortDescription => "Is this blast asset export OBJ" },
-				},
-				{
-					name => 'collision',
-					type => 'STRING',
-					hints => { shortDescription => "Collision export asset path" },
-				},
-				{
-					name => 'exportCollision',
-					type => 'BOOL',
-					defaultValue => 'false',
-					hints => { shortDescription => "Is this blast asset export Collision" },
 				},
 				{
 					name => 'llasset',

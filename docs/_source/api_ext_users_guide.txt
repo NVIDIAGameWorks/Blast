@@ -1,6 +1,6 @@
 /*! \page pageextapi Extensions (NvBlastExt)
 
-These are the current Blast extensions:
+These are the current Blast&tm; extensions:
 <br>
 <br>
 \subpage pageextshaders - Standard damage shaders (radial, shear, line segment) which can be used in NvBlast and NvBlastTk damage functions.
@@ -31,7 +31,7 @@ using a variety of encodings.  This extension comes with low-level serializers b
 \subpage pageextpxserialization - This module contains serializers for ExtPhysX objects.  Use in conjunction  with ExtSerialization.
 <br>
 <br>
-\subpage pageextphysx - A reference implementation of a physics manager, using the PhysX SDK.  Creates and manages actors and joints, and handles impact damage and uses the stress solver (ExtStress) to
+\subpage pageextphysx - A reference implementation of a physics manager, using the PhysX&tm; SDK.  Creates and manages actors and joints, and handles impact damage and uses the stress solver (ExtStress) to
 handle stress calculations.
 <br>
 <br>

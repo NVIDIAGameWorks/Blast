@@ -31,42 +31,42 @@
 Introduction</a></h2>
 The low-level API is the core of Blast&trade; destruction. It is designed to be a minimal API that allows an experienced user to incorporate destruction into their application. Summarizing what the low-level API has, and <em>doesn't</em> have:<p>
 <ul>
-<li>There is no physics representation. The low-level API is agnostic with respect to any physics engine, and furthermore does not have any notion of collision geometry. The <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> is an abstraction which is intended to correspond to a rigid body. However it is up to the user to implement that connection. The <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> references a list of visible chunk indices, which correspond to <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a> data in the asset. The <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a> contains a userData field which can be used to associate collision geometry with the actor based upon the visible chunks. The same is true for constraints created between actors. Bonds contain a userData field that can be used to inform the user that actors should have joints created at a particular location, but it is up to the user to create and manage physical joints between two actors.</li><li>There is no graphics representation. Just as there is no notion of collision geometry, there is also no notion of graphics geometry. The <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a> userData field (see the item above) can be used to associate graphics geometry with the actor based upon the visible chunks.</li><li>There is no notion of threading. The API is a collection of free functions which the user may call from appropriate threads. Blast&trade; guarantees that it is safe to operate on different actors from different threads.</li><li>There is no global memory manager, message handler, etc. All low-level API functions take an optional message function pointer argument in order to report warnings or errors. Memory is managed by the user, and functions that build objects require an appropriately-sized memory block to be passed in. A corresponding utility function that calculates the memory requirements is always present alongside such functions. Temporary storage needed by a function is always handled via user-supplied scratch space. For scratch, there is always a corresponding "RequiredScratch" function or documentation which lets the user know how much scratch space is needed based upon the function arguments.</li><li>Backwards-compatible, versioned, device-independent serialization is not handled by Blast&trade;. There <em>is&lt;<em></em> &gt; however a Blast&trade; extension which does, see <a class="el" href="pageextserialization.html">Serialization (NvBlastExtSerialization)</a>. However, a simple form of serialization may be performed on assets and familes (see <a class="el" href="pagedefinitions.html">Definitions</a>) via simple memory copy. The data associated with these objects is available to the user, and may be copied and stored by the user. There are Simply casting a pointer to such a block of memory to the correct object type will produce a usable object for Blast&trade;. (The only restriction is that the block must be 16-byte aligned.) Families contain a number of actors and so this form of deserialization recreates all actors in the family. This form of serialization may be used between two devices which have the same endianness, and contain Blast&trade; SDKs which use the same object format.</em></li><li><em>Single-actor serialization and deserialization is, however, supported. This is not as light-weight as family serialization, but may be a better serialization model for a particular application. To deserialize a single actor, one must have a family to hold the actor, created from the appropriate asset. If none exists already, the user may create an empty family. After that, all actors that had been in that family may be deserialized into it one-at-a-time, in any order.</em></li></ul>
+<li>There is no physics representation. The low-level API is agnostic with respect to any physics engine, and furthermore does not have any notion of collision geometry. The <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> is an abstraction which is intended to correspond to a rigid body. However it is up to the user to implement that connection. The <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> references a list of visible chunk indices, which correspond to <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a> data in the asset. The <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a> contains a userData field which can be used to associate collision geometry with the actor based upon the visible chunks. The same is true for constraints created between actors. Bonds contain a userData field that can be used to inform the user that actors should have joints created at a particular location, but it is up to the user to create and manage physical joints between two actors.</li><li>There is no graphics representation. Just as there is no notion of collision geometry, there is also no notion of graphics geometry. The <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a> userData field (see the item above) can be used to associate graphics geometry with the actor based upon the visible chunks.</li><li>There is no notion of threading. The API is a collection of free functions which the user may call from appropriate threads. Blast&trade; guarantees that it is safe to operate on different actors from different threads.</li><li>There is no global memory manager, message handler, etc. All low-level API functions take an optional message function pointer argument in order to report warnings or errors. Memory is managed by the user, and functions that build objects require an appropriately-sized memory block to be passed in. A corresponding utility function that calculates the memory requirements is always present alongside such functions. Temporary storage needed by a function is always handled via user-supplied scratch space. For scratch, there is always a corresponding "RequiredScratch" function or documentation which lets the user know how much scratch space is needed based upon the function arguments.</li><li>Backwards-compatible, versioned, device-independent serialization is not handled by Blast&trade;. There <em>is</em> however a Blast&trade; extension which does, see <a class="el" href="pageextserialization.html">Serialization (NvBlastExtSerialization)</a>. However, a simple form of serialization may be performed on assets and familes (see <a class="el" href="pagedefinitions.html">Definitions</a>) via simple memory copy. The data associated with these objects is available to the user, and may be copied and stored by the user. Simply casting a pointer to such a block of memory to the correct object type will produce a usable object for Blast&trade;. (The only restriction is that the block must be 16-byte aligned.) Families contain a number of actors and so this form of deserialization recreates all actors in the family. This form of serialization may be used between two devices which have the same endianness, and contain Blast&trade; SDKs which use the same object format.</li><li>Single-actor serialization and deserialization is, however, supported. This is not as light-weight as family serialization, but may be a better serialization model for a particular application. To deserialize a single actor, one must have a family to hold the actor, created from the appropriate asset. If none exists already, the user may create an empty family. After that, all actors that had been in that family may be deserialized into it one-at-a-time, in any order.</li></ul>
 <p>
-<em><br>
- </em><h2><a class="anchor" name="include_and_library">
+<br>
+ <h2><a class="anchor" name="include_and_library">
 Linking and Header Files</a></h2>
-<em> To use the low-level Blast&trade; SDK, the application need only inlclude the header <a class="el" href="_nv_blast_8h.html">NvBlast.h</a>, found in the top-level <b>include</b> folder, and link against the appropriate version of the NvBlast library. Depending on the platform and configuration, various suffixes will be added to the library name. The general naming scheme is</em><p>
-<em>NvBlast(config)(arch).(ext)</em><p>
-<em>(config) is DEBUG, CHECKED, OR PROFILE for the corresponding configurations. For a release configuration there is no (config) suffix.</em><p>
-<em>(arch) is _x86 or _x64 for Windows 32- and 64-bit builds, respectively, and empty for non-Windows platforms.</em><p>
-<em>(ext) is .lib for static linking and .dll for dynamic linking on Windows. On XBoxOne it is .lib, and on PS4 it is .a.</em><p>
-<em><br>
- </em><h2><a class="anchor" name="assets">
+To use the low-level Blast&trade; SDK, the application need only inlclude the header <a class="el" href="_nv_blast_8h.html">NvBlast.h</a>, found in the top-level <b>include</b> folder, and link against the appropriate version of the NvBlast library. Depending on the platform and configuration, various suffixes will be added to the library name. The general naming scheme is<p>
+NvBlast(config)(arch).(ext)<p>
+(config) is DEBUG, CHECKED, OR PROFILE for the corresponding configurations. For a release configuration there is no (config) suffix.<p>
+(arch) is _x86 or _x64 for Windows 32- and 64-bit builds, respectively, and empty for non-Windows platforms.<p>
+(ext) is .lib for static linking and .dll for dynamic linking on Windows. On XBoxOne it is .lib, and on PS4 it is .a.<p>
+<br>
+ <h2><a class="anchor" name="assets">
 Creating an Asset from a Descriptor (Authoring)</a></h2>
-<em> The <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> is an opaque type pointing to an object constructed by Blast&trade; in memory allocated by the user. To create an asset from a descriptor, use the function NvBlastAssetCreate. See the function documentation for a description of its parameters.</em><p>
-<em><b>N.B., there are strict rules for the ordering of chunks with an asset, and also conditions on the chunks marked as "support" (using the <a class="el" href="struct_nv_blast_chunk_desc.html#c5f6208f745fd4269c4a9b098297bf1b912c6007e1f18bab5eca228701183b3c">NvBlastChunkDesc::SupportFlag</a>). See the function documentation for these conditions. NvBlastAssetCreate does <em>not</em> reorder chunks or modify support flags to meet these conditions. If the conditions are not met, NvBlastAssetCreate fails and returns NULL. However, Blast&trade; provides helper functions to reorder chunk descriptors and modify the support flags within those descriptors so that they are valid for asset creation. The helper functions return a mapping from the original chunk ordering to the new chunk ordering, so that corresponding adjustments or mappings may be made for graphics and other data the user associates with chunks.</b></em><p>
-<em>Example code is given below. Throughout, we assume the user has defined a logging function called <b>logFn</b>, with the signature of NvBlastLog. In all cases, the log function is optional, and NULL may be passed in its place.</em><p>
-<em><div class="fragment"><pre class="fragment"><span class="comment">// Create chunk descriptors</span>
+The <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> is an opaque type pointing to an object constructed by Blast&trade; in memory allocated by the user. To create an asset from a descriptor, use the function <a class="el" href="_nv_blast_8h.html#8455859eec0e23e95aa5bbf7c4fd1e14">NvBlastCreateAsset</a>. See the function documentation for a description of its parameters.<p>
+<b>N.B., there are strict rules for the ordering of chunks with an asset, and also conditions on the chunks marked as "support" (using the <a class="el" href="struct_nv_blast_chunk_desc.html#c5f6208f745fd4269c4a9b098297bf1b912c6007e1f18bab5eca228701183b3c">NvBlastChunkDesc::SupportFlag</a>). See the function documentation for these conditions. NvBlastCreateAsset does <em>not</em> reorder chunks or modify support flags to meet these conditions. If the conditions are not met, NvBlastCreateAsset fails and returns NULL. However, Blast&trade; provides helper functions to reorder chunk descriptors and modify the support flags within those descriptors so that they are valid for asset creation. The helper functions return a mapping from the original chunk ordering to the new chunk ordering, so that corresponding adjustments or mappings may be made for graphics and other data the user associates with chunks.</b><p>
+Example code is given below. Throughout, we assume the user has defined a logging function called <b>logFn</b>, with the signature of NvBlastLog. In all cases, the log function is optional, and NULL may be passed in its place.<p>
+<div class="fragment"><pre class="fragment"><span class="comment">// Create chunk descriptors</span>
 std::vector&lt;NvBlastChunkDesc&gt; chunkDescs;
 chunkDescs.resize( chunkCount );    <span class="comment">// chunkCount &gt; 0</span>
 
 chunkDescs[0].parentChunkIndex = UINT32_MAX;    <span class="comment">// invalid index denotes a chunk hierarchy root</span>
-chunkDescs[0].centroid[0] = 0.f;    <span class="comment">// centroid position in asset-local space</span>
-chunkDescs[0].centroid[1] = 0.f;
-chunkDescs[0].centroid[2] = 0.f;
-chunkDescs[0].volume = 1.f; <span class="comment">// Unit volume</span>
+chunkDescs[0].centroid[0] = 0.0f;   <span class="comment">// centroid position in asset-local space</span>
+chunkDescs[0].centroid[1] = 0.0f;
+chunkDescs[0].centroid[2] = 0.0f;
+chunkDescs[0].volume = 1.0f;    <span class="comment">// Unit volume</span>
 chunkDescs[0].flags = <a class="code" href="struct_nv_blast_chunk_desc.html#c5f6208f745fd4269c4a9b098297bf1b09ac7c50cd7a350095ee9680bb66547a">NvBlastChunkDesc::NoFlags</a>;
-chunkDescs[0].ID = 0;   <span class="comment">// User-supplied ID.  For example, this can be the index of the chunkDesc.</span>
-                        <span class="comment">// The ID can be left undefined.</span>
+chunkDescs[0].userData = 0; <span class="comment">// User-supplied ID.  For example, this can be the index of the chunkDesc.</span>
+                            <span class="comment">// The userData can be left undefined.</span>
 
 chunkDescs[1].parentChunkIndex = 0; <span class="comment">// child of chunk described by chunkDescs[0]</span>
-chunkDescs[1].centroid[0] = 2.f;    <span class="comment">// centroid position in asset-local space</span>
-chunkDescs[1].centroid[1] = 4.f;
-chunkDescs[1].centroid[2] = 6.f;
-chunkDescs[1].volume = 1.0; <span class="comment">// Unit volume</span>
+chunkDescs[1].centroid[0] = 2.0f;   <span class="comment">// centroid position in asset-local space</span>
+chunkDescs[1].centroid[1] = 4.0f;
+chunkDescs[1].centroid[2] = 6.0f;
+chunkDescs[1].volume = 1.0f;    <span class="comment">// Unit volume</span>
 chunkDescs[1].flags = <a class="code" href="struct_nv_blast_chunk_desc.html#c5f6208f745fd4269c4a9b098297bf1b912c6007e1f18bab5eca228701183b3c">NvBlastChunkDesc::SupportFlag</a>; <span class="comment">// This chunk should be represented in the support graph</span>
-chunkDescs[1].ID = 1;
+chunkDescs[1].userData = 1;
 
 <span class="comment">// ... etc. for all chunks</span>
 
@@ -76,14 +76,14 @@ bondDescs.resize( bondCount );  <span class="comment">// bondCount &gt; 0</span>
 
 bondDescs[0].chunkIndices[0] = 1;   <span class="comment">// chunkIndices refer to chunk descriptor indices for support chunks</span>
 bondDescs[0].chunkIndices[1] = 2;
-bondDescs[0].bond.m_normal[0] = 1.f;    <span class="comment">// normal in the +x direction</span>
-bondDescs[0].bond.m_normal[1] = 0.f;
-bondDescs[0].bond.m_normal[2] = 0.f;
-bondDescs[0].bond.m_area = 1.0; <span class="comment">// unit area</span>
-bondDescs[0].bond.m_centroid[0] = 1.f;  <span class="comment">// centroid position in asset-local space</span>
-bondDescs[0].bond.m_centroid[1] = 2.f;
-bondDescs[0].bond.m_centroid[2] = 3.f;
-bondDescs[0].m_userData = 0;    <span class="comment">// this can be used to tell the user more information about this</span>
+bondDescs[0].bond.normal[0] = 1.0f; <span class="comment">// normal in the +x direction</span>
+bondDescs[0].bond.normal[1] = 0.0f;
+bondDescs[0].bond.normal[2] = 0.0f;
+bondDescs[0].bond.area = 1.0f;  <span class="comment">// unit area</span>
+bondDescs[0].bond.centroid[0] = 1.0f;   <span class="comment">// centroid position in asset-local space</span>
+bondDescs[0].bond.centroid[1] = 2.0f;
+bondDescs[0].bond.centroid[2] = 3.0f;
+bondDescs[0].userData = 0;  <span class="comment">// this can be used to tell the user more information about this</span>
                                 <span class="comment">// bond for example to create a joint when this bond breaks</span>
 
 bondDescs[1].chunkIndices[0] = 1;
@@ -109,37 +109,37 @@ std::vector&lt;uint32_t&gt; map(chunkCount);  <span class="comment">// Will be f
 scratch.resize( <a class="code" href="_nv_blast_8h.html#7517e528d4862b5e09853140bd4a2e46">NvBlastGetRequiredScratchForCreateAsset</a>( &amp;assetDesc ) );    <span class="comment">// Provide scratch memory for asset creation</span>
 <span class="keywordtype">void</span>* mem = malloc( <a class="code" href="_nv_blast_8h.html#6b27b9cc240bef3481cbfa23f7051060">NvBlastGetAssetMemorySize</a>( &amp;assetDesc ) );      <span class="comment">// Allocate memory for the asset object</span>
 <a class="code" href="struct_nv_blast_asset.html">NvBlastAsset</a>* asset = <a class="code" href="_nv_blast_8h.html#8455859eec0e23e95aa5bbf7c4fd1e14">NvBlastCreateAsset</a>( mem, &amp;assetDesc, scratch.data(), logFn );
-</pre></div></em><p>
-<em><br>
- It should be noted that the geometric information (centroid, volume, area, normal) in chunks and bonds is only used by damage shader functions (see <a class="el" href="pageextshaders.html">Damage Shaders (NvBlastExtShaders)</a>). Depending on the shader, some, all, or none of the geometric information will be needed. The user may write damage shader functions that interpret this data in any way they wish.</em><p>
-<em><br>
- </em><h3><a class="anchor" name="asset_copying">
+</pre></div><p>
+<br>
+ It should be noted that the geometric information (centroid, volume, area, normal) in chunks and bonds is only used by damage shader functions (see <a class="el" href="pageextshaders.html">Damage Shaders (NvBlastExtShaders)</a>). Depending on the shader, some, all, or none of the geometric information will be needed. The user may write damage shader functions that interpret this data in any way they wish.<p>
+<br>
+ <h3><a class="anchor" name="asset_copying">
 Cloning an Asset</a></h3>
-<em> To clone an asset, one only needs to copy the memory associated with the <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a>.</em><p>
-<em><div class="fragment"><pre class="fragment">uint32_t assetSize = <a class="code" href="_nv_blast_8h.html#d7ee1d97ad6e4f048eab694249fa2594">NvBlastAssetGetSize</a>( asset );
+To clone an asset, one only needs to copy the memory associated with the <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a>.<p>
+<div class="fragment"><pre class="fragment">uint32_t assetSize = <a class="code" href="_nv_blast_8h.html#d7ee1d97ad6e4f048eab694249fa2594">NvBlastAssetGetSize</a>( asset );
 
 <a class="code" href="struct_nv_blast_asset.html">NvBlastAsset</a>* newAsset = (<a class="code" href="struct_nv_blast_asset.html">NvBlastAsset</a>*)malloc(assetSize);  <span class="comment">// NOTE: the memory buffer MUST be 16-byte aligned!</span>
 memcpy( newAsset, asset, assetSize );   <span class="comment">// this data may be copied into a buffer, stored to a file, etc.</span>
-</pre></div></em><p>
-<em>N.B. the comment after the malloc call above. <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> memory <b>must</b> be 16-byte aligned.</em><p>
-<em><br>
- </em><h3><a class="anchor" name="asset_releasing">
+</pre></div><p>
+N.B. the comment after the malloc call above. <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> memory <b>must</b> be 16-byte aligned.<p>
+<br>
+ <h3><a class="anchor" name="asset_releasing">
 Releasing an Asset</a></h3>
-<em> Blast&amp;tm low-level does no internal allocation; since the memory is allocated by the user, one simply has to free the memory they've allocated. The asset pointer returned by NvBlastCreateAsset has the same numerical value as the mem block passed in (if the function is successful, or NULL otherwise). So releasing an asset with memory allocate by <b>malloc</b> is simply done with a call to <b>free</b>:</em><p>
-<em><div class="fragment"><pre class="fragment">free( asset );
-</pre></div></em><p>
-<em><br>
- </em><h2><a class="anchor" name="actors_and_families">
+Blast&trade; low-level does no internal allocation; since the memory is allocated by the user, one simply has to free the memory they've allocated. The asset pointer returned by NvBlastCreateAsset has the same numerical value as the mem block passed in (if the function is successful, or NULL otherwise). So releasing an asset with memory allocated by <b>malloc</b> is simply done with a call to <b>free</b>:<p>
+<div class="fragment"><pre class="fragment">free( asset );
+</pre></div><p>
+<br>
+ <h2><a class="anchor" name="actors_and_families">
 Creating Actors and Families</a></h2>
-<em> Actors live within a family created from asset data. To create an actor, one must first create a family. This family is used by the initial actor created from the asset, as well as all of the descendent actors created by recursively fracturing the initial actor. As with assets, family allocation is done by the user.</em><p>
-<em>To create a family, use:</em><p>
-<em><div class="fragment"><pre class="fragment"><span class="comment">// Allocate memory for the family object - this depends on the asset being represented by the family.</span>
+Actors live within a family created from asset data. To create an actor, one must first create a family. This family is used by the initial actor created from the asset, as well as all of the descendant actors created by recursively fracturing the initial actor. As with assets, family allocation is done by the user.<p>
+To create a family, use:<p>
+<div class="fragment"><pre class="fragment"><span class="comment">// Allocate memory for the family object - this depends on the asset being represented by the family.</span>
 <span class="keywordtype">void</span>* mem = malloc( <a class="code" href="_nv_blast_8h.html#b933a279e63545023464292bf7d562a1">NvBlastAssetGetFamilyMemorySize</a>( asset, logFn ) );
 
 <a class="code" href="struct_nv_blast_family.html">NvBlastFamily</a>* family = <a class="code" href="_nv_blast_8h.html#868a59bb905879503d5e9a034cff247e">NvBlastAssetCreateFamily</a>( mem, asset, logFn );
-</pre></div></em><p>
-<em>When an actor is first created from an asset, it represents the root of the chunk hierarchy, that is the unfractured object. To create this actor, use:</em><p>
-<em><div class="fragment"><pre class="fragment"><span class="comment">// Set the fields of the descriptor</span>
+</pre></div><p>
+When an actor is first created from an asset, it represents the root of the chunk hierarchy, that is the unfractured object. To create this actor, use:<p>
+<div class="fragment"><pre class="fragment"><span class="comment">// Set the fields of the descriptor</span>
 <a class="code" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a> actorDesc;
 actorDesc.asset = asset;    <span class="comment">// point to a valid asset</span>
 actorDesc.initialBondHealth = 1.0f;  <span class="comment">// this health value will be given to all bonds</span>
@@ -150,83 +150,83 @@ std::vector&lt;char&gt; scratch( <a class="code" href="_nv_blast_8h.html#730a6ea
 
 <span class="comment">// Create the first actor</span>
 <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>* actor = <a class="code" href="_nv_blast_8h.html#6d774be820fc1ff7df4d2241df1db220">NvBlastFamilyCreateFirstActor</a>( family, &amp;actorDesc, scratch.data(), logFn );   <span class="comment">// ready to be associated with physics and graphics by the user</span>
-</pre></div></em><p>
-<em><br>
- </em><h3><a class="anchor" name="actor_copying">
+</pre></div><p>
+<br>
+ <h3><a class="anchor" name="actor_copying">
 Copying Actors (Serialization and Deserialization)</a></h3>
-<em> There are two ways to copy NvBlastActors: cloning an <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a>, and single-actor serialization. Cloning an <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a> is extremely fast as it only requires a single memory copy. All actors in the family may be saved, loaded, or copied at once in this way.</em><p>
-<em><br>
- </em><h3><a class="anchor" name="family_serialization">
+There are two ways to copy NvBlastActors: cloning an <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a>, and single-actor serialization. Cloning an <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a> is extremely fast as it only requires a single memory copy. All actors in the family may be saved, loaded, or copied at once in this way.<p>
+<br>
+ <h3><a class="anchor" name="family_serialization">
 Cloning a Family</a></h3>
-<em> To clone a family, use the family pointer which may be retrieved from any active actor in the family if needed, using the NvBlastActorGetFamily function:</em><p>
-<em><div class="fragment"><pre class="fragment"><span class="keyword">const</span> <a class="code" href="struct_nv_blast_family.html">NvBlastFamily</a>* family = <a class="code" href="_nv_blast_8h.html#2d59048197fbddd4ba1ec575eef91b4d">NvBlastActorGetFamily</a>( &amp;actor, logFn );
-</pre></div></em><p>
-<em>Then the size of the family may be obtained using:</em><p>
-<em><div class="fragment"><pre class="fragment"><span class="keywordtype">size_t</span> size = <a class="code" href="_nv_blast_8h.html#f2316e686029f931812a3ddf11de6547">NvBlastFamilyGetSize</a>( family, logFn );
-</pre></div></em><p>
-<em>Now this memory may be copied, saved to disk, etc. To clone the family, for example, we can duplicate the memory:</em><p>
-<em><div class="fragment"><pre class="fragment">std::vector&lt;char&gt; buffer( size );
+To clone a family, use the family pointer which may be retrieved from any active actor in the family if needed, using the NvBlastActorGetFamily function:<p>
+<div class="fragment"><pre class="fragment"><span class="keyword">const</span> <a class="code" href="struct_nv_blast_family.html">NvBlastFamily</a>* family = <a class="code" href="_nv_blast_8h.html#2d59048197fbddd4ba1ec575eef91b4d">NvBlastActorGetFamily</a>( &amp;actor, logFn );
+</pre></div><p>
+Then the size of the family may be obtained using:<p>
+<div class="fragment"><pre class="fragment"><span class="keywordtype">size_t</span> size = <a class="code" href="_nv_blast_8h.html#f2316e686029f931812a3ddf11de6547">NvBlastFamilyGetSize</a>( family, logFn );
+</pre></div><p>
+Now this memory may be copied, saved to disk, etc. To clone the family, for example, we can duplicate the memory:<p>
+<div class="fragment"><pre class="fragment">std::vector&lt;char&gt; buffer( size );
 <a class="code" href="struct_nv_blast_family.html">NvBlastFamily</a>* family2 = <span class="keyword">reinterpret_cast&lt;</span><a class="code" href="struct_nv_blast_family.html">NvBlastFamily</a>*<span class="keyword">&gt;</span>( buffer.data() );
 memcpy( family2, family, size );
-</pre></div></em><p>
-<em><b>N.B.</b> If this data has been serialized from an external source, the family will not contain a valid reference to its associated asset. The user <em>must</em> set the family's asset. The family does however contain the asset's ID, to help the user match the correct asset to the family. So one way of restoring the asset to the family follows:</em><p>
-<em><div class="fragment"><pre class="fragment"><span class="keyword">const</span> NvBlastGUID guid = <a class="code" href="_nv_blast_8h.html#fa406b4fc35520001060b529ec95e820">NvBlastFamilyGetAssetID</a>( family2, logFn );
+</pre></div><p>
+<b>N.B.</b> If this data has been serialized from an external source, the family will not contain a valid reference to its associated asset. The user <em>must</em> set the family's asset. The family does however contain the asset's ID, to help the user match the correct asset to the family. So one way of restoring the asset to the family follows:<p>
+<div class="fragment"><pre class="fragment"><span class="keyword">const</span> NvBlastGUID guid = <a class="code" href="_nv_blast_8h.html#fa406b4fc35520001060b529ec95e820">NvBlastFamilyGetAssetID</a>( family2, logFn );
 <span class="comment">// ... here the user must retrieve the asset using the GUID or by some other means</span>
 <a class="code" href="_nv_blast_8h.html#fa4b1c5e96650587b8daabb5ab86d2f1">NvBlastFamilySetAsset</a>( family2, asset, logFn );
-</pre></div></em><p>
-<em>The data in family2 will contain the same actors as the original family. To access them, use:</em><p>
-<em><div class="fragment"><pre class="fragment">uint32_t actorCount = <a class="code" href="_nv_blast_8h.html#88fd777ba36d4ad6c6d7a7913810c24d">NvBlastFamilyGetActorCount</a>( family2, logFn );
+</pre></div><p>
+The data in family2 will contain the same actors as the original family. To access them, use:<p>
+<div class="fragment"><pre class="fragment">uint32_t actorCount = <a class="code" href="_nv_blast_8h.html#88fd777ba36d4ad6c6d7a7913810c24d">NvBlastFamilyGetActorCount</a>( family2, logFn );
 std::vector&lt;NvBlastActor*&gt; actors( actorCount );
 uint32_t actorsWritten = <a class="code" href="_nv_blast_8h.html#eb9144660cd1dbdb4dc23720a3e542de">NvBlastFamilyGetActors</a>( actors.data(), actorCount, family2, logFn );
-</pre></div></em><p>
-<em>In the code above, actorsWritten should equal actorCount.</em><p>
-<em><br>
- </em><h3><a class="anchor" name="single_actor_serialization">
+</pre></div><p>
+In the code above, actorsWritten should equal actorCount.<p>
+<br>
+ <h3><a class="anchor" name="single_actor_serialization">
 Single Actor Serialization</a></h3>
-<em> To perform single-actor serialization, first find the buffer size required to store the serialization data:</em><p>
-<em><div class="fragment"><pre class="fragment"><span class="keywordtype">size_t</span> bufferSize = <a class="code" href="_nv_blast_8h.html#8a9c103d9113d83a21a004bbbcad7beb">NvBlastActorGetSerializationSize</a>( actor, logFn );
-</pre></div></em><p>
-<em>If you want to use an upper bound which will be large enough for any actor in a family, you may use:</em><p>
-<em><div class="fragment"><pre class="fragment"><span class="keywordtype">size_t</span> bufferSize = <a class="code" href="_nv_blast_8h.html#2539b7a2f244a8f0c45d7020d1dfad63">NvBlastAssetGetActorSerializationSizeUpperBound</a>( asset, logFn );
-</pre></div></em><p>
-<em>Then create a buffer of that size and use NvBlastActorSerialize to write to the buffer:</em><p>
-<em><div class="fragment"><pre class="fragment">std::vector&lt;char&gt; buffer( bufferSize );
+To perform single-actor serialization, first find the buffer size required to store the serialization data:<p>
+<div class="fragment"><pre class="fragment"><span class="keywordtype">size_t</span> bufferSize = <a class="code" href="_nv_blast_8h.html#8a9c103d9113d83a21a004bbbcad7beb">NvBlastActorGetSerializationSize</a>( actor, logFn );
+</pre></div><p>
+If you want to use an upper bound which will be large enough for any actor in a family, you may use:<p>
+<div class="fragment"><pre class="fragment"><span class="keywordtype">size_t</span> bufferSize = <a class="code" href="_nv_blast_8h.html#2539b7a2f244a8f0c45d7020d1dfad63">NvBlastAssetGetActorSerializationSizeUpperBound</a>( asset, logFn );
+</pre></div><p>
+Then create a buffer of that size and use NvBlastActorSerialize to write to the buffer:<p>
+<div class="fragment"><pre class="fragment">std::vector&lt;char&gt; buffer( bufferSize );
 <span class="keywordtype">size_t</span> bytesWritten = <a class="code" href="_nv_blast_8h.html#cab7d192ec7ac6d3a095a6b0646375fe">NvBlastActorSerialize</a>( buffer, bufferSize, actor, logFn );
-</pre></div></em><p>
-<em>To deserialize the buffer, an appropriate family must be created. It must not already hold a copy of the actor. It must be formed using the correct asset (the one that originally created the actor):</em><p>
-<em><div class="fragment"><pre class="fragment"><span class="keywordtype">void</span>* mem = malloc( <a class="code" href="_nv_blast_8h.html#b933a279e63545023464292bf7d562a1">NvBlastAssetGetFamilyMemorySize</a>( asset, logFn ) );
+</pre></div><p>
+To deserialize the buffer, an appropriate family must be created. It must not already hold a copy of the actor. It must be formed using the correct asset (the one that originally created the actor):<p>
+<div class="fragment"><pre class="fragment"><span class="keywordtype">void</span>* mem = malloc( <a class="code" href="_nv_blast_8h.html#b933a279e63545023464292bf7d562a1">NvBlastAssetGetFamilyMemorySize</a>( asset, logFn ) );
 <a class="code" href="struct_nv_blast_family.html">NvBlastFamily</a>* family = <a class="code" href="_nv_blast_8h.html#868a59bb905879503d5e9a034cff247e">NvBlastAssetCreateFamily</a>( mem, asset, logFn );
-</pre></div></em><p>
-<em>Then deserialize into the family:</em><p>
-<em><div class="fragment"><pre class="fragment"><a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>* newActor = <a class="code" href="_nv_blast_8h.html#38e8e96d5b62bf19dc3135603ed38240">NvBlastFamilyDeserializeActor</a>( family, buffer.data(), logFn );
-</pre></div></em><p>
-<em>If newActor is not NULL, then the actor was successfully deserialized.</em><p>
-<em><br>
- </em><h2><a class="anchor" name="actor_deactivating">
+</pre></div><p>
+Then deserialize into the family:<p>
+<div class="fragment"><pre class="fragment"><a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>* newActor = <a class="code" href="_nv_blast_8h.html#38e8e96d5b62bf19dc3135603ed38240">NvBlastFamilyDeserializeActor</a>( family, buffer.data(), logFn );
+</pre></div><p>
+If newActor is not NULL, then the actor was successfully deserialized.<p>
+<br>
+ <h2><a class="anchor" name="actor_deactivating">
 Deactivating an Actor</a></h2>
-<em> Actors may not be released in the usual sense of deallocation. This is because actors' memory is stored as a block within the owning family. The memory is only released when the family is released. However, one may deactivate an actor using NvBlastActorDeactivate. This clears the actor's chunk lists and marks it as invalid, effectively disassociating it from the family. The user should consider this actor to be destroyed.</em><p>
-<em><div class="fragment"><pre class="fragment"><span class="keywordtype">bool</span> success = <a class="code" href="_nv_blast_8h.html#d7b368ffbf45a130d7b116530b81a77e">NvBlastActorDeactivate</a>( actor, logFn );
-</pre></div></em><p>
-<em><br>
- </em><h3><a class="anchor" name="family_releasing">
+Actors may not be released in the usual sense of deallocation. This is because actors' memory is stored as a block within the owning family. The memory is only released when the family is released. However, one may deactivate an actor using NvBlastActorDeactivate. This clears the actor's chunk lists and marks it as invalid, effectively disassociating it from the family. The user should consider this actor to be destroyed.<p>
+<div class="fragment"><pre class="fragment"><span class="keywordtype">bool</span> success = <a class="code" href="_nv_blast_8h.html#d7b368ffbf45a130d7b116530b81a77e">NvBlastActorDeactivate</a>( actor, logFn );
+</pre></div><p>
+<br>
+ <h3><a class="anchor" name="family_releasing">
 Releasing a family</a></h3>
-<em> As mentioned above, releasing an actor does not actually do any deallocation; it simply invalidates the actor within its family. To actually deallocate memory, you must deallocate the family. Note, this will invalidate all actors in the family. This is a fast way to delete all actors that were created from repeated fracturing of a single instance. As with <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a>, memory is allocated by the user, so to release a family with memory allocated by <b>malloc</b>, simply free that memory with <b>free</b>:</em><p>
-<em><div class="fragment"><pre class="fragment">free( family );
-</pre></div></em><p>
-<em>The family will <em>not</em> be automatically released when all actors within it are invalidated using NvBlastActorDeactivate. However, the user may query the number of active actors in a family using</em><p>
-<em><div class="fragment"><pre class="fragment">uint32_t actorCount = <a class="code" href="_nv_blast_8h.html#88fd777ba36d4ad6c6d7a7913810c24d">NvBlastFamilyGetActorCount</a>( family, logFn );
-</pre></div></em><p>
-<em><br>
- </em><h2><a class="anchor" name="splitting">
+As mentioned above, releasing an actor does not actually do any deallocation; it simply invalidates the actor within its family. To actually deallocate memory, you must deallocate the family. Note, this will invalidate all actors in the family. This is a fast way to delete all actors that were created from repeated fracturing of a single instance. As with <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a>, memory is allocated by the user, so to release a family with memory allocated by <b>malloc</b>, simply free that memory with <b>free</b>:<p>
+<div class="fragment"><pre class="fragment">free( family );
+</pre></div><p>
+The family will <em>not</em> be automatically released when all actors within it are invalidated using NvBlastActorDeactivate. However, the user may query the number of active actors in a family using<p>
+<div class="fragment"><pre class="fragment">uint32_t actorCount = <a class="code" href="_nv_blast_8h.html#88fd777ba36d4ad6c6d7a7913810c24d">NvBlastFamilyGetActorCount</a>( family, logFn );
+</pre></div><p>
+<br>
+ <h2><a class="anchor" name="splitting">
 Damage and Fracturing</a></h2>
-<em> Damaging and fracturing is a staged process. In a first step, a <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> creates lists of Bonds and Chunks to damage - so called Fracture Commands. The lists are created from input specific to the <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>.<br>
+Damaging and fracturing is a staged process. In a first step, a <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> creates lists of Bonds and Chunks to damage - so called Fracture Commands. The lists are created from input specific to the <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>.<br>
  NvBlastDamagePrograms are composed of a <a class="el" href="_nv_blast_types_8h.html#f1fde0d45c48f0575e67f1df5860f940">NvBlastGraphShaderFunction</a> and a <a class="el" href="_nv_blast_types_8h.html#33a8ca70a1399b8b42a968c93f89ff50">NvBlastSubgraphShaderFunction</a> operating on support graphs (support chunks and bonds) and disconnected subsupport chunks respectively. An implementer can freely define the shader functions and parameters. Different functions can have the effect of emulating different physical materials.<br>
- Blast&trade; provides reference implementations of such functions in <a class="el" href="pageextshaders.html">Damage Shaders (NvBlastExtShaders)</a>, see also <a class="el" href="_nv_blast_ext_damage_shaders_8h.html">NvBlastExtDamageShaders.h</a>. The <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> is used through <a class="el" href="_nv_blast_8h.html#6a40c4286de500e8545babfb9c517789">NvBlastActorGenerateFracture</a> that will provide the necessary internal data for the <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> being processed. The shader functions see the internal data as <a class="el" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a> and <a class="el" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a> respectively.</em><p>
-<em>The second stage is carried out with <a class="el" href="_nv_blast_8h.html#6a3d0ae6f5c5efb65699140897adb8c0">NvBlastActorApplyFracture</a>. This function takes the previously generated Fracture Commands and applies them to the <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a>. The result of every applied command is reported as a respective Fracture Event if requested.</em><p>
-<em>Fracture Commands and Fracture Events both are represented by <a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>. The splitting of the actor into child actors is not done until the third stage, <a class="el" href="_nv_blast_8h.html#dc280b2a624d76981c87fb5f068d5106">NvBlastActorSplit</a>, is called. Fractures may be repeatedly applied to an actor before splitting.</em><p>
-<em>The <a class="el" href="_nv_blast_8h.html#6a40c4286de500e8545babfb9c517789">NvBlastActorGenerateFracture</a>, <a class="el" href="_nv_blast_8h.html#6a3d0ae6f5c5efb65699140897adb8c0">NvBlastActorApplyFracture</a> and <a class="el" href="_nv_blast_8h.html#dc280b2a624d76981c87fb5f068d5106">NvBlastActorSplit</a> functions are profiled in Profile configurations. This is done through a pointer to a <a class="el" href="struct_nv_blast_timers.html">NvBlastTimers</a> struct passed into the functions. If this pointer is not NULL, then timing values will be accumulated in the referenced struct.</em><p>
-<em>The following example illustrates the process:</em><p>
-<em><div class="fragment"><pre class="fragment"><span class="comment">// Step one: Generate Fracture Commands</span>
+ Blast&trade; provides reference implementations of such functions in <a class="el" href="pageextshaders.html">Damage Shaders (NvBlastExtShaders)</a>, see also <a class="el" href="_nv_blast_ext_damage_shaders_8h.html">NvBlastExtDamageShaders.h</a>. The <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> is used through <a class="el" href="_nv_blast_8h.html#6a40c4286de500e8545babfb9c517789">NvBlastActorGenerateFracture</a> that will provide the necessary internal data for the <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> being processed. The shader functions see the internal data as <a class="el" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a> and <a class="el" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a> respectively.<p>
+The second stage is carried out with <a class="el" href="_nv_blast_8h.html#6a3d0ae6f5c5efb65699140897adb8c0">NvBlastActorApplyFracture</a>. This function takes the previously generated Fracture Commands and applies them to the <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a>. The result of every applied command is reported as a respective Fracture Event if requested.<p>
+Fracture Commands and Fracture Events both are represented by <a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>. The splitting of the actor into child actors is not done until the third stage, <a class="el" href="_nv_blast_8h.html#dc280b2a624d76981c87fb5f068d5106">NvBlastActorSplit</a>, is called. Fractures may be repeatedly applied to an actor before splitting.<p>
+The <a class="el" href="_nv_blast_8h.html#6a40c4286de500e8545babfb9c517789">NvBlastActorGenerateFracture</a>, <a class="el" href="_nv_blast_8h.html#6a3d0ae6f5c5efb65699140897adb8c0">NvBlastActorApplyFracture</a> and <a class="el" href="_nv_blast_8h.html#dc280b2a624d76981c87fb5f068d5106">NvBlastActorSplit</a> functions are profiled in Profile configurations. This is done through a pointer to a <a class="el" href="struct_nv_blast_timers.html">NvBlastTimers</a> struct passed into the functions. If this pointer is not NULL, then timing values will be accumulated in the referenced struct.<p>
+The following example illustrates the process:<p>
+<div class="fragment"><pre class="fragment"><span class="comment">// Step one: Generate Fracture Commands</span>
 
 <span class="comment">// Damage programs (shader functions), material properties and damage description relate to each other.</span>
 <span class="comment">// Together they define how actors will break by generating the desired set of Fracture Commands for Bonds and Chunks.</span>
@@ -248,7 +248,7 @@ Damage and Fracturing</a></h2>
 <span class="comment">// Step three: Splitting</span>
 
 <span class="comment">// The Actor may be split into all its smallest pieces.</span>
-uint32_t maxNewActorCount = <a class="code" href="_nv_blast_8h.html#c82609eb93afc9a8ab7011f2eb8f9a23">NvBlastAssetGetChunkCount</a>( asset, logFn );  <span class="comment">// In the worst case, one NvBlastActor may be created for every chunk in the asset</span>
+uint32_t maxNewActorCount = <a class="code" href="_nv_blast_8h.html#0142a22e103d7726b58d976925504f9c">NvBlastActorGetMaxActorCountForSplit</a>( actor, logFn );
 std::vector&lt;NvBlastActor*&gt; newActors( maxNewActorCount );
 
 <span class="comment">// Make this memory available to NvBlastSplitEvent.</span>
@@ -261,9 +261,9 @@ std::vector&lt;char&gt; scratch( <a class="code" href="_nv_blast_8h.html#8ecf145
 <span class="comment">// New actors created are reported in splitEvent.newActors.</span>
 <span class="comment">// If newActorCount != 0, then the old actor is deleted and is reported in splitEvent.deletedActor.</span>
 <span class="keywordtype">size_t</span> newActorCount = <a class="code" href="_nv_blast_8h.html#dc280b2a624d76981c87fb5f068d5106">NvBlastActorSplit</a>( &amp;splitEvent, actor, maxNewActorCount, scratch.data(), logFn, &amp;timers );
-</pre></div></em><p>
-<em><br>
- </em></div>
+</pre></div><p>
+<br>
+ </div>
 <!-- start footer part -->
 <div class="footer">
 Copyright &copy; 2015-2017 NVIDIA Corporation, 2701 San Tomas Expressway, Santa Clara, CA 95050 U.S.A. All rights reserved. <a href="http://www.nvidia.com ">www.nvidia.com</a>

@@ -98,8 +98,8 @@ An interface for <a class="el" href="namespace_nv_1_1_blast.html">Blast</a> mesh
 Retrieve collision geometry if it exist <dl class="note" compact><dt><b>Note:</b></dt><dd>User should call NVBLAST_FREE for hulls and hullsOffset when it not needed anymore</dd></dl>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>hullsOffset</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of hull offsets for hulls array. The size is meshCount + 1. </td></tr>
-    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>hulls</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of hull. The first i-th mesh hull: hulls[hullsOffset[i]]. The size is written to hullsOffset[meshCount] </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>hullsOffset</em>&nbsp;</td><td>Array of hull offsets for hulls array. The size is meshCount + 1. </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>hulls</em>&nbsp;</td><td>Array of hull. The first i-th mesh hull: hulls[hullsOffset[i]]. The size is written to hullsOffset[meshCount] </td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>Number of meshes (meshCount) </dd></dl>

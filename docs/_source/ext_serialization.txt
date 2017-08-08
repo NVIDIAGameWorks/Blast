@@ -43,22 +43,22 @@ Each serialization module defines the object types it can serialize.  ExtSeriali
 
 To serialize an object, for example an NvBlastAsset, use ExtSerialization::serializeIntoBuffer as follows:
 
-/code
+\code
 const NvBlastAsset* asset = ... // Given pointer to an NvBlastAsset
 
 void* buffer;
 uint64_t size = ser->serializeIntoBuffer(buffer, asset, LlObjectTypeID::Asset);
-/endcode
+\endcode
 
 If successful, the data is written into a buffer allocated using the NvBlastGlobals allocator, written to the "buffer" parameter, and the size of the buffer
 written is the return value of the function.  If the function returns 0, then serialization was unsuccessful.  Notice that the second function parameter is actually a void*,
-so it requires the last parameter to tell it what object it's serializing.  A utility wrapper function is given in <b>NvBlastExtLlSerialization.h</b> which performs the
+so it requires the last parameter to tell it what object it is serializing.  A utility wrapper function is given in <b>NvBlastExtLlSerialization.h</b> which performs the
 same operation with an NvBlastAsset, so one could equivalently use
 
-/code
+\code
 void* buffer;
 uint64_t size = NvBlastExtSerializationSerializeAssetIntoBuffer(buffer, *ser, asset);
-/endcode
+\endcode
 
 A corresponding function also exists for NvBlastFamily, as well as other data types supported by other serialization extensions.
 
@@ -155,7 +155,7 @@ default:
 \subsection peeking_and_skipping Peeking at and Skipping Buffer Data
 
 If a buffer contains multiple objects, you may peek at the buffer to get object information including object type, encoding, and data size, and skip to
-the next object in the buffer (whether or not you've chosen to read the current object).  For example:
+the next object in the buffer (whether or not you have chosen to read the current object).  For example:
 
 \code
 const void* buffer = ... // The input buffer

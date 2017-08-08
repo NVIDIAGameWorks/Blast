@@ -148,7 +148,7 @@ bool FbxFileWriter::appendMesh(const AuthoringResult& aResult, const char* asset
 			//Found a valid smoothing group
 			smElement = mesh->CreateElementSmoothing();
 			smElement->SetMappingMode(FbxGeometryElement::eByPolygon);
-			smElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
+			smElement->SetReferenceMode(FbxGeometryElement::eDirect);
 			break;
 		}
 	}
@@ -423,11 +423,11 @@ uint32_t FbxFileWriter::createChunkRecursive(uint32_t currentCpIdx, uint32_t chu
 		{
 			if (tri.userData == 0)
 			{
-				smElement->GetIndexArray().SetAt(polyCount, tri.smoothingGroup);
+				smElement->GetDirectArray().Add(tri.smoothingGroup);
 			}
 			else
 			{
-				smElement->GetIndexArray().SetAt(polyCount, SMOOTHING_GROUP_INTERIOR);
+				smElement->GetDirectArray().Add(SMOOTHING_GROUP_INTERIOR);
 			}
 		}
 		
@@ -611,7 +611,7 @@ void FbxFileWriter::createChunkRecursiveNonSkinned(const std::string& meshName, 
 			//Found a valid smoothing group
 			smElement = mesh->CreateElementSmoothing();
 			smElement->SetMappingMode(FbxGeometryElement::eByPolygon);
-			smElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
+			smElement->SetReferenceMode(FbxGeometryElement::eDirect);
 			break;
 		}
 	}
@@ -658,11 +658,11 @@ void FbxFileWriter::createChunkRecursiveNonSkinned(const std::string& meshName, 
 		{
 			if (geo.userData == 0)
 			{
-				smElement->GetIndexArray().SetAt(polyCount, geo.smoothingGroup);
+				smElement->GetDirectArray().Add(geo.smoothingGroup);
 			}
 			else
 			{
-				smElement->GetIndexArray().SetAt(polyCount, SMOOTHING_GROUP_INTERIOR);
+				smElement->GetDirectArray().Add(SMOOTHING_GROUP_INTERIOR);
 			}
 		}
 

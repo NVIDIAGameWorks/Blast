@@ -186,11 +186,12 @@ public:
 		\param[in] cellPoints			Array of voronoi sites
 		\param[in] cellPoints			Array of voronoi sites
 		\param[in] scale				Voronoi cells scaling factor
+		\param[in] rotation				Voronoi cells rotation. Has no effect without cells scale factor
 		\param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them.
 									    Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
 		\return   If 0, fracturing is successful.
 	*/
-	int32_t									voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3* cellPoints, const physx::PxVec3& scale, bool replaceChunk) override;
+	int32_t									voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3* cellPoints, const physx::PxVec3& scale, const physx::PxQuat& rotation, bool replaceChunk) override;
 
 
 	/**

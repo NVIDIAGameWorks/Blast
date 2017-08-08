@@ -29,6 +29,7 @@
 #include "PxPhysicsAPI.h"
 #include "PsFileBuffer.h"
 #include "NvBlast.h"
+#include "NvBlastAssert.h"
 #include "NvBlastGlobals.h"
 #include "NvBlastExtExporter.h"
 #include "NvBlastPxCallbacks.h"
@@ -87,7 +88,7 @@ namespace TCLAP {
 	};
 }
 
-bool isDirectoryExist(std::string path)
+bool isDirectoryExist(const std::string& path)
 {
 	DWORD attributes = GetFileAttributesA(path.c_str());
 	if ((attributes != INVALID_FILE_ATTRIBUTES) && (attributes & FILE_ATTRIBUTE_DIRECTORY))
@@ -97,7 +98,17 @@ bool isDirectoryExist(std::string path)
 	return false;
 }
 
-bool mkDirRecursively(std::string path)
+bool isFileExist(const std::string& path)
+{
+	DWORD attributes = GetFileAttributesA(path.c_str());
+	if ((attributes != INVALID_FILE_ATTRIBUTES) && !(attributes & FILE_ATTRIBUTE_DIRECTORY))
+	{
+		return true;
+	}
+	return false;
+}
+
+bool mkDirRecursively(const std::string& path)
 {
 	if (isDirectoryExist(path))
 	{
@@ -118,14 +129,14 @@ bool initPhysX()
 	gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
 	if (!gFoundation)
 	{
-		std::cout << "Can't init PhysX foundation" << std::endl;
+		std::cerr << "Can't init PhysX foundation" << std::endl;
 		return false;
 	}
 	physx::PxTolerancesScale scale;
 	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, scale, true);
 	if (!gPhysics)
 	{
-		std::cout << "Can't create Physics" << std::endl;
+		std::cerr << "Can't create Physics" << std::endl;
 		return false;
 	}
 	physx::PxCookingParams cookingParams(scale);
@@ -133,7 +144,7 @@ bool initPhysX()
 	gCooking = PxCreateCooking(PX_PHYSICS_VERSION, gPhysics->getFoundation(), cookingParams);
 	if (!gCooking)
 	{
-		std::cout << "Can't create Cooking" << std::endl;
+		std::cerr << "Can't create Cooking" << std::endl;
 		return false;
 	}
 	return true;
@@ -141,6 +152,46 @@ bool initPhysX()
 
 int main(int argc, const char* const* argv)
 {
+	// set blast global error callback
+	// overriding default one in order to exit tool in profile/release configuration too (and write to stderr)
+	class CustomErrorCallback : public ErrorCallback
+	{
+		virtual void reportError(ErrorCode::Enum code, const char* msg, const char* file, int line) override
+		{
+			std::stringstream str;
+			bool critical = false;
+			switch (code)
+			{
+			case ErrorCode::eNO_ERROR:			str << "[Info]";				critical = false; break;
+			case ErrorCode::eDEBUG_INFO:		str << "[Debug Info]";			critical = false; break;
+			case ErrorCode::eDEBUG_WARNING:		str << "[Debug Warning]";		critical = false; break;
+			case ErrorCode::eINVALID_PARAMETER:	str << "[Invalid Parameter]";	critical = true;  break;
+			case ErrorCode::eINVALID_OPERATION:	str << "[Invalid Operation]";	critical = true;  break;
+			case ErrorCode::eOUT_OF_MEMORY:		str << "[Out of] Memory";		critical = true;  break;
+			case ErrorCode::eINTERNAL_ERROR:	str << "[Internal Error]";		critical = true;  break;
+			case ErrorCode::eABORT:				str << "[Abort]";				critical = true;  break;
+			case ErrorCode::ePERF_WARNING:		str << "[Perf Warning]";		critical = false; break;
+			default:							NVBLAST_ASSERT(false);
+			}
+#if NV_DEBUG || NV_CHECKED
+			str << file << "(" << line << "): ";
+#else 
+			NV_UNUSED(file);
+			NV_UNUSED(line);
+#endif				
+			str << " " << msg << "\n";
+			std::cerr << str.str();
+
+			if (critical)
+			{
+				std::cerr << "Authoring failed. Exiting.\n";
+				exit(-1);
+			}
+		}
+	};
+	CustomErrorCallback errorCallback;
+	NvBlastGlobalSetErrorCallback(&errorCallback);
+
 	// setup cmd line
 	TCLAP::CmdLine cmd("Blast SDK: Authoring Tool", ' ', "0.1");
 
@@ -215,15 +266,21 @@ int main(int argc, const char* const* argv)
 	}
 	catch (TCLAP::ArgException &e)  // catch any exceptions
 	{
-		std::cout << "error: " << e.error() << " for arg " << e.argId() << std::endl;
+		std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
 		return -1;
 	}
 
 	// get cmd parse results
 	std::string infile = infileArg.getValue();
+	if (!isFileExist(infile))
+	{
+		std::cerr << "[Error] Can't fine input file: " << infile << std::endl;
+		return -1;
+	}
 
 	std::string outDir;
 	
+	std::cout << "Input file: " << infile << std::endl;
 
 	if (outDirArg.isSet())
 	{
@@ -234,7 +291,7 @@ int main(int argc, const char* const* argv)
 			std::cout << "Output directory doesn't exist. It will be created." << std::endl;
 			if (!mkDirRecursively(temp.data()))
 			{
-				std::cout << "Directory creation failed!" << std::endl;
+				std::cerr << "Directory creation failed!" << std::endl;
 				return -1;
 			}
 		}
@@ -266,7 +323,7 @@ int main(int argc, const char* const* argv)
 	}
 	else
 	{
-		std::cout << "Can't determine extension (and thus, loader) of input file. " << infile << std::endl;
+		std::cerr << "Can't determine extension (and thus, loader) of input file. " << infile << std::endl;
 		return -1;
 	}
 
@@ -338,6 +395,8 @@ int main(int argc, const char* const* argv)
 		mesh = nmesh;
 	}
 	mesh->setMaterialId(fileReader->getMaterialIds());
+	mesh->setSmoothingGroup(fileReader->getSmoothingGroups());
+
 	fTool->setSourceMesh(mesh);
 	
 
@@ -345,7 +404,7 @@ int main(int argc, const char* const* argv)
 	Nv::Blast::VoronoiSitesGenerator* voronoiSitesGenerator = NvBlastExtAuthoringCreateVoronoiSitesGenerator(mesh, &rng);
 	if (voronoiSitesGenerator == nullptr)
 	{
-		std::cout << "Failed to create Voronoi sites generator" << std::endl;
+		std::cerr << "Failed to create Voronoi sites generator" << std::endl;
 		return -1;
 	}
 
@@ -359,7 +418,7 @@ int main(int argc, const char* const* argv)
 			uint32_t sitesCount = voronoiSitesGenerator->getVoronoiSites(sites);
 			if (fTool->voronoiFracturing(0, sitesCount, sites, false) != 0)
 			{
-				std::cout << "Failed to fracture with Voronoi" << std::endl;
+				std::cerr << "Failed to fracture with Voronoi" << std::endl;
 				return -1;
 			}
 			break;
@@ -371,7 +430,7 @@ int main(int argc, const char* const* argv)
 			uint32_t sitesCount = voronoiSitesGenerator->getVoronoiSites(sites);
 			if (fTool->voronoiFracturing(0, sitesCount, sites, false) != 0)
 			{
-				std::cout << "Failed to fracture with Clustered Voronoi" << std::endl;
+				std::cerr << "Failed to fracture with Clustered Voronoi" << std::endl;
 				return -1;
 			}
 			break;
@@ -386,14 +445,14 @@ int main(int argc, const char* const* argv)
 			slConfig.offset_variations = offsetVariation.getValue();
 			if (fTool->slicing(0, slConfig, false, &rng) != 0)
 			{
-				std::cout << "Failed to fracture with Slicing" << std::endl;
+				std::cerr << "Failed to fracture with Slicing" << std::endl;
 				return -1;
 			}
 			break;
 		}
 		default:
-			std::cout << "Not supported mode" << std::endl;
-			break;
+			std::cerr << "Unknown mode" << std::endl;
+			return -1;
 	}
 	voronoiSitesGenerator->release();
 	mesh->release();

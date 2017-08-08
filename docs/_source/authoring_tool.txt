@@ -2,11 +2,11 @@
 
 The application <b>AuthoringTool</b> is a command-line asset authoring utility.  It reads a file containing a single graphics mesh
 (currently .fbx and .obj format are supported in this tool), and fractures it according to the parameters given in the command line.
-User can configure output of tool. It can save render mesh geometry to .fbx or .obj file. 
+The user can configure the output of the tool. It can save render mesh geometry to .fbx or .obj files. 
 
-Additionally user can set how Blast data should be saved:
+Additionally, the user can choose how Blast&tm; data should be saved:
 
-	1) BPXA-asset which incorporates Blast data and collision geometry for physics engine. 
+	1) BPXA-asset which incorporates Blast&tm; data and collision geometry for physics engine. 
 
 	2) LL-asset which is Low Level asset data
 

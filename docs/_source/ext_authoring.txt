@@ -2,52 +2,51 @@
 
 The Authoring extension provides tools for creation of a Blast&tm; asset from a provided mesh.
 
-There are three tools for creation Blast asset.
+There are four tools for creation of Blast&tm; assets.
 
-First one is FractureTool (see NvBlastExtAuthoringFractureTool.h) which is used to fracture an input mesh. It supports Voronoi fracturing and also
-simple slicing.  Internal surfaces of output chunks can be tesselated and noise can be applied to them.  The slicing method supports slicing with
-a noisy slicing surface, which allows the creation of a jagged slicing line.  Noisy slicing is switched on by setting a non-zero noise amplitude
-in slicing parameters (Nv::Blast::SlicingConfiguration).
 
 <br>
 \section fracturetool FractureTool
 
-Nv::Blast::FractureTool supports two types of output:
+Nv::Blast::FractureTool (see NvBlastExtAuthoringFractureTool.h) is used to fracture an input mesh.  It supports Voronoi fracturing and also simple slicing.  Internal surfaces of output chunks can be tesselated and noise can be applied to them.  The slicing method supports slicing with a noisy slicing surface, which allows the creation of a jagged slicing line.  Noisy slicing is switched on by setting a non-zero noise amplitude in slicing parameters (Nv::Blast::SlicingConfiguration).
+
+
+FractureTool supports two types of output:
 
 1) Array of triangles - the tool fills provided array with triangles of chunk, ID of chunk should be provided.
 
-2) Buffered output - tool fills provided array with vertices, and another array of arrays with indices. Indices form triplets of vertices of triangle.
+2) Buffered output - the tool fills provided array with vertices, and another array of arrays with indices. Indices form triplets of vertices of triangle.
 
 <br>
 \section convexmeshbuilder ConvexMeshBuilder
 
-Nv::Blast::ConvexMeshBuilder is tool for creation collision geometry for physics engine. It recieves mesh vertices, and returns convex hull of that vertices. If creation of convex hull fails,
+Nv::Blast::ConvexMeshBuilder is a tool for creation of collision geometry for physics engine. It recieves mesh vertices, and returns the convex hull of those vertices. If creation of a convex hull fails, the
 tool creates collision geometry as a bounding box of provided vertices.
 
-Tool provides method to trim convex hulls against each other. It can be used along with noisy slicing to avoid "explosive" behavior due to penetration of neighboor collision hulls into each other.
-As a drawback penetration of render meshes into each other is possible due to trimmed collision geometry. 
+The tool provides a method to trim convex hulls against each other. It can be used along with noisy slicing to avoid "explosive" behavior due to penetration of neighboring collision hulls into each other.
+As a drawback, penetration of render meshes into each other is possible due to trimmed collision geometry. 
 
 <br>
 \section bondgenerator BondGenerator
 
-Nv::Blast::BlastBondGenerator tool for creation Blast Bond descriptors from provided geometry data. 
-It has separate method which is optimized for working FractureTool. 
+Nv::Blast::BlastBondGenerator is a tool for creation of Blast&tm; Bond descriptors from provided geometry data. 
+It has separate a method which is optimized for working FractureTool. 
 \code
 int32_t Nv::Blast::BlastBondGenerator::buildDescFromInternalFracture(FractureTool* tool, const std::vector<bool>& chunkIsSupport, std::vector<NvBlastBondDesc>& resultBondDescs, std::vector<NvBlastChunkDesc>& resultChunkDescriptors);
 \endcode
 
-Other methods can work with prefractured mesh created in Third party tool, and can be used for converting prefractured models to Blast assets.
+Other methods can work with prefractured meshes created in Third party tools, and can be used for converting prefractured models to Blast&tm; assets.
 
 Nv::Blast::BlastBondGenerator supports two modes of NvBlastBond data generation:
 
 1) Exact - in this mode exact common surface between chunks is found and considered as interface between them. Exact normal, area and centroid are computed.
 
-2) Average - this mode uses approximations of interface, and can be used for gathering NvBlastBond data for assets, where chunks penetrate each other, e.g. chunks with noise.
+2) Average - this mode uses approximations of the interface, and can be used for gathering NvBlastBond data for assets, where chunks penetrate each other, e.g. chunks with noise.
 
 <br>
 \section meshcleaner MeshCleaner
 
-Nv::Blast::MeshCleaner can be used to remove self intersections and open edges in interior of mesh, making it more likely to fracture well.
+Nv::Blast::MeshCleaner can be used to remove self intersections and open edges in the interior of a mesh, making it more likely to fracture well.
 
 To use it, create a MeshCleaner using
 
@@ -55,7 +54,7 @@ To use it, create a MeshCleaner using
 Nv::Blast::MeshCleaner* cleaner = NvBlastExtAuthoringCreateMeshCleaner();
 \endcode
 
-Given an Nv::Blast::Mesh called "mesh," simply call
+Given an Nv::Blast::Mesh called "mesh", simply call
 
 \code
 Nv::Blast::Mesh* newMesh = cleaner->cleanMesh(mesh);

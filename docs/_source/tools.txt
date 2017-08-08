@@ -5,7 +5,7 @@
 See \ref pagecopyrights for license information regarding third-party software used by the tools.
 
 <br>
-\subpage pageimporter - Import Apex assets into Blast format.
+\subpage pageimporter - Import Apex assets into Blast&tm; format.
 
 
 <br>

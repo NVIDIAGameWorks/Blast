@@ -30,7 +30,7 @@ asset is initially instanced.  Subsequent fracturing has the effect of breaking 
 
 Blast&tm; requires that support chunks form an <em>exact cover</em> (see the definition of exact coverage in \ref pagedefinitions).
 The geometric interpretation of exact coverage is that the support chunks fill the space of the root (unfractured) chunk, without
-any volume being covered by more than one chunk.  A helper function are provided to modify a set of chunk descriptors so that they
+any volume being covered by more than one chunk.  A helper function is provided to modify a set of chunk descriptors so that they
 have exact coverage.  This function fills in missing coverage by assigning support to chunks at the highest place possible (closest
 to root) in the hierarchy, and redundant support is removed: if a chunk and one of its descendant chunks are both marked as support,
 the function will remove support from the descendant chunk.

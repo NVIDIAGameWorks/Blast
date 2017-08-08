@@ -42,6 +42,9 @@ cbuffer World : register(b1)
 	float specularPower;
 	float3 dirLightColor;
 	float specularIntensity;
+	float g_flatNormal;
+	float g_wireFrameOver;
+	float g_useLighting;
 	Light g_Light[4];
 };
 

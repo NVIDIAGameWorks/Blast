@@ -285,7 +285,7 @@ void RenderMaterial::setTextureFileName(std::string textureFileName, TextureType
 
 	std::string searchDir = mTextureFileNames[tt];
 	size_t ind = searchDir.find_last_of('/');
-	if (ind > 0)
+	if (ind > 0 && (ind != std::string::npos))
 		searchDir = searchDir.substr(0, ind);
 
 	ResourceManager* pResourceManager = ResourceManager::ins();

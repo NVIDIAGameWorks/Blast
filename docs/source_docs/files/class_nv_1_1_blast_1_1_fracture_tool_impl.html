@@ -97,7 +97,7 @@ Inheritance diagram for Nv::Blast::FractureToolImpl:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#2664c30433f3670fdae610aaec303a55">slicing</a> (uint32_t chunkId, <a class="el" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a> conf, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#bdb34e565cfd944125309bfe663377d3">voronoiFracturing</a> (uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, const physx::PxVec3 &amp;scale, bool replaceChunk) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3ef1b827dd70eb666cce38c3dbcc507f">voronoiFracturing</a> (uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, const physx::PxVec3 &amp;scale, const physx::PxQuat &amp;rotation, bool replaceChunk) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#f7fd215d495bd93428a5075abad44d09">voronoiFracturing</a> (uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, bool replaceChunk) override</td></tr>
 
@@ -717,7 +717,7 @@ Fractures specified chunk with slicing method. <dl compact><dt><b>Parameters:</b
 
 </div>
 </div><p>
-<a class="anchor" name="bdb34e565cfd944125309bfe663377d3"></a><!-- doxytag: member="Nv::Blast::FractureToolImpl::voronoiFracturing" ref="bdb34e565cfd944125309bfe663377d3" args="(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, const physx::PxVec3 &amp;scale, bool replaceChunk) override" -->
+<a class="anchor" name="3ef1b827dd70eb666cce38c3dbcc507f"></a><!-- doxytag: member="Nv::Blast::FractureToolImpl::voronoiFracturing" ref="3ef1b827dd70eb666cce38c3dbcc507f" args="(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, const physx::PxVec3 &amp;scale, const physx::PxQuat &amp;rotation, bool replaceChunk) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -748,6 +748,12 @@ Fractures specified chunk with slicing method. <dl compact><dt><b>Parameters:</b
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const physx::PxQuat &amp;&nbsp;</td>
+          <td class="paramname"> <em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">bool&nbsp;</td>
           <td class="paramname"> <em>replaceChunk</em></td><td>&nbsp;</td>
         </tr>
@@ -767,12 +773,13 @@ Fractures specified chunk with voronoi method. Cells can be scaled along x,y,z a
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>cellPoints</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of voronoi sites </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>cellPoints</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of voronoi sites </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>scale</em>&nbsp;</td><td>Voronoi cells scaling factor </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>rotation</em>&nbsp;</td><td>Voronoi cells rotation. Has no effect without cells scale factor </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>replaceChunk</em>&nbsp;</td><td>if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them. Case replaceChunk == true &amp;&amp; chunkId == 0 considered as wrong input parameters </td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>If 0, fracturing is successful. </dd></dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#685b39f2892d8be70dd74cdc30cb5361">Nv::Blast::FractureTool</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#4f3ef816a0f201da675be379691193d1">Nv::Blast::FractureTool</a>.</p>
 
 </div>
 </div><p>

@@ -55,7 +55,6 @@ Renderer::Renderer()
 : m_cameraCB(nullptr)
 , m_worldCB(nullptr)
 , m_objectCB(nullptr)
-, m_RSState(nullptr)
 , m_opaqueRenderDSState(nullptr)
 , m_transparencyRenderDSState(nullptr)
 , m_opaqueRenderNoDepthDSState(nullptr)
@@ -79,6 +78,9 @@ Renderer::Renderer()
 	m_worldCBData.dirLightDir = DirectX::XMFLOAT3(-0.08f, -0.34f, -0.91f);
 	m_worldCBData.specularPower = 140.0f;
 	m_worldCBData.specularIntensity = 0.4f;
+	
+	m_RSState[0] = nullptr;
+	m_RSState[1] = nullptr;
 
 	toggleCameraSpeed(false);
 }
@@ -89,13 +91,9 @@ Renderer::~Renderer()
 
 void Renderer::initializeDefaultRSState()
 {
-	SAFE_RELEASE(m_RSState);
 	D3D11_RASTERIZER_DESC desc;
 	ZeroMemory(&desc, sizeof(desc));
-// Add By Lixu Begin
 	desc.CullMode = D3D11_CULL_NONE;
-// Add By Lixu End
-	desc.FillMode = m_wireframeMode ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID;
 	desc.AntialiasedLineEnable = FALSE;
 	desc.DepthBias = 0;
 	desc.DepthBiasClamp = 0;
@@ -105,7 +103,11 @@ void Renderer::initializeDefaultRSState()
 	desc.ScissorEnable = FALSE;
 	desc.SlopeScaledDepthBias = 0;
 
-	V(m_device->CreateRasterizerState(&desc, &m_RSState));
+	desc.FillMode = D3D11_FILL_SOLID;
+	V(m_device->CreateRasterizerState(&desc, &m_RSState[0]));
+
+	desc.FillMode = D3D11_FILL_WIREFRAME;
+	V(m_device->CreateRasterizerState(&desc, &m_RSState[1]));
 }
 
 HRESULT Renderer::DeviceCreated(ID3D11Device* device)
@@ -242,7 +244,8 @@ void Renderer::DeviceDestroyed()
 	SAFE_RELEASE(m_cameraCB);
 	SAFE_RELEASE(m_worldCB);
 	SAFE_RELEASE(m_objectCB);
-	SAFE_RELEASE(m_RSState);
+	SAFE_RELEASE(m_RSState[0]);
+	SAFE_RELEASE(m_RSState[1]);
 	SAFE_RELEASE(m_opaqueRenderDSState);
 	SAFE_RELEASE(m_transparencyRenderDSState);
 	SAFE_RELEASE(m_opaqueRenderNoDepthDSState);
@@ -360,6 +363,10 @@ void Renderer::setAllConstantBuffers(ID3D11DeviceContext* ctx)
 void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11RenderTargetView* pRTV,
 						  ID3D11DepthStencilView*)
 {
+	GlobalSettings& globalSettings = GlobalSettings::Inst();
+	if (!globalSettings.m_showGraphicsMesh)
+		return;
+
 	PROFILER_SCOPED_FUNCTION();
 
 	m_context = ctx;
@@ -389,6 +396,19 @@ void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		ctx->Map(m_worldCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		CBWorld* worldBuffer = (CBWorld*)mappedResource.pData;
+		float flatNormal = -1.0;
+		if (globalSettings.m_renderStyle == MESH_RENDER_FLAT)
+		{
+			flatNormal = 1.0;
+		}
+		float useLighting = 1.0;
+		if (!globalSettings.m_useLighting)
+		{
+			useLighting = -1.0;
+		}
+		m_worldCBData.flatNormal = flatNormal;
+		m_worldCBData.wireFrameOver = -1.0;
+		m_worldCBData.useLighting = useLighting;
 		Light::FillLightShaderParam(m_worldCBData.lightParam);
 		memcpy(worldBuffer, &m_worldCBData, sizeof(m_worldCBData));
 		//worldBuffer->ambientColor = m_CBWorldData.ambientColor;
@@ -401,7 +421,15 @@ void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11
 		ctx->Unmap(m_worldCB, 0);
 	}
 
-	ctx->RSSetState(m_RSState);
+	if (globalSettings.m_renderStyle != MESH_RENDER_WIREFRAME)
+	{
+		ctx->RSSetState(m_RSState[0]);
+	}
+	else
+	{
+		ctx->RSSetState(m_RSState[1]);
+	}
+	
 	ctx->PSSetSamplers(0, 1, &m_linearSampler);
 	ctx->PSSetSamplers(1, 1, &m_pointSampler);
 
@@ -450,7 +478,6 @@ void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11
 	// Opaque render
 	{
 		ctx->RSSetViewports(1, &m_viewport);
-		ctx->RSSetState(m_RSState);
 		ctx->OMSetRenderTargets(1, &pRTV, m_DSView);
 		ctx->OMSetDepthStencilState(m_opaqueRenderDSState, 0xFF);
 
@@ -498,8 +525,44 @@ void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11
 		}
 	}
 
+	// draw overline	
+	if (globalSettings.m_showWireframe)
+	{
+		ctx->RSSetState(m_RSState[1]);
+
+		// update wireFrameOver
+		{
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+			ctx->Map(m_worldCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			CBWorld* worldBuffer = (CBWorld*)mappedResource.pData;
+			float wireFrameOver = -1.0;
+			{
+				if (globalSettings.m_showWireframe)
+				{
+					wireFrameOver = 1.0;
+				}
+			}
+			m_worldCBData.wireFrameOver = wireFrameOver;
+			memcpy(worldBuffer, &m_worldCBData, sizeof(m_worldCBData));
+			ctx->Unmap(m_worldCB, 0);
+		}
+
+		for (auto it = m_renderables.begin(); it != m_renderables.end(); it++)
+		{
+			if (!(*it)->isTransparent() && !(*it)->isHidden())
+			{
+				(*it)->render(*this);
+			}
+		}
+
+		if (globalSettings.m_renderStyle != MESH_RENDER_WIREFRAME)
+		{
+			ctx->RSSetState(m_RSState[0]);
+		}
+	}
+
 	// modulate shadows
-	if (m_shadowEnabled)
+	if (m_shadowEnabled && globalSettings.m_useLighting)
 	{
 		m_shadow.modulateShadowBuffer(pRTV);
 	}

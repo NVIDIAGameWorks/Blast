@@ -218,7 +218,8 @@ void FbxFileReader::loadFromFile(const char* filename)
 		std::cerr << "Mesh has more than 1 material mappings, first one will be used. " << std::endl;
 	}
 	auto matLayer = mesh->GetElementMaterial(0);
-	
+	auto smLayer = mesh->GetElementSmoothing();
+
 
 	for (int i = 0; i < polyCount; i++)
 	{
@@ -245,6 +246,10 @@ void FbxFileReader::loadFromFile(const char* filename)
 		{
 			mMaterialIds.push_back(matLayer->GetIndexArray().GetAt(i));
 		}
+		if (smLayer != nullptr)
+		{
+			mSmoothingGroups.push_back(smLayer->GetDirectArray().GetAt(i));
+		}
 	}
 	
 	mVertexPositions = positions;
@@ -253,6 +258,18 @@ void FbxFileReader::loadFromFile(const char* filename)
 	mIndices = indices;
 
 	getBoneInfluencesInternal(mesh);
+}
+
+int32_t* FbxFileReader::getSmoothingGroups()
+{
+	if (!mSmoothingGroups.empty())
+	{
+		return mSmoothingGroups.data();
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 int32_t FbxFileReader::getMaterialCount()

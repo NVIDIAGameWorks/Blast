@@ -29,7 +29,7 @@
 #include "Renderable.h"
 #include "Renderer.h"
 #include "RenderUtils.h"
-
+#include "GlobalSettings.h"
 const DirectX::XMFLOAT4 DEFAULT_COLOR(0.5f, 0.5f, 0.5f, 1.0f);
 
 Renderable::Renderable(IRenderMesh& mesh, RenderMaterial& material) : m_mesh(mesh), m_scale(1, 1, 1), m_color(DEFAULT_COLOR), m_hidden(false), m_transform(PxIdentity)
@@ -64,6 +64,7 @@ void Renderable::render(Renderer& renderer, bool depthStencilOnly) const
 	float useSpecularTexture = -1.0;
 	float useNormalTexture = -1.0;
 	float specularShininess = 1.0;
+	bool useTexture = GlobalSettings::Inst().m_renderStyle == MESH_RENDER_TEXTURED;
 	RenderMaterial& renderMaterial = m_materialInstance->getMaterial();
 	std::string mName = renderMaterial.getMaterialName();
 	if (mName != "")
@@ -77,19 +78,19 @@ void Renderable::render(Renderer& renderer, bool depthStencilOnly) const
 		specularColor = DirectX::XMFLOAT4(r, g, b, a);
 			
 		texName = renderMaterial.getTextureFileName();
-		if (texName != "" && !renderMaterial.isBadTexture())
+		if (useTexture && texName != "" && !renderMaterial.isBadTexture())
 		{
 			useDiffuseTexture = 1.0;
 		}
 
 		texName = renderMaterial.getTextureFileName(RenderMaterial::TT_Specular);
-		if (texName != "" && !renderMaterial.isBadTexture(RenderMaterial::TT_Specular))
+		if (useTexture && texName != "" && !renderMaterial.isBadTexture(RenderMaterial::TT_Specular))
 		{
 			useSpecularTexture = 1.0;
 		}
 
 		texName = renderMaterial.getTextureFileName(RenderMaterial::TT_Normal);
-		if (texName != "" && !renderMaterial.isBadTexture(RenderMaterial::TT_Normal))
+		if (useTexture && texName != "" && !renderMaterial.isBadTexture(RenderMaterial::TT_Normal))
 		{
 			useNormalTexture = 1.0;
 		}

@@ -49,8 +49,6 @@ For the remainder of this page we will be in the Nv::Blast namespace, and will d
 <br>
 
 
-BlastTk access the 
-
 BlastTk adds:
 
 - An object class hierarchy (see \ref tk_class_hierarchy, below).
@@ -63,7 +61,7 @@ the user to query them based upon either GUID or <b>TkIdentifiable</b> subclass 
 <br>
 \section tk_class_hierarchy NvBlastTk Class Hierarchy
 
-- There are two abstract interfaces, one of which deriving from the other: <b>TkObject <- TkIdentifiable.
+- There are two abstract interfaces, one of which deriving from the other: <b>TkObject <- TkIdentifiable</b>.
  - Lightweight objects are derived from <b>TkObject</b>.
  - Objects which use a GUID and class identification are derieved from <b>TkIdentifiable</b>.
 - <b>TkAsset</b> derives from <b>TkIdentifiable</b>.  This is mostly a wrapper for NvBlastAsset, however it also stores
@@ -104,7 +102,7 @@ NvBlastTk(config)(arch).(ext)
 As a reminder, in this document we assume we are in the Nv::Blast namespace:
 
 \code
-using Nv::Blast;
+using namespace Nv::Blast;
 \endcode
 
 In order to use NvBlastTk, one first has to create a TkFramework singleton.  This simply requires a call
@@ -210,7 +208,9 @@ Otherwise, the mapped value will be a valid graph node index.
 
 Finally, to release a TkAsset, as with any TkObject-derived object, use the release() method:
 
+\code
 asset->release();
+\endcode
 
 <br>
 \section tkasset_instancing Instancing a TkAsset: Creation of a TkActor and a TkFamily
@@ -221,7 +221,7 @@ the framework's createActor function.  This family is accessible through the act
 <em>not</em> released automatically when all actors within it have been released.  The user must use the TkFamily's release() method (see TkObject base
 API) to do so.  (Or wait until the framework is released.)  If a family is released that contains actors, the actors within will be released as well.
 
-The TkFamily has a special roll in NvBlastTk, holding user-supplied event listeners (TkEventListener).  All <em>internal</em> actor creation and destruction
+The TkFamily has a special role in NvBlastTk, holding user-supplied event listeners (\ref TkEventListener).  All <em>internal</em> actor creation and destruction
 events are broadcast to listeners through split events (TkSplitEvent).  These signal when a fracturing operation has destroyed an actor and created
 child actors from it.  TkActor creation or release that occurs from an explicit API call do not produce events.  For example when creating a first unfractured
 instance of an asset using createAsset, or when calling the release() method on a TkActor.  TkJoint events are similarly broadcast to
@@ -229,7 +229,7 @@ receivers (TkJointEvent).  These signal when the actors which are joined by the 
 They also signal when a joint no longer attaches actors and is therefore unreferenced.  The user may invalidate or release the joint using the TkObject
 release() method when this occurs (more on joint ownership in \ref tkjoints).
 
-To create an unfractured TkActor instance from a TkAsset, one first fills in a descriptor (TkActorDesc) and passes it to the framework's createActor function.
+To create an unfractured TkActor instance from a TkAsset, one first fills in a descriptor (\ref TkActorDesc) and passes it to the framework's createActor function.
 As with the TkAssetDesc, the TkActorDesc is derived from its low-level counterpart, the NvBlastActorDesc.  In addition the TkActorDesc holds a pointer to
 the TkAsset being instanced.  An example of TkActor creation is given below, given a TkAsset pointer <b>asset</b>.
 
@@ -292,7 +292,7 @@ actor3->getFamily().addListener(gMyReceiver);
 
 // Let's create two groups.  First, create a group descriptor.  This may be used to create both groups.
 TkGroupDesc groupDesc;
-groupDesc.pxTaskManager = &gTaskManager;	// physx::PxTaskManager-derived object
+groupDesc.workerCount = 1;	// this example processes groups on the calling thread only
 
 // Now create the groups
 TkGroup* group1 = framework->createGroup(groupDesc);
@@ -339,7 +339,7 @@ Examples of the three TkActor damage methods are given below.
 \subsection multiple_damage Multiple Damage Descriptors using NvBlastProgramParams
 
 <b>N.B. - with this method of damage, the lifetime of the NvBlastProgramParams <em>must</em> extend at
-least until the TkGroup::sync call for the actor.</b>
+least until the TkGroup::endProcess call for the actor.</b>
 
 \code
 NvBlastDamageProgram program =
@@ -376,7 +376,7 @@ material.maxDamageThreshold = 0.8f;
 NvBlastProgramParams params = { damageDescs, 2, &material };
 
 // Apply damage
-actor->damage(program, &params);	// params must be kept around until TkGroup::sync is called!
+actor->damage(program, &params);	// params must be kept around until TkGroup::endProcess is called!
 \endcode
 
 <br>
@@ -399,7 +399,7 @@ material.maxDamageThreshold = 0.8f;
 actor->getFamily().setMaterial(&material);
 \endcode
 
-<b>N.B. the lifetime of the material set <em>must</em> extend at least until the TkGroup::sync call for the actor.</b>
+<b>N.B. the lifetime of the material set <em>must</em> extend at least until the TkGroup::endProcess call for the actor.</b>
 
 Then to apply damage, use:
 
@@ -429,7 +429,7 @@ actor->damage(program, &damageDesc, (uint32_t)sizeof(RadialDamageDesc));
 
 This method is just like the one above, except that the user has the opportunity to override the material used during damage.
 
-<b>N.B. - the lifetime of the material passed in <em>must</em> extend at least until the TkGroup::sync call for the actor.</b>
+<b>N.B. - the lifetime of the material passed in <em>must</em> extend at least until the TkGroup::endProcess call for the actor.</b>
 
 This call is just like the one above with an extra material parameter:
 
@@ -462,10 +462,10 @@ given below.
 TkJointDesc desc;
 desc.families[0] = &actor0->getFamily();	// Assume we have a valid actor0 pointer
 desc.chunkIndices[0] = 1;	// This chunk *must* be a support chunk in the asset that created desc.families[0]
-desc.attachPositions[0] = physx::PxVec3(1.f, 2.f; 3.f);	// The attach position is in asset space
+desc.attachPositions[0] = physx::PxVec3(1.0f, 2.0f; 3.0f);	// The attach position is in asset space
 desc.families[1] = &actor1->getFamily();	// Assume we have a valid actor1 pointer... note, actor0 and actor1 could have the same family
 desc.chunkIndices[1] = 10;	// This chunk *must* be a support chunk in the asset that created desc.families[1]
-desc.attachPositions[1] = physx::PxVec3(4.f, 5.f; 6.f);	// The attach position is in asset space
+desc.attachPositions[1] = physx::PxVec3(4.0f, 5.0f; 6.0f);	// The attach position is in asset space
 
 // Create the external joint from the descriptor, which joins actor0 and actor1
 TkJoint* joint = framework->createJoint(desc);
@@ -473,10 +473,10 @@ TkJoint* joint = framework->createJoint(desc);
 // Now join actor0 to the NRF
 // desc.families[0] already contains actor0's family
 desc.chunkIndices[0] = 2;	// Again, this chunk must be a support chunk in the asset that created desc.families[0]
-desc.attachPositions[0] = physx::PxVec3(0.f, 0.f; 0.f);	// The attach position is in asset space
+desc.attachPositions[0] = physx::PxVec3(0.0f, 0.0f; 0.0f);	// The attach position is in asset space
 desc.families[1] = nullptr;	// Setting the family to NULL designates the world (NRF)
 // The value of desc.chunkIndices[1] is not used, since desc.families[1] is NULL
-desc.attachPositions[1] = physx::PxVec3(0.f, 0.f, 10.0f);	// Attach position in the world
+desc.attachPositions[1] = physx::PxVec3(0.0f, 0.0f, 10.0f);	// Attach position in the world
 
 // Create the external joint which joins actor0 to the world
 TkJoint* jointNRF = framework->createJoint(desc);
@@ -516,7 +516,7 @@ NvBlastTk uses events to communicate the results of actor splitting, joint updat
 that can be used to synchronize fracturing between multiple clients.
 
 Events are broadcast to listeners which implement the TkEventListener interface.  Listeners are held by TkFamily objects.  During
-a TkGroup::sync call (see \ref tkgroups), relevant events are broadcast to the listeners in the families associated with the actors
+a TkGroup::endProcess call (see \ref tkgroups), relevant events are broadcast to the listeners in the families associated with the actors
 in the group.
 
 A typical user's receiver implementation might take on the form shown below.
@@ -600,7 +600,7 @@ NvBlastTk objects that are derived from TkIdentifiable (TkAsset, TkFamily, and T
 system.  The TkIdentifiable interfaces setID and getID allow the user to set and access an NvBlastID for each object.  The NvBlastID
 is a 128-bit identifier.  TkIdentifiable objects are tracked by the TkFramework, which may be used to look up an object by its NvBlastID.
 
-Upon creation, TkIdentifiable objects are given a GUID, a unique NvBlastID.  The is welcome to change the object's guid at any time, with
+Upon creation, TkIdentifiable objects are given a GUID, a unique NvBlastID.  The user is welcome to change the object's guid at any time, with
 the restriction that the GUID cannot be all zero bytes.
 
 With an object's GUID, one may look up the object using the TkFramework function findObjectByID:

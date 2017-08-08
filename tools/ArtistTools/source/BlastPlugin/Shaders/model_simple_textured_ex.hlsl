@@ -10,8 +10,9 @@ Texture2D envTexture : register(t3);
 struct VS_INPUT
 {
 	float3 position : POSITION0;
-	float3 normal : NORMAL0;
-	float3 tangent : TANGENT0;
+	float3 normal : VERTEX_NORMAL;
+	float3 faceNormal : FACE_NORMAL;
+	float3 tangent : TANGENT;
 	float2 uv : TEXCOORD0;
 	float health : TEXCOORD1;
 };
@@ -36,8 +37,9 @@ VS_OUTPUT VS(VS_INPUT iV)
 	oV.worldPos = worldSpacePos;
 
 	// normals
-	float3 worldNormal = mul(float4(iV.normal, 0.0f), worldMatrix);
-	oV.normal = worldNormal;
+	float3 normal = (g_flatNormal > 0) ? normalize(iV.faceNormal) : normalize(iV.normal);
+	normal = mul(float4(normal, 0.0f), worldMatrix);
+	oV.normal = normal;
 	
 	oV.tangent = normalize(iV.tangent);
 
@@ -75,11 +77,44 @@ inline float3 computeSpecularLighting(
 
 float4 PS(VS_OUTPUT iV) : SV_Target0
 {
+	if(g_wireFrameOver > 0)
+		return float4(0,0,0,1);
+	
 	float3 diffuseColor = m_diffuseColor.xyz;
 	if(m_useDiffuseTexture > 0)
 	{
 		diffuseColor = diffuseTexture.Sample(defaultSampler, iV.uv).xyz;
 	}
+	
+	if(selected > 0)
+	{
+		if(diffuseColor.r > 0.5)
+		{
+			diffuseColor.r = 0.5;
+		}
+		else
+		{
+			diffuseColor.r += 0.5;
+		}
+		return float4(diffuseColor, 1.0f);
+	}
+	
+	if (g_useLighting < 0)
+	{
+		if(selected > 0)
+		{
+			if(diffuseColor.r > 0.5)
+			{
+				diffuseColor.r = 0.5;
+			}
+			else
+			{
+				diffuseColor.r += 0.5;
+			}
+		}
+		return float4(diffuseColor, 1.0f);
+	}		
+		
 	float3 specularColor = m_specularColor.xyz;
 	if(m_useSpecularTexture > 0)
 	{
@@ -144,17 +179,6 @@ float4 PS(VS_OUTPUT iV) : SV_Target0
 	}
 
 	color.rgb = (ambient + diffuse) * albedo + specular;
-
-	if(selected > 0)
-	{
-		if(color.r > 0.5)
-		{
-			color.r = 0.5;
-		}
-		else
-		{
-			color.r += 0.5;
-		}
-	}	
+	
 	return color;
 }

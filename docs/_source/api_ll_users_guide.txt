@@ -34,9 +34,9 @@ in order to report warnings or errors.  Memory is managed by the user, and funct
 to be passed in.  A corresponding utility function that calculates the memory requirements is always present alongside such functions.  Temporary
 storage needed by a function is always handled via user-supplied scratch space.  For scratch, there is always a corresponding "RequiredScratch"
 function or documentation which lets the user know how much scratch space is needed based upon the function arguments.
-- Backwards-compatible, versioned, device-independent serialization is not handled by Blast&tm;.  There <em>is<\em> however a Blast&tm; extension
+- Backwards-compatible, versioned, device-independent serialization is not handled by Blast&tm;.  There <em>is</em> however a Blast&tm; extension
 which does, see \ref pageextserialization.  However, a simple form of serialization may be performed on assets and familes (see \ref pagedefinitions)
-via simple memory copy.  The data associated with these objects is available to the user, and may be copied and stored by the user.  There are
+via simple memory copy.  The data associated with these objects is available to the user, and may be copied and stored by the user.  
 Simply casting a pointer to such a block of memory to the correct object type will produce a usable object for Blast&tm;.  (The only restriction is
 that the block must be 16-byte aligned.)  Families contain a number of actors and so this form of deserialization recreates all actors in the family.
 This form of serialization may be used between two devices which have the same endianness, and contain Blast&tm; SDKs which use the same object format.
@@ -64,12 +64,12 @@ NvBlast(config)(arch).(ext)
 \section assets Creating an Asset from a Descriptor (Authoring)
 
 The NvBlastAsset is an opaque type pointing to an object constructed by Blast&tm; in memory allocated by the user.
-To create an asset from a descriptor, use the function NvBlastAssetCreate.  See the function documentation for a
+To create an asset from a descriptor, use the function \ref NvBlastCreateAsset.  See the function documentation for a
 description of its parameters.
 
 <b>N.B., there are strict rules for the ordering of chunks with an asset, and also conditions on the chunks marked as "support"
-(using the NvBlastChunkDesc::SupportFlag).  See the function documentation for these conditions.  NvBlastAssetCreate does
-<em>not</em> reorder chunks or modify support flags to meet these conditions.  If the conditions are not met, NvBlastAssetCreate
+(using the NvBlastChunkDesc::SupportFlag).  See the function documentation for these conditions.  NvBlastCreateAsset does
+<em>not</em> reorder chunks or modify support flags to meet these conditions.  If the conditions are not met, NvBlastCreateAsset
 fails and returns NULL.  However, Blast&tm; provides helper functions to reorder chunk descriptors and modify the support flags
 within those descriptors so that they are valid for asset creation.  The helper functions return a mapping from the original
 chunk ordering to the new chunk ordering, so that corresponding adjustments or mappings may be made for graphics and other data
@@ -84,21 +84,21 @@ std::vector<NvBlastChunkDesc> chunkDescs;
 chunkDescs.resize( chunkCount );	// chunkCount > 0
 
 chunkDescs[0].parentChunkIndex = UINT32_MAX;	// invalid index denotes a chunk hierarchy root
-chunkDescs[0].centroid[0] = 0.f;	// centroid position in asset-local space
-chunkDescs[0].centroid[1] = 0.f;
-chunkDescs[0].centroid[2] = 0.f;
-chunkDescs[0].volume = 1.f;	// Unit volume
+chunkDescs[0].centroid[0] = 0.0f;	// centroid position in asset-local space
+chunkDescs[0].centroid[1] = 0.0f;
+chunkDescs[0].centroid[2] = 0.0f;
+chunkDescs[0].volume = 1.0f;	// Unit volume
 chunkDescs[0].flags = NvBlastChunkDesc::NoFlags;
-chunkDescs[0].ID = 0;	// User-supplied ID.  For example, this can be the index of the chunkDesc.
-						// The ID can be left undefined.
+chunkDescs[0].userData = 0;	// User-supplied ID.  For example, this can be the index of the chunkDesc.
+                            // The userData can be left undefined.
 
 chunkDescs[1].parentChunkIndex = 0;	// child of chunk described by chunkDescs[0]
-chunkDescs[1].centroid[0] = 2.f;	// centroid position in asset-local space
-chunkDescs[1].centroid[1] = 4.f;
-chunkDescs[1].centroid[2] = 6.f;
-chunkDescs[1].volume = 1.0;	// Unit volume
+chunkDescs[1].centroid[0] = 2.0f;	// centroid position in asset-local space
+chunkDescs[1].centroid[1] = 4.0f;
+chunkDescs[1].centroid[2] = 6.0f;
+chunkDescs[1].volume = 1.0f;	// Unit volume
 chunkDescs[1].flags = NvBlastChunkDesc::SupportFlag; // This chunk should be represented in the support graph
-chunkDescs[1].ID = 1;
+chunkDescs[1].userData = 1;
 
 // ... etc. for all chunks
 
@@ -108,14 +108,14 @@ bondDescs.resize( bondCount );	// bondCount > 0
 
 bondDescs[0].chunkIndices[0] = 1;	// chunkIndices refer to chunk descriptor indices for support chunks
 bondDescs[0].chunkIndices[1] = 2;
-bondDescs[0].bond.m_normal[0] = 1.f;	// normal in the +x direction
-bondDescs[0].bond.m_normal[1] = 0.f;
-bondDescs[0].bond.m_normal[2] = 0.f;
-bondDescs[0].bond.m_area = 1.0;	// unit area
-bondDescs[0].bond.m_centroid[0] = 1.f;	// centroid position in asset-local space
-bondDescs[0].bond.m_centroid[1] = 2.f;
-bondDescs[0].bond.m_centroid[2] = 3.f;
-bondDescs[0].m_userData = 0;	// this can be used to tell the user more information about this
+bondDescs[0].bond.normal[0] = 1.0f;	// normal in the +x direction
+bondDescs[0].bond.normal[1] = 0.0f;
+bondDescs[0].bond.normal[2] = 0.0f;
+bondDescs[0].bond.area = 1.0f;	// unit area
+bondDescs[0].bond.centroid[0] = 1.0f;	// centroid position in asset-local space
+bondDescs[0].bond.centroid[1] = 2.0f;
+bondDescs[0].bond.centroid[2] = 3.0f;
+bondDescs[0].userData = 0;	// this can be used to tell the user more information about this
 								// bond for example to create a joint when this bond breaks
 
 bondDescs[1].chunkIndices[0] = 1;
@@ -165,9 +165,9 @@ N.B. the comment after the malloc call above.  NvBlastAsset memory <B>must</B> b
 <br>
 \subsection asset_releasing Releasing an Asset
 
-Blast&tm low-level does no internal allocation; since the memory is allocated by the user, one simply has to free the memory they've
+Blast&tm; low-level does no internal allocation; since the memory is allocated by the user, one simply has to free the memory they've
 allocated.  The asset pointer returned by NvBlastCreateAsset has the same numerical value as the mem block passed in (if the function
-is successful, or NULL otherwise).  So releasing an asset with memory allocate by <B>malloc</B> is simply done with a call to <B>free</B>:
+is successful, or NULL otherwise).  So releasing an asset with memory allocated by <B>malloc</B> is simply done with a call to <B>free</B>:
 
 \code
 free( asset );
@@ -177,7 +177,7 @@ free( asset );
 \section actors_and_families Creating Actors and Families
 
 Actors live within a family created from asset data.  To create an actor, one must first create a family.  This family is used by the initial actor created from
-the asset, as well as all of the descendent actors created by recursively fracturing the initial actor.  As with assets, family allocation is done by the user.
+the asset, as well as all of the descendant actors created by recursively fracturing the initial actor.  As with assets, family allocation is done by the user.
 
 To create a family, use:
 
@@ -374,7 +374,7 @@ NvBlastActorApplyFracture( fractureEvents, actor, fractureCommands, logFn, &time
 // Step three: Splitting
 
 // The Actor may be split into all its smallest pieces.
-uint32_t maxNewActorCount = NvBlastAssetGetChunkCount( asset, logFn );	// In the worst case, one NvBlastActor may be created for every chunk in the asset
+uint32_t maxNewActorCount = NvBlastActorGetMaxActorCountForSplit( actor, logFn );
 std::vector<NvBlastActor*> newActors( maxNewActorCount );
 
 // Make this memory available to NvBlastSplitEvent.

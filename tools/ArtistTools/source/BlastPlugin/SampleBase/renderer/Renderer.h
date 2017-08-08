@@ -198,6 +198,10 @@ class Renderer : public ISampleController
 		float specularPower;
 		DirectX::XMFLOAT3 dirLightColor;
 		float specularIntensity; // TODO: actually it's per object property
+		float flatNormal;
+		float wireFrameOver;
+		float useLighting;
+		float unusedPad4;
 		LightShaderParam lightParam;
 	};
 	struct CBObject
@@ -235,7 +239,7 @@ class Renderer : public ISampleController
 	D3D11_VIEWPORT                     m_viewport;
 
 	// DX11 states
-	ID3D11RasterizerState*             m_RSState;
+	ID3D11RasterizerState*             m_RSState[2];
 	ID3D11DepthStencilState*           m_opaqueRenderDSState;
 	ID3D11DepthStencilState*           m_transparencyRenderDSState;
 	ID3D11DepthStencilState*           m_opaqueRenderNoDepthDSState;

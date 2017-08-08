@@ -7,6 +7,8 @@ namespace Ui {
 class FileReferencesPanel;
 }
 
+#include "ProjectParams.h"
+
 class FileReferencesPanel : public QWidget
 {
     Q_OBJECT
@@ -27,9 +29,9 @@ public slots:
 
     void on_checkBoxFBX_stateChanged(int arg1);
 
-    void on_checkBoxObj_stateChanged(int arg1);
+	void on_checkBoxEmbedFBXCollision_stateChanged(int arg1);
 
-    void on_checkBoxCollision_stateChanged(int arg1);
+    void on_checkBoxObj_stateChanged(int arg1);
 	
 	void on_checkBoxLLAsset_stateChanged(int arg1);
 	
@@ -38,6 +40,9 @@ public slots:
 	void on_checkBoxBPXA_stateChanged(int arg1);
 
     void on_btnSave_clicked();
+
+private:
+	BPPAsset* _getCurrentAsset();
 
 private:
     Ui::FileReferencesPanel *ui;

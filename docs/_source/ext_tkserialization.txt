@@ -4,7 +4,7 @@ This extension contains serializers which can be loaded into the ExtSerializatio
 
 To use this extension, you must also load the ExtSerialization extension and create a serialization manager as described in \ref pageextserialization.
 
-We repeat this here (again, assuming we're in the Nv::Blast namespace):
+We repeat this here (again, assuming we are in the Nv::Blast namespace):
 
 \code
 ExtSerialization* ser = NvBlastExtSerializationCreate();
@@ -36,10 +36,10 @@ uint64_t size = ser->serializeIntoBuffer(buffer, asset, TkObjectTypeID::Asset);
 
 or use the wrapper function defined in <b>NvBlastExtTkSerialization.h</b>:
 
-/code
+\code
 void* buffer;
 uint64_t size = NvBlastExtSerializationSerializeTkAssetIntoBuffer(buffer, *ser, asset);
-/endcode
+\endcode
 
 <br>
 */

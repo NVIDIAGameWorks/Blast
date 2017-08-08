@@ -757,15 +757,20 @@ void MeshNoiser::divideEdge(int32_t id)
 				mTrMeshEdToTr[ind1].add(mTrMeshEdToTr[id].tr[t]);
 				int32_t userInfo = mTriangles[mTrMeshEdToTr[id].tr[t]].userData;
 				int32_t matId = mTriangles[mTrMeshEdToTr[id].tr[t]].materialId;
+				int32_t smId = mTriangles[mTrMeshEdToTr[id].tr[t]].smoothingGroup;
 				mTriangles[mTrMeshEdToTr[id].tr[t]] = TriangleIndexed(pbf[p], nv, pbf[opp]);
 				mTriangles[mTrMeshEdToTr[id].tr[t]].userData = userInfo;
 				mTriangles[mTrMeshEdToTr[id].tr[t]].materialId = matId;
+				mTriangles[mTrMeshEdToTr[id].tr[t]].smoothingGroup = smId;
+
 				mTrMeshEdToTr[ind2].add((int32_t)mTriangles.size());
 				mTrMeshEdToTr[ind3].add((int32_t)mTrMeshEdToTr[id].tr[t]);
 				mTrMeshEdToTr[ind3].add((int32_t)mTriangles.size());
 				mTriangles.push_back(TriangleIndexed(nv,pbf[pnx], pbf[opp]));
 				mTriangles.back().userData = userInfo;
 				mTriangles.back().materialId = matId;
+				mTriangles.back().smoothingGroup = smId;
+
 				int32_t ed1 = findEdge(Edge(pbf[pnx], pbf[opp]));
 				mTrMeshEdToTr[ed1].replace(oldTriangleIndex, (int32_t)mTriangles.size() - 1);
 				break;

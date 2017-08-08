@@ -56,6 +56,7 @@ public:
 	public:
 		physx::PxVec3 position;
 		physx::PxVec3 normal;
+		physx::PxVec3 facenormal;
 		physx::PxVec3 tangent;
 		physx::PxVec2 uv;
 	};

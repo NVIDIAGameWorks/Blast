@@ -241,7 +241,7 @@ bool ResourceManager::findFile(std::string fileName, const std::vector<const cha
 	}
 
 	size_t ind = fileNameOnly.find_last_of('/');
-	if (ind > 0)
+	if (ind > 0 && (ind != std::string::npos))
 		fileNameOnly = fileNameOnly.substr(ind + 1);
 
 // Add By Lixu Begin

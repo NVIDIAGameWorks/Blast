@@ -72,7 +72,8 @@
 #include "SelectionToolController.h"
 #include "GizmoToolController.h"
 #include <QtCore/QTimer>
-
+#include "NvBlastExtAuthoring.h"
+#include "ResourceManager.h"
 const float tolenrance = 10e-6;
 
 QTimer gPlayTimer;
@@ -110,8 +111,8 @@ return u + v <= 1;
 }
 */
 
-bool outside(int vc1, int fc1, Vertex* pv1, physx::PxBounds3& b1,
-	int vc2, int fc2, Vertex* pv2, physx::PxBounds3& b2)
+bool outside(int vc1, int fc1, const Vertex* pv1, const physx::PxBounds3& b1,
+	int vc2, int fc2, const Vertex* pv2, const physx::PxBounds3& b2)
 {
 	// mesh2 is not a volumn
 	if (fc2 < 4)
@@ -195,12 +196,12 @@ int contains(Nv::Blast::Mesh* pMesh1, Nv::Blast::Mesh* pMesh2)
 
 	int vc1 = pMesh1->getVerticesCount();
 	int fc1 = pMesh1->getFacetCount();
-	Vertex* pv1 = pMesh1->getVertices();
-	physx::PxBounds3& b1 = pMesh1->getBoundingBox();
+	const Vertex* pv1 = pMesh1->getVertices();
+	const physx::PxBounds3& b1 = pMesh1->getBoundingBox();
 	int vc2 = pMesh2->getVerticesCount();
 	int fc2 = pMesh2->getFacetCount();
-	Vertex* pv2 = pMesh2->getVertices();
-	physx::PxBounds3& b2 = pMesh2->getBoundingBox();
+	const Vertex* pv2 = pMesh2->getVertices();
+	const physx::PxBounds3& b2 = pMesh2->getBoundingBox();
 
 	if (outside(vc1, fc1, pv1, b1, vc2, fc2, pv2, b2))
 	{
@@ -898,9 +899,11 @@ void BlastPlugin::SimpleScene_OpenFilesByDrop(const QStringList& fileNames)
 		}
 	}
 	bool bUpdateUI = false;
+	ResourceManager* pResourceManager = ResourceManager::ins();
 	if (projCount == 1)
 	{
 		QFileInfo fileInfo(projName);
+		pResourceManager->addSearchDir(fileInfo.absolutePath().toUtf8().data());
 		GlobalSettings& globalSettings = GlobalSettings::Inst();
 		globalSettings.m_projectFileDir = fileInfo.absolutePath().toUtf8().data();
 		globalSettings.m_projectFileName = fileInfo.fileName().toUtf8().data();
@@ -910,12 +913,14 @@ void BlastPlugin::SimpleScene_OpenFilesByDrop(const QStringList& fileNames)
 	else if (fbxCount == 1)
 	{
 		QFileInfo fileInfo(fbxName);
+		pResourceManager->addSearchDir(fileInfo.absolutePath().toUtf8().data());
 		SimpleScene_LoadSceneFromFbx(fileInfo.absolutePath().toUtf8().data(), fileInfo.fileName().toUtf8().data());
 		bUpdateUI = true;
 	}
 	else if (bpxaCount == 1)
 	{
 		QFileInfo fileInfo(bpxaName);
+		pResourceManager->addSearchDir(fileInfo.absolutePath().toUtf8().data());
 		OpenBpxa(fileInfo.absolutePath().toUtf8().data(), fileInfo.fileName().toUtf8().data());
 		bUpdateUI = true;
 	}
@@ -1173,7 +1178,7 @@ bool BlastPlugin::SimpleScene_LoadSceneFromFbx(const char* d, const char* f)
 
 		physx::PxVec3* nr = (!normals.empty()) ? normals.data() : 0;
 		physx::PxVec2* uvp = (!uv.empty()) ? uv.data() : 0;
-		Nv::Blast::Mesh* pMesh = new Nv::Blast::Mesh(positions.data(), nr, uvp, static_cast<uint32_t>(positions.size()),
+		Nv::Blast::Mesh* pMesh = NvBlastExtAuthoringCreateMesh(positions.data(), nr, uvp, static_cast<uint32_t>(positions.size()),
 			indices.data(), static_cast<uint32_t>(indices.size()));		
 		meshes[nm] = pMesh;
 
@@ -1504,11 +1509,12 @@ bool BlastPlugin::SimpleScene_LoadParameters(NvParameterized::Interface* iface)
 
 			physx::PxVec3* nr = (!normals.empty()) ? normals.data() : 0;
 			physx::PxVec2* uvp = (!uv.empty()) ? uv.data() : 0;
-			Nv::Blast::Mesh* pMesh = new Nv::Blast::Mesh(positions.data(), nr, uvp, static_cast<uint32_t>(positions.size()),
+			Nv::Blast::Mesh* pMesh = NvBlastExtAuthoringCreateMesh(positions.data(), nr, uvp, static_cast<uint32_t>(positions.size()),
 				indices.data(), static_cast<uint32_t>(indices.size()));
 			for (uint32_t nf = 0; nf < numFaces; nf++)
 			{
-				pMesh->getFacet(nf)->userData = materialIDArray.buf[nf];
+				Facet* pFacet = const_cast<Facet*>(pMesh->getFacet(nf));
+				pFacet->materialId = materialIDArray.buf[nf];
 			}
 
 			meshes.push_back(pMesh);

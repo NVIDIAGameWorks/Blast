@@ -71,7 +71,8 @@
 #include "FileReferencesPanel.h"
 #include "BlastPlugin.h"
 #include "BlastToolBar.h"
-
+#include "NvBlastExtAuthoring.h"
+#include "NvBlastExtExporter.h"
 using namespace physx;
 
 const uint32_t DEFAULT_VORONOI_UNIFORM_SITES_NUMBER = 5;
@@ -122,7 +123,9 @@ void loggingCallback(int type, const char* msg, const char* file, int line)
 void buildPxChunks(const std::vector<std::vector<Triangle>>& chunkGeometry, std::vector<ExtPxAssetDesc::ChunkDesc>& pxChunks,
 	std::vector<ExtPxAssetDesc::SubchunkDesc>& pxSubchunks, std::vector<bool>& statics)
 {
-	ConvexMeshBuilder collisionBuilder(cooking, &physics->getPhysicsInsertionCallback());
+	std::shared_ptr<Nv::Blast::ConvexMeshBuilder> collisionBuilder(
+		NvBlastExtAuthoringCreateConvexMeshBuilder(cooking, &physics->getPhysicsInsertionCallback()),
+		[](Nv::Blast::ConvexMeshBuilder* cmb) {cmb->release(); });
 
 	pxChunks.resize(chunkGeometry.size());
 	pxSubchunks.resize(chunkGeometry.size());
@@ -137,7 +140,8 @@ void buildPxChunks(const std::vector<std::vector<Triangle>>& chunkGeometry, std:
 			vertices.push_back(chunkGeometry[i][p].c.p);
 		}
 		pxSubchunks[i].transform = physx::PxTransform(physx::PxIdentity);
-		pxSubchunks[i].geometry = physx::PxConvexMeshGeometry(collisionBuilder.buildConvexMesh(vertices));
+		pxSubchunks[i].geometry = physx::PxConvexMeshGeometry(
+			collisionBuilder.get()->buildConvexMesh(*collisionBuilder.get()->buildCollisionGeometry((uint32_t)vertices.size(), vertices.data())));
 		pxChunks[i].isStatic = statics.size() == 0 ? false : statics[i];
 		pxChunks[i].subchunkCount = 1;
 		pxChunks[i].subchunks = &pxSubchunks[i];
@@ -268,7 +272,7 @@ void saveFractureToObj(std::vector<std::vector<Triangle> > chunksGeometry, std::
 			std::vector<int> internalSurfaces;
 			for (uint32_t i = 0; i < totalSize; ++i)
 			{
-				if (chunksGeometry[vc][i].userInfo != 0)
+				if (chunksGeometry[vc][i].materialId != 0)
 				{
 					internalSurfaces.push_back(indx++);
 					internalSurfaces.push_back(indx++);
@@ -383,10 +387,10 @@ bool VoronoiFractureExecutor::execute()
 		if (mesh == nullptr)
 			continue;
 
-		VoronoiSitesGenerator* siteGenerator = nullptr;
+		VoronoiSitesGenerator* siteGenerator = NvBlastExtAuthoringCreateVoronoiSitesGenerator(mesh, m_randomGenerator == nullptr ? &sRandomGenerator : m_randomGenerator);
 		if (m_voronoi)
 		{
-			siteGenerator = new VoronoiSitesGenerator(mesh, m_randomGenerator == nullptr ? &sRandomGenerator : m_randomGenerator);
+//			siteGenerator = new VoronoiSitesGenerator(mesh, m_randomGenerator == nullptr ? &sRandomGenerator : m_randomGenerator);
 			if (0 == m_voronoi->siteGeneration)
 			{
 				siteGenerator->uniformlyGenerateSitesInMesh(m_voronoi->numSites);
@@ -398,11 +402,13 @@ bool VoronoiFractureExecutor::execute()
 		}
 		else
 		{
-			siteGenerator = new VoronoiSitesGenerator(mesh, m_randomGenerator == nullptr ? &sRandomGenerator : m_randomGenerator);
+//			siteGenerator = new VoronoiSitesGenerator(mesh, m_randomGenerator == nullptr ? &sRandomGenerator : m_randomGenerator);
 			siteGenerator->uniformlyGenerateSitesInMesh(DEFAULT_VORONOI_UNIFORM_SITES_NUMBER);
 		}
 
-		m_fractureTool->voronoiFracturing(*it, siteGenerator->getVoronoiSites(), false);
+		const physx::PxVec3* sites = nullptr;
+		uint32_t sitesCount = siteGenerator->getVoronoiSites(sites);
+		m_fractureTool->voronoiFracturing(*it, sitesCount, sites, false);
 		delete siteGenerator;
 	}
 	m_fractureTool->finalizeFracturing();
@@ -686,23 +692,24 @@ bool SampleManager::saveAsset(BlastAsset* pBlastAsset)
 	m_fTool->finalizeFracturing();
 
 	size_t nChunkListSize = m_fTool->getChunkCount();
-	std::vector<std::shared_ptr<Triangle> > chunkMeshes(nChunkListSize);
+	std::vector<Triangle*> chunkMeshes(nChunkListSize);
 	std::vector<uint32_t> chunkMeshesTriangleCount(nChunkListSize);
-	std::vector<bool> isSupport(nChunkListSize);
+	std::shared_ptr<bool> isSupport(new bool[nChunkListSize] { false }, [](bool* b) {delete[] b; });
 	for (uint32_t i = 0; i < nChunkListSize; ++i)
 	{
 		chunkMeshesTriangleCount[i] = m_fTool->getBaseMesh(i, chunkMeshes[i]);
-		isSupport[i] = m_fTool->getChunkInfo(i).isLeaf;
+		isSupport.get()[i] = m_fTool->getChunkInfo(i).isLeaf;
 	}
 
-	BlastBondGenerator bondGenerator(cooking, &physics->getPhysicsInsertionCallback());
+	std::shared_ptr<Nv::Blast::BlastBondGenerator> bondGenerator(
+		NvBlastExtAuthoringCreateBondGenerator(cooking, &physics->getPhysicsInsertionCallback()),
+		[](Nv::Blast::BlastBondGenerator* bg) {bg->release(); });
 	BondGenerationConfig cnf;
 	cnf.bondMode = BondGenerationConfig::AVERAGE;
-	std::vector<NvBlastChunkDesc> chunkDesc;
-	std::vector<NvBlastBondDesc> bondDescs;
-	bondGenerator.buildDescFromInternalFracture(m_fTool, isSupport, bondDescs, chunkDesc);
-	const uint32_t chunkCount = static_cast<uint32_t>(chunkDesc.size());
-	const uint32_t bondCount = static_cast<uint32_t>(bondDescs.size());
+	NvBlastChunkDesc* chunkDesc;
+	NvBlastBondDesc* bondDescs;
+	const uint32_t bondCount = bondGenerator.get()->buildDescFromInternalFracture(m_fTool, isSupport.get(), bondDescs, chunkDesc);
+	const uint32_t chunkCount = nChunkListSize;
 	if (bondCount == 0)
 	{
 		std::cout << "Can't create bonds descriptors..." << std::endl;
@@ -712,9 +719,9 @@ bool SampleManager::saveAsset(BlastAsset* pBlastAsset)
 	{
 		std::vector<uint32_t> chunkReorderMap(chunkCount);
 		std::vector<char> scratch(chunkCount * sizeof(NvBlastChunkDesc));
-		NvBlastEnsureAssetExactSupportCoverage(chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
-		NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
-		NvBlastApplyAssetDescChunkReorderMapInPlace(chunkDesc.data(), chunkCount, bondDescs.data(), bondCount, chunkReorderMap.data(), true, scratch.data(), loggingCallback);
+		NvBlastEnsureAssetExactSupportCoverage(chunkDesc, chunkCount, scratch.data(), loggingCallback);
+		NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), chunkDesc, chunkCount, scratch.data(), loggingCallback);
+		NvBlastApplyAssetDescChunkReorderMapInPlace(chunkDesc, chunkCount, bondDescs, bondCount, chunkReorderMap.data(), true, scratch.data(), loggingCallback);
 		chunkReorderInvMap.resize(chunkReorderMap.size());
 		Nv::Blast::invertMap(chunkReorderInvMap.data(), chunkReorderMap.data(), static_cast<unsigned int>(chunkReorderMap.size()));
 	}
@@ -724,7 +731,7 @@ bool SampleManager::saveAsset(BlastAsset* pBlastAsset)
 	{
 		uint32_t chunkIndex = chunkReorderInvMap[i];
 		resultGeometry[chunkIndex].resize(chunkMeshesTriangleCount[i]);
-		memcpy(resultGeometry[chunkIndex].data(), chunkMeshes[i].get(), chunkMeshesTriangleCount[i] * sizeof(Triangle));
+		memcpy(resultGeometry[chunkIndex].data(), chunkMeshes[i], chunkMeshesTriangleCount[i] * sizeof(Triangle));
 	}
 
 	saveFractureToObj(resultGeometry, desc.name, outDir);
@@ -855,7 +862,7 @@ uint32_t createChunkRecursive(FbxManager* sdkManager, uint32_t currentCpIdx, uin
 		mesh->AddPolygon(currentCpIdx + cpIdx + 1);
 		mesh->AddPolygon(currentCpIdx + cpIdx + 2);
 		mesh->EndPolygon();
-		if (tri.userInfo == 0)
+		if (tri.materialId == 0)
 		{
 			matElement->GetIndexArray().SetAt(polyCount, 0);
 		}
@@ -1003,23 +1010,24 @@ bool SampleManager::exportAsset()
 	m_fTool->finalizeFracturing();
 
 	size_t nChunkListSize = m_fTool->getChunkCount();
-	std::vector<std::shared_ptr<Triangle> > chunkMeshes(nChunkListSize);
+	std::vector<Triangle*> chunkMeshes(nChunkListSize);
 	std::vector<uint32_t> chunkMeshesTriangleCount(nChunkListSize);
-	std::vector<bool> isSupport(nChunkListSize);
+	std::shared_ptr<bool> isSupport(new bool[nChunkListSize] { false }, [](bool* b) {delete[] b; });
 	for (uint32_t i = 0; i < nChunkListSize; ++i)
 	{
 		chunkMeshesTriangleCount[i] = m_fTool->getBaseMesh(i, chunkMeshes[i]);
-		isSupport[i] = m_fTool->getChunkInfo(i).isLeaf;
+		isSupport.get()[i] = m_fTool->getChunkInfo(i).isLeaf;
 	}
 
-	BlastBondGenerator bondGenerator(cooking, &physics->getPhysicsInsertionCallback());
+	std::shared_ptr<Nv::Blast::BlastBondGenerator> bondGenerator(
+		NvBlastExtAuthoringCreateBondGenerator(cooking, &physics->getPhysicsInsertionCallback()),
+		[](Nv::Blast::BlastBondGenerator* bg) {bg->release(); });
 	BondGenerationConfig cnf;
 	cnf.bondMode = BondGenerationConfig::AVERAGE;
-	std::vector<NvBlastChunkDesc> chunkDesc;
-	std::vector<NvBlastBondDesc> bondDescs;
-	bondGenerator.buildDescFromInternalFracture(m_fTool, isSupport, bondDescs, chunkDesc);
-	const uint32_t chunkCount = static_cast<uint32_t>(chunkDesc.size());
-	const uint32_t bondCount = static_cast<uint32_t>(bondDescs.size());
+	NvBlastChunkDesc* chunkDesc;
+	NvBlastBondDesc* bondDescs;
+	const uint32_t bondCount = bondGenerator.get()->buildDescFromInternalFracture(m_fTool, isSupport.get(), bondDescs, chunkDesc);
+	const uint32_t chunkCount = nChunkListSize;
 	if (bondCount == 0)
 	{
 		std::cout << "Can't create bonds descriptors..." << std::endl;
@@ -1029,9 +1037,9 @@ bool SampleManager::exportAsset()
 	{
 		std::vector<uint32_t> chunkReorderMap(chunkCount);
 		std::vector<char> scratch(chunkCount * sizeof(NvBlastChunkDesc));
-		NvBlastEnsureAssetExactSupportCoverage(chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
-		NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
-		NvBlastApplyAssetDescChunkReorderMapInPlace(chunkDesc.data(), chunkCount, bondDescs.data(), bondCount, chunkReorderMap.data(), true, scratch.data(), loggingCallback);
+		NvBlastEnsureAssetExactSupportCoverage(chunkDesc, chunkCount, scratch.data(), loggingCallback);
+		NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), chunkDesc, chunkCount, scratch.data(), loggingCallback);
+		NvBlastApplyAssetDescChunkReorderMapInPlace(chunkDesc, chunkCount, bondDescs, bondCount, chunkReorderMap.data(), true, scratch.data(), loggingCallback);
 		chunkReorderInvMap.resize(chunkReorderMap.size());
 		Nv::Blast::invertMap(chunkReorderInvMap.data(), chunkReorderMap.data(), static_cast<unsigned int>(chunkReorderMap.size()));
 	}
@@ -1041,11 +1049,30 @@ bool SampleManager::exportAsset()
 	{
 		uint32_t chunkIndex = chunkReorderInvMap[i];
 		resultGeometry[chunkIndex].resize(chunkMeshesTriangleCount[i]);
-		memcpy(resultGeometry[chunkIndex].data(), chunkMeshes[i].get(), chunkMeshesTriangleCount[i] * sizeof(Triangle));
+		memcpy(resultGeometry[chunkIndex].data(), chunkMeshes[i], chunkMeshesTriangleCount[i] * sizeof(Triangle));
 	}
 
 	if (asset.exportFBX)
 	{
+		std::string outputFilePath = GlobalSettings::MakeFileName(outDir.c_str(), asset.fbx.buf);
+
+		Nv::Blast::ConvexMeshBuilder* collisionBuilder = NvBlastExtAuthoringCreateConvexMeshBuilder(cooking, &physics->getPhysicsInsertionCallback());
+		Nv::Blast::AuthoringResult* result = NvBlastExtAuthoringProcessFracture(*m_fTool, *bondGenerator, *collisionBuilder);
+
+		if (!asset.embedFBXCollision)
+		{
+			result->releaseCollisionHulls();
+		}
+
+		std::shared_ptr<IMeshFileWriter> fileWriter(NvBlastExtExporterCreateFbxFileWriter(bOutputFBXAscii), [](IMeshFileWriter* p) {p->release(); });
+		fileWriter->appendMesh(*result, asset.name.buf);
+		if (!fileWriter->saveToFile(asset.fbx.buf, outDir.c_str()))
+		{
+			std::cerr << "Can't write geometry to FBX file." << std::endl;
+			return false;
+		}
+
+#if (0)
 		FbxManager* sdkManager = FbxManager::Create();
 
 		FbxIOSettings* ios = FbxIOSettings::Create(sdkManager, IOSROOT);
@@ -1150,6 +1177,7 @@ bool SampleManager::exportAsset()
 
 		sdkManager->Destroy();
 		sdkManager = nullptr;
+#endif
 
 		std::string info = outputFilePath + " is saved.";
 		viewer_info(info.c_str());
@@ -1175,20 +1203,6 @@ bool SampleManager::exportAsset()
 			return false;
 		}
 		saveExtAsset(outDir, std::string(asset.bpxa.buf), pExtPxAsset);
-
-		std::string info = outputFilePath + " is saved.";
-		viewer_info(info.c_str());
-	}
-
-	if (asset.exportCollision)
-	{
-		SampleManager* pSampleManager = SampleManager::ins();
-		PhysXController& physXController = pSampleManager->getPhysXController();
-		PxPhysics& physics = physXController.getPhysics();
-		PxScene& scene = physXController.getPhysXScene();
-
-		std::string outputFilePath = GlobalSettings::MakeFileName(outDir.c_str(), asset.collision.buf);
-		physXController.ExportCollisionRepX(outputFilePath.c_str(), &physics, &scene, false);
 
 		std::string info = outputFilePath + " is saved.";
 		viewer_info(info.c_str());
@@ -1247,26 +1261,29 @@ void SampleManager::_createAsset(BlastAssetModelSimple** ppBlastAsset,
 	physicsManager = &bc.getExtPxManager();
 	TkFramework& tk = bc.getTkFramework();
 
-	std::vector<NvBlastChunkDesc> chunkDesc;
-	std::vector<NvBlastBondDesc> bondDescs;
-	std::vector<std::shared_ptr<Triangle> > chunkMeshes;
-	std::vector<uint32_t> chunkMeshesTriangleCount(nChunkListSize);
-	std::vector<bool> isSupport;
-
 	size_t nChunkListSize = m_fTool->getChunkCount();
+
+	std::vector<Triangle*> chunkMeshes;
+	std::vector<uint32_t> chunkMeshesTriangleCount(nChunkListSize);
+	std::shared_ptr<bool> isSupport(new bool[nChunkListSize] { false }, [](bool* b) {delete[] b; });
+
 	chunkMeshes.resize(nChunkListSize);
-	isSupport.resize(nChunkListSize);
 	for (uint32_t i = 0; i < nChunkListSize; ++i)
 	{
 		chunkMeshesTriangleCount[i] = m_fTool->getBaseMesh(i, chunkMeshes[i]);
-		isSupport[i] = supports.size() == 0 ? m_fTool->getChunkInfo(i).isLeaf : supports[i];
+		isSupport.get()[i] = supports.size() == 0 ? m_fTool->getChunkInfo(i).isLeaf : supports[i];
 	}
 
-	BlastBondGenerator bondGenerator(cooking, &physics->getPhysicsInsertionCallback());
-	bondGenerator.buildDescFromInternalFracture(m_fTool, isSupport, bondDescs, chunkDesc);
-	bondDescs.clear();
-	bondGenerator.bondsFromPrefractured(chunkMeshes, isSupport, bondDescs);
-	int bondDescsSize = bondDescs.size();
+	std::shared_ptr<Nv::Blast::BlastBondGenerator> bondGenerator(
+		NvBlastExtAuthoringCreateBondGenerator(cooking, &physics->getPhysicsInsertionCallback()),
+		[](Nv::Blast::BlastBondGenerator* bg) {bg->release(); });
+	BondGenerationConfig cnf;
+	cnf.bondMode = BondGenerationConfig::AVERAGE;
+	NvBlastChunkDesc* chunkDesc;
+	NvBlastBondDesc* bondDescs;
+	const uint32_t bondCount = bondGenerator.get()->buildDescFromInternalFracture(m_fTool, isSupport.get(), bondDescs, chunkDesc);
+	const uint32_t chunkCount = nChunkListSize;
+	int bondDescsSize = bondCount;
 	if (bondDescsSize == worlds.size())
 	{		
 		for (int bds = 0; bds < bondDescsSize; bds++)
@@ -1278,8 +1295,6 @@ void SampleManager::_createAsset(BlastAssetModelSimple** ppBlastAsset,
 		}
 	}
 
-	const uint32_t chunkCount = static_cast<uint32_t>(chunkDesc.size());
-	const uint32_t bondCount = static_cast<uint32_t>(bondDescs.size());
 	if (bondCount == 0)
 	{
 		std::cout << "Can't create bonds descriptors..." << std::endl;
@@ -1290,9 +1305,9 @@ void SampleManager::_createAsset(BlastAssetModelSimple** ppBlastAsset,
 	{
 		std::vector<uint32_t> chunkReorderMap(chunkCount);
 		std::vector<char> scratch(chunkCount * sizeof(NvBlastChunkDesc));
-		NvBlastEnsureAssetExactSupportCoverage(chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
-		NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), chunkDesc.data(), chunkCount, scratch.data(), loggingCallback);
-		NvBlastApplyAssetDescChunkReorderMapInPlace(chunkDesc.data(), chunkCount, bondDescs.data(), bondCount, chunkReorderMap.data(), true, scratch.data(), loggingCallback);
+		NvBlastEnsureAssetExactSupportCoverage(chunkDesc, chunkCount, scratch.data(), loggingCallback);
+		NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), chunkDesc, chunkCount, scratch.data(), loggingCallback);
+		NvBlastApplyAssetDescChunkReorderMapInPlace(chunkDesc, chunkCount, bondDescs, bondCount, chunkReorderMap.data(), true, scratch.data(), loggingCallback);
 		chunkReorderInvMap.resize(chunkReorderMap.size());
 		Nv::Blast::invertMap(chunkReorderInvMap.data(), chunkReorderMap.data(), static_cast<unsigned int>(chunkReorderMap.size()));
 	}
@@ -1303,7 +1318,7 @@ void SampleManager::_createAsset(BlastAssetModelSimple** ppBlastAsset,
 	{
 		uint32_t chunkIndex = chunkReorderInvMap[i];
 		resultGeometry[chunkIndex].resize(chunkMeshesTriangleCount[i]);
-		memcpy(resultGeometry[chunkIndex].data(), chunkMeshes[i].get(), chunkMeshesTriangleCount[i] * sizeof(Triangle));
+		memcpy(resultGeometry[chunkIndex].data(), chunkMeshes[i], chunkMeshesTriangleCount[i] * sizeof(Triangle));
 	}
 
 	// prepare physics data (convexes)
@@ -1314,9 +1329,9 @@ void SampleManager::_createAsset(BlastAssetModelSimple** ppBlastAsset,
 	// build and serialize ExtPhysicsAsset
 	ExtPxAssetDesc	descriptor;
 	descriptor.bondCount = bondCount;
-	descriptor.bondDescs = bondDescs.data();
+	descriptor.bondDescs = bondDescs;
 	descriptor.chunkCount = chunkCount;
-	descriptor.chunkDescs = chunkDesc.data();
+	descriptor.chunkDescs = chunkDesc;
 	descriptor.bondFlags = joints.data();
 	descriptor.pxChunks = pxChunks.data();
 	ExtPxAsset* asset = ExtPxAsset::create(descriptor, tk);
@@ -2760,26 +2775,28 @@ void SampleManager::_addAssetToProjectParam(BlastAsset* pBlastAsset)
 	{
 		chunkArray.buf = new BPPChunk[chunkCount];
 		chunkArray.arraySizes[0] = chunkCount;
-		char chunkname[10];
+		char chunkname[32];
 		for (int cc = 0; cc < chunkCount; ++cc)
 		{
 			BPPChunk& chunk = chunkArray.buf[cc];
 			::init(chunk);
 
-			std::vector<uint32_t> parentChunkIndexes;
-			parentChunkIndexes.push_back(cc);
-			uint32_t parentChunkIndex = cc;
-			while ((parentChunkIndex = pNvBlastChunk[parentChunkIndex].parentChunkIndex) != -1)
-			{
-				parentChunkIndexes.push_back(parentChunkIndex);
-			}
+			//std::vector<uint32_t> parentChunkIndexes;
+			//parentChunkIndexes.push_back(cc);
+			//uint32_t parentChunkIndex = cc;
+			//while ((parentChunkIndex = pNvBlastChunk[parentChunkIndex].parentChunkIndex) != -1)
+			//{
+			//	parentChunkIndexes.push_back(parentChunkIndex);
+			//}
 
 			std::string strChunkName = "Chunk";
-			for (int pcIndex = parentChunkIndexes.size() - 1; pcIndex >= 0; pcIndex--)
-			{
-				sprintf(chunkname, "_%d", parentChunkIndexes[pcIndex]);
-				strChunkName += chunkname;
-			}
+			sprintf(chunkname, "_%d", cc);
+			strChunkName += chunkname;
+			//for (int pcIndex = parentChunkIndexes.size() - 1; pcIndex >= 0; pcIndex--)
+			//{
+			//	sprintf(chunkname, "_%d", parentChunkIndexes[pcIndex]);
+			//	strChunkName += chunkname;
+			//}
 			copy(chunk.name, strChunkName.c_str());
 
 			chunk.asset = asset.ID;
@@ -2927,7 +2944,7 @@ void SampleManager::_addAssetToProjectParam(BlastAsset* pBlastAsset)
 	{
 		bondArray.buf = new BPPBond[bondCount];
 		bondArray.arraySizes[0] = bondCount;
-		char bondname[20];
+		char bondname[64];
 		bool visible;
 		for (int bc = 0; bc < bondCount; ++bc)
 		{

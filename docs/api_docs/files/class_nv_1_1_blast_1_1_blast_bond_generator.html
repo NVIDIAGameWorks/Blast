@@ -120,7 +120,7 @@ Creates bond description for prefractured meshes, when there is no info about wh
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>meshCount</em>&nbsp;</td><td>Number of meshes </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>geometryOffset</em>&nbsp;</td><td>Pointer to array of triangle offsets for each mesh. Containts meshCount + 1 element, last one is total number of triangles in geometry </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>geometry</em>&nbsp;</td><td>Pointer to array of triangles. Triangles from geometryOffset[i] to geometryOffset[i+1] correspond to i-th mesh. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIsSupport</em>&nbsp;</td><td>Pointer to array of flags, if true - chunk is support. <a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> size should be equal to chunk count in tool. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIsSupport</em>&nbsp;</td><td>Pointer to array of flags, if true - chunk is support. Array size should be equal to chunk count in tool. </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>resultBondDescs</em>&nbsp;</td><td>Pointer to array of result bonds. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>conf</em>&nbsp;</td><td>Bond creation mode. </td></tr>
   </table>
@@ -171,7 +171,7 @@ This method based on marking triangles during fracture process, so can be used o
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>tool</em>&nbsp;</td><td><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> which contains chunks representation, tool-&gt;finalizeFracturing() should be called before. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIsSupport</em>&nbsp;</td><td>Pointer to array of flags, if true - chunk is support. <a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> size should be equal to chunk count in tool. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIsSupport</em>&nbsp;</td><td>Pointer to array of flags, if true - chunk is support. Array size should be equal to chunk count in tool. </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>resultBondDescs</em>&nbsp;</td><td>Pointer to array of created bond descriptors. </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>resultChunkDescriptors</em>&nbsp;</td><td>Pointer to array of created chunk descriptors. </td></tr>
   </table>

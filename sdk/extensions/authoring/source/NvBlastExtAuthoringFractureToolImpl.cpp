@@ -524,7 +524,7 @@ bool FractureToolImpl::isMeshContainOpenEdges(const Mesh* input)
 	return collected & 1;
 }
 
-int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3* cellPointsIn, const physx::PxVec3& scale, bool replaceChunk)
+int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3* cellPointsIn, const physx::PxVec3& scale, const physx::PxQuat& rotation, bool replaceChunk)
 {
 	if (chunkId == 0 && replaceChunk)
 	{
@@ -549,9 +549,12 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 	{
 		cellPoints[i] = (cellPointsIn[i] - mOffset) * (1.0f / mScaleFactor);
 	
+		cellPoints[i] = rotation.rotateInv(cellPoints[i]);
+
 		cellPoints[i].x *= (1.0f / scale.x);
 		cellPoints[i].y *= (1.0f / scale.y);
 		cellPoints[i].z *= (1.0f / scale.z);
+		
 	}
 
 	/**
@@ -585,6 +588,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 			cell->getVerticesWritable()[v].p.x *= scale.x;
 			cell->getVerticesWritable()[v].p.y *= scale.y;
 			cell->getVerticesWritable()[v].p.z *= scale.z;
+			cell->getVerticesWritable()[v].p = rotation.rotate(cell->getVerticesWritable()[v].p);
 		}
 		cell->recalculateBoundingBox();
 		DummyAccelerator dmAccel(cell->getFacetCount());
@@ -1069,7 +1073,7 @@ void FractureToolImpl::setSourceMesh(const Mesh* meshInput)
 
 	if (isMeshContainOpenEdges(meshInput))
 	{
-		NVBLAST_LOG_WARNING("WARNING! Input mesh contains open edges, it may lead to wrong fractruing results!. \n");
+		NVBLAST_LOG_WARNING("Input mesh contains open edges, it may lead to wrong fractruing results!. \n");
 	}
 
 

@@ -29,7 +29,7 @@
 #ifndef BLAST_FRACTURETOOL_H
 #define BLAST_FRACTURETOOL_H
 
-#include "NvBlastExtAuthoringFractureTool.h"
+#include "NvBlastExtAuthoringFractureToolImpl.h"
 
 class BlastAsset;
 namespace Nv
@@ -40,7 +40,7 @@ namespace Nv
 	}
 }
 
-class BlastFractureTool : public Nv::Blast::FractureTool
+class BlastFractureTool : public Nv::Blast::FractureToolImpl
 {
 public:
 	BlastFractureTool() {}

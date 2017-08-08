@@ -204,6 +204,7 @@
 		${env:PHYSX_PATH}/Source/PhysXGpu/include
 		${env:BLAST_PATH}/sdk/common
 		${env:BLAST_PATH}/sdk/extensions/authoring/include
+		${env:BLAST_PATH}/sdk/extensions/authoring/source
 		${env:BLAST_PATH}/sdk/extensions/common/include
 		${env:BLAST_PATH}/sdk/extensions/import/include
 		${env:BLAST_PATH}/sdk/extensions/lowlevel/include
@@ -672,6 +673,13 @@
 	</Files>
 	<Files name="SampleBase" root="${env:BLAST_PATH}/sdk/globals/source" type="source">
 		NvBlastGlobals.cpp
+	</Files>
+	<Files name="SampleBase" root="${env:BLAST_PATH}/sdk/extensions/authoring/source" type="source">
+		NvBlastExtAuthoringAccelerator.cpp
+		NvBlastExtAuthoringBooleanTool.cpp
+		NvBlastExtAuthoringFractureToolImpl.cpp
+		NvBlastExtAuthoringMeshImpl.cpp
+		NvBlastExtAuthoringTriangulator.cpp
 	</Files>
 	<Files name="NsFoundation" root="${env:NsFoundation_ROOT}">
 		src/*.cpp

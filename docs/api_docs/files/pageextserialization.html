@@ -44,10 +44,15 @@ Each serialization module defines the object types it can serialize. ExtSerializ
 <li>LlObjectTypeID::Asset - An <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a></li><li>LlObjectTypeID::Family - An <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a></li></ul>
 <p>
 To serialize an object, for example an <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a>, use ExtSerialization::serializeIntoBuffer as follows:<p>
-/code const NvBlastAsset* asset = ... // Given pointer to an <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a><p>
-void* buffer; uint64_t size = ser-&gt;serializeIntoBuffer(buffer, asset, LlObjectTypeID::Asset); /endcode<p>
-If successful, the data is written into a buffer allocated using the NvBlastGlobals allocator, written to the "buffer" parameter, and the size of the buffer written is the return value of the function. If the function returns 0, then serialization was unsuccessful. Notice that the second function parameter is actually a void*, so it requires the last parameter to tell it what object it's serializing. A utility wrapper function is given in <b><a class="el" href="_nv_blast_ext_ll_serialization_8h.html">NvBlastExtLlSerialization.h</a></b> which performs the same operation with an <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a>, so one could equivalently use<p>
-/code void* buffer; uint64_t size = NvBlastExtSerializationSerializeAssetIntoBuffer(buffer, *ser, asset); /endcode<p>
+<div class="fragment"><pre class="fragment"><span class="keyword">const</span> <a class="code" href="struct_nv_blast_asset.html">NvBlastAsset</a>* asset = ... <span class="comment">// Given pointer to an NvBlastAsset</span>
+
+<span class="keywordtype">void</span>* buffer;
+uint64_t size = ser-&gt;serializeIntoBuffer(buffer, asset, LlObjectTypeID::Asset);
+</pre></div><p>
+If successful, the data is written into a buffer allocated using the NvBlastGlobals allocator, written to the "buffer" parameter, and the size of the buffer written is the return value of the function. If the function returns 0, then serialization was unsuccessful. Notice that the second function parameter is actually a void*, so it requires the last parameter to tell it what object it is serializing. A utility wrapper function is given in <b><a class="el" href="_nv_blast_ext_ll_serialization_8h.html">NvBlastExtLlSerialization.h</a></b> which performs the same operation with an <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a>, so one could equivalently use<p>
+<div class="fragment"><pre class="fragment"><span class="keywordtype">void</span>* buffer;
+uint64_t size = <a class="code" href="_nv_blast_ext_ll_serialization_8h.html#51eaff0f60a0dd3f1ee29618549ae635">NvBlastExtSerializationSerializeAssetIntoBuffer</a>(buffer, *ser, asset);
+</pre></div><p>
 A corresponding function also exists for <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a>, as well as other data types supported by other serialization extensions.<p>
 This buffer may be written to disk, memory, networked, etc. Since the memory for the buffer is allocated using the allocator in NvBlastGlobals, it may be freed using the same allocator:<p>
 <div class="fragment"><pre class="fragment"><a class="code" href="_nv_blast_globals_8h.html#f968d9c2dc2aaeb87f55bbd85488f741">NVBLAST_FREE</a>(buffer)
@@ -117,7 +122,7 @@ If you don't know the object type in the buffer, you may use the last (optional)
 <br>
  <h3><a class="anchor" name="peeking_and_skipping">
 Peeking at and Skipping Buffer Data</a></h3>
-If a buffer contains multiple objects, you may peek at the buffer to get object information including object type, encoding, and data size, and skip to the next object in the buffer (whether or not you've chosen to read the current object). For example:<p>
+If a buffer contains multiple objects, you may peek at the buffer to get object information including object type, encoding, and data size, and skip to the next object in the buffer (whether or not you have chosen to read the current object). For example:<p>
 <div class="fragment"><pre class="fragment"><span class="keyword">const</span> <span class="keywordtype">void</span>* buffer = ... <span class="comment">// The input buffer</span>
 uint64_t size = ... <span class="comment">// The input buffer size</span>
 

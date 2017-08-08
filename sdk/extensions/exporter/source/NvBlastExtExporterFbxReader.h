@@ -104,7 +104,7 @@ public:
 	/**
 	Get loaded per triangle smoothing groups.  Currently not supported.
 	*/
-	int32_t*		getSmoothingGroups() override { return nullptr; };
+	int32_t*		getSmoothingGroups() override;
 
 	/**
 	Get material name.

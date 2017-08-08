@@ -36,7 +36,7 @@
 #include "NvBlastExtPxAsset.h"
 #include <sstream>
 #include <fstream>
-#include "NvBlastExtExporterFbxReader.h"
+#include "NvBlastExtExporter.h"
 #include "PxPhysics.h"
 #include <NvBlastGlobals.h>
 #include "NvBlastExtAssetUtils.h"
@@ -46,6 +46,8 @@
 #include "NvBlastExtLlSerialization.h"
 #include "NvBlastExtTkSerialization.h"
 #include "NvBlastExtPxSerialization.h"
+#include "NvBlastExtAuthoring.h"
+#include "NvBlastExtAuthoringCollisionBuilder.h"
 
 BlastAssetModel::BlastAssetModel(TkFramework& framework, PxPhysics& physics, PxCooking& cooking, ExtSerialization& serialization, Renderer& renderer, const char* modelName, const char* modelPath)
 	: BlastAsset(renderer)
@@ -179,27 +181,31 @@ BlastAssetModel::BlastAssetModel(TkFramework& framework, PxPhysics& physics, PxC
 				path = GlobalSettings::MakeFileName(modelPath, objFileName.str().c_str());
 				if (QFile::exists(path.c_str()))
 				{
-					FbxFileReader rdr;
-					rdr.loadFromFile(path);
-					if (rdr.isCollisionLoaded() == 0)
+					std::shared_ptr<IFbxFileReader> rdr(NvBlastExtExporterCreateFbxFileReader(), [](IFbxFileReader* p) {p->release(); });
+					rdr->loadFromFile(path.c_str());
+					if (rdr->isCollisionLoaded() == 0)
 					{
 						ASSERT_PRINT(false, "fbx doesn't contain collision geometry");
 					}
-					std::vector<std::vector<CollisionHull> > hulls;
-					rdr.getCollision(hulls);
+					uint32_t* hullsOffsets = nullptr;
+					CollisionHull** hulls = nullptr;
+					uint32_t meshCount = rdr->getCollision(hullsOffsets, hulls);
 
 					/**
 					Create physics meshes;
 					*/
-					Nv::Blast::ConvexMeshBuilder collisionBuilder(&cooking, &physics.getPhysicsInsertionCallback());
-					physicsChunks.resize(hulls.size());
-					physicsSubchunks.resize(hulls.size());
+					std::shared_ptr<Nv::Blast::ConvexMeshBuilder> collisionBuilder(
+						NvBlastExtAuthoringCreateConvexMeshBuilder(&cooking, &physics.getPhysicsInsertionCallback()),
+						[](Nv::Blast::ConvexMeshBuilder* cmb) {cmb->release(); });
 
-					for (uint32_t i = 0; i < hulls.size(); ++i)
+					physicsChunks.resize(meshCount);
+					physicsSubchunks.resize(meshCount);
+
+					for (uint32_t i = 0; i < meshCount; ++i)
 					{
-						for (uint32_t sbHulls = 0; sbHulls < hulls[i].size(); ++sbHulls)
+						for (uint32_t sbHulls = hullsOffsets[i]; sbHulls < hullsOffsets[i+1]; ++sbHulls)
 						{
-							PxConvexMeshGeometry temp = physx::PxConvexMeshGeometry(collisionBuilder.buildConvexMesh(hulls[i][sbHulls]));
+							PxConvexMeshGeometry temp = physx::PxConvexMeshGeometry(collisionBuilder.get()->buildConvexMesh(*hulls[sbHulls]));
 							if (temp.isValid())
 							{
 								physicsSubchunks[i].push_back(ExtPxAssetDesc::SubchunkDesc());
@@ -208,11 +214,19 @@ BlastAssetModel::BlastAssetModel(TkFramework& framework, PxPhysics& physics, PxC
 							}
 						}
 					}
-					for (uint32_t i = 0; i < hulls.size(); ++i)
+					for (uint32_t i = 0; i < meshCount; ++i)
 					{
 						physicsChunks[i].isStatic = false;
 						physicsChunks[i].subchunkCount = (uint32_t)physicsSubchunks[i].size();
 						physicsChunks[i].subchunks = physicsSubchunks[i].data();
+					}
+					if (hullsOffsets)
+					{
+						NVBLAST_FREE(hullsOffsets);
+					}
+					if (hulls)
+					{
+						NVBLAST_FREE(hulls);
 					}
 				}
 				m_pxAsset = ExtPxAsset::create(tkAsset, physicsChunks.data(), (uint32_t)physicsChunks.size());

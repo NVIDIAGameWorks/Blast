@@ -155,44 +155,44 @@
 <a name="l00217"></a>00217 
 <a name="l00226"></a>00226     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#c4fc3be233311be7daf7471fcea21285">voronoiFracturing</a>(uint32_t chunkId, uint32_t cellCount, <span class="keyword">const</span> physx::PxVec3* cellPoints, <span class="keywordtype">bool</span> replaceChunk) = 0;
 <a name="l00227"></a>00227 
-<a name="l00238"></a>00238     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#c4fc3be233311be7daf7471fcea21285">voronoiFracturing</a>(uint32_t chunkId, uint32_t cellCount, <span class="keyword">const</span> physx::PxVec3* cellPoints, <span class="keyword">const</span> physx::PxVec3&amp; scale, <span class="keywordtype">bool</span> replaceChunk) = 0;
-<a name="l00239"></a>00239 
+<a name="l00239"></a>00239     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#c4fc3be233311be7daf7471fcea21285">voronoiFracturing</a>(uint32_t chunkId, uint32_t cellCount, <span class="keyword">const</span> physx::PxVec3* cellPoints, <span class="keyword">const</span> physx::PxVec3&amp; scale, <span class="keyword">const</span> physx::PxQuat&amp; rotation, <span class="keywordtype">bool</span> replaceChunk) = 0;
 <a name="l00240"></a>00240 
-<a name="l00251"></a>00251     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#c61aa65dde3c085450e8256a838a487f">slicing</a>(uint32_t chunkId, <a class="code" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a> conf, <span class="keywordtype">bool</span> replaceChunk, <a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a>* rnd) = 0;
-<a name="l00252"></a>00252 
+<a name="l00241"></a>00241 
+<a name="l00252"></a>00252     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#c61aa65dde3c085450e8256a838a487f">slicing</a>(uint32_t chunkId, <a class="code" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a> conf, <span class="keywordtype">bool</span> replaceChunk, <a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a>* rnd) = 0;
 <a name="l00253"></a>00253 
-<a name="l00257"></a>00257     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#8830959a8f7e4babc1983ea31c61ef5d">finalizeFracturing</a>() = 0;
-<a name="l00258"></a>00258     
-<a name="l00259"></a>00259     <span class="keyword">virtual</span> uint32_t                                <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#f07eb7960687cd912df496640bec8876">getChunkCount</a>() <span class="keyword">const</span> = 0;
-<a name="l00260"></a>00260 
-<a name="l00264"></a>00264     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html">ChunkInfo</a>&amp;                        <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#9a113cc771fac30fd14a9c7b5b073e99">getChunkInfo</a>(int32_t chunkIndex) = 0;
-<a name="l00265"></a>00265 
-<a name="l00273"></a>00273     <span class="keyword">virtual</span> <span class="keywordtype">float</span>                                   <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#dc4037818bdb9424fe0543b59c1e2eac">getMeshOverlap</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>&amp; meshA, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>&amp; meshB) = 0;
-<a name="l00274"></a>00274 
-<a name="l00281"></a>00281     <span class="keyword">virtual</span> uint32_t                                <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#ea8f1d386c70af0ea67bed2c353e57a1">getBaseMesh</a>(int32_t chunkIndex, <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>*&amp; output) = 0;
-<a name="l00282"></a>00282 
-<a name="l00288"></a>00288     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#0277f85b5f3ab9c3f60118895c289031">getChunkIndex</a>(int32_t chunkId) = 0;
-<a name="l00289"></a>00289 
-<a name="l00295"></a>00295     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#1d2f1ce4db5aab0ac6a075db607c6b2f">getChunkId</a>(int32_t chunkIndex) = 0;
-<a name="l00296"></a>00296 
-<a name="l00302"></a>00302     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#c99cb91a13255929a52d9a2623ac207b">getChunkDepth</a>(int32_t chunkId) = 0;
-<a name="l00303"></a>00303 
-<a name="l00310"></a>00310     <span class="keyword">virtual</span> uint32_t                                <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#7bcaeda929fdcc29a7db12676cf0984a">getChunksIdAtDepth</a>(uint32_t depth, int32_t*&amp; chunkIds) = 0;
-<a name="l00311"></a>00311 
+<a name="l00254"></a>00254 
+<a name="l00258"></a>00258     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#8830959a8f7e4babc1983ea31c61ef5d">finalizeFracturing</a>() = 0;
+<a name="l00259"></a>00259     
+<a name="l00260"></a>00260     <span class="keyword">virtual</span> uint32_t                                <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#f07eb7960687cd912df496640bec8876">getChunkCount</a>() <span class="keyword">const</span> = 0;
+<a name="l00261"></a>00261 
+<a name="l00265"></a>00265     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html">ChunkInfo</a>&amp;                        <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#9a113cc771fac30fd14a9c7b5b073e99">getChunkInfo</a>(int32_t chunkIndex) = 0;
+<a name="l00266"></a>00266 
+<a name="l00274"></a>00274     <span class="keyword">virtual</span> <span class="keywordtype">float</span>                                   <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#dc4037818bdb9424fe0543b59c1e2eac">getMeshOverlap</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>&amp; meshA, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>&amp; meshB) = 0;
+<a name="l00275"></a>00275 
+<a name="l00282"></a>00282     <span class="keyword">virtual</span> uint32_t                                <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#ea8f1d386c70af0ea67bed2c353e57a1">getBaseMesh</a>(int32_t chunkIndex, <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>*&amp; output) = 0;
+<a name="l00283"></a>00283 
+<a name="l00289"></a>00289     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#0277f85b5f3ab9c3f60118895c289031">getChunkIndex</a>(int32_t chunkId) = 0;
+<a name="l00290"></a>00290 
+<a name="l00296"></a>00296     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#1d2f1ce4db5aab0ac6a075db607c6b2f">getChunkId</a>(int32_t chunkIndex) = 0;
+<a name="l00297"></a>00297 
+<a name="l00303"></a>00303     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#c99cb91a13255929a52d9a2623ac207b">getChunkDepth</a>(int32_t chunkId) = 0;
+<a name="l00304"></a>00304 
+<a name="l00311"></a>00311     <span class="keyword">virtual</span> uint32_t                                <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#7bcaeda929fdcc29a7db12676cf0984a">getChunksIdAtDepth</a>(uint32_t depth, int32_t*&amp; chunkIds) = 0;
 <a name="l00312"></a>00312 
-<a name="l00322"></a>00322     <span class="keyword">virtual</span> uint32_t                                <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#7959339df1bf17419cde2428c257af1d">getBufferedBaseMeshes</a>(<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>*&amp; vertexBuffer, uint32_t*&amp; indexBuffer, uint32_t*&amp; indexBufferOffsets) = 0;
-<a name="l00323"></a>00323 
-<a name="l00328"></a>00328     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#251738022e498b819e88536577470735">setRemoveIslands</a>(<span class="keywordtype">bool</span> isRemoveIslands) = 0;
-<a name="l00329"></a>00329 
-<a name="l00335"></a>00335     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#7ce2d9ab0cf8d3f03982b53bb4dc3d81">islandDetectionAndRemoving</a>(int32_t chunkId) = 0;
-<a name="l00336"></a>00336 
-<a name="l00341"></a>00341     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#5710c73457bcceba3f20d130e231a028">isMeshContainOpenEdges</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* input) = 0;
-<a name="l00342"></a>00342 };
-<a name="l00343"></a>00343 
-<a name="l00344"></a>00344 } <span class="comment">// namespace Blast</span>
-<a name="l00345"></a>00345 } <span class="comment">// namespace Nv</span>
-<a name="l00346"></a>00346 
-<a name="l00347"></a>00347 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORINGFRACTURETOOL_H</span>
+<a name="l00313"></a>00313 
+<a name="l00323"></a>00323     <span class="keyword">virtual</span> uint32_t                                <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#7959339df1bf17419cde2428c257af1d">getBufferedBaseMeshes</a>(<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>*&amp; vertexBuffer, uint32_t*&amp; indexBuffer, uint32_t*&amp; indexBufferOffsets) = 0;
+<a name="l00324"></a>00324 
+<a name="l00329"></a>00329     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#251738022e498b819e88536577470735">setRemoveIslands</a>(<span class="keywordtype">bool</span> isRemoveIslands) = 0;
+<a name="l00330"></a>00330 
+<a name="l00336"></a>00336     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#7ce2d9ab0cf8d3f03982b53bb4dc3d81">islandDetectionAndRemoving</a>(int32_t chunkId) = 0;
+<a name="l00337"></a>00337 
+<a name="l00342"></a>00342     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#5710c73457bcceba3f20d130e231a028">isMeshContainOpenEdges</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* input) = 0;
+<a name="l00343"></a>00343 };
+<a name="l00344"></a>00344 
+<a name="l00345"></a>00345 } <span class="comment">// namespace Blast</span>
+<a name="l00346"></a>00346 } <span class="comment">// namespace Nv</span>
+<a name="l00347"></a>00347 
+<a name="l00348"></a>00348 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORINGFRACTURETOOL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

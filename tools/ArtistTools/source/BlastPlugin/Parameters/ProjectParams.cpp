@@ -130,7 +130,6 @@ void freeBlast(BPPAsset& data)
 	freeString(data.name);
 	freeString(data.fbx);
 	freeString(data.obj);
-	freeString(data.collision);
 	freeString(data.llasset);
 	freeString(data.tkasset);
 	freeString(data.bpxa);
@@ -732,13 +731,12 @@ void copy(BPPAsset& dest, BPPAsset& source)
 	copy(dest.activeUserPreset, source.activeUserPreset);
 	copy(dest.fbx, source.fbx);
 	copy(dest.obj, source.obj);
-	copy(dest.collision, source.collision);
 	copy(dest.llasset, source.llasset);
 	copy(dest.tkasset, source.tkasset);
 	copy(dest.bpxa, source.bpxa);
 	dest.exportFBX = source.exportFBX;
+	dest.embedFBXCollision = source.embedFBXCollision;
 	dest.exportOBJ = source.exportOBJ;
-	dest.exportCollision = source.exportCollision;
 	dest.exportLLAsset = source.exportLLAsset;
 	dest.exportTKAsset = source.exportTKAsset;
 	dest.exportBPXA = source.exportBPXA;
@@ -1471,13 +1469,12 @@ void init(BPPAsset& param)
 	init(param.stressSolver);
 	param.obj.buf = nullptr;
 	param.fbx.buf = nullptr;
-	param.collision.buf = nullptr;
 	param.llasset.buf = nullptr;
 	param.tkasset.buf = nullptr;
 	param.bpxa.buf = nullptr;
 	param.exportFBX = false;
+	param.embedFBXCollision = true;
 	param.exportOBJ = false;
-	param.exportCollision = false;
 	param.exportLLAsset = false;
 	param.exportTKAsset = false;
 	param.exportBPXA = false;

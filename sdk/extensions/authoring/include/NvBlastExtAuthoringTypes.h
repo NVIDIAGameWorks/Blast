@@ -85,7 +85,7 @@ struct Triangle
 	Vertex a, b, c;
 	int32_t userData;
 	int32_t materialId;
-	int32_t smoothingGroup; // NOT SUPPORTED ATM.
+	int32_t smoothingGroup;
 	physx::PxVec3 getNormal()
 	{
 		return ((b.p - a.p).cross(c.p - a.p));

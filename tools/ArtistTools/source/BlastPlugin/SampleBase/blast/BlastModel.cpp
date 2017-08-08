@@ -33,9 +33,24 @@
 // Add By Lixu End
 #include "tiny_obj_loader.h"
 #include "MathUtil.h"
-#include "NvBlastExtExporterFbxReader.h"
+#include "NvBlastExtExporter.h"
+#include "NvBlastGlobals.h"
 
 using namespace physx;
+
+void computeFacenormalByPosition(
+	physx::PxVec3 p0, physx::PxVec3 p1, physx::PxVec3 p2,
+	physx::PxVec3& facenormal)
+{
+	physx::PxVec3 p01 = p1 - p0;
+	physx::PxVec3 p02 = p2 - p0;
+
+	facenormal.x = p01.y * p02.z - p01.z * p02.y;
+	facenormal.y = p01.z * p02.x - p01.x * p02.z;
+	facenormal.z = p01.x * p02.y - p01.y * p02.x;
+
+	facenormal = -facenormal.getNormalized();
+}
 
 void computeTangentByPositionAndTexcoord(
 	physx::PxVec3 p0, physx::PxVec3 p1, physx::PxVec3 p2,
@@ -67,14 +82,15 @@ BlastModelPtr BlastModel::loadFromFbxFile(const char* path)
 	model->bbMax = PxVec3(FLT_MIN, FLT_MIN, FLT_MIN);
 // Add By Lixu End
 
-	FbxFileReader rdr;
-	rdr.loadFromFile(path);
-	if (rdr.getBoneCount() == 0)
+
+	std::shared_ptr<Nv::Blast::IFbxFileReader> rdr(NvBlastExtExporterCreateFbxFileReader(), [](Nv::Blast::IFbxFileReader* p) {p->release(); });
+	rdr->loadFromFile(path);
+	if (rdr->getBoneCount() == 0)
 	{
 		return nullptr;
 	}
 
-	model->chunks.resize(rdr.getBoneCount());
+	model->chunks.resize(rdr->getBoneCount());
 
 	model->materials.push_back(BlastModel::Material());
 	
@@ -82,33 +98,33 @@ BlastModelPtr BlastModel::loadFromFbxFile(const char* path)
 	/**
 		Produce buffers of appropriate for AssetViewer format
 	*/
-	std::vector<uint32_t> infl;
-	rdr.getBoneInfluences(infl);
-	for (uint32_t i = 0; i < rdr.getBoneCount(); ++i)
+	uint32_t* infl;
+	rdr->getBoneInfluences(infl);
+	for (uint32_t i = 0; i < rdr->getBoneCount(); ++i)
 	{
-		std::vector<int32_t> indRemap(rdr.getPositionArray().size(), -1);
+		std::vector<int32_t> indRemap(rdr->getVerticesCount(), -1);
 		std::vector<uint32_t> indices;
 		SimpleMesh cmesh;
-		for (uint32_t j = 0; j < rdr.getPositionArray().size(); ++j)
+		for (uint32_t j = 0; j < rdr->getVerticesCount(); ++j)
 		{
 			if (i == infl[j])
 			{
 				indRemap[j] = (int32_t)cmesh.vertices.size();
 				cmesh.vertices.push_back(SimpleMesh::Vertex());
-				cmesh.vertices.back().normal = rdr.getNormalsArray()[j];
-				cmesh.vertices.back().position = rdr.getPositionArray()[j];
-				cmesh.vertices.back().uv = rdr.getUvArray()[j];	
+				cmesh.vertices.back().normal = rdr->getNormalsArray()[j];
+				cmesh.vertices.back().position = rdr->getPositionArray()[j];
+				cmesh.vertices.back().uv = rdr->getUvArray()[j];	
 			}
 		}
-		for (uint32_t j = 0; j < rdr.getIndexArray().size(); j += 3)
+		for (uint32_t j = 0; j < rdr->getIdicesCount(); j += 3)
 		{
-			if (i == infl[rdr.getIndexArray()[j]])
+			if (i == infl[rdr->getIndexArray()[j]])
 			{
-				int32_t lind = rdr.getIndexArray()[j + 2];
+				int32_t lind = rdr->getIndexArray()[j + 2];
 				cmesh.indices.push_back(indRemap[lind]);
-				lind = rdr.getIndexArray()[j + 1];
+				lind = rdr->getIndexArray()[j + 1];
 				cmesh.indices.push_back(indRemap[lind]);
-				lind = rdr.getIndexArray()[j];
+				lind = rdr->getIndexArray()[j];
 				cmesh.indices.push_back(indRemap[lind]);
 			}
 		}
@@ -116,6 +132,8 @@ BlastModelPtr BlastModel::loadFromFbxFile(const char* path)
 		model->chunks[i].meshes.push_back(Chunk::Mesh());
 		model->chunks[i].meshes.back().materialIndex = 0;
 		model->chunks[i].meshes.back().mesh = cmesh;
+
+		NVBLAST_FREE(infl);
 	}
 	return model;
 }
@@ -272,7 +290,7 @@ BlastModelPtr BlastModel::loadFromFileTinyLoader(const char* path)
 				}
 			}
 
-			// compute tangent
+			// compute facenormal and tangent
 			if (pMesh.mesh.indices.size() > 0 && allTriangles)
 			{
 				for (uint32_t i = 0; i < pMesh.mesh.indices.size(); i += 3)
@@ -280,6 +298,14 @@ BlastModelPtr BlastModel::loadFromFileTinyLoader(const char* path)
 					SimpleMesh::Vertex& v0 = chunkMesh.vertices[chunkMesh.indices[i + 0]];
 					SimpleMesh::Vertex& v1 = chunkMesh.vertices[chunkMesh.indices[i + 1]];
 					SimpleMesh::Vertex& v2 = chunkMesh.vertices[chunkMesh.indices[i + 2]];
+
+					physx::PxVec3 facenormal;
+					computeFacenormalByPosition(
+						v0.position, v1.position, v2.position, facenormal);
+
+					v0.facenormal = facenormal;
+					v1.facenormal = facenormal;
+					v2.facenormal = facenormal;
 
 					physx::PxVec3 tangent;
 					computeTangentByPositionAndTexcoord(

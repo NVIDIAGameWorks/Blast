@@ -280,38 +280,38 @@ Mesh* getCuttingBox(const PxVec3& point, const PxVec3& normal, float size, int32
 	edges.push_back(Edge(1, 2));
 	edges.push_back(Edge(2, 3));
 	edges.push_back(Edge(3, 0));
-	facets.push_back(Facet(0, 4, MATERIAL_INTERIOR, id));
+	facets.push_back(Facet(0, 4, MATERIAL_INTERIOR, id, -1));
 
 
 	edges.push_back(Edge(0, 3));
 	edges.push_back(Edge(3, 7));
 	edges.push_back(Edge(7, 4));
 	edges.push_back(Edge(4, 0));
-	facets.push_back(Facet(4, 4, MATERIAL_INTERIOR, id));
+	facets.push_back(Facet(4, 4, MATERIAL_INTERIOR, id, -1));
 
 	edges.push_back(Edge(3, 2));
 	edges.push_back(Edge(2, 6));
 	edges.push_back(Edge(6, 7));
 	edges.push_back(Edge(7, 3));
-	facets.push_back(Facet(8, 4, MATERIAL_INTERIOR, id));
+	facets.push_back(Facet(8, 4, MATERIAL_INTERIOR, id, -1));
 
 	edges.push_back(Edge(5, 6));
 	edges.push_back(Edge(6, 2));
 	edges.push_back(Edge(2, 1));
 	edges.push_back(Edge(1, 5));
-	facets.push_back(Facet(12, 4, MATERIAL_INTERIOR, id));
+	facets.push_back(Facet(12, 4, MATERIAL_INTERIOR, id, -1));
 
 	edges.push_back(Edge(4, 5));
 	edges.push_back(Edge(5, 1));
 	edges.push_back(Edge(1, 0));
 	edges.push_back(Edge(0, 4));
-	facets.push_back(Facet(16, 4, MATERIAL_INTERIOR, id));
+	facets.push_back(Facet(16, 4, MATERIAL_INTERIOR, id, -1));
 
 	edges.push_back(Edge(4, 7));
 	edges.push_back(Edge(7, 6));
 	edges.push_back(Edge(6, 5));
 	edges.push_back(Edge(5, 4));
-	facets.push_back(Facet(20, 4, MATERIAL_INTERIOR, id));
+	facets.push_back(Facet(20, 4, MATERIAL_INTERIOR, id, -1));
 	return new MeshImpl(positions.data(), edges.data(), facets.data(), static_cast<uint32_t>(positions.size()), static_cast<uint32_t>(edges.size()), static_cast<uint32_t>(facets.size()));
 }
 
@@ -443,7 +443,7 @@ Mesh* getNoisyCuttingBoxPair(const physx::PxVec3& point, const physx::PxVec3& no
 			edges.push_back(Edge(i * (resolution + 1) + j + 1, (i + 1) * (resolution + 1) + j + 1));
 			edges.push_back(Edge((i + 1) * (resolution + 1) + j + 1, (i + 1) * (resolution + 1) + j));
 			edges.push_back(Edge((i + 1) * (resolution + 1) + j, i * (resolution + 1) + j));
-			facets.push_back(Facet(start, 4, MATERIAL_INTERIOR, id));
+			facets.push_back(Facet(start, 4, MATERIAL_INTERIOR, id, -1));
 		}
 	}
 	uint32_t offset = (resolution + 1) * (resolution + 1);
@@ -492,7 +492,7 @@ Mesh* getNoisyCuttingBoxPair(const physx::PxVec3& point, const physx::PxVec3& no
 	edges.push_back(Edge(9 + offset, 8 + offset));
 	edges.push_back(Edge(8 + offset, 11 + offset));
 
-	facets.push_back(Facet(edgeOffset, 8, MATERIAL_INTERIOR, id));
+	facets.push_back(Facet(edgeOffset, 8, MATERIAL_INTERIOR, id, -1));
 
 
 
@@ -500,31 +500,31 @@ Mesh* getNoisyCuttingBoxPair(const physx::PxVec3& point, const physx::PxVec3& no
 	edges.push_back(Edge(3 + offset, 7 + offset));
 	edges.push_back(Edge(7 + offset, 4 + offset));
 	edges.push_back(Edge(4 + offset, 0 + offset));
-	facets.push_back(Facet(8 + edgeOffset, 4, MATERIAL_INTERIOR, id));
+	facets.push_back(Facet(8 + edgeOffset, 4, MATERIAL_INTERIOR, id, -1));
 
 	edges.push_back(Edge(3 + offset, 2 + offset));
 	edges.push_back(Edge(2 + offset, 6 + offset));
 	edges.push_back(Edge(6 + offset, 7 + offset));
 	edges.push_back(Edge(7 + offset, 3 + offset));
-	facets.push_back(Facet(12 + edgeOffset, 4, MATERIAL_INTERIOR, id));
+	facets.push_back(Facet(12 + edgeOffset, 4, MATERIAL_INTERIOR, id, -1));
 
 	edges.push_back(Edge(5 + offset, 6 + offset));
 	edges.push_back(Edge(6 + offset, 2 + offset));
 	edges.push_back(Edge(2 + offset, 1 + offset));
 	edges.push_back(Edge(1 + offset, 5 + offset));
-	facets.push_back(Facet(16 + edgeOffset, 4, MATERIAL_INTERIOR, id));
+	facets.push_back(Facet(16 + edgeOffset, 4, MATERIAL_INTERIOR, id, -1));
 
 	edges.push_back(Edge(4 + offset, 5 + offset));
 	edges.push_back(Edge(5 + offset, 1 + offset));
 	edges.push_back(Edge(1 + offset, 0 + offset));
 	edges.push_back(Edge(0 + offset, 4 + offset));
-	facets.push_back(Facet(20 + edgeOffset, 4, MATERIAL_INTERIOR, id));
+	facets.push_back(Facet(20 + edgeOffset, 4, MATERIAL_INTERIOR, id, -1));
 
 	edges.push_back(Edge(4 + offset, 7 + offset));
 	edges.push_back(Edge(7 + offset, 6 + offset));
 	edges.push_back(Edge(6 + offset, 5 + offset));
 	edges.push_back(Edge(5 + offset, 4 + offset));
-	facets.push_back(Facet(24 + edgeOffset, 4, MATERIAL_INTERIOR, id));
+	facets.push_back(Facet(24 + edgeOffset, 4, MATERIAL_INTERIOR, id, -1));
 
 	//
 	return new MeshImpl(vertices.data(), edges.data(), facets.data(), vertices.size(), edges.size(), facets.size());
@@ -572,38 +572,38 @@ Mesh* getBigBox(const PxVec3& point, float size)
 	edges.push_back(Edge(1, 2));
 	edges.push_back(Edge(2, 3));
 	edges.push_back(Edge(3, 0));
-	facets.push_back(Facet(0, 4, MATERIAL_INTERIOR, 0));
+	facets.push_back(Facet(0, 4, MATERIAL_INTERIOR, 0, -1));
 
 
 	edges.push_back(Edge(0, 3));
 	edges.push_back(Edge(3, 7));
 	edges.push_back(Edge(7, 4));
 	edges.push_back(Edge(4, 0));
-	facets.push_back(Facet(4, 4, MATERIAL_INTERIOR, 0));
+	facets.push_back(Facet(4, 4, MATERIAL_INTERIOR, 0, -1));
 
 	edges.push_back(Edge(3, 2));
 	edges.push_back(Edge(2, 6));
 	edges.push_back(Edge(6, 7));
 	edges.push_back(Edge(7, 3));
-	facets.push_back(Facet(8, 4, MATERIAL_INTERIOR, 0));
+	facets.push_back(Facet(8, 4, MATERIAL_INTERIOR, 0, -1));
 
 	edges.push_back(Edge(5, 6));
 	edges.push_back(Edge(6, 2));
 	edges.push_back(Edge(2, 1));
 	edges.push_back(Edge(1, 5));
-	facets.push_back(Facet(12, 4, MATERIAL_INTERIOR, 0));
+	facets.push_back(Facet(12, 4, MATERIAL_INTERIOR, 0, -1));
 
 	edges.push_back(Edge(4, 5));
 	edges.push_back(Edge(5, 1));
 	edges.push_back(Edge(1, 0));
 	edges.push_back(Edge(0, 4));
-	facets.push_back(Facet(16, 4, MATERIAL_INTERIOR, 0));
+	facets.push_back(Facet(16, 4, MATERIAL_INTERIOR, 0, -1));
 
 	edges.push_back(Edge(4, 7));
 	edges.push_back(Edge(7, 6));
 	edges.push_back(Edge(6, 5));
 	edges.push_back(Edge(5, 4));
-	facets.push_back(Facet(20, 4, MATERIAL_INTERIOR, 0));
+	facets.push_back(Facet(20, 4, MATERIAL_INTERIOR, 0, -1));
 	for (int i = 0; i < 8; ++i)
 		positions[i].n = PxVec3(0, 0, 0);
 	return new MeshImpl(positions.data(), edges.data(), facets.data(), static_cast<uint32_t>(positions.size()), static_cast<uint32_t>(edges.size()), static_cast<uint32_t>(facets.size()));

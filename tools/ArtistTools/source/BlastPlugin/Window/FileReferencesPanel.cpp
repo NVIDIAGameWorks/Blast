@@ -2,7 +2,6 @@
 #include "ui_FileReferencesPanel.h"
 #include "AppMainWindow.h"
 #include <QtWidgets/QFileDialog>
-#include "ProjectParams.h"
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
 #include "GlobalSettings.h"
@@ -24,14 +23,12 @@ FileReferencesPanel::FileReferencesPanel(QWidget *parent)
 
 	ui->lineEditFBX->setText("New.fbx");
 	ui->lineEditObj->setText("New.obj");
-	ui->lineEditCollision->setText("New.repx");
 	ui->lineEditLLAsset->setText("Newll.blast");
 	ui->lineEditTKAsset->setText("Newtk.blast");
 	ui->lineEditBPXA->setText("New.blast");
 	bValid = false;
 	ui->checkBoxFBX->setChecked(false);
 	ui->checkBoxObj->setChecked(false);
-	ui->checkBoxCollision->setChecked(false);
 	ui->checkBoxLLAsset->setChecked(false);
 	ui->checkBoxTKAsset->setChecked(false);
 	ui->checkBoxBPXA->setChecked(false);
@@ -59,15 +56,12 @@ void FileReferencesPanel::updateValues()
 
 	ui->lineEditFBX->setText("");
 	ui->lineEditObj->setText("");
-	ui->lineEditCollision->setText("");
 	ui->lineEditLLAsset->setText("");
 	ui->lineEditTKAsset->setText("");
 	ui->lineEditBPXA->setText("");
 	bValid = false;
 	ui->checkBoxFBX->setChecked(false);
 	ui->checkBoxObj->setChecked(false);
-	ui->checkBoxCollision->setChecked(false);
-	ui->checkBoxLLAsset->setChecked(false);
 	ui->checkBoxTKAsset->setChecked(false);
 	ui->checkBoxBPXA->setChecked(false);
 	bValid = true;
@@ -128,13 +122,6 @@ void FileReferencesPanel::updateValues()
 		ui->lineEditObj->setText(fileInfo.baseName() + "_New.obj");
 	}
 
-	if (asset.collision.buf != nullptr)
-		ui->lineEditCollision->setText(asset.collision.buf);
-	else
-	{
-		ui->lineEditCollision->setText(fileInfo.baseName() + "_New.repx");
-	}
-
 	if (asset.llasset.buf != nullptr)
 		ui->lineEditLLAsset->setText(asset.llasset.buf);
 	else
@@ -158,8 +145,8 @@ void FileReferencesPanel::updateValues()
 
 	bValid = false;
 	ui->checkBoxFBX->setChecked(asset.exportFBX);
+	ui->checkBoxEmbedFBXCollision->setChecked(asset.embedFBXCollision);
 	ui->checkBoxObj->setChecked(asset.exportOBJ);
-	ui->checkBoxCollision->setChecked(asset.exportCollision);
 	ui->checkBoxLLAsset->setChecked(asset.exportLLAsset);
 	ui->checkBoxTKAsset->setChecked(asset.exportTKAsset);
 	ui->checkBoxBPXA->setChecked(asset.exportBPXA);
@@ -204,47 +191,27 @@ void FileReferencesPanel::on_checkBoxFBX_stateChanged(int arg1)
 		return;
 	}
 
-	SampleManager* pSampleManager = SampleManager::ins();
-	if (pSampleManager == nullptr)
-	{
+	BPPAsset* assetPtr = _getCurrentAsset();
+	if (nullptr == assetPtr)
 		return;
-	}
 
-	BlastAsset* pBlastAsset = pSampleManager->getCurBlastAsset();
-	if (pBlastAsset == nullptr)
-	{
-		return;
-	}
-
-	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = pSampleManager->getAssetDescMap();
-	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM = AssetDescMap.find(pBlastAsset);
-	if (itADM == AssetDescMap.end())
-	{
-		return;
-	}
-
-	AssetList::ModelAsset modelAsset = itADM->second;
-	if (modelAsset.name.empty())
-	{
-		return;
-	}
-
-	BPParams& projectParams = BlastProject::ins().getParams();
-	BPPAssetArray& assetArray = projectParams.blast.blastAssets;
-	int aaas = 0;
-	for (; aaas < assetArray.arraySizes[0]; aaas++)
-	{
-		std::string assetname = assetArray.buf[aaas].name;
-		if (assetname == modelAsset.name)
-			break;
-	}
-	if (aaas == assetArray.arraySizes[0])
-	{
-		return;
-	}
-
-	BPPAsset& asset = assetArray.buf[aaas];
+	BPPAsset& asset = *assetPtr;
 	asset.exportFBX = ui->checkBoxFBX->isChecked();
+}
+
+void FileReferencesPanel::on_checkBoxEmbedFBXCollision_stateChanged(int arg1)
+{
+	if (!bValid)
+	{
+		return;
+	}
+
+	BPPAsset* assetPtr = _getCurrentAsset();
+	if (nullptr == assetPtr)
+		return;
+
+	BPPAsset& asset = *assetPtr;
+	asset.embedFBXCollision = ui->checkBoxEmbedFBXCollision->isChecked();
 }
 
 void FileReferencesPanel::on_checkBoxObj_stateChanged(int arg1)
@@ -254,97 +221,12 @@ void FileReferencesPanel::on_checkBoxObj_stateChanged(int arg1)
 		return;
 	}
 
-	SampleManager* pSampleManager = SampleManager::ins();
-	if (pSampleManager == nullptr)
-	{
+	BPPAsset* assetPtr = _getCurrentAsset();
+	if (nullptr == assetPtr)
 		return;
-	}
 
-	BlastAsset* pBlastAsset = pSampleManager->getCurBlastAsset();
-	if (pBlastAsset == nullptr)
-	{
-		return;
-	}
-
-	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = pSampleManager->getAssetDescMap();
-	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM = AssetDescMap.find(pBlastAsset);
-	if (itADM == AssetDescMap.end())
-	{
-		return;
-	}
-
-	AssetList::ModelAsset modelAsset = itADM->second;
-	if (modelAsset.name.empty())
-	{
-		return;
-	}
-
-	BPParams& projectParams = BlastProject::ins().getParams();
-	BPPAssetArray& assetArray = projectParams.blast.blastAssets;
-	int aaas = 0;
-	for (; aaas < assetArray.arraySizes[0]; aaas++)
-	{
-		std::string assetname = assetArray.buf[aaas].name;
-		if (assetname == modelAsset.name)
-			break;
-	}
-	if (aaas == assetArray.arraySizes[0])
-	{
-		return;
-	}
-
-	BPPAsset& asset = assetArray.buf[aaas];
+	BPPAsset& asset = *assetPtr;
 	asset.exportOBJ = ui->checkBoxObj->isChecked();
-}
-
-void FileReferencesPanel::on_checkBoxCollision_stateChanged(int arg1)
-{
-	if (!bValid)
-	{
-		return;
-	}
-
-	SampleManager* pSampleManager = SampleManager::ins();
-	if (pSampleManager == nullptr)
-	{
-		return;
-	}
-
-	BlastAsset* pBlastAsset = pSampleManager->getCurBlastAsset();
-	if (pBlastAsset == nullptr)
-	{
-		return;
-	}
-
-	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = pSampleManager->getAssetDescMap();
-	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM = AssetDescMap.find(pBlastAsset);
-	if (itADM == AssetDescMap.end())
-	{
-		return;
-	}
-
-	AssetList::ModelAsset modelAsset = itADM->second;
-	if (modelAsset.name.empty())
-	{
-		return;
-	}
-
-	BPParams& projectParams = BlastProject::ins().getParams();
-	BPPAssetArray& assetArray = projectParams.blast.blastAssets;
-	int aaas = 0;
-	for (; aaas < assetArray.arraySizes[0]; aaas++)
-	{
-		std::string assetname = assetArray.buf[aaas].name;
-		if (assetname == modelAsset.name)
-			break;
-	}
-	if (aaas == assetArray.arraySizes[0])
-	{
-		return;
-	}
-
-	BPPAsset& asset = assetArray.buf[aaas];
-	asset.exportCollision = ui->checkBoxCollision->isChecked();
 }
 
 void FileReferencesPanel::on_checkBoxLLAsset_stateChanged(int arg1)
@@ -354,46 +236,11 @@ void FileReferencesPanel::on_checkBoxLLAsset_stateChanged(int arg1)
 		return;
 	}
 
-	SampleManager* pSampleManager = SampleManager::ins();
-	if (pSampleManager == nullptr)
-	{
+	BPPAsset* assetPtr = _getCurrentAsset();
+	if (nullptr == assetPtr)
 		return;
-	}
 
-	BlastAsset* pBlastAsset = pSampleManager->getCurBlastAsset();
-	if (pBlastAsset == nullptr)
-	{
-		return;
-	}
-
-	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = pSampleManager->getAssetDescMap();
-	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM = AssetDescMap.find(pBlastAsset);
-	if (itADM == AssetDescMap.end())
-	{
-		return;
-	}
-
-	AssetList::ModelAsset modelAsset = itADM->second;
-	if (modelAsset.name.empty())
-	{
-		return;
-	}
-
-	BPParams& projectParams = BlastProject::ins().getParams();
-	BPPAssetArray& assetArray = projectParams.blast.blastAssets;
-	int aaas = 0;
-	for (; aaas < assetArray.arraySizes[0]; aaas++)
-	{
-		std::string assetname = assetArray.buf[aaas].name;
-		if (assetname == modelAsset.name)
-			break;
-	}
-	if (aaas == assetArray.arraySizes[0])
-	{
-		return;
-	}
-
-	BPPAsset& asset = assetArray.buf[aaas];
+	BPPAsset& asset = *assetPtr;
 	asset.exportLLAsset = ui->checkBoxLLAsset->isChecked();
 }
 	
@@ -404,46 +251,11 @@ void FileReferencesPanel::on_checkBoxTKAsset_stateChanged(int arg1)
 		return;
 	}
 
-	SampleManager* pSampleManager = SampleManager::ins();
-	if (pSampleManager == nullptr)
-	{
+	BPPAsset* assetPtr = _getCurrentAsset();
+	if (nullptr == assetPtr)
 		return;
-	}
 
-	BlastAsset* pBlastAsset = pSampleManager->getCurBlastAsset();
-	if (pBlastAsset == nullptr)
-	{
-		return;
-	}
-
-	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = pSampleManager->getAssetDescMap();
-	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM = AssetDescMap.find(pBlastAsset);
-	if (itADM == AssetDescMap.end())
-	{
-		return;
-	}
-
-	AssetList::ModelAsset modelAsset = itADM->second;
-	if (modelAsset.name.empty())
-	{
-		return;
-	}
-
-	BPParams& projectParams = BlastProject::ins().getParams();
-	BPPAssetArray& assetArray = projectParams.blast.blastAssets;
-	int aaas = 0;
-	for (; aaas < assetArray.arraySizes[0]; aaas++)
-	{
-		std::string assetname = assetArray.buf[aaas].name;
-		if (assetname == modelAsset.name)
-			break;
-	}
-	if (aaas == assetArray.arraySizes[0])
-	{
-		return;
-	}
-
-	BPPAsset& asset = assetArray.buf[aaas];
+	BPPAsset& asset = *assetPtr;
 	asset.exportTKAsset = ui->checkBoxTKAsset->isChecked();
 }
 	
@@ -454,46 +266,11 @@ void FileReferencesPanel::on_checkBoxBPXA_stateChanged(int arg1)
 		return;
 	}
 
-	SampleManager* pSampleManager = SampleManager::ins();
-	if (pSampleManager == nullptr)
-	{
+	BPPAsset* assetPtr = _getCurrentAsset();
+	if (nullptr == assetPtr)
 		return;
-	}
 
-	BlastAsset* pBlastAsset = pSampleManager->getCurBlastAsset();
-	if (pBlastAsset == nullptr)
-	{
-		return;
-	}
-
-	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = pSampleManager->getAssetDescMap();
-	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM = AssetDescMap.find(pBlastAsset);
-	if (itADM == AssetDescMap.end())
-	{
-		return;
-	}
-
-	AssetList::ModelAsset modelAsset = itADM->second;
-	if (modelAsset.name.empty())
-	{
-		return;
-	}
-
-	BPParams& projectParams = BlastProject::ins().getParams();
-	BPPAssetArray& assetArray = projectParams.blast.blastAssets;
-	int aaas = 0;
-	for (; aaas < assetArray.arraySizes[0]; aaas++)
-	{
-		std::string assetname = assetArray.buf[aaas].name;
-		if (assetname == modelAsset.name)
-			break;
-	}
-	if (aaas == assetArray.arraySizes[0])
-	{
-		return;
-	}
-
-	BPPAsset& asset = assetArray.buf[aaas];
+	BPPAsset& asset = *assetPtr;
 	asset.exportBPXA = ui->checkBoxBPXA->isChecked();
 
 	if (asset.exportBPXA)
@@ -512,54 +289,17 @@ void FileReferencesPanel::on_btnSave_clicked()
 
 	copy(fileReferences.fbxSourceAsset, ui->lineEditFBXSourceAsset->text().toUtf8().data());
 
-	SampleManager* pSampleManager = SampleManager::ins();
-	if (pSampleManager == nullptr)
-	{
+	BPPAsset* assetPtr = _getCurrentAsset();
+	if (nullptr == assetPtr)
 		return;
-	}
 
-	BlastAsset* pBlastAsset = pSampleManager->getCurBlastAsset();
-	if (pBlastAsset == nullptr)
-	{
-		return;
-	}
-
-	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = pSampleManager->getAssetDescMap();
-	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM = AssetDescMap.find(pBlastAsset);
-	if (itADM == AssetDescMap.end())
-	{
-		return;
-	}
-
-	AssetList::ModelAsset modelAsset = itADM->second;
-	if (modelAsset.name.empty())
-	{
-		return;
-	}
-
-	BPPAssetArray& assetArray = projectParams.blast.blastAssets;
-	int aaas = 0;
-	for (; aaas < assetArray.arraySizes[0]; aaas++)
-	{
-		std::string assetname = assetArray.buf[aaas].name;
-		if (assetname == modelAsset.name)
-			break;
-	}
-	if (aaas == assetArray.arraySizes[0])
-	{
-		return;
-	}
-
-	BPPAsset& asset = assetArray.buf[aaas];
+	BPPAsset& asset = *assetPtr;
 
 	copy(asset.fbx, ui->lineEditFBX->text().toUtf8().data());
 	asset.exportFBX = ui->checkBoxFBX->isChecked();
 
 	copy(asset.obj, ui->lineEditObj->text().toUtf8().data());
 	asset.exportOBJ = ui->checkBoxObj->isChecked();
-
-	copy(asset.collision, ui->lineEditCollision->text().toUtf8().data());
-	asset.exportCollision = ui->checkBoxCollision->isChecked();
 
 	copy(asset.llasset, ui->lineEditLLAsset->text().toUtf8().data());
 	asset.exportLLAsset = ui->checkBoxLLAsset->isChecked();
@@ -571,4 +311,50 @@ void FileReferencesPanel::on_btnSave_clicked()
 	asset.exportBPXA = ui->checkBoxBPXA->isChecked();
 
 	SampleManager::ins()->exportAsset();
+}
+
+BPPAsset* FileReferencesPanel::_getCurrentAsset()
+{
+	SampleManager* pSampleManager = SampleManager::ins();
+	if (pSampleManager == nullptr)
+	{
+		return nullptr;
+	}
+
+	BlastAsset* pBlastAsset = pSampleManager->getCurBlastAsset();
+	if (pBlastAsset == nullptr)
+	{
+		return nullptr;
+	}
+
+	std::map<BlastAsset*, AssetList::ModelAsset>& AssetDescMap = pSampleManager->getAssetDescMap();
+	std::map<BlastAsset*, AssetList::ModelAsset>::iterator itADM = AssetDescMap.find(pBlastAsset);
+	if (itADM == AssetDescMap.end())
+	{
+		return nullptr;
+	}
+
+	AssetList::ModelAsset modelAsset = itADM->second;
+	if (modelAsset.name.empty())
+	{
+		return nullptr;
+	}
+
+	BPParams& projectParams = BlastProject::ins().getParams();
+	BPPAssetArray& assetArray = projectParams.blast.blastAssets;
+	int aaas = 0;
+	for (; aaas < assetArray.arraySizes[0]; aaas++)
+	{
+		std::string assetname = assetArray.buf[aaas].name;
+		if (assetname == modelAsset.name)
+			break;
+	}
+	if (aaas == assetArray.arraySizes[0])
+	{
+		return nullptr;
+	}
+
+	BPPAsset& asset = assetArray.buf[aaas];
+
+	return &asset;
 }

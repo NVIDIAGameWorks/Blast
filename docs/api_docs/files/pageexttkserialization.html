@@ -22,7 +22,7 @@
 <div class="contents">
 <h1><a class="anchor" name="pageexttkserialization">BlastTk Serialization (NvBlastExtTkSerialization) </a></h1>This extension contains serializers which can be loaded into the ExtSerialization manager defined in <a class="el" href="pageextserialization.html">Serialization (NvBlastExtSerialization)</a>.<p>
 To use this extension, you must also load the ExtSerialization extension and create a serialization manager as described in <a class="el" href="pageextserialization.html">Serialization (NvBlastExtSerialization)</a>.<p>
-We repeat this here (again, assuming we're in the <a class="el" href="namespace_nv_1_1_blast.html">Nv::Blast</a> namespace):<p>
+We repeat this here (again, assuming we are in the <a class="el" href="namespace_nv_1_1_blast.html">Nv::Blast</a> namespace):<p>
 <div class="fragment"><pre class="fragment">ExtSerialization* ser = <a class="code" href="_nv_blast_ext_serialization_8h.html#9dad7f69d7a72d402c99238ed3c34bfc">NvBlastExtSerializationCreate</a>();
 </pre></div><p>
 Then, call the function NvBlastExtTkSerializerLoadSet, declared in <b><a class="el" href="_nv_blast_ext_tk_serialization_8h.html">NvBlastExtTkSerialization.h</a></b>, passing in your TkFramework:<p>
@@ -41,7 +41,9 @@ As with low-level assets, you can serialize using the serialization manager dire
 uint64_t size = ser-&gt;serializeIntoBuffer(buffer, asset, TkObjectTypeID::Asset);
 </pre></div><p>
 or use the wrapper function defined in <b><a class="el" href="_nv_blast_ext_tk_serialization_8h.html">NvBlastExtTkSerialization.h</a></b>:<p>
-/code void* buffer; uint64_t size = NvBlastExtSerializationSerializeTkAssetIntoBuffer(buffer, *ser, asset); /endcode<p>
+<div class="fragment"><pre class="fragment"><span class="keywordtype">void</span>* buffer;
+uint64_t size = <a class="code" href="_nv_blast_ext_tk_serialization_8h.html#c41dafd2d5ffd5a6131426755c477793">NvBlastExtSerializationSerializeTkAssetIntoBuffer</a>(buffer, *ser, asset);
+</pre></div><p>
 <br>
  </div>
 <!-- start footer part -->

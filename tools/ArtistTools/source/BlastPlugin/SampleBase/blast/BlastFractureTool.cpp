@@ -31,7 +31,8 @@
 #include <BlastAsset.h>
 #include <NvBlastExtPxAsset.h>
 #include <NvBlastTkAsset.h>
-
+#include "NvBlastExtAuthoring.h"
+#include "NvBlastExtAuthoringMeshImpl.h"
 void BlastFractureTool::free()
 {
 	std::vector<Nv::Blast::Mesh*>::iterator it;
@@ -101,7 +102,7 @@ void BlastFractureTool::setSourceAsset(const BlastAsset* pBlastAsset)
 
 		PxVec3* nr = (!normals.empty()) ? normals.data() : 0;
 		PxVec2* uvp = (!uv.empty()) ? uv.data() : 0;
-		Nv::Blast::Mesh* pMesh = new Nv::Blast::Mesh(
+		Nv::Blast::Mesh* pMesh = NvBlastExtAuthoringCreateMesh(
 			positions.data(), nr, uvp, static_cast<uint32_t>(positions.size()),
 			ind.data(), static_cast<uint32_t>(ind.size()));
 
@@ -117,7 +118,8 @@ void BlastFractureTool::setSourceAsset(const BlastAsset* pBlastAsset)
 				curMaterialIndex = materialIndexes[curFaceIndex];
 			}
 
-			pMesh->getFacet(fc)->userData = curMaterialIndex;
+			Facet* pFacet = const_cast<Facet*>(pMesh->getFacet(fc));
+			pFacet->materialId = curMaterialIndex;
 		}
 
 		chunkMeshes[cs] = pMesh;
@@ -162,22 +164,24 @@ void BlastFractureTool::setSourceAsset(const BlastAsset* pBlastAsset)
 	{
 		if (chunkMeshes[cs] == nullptr)
 			continue;
-		mChunkData[cs].meshData = new Nv::Blast::Mesh(*chunkMeshes[cs]);
+		mChunkData[cs].meshData = new MeshImpl(*reinterpret_cast<const MeshImpl*>(chunkMeshes[cs]));
 		mChunkData[cs].parent = parentIds[cs];
 		mChunkData[cs].chunkId = mChunkIdCounter++;
 		mChunkData[cs].isLeaf = isLeafs[cs];
 
 		mesh = mChunkData[cs].meshData;
-		Nv::Blast::Vertex* verticesBuffer = mesh->getVertices();
+		Nv::Blast::Vertex* verticesBuffer = const_cast<Nv::Blast::Vertex*>(mesh->getVertices());
 		for (uint32_t i = 0; i < mesh->getVerticesCount(); ++i)
 		{
 			verticesBuffer[i].p = (verticesBuffer[i].p - mOffset) * (1.0f / mScaleFactor);
 		}
-		mesh->getBoundingBox().minimum = (mesh->getBoundingBox().minimum - mOffset) * (1.0f / mScaleFactor);
-		mesh->getBoundingBox().maximum = (mesh->getBoundingBox().maximum - mOffset) * (1.0f / mScaleFactor);
+		PxBounds3& bb = const_cast<PxBounds3&>(mesh->getBoundingBox());
+		bb.minimum = (bb.minimum - mOffset) * (1.0f / mScaleFactor);
+		bb.maximum = (bb.maximum - mOffset) * (1.0f / mScaleFactor);
 		for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
 		{
-			mesh->getFacet(i)->userData = chunkMeshes[cs]->getFacet(i)->userData;
+			Facet* pFacet = const_cast<Facet*>(mesh->getFacet(i));
+			pFacet->materialId = chunkMeshes[cs]->getFacet(i)->materialId;
 		}
 	}
 }
@@ -195,7 +199,7 @@ void BlastFractureTool::setSourceMeshes(std::vector<Nv::Blast::Mesh*>& meshes, s
 	chunkMeshes.resize(chunkSize, nullptr);
 	for (int cs = 0; cs < chunkSize; cs++)
 	{
-		Nv::Blast::Mesh* pMesh = new Nv::Blast::Mesh(*meshes[cs]);
+		Nv::Blast::Mesh* pMesh = new MeshImpl(*reinterpret_cast<const MeshImpl*>(meshes[cs]));
 		chunkMeshes[cs] = pMesh;
 	}
 
@@ -223,22 +227,24 @@ void BlastFractureTool::setSourceMeshes(std::vector<Nv::Blast::Mesh*>& meshes, s
 	{
 		if (chunkMeshes[cs] == nullptr)
 			continue;
-		mChunkData[cs].meshData = new Nv::Blast::Mesh(*chunkMeshes[cs]);
+		mChunkData[cs].meshData = new MeshImpl(*reinterpret_cast<const MeshImpl*>(chunkMeshes[cs]));
 		mChunkData[cs].parent = parentIds[cs];
 		mChunkData[cs].chunkId = mChunkIdCounter++;
 		mChunkData[cs].isLeaf = isLeafs[cs];
 
 		mesh = mChunkData[cs].meshData;
-		Nv::Blast::Vertex* verticesBuffer = mesh->getVertices();
+		Nv::Blast::Vertex* verticesBuffer = const_cast<Nv::Blast::Vertex*>(mesh->getVertices());
 		for (uint32_t i = 0; i < mesh->getVerticesCount(); ++i)
 		{
 			verticesBuffer[i].p = (verticesBuffer[i].p - mOffset) * (1.0f / mScaleFactor);
 		}
-		mesh->getBoundingBox().minimum = (mesh->getBoundingBox().minimum - mOffset) * (1.0f / mScaleFactor);
-		mesh->getBoundingBox().maximum = (mesh->getBoundingBox().maximum - mOffset) * (1.0f / mScaleFactor);
+		PxBounds3& bb = const_cast<PxBounds3&>(mesh->getBoundingBox());
+		bb.minimum = (bb.minimum - mOffset) * (1.0f / mScaleFactor);
+		bb.maximum = (bb.maximum - mOffset) * (1.0f / mScaleFactor);
 		for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
 		{
-			mesh->getFacet(i)->userData = chunkMeshes[cs]->getFacet(i)->userData;
+			Facet* pFacet = const_cast<Facet*>(mesh->getFacet(i));
+			pFacet->materialId = chunkMeshes[cs]->getFacet(i)->materialId;
 		}
 	}
 }

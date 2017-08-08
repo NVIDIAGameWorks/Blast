@@ -28,11 +28,11 @@ the models in the subdirectories of <b>samples/resources/models</b>.
 
 \section using_assetviewer Using SampleAssetViewer
 
-Upon startup, the viewer will instance its first asset in its assets list.  Using the default assets.xml, this is a brick will.
+Upon startup, the viewer will instance its first asset in its assets list.  Using the default assets.xml, this is a brick wall.
 
 The menu is displayed using an overlay on the left side of the screen.  It is divided into many submenus, which are described below.
 
-In any scene, you may press <b>'F'</b> to fire a box into the scene in the direction the camer is pointing.
+In any scene, you may press <b>'F'</b> to fire a box into the scene in the direction the camera is pointing.
 
 You may also press <b>SPACE</b> to toggle between damage and drag mode.  (The mode is shown at the top of the screen.)  In drag mode, dynamic objects can be manipulated by
 placing the mouse cursor over them, and using <b>Left Mouse / Drag</b> to pull on the object.  In damage mode, <b>left-clicking</b> a destructible actor will apply damage to it.
@@ -62,7 +62,7 @@ You may also select actors in the Scene Actors list,  and remove (or reload) the
 unfractured state.
 
 Note, in addition to destructible actors, the Scene Actors list shows the boxes that were fired into the scene using the 'F' key.  Holding down the 'F' key "charges"
-the throw, increasing the cube's speed the longer you hold down the kye.  You may remove the cubes using the scene controls.  All cubes will be removed when the scene
+the throw, increasing the cube's speed the longer you hold down the key.  You may remove the cubes using the scene controls.  All cubes will be removed when the scene
 is reset.
 
 The Blast Material properties are used by the various damage tools available.
@@ -71,15 +71,15 @@ The Blast Material properties are used by the various damage tools available.
 - Min Damage Threshold = a fraction of Health, below which damage has no effect
 - Max Damage Threshold = a fraction of Health, equal to the maximum damage that can be applied per damage event
 
-A stress solver may be enabled by selcting the Stress Solver Enabled checkbox.  When enabled you will be presented with several options.  
-NOTE: you must then select the Stress Damage Enabled checkbox in order to allow stress to do damage to the actors in the scene.
-Bond Iterations Per Frame - is max amount of bonds allowed to be processed in one frame. The more this value the better quality of stress solver, but the time taken by it is increased linearly. You can 
-check this timing in \a Stats submenu. Using this value stress solver takes fixed amount of CPU time on asset of any size. So the more asset complex (the more bonds it has) the less total iterations (on all bonds) are made. 
-Use graph reduction level param to simplify stress graph for large assets. You can look at stress graph using by using \a Debug Render submenu.
-Stress linear and angular factors are corresponded for amount of damage to be applied on bonds from linear and angular momentum of stress on every bond.
+A stress solver may be enabled by selcting the Stress Solver Enabled checkbox.  When enabled, you will be presented with several options.  
+NOTE: you must then select the Stress Damage Enabled checkbox in order to allow stress to do damage to the actors in the scene.<br>
+Bond Iterations Per Frame - is max amount of bonds allowed to be processed in one frame. The higher this value, the better quality of stress solver, but the time taken by it is increased linearly. 9You can 
+check this timing in \a Stats submenu.) Using this value stress solver takes a fixed amount of CPU time on assets of any size. So the more complex an asset is (the more bonds it has) the less total iterations (on all bonds) are made.<br>
+Use graph reduction level param to simplify stress graph for large assets. You can look at stress graph by using the \a Debug Render submenu.
+Stress linear and angular factors are corresponded to the amount of damage to be applied on bonds from linear and angular momentum of stress on every bond.
 
-Replay control section allows to control recording and replaying Blast events. It demonstrates the usage of ExtSync extension. You may start/stop recording of blast events (damage, split). 
-If you toggle to sync initial actors once recording starts full blast state is saved.
+Replay control section allows to control recording and replaying Blast&tm; events. It demonstrates the usage of \ref ExtSync extension. You may start/stop recording of Blast&tm; events (damage, split). 
+If you toggle to sync initial actors, once recording starts, the full Blast&tm; state is saved.
 
 \subsection viewer_blast Blast
 
@@ -88,7 +88,7 @@ Here you may disable or enable impact damage, using the Impact Damage checkbox (
 The Fragility setting is a multiplier that turns impact forces into damage amounts.
 
 You can toggle to pass impact damage to stress solver instead of just applying it with simple damage shader. Impact impulse will be passed to stress graph and damage will be applied
-accordingly to stress solver settings mentioned above.
+according to stress solver settings mentioned above.
 
 When dragging static actors (with mouse dragging tool) stress impulse is also applied on stress graph. Use Dragging To Stress Factor to tune the amount.
 
@@ -133,7 +133,7 @@ The green segments show the linear impulse, the red segments the rotational impu
 
 \subsection viewer_physx PhysX
 
-This menu controls PhysX simulation parameters.  Here you may choose to use fixed time steps (off by default), and set the time step (if Use Fixed Timestep is checked) with the Fixed Timestep control.
+This menu controls PhysX&tm; simulation parameters.  Here you may choose to use fixed time steps (off by default), and set the time step (if Use Fixed Timestep is checked) with the Fixed Timestep control.
 
 If a suitable GPU is available, GPU Physics may be enabled using the Use GPU Physics control.
 

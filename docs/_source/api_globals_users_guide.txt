@@ -59,7 +59,7 @@ NvBlastGlobalGetErrorCallback
 An internal, default error callback is used if the user does not set their own, or if NULL is passed into NvBlastGlobalSetErrorCallback.
 
 This error callback is used by NvBlastTk, as well as many extensions.  In addition, utility macros are provided such as
-<b>NVBLAST_LOG_ERROR</b> and <b>NVBLAST_LOG_WARNDING</b>.
+<b>NVBLAST_LOG_ERROR</b> and <b>NVBLAST_LOG_WARNING</b>.
 
 Finally, a function with signature given by NvBlastLog is provided which uses the global error callback,
 

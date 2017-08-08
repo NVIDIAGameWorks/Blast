@@ -91,12 +91,33 @@ NV_FORCE_INLINE int32_t veStatus10(const PxVec3& sEdge, const PxVec3& eEdge, con
 	return -vertexShadowing(eEdge, p) + vertexShadowing(sEdge, p);
 }
 
+bool shouldSwap(const PxVec3& a, const PxVec3& b)
+{
+	if (a.x < b.x) return false;
+	if (a.x > b.x) return true;
+
+	if (a.y < b.y) return false;
+	if (a.y > b.y) return true;
+
+	if (a.z < b.z) return false;
+	if (a.z > b.z) return true;
+	return false;
+}
+
+
 /**
 Vertex-edge shadowing functions
 */
-int32_t shadowing01(const Vertex& sEdge, const Vertex& eEdge, const PxVec3& p, Vertex& onEdgePoint, bool& hasOnEdge)
+int32_t shadowing01(Vertex sEdge, Vertex eEdge, const PxVec3& p, Vertex& onEdgePoint, bool& hasOnEdge)
 {
+
 	int32_t winding = veStatus01(sEdge.p, eEdge.p, p);
+
+	if (sEdge.p.x > eEdge.p.x)
+	{
+		std::swap(sEdge, eEdge);
+	}
+
 	if (winding != 0)
 	{
 		float t = (p.x - sEdge.p.x) / (eEdge.p.x - sEdge.p.x);
@@ -458,7 +479,14 @@ int32_t edgeFacetIntersection12(const Vertex& edSt, const Vertex& edEnd, const V
 
 	for (int32_t ed = 0; ed < edgesCount; ++ed)
 	{
-		shadowingType = edgeEdgeShadowing(edSt, edEnd, points[edges[ed].s], points[edges[ed].e], p1, p2, hasPoint);
+		if (shouldSwap(points[edges[ed].s].p, points[edges[ed].e].p))
+		{
+			shadowingType = -edgeEdgeShadowing(edSt, edEnd, points[edges[ed].e], points[edges[ed].s], p1, p2, hasPoint);
+		}
+		else
+		{
+			shadowingType = edgeEdgeShadowing(edSt, edEnd, points[edges[ed].s], points[edges[ed].e], p1, p2, hasPoint);
+		}
 		status -= shadowingType;
 		if (shadowingType == 0 && !aShadowing && hasPoint)
 		{
@@ -600,8 +628,7 @@ int32_t BooleanEvaluator::vertexMeshStatus03(const PxVec3& p, const Mesh* mesh)
 	//{
 	//	Edge* ed = mesh->getEdges() + mesh->getFacet(facet)->firstEdgeNumber;
 	//	status += shadowing02(p, mesh->getVertices(), ed, mesh->getFacet(facet)->edgesCount, hasPoint, pnt);
-	//}
-
+	//};
 	return status;
 }
 
@@ -685,19 +712,7 @@ int32_t BooleanEvaluator::isPointContainedInMesh(const Mesh* msh, SpatialAcceler
 }
 
 
-bool shouldSwap(const PxVec3& a, const PxVec3& b)
-{
-	if (a.x < b.x) return false;
-	if (a.x > b.x) return true;
 
-	if (a.y < b.y) return false;
-	if (a.y > b.y) return true;
-
-	if (a.z < b.z) return false;
-	if (a.z > b.z) return true;
-
-	return false;
-}
 
 void BooleanEvaluator::buildFaceFaceIntersections(BooleanConf mode)
 {
@@ -1288,6 +1303,8 @@ Mesh* BooleanEvaluator::createNewMesh()
 	uint32_t collected = 0;
 	int32_t userData = 0;
 	int32_t materialId = 0;
+	int32_t smoothingGroup = 0;
+
 	for (uint32_t i = 0; i < mEdgeAggregate.size(); ++i)
 	{
 		if (mEdgeAggregate[i].parent != lastParent)
@@ -1296,13 +1313,16 @@ Mesh* BooleanEvaluator::createNewMesh()
 			{
 				userData = mMeshA->getFacet(lastParent)->userData;
 				materialId = mMeshA->getFacet(lastParent)->materialId;
+				smoothingGroup = mMeshA->getFacet(lastParent)->smoothingGroup;
+
 			}
 			else
 			{
 				userData = mMeshB->getFacet(lastParent - mMeshA->getFacetCount())->userData;
 				materialId = mMeshB->getFacet(lastParent - mMeshA->getFacetCount())->materialId;
+				smoothingGroup = mMeshB->getFacet(lastParent - mMeshA->getFacetCount())->smoothingGroup;
 			}
-			newFacets.push_back(Facet(lastPos, collected, materialId, userData));
+			newFacets.push_back(Facet(lastPos, collected, materialId, userData, smoothingGroup));
 			lastPos = i;
 			lastParent = mEdgeAggregate[i].parent;
 			collected = 0;
@@ -1316,14 +1336,15 @@ Mesh* BooleanEvaluator::createNewMesh()
 	{
 		userData = mMeshA->getFacet(lastParent)->userData;
 		materialId = mMeshA->getFacet(lastParent)->materialId;
-
+		smoothingGroup = mMeshA->getFacet(lastParent)->smoothingGroup;
 	}
 	else
 	{
 		userData = mMeshB->getFacet(pr)->userData;
 		materialId = mMeshB->getFacet(pr)->materialId;
+		smoothingGroup = mMeshB->getFacet(pr)->smoothingGroup;
 	}
-	newFacets.push_back(Facet(lastPos, collected, materialId, userData));
+	newFacets.push_back(Facet(lastPos, collected, materialId, userData, smoothingGroup));
 	return new MeshImpl(mVerticesAggregate.data(), newEdges.data(), newFacets.data(), static_cast<uint32_t>(mVerticesAggregate.size()), static_cast<uint32_t>(mEdgeAggregate.size()), static_cast<uint32_t>(newFacets.size()));
 }
 

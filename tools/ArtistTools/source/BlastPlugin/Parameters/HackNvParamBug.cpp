@@ -9,6 +9,8 @@ int GetHackElementSize(const char* data)
 		return sizeof(nvidia::NvVec3);
 	if (strstr(data, "graphicsMesh.normals") != nullptr)
 		return sizeof(nvidia::NvVec3);
+	if (strstr(data, "graphicsMesh.tangents") != nullptr)
+		return sizeof(nvidia::NvVec3);
 	if (strstr(data, "graphicsMesh.texcoords") != nullptr)
 		return sizeof(nvidia::NvVec2);
 	if (strstr(data, "graphicsMesh.positionIndexes") != nullptr)

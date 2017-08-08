@@ -1191,10 +1191,10 @@ bool ExtStressSolverImpl::notifyActorCreated(const NvBlastActor& actor)
 		// update neighbors
 		{
 			uint32_t* graphNodeIndices = getScratchArray<uint32_t>(graphNodeCount);
-			NvBlastActorGetGraphNodeIndices(graphNodeIndices, graphNodeCount, &actor, logLL);
-			for (uint32_t i = 0; i < graphNodeCount; ++i)
+			const uint32_t nodeCount = NvBlastActorGetGraphNodeIndices(graphNodeIndices, graphNodeCount, &actor, logLL);
+			for (uint32_t i = 0; i < nodeCount; ++i)
 			{
-				m_graphProcessor->setNodeNeighborsCount(graphNodeIndices[i], graphNodeCount);
+				m_graphProcessor->setNodeNeighborsCount(graphNodeIndices[i], nodeCount);
 			}
 		}
 
@@ -1263,9 +1263,9 @@ bool ExtStressSolverImpl::addForce(const NvBlastActor& actor, physx::PxVec3 loca
 	if (graphNodeCount > 1)
 	{
 		uint32_t* graphNodeIndices = getScratchArray<uint32_t>(graphNodeCount);
-		NvBlastActorGetGraphNodeIndices(graphNodeIndices, graphNodeCount, &actor, logLL);
+		const uint32_t nodeCount = NvBlastActorGetGraphNodeIndices(graphNodeIndices, graphNodeCount, &actor, logLL);
 
-		for (uint32_t i = 0; i < graphNodeCount; ++i)
+		for (uint32_t i = 0; i < nodeCount; ++i)
 		{
 			const uint32_t node = graphNodeIndices[i];
 			const float sqrDist = (localPosition - m_graphProcessor->getNodeData(node).localPos).magnitudeSquared();
@@ -1296,9 +1296,9 @@ bool ExtStressSolverImpl::addGravityForce(const NvBlastActor& actor, physx::PxVe
 	if (graphNodeCount > 1)
 	{
 		uint32_t* graphNodeIndices = getScratchArray<uint32_t>(graphNodeCount);
-		NvBlastActorGetGraphNodeIndices(graphNodeIndices, graphNodeCount, &actor, logLL);
+		const uint32_t nodeCount = NvBlastActorGetGraphNodeIndices(graphNodeIndices, graphNodeCount, &actor, logLL);
 
-		for (uint32_t i = 0; i < graphNodeCount; ++i)
+		for (uint32_t i = 0; i < nodeCount; ++i)
 		{
 			const uint32_t node = graphNodeIndices[i];
 			m_graphProcessor->addNodeVelocity(node, localGravity);
@@ -1314,10 +1314,10 @@ bool ExtStressSolverImpl::addAngularVelocity(const NvBlastActor& actor, PxVec3 l
 	if (graphNodeCount > 1)
 	{
 		uint32_t* graphNodeIndices = getScratchArray<uint32_t>(graphNodeCount);
-		NvBlastActorGetGraphNodeIndices(graphNodeIndices, graphNodeCount, &actor, logLL);
+		const uint32_t nodeCount = NvBlastActorGetGraphNodeIndices(graphNodeIndices, graphNodeCount, &actor, logLL);
 
 		// Apply centrifugal force
-		for (uint32_t i = 0; i < graphNodeCount; ++i)
+		for (uint32_t i = 0; i < nodeCount; ++i)
 		{
 			const uint32_t node = graphNodeIndices[i];
 			const auto& localPos = m_graphProcessor->getNodeData(node).localPos;
@@ -1367,9 +1367,9 @@ void ExtStressSolverImpl::fillFractureCommands(const NvBlastActor& actor, NvBlas
 	if (graphNodeCount > 1 && m_graphProcessor->getOverstressedBondCount() > 0)
 	{
 		uint32_t* graphNodeIndices = getScratchArray<uint32_t>(graphNodeCount);
-		NvBlastActorGetGraphNodeIndices(graphNodeIndices, graphNodeCount, &actor, logLL);
+		const uint32_t nodeCount = NvBlastActorGetGraphNodeIndices(graphNodeIndices, graphNodeCount, &actor, logLL);
 
-		for (uint32_t i = 0; i < graphNodeCount; ++i)
+		for (uint32_t i = 0; i < nodeCount; ++i)
 		{
 			const uint32_t node0 = graphNodeIndices[i];
 			for (uint32_t adjacencyIndex = m_graph.adjacencyPartition[node0]; adjacencyIndex < m_graph.adjacencyPartition[node0 + 1]; adjacencyIndex++)

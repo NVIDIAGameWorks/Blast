@@ -486,9 +486,9 @@ This is a convenience wrapper for the low-level NvBlastReorderAssetDescChunks fu
 This function may modify both the chunkDescs and bondDescs array, since rearranging chunk descriptors requires re-indexing within the bond descriptors.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkDescs</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of chunk descriptors of size chunkCount. It will be updated accordingly. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkDescs</em>&nbsp;</td><td>Array of chunk descriptors of size chunkCount. It will be updated accordingly. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkCount</em>&nbsp;</td><td>The number of chunk descriptors. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondDescs</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of bond descriptors of size chunkCount. It will be updated accordingly. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondDescs</em>&nbsp;</td><td>Array of bond descriptors of size chunkCount. It will be updated accordingly. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondCount</em>&nbsp;</td><td>The number of bond descriptors. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkReorderMap</em>&nbsp;</td><td>If not NULL, must be a pointer to a uint32_t array of size desc.chunkCount. Maps old chunk indices to the reordered chunk indices. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>keepBondNormalChunkOrder</em>&nbsp;</td><td>If true, bond normals will be flipped if their chunk index order was reveresed by the reorder map.</td></tr>
