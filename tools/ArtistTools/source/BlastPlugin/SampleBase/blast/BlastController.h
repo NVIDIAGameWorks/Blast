@@ -169,6 +169,8 @@ public:
 
 	// only update unfractured mode mesh
 	void updateModelMeshToProjectParam(const PxActor& actor);
+
+	BlastFamily* getFamilyById(int familyId);
 // Add By Lixu End
 
 	float getLastStressDelta() const;

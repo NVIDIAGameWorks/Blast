@@ -1009,6 +1009,20 @@ bool CoreLib::SimpleScene_FitCamera(atcore_float3& center, atcore_float3& extent
 	}
 	return valid;
 }
+bool CoreLib::SimpleScene_ResetUpDir(bool zup)
+{
+	bool valid = true;
+	std::map<QString, PluginInterface*>::iterator it;
+	for (it = m_PluginInterfaces.begin(); it != m_PluginInterfaces.end(); it++)
+	{
+		if (!(it->second)->SimpleScene_ResetUpDir(zup))
+		{
+			valid = false;
+			break;
+		}
+	}
+	return valid;
+}
 bool CoreLib::SimpleScene_UpdateCamera()
 {
 	std::map<QString, PluginInterface*>::iterator it;

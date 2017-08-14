@@ -70,7 +70,7 @@ public:
 	virtual void dataSelected(std::vector<BlastNode*> selections);
 
 	void pointSelect(PxActor* actor, SelectMode selectMode = SM_RESET);
-	void rectSelect(PxVec3 eyePos, PxVec3 lefttop, PxVec3 leftbottom, PxVec3 righttop, PxVec3 rightbottom, SelectMode selectMode = SM_RESET);
+	void rangeSelect(std::set<PxActor*>& actors, SelectMode selectMode = SM_RESET);
 	void clearSelect();
 
 	void setTargetActor(PxActor* actor);
@@ -108,10 +108,11 @@ private:
 	//////// internal data ////////
 
 	PxVec2 m_RectSelectScreenPos;
-	PxVec3 m_RectSelectSpaceDir;
 	bool m_bRectSelecting;
+	std::vector<PxVec2> m_DrawSelectScreenPos;
+	bool m_bDrawSelecting;
+	DebugRenderBuffer m_ScreenRenderBuffer;
 	bool m_bSelecting;
-	DebugRenderBuffer m_RectRenderBuffer;
 
 	void setActorSelected(const PxActor& actor, bool selected);
 	std::set<PxActor*> m_actorsSelected;

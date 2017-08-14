@@ -36,10 +36,24 @@
 #include "SampleManager.h"
 // Add By Lixu End
 
-
+std::set<int> ExistingAssetIds;
 BlastAsset::BlastAsset(Renderer& renderer)
 	: m_renderer(renderer), m_bondHealthMax(1.0f), m_supportChunkHealthMax(1.0f)
 {
+	for (int id = 0; ; id++)
+	{
+		if (ExistingAssetIds.find(id) == ExistingAssetIds.end())
+		{
+			ExistingAssetIds.emplace(id);
+			mUniqueId = id;
+			break;
+		}
+	}
+}
+
+BlastAsset::~BlastAsset()
+{
+	ExistingAssetIds.erase(mUniqueId);
 }
 
 void BlastAsset::initialize()

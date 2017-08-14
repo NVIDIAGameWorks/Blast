@@ -185,13 +185,10 @@ Implements ExtGroupTaskManager
 class ExtGroupTaskManagerImpl : public ExtGroupTaskManager
 {
 public:
-	ExtGroupTaskManagerImpl(physx::PxTaskManager& taskManager)
-		: m_taskManager(taskManager), m_sync(0), m_group(nullptr) {}
+	ExtGroupTaskManagerImpl(physx::PxTaskManager& taskManager, TkGroup* group)
+		: m_taskManager(taskManager), m_sync(0), m_group(group) {}
 
-	ExtGroupTaskManagerImpl(physx::PxTaskManager& taskManager, TkGroup& group)
-		: m_taskManager(taskManager), m_sync(0), m_group(&group) {}
-
-	// public API
+	// ExtGroupTaskManager API
 	virtual void setGroup(TkGroup*) override;
 	virtual uint32_t process(uint32_t) override;
 	virtual void release() override;

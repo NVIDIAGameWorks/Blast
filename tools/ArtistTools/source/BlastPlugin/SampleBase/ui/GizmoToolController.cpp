@@ -552,12 +552,8 @@ LRESULT GizmoToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 
 	if (uMsg == WM_LBUTTONDOWN || uMsg == WM_MOUSEMOVE || uMsg == WM_LBUTTONUP)
 	{
-		float mouseX = (short)LOWORD(lParam) / getRenderer().getScreenWidth();
-		if (!SimpleScene::Inst()->m_pCamera->_lhs)
-		{
-			mouseX = 1 - mouseX;
-		}
-		float mouseY = (short)HIWORD(lParam) / getRenderer().getScreenHeight();
+		float mouseX = (float)LOWORD(lParam);
+		float mouseY = (float)HIWORD(lParam);
 
 		PxVec3 eyePos, pickDir;
 		getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);

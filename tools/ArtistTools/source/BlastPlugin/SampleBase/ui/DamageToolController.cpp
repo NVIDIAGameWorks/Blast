@@ -406,12 +406,8 @@ LRESULT DamageToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 	if (uMsg == WM_LBUTTONDOWN || uMsg == WM_MOUSEMOVE || uMsg == WM_LBUTTONUP)
 	{
-		m_lastMousePos.x = (short)LOWORD(lParam) / getRenderer().getScreenWidth();
-		if (!SimpleScene::Inst()->m_pCamera->_lhs)
-		{
-			m_lastMousePos.x = 1 - m_lastMousePos.x;
-		}
-		m_lastMousePos.y = (short)HIWORD(lParam) / getRenderer().getScreenHeight();
+		m_lastMousePos.x = (float)LOWORD(lParam);
+		m_lastMousePos.y = (float)HIWORD(lParam);
 	}
 
 	if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP)

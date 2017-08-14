@@ -359,8 +359,8 @@ TEST_F(TkTestStrict, ActorDamageMultiGroup)
 	TkGroup* group1 = fwk->createGroup(gdesc);
 	EXPECT_TRUE(group1 != nullptr);
 
-	ExtGroupTaskManager& gtm1 = *ExtGroupTaskManager::create(*m_taskman, *group1);
-	ExtGroupTaskManager& gtm0 = *ExtGroupTaskManager::create(*m_taskman, *group0);
+	ExtGroupTaskManager& gtm1 = *ExtGroupTaskManager::create(*m_taskman, group1);
+	ExtGroupTaskManager& gtm0 = *ExtGroupTaskManager::create(*m_taskman, group0);
 
 	std::vector<TkFamily*> families(2);
 	std::map<TkFamily*, ExpectedVisibleChunks> expectedVisibleChunks;

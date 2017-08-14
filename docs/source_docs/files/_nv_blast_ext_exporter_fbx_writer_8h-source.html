@@ -140,12 +140,15 @@
 <a name="l00126"></a>00126 
 <a name="l00127"></a>00127     <span class="keywordtype">void</span> addControlPoints(fbxsdk::FbxMesh* mesh, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData);
 <a name="l00128"></a>00128     <span class="keywordtype">void</span> addBindPose();
-<a name="l00129"></a>00129 };
-<a name="l00130"></a>00130 
-<a name="l00131"></a>00131 }
-<a name="l00132"></a>00132 }
+<a name="l00129"></a>00129 
+<a name="l00130"></a>00130     <span class="keywordtype">void</span> generateSmoothingGroups(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
+<a name="l00131"></a>00131     <span class="keywordtype">void</span> removeDuplicateControlPoints(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
+<a name="l00132"></a>00132 };
 <a name="l00133"></a>00133 
-<a name="l00134"></a>00134 <span class="preprocessor">#endif // NVBLASTEXTEXPORTERFBXWRITER_H</span>
+<a name="l00134"></a>00134 }
+<a name="l00135"></a>00135 }
+<a name="l00136"></a>00136 
+<a name="l00137"></a>00137 <span class="preprocessor">#endif // NVBLASTEXTEXPORTERFBXWRITER_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

@@ -93,7 +93,7 @@ public:
 	/**
 	Atomically check if this group is processing actors. @see setProcessing()
 
-	\return				true between process() and sync() calls, false otherwise
+	\return					true between startProcess() and endProcess() calls, false otherwise
 	*/
 	bool					isProcessing() const;
 

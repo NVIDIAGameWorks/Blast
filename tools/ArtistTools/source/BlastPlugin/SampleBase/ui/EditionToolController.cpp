@@ -82,8 +82,8 @@ LRESULT EditionToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 
 	if (uMsg == WM_LBUTTONDOWN || uMsg == WM_MOUSEMOVE || uMsg == WM_LBUTTONUP)
 	{
-		float mouseX = (short)LOWORD(lParam) / getRenderer().getScreenWidth();
-		float mouseY = (short)HIWORD(lParam) / getRenderer().getScreenHeight();
+		float mouseX = (float)LOWORD(lParam);
+		float mouseY = (float)HIWORD(lParam);
 		bool press = uMsg == WM_LBUTTONDOWN;
 
 		if (uMsg == WM_LBUTTONUP)

@@ -58,11 +58,13 @@ protected:
 	virtual ~ExtGroupTaskManager() {}
 
 public:
-	static ExtGroupTaskManager* create(physx::PxTaskManager&);
-	static ExtGroupTaskManager* create(physx::PxTaskManager&, TkGroup&);
+	/**
+	Construct using existing physx::PxTaskManager and TkGroup. The TkGroup can be set later with setGroup().
+	*/
+	static ExtGroupTaskManager* create(physx::PxTaskManager&, TkGroup* = nullptr);
 
 	/**
-	Change the group to process. Cannot be changed while the group being processed.
+	Set the group to process. Cannot be changed while a group being processed.
 	*/
 	virtual void setGroup(TkGroup*) = 0;
 
@@ -75,12 +77,19 @@ public:
 
 	\param[in]	workerCount		The number of worker tasks to start, 
 								0 uses the dispatcher's worker thread count.
+
 	\return						The number of worker tasks started.
+								If 0, processing did not start and wait() will never return true.
 	*/
 	virtual uint32_t process(uint32_t workerCount = 0) = 0;
 
 	/**
-	Wait for the group to end processing.
+	Wait for the group to end processing. When processing has finished, TkGroup::endProcess is executed.
+
+	\param[in]	block			true:	does not return until the group has been processed.
+								false:	return immediately if workers are still processing the group.
+
+	\return						true if group processing was completed (and the group was actually processing)
 	*/
 	virtual bool wait(bool block = true) = 0;
 

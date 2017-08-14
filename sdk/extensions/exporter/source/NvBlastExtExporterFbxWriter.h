@@ -126,6 +126,9 @@ private:
 
 	void addControlPoints(fbxsdk::FbxMesh* mesh, const ExporterMeshData& meshData);
 	void addBindPose();
+
+	void generateSmoothingGroups(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
+	void removeDuplicateControlPoints(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
 };
 
 }

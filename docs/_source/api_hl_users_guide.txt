@@ -269,7 +269,7 @@ by the group's actors.  After all jobs have been run, the user must call TkGroup
 with families with actors in the group.
 
 A convenience function, TkGroup::process(), is provided which uses one worker to perform all jobs sequentially on the calling thread.  This is useful shortcut to
-get BlastTk up and running quickly.  A multithreaded group processing implementation is given by Nv::Blast::ExtGroupTaskManagerImpl (in NvBlastExtPxTaskImpl.h).
+get BlastTk up and running quickly.  A multithreaded group processing implementation is given by Nv::Blast::ExtGroupTaskManager (in NvBlastExtPxTask.h).
 This resides in \ref pageextphysx, because it uses physx::PxTask.
 
 Actors resulting from the split of a "parent" actor will be placed automatically into the group that the parent belonged to.  This is similar to the assigment of
@@ -318,6 +318,21 @@ group2->process();
 // When the groups are no longer needed, they may be released with the usual release method.
 group1->release();
 group2->release();
+\endcode
+
+<br>
+<b>Multithreaded processing</b>
+
+When distributing the jobs as mentioned above, every job must be processed exactly once (over all user tasks).
+ 
+The number of jobs processed per worker can range from a single job (resulting in a user task per job) to all jobs (like Nv::Blast::TkGroup::process() does).
+
+At any point in time, no more than the set workerCount amount of workers may have been acquired. Return the worker at the end of each task.
+
+\code
+Nv::Blast::TkGroupWorker* worker = group->acquireWorker();
+// process some jobs
+group->returnWorker(worker);
 \endcode
 
 <br>

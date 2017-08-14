@@ -50,6 +50,7 @@ public:
 	virtual void render(ID3D11DeviceContext& context) const = 0;
 // Add By Lixu Begin
 	virtual void setScale(PxMat44 scale, bool replace) {};
+	int mUniqueId;
 // Add By Lixu End
 };
 
@@ -61,6 +62,18 @@ class Renderable
 {
 public:
 	//////// public API ////////
+
+	// suppose chunk count is less than 10000
+	static int getRenderableId(int familyId, int chunkId)
+	{		
+		int renderableId = familyId * 10000 + chunkId;
+		return renderableId;
+	}
+	static void getFamilyChunkId(int renderableId, int& familyId, int& chunkId)
+	{
+		familyId = renderableId / 10000;
+		chunkId = renderableId % 10000;
+	}
 
 	void setMaterial(RenderMaterial& material);
 

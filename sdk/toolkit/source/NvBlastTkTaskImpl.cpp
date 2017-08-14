@@ -154,7 +154,7 @@ void TkWorker::process(TkWorkerJob& j)
 {
 	NvBlastTimers* timers = nullptr;
 
-		BLAST_PROFILE_SCOPE_M("TkActor");
+	BLAST_PROFILE_SCOPE_M("TkActor");
 
 	TkActorImpl* tkActor = j.m_tkActor;
 	const uint32_t tkActorIndex = tkActor->getIndex();
@@ -179,25 +179,25 @@ void TkWorker::process(TkWorkerJob& j)
 	{
 		NvBlastFractureBuffers commandBuffer = m_tempBuffer;
 
-			BLAST_PROFILE_ZONE_BEGIN("Material");
+		BLAST_PROFILE_ZONE_BEGIN("Material");
 		damage.generateFracture(&commandBuffer, actorLL, timers);
-			BLAST_PROFILE_ZONE_END("Material");
+		BLAST_PROFILE_ZONE_END("Material");
 
 		if (commandBuffer.chunkFractureCount > 0 || commandBuffer.bondFractureCount > 0)
 		{
-				BLAST_PROFILE_SCOPE_M("Fill Command Events");
+			BLAST_PROFILE_SCOPE_M("Fill Command Events");
 			reportFractureCommands(commandBuffer, m_bondBuffer, m_chunkBuffer, events, tkActor);
 		}
 
 		NvBlastFractureBuffers eventBuffer = m_tempBuffer;
 
-			BLAST_PROFILE_ZONE_BEGIN("Fracture");
+		BLAST_PROFILE_ZONE_BEGIN("Fracture");
 		NvBlastActorApplyFracture(&eventBuffer, actorLL, &commandBuffer, logLL, timers);
-			BLAST_PROFILE_ZONE_END("Fracture");
+		BLAST_PROFILE_ZONE_END("Fracture");
 
 		if (eventBuffer.chunkFractureCount > 0 || eventBuffer.bondFractureCount > 0)
 		{
-				BLAST_PROFILE_SCOPE_M("Fill Fracture Events");
+			BLAST_PROFILE_SCOPE_M("Fill Fracture Events");
 			tkActor->m_flags |= (TkActorFlag::DAMAGED);
 			reportFractureEvents(eventBuffer, m_bondBuffer, m_chunkBuffer, events, tkActor);
 		}
@@ -210,13 +210,13 @@ void TkWorker::process(TkWorkerJob& j)
 	NvBlastActorSplitEvent splitEvent = { nullptr, nullptr };
 	if (tkActor->isDamaged())
 	{
-			BLAST_PROFILE_ZONE_BEGIN("Split Memory");
+		BLAST_PROFILE_ZONE_BEGIN("Split Memory");
 		uint32_t maxActorCount = NvBlastActorGetMaxActorCountForSplit(actorLL, logLL);
 		splitEvent.newActors = mem->reserveNewActors(maxActorCount);
-			BLAST_PROFILE_ZONE_END("Split Memory");
-			BLAST_PROFILE_ZONE_BEGIN("Split");
+		BLAST_PROFILE_ZONE_END("Split Memory");
+		BLAST_PROFILE_ZONE_BEGIN("Split");
 		j.m_newActorsCount = NvBlastActorSplit(&splitEvent, actorLL, maxActorCount, m_splitScratch, logLL, timers);
-			BLAST_PROFILE_ZONE_END("Split");
+		BLAST_PROFILE_ZONE_END("Split");
 
 		tkActor->m_flags.clear(TkActorFlag::DAMAGED);
 	}
@@ -231,7 +231,7 @@ void TkWorker::process(TkWorkerJob& j)
 	{
 		NVBLAST_ASSERT(splitEvent.deletedActor == tkActor->getActorLL());
 
-			BLAST_PROFILE_ZONE_BEGIN("memory new actors");
+		BLAST_PROFILE_ZONE_BEGIN("memory new actors");
 
 		auto tkSplitEvent = events.allocData<TkSplitEvent>();
 
@@ -243,21 +243,21 @@ void TkWorker::process(TkWorkerJob& j)
 		tkSplitEvent->parentData.index = tkActorIndex;
 		family.removeActor(tkActor);
 
-			BLAST_PROFILE_ZONE_END("memory new actors");
+		BLAST_PROFILE_ZONE_END("memory new actors");
 
 
-			BLAST_PROFILE_ZONE_BEGIN("create new actors");
+		BLAST_PROFILE_ZONE_BEGIN("create new actors");
 		for (uint32_t i = 0; i < j.m_newActorsCount; ++i)
 		{
 			TkActorImpl* newActor = family.addActor(splitEvent.newActors[i]);
 			tkSplitEvent->children[i] = newActor;
 		}
 		j.m_newActors = reinterpret_cast<TkActorImpl**>(tkSplitEvent->children);
-			BLAST_PROFILE_ZONE_END("create new actors");
+		BLAST_PROFILE_ZONE_END("create new actors");
 
-			BLAST_PROFILE_ZONE_BEGIN("split event");
+		BLAST_PROFILE_ZONE_BEGIN("split event");
 		events.addEvent(tkSplitEvent);
-			BLAST_PROFILE_ZONE_END("split event");
+		BLAST_PROFILE_ZONE_END("split event");
 	}
 
 	j.m_tkActor->m_flags.clear(TkActorFlag::PENDING);

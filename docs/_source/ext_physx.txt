@@ -1,14 +1,17 @@
 /*! \page pageextphysx PhysX&tm; Extensions (NvBlastExtPhysX)
 
 NvBlastExtPhysX contains classes for easier use of Blast&tm; Toolkit with the PhysX&tm; SDK.
-There are 3 of them:
-- <b>ExtPxManager</b>: Manager to keep Blast&tm; actors in sync with PhysX&tm; actors.
-- <b>ExtImpactDamageManager</b>: Manager to collect and apply impact damage caused by collision in PhysX&tm; scene.
-- <b>ExtPxStressSolver</b>: Stress Solver to propagate stress through support graph and apply it as damage to Blast&tm; actors.
+There are three of them:
+- \ref ExtPxManager - Manager to keep Blast&tm; actors in sync with PhysX&tm; actors.
+- \ref ExtImpactDamageManager - Manager to collect and apply impact damage caused by collision in PhysX&tm; scene.
+- \ref ExtPxStressSolver - Stress Solver to propagate stress through support graph and apply it as damage to Blast&tm; actors.
 
 This library also contains an extension for synchronizing Blast&tm; state:
-- <b>ExtSync</b> - Utility for writing Blast&tm; state to a buffer, to be read by a client.  This may be used for networking, for example.
+- \ref ExtSync - Utility for writing Blast&tm; state to a buffer, to be read by a client.  This may be used for networking, for example.
 
+It also provides classes for utilizing PhysX&tm; SDK Foundation capabilities:
+- \ref ExtGroupTaskManager - Multithreaded TkGroup processing using PxTask.
+- \ref ExtCustomProfiler - Serves Blast&tm; profiling zones to PxFoundation profiler (e.g. PVD) and platform specific profilers.
 
 <br>
 \section ExtPxManager
@@ -133,7 +136,7 @@ sceneDesc.filterShader = ExtImpactDamageManager::FilterShader;
 \endcode
 
 <br>
-\section extpxstresssolver ExtPxStressSolver
+\section ExtPxStressSolver
 
 <b>Stress Solver</b> - this wrapper class uses \ref pageextstress to apply stress calculations to an ExtPxFamily.  See \ref pageextstress for
 the details of the underlying stress solver.
@@ -229,6 +232,84 @@ sync->applySyncBuffer(tkFramework, m_savedBuffer.data(), m_savedBuffer.size(), g
 
 ExtPxManager is required only if sync buffer contains ExtSyncEventType::Physics events.
 
+
+<br>
+
+\section ExtGroupTaskManager 
+This class provides a basic implementation for multithreaded TkGroup processing using PxTask and a PxTaskManager from PxFoundation.
+
+In the simplest use case, all worker threads provided by PxTaskManager are used to process the group.
+
+\code
+// creating ExtGroupTaskManager from existing taskManager and tkGroup
+ExtGroupTaskManager* gtm = ExtGroupTaskManager::create(*taskManager, tkGroup);
+
+while (running)
+{
+    // ... add TkActors to TkGroup and damage ...
+
+    // start processing on all worker threads provided
+    gtm->process();
+
+    // ... do something else ...
+
+    // wait for the group processing to finish
+    gtm->wait();
+}
+
+// after use, release the ExtGroupTaskManager
+gtm->release();
+\endcode
+
+<br>
+
+Groups can be processed concurrently as well as follows. 
+
+\code
+// creating ExtGroupTaskManager from existing taskManager and groups
+
+ExtGroupTaskManager* gtm0 = ExtGroupTaskManager::create(*taskManager, tkGroup0);
+ExtGroupTaskManager* gtm1 = ExtGroupTaskManager::create(*taskManager, tkGroup1);
+\endcode
+
+TkActors are added to TkGroups and damaged as usual.
+
+The PxTaskManager used in this example provides four worker threads of which each ExtGroupTaskManager uses two for its group.
+
+\code
+uint32_t started = 0;
+if (gtm0->process(2) > 0) { started++; }
+if (gtm1->process(2) > 0) { started++; }
+\endcode
+
+Note that ExtGroupTaskManager::wait() never returns true if no processing has started, as reported by ExtGroupTaskManager::process().
+The illustrative busy loop is not recomended for actual use.
+
+\code
+uint32_t completed = 0;
+while (completed < started)
+{
+    if (gtm0->wait(false)) { completed++; }
+    if (gtm1->wait(false)) { completed++; }
+}
+\endcode
+
+<br>
+
+\section ExtCustomProfiler
+This Nv::Blast::ProfileCallback implementation forwards Blast&tm; profile events to the PxProfilerCallback attached to PxFoundation, typically a PhysX&tm; Visual Debugger (PVD) instance.
+To use it, simply attach one to Blast&tm;.
+
+\code
+static Nv::Blast::ExtCustomProfiler gBlastProfiler;
+NvBlastProfilerSetCallback(&gBlastProfiler);
+\endcode
+
+For convenience, it also provides sending profile events to platform specific profilers. These are disabled by default.
+
+\code
+gBlastProfiler.setPlatformEnabled(true);
+\endcode
 
 <br>
 

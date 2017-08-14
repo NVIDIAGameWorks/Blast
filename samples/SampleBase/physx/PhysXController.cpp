@@ -66,7 +66,6 @@ const DirectX::XMFLOAT4 PLANE_COLOR(1.0f, 1.0f, 1.0f, 1.0f);
 const DirectX::XMFLOAT4 HOOK_LINE_COLOR(1.0f, 1.0f, 1.0f, 1.0f);
 const float DEFAULT_FIXED_TIMESTEP = 1.0f / 60.0f;
 
-static Nv::Blast::ExtCustomProfiler gBlastProfiler;
 
 PhysXController::PhysXController(PxSimulationFilterShader filterShader)
 : m_filterShader(filterShader)
@@ -115,6 +114,7 @@ void PhysXController::initPhysX()
 
 	m_pvd = PxCreatePvd(*m_foundation);
 
+	static Nv::Blast::ExtCustomProfiler gBlastProfiler;
 	NvBlastProfilerSetCallback(&gBlastProfiler);
 	NvBlastProfilerSetDetail(Nv::Blast::ProfilerDetail::LOW);
 	gBlastProfiler.setPlatformEnabled(false);

@@ -80,6 +80,7 @@ public:
 	virtual bool SimpleScene_Draw_DX12() = 0;
 	virtual bool SimpleScene_Draw_DX11() = 0;
 	virtual bool SimpleScene_FitCamera(atcore_float3& center, atcore_float3& extents) = 0;
+	virtual bool SimpleScene_ResetUpDir(bool zup) = 0;
 	virtual bool SimpleScene_UpdateCamera() = 0;
 	virtual bool SimpleScene_LoadSceneFromFbx(const char* dir, const char* fbxName) = 0;
 	virtual bool SimpleScene_LoadProject(const char* dir, const char* file) = 0;

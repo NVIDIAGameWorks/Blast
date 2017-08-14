@@ -106,13 +106,7 @@ void ExtGroupTaskManagerImpl::setGroup(TkGroup* group)
 }
 
 
-ExtGroupTaskManager* ExtGroupTaskManager::create(physx::PxTaskManager& taskManager)
-{
-	return NVBLAST_NEW(ExtGroupTaskManagerImpl) (taskManager);
-}
-
-
-ExtGroupTaskManager* ExtGroupTaskManager::create(physx::PxTaskManager& taskManager, TkGroup& group)
+ExtGroupTaskManager* ExtGroupTaskManager::create(physx::PxTaskManager& taskManager, TkGroup* group)
 {
 	return NVBLAST_NEW(ExtGroupTaskManagerImpl) (taskManager, group);
 }

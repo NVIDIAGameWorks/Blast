@@ -86,7 +86,7 @@ struct Triangle
 	int32_t userData;
 	int32_t materialId;
 	int32_t smoothingGroup;
-	physx::PxVec3 getNormal()
+	physx::PxVec3 getNormal() const
 	{
 		return ((b.p - a.p).cross(c.p - a.p));
 	}

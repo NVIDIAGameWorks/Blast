@@ -167,9 +167,9 @@ public:
 	/**
 	Apply damage to this actor.
 
-	Actual damage processing is deferred till the group process() call. Sets actor in 'pending' state.
+	Actual damage processing is deferred till the group worker process() call. Sets actor in 'pending' state.
 
-	It's the user's responsibility to keep programParams pointer alive until the group sync() call.
+	It's the user's responsibility to keep programParams pointer alive until the group endProcess() call.
 
 	\param[in] program				A NvBlastDamageProgram containing damage shaders.
 	\param[in] programParams		Parameters for the NvBlastDamageProgram.
@@ -179,7 +179,7 @@ public:
 	/**
 	Apply damage to this actor.
 
-	Actual damage processing is deferred till the group process() call. Sets actor in 'pending' state.
+	Actual damage processing is deferred till the group worker process() call. Sets actor in 'pending' state.
 
 	Damage Desc will be stacked into NvBlastProgramParams. NvBlastProgramParams will be passed into shader.
 
@@ -194,16 +194,16 @@ public:
 	/**
 	Apply damage to this actor.
 
-	Actual damage processing is deferred till the group process() call. Sets actor in 'pending' state.
+	Actual damage processing is deferred till the group worker process() call. Sets actor in 'pending' state.
 
 	Damage Desc will be stacked into NvBlastDamageProgram. NvBlastDamageProgram will be passed into shader.
 
-	This function overload explicitly sets a material to be passed into NvBlastProgramParams, it must be valid until the group sync() call.
+	This function overload explicitly sets a material to be passed into NvBlastProgramParams, it must be valid until the group endProcess() call.
 
 	\param[in] program				A NvBlastDamageProgram containing damage shaders.
 	\param[in] damageDesc			Parameters to be put in NvBlastDamageProgram, have to be POD type (will be copied).
 	\param[in] descSize				Size of damageDesc in bytes. Required to copy and store Damage Desc.
-	\param[in] material				Material to be passed into NvBlastProgramParams. Must be valid until the group sync() call.
+	\param[in] material				Material to be passed into NvBlastProgramParams. Must be valid until the group endProcess() call.
 	*/
 	virtual void				damage(const NvBlastDamageProgram& program, const void* damageDesc, uint32_t descSize, const void* material) = 0;
 

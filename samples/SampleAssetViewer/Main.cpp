@@ -141,6 +141,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		asset.transform.q = PxQuat(r.w, PxVec3(r.x, r.y, r.z).getNormalized());
 		asset.name = addAssetArg.getValue();
 		asset.id = asset.name;
+		asset.file = asset.name;
 		config.additionalAssetList.models.push_back(asset);
 	}
 

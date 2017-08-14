@@ -180,6 +180,7 @@ public:
 	//////// dtor ////////
 
 	virtual ~BlastFamily();
+	int mUniqueId;
 
 protected:
 

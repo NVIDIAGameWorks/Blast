@@ -68,10 +68,21 @@ static thread_local ExtProfileData th_ProfileData[PROFILER_MAX_NESTED_DEPTH];
 static thread_local int32_t th_depth = 0;
 #endif
 
+
+/**
+Implements Nv::Blast::ProfilerCallback to serve the physx::PxProfilerCallback set in PxFoundation
+for PhysX Visual Debugger support and platform specific profilers like NVIDIA(R) NSight(TM).
+*/
 class ExtCustomProfiler : public ProfilerCallback
 {
 public:
+	/**
+	Construct an ExtCustomProfiler with platform specific profiler signals disabled.
+	*/
 	ExtCustomProfiler() : m_platformEnabled(false) {}
+
+
+	////// ProfilerCallback interface //////
 
 	virtual void zoneStart(const char* name) override
 	{
@@ -127,6 +138,13 @@ public:
 	}
 
 
+	////// local interface //////
+
+	/**
+	Enable or disable platform specific profiler signals. Disabled by default.
+
+	\param[in]	enabled		true enables, false disables platform profiler calls.
+	*/
 	void setPlatformEnabled(bool enabled)
 	{
 		m_platformEnabled = enabled;
@@ -140,4 +158,4 @@ private:
 } // namespace Nv
 
 
-#endif
+#endif // NVBLASTDEFAULTPROFILER_H

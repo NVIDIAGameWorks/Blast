@@ -865,3 +865,27 @@ void Camera::getScreenCoord(float x, float y, float z, int &sx, int &sy)
 
 }
 
+void Camera::getWorldCoord(int sx, int sy, float &x, float &y, float &z)
+{
+	atcore_float4x4 view = (atcore_float4x4&)GetViewMatrix();
+	atcore_float4x4 projection = (atcore_float4x4&)GetProjectionMatrix();
+
+	float w = GetWidth();
+	float h = GetHeight();
+
+	atcore_float4x4 viewProjection = view * projection;
+	atcore_float4x4 viewProjectionIV = gfsdk_inverse(viewProjection);
+
+	float nx = 2.0f * (sx / w) - 1.0f;
+	float ny = 1.0f - 2.0f * (sy / h);
+	float nz = 0.0f;
+
+	atcore_float4 screenPoint = { nx, ny, nz, 1.0f };
+	atcore_float4 pos = gfsdk_transform(viewProjectionIV, screenPoint);
+
+	pos.w = 1.0f / pos.w;
+
+	x = pos.x * pos.w;
+	y = pos.y * pos.w;
+	z = pos.z * pos.w;
+}

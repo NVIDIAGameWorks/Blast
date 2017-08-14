@@ -150,7 +150,7 @@ For most applications, the user will need to create a listener object to pass to
 Groups</a></h2>
 One important feature of NvBlastTk is the ability to multitask damage processing. The mechanism by which the toolkit does this is the group object, TkGroup. Groups are created at the request of the user; the user may create as many groups as he or she likes. Actors may be added or removed from groups in any way the user wishes, with the only constraint being that a given actor may belong to no more than one group. A group is a processing object, much like a scene in a physics simulation. Indeed, a natural pattern would be to associate one group per physics scene, and synchronize the group processing with scene simulation. Another pattern would be to subdivide the world into neighborhoods, and associate each neighborhood with a group. A distributed game could take advantage of this structure to similarly distribute computation.<p>
 Group processing is performed by <em>workers</em>, which have a TkGroupWorker API exposed to the user. The number of workers may be set by the user, with the idea being that this should correspond to the number of threads available for group processing. Processing starts with a call to TkGroup::startProcess(). This creates a number of jobs which the user may assign to workers as they like, each worker potentially on its own thread. The jobs calculate the effects of all damage taken by the group's actors. After all jobs have been run, the user must call TkGroup::endProcess(). This will result in all events being fired off to listeners associated with families with actors in the group.<p>
-A convenience function, TkGroup::process(), is provided which uses one worker to perform all jobs sequentially on the calling thread. This is useful shortcut to get BlastTk up and running quickly. A multithreaded group processing implementation is given by Nv::Blast::ExtGroupTaskManagerImpl (in NvBlastExtPxTaskImpl.h). This resides in <a class="el" href="pageextphysx.html">PhysX&trade; Extensions (NvBlastExtPhysX)</a>, because it uses physx::PxTask.<p>
+A convenience function, TkGroup::process(), is provided which uses one worker to perform all jobs sequentially on the calling thread. This is useful shortcut to get BlastTk up and running quickly. A multithreaded group processing implementation is given by <a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html">Nv::Blast::ExtGroupTaskManager</a> (in <a class="el" href="_nv_blast_ext_px_task_8h.html">NvBlastExtPxTask.h</a>). This resides in <a class="el" href="pageextphysx.html">PhysX&trade; Extensions (NvBlastExtPhysX)</a>, because it uses physx::PxTask.<p>
 Actors resulting from the split of a "parent" actor will be placed automatically into the group that the parent belonged to. This is similar to the assigment of families from a split, except that unlike families, the user then has the option to move the new actors to other groups, or no group at all.<p>
 Also similar to families, groups are not automatically released when the last actor is removed from it. Unlike families, when a group is released, the actors which belong to the group are <em>not</em> released. They will, however, be removed from the group before the release is complete.<p>
 A typical usage is outlined below. See <a class="el" href="pagehlapi.html#damage_in_tk">Applying Damage to Actors and Families</a> for methods of applying damage to actors.<p>
@@ -191,6 +191,15 @@ group2-&gt;process();
 <span class="comment">// When the groups are no longer needed, they may be released with the usual release method.</span>
 group1-&gt;release();
 group2-&gt;release();
+</pre></div><p>
+<br>
+ <b>Multithreaded processing</b><p>
+When distributing the jobs as mentioned above, every job must be processed exactly once (over all user tasks).<p>
+The number of jobs processed per worker can range from a single job (resulting in a user task per job) to all jobs (like <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#e207854ae3e30047c6347f9fd3e7a3b9">Nv::Blast::TkGroup::process()</a> does).<p>
+At any point in time, no more than the set workerCount amount of workers may have been acquired. Return the worker at the end of each task.<p>
+<div class="fragment"><pre class="fragment"><a class="code" href="class_nv_1_1_blast_1_1_tk_group_worker.html">Nv::Blast::TkGroupWorker</a>* worker = group-&gt;acquireWorker();
+<span class="comment">// process some jobs</span>
+group-&gt;returnWorker(worker);
 </pre></div><p>
 <br>
  <h2><a class="anchor" name="damage_in_tk">

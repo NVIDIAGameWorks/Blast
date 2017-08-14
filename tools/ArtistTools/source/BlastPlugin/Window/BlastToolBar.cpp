@@ -976,8 +976,16 @@ void BlastToolbar::on_btnDropObject_clicked()
 				if (family)
 				{
 					physx::PxTransform t = family->getSettings().transform;
-					if(t.p.y < minHeight)
-						minHeight = t.p.y;
+					if (GlobalSettings::Inst().m_zup)
+					{
+						if (t.p.z < minHeight)
+							minHeight = t.p.z;
+					}
+					else
+					{
+						if (t.p.y < minHeight)
+							minHeight = t.p.y;
+					}
 				}
 			}
 		}
@@ -997,7 +1005,14 @@ void BlastToolbar::on_btnDropObject_clicked()
 				if (family)
 				{
 					physx::PxTransform t = family->getSettings().transform;
-					t.p.y += fChange;
+					if (GlobalSettings::Inst().m_zup)
+					{
+						t.p.z += fChange;
+					}
+					else
+					{
+						t.p.y += fChange;
+					}
 					family->initTransform(t);
 				}
 			}
@@ -1016,7 +1031,14 @@ void BlastToolbar::on_btnDropObject_clicked()
 				if (family)
 				{
 					physx::PxTransform t = family->getSettings().transform;
-					t.p.y -= fChange;
+					if (GlobalSettings::Inst().m_zup)
+					{
+						t.p.z -= fChange;
+					}
+					else
+					{
+						t.p.y -= fChange;
+					}
 					family->initTransform(t);
 				}
 			}

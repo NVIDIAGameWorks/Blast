@@ -90,5 +90,11 @@ NvBlastProfilerSetCallback
 
 A NULL pointer may be passed in, disabling profiling.  Profiler features are only active in checked, debug and profile builds.
 
+The granularity of events reported can be selected with
+
+\code
+NvBlastProfilerSetDetail
+\endcode
+
 <br>
 */

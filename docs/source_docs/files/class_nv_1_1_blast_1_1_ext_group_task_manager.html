@@ -66,9 +66,7 @@ Inheritance diagram for Nv::Blast::ExtGroupTaskManager:</div>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html#1af315dfd26f9a9ad579960714266932">wait</a> (bool block=true)=0</td></tr>
 
 <tr><td colspan="2"><br><h2>Static Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html">ExtGroupTaskManager</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html#ea17630331407ecd9d23315a3099c9ab">create</a> (physx::PxTaskManager &amp;, <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a> &amp;)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html">ExtGroupTaskManager</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html#0b85f2ef6aaa09f5a227cc926d857cfd">create</a> (physx::PxTaskManager &amp;)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html">ExtGroupTaskManager</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html#7fbbb098b47ed4e68bca0f610a8c3d1b">create</a> (physx::PxTaskManager &amp;, <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a> *=nullptr)</td></tr>
 
 <tr><td colspan="2"><br><h2>Protected Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html#756207678a22314a8a7a2232819d4e99">~ExtGroupTaskManager</a> ()</td></tr>
@@ -96,7 +94,7 @@ Uses a physx::PxTaskManager to process a <a class="el" href="class_nv_1_1_blast_
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="ea17630331407ecd9d23315a3099c9ab"></a><!-- doxytag: member="Nv::Blast::ExtGroupTaskManager::create" ref="ea17630331407ecd9d23315a3099c9ab" args="(physx::PxTaskManager &amp;, TkGroup &amp;)" -->
+<a class="anchor" name="7fbbb098b47ed4e68bca0f610a8c3d1b"></a><!-- doxytag: member="Nv::Blast::ExtGroupTaskManager::create" ref="7fbbb098b47ed4e68bca0f610a8c3d1b" args="(physx::PxTaskManager &amp;, TkGroup *=nullptr)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -109,8 +107,8 @@ Uses a physx::PxTaskManager to process a <a class="el" href="class_nv_1_1_blast_
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a> &amp;&nbsp;</td>
-          <td class="paramname"></td><td>&nbsp;</td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a> *&nbsp;</td>
+          <td class="paramname"> = <code>nullptr</code></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -122,27 +120,7 @@ Uses a physx::PxTaskManager to process a <a class="el" href="class_nv_1_1_blast_
 <div class="memdoc">
 
 <p>
-
-</div>
-</div><p>
-<a class="anchor" name="0b85f2ef6aaa09f5a227cc926d857cfd"></a><!-- doxytag: member="Nv::Blast::ExtGroupTaskManager::create" ref="0b85f2ef6aaa09f5a227cc926d857cfd" args="(physx::PxTaskManager &amp;)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html">ExtGroupTaskManager</a>* Nv::Blast::ExtGroupTaskManager::create           </td>
-          <td>(</td>
-          <td class="paramtype">physx::PxTaskManager &amp;&nbsp;</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
+Construct using existing physx::PxTaskManager and <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>. The <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a> can be set later with <a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html#1e553149082485157b6864e952703e11">setGroup()</a>. 
 </div>
 </div><p>
 <a class="anchor" name="19b9a2c48f9e29020becdaf5bc8372b2"></a><!-- doxytag: member="Nv::Blast::ExtGroupTaskManager::process" ref="19b9a2c48f9e29020becdaf5bc8372b2" args="(uint32_t workerCount=0)=0" -->
@@ -165,10 +143,10 @@ Uses a physx::PxTaskManager to process a <a class="el" href="class_nv_1_1_blast_
 Start processing the group. The parallelizing strategy is to have all worker tasks running concurrently. The number of started tasks may be smaller than the requested value, when the task manager's dispatcher thread count or the number of group jobs are smaller.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>workerCount</em>&nbsp;</td><td>The number of worker tasks to start, 0 uses the dispatcher's worker thread count. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>workerCount</em>&nbsp;</td><td>The number of worker tasks to start, 0 uses the dispatcher's worker thread count.</td></tr>
   </table>
 </dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>The number of worker tasks started. </dd></dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>The number of worker tasks started. If 0, processing did not start and <a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html#1af315dfd26f9a9ad579960714266932">wait()</a> will never return true. </dd></dl>
 
 <p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager_impl.html#66106800491cda7fd453dc48aa6960b4">Nv::Blast::ExtGroupTaskManagerImpl</a>.</p>
 
@@ -212,7 +190,7 @@ Release this object.
 <div class="memdoc">
 
 <p>
-Change the group to process. Cannot be changed while the group being processed. 
+Set the group to process. Cannot be changed while a group being processed. 
 <p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager_impl.html#2ea36f893e4c903a076901040780cc8b">Nv::Blast::ExtGroupTaskManagerImpl</a>.</p>
 
 </div>
@@ -234,7 +212,14 @@ Change the group to process. Cannot be changed while the group being processed.
 <div class="memdoc">
 
 <p>
-Wait for the group to end processing. 
+Wait for the group to end processing. When processing has finished, <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#4d21bd8b0225ae57b81bb8fe09df39ff">TkGroup::endProcess</a> is executed.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>block</em>&nbsp;</td><td>true: does not return until the group has been processed. false: return immediately if workers are still processing the group.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true if group processing was completed (and the group was actually processing) </dd></dl>
+
 <p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_ext_group_task_manager_impl.html#1d52ce317cf1af16bfaba2e95795f54f">Nv::Blast::ExtGroupTaskManagerImpl</a>.</p>
 
 </div>

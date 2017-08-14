@@ -30,6 +30,9 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <map>
+#include <algorithm>
+#include <set>
 #include "NvBlastTypes.h"
 #include "NvBlastGlobals.h"
 #include "NvBlastTkFramework.h"
@@ -212,12 +215,10 @@ bool FbxFileWriter::appendMesh(const AuthoringResult& aResult, const char* asset
 	if (!smElement)
 	{
 		//If no smoothing groups, generate them
-		FbxGeometryConverter fbxConv(mesh->GetFbxManager());
-		if (fbxConv.ComputeEdgeSmoothingFromNormals(mesh))
-		{
-			fbxConv.ComputePolygonSmoothingFromEdgeSmoothing(mesh, 0);
-		}
+		generateSmoothingGroups(mesh, skin);
 	}
+
+	removeDuplicateControlPoints(mesh, skin);
 
 	if (aResult.collisionHull != nullptr)
 	{
@@ -544,12 +545,10 @@ void FbxFileWriter::createChunkRecursiveNonSkinned(const std::string& meshName, 
 	if (!mesh->GetElementSmoothing())
 	{
 		//If no smoothing groups, generate them
-		FbxGeometryConverter fbxConv(mesh->GetFbxManager());
-		if (fbxConv.ComputeEdgeSmoothingFromNormals(mesh))
-		{
-			fbxConv.ComputePolygonSmoothingFromEdgeSmoothing(mesh, 0);
-		}
+		generateSmoothingGroups(mesh, nullptr);
 	}
+
+	removeDuplicateControlPoints(mesh, nullptr);
 
 	for (uint32_t i = chunk->firstChildIndex; i < chunk->childIndexStop; i++)
 	{
@@ -673,12 +672,11 @@ void FbxFileWriter::createChunkRecursiveNonSkinned(const std::string& meshName, 
 	if (!smElement)
 	{
 		//If no smoothing groups, generate them
-		FbxGeometryConverter fbxConv(mesh->GetFbxManager());
-		if (fbxConv.ComputeEdgeSmoothingFromNormals(mesh))
-		{
-			fbxConv.ComputePolygonSmoothingFromEdgeSmoothing(mesh, 0);
-		}
+		generateSmoothingGroups(mesh, nullptr);
+
 	}
+
+	removeDuplicateControlPoints(mesh, nullptr);
 
 	for (uint32_t i = chunk->firstChildIndex; i < chunk->childIndexStop; i++)
 	{
@@ -1079,12 +1077,10 @@ bool FbxFileWriter::appendMesh(const ExporterMeshData& meshData, const char* ass
 	if (!mesh->GetElementSmoothing())
 	{
 		//If no smoothing groups, generate them
-		FbxGeometryConverter fbxConv(mesh->GetFbxManager());
-		if (fbxConv.ComputeEdgeSmoothingFromNormals(mesh))
-		{
-			fbxConv.ComputePolygonSmoothingFromEdgeSmoothing(mesh, 0);
-		}
+		generateSmoothingGroups(mesh, skin);
 	}
+
+	removeDuplicateControlPoints(mesh, skin);
 
 	if (meshData.hulls != nullptr)
 	{
@@ -1093,3 +1089,338 @@ bool FbxFileWriter::appendMesh(const ExporterMeshData& meshData, const char* ass
 	return true;
 }
 
+void FbxFileWriter::generateSmoothingGroups(fbxsdk::FbxMesh* mesh, FbxSkin* skin)
+{
+	if (mesh->GetElementSmoothing(0) || !mesh->IsTriangleMesh())
+	{
+		//they already exist or we can't make it
+		return;
+	}
+
+	const FbxGeometryElementNormal* geNormal = mesh->GetElementNormal();
+	if (!geNormal || geNormal->GetMappingMode() != FbxGeometryElement::eByPolygonVertex || geNormal->GetReferenceMode() != FbxGeometryElement::eDirect)
+	{
+		//We just set this up, but just incase
+		return;
+	}
+
+	int clusterCount = 0;
+	std::vector<std::vector<int>> cpsPerCluster;
+	if (skin)
+	{
+		clusterCount = skin->GetClusterCount();
+		cpsPerCluster.resize(clusterCount);
+		for (int c = 0; c < clusterCount; c++)
+		{
+			FbxCluster* cluster = skin->GetCluster(c);
+			int* clusterCPList = cluster->GetControlPointIndices();
+			const int clusterCPListLength = cluster->GetControlPointIndicesCount();
+
+			cpsPerCluster[c].resize(clusterCPListLength);
+			memcpy(cpsPerCluster[c].data(), clusterCPList, sizeof(int) * clusterCPListLength);
+			std::sort(cpsPerCluster[c].begin(), cpsPerCluster[c].end());
+		}
+	}
+
+	auto smElement = mesh->CreateElementSmoothing();
+	smElement->SetMappingMode(FbxGeometryElement::eByPolygon);
+	smElement->SetReferenceMode(FbxGeometryElement::eDirect);
+
+	FbxVector4* cpList = mesh->GetControlPoints();
+	const int cpCount = mesh->GetControlPointsCount();
+
+	const int triangleCount = mesh->GetPolygonCount();
+	const int cornerCount = triangleCount * 3;
+
+	int* polygonCPList = mesh->GetPolygonVertices();
+	const auto& normalByCornerList = geNormal->GetDirectArray();
+
+	std::multimap<int, int> overlappingCorners;
+	//sort them by z for faster overlap checking
+	std::vector<std::pair<double, int>> cornerIndexesByZ(cornerCount);
+	for (int c = 0; c < cornerCount; c++)
+	{
+		cornerIndexesByZ[c] = std::pair<double, int>(cpList[polygonCPList[c]][2], c);
+	}
+	std::sort(cornerIndexesByZ.begin(), cornerIndexesByZ.end());
+
+	for (int i = 0; i < cornerCount; i++)
+	{
+		const int cornerA = cornerIndexesByZ[i].second;
+		const int cpiA = polygonCPList[cornerA];
+		FbxVector4 cpA = cpList[cpiA];
+		cpA[3] = 0;
+
+		int clusterIndexA = -1;
+		for (int c = 0; c < clusterCount; c++)
+		{
+			if (std::binary_search(cpsPerCluster[c].begin(), cpsPerCluster[c].end(), cpiA))
+			{
+				clusterIndexA = c;
+				break;
+			}
+		}
+
+		for (int j = i + 1; j < cornerCount; j++)
+		{
+			if (std::abs(cornerIndexesByZ[j].first - cornerIndexesByZ[i].first) > FBXSDK_TOLERANCE)
+			{
+				break; // if the z's don't match other values don't matter
+			}
+			const int cornerB = cornerIndexesByZ[j].second;
+			const int cpiB = polygonCPList[cornerB];
+			FbxVector4 cpB = cpList[cpiB];
+
+			cpB[3] = 0;
+
+			//uses FBXSDK_TOLERANCE
+			if (cpA == cpB)
+			{
+				int clusterIndexB = -1;
+				for (int c = 0; c < clusterCount; c++)
+				{
+					if (std::binary_search(cpsPerCluster[c].begin(), cpsPerCluster[c].end(), cpiB))
+					{
+						clusterIndexB = c;
+						break;
+					}
+				}
+
+				if (clusterIndexA == clusterIndexB)
+				{
+					overlappingCorners.emplace(cornerA, cornerB);
+					overlappingCorners.emplace(cornerB, cornerA);
+				}
+			}
+		}
+	}
+
+	auto& smoothingGroupByTri = smElement->GetDirectArray();
+	for (int i = 0; i < triangleCount; i++)
+	{
+		smoothingGroupByTri.Add(0);
+	}
+	//first one
+	smoothingGroupByTri.SetAt(0, 1);
+
+	for (int i = 1; i < triangleCount; i++)
+	{
+		int sharedMask = 0, unsharedMask = 0;
+		for (int c = 0; c < 3; c++)
+		{
+			int myCorner = i * 3 + c;
+			FbxVector4 myNormal = normalByCornerList.GetAt(myCorner);
+			myNormal.Normalize();
+			myNormal[3] = 0;
+
+			auto otherCornersRangeBegin = overlappingCorners.lower_bound(myCorner);
+			auto otherCornersRangeEnd = overlappingCorners.upper_bound(myCorner);
+			for (auto it = otherCornersRangeBegin; it != otherCornersRangeEnd; it++)
+			{
+				int otherCorner = it->second;
+				FbxVector4 otherNormal = normalByCornerList.GetAt(otherCorner);
+				otherNormal.Normalize();
+				otherNormal[3] = 0;
+				if (otherNormal == myNormal)
+				{
+					sharedMask |= smoothingGroupByTri[otherCorner / 3];
+				}
+				else
+				{
+					unsharedMask |= smoothingGroupByTri[otherCorner / 3];
+				}
+			}
+		}
+
+		//Easy case, no overlap
+		if ((sharedMask & unsharedMask) == 0 && sharedMask != 0)
+		{
+			smoothingGroupByTri.SetAt(i, sharedMask);
+		}
+		else
+		{
+			for (int sm = 0; sm < 32; sm++)
+			{
+				int val = 1 << sm;
+				if (((val & sharedMask) == sharedMask) && !(val & unsharedMask))
+				{
+					smoothingGroupByTri.SetAt(i, val);
+					break;
+				}
+			}
+		}
+	}
+
+}
+
+namespace
+{
+	//These methods have different names for some reason
+	inline double* getControlPointBlendWeights(FbxSkin* skin)
+	{
+		return skin->GetControlPointBlendWeights();
+	}
+
+	inline double* getControlPointBlendWeights(FbxCluster* cluster)
+	{
+		return cluster->GetControlPointWeights();
+	}
+
+	template <typename T>
+	void remapCPsAndRemoveDuplicates(const int newCPCount, const std::vector<int>& oldToNewCPMapping, T* skinOrCluster)
+	{
+		//Need to avoid duplicate entires since UE doesn't seem to normalize this correctly
+		std::vector<bool> addedCP(newCPCount, false);
+		std::vector<std::pair<int, double>> newCPsAndWeights;
+		newCPsAndWeights.reserve(newCPCount);
+
+		int* skinCPList = skinOrCluster->GetControlPointIndices();
+		double* skinCPWeights = getControlPointBlendWeights(skinOrCluster);
+		const int skinCPListLength = skinOrCluster->GetControlPointIndicesCount();
+
+		for (int bw = 0; bw < skinCPListLength; bw++)
+		{
+			int newCPIdx = oldToNewCPMapping[skinCPList[bw]];
+			if (!addedCP[newCPIdx])
+			{
+				addedCP[newCPIdx] = true;
+				newCPsAndWeights.emplace_back(newCPIdx, skinCPWeights[bw]);
+			}
+		}
+		skinOrCluster->SetControlPointIWCount(newCPsAndWeights.size());
+		skinCPList = skinOrCluster->GetControlPointIndices();
+		skinCPWeights = getControlPointBlendWeights(skinOrCluster);
+		for (size_t bw = 0; bw < newCPsAndWeights.size(); bw++)
+		{
+			skinCPList[bw] = newCPsAndWeights[bw].first;
+			skinCPWeights[bw] = newCPsAndWeights[bw].second;
+		}
+	}
+}
+
+//Do this otherwise Maya shows the mesh as faceted due to not being welded
+void FbxFileWriter::removeDuplicateControlPoints(fbxsdk::FbxMesh* mesh, FbxSkin* skin)
+{
+	FbxVector4* cpList = mesh->GetControlPoints();
+	const int cpCount = mesh->GetControlPointsCount();
+
+	std::vector<int> oldToNewCPMapping(cpCount, -1);
+	//sort them by z for faster overlap checking
+	std::vector<std::pair<double, int>> cpIndexesByZ(cpCount);
+	for (int cp = 0; cp < cpCount; cp++)
+	{
+		cpIndexesByZ[cp] = std::pair<double, int>(cpList[cp][2], cp);
+	}
+	std::sort(cpIndexesByZ.begin(), cpIndexesByZ.end());
+
+	int clusterCount = 0;
+	std::vector<std::vector<int>> cpsPerCluster;
+	if (skin)
+	{
+		clusterCount = skin->GetClusterCount();
+		cpsPerCluster.resize(clusterCount);
+		for (int c = 0; c < clusterCount; c++)
+		{
+			FbxCluster* cluster = skin->GetCluster(c);
+			int* clusterCPList = cluster->GetControlPointIndices();
+			const int clusterCPListLength = cluster->GetControlPointIndicesCount();
+
+			cpsPerCluster[c].resize(clusterCPListLength);
+			memcpy(cpsPerCluster[c].data(), clusterCPList, sizeof(int) * clusterCPListLength);
+			std::sort(cpsPerCluster[c].begin(), cpsPerCluster[c].end());
+		}
+	}
+
+	std::vector<FbxVector4> uniqueCPs;
+	uniqueCPs.reserve(cpCount);
+
+	for (int i = 0; i < cpCount; i++)
+	{
+		const int cpiA = cpIndexesByZ[i].second;
+		FbxVector4 cpA = cpList[cpiA];
+		if (!(oldToNewCPMapping[cpiA] < 0))
+		{
+			//already culled this one
+			continue;
+		}
+		const int newIdx = int(uniqueCPs.size());
+		oldToNewCPMapping[cpiA] = newIdx;
+		uniqueCPs.push_back(cpA);
+
+		int clusterIndexA = -1;
+		for (int c = 0; c < clusterCount; c++)
+		{
+			if (std::binary_search(cpsPerCluster[c].begin(), cpsPerCluster[c].end(), cpiA))
+			{
+				clusterIndexA = c;
+				break;
+			}
+		}
+		
+		for (int j = i + 1; j < cpCount; j++)
+		{
+			if (std::abs(cpIndexesByZ[j].first - cpIndexesByZ[i].first) > FBXSDK_TOLERANCE)
+			{
+				break; // if the z's don't match other values don't matter
+			}
+			
+			const int cpiB = cpIndexesByZ[j].second;
+			FbxVector4 cpB = cpList[cpiB];
+
+			//uses FBXSDK_TOLERANCE
+			if (cpA == cpB)
+			{
+				int clusterIndexB = -1;
+				for (int c = 0; c < clusterCount; c++)
+				{
+					if (std::binary_search(cpsPerCluster[c].begin(), cpsPerCluster[c].end(), cpiB))
+					{
+						clusterIndexB = c;
+						break;
+					}
+				}
+
+				//don't merge unless they share the same clusters
+				if (clusterIndexA == clusterIndexB)
+				{
+					oldToNewCPMapping[cpiB] = newIdx;
+				}
+			}
+		}
+	}
+
+	const int originalCPCount = cpCount;
+	const int newCPCount = int(uniqueCPs.size());
+
+	if (newCPCount == cpCount)
+	{
+		//don't bother, it will just scramble it for no reason
+		return;
+	}
+
+	mesh->InitControlPoints(newCPCount);
+	cpList = mesh->GetControlPoints();
+
+	for (int cp = 0; cp < newCPCount; cp++)
+	{
+		cpList[cp] = uniqueCPs[cp];
+	}
+
+	int* polygonCPList = mesh->GetPolygonVertices();
+	const int polygonCPListLength = mesh->GetPolygonVertexCount();
+	for (int pv = 0; pv < polygonCPListLength; pv++)
+	{
+		polygonCPList[pv] = oldToNewCPMapping[polygonCPList[pv]];
+	}
+
+	if (skin)
+	{
+		remapCPsAndRemoveDuplicates(newCPCount, oldToNewCPMapping, skin);
+		for (int c = 0; c < skin->GetClusterCount(); c++)
+		{
+			FbxCluster* cluster = skin->GetCluster(c);
+			remapCPsAndRemoveDuplicates(newCPCount, oldToNewCPMapping, cluster);
+		}
+		 
+	}
+}

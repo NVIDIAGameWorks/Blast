@@ -2686,6 +2686,11 @@ void SampleManager::UpdateCamera()
 	m_renderer->UpdateCamera();
 }
 
+void SampleManager::ResetUpDir(bool zup)
+{
+	m_physXController->ResetUpDir(zup);
+}
+
 void SampleManager::_addAssetToProjectParam(BlastAsset* pBlastAsset)
 {
 	BlastAssetModel* assetModel = dynamic_cast<BlastAssetModel*>(pBlastAsset);

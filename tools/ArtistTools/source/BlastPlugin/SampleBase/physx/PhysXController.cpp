@@ -60,6 +60,7 @@
 // Add By Lixu Begin
 #include "PxRigidActorExt.h"
 #include "SimpleScene.h"
+#include "GlobalSettings.h"
 // Add By Lixu End
 
 #include <imgui.h>
@@ -73,7 +74,6 @@ const DirectX::XMFLOAT4 PLANE_COLOR(1.0f, 1.0f, 1.0f, 1.0f);
 const DirectX::XMFLOAT4 HOOK_LINE_COLOR(1.0f, 1.0f, 1.0f, 1.0f);
 const float DEFAULT_FIXED_TIMESTEP = 1.0f / 60.0f;
 
-static Nv::Blast::ExtCustomProfiler gBlastProfiler;
 
 PhysXController::PhysXController(PxSimulationFilterShader filterShader)
 : m_filterShader(filterShader)
@@ -126,6 +126,7 @@ void PhysXController::initPhysX()
 
 	m_pvd = PxCreatePvd(*m_foundation);
 
+	static Nv::Blast::ExtCustomProfiler gBlastProfiler;
 	NvBlastProfilerSetCallback(&gBlastProfiler);
 	NvBlastProfilerSetDetail(Nv::Blast::ProfilerDetail::LOW);
 	gBlastProfiler.setPlatformEnabled(false);
@@ -451,8 +452,8 @@ LRESULT PhysXController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 	if (m_draggingEnabled && (uMsg == WM_LBUTTONDOWN || uMsg == WM_MOUSEMOVE || uMsg == WM_LBUTTONUP))
 	{
-		float mouseX = (short)LOWORD(lParam) / getRenderer().getScreenWidth();
-		float mouseY = (short)HIWORD(lParam) / getRenderer().getScreenHeight();
+		float mouseX = (short)LOWORD(lParam);
+		float mouseY = (short)HIWORD(lParam);
 
 		PxVec3 eyePos, pickDir;
 		getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
@@ -590,7 +591,8 @@ void PhysXController::drawUI()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Add By Lixu Begin
-PhysXController::Actor* planeActor_Pri = nullptr;
+// 0 means GROUND_YUP 1 means GROUND_ZUP
+PhysXController::Actor* planeActor_Pri[2] = { nullptr, nullptr };
 // Add By Lixu End
 
 void PhysXController::initPhysXPrimitives()
@@ -609,8 +611,12 @@ void PhysXController::initPhysXPrimitives()
 	plane->setColor(PLANE_COLOR);
 
 // Add By Lixu Begin
-	planeActor_Pri = plane;
-	planeActor_Pri->setHidden(true);
+	planeActor_Pri[0] = plane;
+	planeActor_Pri[0]->setHidden(true);
+	plane = spawnPhysXPrimitivePlane(PxPlane(PxVec3(0, 0, 1).getNormalized(), 0));
+	plane->setColor(PLANE_COLOR);
+	planeActor_Pri[1] = plane;
+	planeActor_Pri[1]->setHidden(true);
 // Add By Lixu End
 }
 
@@ -657,7 +663,7 @@ PhysXController::Actor* PhysXController::spawnPhysXPrimitiveBox(const PxTransfor
 PhysXController::Actor* PhysXController::spawnPhysXPrimitivePlane(const PxPlane& plane)
 {
 	PxRigidStatic* actor = PxCreatePlane(*m_physics, plane, *m_defaultMaterial);
-	PhysXController::Actor* p = spawnPhysXPrimitive(actor, true, true);
+	PhysXController::Actor* p = spawnPhysXPrimitive(actor, false, true);
 	return p;
 }
 
@@ -852,8 +858,8 @@ PxVec3 PhysXController::getMeshScaleForShape(const PxShape* shape)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //													Utils
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-PxVec3 unproject(PxMat44& proj, PxMat44& view, float x, float y)
+// work right
+PxVec3 unprojectRH(PxMat44& proj, PxMat44& view, float x, float y)
 {
 	PxVec4 screenPoint(x, y, 0, 1);
 	PxVec4 viewPoint = PxVec4(x / proj[0][0], y / proj[1][1], 1, 1);
@@ -863,9 +869,55 @@ PxVec3 unproject(PxMat44& proj, PxMat44& view, float x, float y)
 	return PxVec3(nearPoint.x, nearPoint.y, nearPoint.z);
 }
 
+// work wrong
+PxVec3 unprojectRH2(PxMat44& proj, PxMat44& view, float x, float y)
+{
+	PxMat44 matProj = view * proj;
+	PxMat44 matInverse = matProj.inverseRT();
+
+	PxVec4 screenPoint(x, y, 0, 0);
+	PxVec4 pos = matInverse.transform(screenPoint);
+	return PxVec3(pos.x, pos.y, pos.z);
+}
+
+// work right
+PxVec3 unprojectLH(PxMat44& proj, PxMat44& view, float x, float y)
+{
+	DirectX::XMMATRIX proj1 = PxMat44ToXMMATRIX(proj);
+	DirectX::XMMATRIX view1 = PxMat44ToXMMATRIX(view);
+	DirectX::XMMATRIX invProjectionView = DirectX::XMMatrixInverse(&DirectX::XMMatrixDeterminant(view1 *  proj1), (view1 *  proj1));
+
+	DirectX::XMVECTOR mousePosition = DirectX::XMVectorSet(x, y, 0.0f, 0.0f);
+	DirectX::XMVECTOR mouseInWorldSpace = DirectX::XMVector3Transform(mousePosition, invProjectionView);
+	return PxVec3(DirectX::XMVectorGetX(mouseInWorldSpace), DirectX::XMVectorGetY(mouseInWorldSpace), DirectX::XMVectorGetZ(mouseInWorldSpace));
+}
+
+// work right
+PxVec3 unprojectLH(DirectX::XMMATRIX& proj, DirectX::XMMATRIX& view, float x, float y)
+{
+	//DirectX::XMMATRIX invProjectionView = DirectX::XMMatrixInverse(&DirectX::XMMatrixDeterminant(view *  proj), (view *  proj));
+
+	//DirectX::XMVECTOR mousePosition = DirectX::XMVectorSet(x, y, 0.0f, 0.0f);
+	//DirectX::XMVECTOR mouseInWorldSpace = DirectX::XMVector3Transform(mousePosition, invProjectionView);
+	//return PxVec3(DirectX::XMVectorGetX(mouseInWorldSpace), DirectX::XMVectorGetY(mouseInWorldSpace), DirectX::XMVectorGetZ(mouseInWorldSpace));
+
+
+	DirectX::XMMATRIX inView = DirectX::XMMatrixInverse(&DirectX::XMMatrixDeterminant(view), view);
+
+	DirectX::XMVECTOR screenPoint = DirectX::XMVectorSet(x, y, 0, 1);
+	DirectX::XMVECTOR viewPoint = DirectX::XMVectorSet(x / DirectX::XMVectorGetX(proj.r[0]), y / DirectX::XMVectorGetY(proj.r[1]), 1, 1);
+	DirectX::XMVECTOR nearPoint = DirectX::XMVector3Transform(viewPoint, inView);
+	PxVec3 nearPnt = PxVec3(DirectX::XMVectorGetX(nearPoint), DirectX::XMVectorGetY(nearPoint), DirectX::XMVectorGetZ(nearPoint));
+	if (DirectX::XMVectorGetW(nearPoint))
+		nearPnt *= 1.0f / DirectX::XMVectorGetW(nearPoint);
+	return nearPnt;
+}
+
+#include "SimpleScene.h"
 
 void PhysXController::getEyePoseAndPickDir(float mouseX, float mouseY, PxVec3& eyePos, PxVec3& pickDir)
 {
+#if(0)
 	// Add By Lixu Begin
 	PxMat44 view, proj;
 	SimpleScene* simpleScene = SimpleScene::Inst();
@@ -886,10 +938,46 @@ void PhysXController::getEyePoseAndPickDir(float mouseX, float mouseY, PxVec3& e
 
 	PxMat44 eyeTransform = view.inverseRT();
 	eyePos = eyeTransform.getPosition();
-	PxVec3 nearPos = unproject(proj, view, mouseX * 2 - 1, 1 - mouseY * 2);
+	PxVec3 nearPos = unprojectRH(proj, view, mouseX * 2 - 1, 1 - mouseY * 2);
+	pickDir = nearPos - eyePos;
+#endif
+
+#if(0)
+	if (SimpleScene::Inst()->m_pCamera->UseLHS())
+	{
+		DirectX::XMMATRIX view = SimpleScene::Inst()->GetViewMatrix();
+		DirectX::XMMATRIX proj = SimpleScene::Inst()->GetProjMatrix();
+
+		DirectX::XMMATRIX eyeTransform = DirectX::XMMatrixInverse(&DirectX::XMMatrixDeterminant(view), view);
+		eyePos = PxVec3(DirectX::XMVectorGetX(eyeTransform.r[3]), DirectX::XMVectorGetY(eyeTransform.r[3]), DirectX::XMVectorGetZ(eyeTransform.r[3]));
+
+		PxVec3 nearPos = unprojectLH(proj, view, mouseX * 2 - 1, 1 - mouseY * 2);
+
+		pickDir = nearPos - eyePos;
+	}
+	else
+	{
+		PxMat44 view = XMMATRIXToPxMat44(getRenderer().getCamera().GetViewMatrix());
+		PxMat44 proj = XMMATRIXToPxMat44(getRenderer().getCamera().GetProjMatrix());
+
+		PxMat44 eyeTransform = view.inverseRT();
+		eyePos = eyeTransform.getPosition();
+
+		PxVec3 nearPos = unprojectRH(proj, view, mouseX * 2 - 1, 1 - mouseY * 2);
+
+		pickDir = nearPos - eyePos;
+	}
+#endif
+
+	atcore_float3 eye = SimpleScene::Inst()->m_pCamera->GetEye();
+	eyePos = PxVec3(eye.x, eye.y, eye.z);
+
+	float x = 0, y = 0, z = 0;
+	SimpleScene::Inst()->m_pCamera->getWorldCoord(mouseX, mouseY, x, y, z);
+
+	PxVec3 nearPos(x, y, z);
 	pickDir = nearPos - eyePos;
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -981,12 +1069,28 @@ void PhysXController::ClearOldCOllisions()
 
 bool PhysXController::isPlaneVisible()
 {
-	return !planeActor_Pri->isHidden();
+	if (GlobalSettings::Inst().m_zup)
+	{
+		return !planeActor_Pri[1]->isHidden();
+	}
+	else
+	{
+		return !planeActor_Pri[0]->isHidden();
+	}
 }
 
 void PhysXController::setPlaneVisible(bool bVisible)
 {
-	planeActor_Pri->setHidden(!bVisible);
+	if (GlobalSettings::Inst().m_zup)
+	{
+		planeActor_Pri[0]->setHidden(true);
+		planeActor_Pri[1]->setHidden(!bVisible);
+	}
+	else
+	{
+		planeActor_Pri[0]->setHidden(!bVisible);
+		planeActor_Pri[1]->setHidden(true);
+	}
 }
 
 PxRigidDynamic* PhysXController::createEditPhysXActor(const std::vector<BlastModel::Chunk::Mesh>& meshes, const PxTransform& pos)
@@ -1050,5 +1154,39 @@ PxRigidDynamic* PhysXController::createEditPhysXActor(const std::vector<BlastMod
 	actor->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
 	m_editPhysicsScene->addActor(*actor);
 	return actor;
+}
+
+void PhysXController::setPaused(bool paused)
+{
+	m_paused = paused;
+	if (m_paused)
+	{
+		return;
+	}
+
+	if (GlobalSettings::Inst().m_zup)
+	{
+		m_physicsScene->removeActor(*planeActor_Pri[0]->getActor());
+		m_physicsScene->addActor(*planeActor_Pri[1]->getActor());
+	}
+	else
+	{
+		m_physicsScene->removeActor(*planeActor_Pri[1]->getActor());
+		m_physicsScene->addActor(*planeActor_Pri[0]->getActor());
+	}
+}
+
+void PhysXController::ResetUpDir(bool zup)
+{
+	setPaused(m_paused);
+	setPlaneVisible(isPlaneVisible());
+	if (zup)
+	{
+		m_physicsScene->setGravity(PxVec3(0.0f, 0.0f, -9.81f));
+	}
+	else
+	{
+		m_physicsScene->setGravity(PxVec3(0.0f, -9.81f, 0.0f));
+	}	
 }
 // Add By Lixu End

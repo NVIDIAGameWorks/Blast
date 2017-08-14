@@ -157,8 +157,10 @@ void scaleModel(BlastModel& model, PxMat44& scale)
 class SimpleRenderMesh : public IRenderMesh
 {
 public:
-	SimpleRenderMesh(const SimpleMesh* mesh) : m_mesh(mesh)
+	SimpleRenderMesh(const SimpleMesh* mesh, int renderableId) : m_mesh(mesh)
 	{
+		mUniqueId = renderableId;
+
 		m_device = GetDeviceManager()->GetDevice();
 
 		m_inputDesc.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 });
@@ -242,7 +244,7 @@ public:
 	{
 		context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		UINT strides[2] = { sizeof(SimpleMesh::Vertex), sizeof(uint32_t) };
+		UINT strides[2] = { sizeof(SimpleMesh::Vertex), sizeof(float) };
 		UINT offsets[2] = { 0 };
 		ID3D11Buffer* buffers[2] = { m_vertexBuffer, m_healthBuffer };
 		context.IASetVertexBuffers(0, 2, buffers, strides, offsets);
@@ -371,9 +373,12 @@ BlastFamilyModelSimple::BlastFamilyModelSimple(PhysXController& physXController,
 // Add By Lixu End
 		renderMeshes.resize(meshes.size());
 		renderables.resize(meshes.size());
+
+		int renderableId = Renderable::getRenderableId(mUniqueId, chunkIndex);
+
 		for (uint32_t i = 0; i < meshes.size(); i++)
 		{
-			renderMeshes[i] = new SimpleRenderMesh(&meshes[i].mesh);
+			renderMeshes[i] = new SimpleRenderMesh(&meshes[i].mesh, renderableId);
 
 			uint32_t materialIndex = model.chunks[chunkIndex].meshes[i].materialIndex;
 
@@ -788,7 +793,7 @@ void BlastFamilyModelSimple::setChunkSelected(uint32_t chunk, bool selected)
 	std::vector<Renderable*>& renderables = m_chunks[chunk].renderables;
 	for (Renderable* r : renderables)
 	{
-		r->setSelected(select);
+		r->setSelected(selected);
 
 		if (!selectionDepthTest && selected)
 		{

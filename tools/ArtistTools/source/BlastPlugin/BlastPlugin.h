@@ -87,6 +87,7 @@ public:
 	virtual bool SimpleScene_Draw_DX12();
 	virtual bool SimpleScene_Draw_DX11();
 	virtual bool SimpleScene_FitCamera(atcore_float3& center, atcore_float3& extents);
+	virtual bool SimpleScene_ResetUpDir(bool zup);
 	virtual bool SimpleScene_UpdateCamera();
 	virtual bool SimpleScene_DrawGround();
 	virtual bool SimpleScene_DrawWind();

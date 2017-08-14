@@ -128,7 +128,7 @@ public:
 	virtual const void*				getMaterial() const = 0;
 
 	/**
-	Set the default material to be passed into NvBlastDamageProgram when a TkActor in this family is damaged.  Must be valid till group sync() call.
+	Set the default material to be passed into NvBlastDamageProgram when a TkActor in this family is damaged.  Must be valid till group endProcess() call.
 
 	\param[in] material			The material to be the new default.
 	*/

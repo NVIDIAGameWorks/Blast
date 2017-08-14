@@ -48,6 +48,7 @@ public:
 	void Pan(const atcore_float2& delta);
 
 	void getScreenCoord(float x, float y, float z, int &sx, int &sy);
+	void getWorldCoord(int sx, int sy, float &x, float &y, float &z);
 
 	float GetZNear() { return _znear; }
 	float GetZFar() { return _zfar; }

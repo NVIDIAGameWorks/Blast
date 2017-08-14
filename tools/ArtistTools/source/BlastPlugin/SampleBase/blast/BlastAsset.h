@@ -65,7 +65,8 @@ public:
 	//////// ctor ////////
 
 	BlastAsset(Renderer& renderer);
-	virtual ~BlastAsset() {}
+	virtual ~BlastAsset();
+	int mUniqueId;
 
 
 	//////// desc ////////

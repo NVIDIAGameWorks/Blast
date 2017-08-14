@@ -242,6 +242,20 @@ BlastFamily* BlastController::getFamilyByPxActor(const PxActor& actor)
 	return nullptr;
 }
 
+BlastFamily* BlastController::getFamilyById(int familyId)
+{
+	BlastFamily* pBlastFamily = nullptr;
+	for (BlastFamilyPtr p : m_families)
+	{
+		if (p->mUniqueId == familyId)
+		{
+			pBlastFamily = p;
+			break;
+		}
+	}
+	return pBlastFamily;
+}
+
 std::vector<PxActor*> BlastController::getActor(BlastAsset* asset, int chunkId)
 {
 	std::vector<PxActor*> actors;

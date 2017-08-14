@@ -256,7 +256,7 @@ public:
 	virtual void							generateFractureCommands(const NvBlastActor& actor, NvBlastFractureBuffers& commands) = 0;
 
 	/**
-	Generate fracture commands for whole family. A bit faster way to get all fractured bonds then calling generateFractureCommands() for every actor.
+	Generate fracture commands for whole family. A bit faster way to get all fractured bonds than calling generateFractureCommands() for every actor.
 
 	Calling this function if getOverstressedBondCount() == 0 or actor has no bond doesn't make sense, bondFractureCount will be '0'.
 

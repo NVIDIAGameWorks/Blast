@@ -89,79 +89,83 @@
 <a name="l00068"></a>00068 <span class="keyword">static</span> thread_local int32_t th_depth = 0;
 <a name="l00069"></a>00069 <span class="preprocessor">#endif</span>
 <a name="l00070"></a>00070 <span class="preprocessor"></span>
-<a name="l00071"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html">00071</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html">ExtCustomProfiler</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_profiler_callback.html">ProfilerCallback</a>
-<a name="l00072"></a>00072 {
-<a name="l00073"></a>00073 <span class="keyword">public</span>:
-<a name="l00074"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#9e7434d8654794fc69d7f0b7afab22d6">00074</a>     <a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#9e7434d8654794fc69d7f0b7afab22d6">ExtCustomProfiler</a>() : m_platformEnabled(false) {}
-<a name="l00075"></a>00075 
-<a name="l00076"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#78b9d61f6da77c27fe4436997363dfb1">00076</a>     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#78b9d61f6da77c27fe4436997363dfb1">zoneStart</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* name)<span class="keyword"> override</span>
-<a name="l00077"></a>00077 <span class="keyword">    </span>{
-<a name="l00078"></a>00078 
-<a name="l00079"></a>00079 <span class="preprocessor">#if SUPPORTS_THREAD_LOCAL</span>
-<a name="l00080"></a>00080 <span class="preprocessor"></span>        <span class="keywordflow">if</span> (PxGetProfilerCallback())
-<a name="l00081"></a>00081         {
-<a name="l00082"></a>00082             <span class="keywordtype">void</span>* data = PxGetProfilerCallback()-&gt;zoneStart(name, <span class="keyword">false</span>, 0xb1a57);
+<a name="l00071"></a>00071 
+<a name="l00076"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html">00076</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html">ExtCustomProfiler</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_profiler_callback.html">ProfilerCallback</a>
+<a name="l00077"></a>00077 {
+<a name="l00078"></a>00078 <span class="keyword">public</span>:
+<a name="l00082"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#9e7434d8654794fc69d7f0b7afab22d6">00082</a>     <a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#9e7434d8654794fc69d7f0b7afab22d6">ExtCustomProfiler</a>() : m_platformEnabled(false) {}
 <a name="l00083"></a>00083 
-<a name="l00084"></a>00084             <span class="keywordflow">if</span> (th_depth &lt; PROFILER_MAX_NESTED_DEPTH &amp;&amp; th_depth &gt;= 0)
-<a name="l00085"></a>00085             {
-<a name="l00086"></a>00086                 th_ProfileData[th_depth].<a class="code" href="struct_nv_1_1_blast_1_1_ext_profile_data.html#e45c1aef4a10db9a1c2433b210d5de83">name</a> = name;
-<a name="l00087"></a>00087                 th_ProfileData[th_depth].<a class="code" href="struct_nv_1_1_blast_1_1_ext_profile_data.html#ecbb14649bf0e4003eb2e906649ebb8d">data</a> = data;
-<a name="l00088"></a>00088                 th_depth++;
-<a name="l00089"></a>00089             }
-<a name="l00090"></a>00090             <span class="keywordflow">else</span>
-<a name="l00091"></a>00091             {
-<a name="l00092"></a>00092                 assert(th_depth &lt; PROFILER_MAX_NESTED_DEPTH &amp;&amp; th_depth &gt;= 0);
-<a name="l00093"></a>00093             }
-<a name="l00094"></a>00094         }
-<a name="l00095"></a>00095 <span class="preprocessor">#endif</span>
-<a name="l00096"></a>00096 <span class="preprocessor"></span>
-<a name="l00097"></a>00097         <span class="keywordflow">if</span> (m_platformEnabled)
-<a name="l00098"></a>00098         {
-<a name="l00099"></a>00099             <a class="code" href="_nv_blast_ext_custom_profiler_8h.html#a73cff190baa0fe10aa4b5d21dd5a7ef">platformZoneStart</a>(name);
-<a name="l00100"></a>00100         }
-<a name="l00101"></a>00101     }
-<a name="l00102"></a>00102 
-<a name="l00103"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#be4743b5975ad80c6495167c7a47174b">00103</a>     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#be4743b5975ad80c6495167c7a47174b">zoneEnd</a>()<span class="keyword"> override</span>
-<a name="l00104"></a>00104 <span class="keyword">    </span>{
-<a name="l00105"></a>00105 
-<a name="l00106"></a>00106 <span class="preprocessor">#if SUPPORTS_THREAD_LOCAL</span>
-<a name="l00107"></a>00107 <span class="preprocessor"></span>        <span class="keywordflow">if</span> (PxGetProfilerCallback())
-<a name="l00108"></a>00108         {
-<a name="l00109"></a>00109             th_depth--;
-<a name="l00110"></a>00110 
-<a name="l00111"></a>00111             <span class="keywordflow">if</span> (th_depth &gt;= 0)
-<a name="l00112"></a>00112             {
-<a name="l00113"></a>00113                 <a class="code" href="struct_nv_1_1_blast_1_1_ext_profile_data.html">ExtProfileData</a>&amp; pd = th_ProfileData[th_depth];
-<a name="l00114"></a>00114                 PxGetProfilerCallback()-&gt;zoneEnd(pd.<a class="code" href="struct_nv_1_1_blast_1_1_ext_profile_data.html#ecbb14649bf0e4003eb2e906649ebb8d">data</a>, pd.<a class="code" href="struct_nv_1_1_blast_1_1_ext_profile_data.html#e45c1aef4a10db9a1c2433b210d5de83">name</a>, <span class="keyword">false</span>, 0xb1a57);
-<a name="l00115"></a>00115             }
-<a name="l00116"></a>00116             <span class="keywordflow">else</span>
-<a name="l00117"></a>00117             {
-<a name="l00118"></a>00118                 assert(th_depth &gt;= 0);
-<a name="l00119"></a>00119             }
-<a name="l00120"></a>00120         }
-<a name="l00121"></a>00121 <span class="preprocessor">#endif</span>
-<a name="l00122"></a>00122 <span class="preprocessor"></span>
-<a name="l00123"></a>00123         <span class="keywordflow">if</span> (m_platformEnabled)
-<a name="l00124"></a>00124         {
-<a name="l00125"></a>00125             <a class="code" href="_nv_blast_ext_custom_profiler_8h.html#a1585207662452977fb8b6593e71f40c">platformZoneEnd</a>();
-<a name="l00126"></a>00126         }
-<a name="l00127"></a>00127     }
-<a name="l00128"></a>00128 
-<a name="l00129"></a>00129 
-<a name="l00130"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#326703192c1cef7196f271e6dd47bd94">00130</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#326703192c1cef7196f271e6dd47bd94">setPlatformEnabled</a>(<span class="keywordtype">bool</span> enabled)
-<a name="l00131"></a>00131     {
-<a name="l00132"></a>00132         m_platformEnabled = enabled;
-<a name="l00133"></a>00133     }
-<a name="l00134"></a>00134 
-<a name="l00135"></a>00135 <span class="keyword">private</span>:
-<a name="l00136"></a>00136     <span class="keywordtype">bool</span> m_platformEnabled;
-<a name="l00137"></a>00137 };
-<a name="l00138"></a>00138 
-<a name="l00139"></a>00139 } <span class="comment">// namespace Blast</span>
-<a name="l00140"></a>00140 } <span class="comment">// namespace Nv</span>
-<a name="l00141"></a>00141 
+<a name="l00084"></a>00084 
+<a name="l00086"></a>00086 
+<a name="l00087"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#78b9d61f6da77c27fe4436997363dfb1">00087</a>     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#78b9d61f6da77c27fe4436997363dfb1">zoneStart</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* name)<span class="keyword"> override</span>
+<a name="l00088"></a>00088 <span class="keyword">    </span>{
+<a name="l00089"></a>00089 
+<a name="l00090"></a>00090 <span class="preprocessor">#if SUPPORTS_THREAD_LOCAL</span>
+<a name="l00091"></a>00091 <span class="preprocessor"></span>        <span class="keywordflow">if</span> (PxGetProfilerCallback())
+<a name="l00092"></a>00092         {
+<a name="l00093"></a>00093             <span class="keywordtype">void</span>* data = PxGetProfilerCallback()-&gt;zoneStart(name, <span class="keyword">false</span>, 0xb1a57);
+<a name="l00094"></a>00094 
+<a name="l00095"></a>00095             <span class="keywordflow">if</span> (th_depth &lt; PROFILER_MAX_NESTED_DEPTH &amp;&amp; th_depth &gt;= 0)
+<a name="l00096"></a>00096             {
+<a name="l00097"></a>00097                 th_ProfileData[th_depth].<a class="code" href="struct_nv_1_1_blast_1_1_ext_profile_data.html#e45c1aef4a10db9a1c2433b210d5de83">name</a> = name;
+<a name="l00098"></a>00098                 th_ProfileData[th_depth].<a class="code" href="struct_nv_1_1_blast_1_1_ext_profile_data.html#ecbb14649bf0e4003eb2e906649ebb8d">data</a> = data;
+<a name="l00099"></a>00099                 th_depth++;
+<a name="l00100"></a>00100             }
+<a name="l00101"></a>00101             <span class="keywordflow">else</span>
+<a name="l00102"></a>00102             {
+<a name="l00103"></a>00103                 assert(th_depth &lt; PROFILER_MAX_NESTED_DEPTH &amp;&amp; th_depth &gt;= 0);
+<a name="l00104"></a>00104             }
+<a name="l00105"></a>00105         }
+<a name="l00106"></a>00106 <span class="preprocessor">#endif</span>
+<a name="l00107"></a>00107 <span class="preprocessor"></span>
+<a name="l00108"></a>00108         <span class="keywordflow">if</span> (m_platformEnabled)
+<a name="l00109"></a>00109         {
+<a name="l00110"></a>00110             <a class="code" href="_nv_blast_ext_custom_profiler_8h.html#a73cff190baa0fe10aa4b5d21dd5a7ef">platformZoneStart</a>(name);
+<a name="l00111"></a>00111         }
+<a name="l00112"></a>00112     }
+<a name="l00113"></a>00113 
+<a name="l00114"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#be4743b5975ad80c6495167c7a47174b">00114</a>     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#be4743b5975ad80c6495167c7a47174b">zoneEnd</a>()<span class="keyword"> override</span>
+<a name="l00115"></a>00115 <span class="keyword">    </span>{
+<a name="l00116"></a>00116 
+<a name="l00117"></a>00117 <span class="preprocessor">#if SUPPORTS_THREAD_LOCAL</span>
+<a name="l00118"></a>00118 <span class="preprocessor"></span>        <span class="keywordflow">if</span> (PxGetProfilerCallback())
+<a name="l00119"></a>00119         {
+<a name="l00120"></a>00120             th_depth--;
+<a name="l00121"></a>00121 
+<a name="l00122"></a>00122             <span class="keywordflow">if</span> (th_depth &gt;= 0)
+<a name="l00123"></a>00123             {
+<a name="l00124"></a>00124                 <a class="code" href="struct_nv_1_1_blast_1_1_ext_profile_data.html">ExtProfileData</a>&amp; pd = th_ProfileData[th_depth];
+<a name="l00125"></a>00125                 PxGetProfilerCallback()-&gt;zoneEnd(pd.<a class="code" href="struct_nv_1_1_blast_1_1_ext_profile_data.html#ecbb14649bf0e4003eb2e906649ebb8d">data</a>, pd.<a class="code" href="struct_nv_1_1_blast_1_1_ext_profile_data.html#e45c1aef4a10db9a1c2433b210d5de83">name</a>, <span class="keyword">false</span>, 0xb1a57);
+<a name="l00126"></a>00126             }
+<a name="l00127"></a>00127             <span class="keywordflow">else</span>
+<a name="l00128"></a>00128             {
+<a name="l00129"></a>00129                 assert(th_depth &gt;= 0);
+<a name="l00130"></a>00130             }
+<a name="l00131"></a>00131         }
+<a name="l00132"></a>00132 <span class="preprocessor">#endif</span>
+<a name="l00133"></a>00133 <span class="preprocessor"></span>
+<a name="l00134"></a>00134         <span class="keywordflow">if</span> (m_platformEnabled)
+<a name="l00135"></a>00135         {
+<a name="l00136"></a>00136             <a class="code" href="_nv_blast_ext_custom_profiler_8h.html#a1585207662452977fb8b6593e71f40c">platformZoneEnd</a>();
+<a name="l00137"></a>00137         }
+<a name="l00138"></a>00138     }
+<a name="l00139"></a>00139 
+<a name="l00140"></a>00140 
 <a name="l00142"></a>00142 
-<a name="l00143"></a>00143 <span class="preprocessor">#endif</span>
+<a name="l00148"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#326703192c1cef7196f271e6dd47bd94">00148</a>     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#326703192c1cef7196f271e6dd47bd94">setPlatformEnabled</a>(<span class="keywordtype">bool</span> enabled)
+<a name="l00149"></a>00149     {
+<a name="l00150"></a>00150         m_platformEnabled = enabled;
+<a name="l00151"></a>00151     }
+<a name="l00152"></a>00152 
+<a name="l00153"></a>00153 <span class="keyword">private</span>:
+<a name="l00154"></a>00154     <span class="keywordtype">bool</span> m_platformEnabled;
+<a name="l00155"></a>00155 };
+<a name="l00156"></a>00156 
+<a name="l00157"></a>00157 } <span class="comment">// namespace Blast</span>
+<a name="l00158"></a>00158 } <span class="comment">// namespace Nv</span>
+<a name="l00159"></a>00159 
+<a name="l00160"></a>00160 
+<a name="l00161"></a>00161 <span class="preprocessor">#endif // NVBLASTDEFAULTPROFILER_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

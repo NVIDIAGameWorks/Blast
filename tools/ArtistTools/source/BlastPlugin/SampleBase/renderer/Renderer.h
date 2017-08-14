@@ -70,7 +70,9 @@ class Renderer : public ISampleController
 	Renderer();
 	~Renderer();
 
-
+	static Renderer* Inst();
+	bool bFetchSelection;
+	void fetchSelection(std::vector<PxVec2>& screenPoints, std::map<int, std::set<int>>& selection);
 	//////// public API ////////
 
 	void reloadShaders();
@@ -109,13 +111,21 @@ class Renderer : public ISampleController
 		return m_screenHeight;
 	}
 
-	void queueRenderBuffer(const PxRenderBuffer* buffer)
+	void queueRenderBuffer(const PxRenderBuffer* buffer, bool bScreen = false)
 	{
-		m_queuedRenderBuffers.push_back(buffer);
+		if (bScreen)
+		{
+			m_screenRenderBuffers.push_back(buffer);
+		}
+		else
+		{
+			m_queuedRenderBuffers.push_back(buffer);
+		}
 	}
 
 	void clearQueue()
 	{
+		m_screenRenderBuffers.clear();
 		m_queuedRenderBuffers.clear();
 	}
 
@@ -139,6 +149,10 @@ class Renderer : public ISampleController
 		return m_camera;
 	}
 
+	RenderMaterial::InstancePtr getSelectionRenderMaterialInstance()
+	{
+		return m_selectionRenderMaterialInstance;
+	}
 
 	//////// public 'internal' methods ////////
 
@@ -169,9 +183,9 @@ class Renderer : public ISampleController
 		uint32_t mColor;
 	};
 
-	void render(const PxRenderBuffer* renderBuffer);
+	void render(const PxRenderBuffer* renderBuffer, bool bScreen = false);
 	void render(Renderable* renderable);
-	void renderDebugPrimitive(const RenderDebugVertex *vertices, uint32_t verticesCount, D3D11_PRIMITIVE_TOPOLOGY topology);
+	void renderDebugPrimitive(const RenderDebugVertex *vertices, uint32_t verticesCount, D3D11_PRIMITIVE_TOPOLOGY topology, bool bScreen = false);
 	void initializeDefaultRSState();
 	void setAllConstantBuffers(ID3D11DeviceContext* ctx);
 	void toggleCameraSpeed(bool overspeed);
@@ -278,6 +292,25 @@ class Renderer : public ISampleController
 	ID3D11Buffer*                      m_debugPrimitiveVB;
 	uint32_t                           m_debugPrimitiveVBVerticesCount;
 	std::vector<const PxRenderBuffer*> m_queuedRenderBuffers;
+
+	// Screen Render
+	RenderMaterial*                    m_screenPrimitiveRenderMaterial;
+	RenderMaterial::InstancePtr        m_screenPrimitiveRenderMaterialInstance;
+	ID3D11Buffer*                      m_screenPrimitiveVB;
+	uint32_t                           m_screenPrimitiveVBVerticesCount;
+	std::vector<const PxRenderBuffer*> m_screenRenderBuffers;
+	
+	// Selection Render Resource
+	RenderMaterial*                    m_selectionRenderMaterial;
+	RenderMaterial::InstancePtr        m_selectionRenderMaterialInstance;
+	ID3D11Texture2D*                   m_selectionRenderTargetTexture;
+	ID3D11RenderTargetView*	           m_selectionRenderTargetView;
+	ID3D11ShaderResourceView*          m_selectionRenderTargetSRV;
+	ID3D11Texture2D*                   m_selectionDepthStencilTexture;
+	ID3D11DepthStencilView*	           m_selectionDepthStencilView;
+	ID3D11ShaderResourceView*          m_selectionDepthStencilSRV;
+	ID3D11Texture2D*                   m_selectionTextureForCPU;
+	std::vector<float>				   m_selectionTextureData;
 };
 
 

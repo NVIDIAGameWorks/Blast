@@ -292,6 +292,7 @@ class SampleManager
 	void refreshAsset(BlastAsset* pBlastAsset);
 
 	void UpdateCamera();
+	void ResetUpDir(bool zup);
 
 	bool IsSimulating() { return m_simulating; }
 	void EnableSimulating(bool bSimulating);

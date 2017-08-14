@@ -58,7 +58,10 @@ using namespace physx;
 SelectionToolController::SelectionToolController()
 {
 	m_bRectSelecting = false;
+	m_bDrawSelecting = false;
 	m_bSelecting = false;
+	m_ScreenRenderBuffer.clear();
+	m_DrawSelectScreenPos.clear();
 
 	BlastSceneTree::ins()->addObserver(this);
 }
@@ -107,9 +110,9 @@ void SelectionToolController::Animate(double dt)
 {
 	PROFILER_SCOPED_FUNCTION();
 
-	if (m_bRectSelecting)
-	{
-		getRenderer().queueRenderBuffer(&m_RectRenderBuffer);
+	if (m_ScreenRenderBuffer.getNbLines() > 0)
+	{		
+		getRenderer().queueRenderBuffer(&m_ScreenRenderBuffer, true);
 	}
 }
 
@@ -121,106 +124,75 @@ LRESULT SelectionToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 	if (uMsg == WM_LBUTTONDOWN || uMsg == WM_RBUTTONDOWN || uMsg == WM_MOUSEMOVE || uMsg == WM_LBUTTONUP || uMsg == WM_RBUTTONUP)
 	{
 		float mouseX = (short)LOWORD(lParam) / getRenderer().getScreenWidth();
-		if (!SimpleScene::Inst()->m_pCamera->_lhs)
-		{
-			mouseX = 1 - mouseX;
-		}
 		float mouseY = (short)HIWORD(lParam) / getRenderer().getScreenHeight();
-		bool press = uMsg == WM_LBUTTONDOWN;
 
 		if (uMsg == WM_LBUTTONDOWN || uMsg == WM_RBUTTONDOWN)
 		{
-			PxVec3 eyePos, pickDir;
-			getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
+			m_ScreenRenderBuffer.clear();
 
-			m_RectSelectScreenPos.x = mouseX;
-			m_RectSelectScreenPos.y = mouseY;
-			m_RectSelectSpaceDir = pickDir.getNormalized();
-
-			m_RectRenderBuffer.clear();
 			bool isCtrl = (GetAsyncKeyState(VK_CONTROL) && 0x8000);
 			bool isAlt = (GetAsyncKeyState(VK_MENU) && 0x8000);
 			bool isLight = (GetAsyncKeyState('L') && 0x8000);
 			// ctrl+leftbutton is used for light changing
 			// alt+leftbutton is used for camera rotate movement in AppMainWindow.cpp
 			// so, we use rect select when ctrl and alt off
-			m_bRectSelecting = !(isAlt || isLight);// !(isCtrl || isAlt);
-			if (isAlt || isLight)
+			bool Selecting = !(isAlt || isLight);// !(isCtrl || isAlt);
+			
+			if (uMsg == WM_LBUTTONDOWN && !m_bDrawSelecting)
 			{
-				m_RectRenderBuffer.clear();
+				m_RectSelectScreenPos.x = mouseX;
+				m_RectSelectScreenPos.y = mouseY;
+
+				m_bRectSelecting = Selecting;
 			}
-			m_bSelecting = true;
+			else // uMsg == WM_RBUTTONDOWN
+			{
+				m_DrawSelectScreenPos.push_back(PxVec2(mouseX, mouseY));
+
+				m_bDrawSelecting = Selecting;
+			}
+
+			m_bSelecting = m_bRectSelecting || m_bDrawSelecting;
 		}
 		else if (uMsg == WM_MOUSEMOVE)
 		{
 			if (m_bRectSelecting)
 			{
-				PxVec3 eyePos, pickDir[3];
-				getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir[0]);
-				getPhysXController().getEyePoseAndPickDir(m_RectSelectScreenPos.x, mouseY, eyePos, pickDir[1]);
-				getPhysXController().getEyePoseAndPickDir(mouseX, m_RectSelectScreenPos.y, eyePos, pickDir[2]);
-				pickDir[0] = pickDir[0].getNormalized();
-				pickDir[1] = pickDir[1].getNormalized();
-				pickDir[2] = pickDir[2].getNormalized();
-
-				PxVec3 lefttop, leftbottom, righttop, rightbottom;
-
-				if (mouseX > m_RectSelectScreenPos.x) // right
+				float left, right, top, bottom;
+				left = right = mouseX;
+				top = bottom = mouseY;
+				if (mouseX > m_RectSelectScreenPos.x)
 				{
-					if (mouseY > m_RectSelectScreenPos.y) // top
-					{
-						leftbottom = m_RectSelectSpaceDir;
-						righttop = pickDir[0];
-						lefttop = pickDir[2];
-						rightbottom = pickDir[1];
-					}
-					else // bottom
-					{
-						leftbottom = pickDir[1];
-						righttop = pickDir[2];
-						lefttop = m_RectSelectSpaceDir;
-						rightbottom = pickDir[0];
-					}
+					left = m_RectSelectScreenPos.x;
 				}
-				else // left
+				else
 				{
-					if (mouseY > m_RectSelectScreenPos.y) // top
-					{
-						leftbottom = pickDir[2];
-						righttop = pickDir[1];
-						lefttop = pickDir[0];
-						rightbottom = m_RectSelectSpaceDir;
-					}
-					else // bottom
-					{
-						leftbottom = pickDir[0];
-						righttop = m_RectSelectSpaceDir;
-						lefttop = pickDir[2];
-						rightbottom = pickDir[1];
-					}
+					right = m_RectSelectScreenPos.x;
+				}
+				if (mouseY > m_RectSelectScreenPos.y)
+				{
+					top = m_RectSelectScreenPos.y;
+				}
+				else
+				{
+					bottom = m_RectSelectScreenPos.y;
 				}
 
-				float multiply = 10; // in order to draw line
-				lefttop = eyePos + lefttop * multiply;
-				righttop = eyePos + righttop * multiply;
-				leftbottom = eyePos + leftbottom * multiply;
-				rightbottom = eyePos + rightbottom * multiply;
+				m_ScreenRenderBuffer.clear();
 
-				m_RectRenderBuffer.clear();
-
+				PxVec3 left_top(left, top, 0);
+				PxVec3 left_bottom(left, bottom, 0);
+				PxVec3 right_bottom(right, bottom, 0);
+				PxVec3 right_top(right, top, 0);
 				DirectX::XMFLOAT4 LINE_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
-				m_RectRenderBuffer.m_lines.push_back(PxDebugLine(lefttop, leftbottom, XMFLOAT4ToU32Color(LINE_COLOR)));
-				m_RectRenderBuffer.m_lines.push_back(PxDebugLine(lefttop, righttop, XMFLOAT4ToU32Color(LINE_COLOR)));
-				m_RectRenderBuffer.m_lines.push_back(PxDebugLine(righttop, rightbottom, XMFLOAT4ToU32Color(LINE_COLOR)));
-				m_RectRenderBuffer.m_lines.push_back(PxDebugLine(leftbottom, rightbottom, XMFLOAT4ToU32Color(LINE_COLOR)));
+				m_ScreenRenderBuffer.m_lines.push_back(PxDebugLine(left_top, left_bottom, XMFLOAT4ToU32Color(LINE_COLOR)));
+				m_ScreenRenderBuffer.m_lines.push_back(PxDebugLine(left_bottom, right_bottom, XMFLOAT4ToU32Color(LINE_COLOR)));
+				m_ScreenRenderBuffer.m_lines.push_back(PxDebugLine(right_bottom, right_top, XMFLOAT4ToU32Color(LINE_COLOR)));
+				m_ScreenRenderBuffer.m_lines.push_back(PxDebugLine(right_top, left_top, XMFLOAT4ToU32Color(LINE_COLOR)));
 			}
 		}
-		else if (uMsg == WM_LBUTTONUP || uMsg == WM_RBUTTONUP)
+		else if (uMsg == WM_LBUTTONUP)
 		{
-			if (uMsg == WM_RBUTTONUP && m_actorsSelected.size() > 1)
-			{
-				return 1;
-			}
 			bool isAlt = (GetAsyncKeyState(VK_MENU) && 0x8000);
 			bool isLight = (GetAsyncKeyState('L') && 0x8000);
 			if (m_bSelecting && !(isAlt || isLight))
@@ -241,101 +213,123 @@ LRESULT SelectionToolController::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 				{
 					selectMode = SM_SUB;
 				}
-				int width = getRenderer().getScreenWidth();
-				int height = getRenderer().getScreenHeight();
-				int deltaX = (mouseX - m_RectSelectScreenPos.x) * width;
-				int deltaY = (mouseY - m_RectSelectScreenPos.y) * height;
-				float distance = deltaX * deltaX + deltaY * deltaY;
-				if (distance < 1)
-				{
-					m_bRectSelecting = false;
-				}
+				
+				Renderer* pRenderer = Renderer::Inst();
+				std::vector<PxVec2> screenPoints;
+				std::map<int, std::set<int>> selection;
+
 				if (m_bRectSelecting)
 				{
-					// rect select mode
-					PxVec3 eyePos, pickDir[3];
-					getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir[0]);
-					getPhysXController().getEyePoseAndPickDir(m_RectSelectScreenPos.x, mouseY, eyePos, pickDir[1]);
-					getPhysXController().getEyePoseAndPickDir(mouseX, m_RectSelectScreenPos.y, eyePos, pickDir[2]);
-					pickDir[0] = pickDir[0].getNormalized();
-					pickDir[1] = pickDir[1].getNormalized();
-					pickDir[2] = pickDir[2].getNormalized();
-
-					PxVec3 lefttop, leftbottom, righttop, rightbottom;
-
-					if (mouseX > m_RectSelectScreenPos.x) // right
+					int width = getRenderer().getScreenWidth();
+					int height = getRenderer().getScreenHeight();
+					int deltaX = (mouseX - m_RectSelectScreenPos.x) * width;
+					int deltaY = (mouseY - m_RectSelectScreenPos.y) * height;
+					float distance = deltaX * deltaX + deltaY * deltaY;
+					if (distance < 1)
 					{
-						if (mouseY > m_RectSelectScreenPos.y) // top
-						{
-							leftbottom = m_RectSelectSpaceDir;
-							righttop = pickDir[0];
-							lefttop = pickDir[2];
-							rightbottom = pickDir[1];
-						}
-						else // bottom
-						{
-							leftbottom = pickDir[1];
-							righttop = pickDir[2];
-							lefttop = m_RectSelectSpaceDir;
-							rightbottom = pickDir[0];
-						}
+						// point select
+						screenPoints.push_back(m_RectSelectScreenPos);
 					}
-					else // left
+					else
 					{
-						if (mouseY > m_RectSelectScreenPos.y) // top
+						// rect select	
+						float left, right, top, bottom;
+						left = right = mouseX;
+						top = bottom = mouseY;
+						if (mouseX > m_RectSelectScreenPos.x)
 						{
-							leftbottom = pickDir[2];
-							righttop = pickDir[1];
-							lefttop = pickDir[0];
-							rightbottom = m_RectSelectSpaceDir;
+							left = m_RectSelectScreenPos.x;
 						}
-						else // bottom
+						else
 						{
-							leftbottom = pickDir[0];
-							righttop = m_RectSelectSpaceDir;
-							lefttop = pickDir[2];
-							rightbottom = pickDir[1];
+							right = m_RectSelectScreenPos.x;
 						}
-					}
+						if (mouseY > m_RectSelectScreenPos.y)
+						{
+							top = m_RectSelectScreenPos.y;
+						}
+						else
+						{
+							bottom = m_RectSelectScreenPos.y;
+						}
 
-					rectSelect(eyePos, lefttop, leftbottom, righttop, rightbottom, selectMode);
+						screenPoints.push_back(PxVec2(left, top));
+						screenPoints.push_back(PxVec2(right, bottom));
+					}
 				}
-				// point select mode
-				else
+				else if(m_bDrawSelecting)
 				{
-					PxVec3 eyePos, pickDir;
-					getPhysXController().getEyePoseAndPickDir(mouseX, mouseY, eyePos, pickDir);
-					pickDir = pickDir.getNormalized();
-
-					PxRaycastBufferN<32> hits;
-
-					GetPhysXScene().raycast(eyePos, pickDir, PX_MAX_F32, hits, PxHitFlag::eDEFAULT | PxHitFlag::eMESH_MULTIPLE);
-
-					PxU32 nbThouches = hits.getNbTouches();
-					const PxRaycastHit* touches = hits.getTouches();
-
-					PxRigidActor* actor = NULL;
-					float fDistance = PX_MAX_F32;
-					for (PxU32 u = 0; u < nbThouches; ++u)
+					// draw select
+					if (m_DrawSelectScreenPos.size() > 2)
 					{
-						const PxRaycastHit& t = touches[u];
-						if (t.shape && getBlastController().isActorVisible(*(t.actor)))
+						screenPoints.swap(m_DrawSelectScreenPos);
+					}
+				}
+
+				pRenderer->fetchSelection(screenPoints, selection);
+
+				std::set<PxActor*> actors;
+				PxActor* pActor;
+				BlastController& blastController = getBlastController();
+				for (std::pair<int, std::set<int>> familychunksId : selection)
+				{
+					BlastFamily* pBlastFamily = blastController.getFamilyById(familychunksId.first);
+					std::set<int>& chunkIds = familychunksId.second;
+					for (int chunkId : chunkIds)
+					{						
+						pBlastFamily->getPxActorByChunkIndex(chunkId, &pActor);
+						if (pActor != nullptr)
 						{
-							if (fDistance > t.distance)
-							{
-								fDistance = t.distance;
-								actor = t.actor;
-							}
+							actors.emplace(pActor);
 						}
 					}
-
-					pointSelect(actor, selectMode);
 				}
+				rangeSelect(actors, selectMode);
 			}
 
-			m_RectRenderBuffer.clear();
+			m_DrawSelectScreenPos.clear();
+			m_ScreenRenderBuffer.clear();
 			m_bRectSelecting = false;
+			m_bDrawSelecting = false;
 			m_bSelecting = false;
+		}
+		else if (uMsg == WM_RBUTTONUP)
+		{
+			/*
+			if (m_actorsSelected.size() > 1)
+			{
+				return 1;
+			}
+			*/
+			if (m_bDrawSelecting)
+			{
+				m_ScreenRenderBuffer.clear();
+
+				DirectX::XMFLOAT4 LINE_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
+
+				int size = m_DrawSelectScreenPos.size() - 1;
+				if (size == 0)
+				{
+					return 1;
+				}
+
+				PxVec3 from(0, 0, 0);
+				PxVec3 to(0, 0, 0);
+				for (int i = 0; i < size; i++)
+				{
+					from.x = m_DrawSelectScreenPos[i].x;
+					from.y = m_DrawSelectScreenPos[i].y;
+					to.x = m_DrawSelectScreenPos[i + 1].x;
+					to.y = m_DrawSelectScreenPos[i + 1].y;
+					m_ScreenRenderBuffer.m_lines.push_back(
+						PxDebugLine(from, to, XMFLOAT4ToU32Color(LINE_COLOR)));
+				}
+				// connect tail and head to close
+				from.x = m_DrawSelectScreenPos[0].x;
+				from.y = m_DrawSelectScreenPos[0].y;
+				m_ScreenRenderBuffer.m_lines.push_back(
+					PxDebugLine(to, from, XMFLOAT4ToU32Color(LINE_COLOR)));
+			}
 		}
 	}
 
@@ -348,100 +342,13 @@ void SelectionToolController::drawUI()
 
 void SelectionToolController::pointSelect(PxActor* actor, SelectMode selectMode)
 {
-	if (selectMode == SM_RESET)
-	{
-		clearSelect();
-
-		if (NULL != actor)
-		{
-			setActorSelected(*actor, true);
-			m_actorsSelected.emplace(actor);
-		}
-	}
-	else if (selectMode == SM_ADD)
-	{
-		if (NULL != actor)
-		{
-			setActorSelected(*actor, true);
-			m_actorsSelected.emplace(actor);
-		}
-	}
-	else if (selectMode == SM_SUB)
-	{
-		if (NULL != actor)
-		{
-			setActorSelected(*actor, false);
-			m_actorsSelected.erase(actor);
-		}
-	}
-
-	BlastSceneTree::ins()->updateChunkItemSelection();
-	trySelectAssetInstanceNode(m_actorsSelected);
+	std::set<PxActor*> actors;
+	actors.emplace(actor);
+	rangeSelect(actors, selectMode);
 }
 
-#include "PxPhysics.h"
-#include "cooking/PxCooking.h"
-
-class RectSelectionCallback : public PxOverlapCallback
+void SelectionToolController::rangeSelect(std::set<PxActor*>& actorsToSelect, SelectMode selectMode)
 {
-public:
-	RectSelectionCallback(std::set<PxActor*>& actorBuffer)
-		:m_actorBuffer(actorBuffer), PxOverlapCallback(m_hitBuffer, sizeof(m_hitBuffer) / sizeof(m_hitBuffer[0])) {}
-
-	PxAgain processTouches(const PxOverlapHit* buffer, PxU32 nbHits)
-	{
-		for (PxU32 i = 0; i < nbHits; ++i)
-		{
-			PxRigidDynamic* rigidDynamic = buffer[i].actor->is<PxRigidDynamic>();
-			if (rigidDynamic)
-			{
-				m_actorBuffer.insert(rigidDynamic);
-			}
-		}
-		return true;
-	}
-
-private:
-	std::set<PxActor*>&				m_actorBuffer;
-	PxOverlapHit					m_hitBuffer[1000];
-};
-
-void SelectionToolController::rectSelect(PxVec3 eyePos, PxVec3 lefttop, PxVec3 leftbottom, PxVec3 righttop, PxVec3 rightbottom, SelectMode selectMode)
-{
-	std::set<PxActor*> actorsToSelect;
-
-	float nearClip = 1;
-	PxVec3 nearlefttop = lefttop * nearClip;
-	PxVec3 nearrighttop = righttop * nearClip;
-	PxVec3 nearleftbottom = leftbottom * nearClip;
-	PxVec3 nearrightbottom = rightbottom * nearClip;
-
-	float farClip = 1000;
-	PxVec3 farlefttop = lefttop * farClip;
-	PxVec3 farrighttop = righttop * farClip;
-	PxVec3 farleftbottom = leftbottom * farClip;
-	PxVec3 farrightbottom = rightbottom * farClip;
-
-	PxVec3 vertices[8] =
-	{
-		nearlefttop, nearrighttop, nearleftbottom, nearrightbottom,
-		farlefttop, farrighttop, farleftbottom, farrightbottom
-	};
-	PxConvexMeshDesc convexMeshDesc;
-	convexMeshDesc.points.count = 8;
-	convexMeshDesc.points.data = vertices;
-	convexMeshDesc.points.stride = sizeof(PxVec3);
-	convexMeshDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX;	
-	PxPhysics& physics = getManager()->getPhysXController().getPhysics();
-	PxCooking& cooking = getManager()->getPhysXController().getCooking();
-	PxConvexMesh* convexMesh = cooking.createConvexMesh(convexMeshDesc, physics.getPhysicsInsertionCallback());
-	if (NULL != convexMesh)
-	{
-		RectSelectionCallback overlapCallback(actorsToSelect);
-		GetPhysXScene().overlap(PxConvexMeshGeometry(convexMesh), PxTransform(eyePos), overlapCallback);
-		convexMesh->release();
-	}
-
 	if (selectMode == SM_RESET)
 	{
 		clearSelect();

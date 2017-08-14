@@ -66,7 +66,7 @@ SET_TARGET_PROPERTIES(ApexImporter PROPERTIES
 
 # Do final direct sets after the target has been defined
 TARGET_LINK_LIBRARIES(ApexImporter 
-	PRIVATE NvBlast NvBlastExtPhysX NvBlastExtAuthoring NvBlastExtImport NvBlastExtExporter NvBlastExtSerialization NvBlastExtTkSerialization NvBlastExtPxSerialization Rpcrt4 $<$<OR:$<CONFIG:debug>,$<CONFIG:checked>,$<CONFIG:profile>>:${NVTOOLSEXT_LIB}> 
+	PRIVATE NvBlast NvBlastExtPhysX NvBlastExtAuthoring NvBlastExtImport NvBlastExtExporter NvBlastExtSerialization NvBlastExtTkSerialization NvBlastExtPxSerialization Rpcrt4 
 	PRIVATE ${FBXSDK_LIBRARIES}
 )
 

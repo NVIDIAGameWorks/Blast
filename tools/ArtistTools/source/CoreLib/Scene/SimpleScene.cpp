@@ -932,6 +932,8 @@ void SimpleScene::ResetUpDir(bool zup)
 
 	GlobalSettings::Inst().m_zup = zup;
 
+	CoreLib::Inst()->SimpleScene_ResetUpDir(zup);
+
 	SetProjectModified(true);
 }
 

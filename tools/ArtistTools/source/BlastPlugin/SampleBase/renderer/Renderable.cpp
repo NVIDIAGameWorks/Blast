@@ -50,6 +50,33 @@ void Renderable::setMaterial(RenderMaterial& material)
 
 void Renderable::render(Renderer& renderer, bool depthStencilOnly) const
 {
+	if (renderer.bFetchSelection)
+	{
+		RenderMaterial::InstancePtr materialInstance = renderer.getSelectionRenderMaterialInstance();
+		if (!materialInstance->isValid())
+		{
+			PX_ALWAYS_ASSERT();
+			return;
+		}
+
+		materialInstance->bind(*renderer.m_context, 0);
+
+		// setup object CB
+		{
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+			renderer.m_context->Map(renderer.m_objectCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			Renderer::CBObject* objectBuffer = (Renderer::CBObject*)mappedResource.pData;
+			objectBuffer->worldMatrix = PxMat44ToXMMATRIX(getModelMatrix());
+			// use selected to store mUniqueId
+			objectBuffer->selected = m_mesh.mUniqueId;
+			renderer.m_context->Unmap(renderer.m_objectCB, 0);
+		}
+
+		m_mesh.render(*renderer.m_context);
+
+		return;
+	}
+
 	if (!m_materialInstance->isValid())
 	{
 		PX_ALWAYS_ASSERT();

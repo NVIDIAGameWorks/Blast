@@ -129,9 +129,9 @@ Descriptor for joint creation.
 */
 struct TkJointDesc
 {
-	TkFamily*		families[2];		//!< The TkFamily objects containint the chunks joined by the joint
+	TkFamily*		families[2];		//!< The TkFamily objects containing the chunks joined by the joint
 	uint32_t		chunkIndices[2];	//!< The chunk indices within the corresponding TkFamily objects joined by the joint.  The indexed chunks will be support chunks.
-	physx::PxVec3	attachPositions[2];	//!< The position of the joint relative to each TkActor which ownes the chunks jointed by this joint
+	physx::PxVec3	attachPositions[2];	//!< The position of the joint relative to each TkActor which owns the chunks jointed by this joint
 };
 
 

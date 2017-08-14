@@ -92,23 +92,22 @@
 <a name="l00058"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html#756207678a22314a8a7a2232819d4e99">00058</a>     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html#756207678a22314a8a7a2232819d4e99">~ExtGroupTaskManager</a>() {}
 <a name="l00059"></a>00059 
 <a name="l00060"></a>00060 <span class="keyword">public</span>:
-<a name="l00061"></a>00061     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html">ExtGroupTaskManager</a>* create(physx::PxTaskManager&amp;);
-<a name="l00062"></a>00062     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html">ExtGroupTaskManager</a>* create(physx::PxTaskManager&amp;, <a class="code" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>&amp;);
-<a name="l00063"></a>00063 
-<a name="l00067"></a>00067     <span class="keyword">virtual</span> <span class="keywordtype">void</span> setGroup(<a class="code" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>*) = 0;
-<a name="l00068"></a>00068 
-<a name="l00080"></a>00080     <span class="keyword">virtual</span> uint32_t process(uint32_t workerCount = 0) = 0;
-<a name="l00081"></a>00081 
-<a name="l00085"></a>00085     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> wait(<span class="keywordtype">bool</span> block = <span class="keyword">true</span>) = 0;
-<a name="l00086"></a>00086 
-<a name="l00090"></a>00090     <span class="keyword">virtual</span> <span class="keywordtype">void</span> release() = 0;
-<a name="l00091"></a>00091 };
-<a name="l00092"></a>00092 
-<a name="l00093"></a>00093 
-<a name="l00094"></a>00094 } <span class="comment">// namespace Blast</span>
-<a name="l00095"></a>00095 } <span class="comment">// namespace Nv</span>
-<a name="l00096"></a>00096 
-<a name="l00097"></a>00097 <span class="preprocessor">#endif // NVBLASTEXTPXTASK_H</span>
+<a name="l00064"></a>00064     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_group_task_manager.html">ExtGroupTaskManager</a>* create(physx::PxTaskManager&amp;, <a class="code" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>* = <span class="keyword">nullptr</span>);
+<a name="l00065"></a>00065 
+<a name="l00069"></a>00069     <span class="keyword">virtual</span> <span class="keywordtype">void</span> setGroup(<a class="code" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>*) = 0;
+<a name="l00070"></a>00070 
+<a name="l00084"></a>00084     <span class="keyword">virtual</span> uint32_t process(uint32_t workerCount = 0) = 0;
+<a name="l00085"></a>00085 
+<a name="l00094"></a>00094     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> wait(<span class="keywordtype">bool</span> block = <span class="keyword">true</span>) = 0;
+<a name="l00095"></a>00095 
+<a name="l00099"></a>00099     <span class="keyword">virtual</span> <span class="keywordtype">void</span> release() = 0;
+<a name="l00100"></a>00100 };
+<a name="l00101"></a>00101 
+<a name="l00102"></a>00102 
+<a name="l00103"></a>00103 } <span class="comment">// namespace Blast</span>
+<a name="l00104"></a>00104 } <span class="comment">// namespace Nv</span>
+<a name="l00105"></a>00105 
+<a name="l00106"></a>00106 <span class="preprocessor">#endif // NVBLASTEXTPXTASK_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

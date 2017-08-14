@@ -422,7 +422,7 @@ NOTE: Returned <a class="el" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1
 <div class="memdoc">
 
 <p>
-Generate fracture commands for whole family. A bit faster way to get all fractured bonds then calling <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d75b9476c3b6189d4d84d3b55016bdf7">generateFractureCommands()</a> for every actor.<p>
+Generate fracture commands for whole family. A bit faster way to get all fractured bonds than calling <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d75b9476c3b6189d4d84d3b55016bdf7">generateFractureCommands()</a> for every actor.<p>
 Calling this function if <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#9f74a5d7affbf89a5c05a1e2320cd60d">getOverstressedBondCount()</a> == 0 or actor has no bond doesn't make sense, bondFractureCount will be '0'.<p>
 IMPORTANT: <a class="el" href="struct_nv_blast_fracture_buffers.html#5768e2ed80216a98fbcaee56a6194837" title="memory to be filled by fracture functions">NvBlastFractureBuffers::bondFractures</a> will point to internal stress solver memory which will be valid till next call of any of <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d75b9476c3b6189d4d84d3b55016bdf7">generateFractureCommands()</a> functions or stress solver <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#9f740702a06e3bd915218ec8aa8415d8">release()</a> call.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>

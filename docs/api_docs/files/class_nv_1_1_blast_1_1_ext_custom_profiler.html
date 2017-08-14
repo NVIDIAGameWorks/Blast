@@ -47,7 +47,8 @@ Inheritance diagram for Nv::Blast::ExtCustomProfiler:</div>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#78b9d61f6da77c27fe4436997363dfb1">zoneStart</a> (const char *name) override</td></tr>
 
 </table>
-<hr><h2>Constructor &amp; Destructor Documentation</h2>
+<hr><a name="_details"></a><h2>Detailed Description</h2>
+Implements <a class="el" href="class_nv_1_1_blast_1_1_profiler_callback.html">Nv::Blast::ProfilerCallback</a> to serve the physx::PxProfilerCallback set in PxFoundation for PhysX Visual Debugger support and platform specific profilers like NVIDIA(R) NSight(TM). <hr><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" name="9e7434d8654794fc69d7f0b7afab22d6"></a><!-- doxytag: member="Nv::Blast::ExtCustomProfiler::ExtCustomProfiler" ref="9e7434d8654794fc69d7f0b7afab22d6" args="()" -->
 <div class="memitem">
 <div class="memproto">
@@ -64,7 +65,7 @@ Inheritance diagram for Nv::Blast::ExtCustomProfiler:</div>
 <div class="memdoc">
 
 <p>
-
+Construct an <a class="el" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html">ExtCustomProfiler</a> with platform specific profiler signals disabled. 
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
@@ -85,6 +86,12 @@ Inheritance diagram for Nv::Blast::ExtCustomProfiler:</div>
 <div class="memdoc">
 
 <p>
+Enable or disable platform specific profiler signals. Disabled by default.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>enabled</em>&nbsp;</td><td>true enables, false disables platform profiler calls. </td></tr>
+  </table>
+</dl>
 
 </div>
 </div><p>

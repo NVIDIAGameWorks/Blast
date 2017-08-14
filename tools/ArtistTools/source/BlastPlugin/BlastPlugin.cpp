@@ -854,6 +854,14 @@ bool BlastPlugin::SimpleScene_FitCamera(atcore_float3& center, atcore_float3& ex
 
 	return true; 
 }
+
+bool BlastPlugin::SimpleScene_ResetUpDir(bool zup)
+{
+	SampleManager* pSampleManager = SampleManager::ins();
+	pSampleManager->ResetUpDir(zup);
+	return true;
+}
+
 bool BlastPlugin::SimpleScene_UpdateCamera()
 {
 	SampleManager* pSampleManager = SampleManager::ins();

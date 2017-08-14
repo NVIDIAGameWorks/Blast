@@ -53,6 +53,7 @@
 
 const float RIGIDBODY_DENSITY = 2000.0f;
 
+std::set<int> ExistingFamilyIds;
 BlastFamily::BlastFamily(PhysXController& physXController, ExtPxManager& pxManager, const BlastAsset& blastAsset) 
 	: m_physXController(physXController)
 	, m_pxManager(pxManager)
@@ -64,6 +65,16 @@ BlastFamily::BlastFamily(PhysXController& physXController, ExtPxManager& pxManag
 {
 	m_settings.stressSolverEnabled = false;
 	m_settings.stressDamageEnabled = false;
+
+	for (int id = 0; ; id++)
+	{
+		if (ExistingFamilyIds.find(id) == ExistingFamilyIds.end())
+		{
+			ExistingFamilyIds.emplace(id);
+			mUniqueId = id;
+			break;
+		}
+	}
 }
 
 BlastFamily::~BlastFamily()
@@ -76,6 +87,8 @@ BlastFamily::~BlastFamily()
 	m_pxFamily->unsubscribe(m_listener);
 
 	m_pxFamily->release();
+
+	ExistingFamilyIds.erase(mUniqueId);
 }
 
 void BlastFamily::initialize(const BlastAsset::ActorDesc& desc)
@@ -572,6 +585,7 @@ private:
 bool BlastFamily::overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*)> hitCall)
 {
 // Add By Lixu Begin
+	/*
 	const ExtPxAsset* pExtPxAsset = m_blastAsset.getPxAsset();
 	const TkAsset& tkAsset = pExtPxAsset->getTkAsset();
 	uint32_t bondCount = tkAsset.getBondCount();
@@ -579,6 +593,7 @@ bool BlastFamily::overlap(const PxGeometry& geometry, const PxTransform& pose, s
 	{
 		return false;
 	}
+	*/
 // Add By Lixu End
 
 	std::set<ExtPxActor*> actorsToDamage;

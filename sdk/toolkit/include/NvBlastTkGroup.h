@@ -176,7 +176,7 @@ public:
 	/**
 	Helper function to process the group synchronously on a single thread.
 	*/
-	virtual void			process();
+            void			process();
 
 	/**
 	For profile builds only, request stats of the last successful processing. Inactive in other builds.

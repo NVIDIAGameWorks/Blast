@@ -148,10 +148,8 @@ class PhysXController : public ISampleController
 		return m_paused;
 	}
 
-	void setPaused(bool paused)
-	{
-		m_paused = paused;
-	}
+	void setPaused(bool paused);
+	void ResetUpDir(bool zup);
 
 	void setDraggingEnabled(bool enabled);
 	bool getDraggingEnabled() const { return m_draggingEnabled; }

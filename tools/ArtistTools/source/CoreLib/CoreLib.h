@@ -65,6 +65,7 @@ public:
 	bool SimpleScene_Draw_DX12();
 	bool SimpleScene_Draw_DX11();
 	bool SimpleScene_FitCamera(atcore_float3& center, atcore_float3& extents);
+	bool SimpleScene_ResetUpDir(bool zup);
 	bool SimpleScene_UpdateCamera();
 	bool SimpleScene_DrawGround();
 	bool SimpleScene_DrawWind();

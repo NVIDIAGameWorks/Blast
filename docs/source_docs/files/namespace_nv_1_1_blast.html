@@ -1972,7 +1972,7 @@ Remove the actor from this group if the actor actually belongs to it and the gro
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>true if removing succeeded, false otherwise</dd></dl>
 Add the actor to this group's job queue. It is the caller's responsibility to add an actor only once. This condition is checked in debug builds.<p>
 Atomically check if this group is processing actors. <dl class="see" compact><dt><b>See also:</b></dt><dd>setProcessing()</dd></dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>true between process() and sync() calls, false otherwise</dd></dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true between startProcess() and endProcess() calls, false otherwise</dd></dl>
 Atomically set the processing state. This function checks for the current state before changing it. <dl class="see" compact><dt><b>See also:</b></dt><dd>isProcessing()</dd></dl>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">

@@ -159,15 +159,15 @@ NOTE: Calls NvBlastActorApplyFracture internally. see NvBlastActorApplyFracture 
 
 <p>
 Apply damage to this actor.<p>
-Actual damage processing is deferred till the group process() call. Sets actor in 'pending' state.<p>
+Actual damage processing is deferred till the group worker process() call. Sets actor in 'pending' state.<p>
 Damage Desc will be stacked into <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>. <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> will be passed into shader.<p>
-This function overload explicitly sets a material to be passed into <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>, it must be valid until the group sync() call.<p>
+This function overload explicitly sets a material to be passed into <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>, it must be valid until the group endProcess() call.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>program</em>&nbsp;</td><td>A <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> containing damage shaders. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>damageDesc</em>&nbsp;</td><td>Parameters to be put in <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>, have to be POD type (will be copied). </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>descSize</em>&nbsp;</td><td>Size of damageDesc in bytes. Required to copy and store Damage Desc. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>material</em>&nbsp;</td><td>Material to be passed into <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>. Must be valid until the group sync() call. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>material</em>&nbsp;</td><td>Material to be passed into <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>. Must be valid until the group endProcess() call. </td></tr>
   </table>
 </dl>
 
@@ -206,7 +206,7 @@ This function overload explicitly sets a material to be passed into <a class="el
 
 <p>
 Apply damage to this actor.<p>
-Actual damage processing is deferred till the group process() call. Sets actor in 'pending' state.<p>
+Actual damage processing is deferred till the group worker process() call. Sets actor in 'pending' state.<p>
 Damage Desc will be stacked into <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>. <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> will be passed into shader.<p>
 Material set on actor's family will be passed into <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
@@ -246,8 +246,8 @@ Material set on actor's family will be passed into <a class="el" href="struct_nv
 
 <p>
 Apply damage to this actor.<p>
-Actual damage processing is deferred till the group process() call. Sets actor in 'pending' state.<p>
-It's the user's responsibility to keep programParams pointer alive until the group sync() call.<p>
+Actual damage processing is deferred till the group worker process() call. Sets actor in 'pending' state.<p>
+It's the user's responsibility to keep programParams pointer alive until the group endProcess() call.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>program</em>&nbsp;</td><td>A <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> containing damage shaders. </td></tr>

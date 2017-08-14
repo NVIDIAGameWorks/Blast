@@ -38,6 +38,7 @@
 #include "GlobalSettings.h"
 #include "Light.h"
 #include "AppMainWindow.h"
+#include "PxVec2.h"
 
 
 const float CAMERA_CLIP_NEAR = 1.0f;
@@ -45,10 +46,17 @@ const float CAMERA_CLIP_FAR = 1000.00f;
 
 const float CLEAR_SCENE_COLOR[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
+const int RenderTarget_Size = 512;
+const float SelectionTexture_InitData = -1;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //													Renderer
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Renderer* g_Renderer = nullptr;
+Renderer* Renderer::Inst()
+{
+	return g_Renderer;
+}
 
 
 Renderer::Renderer()
@@ -61,11 +69,20 @@ Renderer::Renderer()
 , m_DSTexture(nullptr)
 , m_DSView(nullptr)
 , m_DSTextureSRV(nullptr)
+, m_selectionRenderTargetTexture(nullptr)
+, m_selectionRenderTargetView(nullptr)
+, m_selectionRenderTargetSRV(nullptr)
+, m_selectionDepthStencilTexture(nullptr)
+, m_selectionDepthStencilView(nullptr)
+, m_selectionDepthStencilSRV(nullptr)
+, m_selectionTextureForCPU(nullptr)
 , m_pointSampler(nullptr)
 , m_linearSampler(nullptr)
 , m_wireframeMode(false)
 , m_debugPrimitiveVB(nullptr)
 , m_debugPrimitiveVBVerticesCount(0)
+, m_screenPrimitiveVB(nullptr)
+, m_screenPrimitiveVBVerticesCount(0)
 , m_shadowEnabled(true)
 , m_HBAOEnabled(true)
 , m_visibleOpaqueRenderablesCount(0)
@@ -83,6 +100,9 @@ Renderer::Renderer()
 	m_RSState[1] = nullptr;
 
 	toggleCameraSpeed(false);
+
+	g_Renderer = this;
+	bFetchSelection = false;
 }
 
 Renderer::~Renderer()
@@ -252,9 +272,17 @@ void Renderer::DeviceDestroyed()
 	SAFE_RELEASE(m_pointSampler);
 	SAFE_RELEASE(m_linearSampler);
 	SAFE_RELEASE(m_debugPrimitiveVB);
+	SAFE_RELEASE(m_screenPrimitiveVB);
 	SAFE_RELEASE(m_DSTexture);
 	SAFE_RELEASE(m_DSView);
 	SAFE_RELEASE(m_DSTextureSRV);
+	SAFE_RELEASE(m_selectionRenderTargetTexture);
+	SAFE_RELEASE(m_selectionRenderTargetView);
+	SAFE_RELEASE(m_selectionRenderTargetSRV);
+	SAFE_RELEASE(m_selectionDepthStencilTexture);
+	SAFE_RELEASE(m_selectionDepthStencilView);
+	SAFE_RELEASE(m_selectionDepthStencilSRV);
+	SAFE_RELEASE(m_selectionTextureForCPU);
 
 	for (uint32_t i = 0; i < PrimitiveRenderMeshType::Count; i++)
 	{
@@ -281,11 +309,40 @@ void Renderer::onInitialize()
 
 		m_debugPrimitiveRenderMaterialInstance = m_debugPrimitiveRenderMaterial->getMaterialInstance(layout, ARRAYSIZE(layout));
 	}
+
+	// screen primitive render material and input layout
+	{
+		m_screenPrimitiveRenderMaterial = new RenderMaterial("", m_resourceManager, "screen_primitive_ex", "");
+
+		D3D11_INPUT_ELEMENT_DESC layout[] = {
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		};
+
+		m_screenPrimitiveRenderMaterialInstance = m_screenPrimitiveRenderMaterial->getMaterialInstance(layout, ARRAYSIZE(layout));
+	}
+
+	// selection render material and input layout
+	{
+		m_selectionRenderMaterial = new RenderMaterial("idm", m_resourceManager, "model_simple_id_ex", "");
+
+		D3D11_INPUT_ELEMENT_DESC layout[] = {
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "VERTEX_NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "FACE_NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 1, DXGI_FORMAT_R32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		};
+
+		m_selectionRenderMaterialInstance = m_selectionRenderMaterial->getMaterialInstance(layout, ARRAYSIZE(layout));
+	}
 }
 
 void Renderer::onTerminate()
 {
 	SAFE_DELETE(m_debugPrimitiveRenderMaterial);
+	SAFE_DELETE(m_screenPrimitiveRenderMaterial);
 }
 
 void Renderer::BackBufferResized(ID3D11Device* /*device*/, const DXGI_SURFACE_DESC* sd)
@@ -300,6 +357,109 @@ void Renderer::BackBufferResized(ID3D11Device* /*device*/, const DXGI_SURFACE_DE
 	SAFE_RELEASE(m_DSTexture);
 	SAFE_RELEASE(m_DSView);
 	SAFE_RELEASE(m_DSTextureSRV);
+	SAFE_RELEASE(m_selectionRenderTargetTexture);
+	SAFE_RELEASE(m_selectionRenderTargetView);
+	SAFE_RELEASE(m_selectionRenderTargetSRV);
+	SAFE_RELEASE(m_selectionDepthStencilTexture);
+	SAFE_RELEASE(m_selectionDepthStencilView);
+	SAFE_RELEASE(m_selectionDepthStencilSRV);
+	SAFE_RELEASE(m_selectionTextureForCPU);
+
+	// create m_selectionRenderTargetTexture
+	{
+		D3D11_TEXTURE2D_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.Width = RenderTarget_Size;
+		desc.Height = RenderTarget_Size;
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.Format = DXGI_FORMAT_R32_FLOAT; // Use a typeless type here so that it can be both depth-stencil and shader resource.
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		desc.CPUAccessFlags = 0;
+		desc.MiscFlags = 0;
+		V(m_device->CreateTexture2D(&desc, NULL, &m_selectionRenderTargetTexture));
+	}
+
+	// create m_selectionRenderTargetView
+	{
+		D3D11_RENDER_TARGET_VIEW_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		desc.Format = DXGI_FORMAT_R32_FLOAT;	// Make the view see this as D32_FLOAT instead of typeless
+		desc.Texture2D.MipSlice = 0;
+		V(m_device->CreateRenderTargetView(m_selectionRenderTargetTexture, &desc, &m_selectionRenderTargetView));
+	}
+
+	// create m_selectionRenderTargetSRV
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.Format = DXGI_FORMAT_R32_FLOAT;	// Make the shaders see this as R32_FLOAT instead of typeless
+		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		desc.Texture2D.MipLevels = 1;
+		desc.Texture2D.MostDetailedMip = 0;
+		V(m_device->CreateShaderResourceView(m_selectionRenderTargetTexture, &desc, &m_selectionRenderTargetSRV));
+	}
+
+	// create m_selectionDepthStencilTexture
+	{
+		D3D11_TEXTURE2D_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.Width = RenderTarget_Size;
+		desc.Height = RenderTarget_Size;
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.Format = DXGI_FORMAT_R32_TYPELESS; // Use a typeless type here so that it can be both depth-stencil and shader resource.
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+		desc.CPUAccessFlags = 0;
+		desc.MiscFlags = 0;
+		V(m_device->CreateTexture2D(&desc, NULL, &m_selectionDepthStencilTexture));
+	}
+
+	// create m_selectionDepthStencilView
+	{
+		D3D11_DEPTH_STENCIL_VIEW_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		desc.Format = DXGI_FORMAT_D32_FLOAT;	// Make the view see this as D32_FLOAT instead of typeless
+		desc.Texture2D.MipSlice = 0;
+		V(m_device->CreateDepthStencilView(m_selectionDepthStencilTexture, &desc, &m_selectionDepthStencilView));
+	}
+
+	// create m_selectionDepthStencilSRV
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.Format = DXGI_FORMAT_R32_FLOAT;	// Make the shaders see this as R32_FLOAT instead of typeless
+		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		desc.Texture2D.MipLevels = 1;
+		desc.Texture2D.MostDetailedMip = 0;
+		V(m_device->CreateShaderResourceView(m_selectionDepthStencilTexture, &desc, &m_selectionDepthStencilSRV));
+	}
+
+	// create m_selectionTextureForCPU
+	{
+		D3D11_TEXTURE2D_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.Width = RenderTarget_Size;
+		desc.Height = RenderTarget_Size;
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.Format = DXGI_FORMAT_R32_FLOAT; // Use a typeless type here so that it can be both depth-stencil and shader resource.
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.Usage = D3D11_USAGE_STAGING;
+		desc.BindFlags = 0;
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+		desc.MiscFlags = 0;
+		V(m_device->CreateTexture2D(&desc, NULL, &m_selectionTextureForCPU));
+	}
 
 	// create a new Depth-Stencil texture 
 	{
@@ -528,7 +688,10 @@ void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11
 	// draw overline	
 	if (globalSettings.m_showWireframe)
 	{
-		ctx->RSSetState(m_RSState[1]);
+		if (globalSettings.m_renderStyle != MESH_RENDER_WIREFRAME)
+		{
+			ctx->RSSetState(m_RSState[1]);
+		}
 
 		// update wireFrameOver
 		{
@@ -584,6 +747,11 @@ void Renderer::Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11
 	{
 		render(m_queuedRenderBuffers.back());
 		m_queuedRenderBuffers.pop_back();
+	}
+	while (m_screenRenderBuffers.size() > 0)
+	{
+		render(m_screenRenderBuffers.back(), true);
+		m_screenRenderBuffers.pop_back();
 	}
 
 	// Transparency render
@@ -670,7 +838,7 @@ void Renderer::renderDepthOnly(DirectX::XMMATRIX* viewProjectionSubstitute)
 	}
 }
 
-void Renderer::render(const PxRenderBuffer* renderBuffer)
+void Renderer::render(const PxRenderBuffer* renderBuffer, bool bScreen)
 {
 	// points 
 	uint32_t pointsCount = renderBuffer->getNbPoints();
@@ -702,7 +870,7 @@ void Renderer::render(const PxRenderBuffer* renderBuffer)
 			verts[i * 2 + 1].mColor = lines[i].color1;
 		}
 
-		renderDebugPrimitive(verts, linesCount * 2, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		renderDebugPrimitive(verts, linesCount * 2, D3D11_PRIMITIVE_TOPOLOGY_LINELIST, bScreen);
 		delete[] verts;
 	}
 
@@ -730,11 +898,18 @@ void Renderer::render(const PxRenderBuffer* renderBuffer)
 	// ....
 }
 
-void Renderer::renderDebugPrimitive(const Renderer::RenderDebugVertex *vertices, uint32_t verticesCount, D3D11_PRIMITIVE_TOPOLOGY topology)
+void Renderer::renderDebugPrimitive(const Renderer::RenderDebugVertex *vertices, uint32_t verticesCount, D3D11_PRIMITIVE_TOPOLOGY topology, bool bScreen)
 {
 	m_context->IASetPrimitiveTopology(topology);
 
-	m_debugPrimitiveRenderMaterialInstance->bind(*m_context, 0);
+	if (bScreen)
+	{
+		m_screenPrimitiveRenderMaterialInstance->bind(*m_context, 0);
+	}
+	else
+	{
+		m_debugPrimitiveRenderMaterialInstance->bind(*m_context, 0);
+	}
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	m_context->Map(m_objectCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -882,4 +1057,189 @@ void Renderer::UpdateCamera()
 	DirectX::XMVECTORF32 lookAtPt = { pCamera->_at.x, pCamera->_at.y, pCamera->_at.z, 0 };
 	m_camera.SetViewParams(eyePt, lookAtPt);
 	m_camera.SetProjParams(pCamera->_fov, pCamera->_aspectRatio, pCamera->_znear, pCamera->_zfar);
+}
+
+bool _pointInPolygon(std::vector<PxVec2>& screenPoints, PxVec2& test)
+{
+	int polySides = screenPoints.size();
+	int i, j = polySides - 1;
+	bool oddNodes = false;
+	for (i = 0; i < polySides; i++)
+	{
+		if ((screenPoints[i].y < test.y && screenPoints[j].y >= test.y
+			|| screenPoints[j].y <test.y && screenPoints[i].y >= test.y)
+			&& (screenPoints[i].x <= test.x || screenPoints[j].x <= test.x))
+		{
+			float temp = (test.y - screenPoints[i].y) /
+				(screenPoints[j].y - screenPoints[i].y) *
+				(screenPoints[j].x - screenPoints[i].x);
+			oddNodes ^= (screenPoints[i].x + temp < test.x);
+		}
+		j = i;
+	}
+	return oddNodes;
+}
+
+void Renderer::fetchSelection(std::vector<PxVec2>& screenPoints, std::map<int, std::set<int>>& selection)
+{
+	PROFILER_SCOPED_FUNCTION();
+
+	selection.clear();
+
+	int pointSize = screenPoints.size();
+	if (pointSize == 0)
+	{
+		return;
+	}
+
+	GlobalSettings& globalSettings = GlobalSettings::Inst();
+	if (!globalSettings.m_showGraphicsMesh)
+		return;
+
+	ID3D11DeviceContext* ctx = m_context;
+	
+	// needed matrices
+	DirectX::XMMATRIX viewMatrix = SimpleScene::Inst()->GetViewMatrix();
+	DirectX::XMMATRIX projMatrix = SimpleScene::Inst()->GetProjMatrix();
+	DirectX::XMMATRIX projMatrixInv = DirectX::XMMatrixInverse(NULL, projMatrix);
+	DirectX::XMMATRIX viewProjMatrix = viewMatrix * projMatrix;
+
+	// Fill Camera constant buffer
+	{
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		ctx->Map(m_cameraCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		CBCamera* cameraBuffer = (CBCamera*)mappedResource.pData;
+		cameraBuffer->viewProjection = viewProjMatrix;
+		ctx->Unmap(m_cameraCB, 0);
+	}
+
+	int width = RenderTarget_Size;
+	int height = RenderTarget_Size;
+	float init_data = SelectionTexture_InitData;
+	int dataSize = width * height;
+	if (m_selectionTextureData.size() != dataSize)
+	{
+		m_selectionTextureData.resize(dataSize);
+	}
+	std::fill(m_selectionTextureData.begin(), m_selectionTextureData.end(), init_data);
+
+	ctx->OMSetRenderTargets(1, &m_selectionRenderTargetView, m_selectionDepthStencilView);
+	float ClearColor[4] = { init_data, init_data, init_data, init_data };
+	ctx->ClearRenderTargetView(m_selectionRenderTargetView, ClearColor);
+	ctx->ClearDepthStencilView(m_selectionDepthStencilView, D3D11_CLEAR_DEPTH, 1.0, 0);
+	D3D11_VIEWPORT vp = { 0.0f, 0.0f, (float)width, (float)height, 0.0f, 1.0f };
+	ctx->RSSetViewports(1, &vp);
+	ctx->RSSetState(m_RSState[0]);
+	ctx->OMSetDepthStencilState(m_opaqueRenderDSState, 0xFF);
+
+	// set constants buffers
+	setAllConstantBuffers(ctx);
+
+	bFetchSelection = true;
+
+	// Render renderables
+	for (auto it = m_renderables.begin(); it != m_renderables.end(); it++)
+	{
+		if (!(*it)->isHidden())
+		{
+			(*it)->render(*this);
+		}
+	}
+
+	bFetchSelection = false;
+
+	{
+		ctx->CopyResource(m_selectionTextureForCPU, m_selectionRenderTargetTexture);
+		D3D11_MAPPED_SUBRESOURCE  mapResource;
+		HRESULT hr = ctx->Map(m_selectionTextureForCPU, 0, D3D11_MAP_READ, NULL, &mapResource);
+		memcpy(m_selectionTextureData.data(), mapResource.pData, dataSize * sizeof(float));
+		ctx->Unmap(m_selectionTextureForCPU, 0);
+	}
+
+	std::set<int> vids;
+	if (pointSize == 1)
+	{
+		// point selection
+		int centerX = screenPoints[0].x * width;
+		int centerY = screenPoints[0].y * height;
+
+		int ds = centerY * width + centerX;
+		int vid = m_selectionTextureData[ds];
+		vids.emplace(vid);
+	}
+	else if (pointSize == 2)
+	{
+		// rect selection
+		PxVec2 lefttop = screenPoints[0];
+		PxVec2 rightbottom = screenPoints[1];
+		int startX = lefttop.x * width;
+		int startY = lefttop.y * height;
+		int endX = rightbottom.x * width;
+		int endY = rightbottom.y * height;
+		for (int h = startY; h <= endY; h++)
+		{
+			for (int w = startX; w <= endX; w++)
+			{
+				int ds = h * width + w;
+				int vid = m_selectionTextureData[ds];
+				vids.emplace(vid);
+			}
+		}
+	}
+	else
+	{
+		// draw selection
+		PxVec2 pMin, pMax;
+		pMin = pMax = screenPoints[0];
+		for (int ps = 1; ps < pointSize; ps++)
+		{
+			PxVec2& p = screenPoints[ps];
+			if (p.x < pMin.x)
+			{
+				pMin.x = p.x;
+			}
+			if (p.y < pMin.y)
+			{
+				pMin.y = p.y;
+			}
+			if (p.x > pMax.x)
+			{
+				pMax.x = p.x;
+			}
+			if (p.y > pMax.y)
+			{
+				pMax.y = p.y;
+			}
+		}
+		int startX = pMin.x * width;
+		int startY = pMin.y * height;
+		int endX = pMax.x * width;
+		int endY = pMax.y * height;
+		for (int h = startY; h <= endY; h++)
+		{
+			for (int w = startX; w <= endX; w++)
+			{
+				PxVec2 test(1.0 * w / width, 1.0 * h / height);
+				bool valid = _pointInPolygon(screenPoints, test);
+				if (valid)
+				{
+					int ds = h * width + w;
+					int vid = m_selectionTextureData[ds];
+					vids.emplace(vid);
+				}
+			}
+		}
+	}
+
+	int familyId, chunkId;
+	for (int vid : vids)
+	{
+		if (vid < 0)
+		{
+			continue;
+		}
+
+		Renderable::getFamilyChunkId(vid, familyId, chunkId);
+		selection[familyId].emplace(chunkId);
+	}
 }
