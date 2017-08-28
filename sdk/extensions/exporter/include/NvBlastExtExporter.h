@@ -118,7 +118,7 @@ public:
 	/**
 		Number of loaded indices
 	*/
-	virtual uint32_t		getIdicesCount() const = 0;
+	virtual uint32_t		getIndicesCount() const = 0;
 
 	/**
 		Get loaded vertex positions
@@ -148,7 +148,7 @@ public:
 	/**
 		Get material name.
 	*/
-	virtual char*			getMaterialName(int32_t id) = 0;
+	virtual const char*		getMaterialName(int32_t id) = 0;
 
 	/**
 		Get material count.
@@ -176,7 +176,7 @@ public:
 		\param[out] hulls			Array of hull. The first i-th mesh hull: hulls[hullsOffset[i]]. The size is written to hullsOffset[meshCount]
 		\return						Number of meshes (meshCount)
 	*/
-	virtual uint32_t		getCollision(uint32_t*& hullsOffset, CollisionHull** hulls) = 0;
+	virtual uint32_t		getCollision(uint32_t*& hullsOffset, CollisionHull**& hulls) = 0;
 
 };
 
@@ -187,7 +187,7 @@ class IFbxFileReader : public IMeshFileReader
 {
 public:
 	/**
-	Retrieve bone influence if it exist
+	Retrieve bone influence if it exist, this is a bone index for each vertex in the mesh
 	\note User should call NVBLAST_FREE for out when it not needed anymore
 
 	\param[out] out			Array of bone influences.

@@ -57,41 +57,49 @@ BlastModelPtr BlastModel::loadFromFbxFile(const char* path)
 	*/
 	uint32_t* infl;
 	rdr->getBoneInfluences(infl);
+
+	std::vector<int32_t> indRemap(rdr->getVerticesCount(), -1);
 	for (uint32_t i = 0; i < rdr->getBoneCount(); ++i)
 	{
-		std::vector<int32_t> indRemap(rdr->getVerticesCount(), -1);
-		std::vector<uint32_t> indices;
+		std::fill(indRemap.begin(), indRemap.end(), -1);
 		SimpleMesh cmesh;
-		for (uint32_t j = 0; j < rdr->getVerticesCount(); ++j)
+		const uint32_t vertexCount = rdr->getVerticesCount();
+		const auto normalsArray = rdr->getNormalsArray();
+		const auto positionArray = rdr->getPositionArray();
+		const auto uvArray = rdr->getUvArray();
+
+		for (uint32_t j = 0; j < vertexCount; ++j)
 		{
 			if (i == infl[j])
 			{
 				indRemap[j] = (int32_t)cmesh.vertices.size();
 				cmesh.vertices.push_back(SimpleMesh::Vertex());
-				cmesh.vertices.back().normal = rdr->getNormalsArray()[j];
-				cmesh.vertices.back().position = rdr->getPositionArray()[j];
-				cmesh.vertices.back().uv = rdr->getUvArray()[j];	
+				cmesh.vertices.back().normal = normalsArray[j];
+				cmesh.vertices.back().position = positionArray[j];
+				cmesh.vertices.back().uv = uvArray[j];
 			}
 		}
-		for (uint32_t j = 0; j < rdr->getIdicesCount(); j += 3)
+		const uint32_t indicesCount = rdr->getIndicesCount();
+		const auto indexArray = rdr->getIndexArray();
+		for (uint32_t j = 0; j < indicesCount; j += 3)
 		{
-			if (i == infl[rdr->getIndexArray()[j]])
+			//Reverse the winding order
+			for (int tv : { 2, 1, 0})
 			{
-				int32_t lind = rdr->getIndexArray()[j + 2];
-				cmesh.indices.push_back(indRemap[lind]);
-				lind = rdr->getIndexArray()[j + 1];
-				cmesh.indices.push_back(indRemap[lind]);
-				lind = rdr->getIndexArray()[j];
-				cmesh.indices.push_back(indRemap[lind]);
+				uint32_t oldIndex = indexArray[j + tv];
+				int32_t newIndex = indRemap[oldIndex];
+				if (newIndex >= 0)
+				{
+					cmesh.indices.push_back(newIndex);
+				}
 			}
 		}
 
 		model->chunks[i].meshes.push_back(Chunk::Mesh());
 		model->chunks[i].meshes.back().materialIndex = 0;
-		model->chunks[i].meshes.back().mesh = cmesh;
-
-		NVBLAST_FREE(infl);
+		model->chunks[i].meshes.back().mesh = std::move(cmesh);
 	}
+	NVBLAST_FREE(infl);
 	return model;
 }
 
@@ -181,9 +189,9 @@ BlastModelPtr BlastModel::loadFromFileTinyLoader(const char* path)
 			{
 				for (uint32_t i = 0; i < pMesh.mesh.indices.size(); i += 3)
 				{
-					chunkMesh.indices[i] = (uint16_t)pMesh.mesh.indices[i + 2];
-					chunkMesh.indices[i + 1] = (uint16_t)pMesh.mesh.indices[i + 1];
-					chunkMesh.indices[i + 2] = (uint16_t)pMesh.mesh.indices[i];
+					chunkMesh.indices[i] = (uint32_t)pMesh.mesh.indices[i + 2];
+					chunkMesh.indices[i + 1] = (uint32_t)pMesh.mesh.indices[i + 1];
+					chunkMesh.indices[i + 2] = (uint32_t)pMesh.mesh.indices[i];
 				}
 			}
 			// create vertex buffer

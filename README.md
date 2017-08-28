@@ -25,7 +25,7 @@ Some notable features of NvBlast:
 Features of NvBlastTk:
 * C++ API which includes a global framework.
 * Manages objects, allocating and deallocating using a user-supplied callback.
-* Spawns multiple tasks to process damage, through a user-supplied task manager to allow multithreading.
+* Generates "worker" objects to process damage, which the user may call from multiple threads.
 * Uses an event system to inform the user of actor splitting and chunk fracturing.
 * Introduces a joint representation which uses the event system to allow the user to update physical joints between actors.
 
@@ -44,7 +44,6 @@ and joints.  The source code for this extension, like all Blast extensions, is i
 Current blast extensions:
 * ExtAssetUtils - NvBlastAsset utility functions. Add world bonds, merge assets, and transform geometric data. 
 * ExtAuthoring - a set of geometric tools which can split a mesh hierarchically and create a Blast asset, along with collision geometry and chunk graphics meshes in a separate files.
-* ExtConverterLL - a data format converter for low-level assets and actor families.  This simple converter uses user-defined conversion functions.
 * ExtImport - provides functions to import an APEX Destructible Asset to create a Blast asset.
 * ExtExporter - standard mesh and collision writer tools in fbx, obj, and json formats. 
 * ExtPhysX - a physics manager using PhysX which keeps PxActors and PxJoints updated in a user-supplied PxScene.  It handles impact damage (through the contact callback), includes a stress solver wrapper, and provides a listener that enables multiple clients to keep their state synchronized.

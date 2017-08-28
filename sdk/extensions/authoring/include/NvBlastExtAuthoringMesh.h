@@ -123,12 +123,17 @@ public:
 	/**
 		Set per-facet material id.
 	*/
-	virtual void	setMaterialId(int32_t* materialIds) = 0;
+	virtual void	setMaterialId(const int32_t* materialIds) = 0;
+
+	/**
+	Replaces an material id on faces with a new one
+	*/
+	virtual void	replaceMaterialId(int32_t oldMaterialId, int32_t newMaterialId) = 0;
 
 	/**
 		Set per-facet smoothing group.
 	*/
-	virtual void	setSmoothingGroup(int32_t* smoothingGroup) = 0;
+	virtual void	setSmoothingGroup(const int32_t* smoothingGroups) = 0;
 
 	/**
 		Recalculate bounding box

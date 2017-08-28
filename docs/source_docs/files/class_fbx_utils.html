@@ -54,7 +54,9 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">static FbxSystemUnit&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_fbx_utils.html#ef410acb3b7b8c6cc3705b104dbe6ee7">getBlastFBXUnit</a> ()</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">static uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_fbx_utils.html#7899e674e3d1f8a0e6b102e6ef31ef6e">getChunkIndexForNode</a> (FbxNode *node, bool includeParents=true)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">static uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_fbx_utils.html#a7b832c2c88de2eefd1a04df520f30e2">getChunkIndexForNode</a> (FbxNode *node, uint32_t *outParentChunkIndex=nullptr)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">static uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_fbx_utils.html#a9bd9a5f026b3604294f9ca41fa8b646">getChunkIndexForNodeBackwardsCompatible</a> (FbxNode *node, uint32_t *outParentChunkIndex=nullptr)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">static std::string&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_fbx_utils.html#94d2380fa21667650aba13ed60a91756">getChunkNodeName</a> (uint32_t chunkIndex)</td></tr>
 
@@ -148,7 +150,7 @@
 
 </div>
 </div><p>
-<a class="anchor" name="7899e674e3d1f8a0e6b102e6ef31ef6e"></a><!-- doxytag: member="FbxUtils::getChunkIndexForNode" ref="7899e674e3d1f8a0e6b102e6ef31ef6e" args="(FbxNode *node, bool includeParents=true)" -->
+<a class="anchor" name="a7b832c2c88de2eefd1a04df520f30e2"></a><!-- doxytag: member="FbxUtils::getChunkIndexForNode" ref="a7b832c2c88de2eefd1a04df520f30e2" args="(FbxNode *node, uint32_t *outParentChunkIndex=nullptr)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -161,8 +163,37 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">bool&nbsp;</td>
-          <td class="paramname"> <em>includeParents</em> = <code>true</code></td><td>&nbsp;</td>
+          <td class="paramtype">uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>outParentChunkIndex</em> = <code>nullptr</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [static]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="a9bd9a5f026b3604294f9ca41fa8b646"></a><!-- doxytag: member="FbxUtils::getChunkIndexForNodeBackwardsCompatible" ref="a9bd9a5f026b3604294f9ca41fa8b646" args="(FbxNode *node, uint32_t *outParentChunkIndex=nullptr)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">static uint32_t FbxUtils::getChunkIndexForNodeBackwardsCompatible           </td>
+          <td>(</td>
+          <td class="paramtype">FbxNode *&nbsp;</td>
+          <td class="paramname"> <em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>outParentChunkIndex</em> = <code>nullptr</code></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>

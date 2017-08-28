@@ -55,7 +55,6 @@ FbxFileWriter::FbxFileWriter():
 	// Wrap in a shared ptr so that when it deallocates we get an auto destroy and all of the other assets created don't leak.
 	sdkManager = std::shared_ptr<FbxManager>(FbxManager::Create(), [=](FbxManager* manager)
 	{
-		std::cout << "Deleting FbxManager" << std::endl;
 		manager->Destroy();
 	});
 
@@ -197,8 +196,8 @@ bool FbxFileWriter::appendMesh(const AuthoringResult& aResult, const char* asset
 
 	// Now walk the tree and create a skeleton with geometry at the same time
 	// Find a "root" chunk and walk the tree from there.
-	uint32_t chunkCount = aResult.chunkCount;
-	auto chunks = aResult.chunkDescs;
+	uint32_t chunkCount = NvBlastAssetGetChunkCount(aResult.asset, Nv::Blast::logLL);
+	auto chunks = NvBlastAssetGetChunks(aResult.asset, Nv::Blast::logLL);
 
 	uint32_t cpIdx = 0;
 	for (uint32_t i = 0; i < chunkCount; i++)
@@ -242,9 +241,8 @@ bool FbxFileWriter::appendNonSkinnedMesh(const AuthoringResult& aResult, const c
 
 	// Now walk the tree and create a skeleton with geometry at the same time
 	// Find a "root" chunk and walk the tree from there.
-	uint32_t chunkCount = aResult.chunkCount;
-
-	auto chunks = aResult.chunkDescs;
+	uint32_t chunkCount = NvBlastAssetGetChunkCount(aResult.asset, Nv::Blast::logLL);
+	auto chunks = NvBlastAssetGetChunks(aResult.asset, Nv::Blast::logLL);
 
 	for (uint32_t i = 0; i < chunkCount; i++)
 	{

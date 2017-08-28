@@ -28,17 +28,16 @@
 #include "NvBlastExtExporterFbxReader.h"
 #include "NvBlastExtExporterFbxUtils.h"
 #include "NvBlastGlobals.h"
-#include "fileio/fbxiosettings.h"
-#include "fileio/fbxiosettingspath.h"
-#include "core/base/fbxstringlist.h"
+#include <fbxsdk.h>
 #include <iostream>
 #include <algorithm>
 #include <cctype>
 #include <sstream>
-#include "scene/geometry/fbxmesh.h"
+#include <unordered_map>
 
 #include "PxVec3.h"
 #include "PxVec2.h"
+#include "PxPlane.h"
 #include "NvBlastExtAuthoringMesh.h"
 #include "NvBlastExtAuthoringBondGenerator.h"
 #include "NvBlastExtAuthoringCollisionBuilder.h"
@@ -50,7 +49,8 @@ using namespace Nv::Blast;
 
 FbxFileReader::FbxFileReader()
 {
-	mBoneCount = 0;
+	mMeshCount = 0;
+	mChunkCount = 0;
 }
 
 void FbxFileReader::release()
@@ -74,11 +74,10 @@ void FbxFileReader::loadFromFile(const char* filename)
 	// Wrap in a shared ptr so that when it deallocates we get an auto destroy and all of the other assets created don't leak.
 	std::shared_ptr<FbxManager> sdkManager = std::shared_ptr<FbxManager>(FbxManager::Create(), [=](FbxManager* manager)
 	{
-		std::cout << "Deleting FbxManager" << std::endl;
 		manager->Destroy();
 	});
 
-	mBoneCount = 0;
+	mChunkCount = 0;
 	mCollisionNodes.clear();
 	FbxIOSettings* ios = FbxIOSettings::Create(sdkManager.get(), IOSROOT);
 	// Set some properties on the io settings
@@ -141,6 +140,7 @@ void FbxFileReader::loadFromFile(const char* filename)
 		blastUnits.ConvertScene(scene);
 	}
 
+	FbxGeometryConverter geoConverter(sdkManager.get());
 	FbxDisplayLayer* collisionDisplayLayer = scene->FindMember<FbxDisplayLayer>(FbxUtils::getCollisionGeometryLayerName().c_str());
 
 	// Recurse the fbx tree and find all meshes
@@ -155,11 +155,38 @@ void FbxFileReader::loadFromFile(const char* filename)
 
 	std::cout << "Found " << meshNodes.size() << " meshes." << std::endl;
 
-	// Process just 0, because dumb. Fail out if more than 1?
 	if (meshNodes.size() > 1)
 	{
-		std::cerr << "Can't load more that one graphics mesh." << std::endl;
-		return;
+		FbxArray<FbxNode*> tempMeshArray;
+		tempMeshArray.Resize((int)meshNodes.size());
+		for (size_t i = 0; i < meshNodes.size(); i++)
+		{
+			FbxMesh* mesh = meshNodes[i]->GetMesh();
+			if (mesh->GetDeformerCount(FbxDeformer::eSkin) != 0)
+			{
+				std::cerr << "Multi-part mesh " << meshNodes[i]->GetName() << " is already skinned, not sure what to do" << std::endl;
+				return;
+			}
+			//Add a one-bone skin so later when we merge meshes the connection to the chunk transform will stick, this handles the non-skinned layout of the FBX file
+			FbxSkin* skin = FbxSkin::Create(scene, (std::string(meshNodes[i]->GetName()) + "_skin").c_str());
+			mesh->AddDeformer(skin);
+			FbxCluster* cluster = FbxCluster::Create(skin, (std::string(meshNodes[i]->GetName()) + "_cluster").c_str());
+			skin->AddCluster(cluster);
+			cluster->SetLink(meshNodes[i]);
+			const int cpCount = mesh->GetControlPointsCount();
+			cluster->SetControlPointIWCount(cpCount);
+			//Fully weight to the one bone
+			int* cpIdx = cluster->GetControlPointIndices();
+			double* cpWeights = cluster->GetControlPointWeights();
+			for (int cp = 0; cp < cpCount; cp++)
+			{
+				cpIdx[cp] = cp;
+				cpWeights[cp] = 1.0;
+			}
+			tempMeshArray.SetAt(int(i), meshNodes[i]);
+		}
+		meshNodes.resize(1);
+		meshNodes[0] = geoConverter.MergeMeshes(tempMeshArray, "MergedMesh", scene);
 	}
 
 	if (meshNodes.empty())
@@ -170,19 +197,16 @@ void FbxFileReader::loadFromFile(const char* filename)
 	FbxNode* meshNode = meshNodes[0];
 	FbxMesh* mesh = meshNode->GetMesh();
 
-	int polyCount = mesh->GetPolygonCount();
-
-
-	bool bAllTriangles = true;
 	// Verify that the mesh is triangulated.
-	for (int i = 0; i < polyCount; i++)
+	bool bAllTriangles = mesh->IsTriangleMesh();
+	if (!bAllTriangles)
 	{
-		if (mesh->GetPolygonSize(i) != 3)
-		{
-			bAllTriangles = false;
-		}
+		//try letting the FBX SDK triangulate it
+		geoConverter.Triangulate(mesh, true);
+		bAllTriangles = mesh->IsTriangleMesh();
 	}
 
+	int polyCount = mesh->GetPolygonCount();
 	if (!bAllTriangles)
 	{
 		std::cerr << "Mesh 0 has " << polyCount << " but not all polygons are triangles. Mesh must be triangulated." << std::endl;
@@ -205,12 +229,7 @@ void FbxFileReader::loadFromFile(const char* filename)
 	uint32_t vertIndex = 0;
 
 	FbxAMatrix trans = getTransformForNode(meshNode);
-	FbxVector4 rotation = trans.GetR();
-	FbxVector4 scale = trans.GetS();
-	FbxAMatrix normalTransf;
-	normalTransf.SetR(rotation);
-	normalTransf.SetS(scale);
-	normalTransf = normalTransf.Inverse().Transpose();
+	FbxAMatrix normalTransf = trans.Inverse().Transpose();
 
 	int32_t matElements = mesh->GetElementMaterialCount();
 	if (matElements > 1)
@@ -220,12 +239,15 @@ void FbxFileReader::loadFromFile(const char* filename)
 	auto matLayer = mesh->GetElementMaterial(0);
 	auto smLayer = mesh->GetElementSmoothing();
 
+	const int triangleIndexMappingUnflipped[3] = { 0, 1, 2 };
+	const int triangleIndexMappingFlipped[3] = { 2, 1, 0 };
+	const int* triangleIndexMapping = trans.Determinant() < 0 ? triangleIndexMappingFlipped : triangleIndexMappingUnflipped;
 
 	for (int i = 0; i < polyCount; i++)
 	{
 		for (int vi = 0; vi < 3; vi++)
 		{
-			int polyCPIdx = polyVertices[i*3+vi];
+			int polyCPIdx = polyVertices[i*3+ triangleIndexMapping[vi]];
 
 			FbxVector4 vert = mesh->GetControlPointAt(polyCPIdx);
 			FbxVector4 normVec;
@@ -321,33 +343,30 @@ bool FbxFileReader::isCollisionLoaded()
 	return !mCollisionNodes.empty();
 }
 
-uint32_t FbxFileReader::getCollision(uint32_t*& hullsOffset, Nv::Blast::CollisionHull** hulls)
+uint32_t FbxFileReader::getCollision(uint32_t*& hullsOffset, Nv::Blast::CollisionHull**& hulls)
 {
 	if (!isCollisionLoaded())
 	{
+		hullsOffset = nullptr;
+		hulls = nullptr;
 		return 0;
 	}
-	hullsOffset = new uint32_t[mMeshCount + 1];
-	hulls = new Nv::Blast::CollisionHull*[mMeshCount];
-	memcpy(hullsOffset, mHullsOffset.data(), sizeof(uint32_t) * (mMeshCount + 1));
-	memcpy(hulls, mHulls.data(), sizeof(Nv::Blast::CollisionHull*) * mMeshCount);
+	hullsOffset = (uint32_t*)NVBLAST_ALLOC(sizeof(uint32_t) * mHullsOffset.size());
+	memcpy(hullsOffset, mHullsOffset.data(), sizeof(uint32_t) * mHullsOffset.size());
+	
+	
+	hulls = (Nv::Blast::CollisionHull**)NVBLAST_ALLOC(sizeof(Nv::Blast::CollisionHull*) * mHulls.size());
+	for (size_t i = 0; i < mHulls.size(); i++)
+	{
+		//This deep-copies the data inside
+		hulls[i] = new CollisionHullImpl(mHulls[i]);
+	}
 	return mMeshCount;
 }
 
-struct CollisionHullImpl : public Nv::Blast::CollisionHull
-{
-	void release() override
-	{
-
-	}
-};
-
 bool FbxFileReader::getCollisionInternal()
 {
-	for (auto hull : mHulls)
-	{
-		hull->release();
-	}
+	mHulls.clear();
 	int32_t maxParentIndex = 0;
 	
 	for (auto p : mCollisionNodes)
@@ -358,62 +377,126 @@ bool FbxFileReader::getCollisionInternal()
 	mMeshCount = maxParentIndex + 1;
 	mHullsOffset.resize(mMeshCount + 1);
 	mHulls.resize(mCollisionNodes.size());
-	mHullsOffset[0] = 0;
+
+	uint32_t currentHullCount = 0;
+	uint32_t prevParentIndex = 0;
+	mHullsOffset[0] = currentHullCount;
 
 	for (auto p : mCollisionNodes) // it should be sorted by chunk id
 	{		
-		int32_t parentIndex = p.first;
-		//hulls[parentIndex].push_back(Nv::Blast::CollisionHull());
-		mHulls[mHullsOffset[parentIndex]] = new CollisionHullImpl();
-		Nv::Blast::CollisionHull& chull = *mHulls[mHullsOffset[parentIndex]];
+		uint32_t parentIndex = p.first;
+		if (prevParentIndex != parentIndex)
+		{
+			for (uint32_t m = prevParentIndex + 1; m < parentIndex; m++)
+			{
+				//copy these if there were no collision meshes
+				mHullsOffset[m] = mHullsOffset[prevParentIndex];
+			}
+			mHullsOffset[parentIndex] = currentHullCount;
+			prevParentIndex = parentIndex;
+		}
+		Nv::Blast::CollisionHull& chull = mHulls[currentHullCount];
+		currentHullCount++;
+
 		FbxMesh* meshNode = p.second->GetMesh();
 
 		FbxAMatrix nodeTransform = getTransformForNode(p.second);
 		FbxAMatrix nodeTransformNormal = nodeTransform.Inverse().Transpose();
 
-		chull.points = new PxVec3[meshNode->GetControlPointsCount()];
+		//PhysX seems to care about having welding verticies.
+		//Probably doing a dumb search is fast enough since how big could the convex hulls possibly be?
+		std::vector<FbxVector4> uniqueCPValues;
+		uniqueCPValues.reserve(meshNode->GetControlPointsCount());
+		std::vector<uint32_t> originalToNewCPMapping(meshNode->GetControlPointsCount(), ~0U);
+
 		FbxVector4* vpos = meshNode->GetControlPoints();
-		/**
-			Copy control points from FBX.
-		*/
 		for (int32_t i = 0; i < meshNode->GetControlPointsCount(); ++i)
 		{
 			FbxVector4 worldVPos = nodeTransform.MultT(*vpos);
+			bool found = false;
+			for (size_t j = 0; j < uniqueCPValues.size(); j++)
+			{
+				if (uniqueCPValues[j] == worldVPos)
+				{
+					originalToNewCPMapping[i] = uint32_t(j);
+					found = true;
+					break;
+				}
+			}
+			if (!found)
+			{
+				originalToNewCPMapping[i] = uint32_t(uniqueCPValues.size());
+				uniqueCPValues.push_back(worldVPos);
+			}
+			vpos++;
+		}
+
+		chull.points = new PxVec3[uniqueCPValues.size()];
+		chull.pointsCount = uint32_t(uniqueCPValues.size());
+	
+		physx::PxVec3 hullCentroid(0.0f);
+
+		for (uint32_t i = 0; i < chull.pointsCount; ++i)
+		{
+			const FbxVector4& worldVPos = uniqueCPValues[i];
 			chull.points[i].x = (float)worldVPos[0];
 			chull.points[i].y = (float)worldVPos[1];
 			chull.points[i].z = (float)worldVPos[2];
-			vpos++;
+			hullCentroid += chull.points[i];
+		}
+
+		if (chull.pointsCount)
+		{
+			hullCentroid /= (float)chull.pointsCount;
 		}
 
 		uint32_t polyCount = meshNode->GetPolygonCount();
 		chull.polygonData = new Nv::Blast::CollisionHull::HullPolygon[polyCount];
-		FbxGeometryElementNormal* nrm = meshNode->GetElementNormal();
-		FbxLayerElementArray& narr = nrm->GetDirectArray();
+		chull.polygonDataCount = polyCount;
+
+		chull.indicesCount = meshNode->GetPolygonVertexCount();
+		chull.indices = new uint32_t[chull.indicesCount];
+		uint32_t curIndexCount = 0;
 
 		for (uint32_t poly = 0; poly < polyCount; ++poly)
 		{
 			int32_t vInPolyCount = meshNode->GetPolygonSize(poly);
 			auto& pd = chull.polygonData[poly];
-			pd.mIndexBase = (uint16_t)chull.indicesCount;
+			pd.mIndexBase = (uint16_t)curIndexCount;
 			pd.mNbVerts = (uint16_t)vInPolyCount;
 			int32_t* ind = &meshNode->GetPolygonVertices()[meshNode->GetPolygonVertexIndex(poly)];
-			chull.indices = new uint32_t[vInPolyCount];
-			memcpy(chull.indices, ind, sizeof(uint32_t) * vInPolyCount);
+			uint32_t* destInd = chull.indices + curIndexCount;
+			for (int32_t v = 0; v < vInPolyCount; v++)
+			{
+				destInd[v] = originalToNewCPMapping[ind[v]];
+			}
+			curIndexCount += vInPolyCount;
 
-			FbxVector4 normal;
-			narr.GetAt(poly, &normal);
+			//Don't depend on the normals to create the plane normal, they could be wrong
+			PxVec3 lastThreeVerts[3] = {
+				chull.points[chull.indices[curIndexCount - 1]],
+				chull.points[chull.indices[curIndexCount - 2]],
+				chull.points[chull.indices[curIndexCount - 3]]
+			};
 
-			normal = nodeTransformNormal.MultT(normal);
+			physx::PxPlane plane(lastThreeVerts[0], lastThreeVerts[1], lastThreeVerts[2]);
+			plane.normalize();
 
-			pd.mPlane[0] = (float)normal[0];
-			pd.mPlane[1] = (float)normal[1];
-			pd.mPlane[2] = (float)normal[2];
-			PxVec3 polyLastVertex = chull.points[chull.indices[vInPolyCount - 1]];
-			pd.mPlane[3] = -((float)(polyLastVertex.x * normal[0] + polyLastVertex.y * normal[1] + polyLastVertex.z * normal[2]));
+			const float s = plane.n.dot(lastThreeVerts[0] - hullCentroid) >= 0.0f ? 1.0f : -1.0f;
+
+			pd.mPlane[0] = s*plane.n.x;
+			pd.mPlane[1] = s*plane.n.y;
+			pd.mPlane[2] = s*plane.n.z;
+			pd.mPlane[3] = s*plane.d;
 		}
-		mHullsOffset[parentIndex + 1] = mHullsOffset[parentIndex] + 1;
 	}
-	
+
+	//Set the end marker
+	for (uint32_t m = prevParentIndex + 1; m <= mMeshCount; m++)
+	{
+		//copy these if there were no collision meshes
+		mHullsOffset[m] = currentHullCount;
+	}
 
 	return false;
 }
@@ -424,43 +507,74 @@ bool FbxFileReader::getCollisionInternal()
 **/
 bool FbxFileReader::getBoneInfluencesInternal(FbxMesh* meshNode) 
 {
+	std::unordered_map<FbxNode*, uint32_t> boneToChunkIndex;
 
 	if (meshNode->GetDeformerCount() != 1)
 	{
 		std::cout << "Can't create bone mapping: There is no mesh deformers...: " << std::endl;
 		return false;
 	}
-	mVertexToParentBoneMap.clear();
-	mVertexToParentBoneMap.resize(mVertexPositions.size());
-	std::vector<uint32_t> controlToParentBoneMap;
-	controlToParentBoneMap.resize(meshNode->GetControlPointsCount());
+	mVertexToContainingChunkMap.clear();
+	mVertexToContainingChunkMap.resize(mVertexPositions.size());
+	std::vector<uint32_t> controlToParentChunkMap;
+	controlToParentChunkMap.resize(meshNode->GetControlPointsCount());
 	FbxSkin* def = (FbxSkin *)meshNode->GetDeformer(0, FbxDeformer::EDeformerType::eSkin);
 
 	if (def->GetClusterCount() == 0)
 	{
 		std::cout << "Can't create bone mapping: There is no vertex clusters...: " << std::endl;
 		return false;
-	}	
-	mBoneCount = def->GetClusterCount();
+	}
+	//We want the number of chunks not the bones in the FBX file
+	mChunkCount = 0;
+
 	for (int32_t i = 0; i < def->GetClusterCount(); ++i)
 	{
 		FbxCluster* cls = def->GetCluster(i);
 		FbxNode* bone = cls->GetLink();
-		int32_t parentChunk = atoi(bone->GetName() + 5);
+
+		uint32_t myChunkIndex;
+		auto findIt = boneToChunkIndex.find(bone);
+		if (findIt != boneToChunkIndex.end())
+		{
+			myChunkIndex = findIt->second;
+		}
+		else
+		{
+			myChunkIndex = FbxUtils::getChunkIndexForNode(bone);
+			if (myChunkIndex == UINT32_MAX)
+			{
+				//maybe an old file?
+				myChunkIndex = FbxUtils::getChunkIndexForNodeBackwardsCompatible(bone);
+			}
+
+			if (myChunkIndex == UINT32_MAX)
+			{
+				std::cerr << "Not sure what to do with node " << bone->GetName() << ". is this a chunk?" << std::endl;
+			}
+
+			boneToChunkIndex.emplace(bone, myChunkIndex);
+			if (myChunkIndex >= mChunkCount)
+			{
+				mChunkCount = myChunkIndex + 1;
+			}
+		}
+
 		int32_t* cpIndx = cls->GetControlPointIndices();
 		for (int32_t j = 0; j < cls->GetControlPointIndicesCount(); ++j)
 		{
-			controlToParentBoneMap[*cpIndx] = parentChunk;
+			controlToParentChunkMap[*cpIndx] = myChunkIndex;
 			++cpIndx;
 		}
 	}
+
 	int* polyVertices = meshNode->GetPolygonVertices();
 	uint32_t lv = 0;
 	for (int i = 0; i < meshNode->GetPolygonCount(); i++)
 	{
 		for (int vi = 0; vi < 3; vi++)
 		{
-			mVertexToParentBoneMap[lv] = controlToParentBoneMap[*polyVertices];
+			mVertexToContainingChunkMap[lv] = controlToParentChunkMap[*polyVertices];
 			polyVertices++;
 			lv++;
 		}
@@ -490,21 +604,21 @@ uint32_t* FbxFileReader::getIndexArray()
 
 uint32_t FbxFileReader::getBoneInfluences(uint32_t*& out)
 {
-	out = static_cast<uint32_t*>(NVBLAST_ALLOC(sizeof(uint32_t) * mVertexToParentBoneMap.size()));
-	memcpy(out, mVertexToParentBoneMap.data(), sizeof(uint32_t) * mVertexToParentBoneMap.size());
-	return mVertexToParentBoneMap.size();
+	out = static_cast<uint32_t*>(NVBLAST_ALLOC(sizeof(uint32_t) * mVertexToContainingChunkMap.size()));
+	memcpy(out, mVertexToContainingChunkMap.data(), sizeof(uint32_t) * mVertexToContainingChunkMap.size());
+	return mVertexToContainingChunkMap.size();
 }
 
 uint32_t FbxFileReader::getBoneCount()
 {
-	return mBoneCount;
+	return mChunkCount;
 }
 
-char* FbxFileReader::getMaterialName(int32_t id)
+const char* FbxFileReader::getMaterialName(int32_t id)
 {
 	if (id < int32_t(mMaterialNames.size()) && id >= 0)
 	{
-		return &mMaterialNames[id][0];		
+		return mMaterialNames[id].c_str();		
 	}
 	else
 	{

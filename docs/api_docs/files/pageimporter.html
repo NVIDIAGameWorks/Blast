@@ -25,23 +25,29 @@
 <p>
 A bond is not created if the area of interface is zero. The interface centroid is computed as center of mass of all interface polygon points. The interface normal is computed as an average of normals of all planes comprising the interface surface.<p>
 Note - for Blast&trade; to operate with satisfactory fracturing behavior, it does not require exact area, centroid, and normal values for Bonds.<p>
-Along with creating a Blast&trade; asset, ApexImporter creates an *.obj or *.fbx file with description of chunk render geometry. Blast&trade; asset data can be saved to *.llasset, *.tkasset or *.bpxa format. BPXA asset contains collision geometry and can be used in <a class="el" href="pagesampleassetviewer.html">SampleAssetViewer</a>.<p>
+Along with creating a Blast&trade; asset (*.blast), ApexImporter creates an *.obj or *.fbx file with description of chunk render geometry. Optionally the *.fbx file can store the collision geometry.<p>
+Blast&trade; asset data can be saved in different ways:<p>
+1) LL-asset which is Low Level asset data (<a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> with --ll).<p>
+2) Tk-asset which is Toolkit asset data (<a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">Nv::Blast::TkAsset</a> with --tk).<p>
+3) ExtPx-asset which incorporates Blast&trade; data and collision geometry for physics engine (<a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">Nv::Blast::ExtPxAsset</a> with --px). Default mode.<p>
+ExtPxAsset assets or *.fbx files that contain collision geometry and can be used in <a class="el" href="pagesampleassetviewer.html">SampleAssetViewer</a>.<p>
 <div class="fragment"><pre class="fragment">
 USAGE:
 
-		ApexImporter -f &lt;infile&gt; -n &lt;output asset name&gt;
-			     [--fbx] [--obj][--fbxascii] [--ue4] [--ll] [--tk]
-                             [--bpxa] [-d] [-m &lt;0 - EXACT, 1 - FORCED&gt;] 
-			     [-o &lt;output directory&gt;] [--] [--version] [-h]
+   ApexImporter  [--nonskinned] [--fbxcollision] [--fbx] [--obj]
+                 [--fbxascii] [--ll] [--tk] [--px] [-d] [-m &lt;0 -
+                 EXACT, 1 - FORCED, for detailed description see
+                 docs.&gt;] -n &lt;output asset name&gt; [-o &lt;output
+                 directory&gt;] -f &lt;infile&gt; [--] [--version] [-h]
 
 
-Where: 
+Where:
 
-   -f &lt;infile&gt;,  --file &lt;infile&gt;
-     (required)  File to load
+   --nonskinned
+     Output a non-skinned FBX file
 
-   -n &lt;output asset name&gt;,  --outAssetName &lt;output asset name&gt;
-     (required)  Output asset name
+   --fbxcollision
+     Append collision geometry to FBX file
 
    --fbx
      Output a FBX mesh to the output directory
@@ -52,26 +58,30 @@ Where:
    --fbxascii
      Output FBX as an ascii file (defaults to binary output)
 
-   --ue4
-     Output FBX with UE4 coordinate system
-
    --ll
-     Output LL Blast asset to the output directory (ext: llasset)
+     Output LL Blast asset to the output directory
 
    --tk
-     Output TkAsset to the output directory (ext: tkasset)
+     Output TkAsset to the output directory
 
-   --bpxa
-     Output ExtPxAsset to the output directory (ext: bpxa)
+   --px
+     Output ExtPxAsset to the output directory
 
    -d,  --debug
      Print debug output
 
-   -m &lt;0 - EXACT, 1 - FORCED&gt;,  --mode &lt;0 - EXACT, 1 - FORCED&gt;,
+   -m &lt;0 - EXACT, 1 - FORCED, for detailed description see docs.&gt;,  --mode
+      &lt;0 - EXACT, 1 - FORCED, for detailed description see docs.&gt;
      Interface search mode
 
+   -n &lt;output asset name&gt;,  --outAssetName &lt;output asset name&gt;
+     (required)  Output asset name
+
    -o &lt;output directory&gt;,  --outputDir &lt;output directory&gt;
-     Result output directory. If is not specified, result will be saved to folder with input file.
+     Output directory
+
+   -f &lt;infile&gt;,  --file &lt;infile&gt;
+     (required)  File to load
 
    --,  --ignore_rest
      Ignores the rest of the labeled arguments following this flag.
@@ -81,7 +91,7 @@ Where:
 
    -h,  --help
      Displays usage information and exits.
-
+     
 </pre></div><p>
 <br>
  See <a class="el" href="pagecopyrights.html">Copyrights</a> for license information regarding third-party software used by ApexImporter.<p>

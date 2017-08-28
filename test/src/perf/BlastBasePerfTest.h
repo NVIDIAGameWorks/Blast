@@ -229,8 +229,10 @@ static const char* getPlatformRoot()
 	return "/app0/";
 #elif NV_XBOXONE
 	return "G:/";
-#else
+#elif NV_LINUX
 	return "../../";
+#else
+	return "../../../";
 #endif
 }
 

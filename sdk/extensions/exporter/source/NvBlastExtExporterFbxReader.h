@@ -44,6 +44,87 @@ class Mesh;
 
 class FbxFileReader : public IFbxFileReader
 {
+	struct CollisionHullImpl : public Nv::Blast::CollisionHull
+	{
+		void release() override
+		{
+			delete this;
+		}
+
+		//copy from existing
+		CollisionHullImpl(const CollisionHullImpl& other) : CollisionHullImpl()
+		{
+			copyFrom(other);
+		}
+
+		CollisionHullImpl()
+		{
+			pointsCount = 0;
+			indicesCount = 0;
+			polygonDataCount = 0;
+			points = nullptr;
+			indices = nullptr;
+			polygonData = nullptr;
+		}
+
+		CollisionHullImpl(CollisionHullImpl&& other)
+		{
+			operator=(std::move(other));
+		}
+
+		CollisionHullImpl& operator=(const CollisionHullImpl& other)
+		{
+			if (&other != this)
+			{
+				release();
+				copyFrom(other);
+			}
+			return *this;
+		}
+
+		CollisionHullImpl& operator=(CollisionHullImpl&& other)
+		{
+			if (&other != this)
+			{
+				pointsCount = other.pointsCount;
+				indicesCount = other.indicesCount;
+				polygonDataCount = other.polygonDataCount;
+				points = other.points;
+				indices = other.indices;
+				polygonData = other.polygonData;
+
+				other.pointsCount = 0;
+				other.indicesCount = 0;
+				other.polygonDataCount = 0;
+				other.points = nullptr;
+				other.indices = nullptr;
+				other.polygonData = nullptr;
+			}
+			return *this;
+		}
+
+		virtual ~CollisionHullImpl()
+		{
+			delete[] points;
+			delete[] indices;
+			delete[] polygonData;
+		}
+	private:
+
+		void copyFrom(const CollisionHullImpl& other)
+		{
+			pointsCount = other.pointsCount;
+			indicesCount = other.indicesCount;
+			polygonDataCount = other.polygonDataCount;
+			points = new physx::PxVec3[pointsCount];
+			indices = new uint32_t[indicesCount];
+			polygonData = new Nv::Blast::CollisionHull::HullPolygon[polygonDataCount];
+			memcpy(points, other.points, sizeof(points[0]) * pointsCount);
+			memcpy(indices, other.indices, sizeof(indices[0]) * indicesCount);
+			memcpy(polygonData, other.polygonData, sizeof(polygonData[0]) * polygonDataCount);
+		}
+	};
+
 public:
 	FbxFileReader();
 	~FbxFileReader() = default;
@@ -60,7 +141,7 @@ public:
 		return mVertexPositions.size();
 	}
 
-	virtual uint32_t getIdicesCount() const override
+	virtual uint32_t getIndicesCount() const override
 	{
 		return mIndices.size();
 	}
@@ -73,7 +154,7 @@ public:
 	/**
 	Retrieve collision geometry if it exist
 	*/
-	virtual uint32_t getCollision(uint32_t*& hullsOffset, Nv::Blast::CollisionHull** hulls) override;
+	virtual uint32_t getCollision(uint32_t*& hullsOffset, Nv::Blast::CollisionHull**& hulls) override;
 
 	virtual uint32_t getBoneInfluences(uint32_t*& out) override;
 
@@ -109,7 +190,7 @@ public:
 	/**
 	Get material name.
 	*/
-	char*			getMaterialName(int32_t id) override;
+	const char*		getMaterialName(int32_t id) override;
 
 
 	int32_t			getMaterialCount() override;
@@ -117,9 +198,10 @@ public:
 private:
 
 	uint32_t mMeshCount;
+	uint32_t mChunkCount;
 	std::vector<uint32_t> mHullsOffset;
-	std::vector<Nv::Blast::CollisionHull*> mHulls;
-	std::vector<uint32_t> mVertexToParentBoneMap;
+	std::vector<CollisionHullImpl> mHulls;
+	std::vector<uint32_t> mVertexToContainingChunkMap;
 	std::multimap<uint32_t, FbxNode*> mCollisionNodes;
 	std::vector<physx::PxVec3> mVertexPositions;
 	std::vector<physx::PxVec3> mVertexNormals;
@@ -128,8 +210,6 @@ private:
 	std::vector<int32_t> mSmoothingGroups;
 	std::vector<int32_t> mMaterialIds;
 	std::vector<std::string> mMaterialNames;	
-
-	uint32_t mBoneCount;
 	
 	FbxAMatrix getTransformForNode(FbxNode* node);
 	void getFbxMeshes(FbxDisplayLayer* collisionDisplayLayer, FbxNode* node, std::vector<FbxNode*>& meshNodes);

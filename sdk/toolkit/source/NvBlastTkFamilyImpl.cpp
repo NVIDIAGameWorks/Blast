@@ -33,8 +33,6 @@
 #include "NvBlastTkActorImpl.h"
 #include "NvBlastTkJointImpl.h"
 
-#include "Px.h"
-
 #include "NvBlastIndexFns.h"
 #include "NvBlastMemory.h"
 

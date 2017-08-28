@@ -210,11 +210,11 @@ public:
 					std::for_each(actors.begin(), actors.end(), [](NvBlastActor* a){ NvBlastActorDeactivate(a, messageLog); });
 					actors.clear();
 
-					free(family);
+					alignedFree(family);
 				}
 
 				// Release asset data
-				free(asset);
+				alignedFree(asset);
 			}
 		}
 	}

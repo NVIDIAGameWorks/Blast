@@ -39,9 +39,6 @@
 #include "NvBlastAssert.h"
 #include "NvBlastMemory.h"
 
-#include "Px.h"
-#include "PxTransform.h"
-
 
 namespace Nv
 {

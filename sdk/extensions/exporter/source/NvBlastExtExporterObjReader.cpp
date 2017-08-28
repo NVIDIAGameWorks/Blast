@@ -103,10 +103,11 @@ bool ObjFileReader::isCollisionLoaded()
 };
 
 
-uint32_t ObjFileReader::getCollision(uint32_t*& hullsOffset, Nv::Blast::CollisionHull** hulls)
+uint32_t ObjFileReader::getCollision(uint32_t*& hullsOffset, Nv::Blast::CollisionHull**& hulls)
 {
-	NV_UNUSED(hulls);
-	return false;
+	hullsOffset = nullptr;
+	hulls = nullptr;
+	return 0;
 };
 
 physx::PxVec3* ObjFileReader::getPositionArray()

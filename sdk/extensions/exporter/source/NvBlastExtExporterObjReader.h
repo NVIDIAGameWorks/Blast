@@ -57,7 +57,7 @@ public:
 		return mVertexPositions.size();
 	}
 
-	virtual uint32_t getIdicesCount() const override
+	virtual uint32_t getIndicesCount() const override
 	{
 		return mIndices.size();
 	}
@@ -70,7 +70,7 @@ public:
 	/**
 	Retrieve collision geometry if it exist
 	*/
-	virtual uint32_t getCollision(uint32_t*& hullsOffset, Nv::Blast::CollisionHull** hulls) override;
+	virtual uint32_t getCollision(uint32_t*& hullsOffset, Nv::Blast::CollisionHull**& hulls) override;
 
 	/**
 		Get loaded vertex positions
@@ -102,7 +102,7 @@ public:
 	/**
 		Get material name. Currently not supported by OBJ.
 	*/
-	char*			getMaterialName(int32_t id) override { return nullptr; }
+	const char*			getMaterialName(int32_t id) override { return nullptr; }
 
 	/**
 		Get material count.

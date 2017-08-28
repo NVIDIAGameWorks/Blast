@@ -117,6 +117,7 @@ ExtPxAsset* deserializeExtPxAsset(ExtIStream& stream, TkFramework& framework, ph
 	// Read header
 	struct LegacyAssetDataHeader
 	{
+		LegacyAssetDataHeader() : dataType(0), version(0) {}
 		uint32_t dataType;
 		uint32_t version;
 	};

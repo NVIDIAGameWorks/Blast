@@ -1,6 +1,6 @@
 #Platform specific compile flags and project includes
 
-SET(CMAKE_CXX_FLAGS "-Wextra -fdiagnostics-show-option -fno-rtti -fno-exceptions -m64 -msse2 -mfpmath=sse -fpic -ffast-math -fno-exceptions -fno-rtti -Wno-invalid-offsetof -Wno-unknown-pragmas -Wno-multichar -std=c++0x")
+SET(CMAKE_CXX_FLAGS "-Wextra -fdiagnostics-show-option -fno-rtti -fno-exceptions -m64 -msse2 -mfpmath=sse -fpic -ffast-math -fno-exceptions -fno-rtti -Wno-invalid-offsetof -Wno-unknown-pragmas -Wno-multichar -Wno-sign-compare -std=c++0x")
 
 SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -gdwarf-2")
 SET(CMAKE_CXX_FLAGS_CHECKED "-O3 -g3 -gdwarf-2 -fno-strict-aliasing")

@@ -239,7 +239,8 @@ void ConvexMeshBuilderImpl::trimCollisionGeometry(uint32_t chunksCount, Collisio
 		}
 		Mesh* hullMesh = new MeshImpl(vertices.data(), edges.data(), facets.data(), vertices.size(), edges.size(), facets.size());
 		BooleanEvaluator evl;
-		Mesh* cuttingMesh = getCuttingBox(PxVec3(0, 0, 0), PxVec3(0, 0, 1), 40, 0);
+		//I think the material ID is unused for collision meshes so harcoding MATERIAL_INTERIOR is ok
+		Mesh* cuttingMesh = getCuttingBox(PxVec3(0, 0, 0), PxVec3(0, 0, 1), 40, 0, MATERIAL_INTERIOR);
 		for (uint32_t p = 0; p < chunkMidplanes[i].size(); ++p)
 		{
 			PxPlane& pl = chunkMidplanes[i][p];
@@ -277,27 +278,19 @@ void ConvexMeshBuilderImpl::trimCollisionGeometry(uint32_t chunksCount, Collisio
 PxConvexMesh* ConvexMeshBuilderImpl::buildConvexMesh(uint32_t verticesCount, const physx::PxVec3* vertexData)
 {
 	CollisionHull* hull = buildCollisionGeometry(verticesCount, vertexData);
-
-	PxConvexMeshDesc convexMeshDescr;
-	convexMeshDescr.indices.data = hull->indices;
-	convexMeshDescr.indices.count = (uint32_t)hull->indicesCount;
-	convexMeshDescr.indices.stride = sizeof(uint32_t);
-
-	convexMeshDescr.points.data = hull->points;
-	convexMeshDescr.points.count = (uint32_t)hull->pointsCount;
-	convexMeshDescr.points.stride = sizeof(PxVec3);
-
-	convexMeshDescr.polygons.data = hull->polygonData;
-	convexMeshDescr.polygons.count = (uint32_t)hull->polygonDataCount;
-	convexMeshDescr.polygons.stride = sizeof(PxHullPolygon);
-
-	PxConvexMesh* convexMesh = mCooking->createConvexMesh(convexMeshDescr, *mInsertionCallback);
+	PxConvexMesh* convexMesh = buildConvexMesh(*hull);
 	hull->release();
 	return convexMesh;
 }
 
 PxConvexMesh* ConvexMeshBuilderImpl::buildConvexMesh(const CollisionHull& hull)
 {	
+	/* PxCooking::createConvexMesh expects PxHullPolygon input, which matches CollisionHull::HullPolygon */
+	static_assert(sizeof(PxHullPolygon) == sizeof(CollisionHull::HullPolygon), "CollisionHull::HullPolygon size mismatch");
+	static_assert(offsetof(PxHullPolygon, mPlane) == offsetof(CollisionHull::HullPolygon, mPlane), "CollisionHull::HullPolygon layout mismatch");
+	static_assert(offsetof(PxHullPolygon, mNbVerts) == offsetof(CollisionHull::HullPolygon, mNbVerts), "CollisionHull::HullPolygon layout mismatch");
+	static_assert(offsetof(PxHullPolygon, mIndexBase) == offsetof(CollisionHull::HullPolygon, mIndexBase), "CollisionHull::HullPolygon layout mismatch");
+
 	PxConvexMeshDesc convexMeshDescr;
 	convexMeshDescr.indices.data = hull.indices;
 	convexMeshDescr.indices.count = (uint32_t)hull.indicesCount;

@@ -334,16 +334,13 @@ void ExtImpactDamageManagerImpl::applyDamage()
 
 	for (const ImpactDamageData& data : m_impactDamageBuffer)
 	{
-		if (data.force.magnitudeSquared() > m_settings.impulseMinThreshold * m_settings.impulseMinThreshold)
-		{
-			PxTransform t(data.actor->getPhysXActor().getGlobalPose().getInverse());
-			PxVec3 force = t.rotate(data.force);
-			PxVec3 position = t.transform(data.position);
+		PxTransform t(data.actor->getPhysXActor().getGlobalPose().getInverse());
+		PxVec3 force = t.rotate(data.force);
+		PxVec3 position = t.transform(data.position);
 
-			if (!damageFn || !damageFn(damageFnData, data.actor, data.shape, position, force))
-			{
-				damageActor(data.actor, data.shape, position, force);
-			}
+		if (!damageFn || !damageFn(damageFnData, data.actor, data.shape, position, force))
+		{
+			damageActor(data.actor, data.shape, position, force);
 		}
 	}
 	m_impactDamageBuffer.clear();
@@ -366,10 +363,7 @@ void ExtImpactDamageManagerImpl::damageActor(ExtPxActor* actor, PxShape* /*shape
 {
 	ensureBuffersSize(actor);
 
-	const float f0 = m_settings.impulseMinThreshold;
-	const float f1 = m_settings.impulseMaxThreshold;
-	const float impulse01 = PxClamp<float>((force.magnitude() - f0) / PxMax<float>(f1 - f0, 1.0f), 0, 1);
-	const float damage = m_settings.damageMax * impulse01;
+	const float damage = m_settings.hardness > 0.f ? force.magnitude() / m_settings.hardness : 0.f;
 
 	const void* material = actor->getTkActor().getFamily().getMaterial();
 	if (!material)
@@ -377,15 +371,16 @@ void ExtImpactDamageManagerImpl::damageActor(ExtPxActor* actor, PxShape* /*shape
 		return;
 	}
 
-	const float normalizedDamage = reinterpret_cast<const NvBlastExtMaterial*>(material)->getNormalizedDamage(damage);
-	if (normalizedDamage == 0.f)
+	float normalizedDamage = reinterpret_cast<const NvBlastExtMaterial*>(material)->getNormalizedDamage(damage);
+	if (normalizedDamage == 0.f || normalizedDamage < m_settings.damageThresholdMin)
 	{
 		return;
 	}
+	normalizedDamage = PxClamp<float>(normalizedDamage, 0, m_settings.damageThresholdMax);
 
 	const PxVec3 normal = force.getNormalized();
-	const float maxDistance = m_settings.damageRadiusMax * impulse01;
-	const float minDistance = maxDistance * PxClamp<float>(1 - m_settings.damageAttenuation, 0, 1);
+	const float minDistance = m_settings.damageRadiusMax * normalizedDamage;
+	const float maxDistance = minDistance * PxClamp<float>(m_settings.damageFalloffRadiusFactor, 1, 32);
 
 	NvBlastProgramParams programParams;
 	programParams.damageDescCount = 1;
@@ -397,8 +392,8 @@ void ExtImpactDamageManagerImpl::damageActor(ExtPxActor* actor, PxShape* /*shape
 		NvBlastExtShearDamageDesc desc[] = {
 			{
 				normalizedDamage,
-				{ normal[0], normal[1], normal[2] },			// shear
-				{ position[0], position[1], position[2] },	// position
+				{ normal[0], normal[1], normal[2] },
+				{ position[0], position[1], position[2] },
 				minDistance,
 				maxDistance
 			}
@@ -418,7 +413,7 @@ void ExtImpactDamageManagerImpl::damageActor(ExtPxActor* actor, PxShape* /*shape
 		NvBlastExtRadialDamageDesc desc[] = {
 			{
 				normalizedDamage,
-				{ position[0], position[1], position[2] },	// position
+				{ position[0], position[1], position[2] },
 				minDistance,
 				maxDistance
 			}

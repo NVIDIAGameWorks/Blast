@@ -57,17 +57,17 @@ Inheritance diagram for Nv::Blast::ObjFileReader:</div>
 <a href="class_nv_1_1_blast_1_1_obj_file_reader-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_obj_file_reader.html#758774c15a99ead007270b8390ed26e8">getCollision</a> (uint32_t *&amp;hullsOffset, <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> **hulls) override</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_obj_file_reader.html#3413ab9dd93089baacdf51a2d7853899">getIdicesCount</a> () const override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_obj_file_reader.html#01c925f55875fe9d85433bd6ab953d60">getCollision</a> (uint32_t *&amp;hullsOffset, <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> **&amp;hulls) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_obj_file_reader.html#7b207f2b310fa696848d436f4c8b0c2c">getIndexArray</a> () override</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_obj_file_reader.html#74864f835a339d96ed14401aaba4e737">getIndicesCount</a> () const override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_obj_file_reader.html#166b9ee741b2c887f059d476ee0c17cc">getMaterialCount</a> ()</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_obj_file_reader.html#5e8db96253945dbb3baa036064f6aff4">getMaterialIds</a> () override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">char *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_obj_file_reader.html#6b4dc6620397273005a252d6d3f1e5f6">getMaterialName</a> (int32_t id) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">const char *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_obj_file_reader.html#4869a7e8d066518cde910559619b11a5">getMaterialName</a> (int32_t id) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual physx::PxVec3 *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_obj_file_reader.html#07a1caf7be42dbb4756863e3656e0569">getNormalsArray</a> () override</td></tr>
 
@@ -130,7 +130,7 @@ Inheritance diagram for Nv::Blast::ObjFileReader:</div>
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="758774c15a99ead007270b8390ed26e8"></a><!-- doxytag: member="Nv::Blast::ObjFileReader::getCollision" ref="758774c15a99ead007270b8390ed26e8" args="(uint32_t *&amp;hullsOffset, Nv::Blast::CollisionHull **hulls) override" -->
+<a class="anchor" name="01c925f55875fe9d85433bd6ab953d60"></a><!-- doxytag: member="Nv::Blast::ObjFileReader::getCollision" ref="01c925f55875fe9d85433bd6ab953d60" args="(uint32_t *&amp;hullsOffset, Nv::Blast::CollisionHull **&amp;hulls) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -143,7 +143,7 @@ Inheritance diagram for Nv::Blast::ObjFileReader:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> **&nbsp;</td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> **&amp;&nbsp;</td>
           <td class="paramname"> <em>hulls</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -157,28 +157,7 @@ Inheritance diagram for Nv::Blast::ObjFileReader:</div>
 
 <p>
 Retrieve collision geometry if it exist 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#824633ab7296a6232d613bed0b4847c6">Nv::Blast::IMeshFileReader</a>.</p>
-
-</div>
-</div><p>
-<a class="anchor" name="3413ab9dd93089baacdf51a2d7853899"></a><!-- doxytag: member="Nv::Blast::ObjFileReader::getIdicesCount" ref="3413ab9dd93089baacdf51a2d7853899" args="() const override" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual uint32_t Nv::Blast::ObjFileReader::getIdicesCount           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td> const<code> [inline, override, virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Number of loaded indices 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#2e0c4b2bdb4cf60eebc713941644b02b">Nv::Blast::IMeshFileReader</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#128ff819638921a9c76e1829e85998d8">Nv::Blast::IMeshFileReader</a>.</p>
 
 </div>
 </div><p>
@@ -200,6 +179,27 @@ Number of loaded indices
 <p>
 Get loaded triangle indices 
 <p>Implements <a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#060e4fcdcc016bdbc60231983851d701">Nv::Blast::IMeshFileReader</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="74864f835a339d96ed14401aaba4e737"></a><!-- doxytag: member="Nv::Blast::ObjFileReader::getIndicesCount" ref="74864f835a339d96ed14401aaba4e737" args="() const override" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual uint32_t Nv::Blast::ObjFileReader::getIndicesCount           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [inline, override, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Number of loaded indices 
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#90fefa5f9bb97a6fa1620d21dde91f1b">Nv::Blast::IMeshFileReader</a>.</p>
 
 </div>
 </div><p>
@@ -245,12 +245,12 @@ Get loaded per triangle material ids. Currently not supported by OBJ.
 
 </div>
 </div><p>
-<a class="anchor" name="6b4dc6620397273005a252d6d3f1e5f6"></a><!-- doxytag: member="Nv::Blast::ObjFileReader::getMaterialName" ref="6b4dc6620397273005a252d6d3f1e5f6" args="(int32_t id) override" -->
+<a class="anchor" name="4869a7e8d066518cde910559619b11a5"></a><!-- doxytag: member="Nv::Blast::ObjFileReader::getMaterialName" ref="4869a7e8d066518cde910559619b11a5" args="(int32_t id) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">char* Nv::Blast::ObjFileReader::getMaterialName           </td>
+          <td class="memname">const char* Nv::Blast::ObjFileReader::getMaterialName           </td>
           <td>(</td>
           <td class="paramtype">int32_t&nbsp;</td>
           <td class="paramname"> <em>id</em>          </td>
@@ -263,7 +263,7 @@ Get loaded per triangle material ids. Currently not supported by OBJ.
 
 <p>
 Get material name. Currently not supported by OBJ. 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#37b2be0f55b78ee2ee194109c7821edd">Nv::Blast::IMeshFileReader</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#a369ee4923ae0cfff1c65155f2926a32">Nv::Blast::IMeshFileReader</a>.</p>
 
 </div>
 </div><p>

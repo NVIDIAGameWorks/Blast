@@ -161,8 +161,11 @@ ExtPxActorImpl::ExtPxActorImpl(ExtPxFamilyImpl* family, TkActor* tkActor, const 
 	// set initial velocities
 	if (!(m_rigidDynamic->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC))
 	{
-		m_rigidDynamic->setLinearVelocity(pxActorInfo.m_linearVelocity);
-		m_rigidDynamic->setAngularVelocity(pxActorInfo.m_angularVelocity);
+		const PxVec3 COM = m_rigidDynamic->getGlobalPose().transform(m_rigidDynamic->getCMassLocalPose().p);
+		const PxVec3 linearVelocity = pxActorInfo.m_parentLinearVelocity + pxActorInfo.m_parentAngularVelocity.cross(COM - pxActorInfo.m_parentCOM);
+		const PxVec3 angularVelocity = pxActorInfo.m_parentAngularVelocity;
+		m_rigidDynamic->setLinearVelocity(linearVelocity);
+		m_rigidDynamic->setAngularVelocity(angularVelocity);
 	}
 }
 

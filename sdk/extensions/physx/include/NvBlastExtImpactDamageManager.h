@@ -63,11 +63,11 @@ struct ExtImpactSettings
 {
 	bool					isSelfCollissionEnabled;	//!<	family's self collision enabled.
 	bool					shearDamage;				//!<	use shear damage program (otherwise simple radial damage is used)
-	float					impulseMinThreshold;		//!<	min impulse value to apply impact damage.
-	float					impulseMaxThreshold;		//!<	max impulse value, damage is interpolated value between min and max impulses.
-	float					damageMax;					//!<	max damage to be applied (if impulse is >= impulseMaxThreshold).
-	float					damageRadiusMax;			//!<	max penetration depth (if impulse is >= impulseMaxThreshold).
-	float					damageAttenuation;			//!<	penetration attenuation ([0..1], where 1 means damage attenuates linearly from 0 to max penetration depth).
+	float					hardness;					//!<	hardness of material for impact damage. Damage = impulse / hardness . This damage is capped by the material's health.
+	float					damageRadiusMax;			//!<	the maximum radius in which full damage is applied.
+	float					damageThresholdMin;			//!<	minimum damage fraction threshold to be applied. Range [0, 1]. For example 0.1 filters all damage below 10% of health.
+	float					damageThresholdMax;			//!<	maximum damage fraction threshold to be applied. Range [0, 1]. For example 0.8 won't allow more then 80% of health damage to be applied.
+	float					damageFalloffRadiusFactor;	//!<	damage attenuation radius factor. Given a radius R for full damage, for [R, R * damageFalloffRadiusFactor] radius interval damage attenuates down to zero at the outer radius.
 	ExtImpactDamageFunction damageFunction;				//!<	custom damage function, can be nullptr, default internal one will be used in that case.
 	void*					damageFunctionData;			//!<	data to be passed in custom damage function.
 
@@ -75,11 +75,11 @@ struct ExtImpactSettings
 	ExtImpactSettings() :
 		isSelfCollissionEnabled(false),
 		shearDamage(true),
-		impulseMinThreshold(0.0f),
-		impulseMaxThreshold(1000000.0f),
-		damageMax(100.f),
-		damageRadiusMax(5.0f),
-		damageAttenuation(1.f),
+		hardness(10.0f),
+		damageRadiusMax(2.0f),
+		damageThresholdMin(0.1f), // to filter small damage events
+		damageThresholdMax(1.0f),
+		damageFalloffRadiusFactor(2.0f),
 		damageFunction(nullptr),
 		damageFunctionData(nullptr)
 	{}

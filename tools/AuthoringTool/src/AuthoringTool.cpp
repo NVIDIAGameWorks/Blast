@@ -193,7 +193,7 @@ int main(int argc, const char* const* argv)
 	NvBlastGlobalSetErrorCallback(&errorCallback);
 
 	// setup cmd line
-	TCLAP::CmdLine cmd("Blast SDK: Authoring Tool", ' ', "0.1");
+	TCLAP::CmdLine cmd("Blast SDK: Authoring Tool", ' ', "1.1");
 
 	TCLAP::UnlabeledValueArg<std::string> infileArg("file", "File to load", true, "", "infile");
 	cmd.add(infileArg);
@@ -204,18 +204,18 @@ int main(int argc, const char* const* argv)
 	TCLAP::ValueArg<std::string> outDirArg("", "outputDir", "Output directory", false, ".", "by default directory of the input file");
 	cmd.add(outDirArg);
 
-	TCLAP::SwitchArg cleanArg("", "clean", "Try clean mesh before fracturing", false);
+	TCLAP::SwitchArg cleanArg("", "clean", "Try cleaning mesh before fracturing", false);
 	cmd.add(cleanArg);
 
 	// The output modes
 	//NOTE: Fun TCLAP quirk here - if you set the default to true and specify this switch on the command line, the value will be false!
-	TCLAP::SwitchArg bpxaOutputArg("", "bpxa", "Output ExtPxAsset to the output directory (ext: bpxa)", false);
-	cmd.add(bpxaOutputArg);
+	TCLAP::SwitchArg pxOutputArg("", "px", "Output ExtPxAsset to the .blast file in the output directory.", false);
+	cmd.add(pxOutputArg);
 
-	TCLAP::SwitchArg tkOutputArg("", "tk", "Output TkAsset to the output directory (ext: tkasset)", false);
+	TCLAP::SwitchArg tkOutputArg("", "tk", "Output TkAsset to the .blast file in the output directory.", false);
 	cmd.add(tkOutputArg);
 
-	TCLAP::SwitchArg llOutputArg("", "ll", "Output LL Blast asset to the output directory (ext: llasset)", false);
+	TCLAP::SwitchArg llOutputArg("", "ll", "Output LL Blast (NvBlastAsset) to the .blast file in the output directory.", false);
 	cmd.add(llOutputArg);
 
 	TCLAP::SwitchArg fbxAsciiArg("", "fbxascii", "Output FBX as an ascii file (defaults to binary output)", false);
@@ -227,18 +227,11 @@ int main(int argc, const char* const* argv)
 	TCLAP::SwitchArg fbxOutputArg("", "fbx", "Output a FBX mesh to the output directory", false);
 	cmd.add(fbxOutputArg);
 
-	TCLAP::SwitchArg protoSer("", "proto", "Serialize Blast data with CapnProto", false);
-	cmd.add(protoSer);
-
-	TCLAP::SwitchArg blockSer("", "block", "Serialize Blast data as block of memory", false);
-	cmd.add(blockSer);
-
 	TCLAP::SwitchArg fbxCollision("", "fbxcollision", "Add collision geometry to FBX file", false);
 	cmd.add(fbxCollision);
 
 	TCLAP::SwitchArg nonSkinnedFBX("", "nonskinned", "Output a non-skinned FBX file", false);
 	cmd.add(nonSkinnedFBX);
-
 
 
 	TCLAP::ValueArg<unsigned char> fracturingMode("", "mode", "Fracturing mode", false, 'v', "v - voronoi, c - clustered voronoi, s - slicing.");
@@ -274,7 +267,7 @@ int main(int argc, const char* const* argv)
 	std::string infile = infileArg.getValue();
 	if (!isFileExist(infile))
 	{
-		std::cerr << "[Error] Can't fine input file: " << infile << std::endl;
+		std::cerr << "[Error] Can't find input file: " << infile << std::endl;
 		return -1;
 	}
 
@@ -308,6 +301,7 @@ int main(int argc, const char* const* argv)
 			outDir = infile.substr(0, idx);		
 		}
 	}
+	std::cout << "Output directory: " << outDir << std::endl;
 	std::string assetName = outAssetName.getValue();
 
 	// Determine whether to use the obj or fbx loader
@@ -327,7 +321,7 @@ int main(int argc, const char* const* argv)
 		return -1;
 	}
 
-	bool bOutputBPXA = bpxaOutputArg.getValue();
+	bool bOutputPX = pxOutputArg.getValue();
 	bool bOutputTK = tkOutputArg.getValue();
 	bool bOutputLL = llOutputArg.getValue();
 
@@ -337,15 +331,21 @@ int main(int argc, const char* const* argv)
 	bool bOutputFbxFile = fbxOutputArg.isSet();
 
 	// Did we specify no output formats?
-	if (!bpxaOutputArg.isSet() && !tkOutputArg.isSet() && !llOutputArg.isSet())
+	if (!bOutputPX && !bOutputTK && !bOutputLL)
 	{
-		std::cout << "Didn't specify an output format on the command line, so defaulting to outputting BPXA" << std::endl;
-		bOutputBPXA = true;
+		std::cout << "Didn't specify an output format on the command line. Use default: LL Blast asset (NvBlastAsset)." << std::endl;
+		bOutputLL = true;
 	}
+	else if	((int)bOutputPX + (int)bOutputTK + (int)bOutputLL > 1)
+	{
+		std::cerr << "More than one of the --ll, --tk, and --px options are set. Choose one. " << std::endl;
+		return -1;
+	}
+
 	// Did we specify no geometry output formats?
 	if (!bOutputObjFile && !bOutputFbxFile)
 	{
-		std::cout << "Didn't specify an output geometry format on the command line, so defaulting to outputting .FBX" << std::endl;
+		std::cout << "Didn't specify an output geometry format on the command line. Use default: .FBX" << std::endl;
 		bOutputFbxFile = true;
 	}
 
@@ -369,12 +369,10 @@ int main(int argc, const char* const* argv)
 	fileReader->loadFromFile(infile.c_str());
 
 	uint32_t vcount = fileReader->getVerticesCount();
-	//uint32_t ncount = (uint32_t)fileReader->getNormalsArray().size();
-	//uint32_t uvcount = (uint32_t)fileReader->getUvArray().size();
 
 	if (!initPhysX())
 	{
-		std::cout << "Failed to initialize PhysX" << std::endl;
+		std::cerr << "Failed to initialize PhysX" << std::endl;
 		return -1;
 	}
 	Nv::Blast::FractureTool* fTool = NvBlastExtAuthoringCreateFractureTool();
@@ -383,7 +381,7 @@ int main(int argc, const char* const* argv)
 	PxVec3* norm = fileReader->getNormalsArray();
 	PxVec2* uv = fileReader->getUvArray();
 
-	Nv::Blast::Mesh* mesh = NvBlastExtAuthoringCreateMesh(pos, norm, uv, vcount, fileReader->getIndexArray(), fileReader->getIdicesCount());
+	Nv::Blast::Mesh* mesh = NvBlastExtAuthoringCreateMesh(pos, norm, uv, vcount, fileReader->getIndexArray(), fileReader->getIndicesCount());
 
 	if (cleanArg.isSet())
 	{
@@ -409,10 +407,12 @@ int main(int argc, const char* const* argv)
 	}
 
 	// Send it to the fracture processor
+
 	switch (fracturingMode.getValue())
 	{
 		case 'v':
 		{
+			std::cout << "Fracturing with Voronoi..." << std::endl;
 			voronoiSitesGenerator->uniformlyGenerateSitesInMesh(cellsCount.getValue());
 			const physx::PxVec3* sites = nullptr;
 			uint32_t sitesCount = voronoiSitesGenerator->getVoronoiSites(sites);
@@ -425,6 +425,7 @@ int main(int argc, const char* const* argv)
 		}
 		case 'c':
 		{
+			std::cout << "Fracturing with Clustered Voronoi..." << std::endl;
 			voronoiSitesGenerator->clusteredSitesGeneration(cellsCount.getValue(), clusterCount.getValue(), clusterRad.getValue());
 			const physx::PxVec3* sites = nullptr;
 			uint32_t sitesCount = voronoiSitesGenerator->getVoronoiSites(sites);
@@ -437,6 +438,7 @@ int main(int argc, const char* const* argv)
 		}
 		case 's':
 		{
+			std::cout << "Fracturing with Slicing..." << std::endl;
 			SlicingConfiguration slConfig;
 			slConfig.x_slices = slicingNumber.getValue().x;
 			slConfig.y_slices = slicingNumber.getValue().y;
@@ -469,7 +471,7 @@ int main(int argc, const char* const* argv)
 	// Output the results
 	// NOTE: Writing to FBX by default. 
 
-	std::vector<char*> matNames;
+	std::vector<const char*> matNames;
 	for (int32_t i = 0; i < fileReader->getMaterialCount(); ++i)
 	{
 		matNames.push_back(fileReader->getMaterialName(i));
@@ -483,6 +485,8 @@ int main(int argc, const char* const* argv)
 		result->releaseCollisionHulls();
 	}
 
+	const std::string assetNameFull = outDir + "\\" + assetName;
+
 	if (bOutputObjFile)
 	{
 		std::shared_ptr<IMeshFileWriter> fileWriter(NvBlastExtExporterCreateObjFileWriter(), [](IMeshFileWriter* p) {p->release(); });
@@ -492,6 +496,7 @@ int main(int argc, const char* const* argv)
 			std::cerr << "Can't write geometry to OBJ file." << std::endl;
 			return -1;
 		}
+		std::cout << "Exported render mesh geometry: " << assetNameFull << ".obj" << std::endl;
 	}
 	if (bOutputFbxFile)
 	{
@@ -502,6 +507,14 @@ int main(int argc, const char* const* argv)
 			std::cerr << "Can't write geometry to FBX file." << std::endl;
 			return -1;
 		}
+		if (fbxCollision.isSet())
+		{
+			std::cout << "Exported render mesh and collision geometry: " << assetNameFull << ".fbx" << std::endl;
+		}
+		else
+		{
+			std::cout << "Exported render mesh geometry: " << assetNameFull << ".fbx" << std::endl;
+		}
 	}
 	
 	auto saveBlastData = [&](BlastDataExporter& blExpr)
@@ -509,8 +522,9 @@ int main(int argc, const char* const* argv)
 		if (bOutputLL)
 		{
 			blExpr.saveBlastObject(outDir, assetName, result->asset, LlObjectTypeID::Asset);
+			std::cout << "Exported NvBlastAsset: " << assetNameFull << ".blast" << std::endl;
 		}
-		if (bOutputTK || bOutputBPXA)
+		else
 		{
 			Nv::Blast::TkAssetDesc descriptor;
 			descriptor.bondCount = result->bondCount;
@@ -522,10 +536,12 @@ int main(int argc, const char* const* argv)
 			if (bOutputTK)
 			{
 				blExpr.saveBlastObject(outDir, assetName, &physicsAsset->getTkAsset(), TkObjectTypeID::Asset);
+				std::cout << "Exported TkAsset: " << assetNameFull << ".blast" << std::endl;
 			}
-			if (bOutputBPXA)
+			else if (bOutputPX)
 			{
 				blExpr.saveBlastObject(outDir, assetName, physicsAsset, ExtPxObjectTypeID::Asset);
+				std::cout << "Exported ExtPxAsset: " << assetNameFull << ".blast" << std::endl;
 			}
 			physicsAsset->release();
 		}
@@ -535,6 +551,8 @@ int main(int argc, const char* const* argv)
 	saveBlastData(blExpr);
 
 	result->release();
+
+	std::cout << "Success!" << std::endl;
 
 	return 0;
 }

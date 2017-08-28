@@ -11,24 +11,35 @@ A bond is not created if the area of interface is zero.  The interface centroid 
 
 Note - for Blast&tm; to operate with satisfactory fracturing behavior, it does not require exact area, centroid, and normal values for Bonds.
 
-Along with creating a Blast&tm; asset, ApexImporter creates an *.obj or *.fbx file with description of chunk render geometry.  Blast&tm; asset data can be saved to *.llasset, *.tkasset or *.bpxa format. BPXA asset contains collision geometry and can be used in \ref pagesampleassetviewer.
+Along with creating a Blast&tm; asset (*.blast), ApexImporter creates an *.obj or *.fbx file with description of chunk render geometry. Optionally the *.fbx file can store the collision geometry. 
+
+Blast&tm; asset data can be saved in different ways:
+
+1) LL-asset which is Low Level asset data (NvBlastAsset with --ll). 
+
+2) Tk-asset which is Toolkit asset data (Nv::Blast::TkAsset with --tk).
+
+3) ExtPx-asset which incorporates Blast&tm; data and collision geometry for physics engine (Nv::Blast::ExtPxAsset with --px). Default mode.
+
+ExtPxAsset assets or *.fbx files that contain collision geometry and can be used in \ref pagesampleassetviewer.
 
 \verbatim
 USAGE:
 
-		ApexImporter -f <infile> -n <output asset name>
-			     [--fbx] [--obj][--fbxascii] [--ue4] [--ll] [--tk]
-                             [--bpxa] [-d] [-m <0 - EXACT, 1 - FORCED>] 
-			     [-o <output directory>] [--] [--version] [-h]
+   ApexImporter  [--nonskinned] [--fbxcollision] [--fbx] [--obj]
+                 [--fbxascii] [--ll] [--tk] [--px] [-d] [-m <0 -
+                 EXACT, 1 - FORCED, for detailed description see
+                 docs.>] -n <output asset name> [-o <output
+                 directory>] -f <infile> [--] [--version] [-h]
 
 
-Where: 
+Where:
 
-   -f <infile>,  --file <infile>
-     (required)  File to load
+   --nonskinned
+     Output a non-skinned FBX file
 
-   -n <output asset name>,  --outAssetName <output asset name>
-     (required)  Output asset name
+   --fbxcollision
+     Append collision geometry to FBX file
 
    --fbx
      Output a FBX mesh to the output directory
@@ -39,26 +50,30 @@ Where:
    --fbxascii
      Output FBX as an ascii file (defaults to binary output)
 
-   --ue4
-     Output FBX with UE4 coordinate system
-
    --ll
-     Output LL Blast asset to the output directory (ext: llasset)
+     Output LL Blast asset to the output directory
 
    --tk
-     Output TkAsset to the output directory (ext: tkasset)
+     Output TkAsset to the output directory
 
-   --bpxa
-     Output ExtPxAsset to the output directory (ext: bpxa)
+   --px
+     Output ExtPxAsset to the output directory
 
    -d,  --debug
      Print debug output
 
-   -m <0 - EXACT, 1 - FORCED>,  --mode <0 - EXACT, 1 - FORCED>,
+   -m <0 - EXACT, 1 - FORCED, for detailed description see docs.>,  --mode
+      <0 - EXACT, 1 - FORCED, for detailed description see docs.>
      Interface search mode
 
+   -n <output asset name>,  --outAssetName <output asset name>
+     (required)  Output asset name
+
    -o <output directory>,  --outputDir <output directory>
-     Result output directory. If is not specified, result will be saved to folder with input file.
+     Output directory
+
+   -f <infile>,  --file <infile>
+     (required)  File to load
 
    --,  --ignore_rest
      Ignores the rest of the labeled arguments following this flag.
@@ -68,7 +83,7 @@ Where:
 
    -h,  --help
      Displays usage information and exits.
-
+     
 \endverbatim
 
 <br>

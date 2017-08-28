@@ -57,7 +57,9 @@ public:
 	static std::string FbxSystemUnitToString(const FbxSystemUnit& systemUnit);
 
 	//returns UINT32_MAX if not a chunk
-	static uint32_t getChunkIndexForNode(FbxNode* node, bool includeParents = true);
+	static uint32_t getChunkIndexForNode(FbxNode* node, uint32_t* outParentChunkIndex = nullptr);
+	//Search using the old naming 
+	static uint32_t getChunkIndexForNodeBackwardsCompatible(FbxNode* node, uint32_t* outParentChunkIndex = nullptr);
 	static std::string getChunkNodeName(uint32_t chunkIndex);
 
 	static std::string getCollisionGeometryLayerName();

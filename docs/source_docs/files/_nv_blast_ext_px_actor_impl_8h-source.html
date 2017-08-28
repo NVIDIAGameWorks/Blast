@@ -86,64 +86,65 @@
 <a name="l00049"></a>00049 {
 <a name="l00050"></a><a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#28eb231942c349d0d50f82f413960af1">00050</a>     PxTransform <a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#28eb231942c349d0d50f82f413960af1">m_transform</a>;
 <a name="l00051"></a><a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#76510af3d085300f0e85dcf0829cfb63">00051</a>     PxVec3      <a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#76510af3d085300f0e85dcf0829cfb63">m_scale</a>;
-<a name="l00052"></a><a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#d7d75f7ba31d748cefcd4c99da268b35">00052</a>     PxVec3      <a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#d7d75f7ba31d748cefcd4c99da268b35">m_linearVelocity</a>;
-<a name="l00053"></a><a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#ec267df2f3e7d7b671ed74b87a3baaa4">00053</a>     PxVec3      <a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#ec267df2f3e7d7b671ed74b87a3baaa4">m_angularVelocity</a>;
-<a name="l00054"></a>00054 };
-<a name="l00055"></a>00055 
+<a name="l00052"></a><a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#e5e985920fb9dfb436cbcf60982f4c0f">00052</a>     PxVec3      <a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#e5e985920fb9dfb436cbcf60982f4c0f">m_parentLinearVelocity</a>;
+<a name="l00053"></a><a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#f0f7e8e9589441b741bbcf42f97ffad9">00053</a>     PxVec3      <a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#f0f7e8e9589441b741bbcf42f97ffad9">m_parentAngularVelocity</a>;
+<a name="l00054"></a><a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#4acdce84fe12b6a8f05da50d5800d0c1">00054</a>     PxVec3      <a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html#4acdce84fe12b6a8f05da50d5800d0c1">m_parentCOM</a>;
+<a name="l00055"></a>00055 };
 <a name="l00056"></a>00056 
-<a name="l00057"></a><a class="code" href="class_nv_1_1_blast_1_1final.html">00057</a> <span class="keyword">class </span>ExtPxActorImpl <a class="code" href="class_nv_1_1_blast_1_1final.html">final</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>
-<a name="l00058"></a>00058 {
-<a name="l00059"></a>00059 <span class="keyword">public</span>:
-<a name="l00061"></a>00061 
-<a name="l00062"></a>00062     ExtPxActorImpl(ExtPxFamilyImpl* family, <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a>* tkActor, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html">PxActorCreateInfo</a>&amp; pxActorInfo);
-<a name="l00063"></a>00063 
-<a name="l00064"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#66fc5e2bb35ad8ec410209f6e254d128">00064</a>     ~ExtPxActorImpl()
-<a name="l00065"></a>00065     {
-<a name="l00066"></a>00066         release();
-<a name="l00067"></a>00067     }
-<a name="l00068"></a>00068 
-<a name="l00069"></a>00069     <span class="keywordtype">void</span> release();
-<a name="l00070"></a>00070 
+<a name="l00057"></a>00057 
+<a name="l00058"></a><a class="code" href="class_nv_1_1_blast_1_1final.html">00058</a> <span class="keyword">class </span>ExtPxActorImpl <a class="code" href="class_nv_1_1_blast_1_1final.html">final</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>
+<a name="l00059"></a>00059 {
+<a name="l00060"></a>00060 <span class="keyword">public</span>:
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063     ExtPxActorImpl(ExtPxFamilyImpl* family, <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a>* tkActor, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html">PxActorCreateInfo</a>&amp; pxActorInfo);
+<a name="l00064"></a>00064 
+<a name="l00065"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#66fc5e2bb35ad8ec410209f6e254d128">00065</a>     ~ExtPxActorImpl()
+<a name="l00066"></a>00066     {
+<a name="l00067"></a>00067         release();
+<a name="l00068"></a>00068     }
+<a name="l00069"></a>00069 
+<a name="l00070"></a>00070     <span class="keywordtype">void</span> release();
 <a name="l00071"></a>00071 
-<a name="l00073"></a>00073 
-<a name="l00074"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#409d4b1a96fa30e0167c41cdb6a9a3f4">00074</a>     <span class="keyword">virtual</span> uint32_t                    getChunkCount()<span class="keyword"> const override</span>
-<a name="l00075"></a>00075 <span class="keyword">    </span>{
-<a name="l00076"></a>00076         <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(m_chunkIndices.size());
-<a name="l00077"></a>00077     }
-<a name="l00078"></a>00078 
-<a name="l00079"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#61bbc1cf9558b32c31167193f0b30543">00079</a>     <span class="keyword">virtual</span> <span class="keyword">const</span> uint32_t*             getChunkIndices()<span class="keyword"> const override</span>
-<a name="l00080"></a>00080 <span class="keyword">    </span>{
-<a name="l00081"></a>00081         <span class="keywordflow">return</span> m_chunkIndices.begin();
-<a name="l00082"></a>00082     }
-<a name="l00083"></a>00083 
-<a name="l00084"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#8f5ca383b5041fc641b67ed7c179a850">00084</a>     <span class="keyword">virtual</span> PxRigidDynamic&amp;             getPhysXActor()<span class="keyword"> const override</span>
-<a name="l00085"></a>00085 <span class="keyword">    </span>{
-<a name="l00086"></a>00086         <span class="keywordflow">return</span> *m_rigidDynamic;
-<a name="l00087"></a>00087     }
-<a name="l00088"></a>00088 
-<a name="l00089"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#37d3cf27f13a73b3ec040a7073de2a6c">00089</a>     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a>&amp;                    getTkActor()<span class="keyword"> const override</span>
-<a name="l00090"></a>00090 <span class="keyword">    </span>{
-<a name="l00091"></a>00091         <span class="keywordflow">return</span> *m_tkActor;
-<a name="l00092"></a>00092     }
-<a name="l00093"></a>00093 
-<a name="l00094"></a>00094     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a>&amp;                getFamily() <span class="keyword">const override</span>;
-<a name="l00095"></a>00095 
+<a name="l00072"></a>00072 
+<a name="l00074"></a>00074 
+<a name="l00075"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#409d4b1a96fa30e0167c41cdb6a9a3f4">00075</a>     <span class="keyword">virtual</span> uint32_t                    getChunkCount()<span class="keyword"> const override</span>
+<a name="l00076"></a>00076 <span class="keyword">    </span>{
+<a name="l00077"></a>00077         <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(m_chunkIndices.size());
+<a name="l00078"></a>00078     }
+<a name="l00079"></a>00079 
+<a name="l00080"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#61bbc1cf9558b32c31167193f0b30543">00080</a>     <span class="keyword">virtual</span> <span class="keyword">const</span> uint32_t*             getChunkIndices()<span class="keyword"> const override</span>
+<a name="l00081"></a>00081 <span class="keyword">    </span>{
+<a name="l00082"></a>00082         <span class="keywordflow">return</span> m_chunkIndices.begin();
+<a name="l00083"></a>00083     }
+<a name="l00084"></a>00084 
+<a name="l00085"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#8f5ca383b5041fc641b67ed7c179a850">00085</a>     <span class="keyword">virtual</span> PxRigidDynamic&amp;             getPhysXActor()<span class="keyword"> const override</span>
+<a name="l00086"></a>00086 <span class="keyword">    </span>{
+<a name="l00087"></a>00087         <span class="keywordflow">return</span> *m_rigidDynamic;
+<a name="l00088"></a>00088     }
+<a name="l00089"></a>00089 
+<a name="l00090"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#37d3cf27f13a73b3ec040a7073de2a6c">00090</a>     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a>&amp;                    getTkActor()<span class="keyword"> const override</span>
+<a name="l00091"></a>00091 <span class="keyword">    </span>{
+<a name="l00092"></a>00092         <span class="keywordflow">return</span> *m_tkActor;
+<a name="l00093"></a>00093     }
+<a name="l00094"></a>00094 
+<a name="l00095"></a>00095     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a>&amp;                getFamily() <span class="keyword">const override</span>;
 <a name="l00096"></a>00096 
-<a name="l00097"></a>00097 <span class="keyword">private</span>:
-<a name="l00099"></a>00099 
-<a name="l00100"></a>00100     ExtPxFamilyImpl*                    m_family;
-<a name="l00101"></a>00101     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a>*                            m_tkActor;
-<a name="l00102"></a>00102     PxRigidDynamic*                     m_rigidDynamic;
-<a name="l00103"></a>00103     <a class="code" href="struct_nv_1_1_blast_1_1_inline_array.html">InlineArray&lt;uint32_t, 4&gt;::type</a>      m_chunkIndices;
-<a name="l00104"></a>00104 };
-<a name="l00105"></a>00105 
+<a name="l00097"></a>00097 
+<a name="l00098"></a>00098 <span class="keyword">private</span>:
+<a name="l00100"></a>00100 
+<a name="l00101"></a>00101     ExtPxFamilyImpl*                    m_family;
+<a name="l00102"></a>00102     <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a>*                            m_tkActor;
+<a name="l00103"></a>00103     PxRigidDynamic*                     m_rigidDynamic;
+<a name="l00104"></a>00104     <a class="code" href="struct_nv_1_1_blast_1_1_inline_array.html">InlineArray&lt;uint32_t, 4&gt;::type</a>      m_chunkIndices;
+<a name="l00105"></a>00105 };
 <a name="l00106"></a>00106 
 <a name="l00107"></a>00107 
-<a name="l00108"></a>00108 } <span class="comment">// namespace Blast</span>
-<a name="l00109"></a>00109 } <span class="comment">// namespace Nv</span>
-<a name="l00110"></a>00110 
+<a name="l00108"></a>00108 
+<a name="l00109"></a>00109 } <span class="comment">// namespace Blast</span>
+<a name="l00110"></a>00110 } <span class="comment">// namespace Nv</span>
 <a name="l00111"></a>00111 
-<a name="l00112"></a>00112 <span class="preprocessor">#endif // ifndef NVBLASTEXTPXACTORIMPL_H</span>
+<a name="l00112"></a>00112 
+<a name="l00113"></a>00113 <span class="preprocessor">#endif // ifndef NVBLASTEXTPXACTORIMPL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

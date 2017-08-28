@@ -1189,7 +1189,7 @@ void SceneController::onSampleStart()
 	}
 
 	// add both asset file and asset list from config
-	addAssets(config.additionalAssetList, packmanResourcesAdded);
+	addAssets(config.additionalAssetList, true); // only used for command line assets
 	addAssets(assetList, packmanResourcesAdded);
 
 	// prepare scene

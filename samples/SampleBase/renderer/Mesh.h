@@ -59,7 +59,7 @@ public:
 	virtual uint32_t getVertexStride() { return sizeof(Vertex); }
 
 	std::vector<Vertex> vertices;
-	std::vector<uint16_t> indices;
+	std::vector<uint32_t> indices;
 
 	physx::PxVec3 extents;
 	physx::PxVec3 center;

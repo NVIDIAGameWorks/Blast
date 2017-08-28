@@ -49,8 +49,9 @@ struct PxActorCreateInfo
 {
 	PxTransform	m_transform;
 	PxVec3		m_scale;
-	PxVec3		m_linearVelocity;
-	PxVec3		m_angularVelocity;
+	PxVec3		m_parentLinearVelocity;
+	PxVec3		m_parentAngularVelocity;
+	PxVec3		m_parentCOM;
 };
 
 

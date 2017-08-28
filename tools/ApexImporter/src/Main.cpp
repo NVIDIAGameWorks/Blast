@@ -219,13 +219,13 @@ int main(int argc, const char* const* argv)
 
 		TCLAP::SwitchArg debugSwitch("d", "debug", "Print debug output", cmd, false);
 
-		TCLAP::SwitchArg bpxaOutputArg("", "bpxa", "Output ExtPxAsset to the output directory (ext: bpxa)", false);
-		cmd.add(bpxaOutputArg);
+		TCLAP::SwitchArg pxOutputArg("", "px", "Output ExtPxAsset to the output directory", false);
+		cmd.add(pxOutputArg);
 
-		TCLAP::SwitchArg tkOutputArg("", "tk", "Output TkAsset to the output directory (ext: tkasset)", false);
+		TCLAP::SwitchArg tkOutputArg("", "tk", "Output TkAsset to the output directory", false);
 		cmd.add(tkOutputArg);
 
-		TCLAP::SwitchArg llOutputArg("", "ll", "Output LL Blast asset to the output directory (ext: llasset)", false);
+		TCLAP::SwitchArg llOutputArg("", "ll", "Output LL Blast asset to the output directory", false);
 		cmd.add(llOutputArg);
 
 		TCLAP::SwitchArg fbxAsciiArg("", "fbxascii", "Output FBX as an ascii file (defaults to binary output)", false);
@@ -246,7 +246,7 @@ int main(int argc, const char* const* argv)
 		// parse cmd input
 		cmd.parse(argc, argv);
 
-		bool bOutputBPXA = bpxaOutputArg.getValue();
+		bool bOutputPX = pxOutputArg.getValue();
 		bool bOutputTK = tkOutputArg.getValue();
 		bool bOutputLL = llOutputArg.getValue();
 
@@ -259,10 +259,10 @@ int main(int argc, const char* const* argv)
 		bool bNonSkinned = nonSkinnedFBX.isSet();
 
 		// Did we specify no output formats?
-		if (!bpxaOutputArg.isSet() && !tkOutputArg.isSet() && !llOutputArg.isSet())
+		if (!pxOutputArg.isSet() && !tkOutputArg.isSet() && !llOutputArg.isSet())
 		{
-			std::cout << "Didn't specify an output format on the command line, so defaulting to outputting BPXA" << std::endl;
-			bOutputBPXA = true;
+			std::cout << "Didn't specify an output format on the command line, so defaulting to outputting an ExtPxAsset" << std::endl;
+			bOutputPX = true;
 		}
 		// Did we specify no geometry output formats?
 		if (!bOutputObjFile && !bOutputFbxFile)
@@ -312,7 +312,7 @@ int main(int argc, const char* const* argv)
 		if (debug)
 			lout().setMinVerbosity(Log::MOST_VERBOSE);
 
-		run(infile, outDir, assetName, mode, bOutputLL, bOutputTK, bOutputBPXA, bOutputObjFile, bOutputFbxFile, bOutputFBXAscii, bFbxCollision, bNonSkinned);
+		run(infile, outDir, assetName, mode, bOutputLL, bOutputTK, bOutputPX, bOutputObjFile, bOutputFbxFile, bOutputFBXAscii, bFbxCollision, bNonSkinned);
 	}
 	catch (TCLAP::ArgException &e)  // catch any exceptions
 	{

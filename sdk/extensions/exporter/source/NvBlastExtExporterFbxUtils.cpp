@@ -146,10 +146,17 @@ std::string FbxUtils::FbxSystemUnitToString(const FbxSystemUnit& systemUnit)
 	return std::string(systemUnit.GetScaleFactorAsString());
 }
 
-const static std::string chunkPrefix = "chunk_";
+const static std::string currentChunkPrefix = "chunk_";
+const static std::string oldChunkPrefix = "bone_";
 
-uint32_t FbxUtils::getChunkIndexForNode(FbxNode* node, bool includeParents /*= true*/)
+static uint32_t getChunkIndexForNodeInternal(const std::string& chunkPrefix, FbxNode* node, uint32_t* outParentChunkIndex /*=nullptr*/)
 {
+	if (!node)
+	{
+		//Found nothing
+		return UINT32_MAX;
+	}
+
 	std::string nodeName(node->GetNameOnly());
 	for (char& c : nodeName)
 		c = (char)std::tolower(c);
@@ -161,23 +168,32 @@ uint32_t FbxUtils::getChunkIndexForNode(FbxNode* node, bool includeParents /*= t
 		iss >> ret;
 		if (!iss.fail())
 		{
+			if (outParentChunkIndex)
+			{
+				*outParentChunkIndex = getChunkIndexForNodeInternal(chunkPrefix, node->GetParent(), nullptr);
+			}
 			return ret;
 		}
 	}
 
-	if (includeParents && node->GetParent())
-	{
-		return getChunkIndexForNode(node->GetParent(), true);
-	}
-	//Found nothing
-	return UINT32_MAX;
+	return getChunkIndexForNodeInternal(chunkPrefix, node->GetParent(), outParentChunkIndex);
+}
+
+uint32_t FbxUtils::getChunkIndexForNode(FbxNode* node, uint32_t* outParentChunkIndex /*=nullptr*/)
+{
+	return getChunkIndexForNodeInternal(currentChunkPrefix, node, outParentChunkIndex);
+}
+
+uint32_t FbxUtils::getChunkIndexForNodeBackwardsCompatible(FbxNode* node, uint32_t* outParentChunkIndex /*= nullptr*/)
+{
+	return getChunkIndexForNodeInternal(oldChunkPrefix, node, outParentChunkIndex);
 }
 
 std::string FbxUtils::getChunkNodeName(uint32_t chunkIndex)
 {
 	//This naming is required for the UE4 plugin to find them
 	std::ostringstream namestream;
-	namestream << chunkPrefix << chunkIndex;
+	namestream << currentChunkPrefix << chunkIndex;
 	return namestream.str();
 }
 

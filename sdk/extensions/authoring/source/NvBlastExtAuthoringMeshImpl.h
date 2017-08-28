@@ -138,12 +138,17 @@ public:
 	/**
 	Set per-facet material id.
 	*/
-	void	setMaterialId(int32_t* materialIds) override;
+	void	setMaterialId(const int32_t* materialIds) override;
+
+	/**
+	Replaces an material id on faces with a new one
+	*/
+	void	replaceMaterialId(int32_t oldMaterialId, int32_t newMaterialId) override;
 
 	/**
 	Set per-facet smoothing group.
 	*/
-	void	setSmoothingGroup(int32_t* smoothingGroup) override;
+	void	setSmoothingGroup(const int32_t* smoothingGroups) override;
 
 private:
 	std::vector<Vertex>	mVertices;
@@ -173,14 +178,14 @@ void	setCuttingBox(const physx::PxVec3& point, const physx::PxVec3& normal, Mesh
 	\param[in] size		Cutting box size
 	\param[in] id	Cutting box ID
 */
-Mesh*	getCuttingBox(const physx::PxVec3& point, const physx::PxVec3& normal, float size, int32_t id);
+Mesh*	getCuttingBox(const physx::PxVec3& point, const physx::PxVec3& normal, float size, int32_t id, int32_t interiorMaterialId);
 
 /**
 	Create box at some particular position.
 	\param[in] point	Cutting face center
 	\param[in] size		Cutting box size
 */
-Mesh*	getBigBox(const physx::PxVec3& point, float size);
+Mesh*	getBigBox(const physx::PxVec3& point, float size, int32_t interiorMaterialId);
 
 /**
 	Create slicing box with noisy cutting surface.
@@ -195,7 +200,7 @@ Mesh*	getBigBox(const physx::PxVec3& point, float size);
 	\param[in] octaves			Noise octaves
 	\param[in] seed				Random generator seed, used for noise generation.	
 */
-Mesh* getNoisyCuttingBoxPair(const physx::PxVec3& point, const physx::PxVec3& normal, float size, float jaggedPlaneSize, uint32_t resolution, int32_t id, float amplitude, float frequency, int32_t octaves, int32_t seed);
+Mesh* getNoisyCuttingBoxPair(const physx::PxVec3& point, const physx::PxVec3& normal, float size, float jaggedPlaneSize, uint32_t resolution, int32_t id, float amplitude, float frequency, int32_t octaves, int32_t seed, int32_t interiorMaterialId);
 
 
 /**

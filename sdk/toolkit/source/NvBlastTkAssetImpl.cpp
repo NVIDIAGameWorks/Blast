@@ -33,8 +33,6 @@
 #include "NvBlast.h"
 #include "NvBlastMemory.h"
 
-#include "Px.h"
-
 
 namespace Nv
 {

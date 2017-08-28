@@ -2,53 +2,44 @@
 
 The application <b>AuthoringTool</b> is a command-line asset authoring utility.  It reads a file containing a single graphics mesh
 (currently .fbx and .obj format are supported in this tool), and fractures it according to the parameters given in the command line.
-The user can configure the output of the tool. It can save render mesh geometry to .fbx or .obj files. 
+The user can configure the output of the tool. It can save render mesh geometry to .fbx or .obj files. It also optionally could save 
+collision geometry in the same .fbx file.
 
-Additionally, the user can choose how Blast&tm; data should be saved:
+Additionally, the user can choose how Blast&tm; data should be saved (in .blast file):
 
-	1) BPXA-asset which incorporates Blast&tm; data and collision geometry for physics engine. 
+  1) LL-asset which is Low Level asset data (NvBlastAsset). Default mode.
 
-	2) LL-asset which is Low Level asset data
+  2) Tk-asset which is Toolkit asset data (Nv::Blast::TkAsset).
 
-	3) Tk-asset which is Toolkit asset data
+	3) ExtPx-asset which incorporates Blast&tm; data and collision geometry for physics engine (Nv::Blast::ExtPxAsset). 
 
-BPXA and .obj files may be consumed by the \ref pagesampleassetviewer.
+.blast and .obj files may be consumed by the \ref pagesampleassetviewer.
 
 
 \verbatim
 
-USAGE:
-
-   AuthoringTool  <infile> <output asset name> [--ovar <by default 0.0>] [--avar <by default 0.0>] [--slices <by default 1 1 1>] [--radius <by default 1.0>]
-                                      	       [--clusters <by default 5>][--cells <by default 5>] [--mode <v - voronoi, c - clustered voronoi, s - slicing.>] 
-											   [--block] [--proto]
-                                       	       [--fbx] [--obj] [--fbxascii]
-                                               [--ue4] [--ll] [--tk] [--bpxa]
-                                               [--outputDir <by default directory of the input file>] [--]
-                                               [--version] [-h]  
 
 
-Where:
+USAGE: 
 
-   Blast data output mode:
+   AuthoringTool_x64.exe  [--ovar <by default
+                            0.0>] [--avar <by default 0.0>]
+                            [--slices <by default 1 1 1>]
+                            [--radius <by default 1.0>]
+                            [--clusters <by default 5>]
+                            [--cells <by default 5>] [--mode <v
+                            - voronoi, c - clustered voronoi, s
+                            - slicing.>] [--nonskinned]
+                            [--fbxcollision] [--fbx] [--obj]
+                            [--fbxascii] [--tk] [--px]
+                            [--clean] [--outputDir <by default
+                            directory of the input file>] [--]
+                            [--version] [-h] <infile> <output
+                            asset name>
 
-  	 --bpxa output BPXA asset
-   	 --tk   output Toolkit asset
-  	 --ll   output Low Level asset
 
-   Blast data serialization mode:
-   
-	 --block - Serialize Blast asset as continuous block of memory	 
-	 --proto - Serialize Blast asset with CapnProto
-	 
-   Render mesh geometry output mode:
+Where: 
 
-	--fbx Output render mesh to .fbx file
-	--obj Output render mesh to .obj file
-	
-		   
-   --ue4 Enable output FBX with UE4 coordinate system	
-	
    --ovar <by default 0.0>
      Slicing offset variation
 
@@ -58,6 +49,9 @@ Where:
    --slices <by default 1 1 1>
      Number of slices per direction
 
+   --radius <by default 1.0>
+     Clustered Voronoi cluster radius
+
    --clusters <by default 5>
      Uniform Voronoi cluster count
 
@@ -66,13 +60,35 @@ Where:
 
    --mode <v - voronoi, c - clustered voronoi, s - slicing.>
      Fracturing mode
-   
-   --radius <by default 0.5> 
-	 Cluster radius for clustered Voronoi fracturing mode.
 
-   --outputDir <output directory>
-	 Result output directory. If is not specified, result will be saved to folder with input file.
+   --nonskinned
+     Output a non-skinned FBX file
 
+   --fbxcollision
+     Add collision geometry to FBX file
+
+   --fbx
+     Output a FBX mesh to the output directory
+
+   --obj
+     Output a OBJ mesh to the output directory
+
+   --fbxascii
+     Output FBX as an ascii file (defaults to binary output)
+
+   --tk
+     Output TkAsset to the .blast file in the output directory instead of
+     LL Blast asset (NvBlastAsset).
+
+   --px
+     Output ExtPxAsset to the .blast file in the output directory instead
+     of LL Blast asset (NvBlastAsset).
+
+   --clean
+     Try cleaning mesh before fracturing
+
+   --outputDir <by default directory of the input file>
+     Output directory
 
    --,  --ignore_rest
      Ignores the rest of the labeled arguments following this flag.
@@ -82,6 +98,18 @@ Where:
 
    -h,  --help
      Displays usage information and exits.
+
+   <infile>
+     (required)  File to load
+
+   <output asset name>
+     (required)  Output asset name
+
+
+   Blast SDK: Authoring Tool
+
+
+
 
 \endverbatim
 

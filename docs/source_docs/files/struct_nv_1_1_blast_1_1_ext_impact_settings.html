@@ -51,27 +51,27 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#a60ddb169850a4b06cb954a2f7c9131d">ExtImpactSettings</a> ()</td></tr>
 
 <tr><td colspan="2"><br><h2>Public Attributes</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#263990017530c9d77b5441d44f6b4609">damageAttenuation</a></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#df5d37a5ceaca7c71c71325f434596bb">damageFalloffRadiusFactor</a></td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">penetration attenuation ([0..1], where 1 means damage attenuates linearly from 0 to max penetration depth).  <a href="#263990017530c9d77b5441d44f6b4609"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">damage attenuation radius factor. Given a radius R for full damage, for [R, R * damageFalloffRadiusFactor] radius interval damage attenuates down to zero at the outer radius.  <a href="#df5d37a5ceaca7c71c71325f434596bb"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="namespace_nv_1_1_blast.html#1cbcf5b75f7db9e3dc15c3a1d99415c5">ExtImpactDamageFunction</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#8a9ae7b592a45684fa7b72269c927334">damageFunction</a></td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">custom damage function, can be nullptr, default internal one will be used in that case.  <a href="#8a9ae7b592a45684fa7b72269c927334"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#9192820a2738e2eddffe7fb9b0b2b367">damageFunctionData</a></td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">data to be passed in custom damage function.  <a href="#9192820a2738e2eddffe7fb9b0b2b367"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#0253cf9ddff0579a2abf687307cb4495">damageMax</a></td></tr>
-
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">max damage to be applied (if impulse is &gt;= impulseMaxThreshold).  <a href="#0253cf9ddff0579a2abf687307cb4495"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#615c8e4e5f48e0e2bfb1a9738f8b227f">damageRadiusMax</a></td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">max penetration depth (if impulse is &gt;= impulseMaxThreshold).  <a href="#615c8e4e5f48e0e2bfb1a9738f8b227f"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#13b5aa7a23ed82d5b514f48bc7640ec5">impulseMaxThreshold</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">the maximum radius in which full damage is applied.  <a href="#615c8e4e5f48e0e2bfb1a9738f8b227f"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#9988badc8579cfccd15ebd934ac146ee">damageThresholdMax</a></td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">max impulse value, damage is interpolated value between min and max impulses.  <a href="#13b5aa7a23ed82d5b514f48bc7640ec5"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#ddba8bd45381af670c158b8d8bd50044">impulseMinThreshold</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">maximum damage fraction threshold to be applied. Range [0, 1]. For example 0.8 won't allow more then 80% of health damage to be applied.  <a href="#9988badc8579cfccd15ebd934ac146ee"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#bf16147f2b974ef0dd08c770923ef925">damageThresholdMin</a></td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">min impulse value to apply impact damage.  <a href="#ddba8bd45381af670c158b8d8bd50044"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">minimum damage fraction threshold to be applied. Range [0, 1]. For example 0.1 filters all damage below 10% of health.  <a href="#bf16147f2b974ef0dd08c770923ef925"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#25d0a370c5293fb22fac9e14edad9346">hardness</a></td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">hardness of material for impact damage. Damage = impulse / hardness . This damage is capped by the material's health.  <a href="#25d0a370c5293fb22fac9e14edad9346"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#ea7a153c0b195de478351ba89e207804">isSelfCollissionEnabled</a></td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">family's self collision enabled.  <a href="#ea7a153c0b195de478351ba89e207804"></a><br></td></tr>
@@ -101,19 +101,19 @@ Impact Damage Manager Settings. <hr><h2>Constructor &amp; Destructor Documentati
 </div>
 </div><p>
 <hr><h2>Member Data Documentation</h2>
-<a class="anchor" name="263990017530c9d77b5441d44f6b4609"></a><!-- doxytag: member="Nv::Blast::ExtImpactSettings::damageAttenuation" ref="263990017530c9d77b5441d44f6b4609" args="" -->
+<a class="anchor" name="df5d37a5ceaca7c71c71325f434596bb"></a><!-- doxytag: member="Nv::Blast::ExtImpactSettings::damageFalloffRadiusFactor" ref="df5d37a5ceaca7c71c71325f434596bb" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">float <a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#263990017530c9d77b5441d44f6b4609">Nv::Blast::ExtImpactSettings::damageAttenuation</a>          </td>
+          <td class="memname">float <a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#df5d37a5ceaca7c71c71325f434596bb">Nv::Blast::ExtImpactSettings::damageFalloffRadiusFactor</a>          </td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-penetration attenuation ([0..1], where 1 means damage attenuates linearly from 0 to max penetration depth). 
+damage attenuation radius factor. Given a radius R for full damage, for [R, R * damageFalloffRadiusFactor] radius interval damage attenuates down to zero at the outer radius. 
 <p>
 
 </div>
@@ -152,23 +152,6 @@ data to be passed in custom damage function.
 
 </div>
 </div><p>
-<a class="anchor" name="0253cf9ddff0579a2abf687307cb4495"></a><!-- doxytag: member="Nv::Blast::ExtImpactSettings::damageMax" ref="0253cf9ddff0579a2abf687307cb4495" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">float <a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#0253cf9ddff0579a2abf687307cb4495">Nv::Blast::ExtImpactSettings::damageMax</a>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-max damage to be applied (if impulse is &gt;= impulseMaxThreshold). 
-<p>
-
-</div>
-</div><p>
 <a class="anchor" name="615c8e4e5f48e0e2bfb1a9738f8b227f"></a><!-- doxytag: member="Nv::Blast::ExtImpactSettings::damageRadiusMax" ref="615c8e4e5f48e0e2bfb1a9738f8b227f" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -181,41 +164,58 @@ max damage to be applied (if impulse is &gt;= impulseMaxThreshold).
 <div class="memdoc">
 
 <p>
-max penetration depth (if impulse is &gt;= impulseMaxThreshold). 
+the maximum radius in which full damage is applied. 
 <p>
 
 </div>
 </div><p>
-<a class="anchor" name="13b5aa7a23ed82d5b514f48bc7640ec5"></a><!-- doxytag: member="Nv::Blast::ExtImpactSettings::impulseMaxThreshold" ref="13b5aa7a23ed82d5b514f48bc7640ec5" args="" -->
+<a class="anchor" name="9988badc8579cfccd15ebd934ac146ee"></a><!-- doxytag: member="Nv::Blast::ExtImpactSettings::damageThresholdMax" ref="9988badc8579cfccd15ebd934ac146ee" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">float <a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#13b5aa7a23ed82d5b514f48bc7640ec5">Nv::Blast::ExtImpactSettings::impulseMaxThreshold</a>          </td>
+          <td class="memname">float <a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#9988badc8579cfccd15ebd934ac146ee">Nv::Blast::ExtImpactSettings::damageThresholdMax</a>          </td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-max impulse value, damage is interpolated value between min and max impulses. 
+maximum damage fraction threshold to be applied. Range [0, 1]. For example 0.8 won't allow more then 80% of health damage to be applied. 
 <p>
 
 </div>
 </div><p>
-<a class="anchor" name="ddba8bd45381af670c158b8d8bd50044"></a><!-- doxytag: member="Nv::Blast::ExtImpactSettings::impulseMinThreshold" ref="ddba8bd45381af670c158b8d8bd50044" args="" -->
+<a class="anchor" name="bf16147f2b974ef0dd08c770923ef925"></a><!-- doxytag: member="Nv::Blast::ExtImpactSettings::damageThresholdMin" ref="bf16147f2b974ef0dd08c770923ef925" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">float <a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#ddba8bd45381af670c158b8d8bd50044">Nv::Blast::ExtImpactSettings::impulseMinThreshold</a>          </td>
+          <td class="memname">float <a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#bf16147f2b974ef0dd08c770923ef925">Nv::Blast::ExtImpactSettings::damageThresholdMin</a>          </td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>
-min impulse value to apply impact damage. 
+minimum damage fraction threshold to be applied. Range [0, 1]. For example 0.1 filters all damage below 10% of health. 
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="25d0a370c5293fb22fac9e14edad9346"></a><!-- doxytag: member="Nv::Blast::ExtImpactSettings::hardness" ref="25d0a370c5293fb22fac9e14edad9346" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float <a class="el" href="struct_nv_1_1_blast_1_1_ext_impact_settings.html#25d0a370c5293fb22fac9e14edad9346">Nv::Blast::ExtImpactSettings::hardness</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+hardness of material for impact damage. Damage = impulse / hardness . This damage is capped by the material's health. 
 <p>
 
 </div>

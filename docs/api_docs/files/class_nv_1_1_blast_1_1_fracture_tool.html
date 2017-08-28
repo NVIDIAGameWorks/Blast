@@ -49,6 +49,8 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#7bcaeda929fdcc29a7db12676cf0984a">getChunksIdAtDepth</a> (uint32_t depth, int32_t *&amp;chunkIds)=0</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#820000e618005f6de1cbcb56d3e54de5">getInteriorMaterialId</a> () const =0</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#dc4037818bdb9424fe0543b59c1e2eac">getMeshOverlap</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> &amp;meshA, const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> &amp;meshB)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#6bea973a4818678affb3ca13e6dc5328">getTransformation</a> (physx::PxVec3 &amp;offset, float &amp;scale)=0</td></tr>
@@ -59,7 +61,11 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#78da4a0d726ec1b541166cd3c46df67e">release</a> ()=0</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#78194aeece0c12c2035c79458ff49c9f">replaceMaterialId</a> (int32_t oldMaterialId, int32_t newMaterialId)=0</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#b462c92fa47a5359bf3d19cf44af80f4">reset</a> ()=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c8c4f90133fdf32969cad6e4c520414f">setInteriorMaterialId</a> (int32_t materialId)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#251738022e498b819e88536577470735">setRemoveIslands</a> (bool isRemoveIslands)=0</td></tr>
 
@@ -367,6 +373,25 @@ Return array of chunks IDs with given depth. <dl compact><dt><b>Parameters:</b><
 
 </div>
 </div><p>
+<a class="anchor" name="820000e618005f6de1cbcb56d3e54de5"></a><!-- doxytag: member="Nv::Blast::FractureTool::getInteriorMaterialId" ref="820000e618005f6de1cbcb56d3e54de5" args="() const =0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int32_t Nv::Blast::FractureTool::getInteriorMaterialId           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Gets the material id to use for new interior faces 
+</div>
+</div><p>
 <a class="anchor" name="dc4037818bdb9424fe0543b59c1e2eac"></a><!-- doxytag: member="Nv::Blast::FractureTool::getMeshOverlap" ref="dc4037818bdb9424fe0543b59c1e2eac" args="(const Mesh &amp;meshA, const Mesh &amp;meshB)=0" -->
 <div class="memitem">
 <div class="memproto">
@@ -498,6 +523,35 @@ Check if input mesh contains open edges. Open edges can lead to wrong fracturing
 Release <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> memory 
 </div>
 </div><p>
+<a class="anchor" name="78194aeece0c12c2035c79458ff49c9f"></a><!-- doxytag: member="Nv::Blast::FractureTool::replaceMaterialId" ref="78194aeece0c12c2035c79458ff49c9f" args="(int32_t oldMaterialId, int32_t newMaterialId)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::FractureTool::replaceMaterialId           </td>
+          <td>(</td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>oldMaterialId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>newMaterialId</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Replaces an material id on faces with a new one 
+</div>
+</div><p>
 <a class="anchor" name="b462c92fa47a5359bf3d19cf44af80f4"></a><!-- doxytag: member="Nv::Blast::FractureTool::reset" ref="b462c92fa47a5359bf3d19cf44af80f4" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
@@ -515,6 +569,26 @@ Release <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureT
 
 <p>
 Reset <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> state. 
+</div>
+</div><p>
+<a class="anchor" name="c8c4f90133fdf32969cad6e4c520414f"></a><!-- doxytag: member="Nv::Blast::FractureTool::setInteriorMaterialId" ref="c8c4f90133fdf32969cad6e4c520414f" args="(int32_t materialId)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::FractureTool::setInteriorMaterialId           </td>
+          <td>(</td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>materialId</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set the material id to use for new interior faces. Defaults to MATERIAL_INTERIOR 
 </div>
 </div><p>
 <a class="anchor" name="251738022e498b819e88536577470735"></a><!-- doxytag: member="Nv::Blast::FractureTool::setRemoveIslands" ref="251738022e498b819e88536577470735" args="(bool isRemoveIslands)=0" -->
@@ -559,7 +633,7 @@ Set automatic islands removing. May cause instabilities. <dl compact><dt><b>Para
 <div class="memdoc">
 
 <p>
-Set input mesh wich will be fractured, <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> will be reseted. 
+Set input mesh which will be fractured, <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> will be reseted. 
 </div>
 </div><p>
 <a class="anchor" name="c61aa65dde3c085450e8256a838a487f"></a><!-- doxytag: member="Nv::Blast::FractureTool::slicing" ref="c61aa65dde3c085450e8256a838a487f" args="(uint32_t chunkId, SlicingConfiguration conf, bool replaceChunk, RandomGeneratorBase *rnd)=0" -->

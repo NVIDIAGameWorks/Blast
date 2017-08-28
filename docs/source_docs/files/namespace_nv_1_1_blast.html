@@ -434,9 +434,9 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NV_INLINE size_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#227ad41f76a5f6c64ae1fb549e08cb85">getActorSerializationSize</a> (uint32_t visibleChunkCount, uint32_t lowerSupportChunkCount, uint32_t graphNodeCount, uint32_t bondCount)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#40cd745e56e5d458c5f706c0da2621c5">getBigBox</a> (const physx::PxVec3 &amp;point, float size)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#ef59d71df12b51af958587475b90495f">getBigBox</a> (const physx::PxVec3 &amp;point, float size, int32_t interiorMaterialId)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#c5ece1f5a36e237ea3220978ab7403df">getCuttingBox</a> (const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, int32_t id)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#7be37651ca8c034ce1426d18ce65247c">getCuttingBox</a> (const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, int32_t id, int32_t interiorMaterialId)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NV_INLINE const <a class="el" href="struct_nv_blast_i_d.html">NvBlastID</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#6812eeabf30d92a2f9f68b02946d0f17">getFamilyID</a> (const TkFamilyImpl *family)</td></tr>
 
@@ -444,7 +444,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">size_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#865dd402e2f1af88e0d8df296d4f10d3">getFamilyMemorySize</a> (const <a class="el" href="class_nv_1_1_blast_1_1_asset.html">Asset</a> *asset)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#995e211b2f4fe08b316a096386bed658">getNoisyCuttingBoxPair</a> (const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, float jaggedPlaneSize, uint32_t resolution, int32_t id, float amplitude, float frequency, int32_t octaves, int32_t seed)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#b1f78ff7033dda34706c1d8d0d976fc5">getNoisyCuttingBoxPair</a> (const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, float jaggedPlaneSize, uint32_t resolution, int32_t id, float amplitude, float frequency, int32_t octaves, int32_t seed, int32_t interiorMaterialId)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NV_INLINE bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#a53d476b82810995adad43062322f649">getPlaneSegmentIntersection</a> (const PxPlane &amp;pl, const PxVec3 &amp;a, const PxVec3 &amp;b, PxVec3 &amp;result)</td></tr>
 
@@ -1195,7 +1195,7 @@ A buffer size sufficient to serialize an actor with a given visible chunk count,
 
 </div>
 </div><p>
-<a class="anchor" name="40cd745e56e5d458c5f706c0da2621c5"></a><!-- doxytag: member="Nv::Blast::getBigBox" ref="40cd745e56e5d458c5f706c0da2621c5" args="(const physx::PxVec3 &amp;point, float size)" -->
+<a class="anchor" name="ef59d71df12b51af958587475b90495f"></a><!-- doxytag: member="Nv::Blast::getBigBox" ref="ef59d71df12b51af958587475b90495f" args="(const physx::PxVec3 &amp;point, float size, int32_t interiorMaterialId)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1209,7 +1209,13 @@ A buffer size sufficient to serialize an actor with a given visible chunk count,
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">float&nbsp;</td>
-          <td class="paramname"> <em>size</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>interiorMaterialId</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -1230,7 +1236,7 @@ Create box at some particular position. <dl compact><dt><b>Parameters:</b></dt><
 
 </div>
 </div><p>
-<a class="anchor" name="c5ece1f5a36e237ea3220978ab7403df"></a><!-- doxytag: member="Nv::Blast::getCuttingBox" ref="c5ece1f5a36e237ea3220978ab7403df" args="(const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, int32_t id)" -->
+<a class="anchor" name="7be37651ca8c034ce1426d18ce65247c"></a><!-- doxytag: member="Nv::Blast::getCuttingBox" ref="7be37651ca8c034ce1426d18ce65247c" args="(const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, int32_t id, int32_t interiorMaterialId)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1256,7 +1262,13 @@ Create box at some particular position. <dl compact><dt><b>Parameters:</b></dt><
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int32_t&nbsp;</td>
-          <td class="paramname"> <em>id</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>interiorMaterialId</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -1345,7 +1357,7 @@ Returns the number of bytes of memory that a family created using the given asse
 
 </div>
 </div><p>
-<a class="anchor" name="995e211b2f4fe08b316a096386bed658"></a><!-- doxytag: member="Nv::Blast::getNoisyCuttingBoxPair" ref="995e211b2f4fe08b316a096386bed658" args="(const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, float jaggedPlaneSize, uint32_t resolution, int32_t id, float amplitude, float frequency, int32_t octaves, int32_t seed)" -->
+<a class="anchor" name="b1f78ff7033dda34706c1d8d0d976fc5"></a><!-- doxytag: member="Nv::Blast::getNoisyCuttingBoxPair" ref="b1f78ff7033dda34706c1d8d0d976fc5" args="(const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, float jaggedPlaneSize, uint32_t resolution, int32_t id, float amplitude, float frequency, int32_t octaves, int32_t seed, int32_t interiorMaterialId)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1407,7 +1419,13 @@ Returns the number of bytes of memory that a family created using the given asse
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int32_t&nbsp;</td>
-          <td class="paramname"> <em>seed</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>seed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>interiorMaterialId</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>

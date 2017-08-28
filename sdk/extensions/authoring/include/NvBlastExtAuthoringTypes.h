@@ -250,7 +250,7 @@ struct AuthoringResult
 	/**
 		Array of material names.
 	*/
-	char** materialNames;
+	const char** materialNames;
 	/**
 		Size of array of material names.
 	*/

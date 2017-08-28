@@ -95,9 +95,11 @@ Inheritance diagram for Nv::Blast::MeshImpl:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#fd0a2a856078f362d0c0f5f2da1ba03e">release</a> () override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#14a9a0be24b392467984ba07811ad75f">setMaterialId</a> (int32_t *materialIds) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#6f24a8e40f0a9d163307b03d45310eb0">replaceMaterialId</a> (int32_t oldMaterialId, int32_t newMaterialId) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#990f18999ab2b12b2dc242f459651ec7">setSmoothingGroup</a> (int32_t *smoothingGroup) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#2d22ff67e8def5b58a895c6cab321ccf">setMaterialId</a> (const int32_t *materialIds) override</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#9d7a7efb5015fc64d764b2eff8a9fb53">setSmoothingGroup</a> (const int32_t *smoothingGroups) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#81e38e84fbe8d618580ae5f21f174cf6">~MeshImpl</a> ()</td></tr>
 
@@ -609,14 +611,45 @@ Release <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> memory
 
 </div>
 </div><p>
-<a class="anchor" name="14a9a0be24b392467984ba07811ad75f"></a><!-- doxytag: member="Nv::Blast::MeshImpl::setMaterialId" ref="14a9a0be24b392467984ba07811ad75f" args="(int32_t *materialIds) override" -->
+<a class="anchor" name="6f24a8e40f0a9d163307b03d45310eb0"></a><!-- doxytag: member="Nv::Blast::MeshImpl::replaceMaterialId" ref="6f24a8e40f0a9d163307b03d45310eb0" args="(int32_t oldMaterialId, int32_t newMaterialId) override" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Nv::Blast::MeshImpl::replaceMaterialId           </td>
+          <td>(</td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>oldMaterialId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>newMaterialId</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [override, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Replaces an material id on faces with a new one 
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#cfffa10ab877367067c0651320e39852">Nv::Blast::Mesh</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="2d22ff67e8def5b58a895c6cab321ccf"></a><!-- doxytag: member="Nv::Blast::MeshImpl::setMaterialId" ref="2d22ff67e8def5b58a895c6cab321ccf" args="(const int32_t *materialIds) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void Nv::Blast::MeshImpl::setMaterialId           </td>
           <td>(</td>
-          <td class="paramtype">int32_t *&nbsp;</td>
+          <td class="paramtype">const int32_t *&nbsp;</td>
           <td class="paramname"> <em>materialIds</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td><code> [override, virtual]</code></td>
@@ -627,19 +660,19 @@ Release <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> memory
 
 <p>
 Set per-facet material id. 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#9c512712bbe2a2e16bd957baeccd2f57">Nv::Blast::Mesh</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#f082c3fd4ea1badcb0263bad0682c20b">Nv::Blast::Mesh</a>.</p>
 
 </div>
 </div><p>
-<a class="anchor" name="990f18999ab2b12b2dc242f459651ec7"></a><!-- doxytag: member="Nv::Blast::MeshImpl::setSmoothingGroup" ref="990f18999ab2b12b2dc242f459651ec7" args="(int32_t *smoothingGroup) override" -->
+<a class="anchor" name="9d7a7efb5015fc64d764b2eff8a9fb53"></a><!-- doxytag: member="Nv::Blast::MeshImpl::setSmoothingGroup" ref="9d7a7efb5015fc64d764b2eff8a9fb53" args="(const int32_t *smoothingGroups) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void Nv::Blast::MeshImpl::setSmoothingGroup           </td>
           <td>(</td>
-          <td class="paramtype">int32_t *&nbsp;</td>
-          <td class="paramname"> <em>smoothingGroup</em>          </td>
+          <td class="paramtype">const int32_t *&nbsp;</td>
+          <td class="paramname"> <em>smoothingGroups</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td><code> [override, virtual]</code></td>
         </tr>
@@ -649,7 +682,7 @@ Set per-facet material id.
 
 <p>
 Set per-facet smoothing group. 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#52f8e09ebf69b53a5fd720165ab8629d">Nv::Blast::Mesh</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#ed83e124b04216f54989ea9f8ade52d7">Nv::Blast::Mesh</a>.</p>
 
 </div>
 </div><p>

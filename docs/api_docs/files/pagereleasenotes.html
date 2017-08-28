@@ -24,7 +24,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Blast(tm) SDK 1.1 (28-Jul-2017)
+Blast(tm) SDK 1.1 (25-Aug-2017)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Changes
@@ -63,6 +63,8 @@ NvBlastExtImpactDamageManager.
 * NvBlastExtShearGraphShader uses a chunk-based method to find the closest graph node, improving performance.
 * TkGroup no longer uses physx::PxTaskManager interface for task management.  Instead, a TkGroupWorker interface
 has been added.  The NvBlastExtPhysX extension uses the physx::PxTaskManager to implement this interface.
+* Better error handling in AuthoringTool (stderr and user error handler).
+* More consistent commandline switches in AuthoringTool and ApexImporter (--ll, --tk, --px flags).
 * Various small clean-ups.
 
 New Features
@@ -73,6 +75,7 @@ New Features
 ** Transform an NvBlastAsset's geometric data in-place.
 * NvBlastExtAuthoring
 ** Open edge detection.
+** Rotation of voronoi cells used for fracturing.
 * "Globals" code (under sdk/globals).  Includes a global allocator, message handler, and profiler API used by
 TkFramework and extensions.
 * NvBlastExtStress extension, a PhysX-independent API for performing stress calculations with low-level Blast actors.
@@ -88,7 +91,10 @@ in one of three ways:
 * LegacyConverter tool has been added, which converts .llasset, .tkasset, .bpxa, .pllasset, .ptkasset, and .pbpxa
 asset files to the new .blast format using the universal serialization scheme in the new NvBlastExtSerialization
 extension.
-* Mesh cleaner in NvBlastExtAuthoring.  Tries to remove self intersections and open edges in the interior of a mesh.
+* NvBlastExtAuthoring
+** Mesh cleaner, tries to remove self intersections and open edges in the interior of a mesh.
+** Ability to set interior material to existing (external) material, or a new material id.
+** Material ID remapping API.
 
 Bug fixes
 ---------
@@ -98,10 +104,19 @@ Bug fixes
 had led to some crashes with empty vectors.
 * SampleAssetViewer
 ** Fixed dragging kinematic actor.
+** Now loads the commandline-defined asset also when sample resources were not downloaded yet.
 * Serialization documented.
+* Fixed smoothing groups in FBX exporter code.
+* Impulse passing from parent to child chunks fixed.
+* Reading unskinned fbx meshes correctly.
+* Collision hull generation from fbx meshes fixed.
+* Win32/64 PerfTest crash fix.
 
 Known Issues
 ------------
+* Damage shaders in extensions can miss bonds if the damage volume is too small.
+* Authoring extension does not perform convex decomposition to fit chunks with multiple collision hulls.
+* Authoring code does not use the user-defined allocator (NvBlastGlobals) exclusively.
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

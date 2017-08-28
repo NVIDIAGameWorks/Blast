@@ -32,8 +32,6 @@
 #include "NvBlastTkAssetImpl.h"
 #include "NvBlastTkFamilyImpl.h"
 
-#include "Px.h"
-
 
 namespace Nv
 {

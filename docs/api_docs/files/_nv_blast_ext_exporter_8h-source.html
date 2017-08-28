@@ -117,7 +117,7 @@
 <a name="l00112"></a>00112 
 <a name="l00116"></a>00116     <span class="keyword">virtual</span> uint32_t        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#a3490dad05f3e1c701c5e4c6a8bf8fcc">getVerticesCount</a>() <span class="keyword">const</span> = 0;
 <a name="l00117"></a>00117 
-<a name="l00121"></a>00121     <span class="keyword">virtual</span> uint32_t        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#2e0c4b2bdb4cf60eebc713941644b02b">getIdicesCount</a>() <span class="keyword">const</span> = 0;
+<a name="l00121"></a>00121     <span class="keyword">virtual</span> uint32_t        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#90fefa5f9bb97a6fa1620d21dde91f1b">getIndicesCount</a>() <span class="keyword">const</span> = 0;
 <a name="l00122"></a>00122 
 <a name="l00126"></a>00126     <span class="keyword">virtual</span> physx::PxVec3*  <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#f17eaa1f59013c225ac6ef35ce7c181e">getPositionArray</a>() = 0;
 <a name="l00127"></a>00127 
@@ -129,7 +129,7 @@
 <a name="l00142"></a>00142 
 <a name="l00146"></a>00146     <span class="keyword">virtual</span> int32_t*        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#bc8eec8be3fec8415a7ca40e5b1d7976">getSmoothingGroups</a>() = 0;
 <a name="l00147"></a>00147 
-<a name="l00151"></a>00151     <span class="keyword">virtual</span> <span class="keywordtype">char</span>*           <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#37b2be0f55b78ee2ee194109c7821edd">getMaterialName</a>(int32_t <span class="keywordtype">id</span>) = 0;
+<a name="l00151"></a>00151     <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">char</span>*     <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#a369ee4923ae0cfff1c65155f2926a32">getMaterialName</a>(int32_t <span class="keywordtype">id</span>) = 0;
 <a name="l00152"></a>00152 
 <a name="l00156"></a>00156     <span class="keyword">virtual</span> int32_t         <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#37cba744c380c56f62a9bc0e181e410a">getMaterialCount</a>() = 0;
 <a name="l00157"></a>00157 
@@ -140,7 +140,7 @@
 <a name="l00165"></a>00165 
 <a name="l00169"></a>00169     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>            <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#2784c55010ab4f9befe8db7e635dfb23">isCollisionLoaded</a>() = 0;
 <a name="l00170"></a>00170 
-<a name="l00179"></a>00179     <span class="keyword">virtual</span> uint32_t        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#824633ab7296a6232d613bed0b4847c6">getCollision</a>(uint32_t*&amp; hullsOffset, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** hulls) = 0;
+<a name="l00179"></a>00179     <span class="keyword">virtual</span> uint32_t        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#128ff819638921a9c76e1829e85998d8">getCollision</a>(uint32_t*&amp; hullsOffset, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>**&amp; hulls) = 0;
 <a name="l00180"></a>00180 
 <a name="l00181"></a>00181 };
 <a name="l00182"></a>00182 

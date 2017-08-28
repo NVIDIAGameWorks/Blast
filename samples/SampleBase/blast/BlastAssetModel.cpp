@@ -208,13 +208,14 @@ BlastAssetModel::BlastAssetModel(TkFramework& framework, PxPhysics& physics, PxC
 						physicsChunks[i].subchunkCount = (uint32_t)physicsSubchunks[i].size();
 						physicsChunks[i].subchunks = physicsSubchunks[i].data();
 					}
-					if (hullsOffsets)
+					if (hulls && hullsOffsets)
 					{
-						NVBLAST_FREE(hullsOffsets);
-					}
-					if (hulls)
-					{
+						for (uint32_t h = 0; h < hullsOffsets[meshCount]; h++)
+						{
+							hulls[h]->release();
+						}
 						NVBLAST_FREE(hulls);
+						NVBLAST_FREE(hullsOffsets);
 					}
 				}
 				m_pxAsset = ExtPxAsset::create(tkAsset, physicsChunks.data(), (uint32_t)physicsChunks.size());

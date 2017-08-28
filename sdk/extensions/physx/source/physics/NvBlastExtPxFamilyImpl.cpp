@@ -118,8 +118,8 @@ bool ExtPxFamilyImpl::spawn(const physx::PxTransform& pose, const physx::PxVec3&
 	for (uint32_t i = 0; i < actorCount; ++i)
 	{
 		PxActorCreateInfo& pxActorInfo = m_newActorCreateInfo[i];
-		pxActorInfo.m_angularVelocity = PxVec3(PxZero);
-		pxActorInfo.m_linearVelocity = PxVec3(PxZero);
+		pxActorInfo.m_parentAngularVelocity = PxVec3(PxZero);
+		pxActorInfo.m_parentLinearVelocity = PxVec3(PxZero);
 		pxActorInfo.m_transform = pose;
 		pxActorInfo.m_scale = scale;
 	}
@@ -176,13 +176,15 @@ void ExtPxFamilyImpl::receive(const TkEvent* events, uint32_t eventCount)
 
 			for (uint32_t j = totalNewActorsCount; j < totalNewActorsCount + newActorsCount; ++j)
 			{
-				m_newActorCreateInfo[j].m_transform = parentPxActor ? parentPxActor->getGlobalPose() : m_initialTransform;
+				const PxTransform parentTransform = parentPxActor ? parentPxActor->getGlobalPose() : m_initialTransform;
+				m_newActorCreateInfo[j].m_transform = parentTransform;
+				m_newActorCreateInfo[j].m_parentCOM = parentTransform.transform(parentPxActor ? parentPxActor->getCMassLocalPose().p : PxVec3(PxZero));
 				
 				//TODO: Get the current scale of the actor!
 				m_newActorCreateInfo[j].m_scale = m_initialScale;
 
-				m_newActorCreateInfo[j].m_linearVelocity = parentPxActor ? parentPxActor->getLinearVelocity() : PxVec3(PxZero);
-				m_newActorCreateInfo[j].m_angularVelocity = parentPxActor ? parentPxActor->getAngularVelocity() : PxVec3(PxZero);
+				m_newActorCreateInfo[j].m_parentLinearVelocity = parentPxActor ? parentPxActor->getLinearVelocity() : PxVec3(PxZero);
+				m_newActorCreateInfo[j].m_parentAngularVelocity = parentPxActor ? parentPxActor->getAngularVelocity() : PxVec3(PxZero);
 
 				m_newActorsBuffer[j] = splitEvent->children[j - totalNewActorsCount];
 			}

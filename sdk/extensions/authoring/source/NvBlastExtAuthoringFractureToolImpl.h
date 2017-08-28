@@ -138,6 +138,7 @@ public:
 		mPlaneIndexerOffset = 1;
 		mChunkIdCounter = 0;
 		mRemoveIslands = false;
+		mInteriorMaterialId = MATERIAL_INTERIOR;
 	}
 
 	~FractureToolImpl()
@@ -152,7 +153,21 @@ public:
 	*/
 	void									reset() override;
 	
+	/**
+	Set the material id to use for new interior faces. Defaults to MATERIAL_INTERIOR
+	*/
+	void									setInteriorMaterialId(int32_t materialId) override;
+
+	/**
+	Gets the material id to use for new interior faces
+	*/
+	int32_t									getInteriorMaterialId() const override;
 	
+	/**
+	Replaces an material id on faces with a new one
+	*/
+	void									replaceMaterialId(int32_t oldMaterialId, int32_t newMaterialId) override;
+
 	/**
 		Set input mesh wich will be fractured, FractureTool will be reseted.
 	*/
@@ -322,6 +337,7 @@ protected:
 	std::vector<ChunkInfo>				mChunkData;
 
 	bool								mRemoveIslands;
+	int32_t								mInteriorMaterialId;
 };
 
 } // namespace Blast

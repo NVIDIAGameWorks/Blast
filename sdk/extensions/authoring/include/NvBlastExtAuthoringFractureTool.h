@@ -199,9 +199,24 @@ public:
 	
 	
 	/**
-		Set input mesh wich will be fractured, FractureTool will be reseted.
+		Set input mesh which will be fractured, FractureTool will be reseted.
 	*/
 	virtual void									setSourceMesh(const Mesh* mesh) = 0;
+
+	/**
+	Set the material id to use for new interior faces. Defaults to MATERIAL_INTERIOR
+	*/
+	virtual void									setInteriorMaterialId(int32_t materialId) = 0;
+
+	/**
+	Gets the material id to use for new interior faces
+	*/
+	virtual int32_t									getInteriorMaterialId() const = 0;
+
+	/**
+	Replaces an material id on faces with a new one
+	*/
+	virtual void									replaceMaterialId(int32_t oldMaterialId, int32_t newMaterialId) = 0;
 
 	/**
 		Get chunk mesh in polygonal representation. User's code should release it after usage.

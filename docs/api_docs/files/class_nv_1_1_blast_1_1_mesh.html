@@ -63,9 +63,11 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#df6faa07b98b634b86a198ad4a6fcc14">release</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#9c512712bbe2a2e16bd957baeccd2f57">setMaterialId</a> (int32_t *materialIds)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#cfffa10ab877367067c0651320e39852">replaceMaterialId</a> (int32_t oldMaterialId, int32_t newMaterialId)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#52f8e09ebf69b53a5fd720165ab8629d">setSmoothingGroup</a> (int32_t *smoothingGroup)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#f082c3fd4ea1badcb0263bad0682c20b">setMaterialId</a> (const int32_t *materialIds)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#ed83e124b04216f54989ea9f8ade52d7">setSmoothingGroup</a> (const int32_t *smoothingGroups)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#9b5fbdd369ae324448c536ceabe82ad7">~Mesh</a> ()</td></tr>
 
@@ -417,14 +419,43 @@ Recalculate bounding box
 Release <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> memory 
 </div>
 </div><p>
-<a class="anchor" name="9c512712bbe2a2e16bd957baeccd2f57"></a><!-- doxytag: member="Nv::Blast::Mesh::setMaterialId" ref="9c512712bbe2a2e16bd957baeccd2f57" args="(int32_t *materialIds)=0" -->
+<a class="anchor" name="cfffa10ab877367067c0651320e39852"></a><!-- doxytag: member="Nv::Blast::Mesh::replaceMaterialId" ref="cfffa10ab877367067c0651320e39852" args="(int32_t oldMaterialId, int32_t newMaterialId)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::Mesh::replaceMaterialId           </td>
+          <td>(</td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>oldMaterialId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>newMaterialId</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Replaces an material id on faces with a new one 
+</div>
+</div><p>
+<a class="anchor" name="f082c3fd4ea1badcb0263bad0682c20b"></a><!-- doxytag: member="Nv::Blast::Mesh::setMaterialId" ref="f082c3fd4ea1badcb0263bad0682c20b" args="(const int32_t *materialIds)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">virtual void Nv::Blast::Mesh::setMaterialId           </td>
           <td>(</td>
-          <td class="paramtype">int32_t *&nbsp;</td>
+          <td class="paramtype">const int32_t *&nbsp;</td>
           <td class="paramname"> <em>materialIds</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td><code> [pure virtual]</code></td>
@@ -437,15 +468,15 @@ Release <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> memory
 Set per-facet material id. 
 </div>
 </div><p>
-<a class="anchor" name="52f8e09ebf69b53a5fd720165ab8629d"></a><!-- doxytag: member="Nv::Blast::Mesh::setSmoothingGroup" ref="52f8e09ebf69b53a5fd720165ab8629d" args="(int32_t *smoothingGroup)=0" -->
+<a class="anchor" name="ed83e124b04216f54989ea9f8ade52d7"></a><!-- doxytag: member="Nv::Blast::Mesh::setSmoothingGroup" ref="ed83e124b04216f54989ea9f8ade52d7" args="(const int32_t *smoothingGroups)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">virtual void Nv::Blast::Mesh::setSmoothingGroup           </td>
           <td>(</td>
-          <td class="paramtype">int32_t *&nbsp;</td>
-          <td class="paramname"> <em>smoothingGroup</em>          </td>
+          <td class="paramtype">const int32_t *&nbsp;</td>
+          <td class="paramname"> <em>smoothingGroups</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td><code> [pure virtual]</code></td>
         </tr>

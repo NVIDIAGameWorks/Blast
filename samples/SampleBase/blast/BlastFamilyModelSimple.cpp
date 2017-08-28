@@ -107,7 +107,7 @@ public:
 
 			memset(&bufferDesc, 0, sizeof(D3D11_BUFFER_DESC));
 			bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-			bufferDesc.ByteWidth = sizeof(uint16_t) * m_numFaces;
+			bufferDesc.ByteWidth = sizeof(uint32_t) * m_numFaces;
 			bufferDesc.CPUAccessFlags = 0;
 			bufferDesc.MiscFlags = 0;
 			bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -134,7 +134,7 @@ public:
 		context.IASetVertexBuffers(0, 2, buffers, strides, offsets);
 
 
-		context.IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+		context.IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 		if (m_indexBuffer)
 			context.DrawIndexed(m_numFaces, 0, 0);

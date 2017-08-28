@@ -94,14 +94,16 @@
 <a name="l00057"></a>00057     <span class="keyword">static</span> std::string <a class="code" href="class_fbx_utils.html#e8ef73c8d3c35ee29072a6914cfd7adc">FbxSystemUnitToString</a>(<span class="keyword">const</span> FbxSystemUnit&amp; systemUnit);
 <a name="l00058"></a>00058 
 <a name="l00059"></a>00059     <span class="comment">//returns UINT32_MAX if not a chunk</span>
-<a name="l00060"></a>00060     <span class="keyword">static</span> uint32_t <a class="code" href="class_fbx_utils.html#7899e674e3d1f8a0e6b102e6ef31ef6e">getChunkIndexForNode</a>(FbxNode* node, <span class="keywordtype">bool</span> includeParents = <span class="keyword">true</span>);
-<a name="l00061"></a>00061     <span class="keyword">static</span> std::string <a class="code" href="class_fbx_utils.html#94d2380fa21667650aba13ed60a91756">getChunkNodeName</a>(uint32_t chunkIndex);
-<a name="l00062"></a>00062 
-<a name="l00063"></a>00063     <span class="keyword">static</span> std::string <a class="code" href="class_fbx_utils.html#147a9c3a95e200202528fc998ac570da">getCollisionGeometryLayerName</a>();
-<a name="l00064"></a>00064     <span class="keyword">static</span> std::string <a class="code" href="class_fbx_utils.html#e829f46b17e67e3f8f5d835bf5996319">getRenderGeometryLayerName</a>();
-<a name="l00065"></a>00065 };
-<a name="l00066"></a>00066 
-<a name="l00067"></a>00067 <span class="preprocessor">#endif //NVBLASTEXTEXPORTERFBXUTILS_H</span>
+<a name="l00060"></a>00060     <span class="keyword">static</span> uint32_t <a class="code" href="class_fbx_utils.html#a7b832c2c88de2eefd1a04df520f30e2">getChunkIndexForNode</a>(FbxNode* node, uint32_t* outParentChunkIndex = <span class="keyword">nullptr</span>);
+<a name="l00061"></a>00061     <span class="comment">//Search using the old naming </span>
+<a name="l00062"></a>00062     <span class="keyword">static</span> uint32_t <a class="code" href="class_fbx_utils.html#a9bd9a5f026b3604294f9ca41fa8b646">getChunkIndexForNodeBackwardsCompatible</a>(FbxNode* node, uint32_t* outParentChunkIndex = <span class="keyword">nullptr</span>);
+<a name="l00063"></a>00063     <span class="keyword">static</span> std::string <a class="code" href="class_fbx_utils.html#94d2380fa21667650aba13ed60a91756">getChunkNodeName</a>(uint32_t chunkIndex);
+<a name="l00064"></a>00064 
+<a name="l00065"></a>00065     <span class="keyword">static</span> std::string <a class="code" href="class_fbx_utils.html#147a9c3a95e200202528fc998ac570da">getCollisionGeometryLayerName</a>();
+<a name="l00066"></a>00066     <span class="keyword">static</span> std::string <a class="code" href="class_fbx_utils.html#e829f46b17e67e3f8f5d835bf5996319">getRenderGeometryLayerName</a>();
+<a name="l00067"></a>00067 };
+<a name="l00068"></a>00068 
+<a name="l00069"></a>00069 <span class="preprocessor">#endif //NVBLASTEXTEXPORTERFBXUTILS_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

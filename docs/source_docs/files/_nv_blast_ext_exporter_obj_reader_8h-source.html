@@ -94,14 +94,14 @@
 <a name="l00057"></a>00057         <span class="keywordflow">return</span> mVertexPositions.size();
 <a name="l00058"></a>00058     }
 <a name="l00059"></a>00059 
-<a name="l00060"></a><a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#3413ab9dd93089baacdf51a2d7853899">00060</a>     <span class="keyword">virtual</span> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#3413ab9dd93089baacdf51a2d7853899">getIdicesCount</a>()<span class="keyword"> const override</span>
+<a name="l00060"></a><a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#74864f835a339d96ed14401aaba4e737">00060</a>     <span class="keyword">virtual</span> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#74864f835a339d96ed14401aaba4e737">getIndicesCount</a>()<span class="keyword"> const override</span>
 <a name="l00061"></a>00061 <span class="keyword">    </span>{
 <a name="l00062"></a>00062         <span class="keywordflow">return</span> mIndices.size();
 <a name="l00063"></a>00063     }
 <a name="l00064"></a>00064 
 <a name="l00068"></a>00068     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#2a654729f599d89b57cc7aa786e0ade0">isCollisionLoaded</a>() <span class="keyword">override</span>;
 <a name="l00069"></a>00069 
-<a name="l00073"></a>00073     <span class="keyword">virtual</span> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#758774c15a99ead007270b8390ed26e8">getCollision</a>(uint32_t*&amp; hullsOffset, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a>** hulls) <span class="keyword">override</span>;
+<a name="l00073"></a>00073     <span class="keyword">virtual</span> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#01c925f55875fe9d85433bd6ab953d60">getCollision</a>(uint32_t*&amp; hullsOffset, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a>**&amp; hulls) <span class="keyword">override</span>;
 <a name="l00074"></a>00074 
 <a name="l00078"></a>00078     <span class="keyword">virtual</span> physx::PxVec3* <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#c4dffb9e822d34b53c671626b751524f">getPositionArray</a>() <span class="keyword">override</span>;
 <a name="l00082"></a>00082     <span class="keyword">virtual</span> physx::PxVec3* <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#07a1caf7be42dbb4756863e3656e0569">getNormalsArray</a>() <span class="keyword">override</span>;
@@ -112,7 +112,7 @@
 <a name="l00096"></a>00096 
 <a name="l00100"></a><a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#fdd3100090d81e51a2e5ff97f5b55230">00100</a>     int32_t*        <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#fdd3100090d81e51a2e5ff97f5b55230">getSmoothingGroups</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; };
 <a name="l00101"></a>00101 
-<a name="l00105"></a><a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#6b4dc6620397273005a252d6d3f1e5f6">00105</a>     <span class="keywordtype">char</span>*           <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#6b4dc6620397273005a252d6d3f1e5f6">getMaterialName</a>(int32_t <span class="keywordtype">id</span>)<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }
+<a name="l00105"></a><a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#4869a7e8d066518cde910559619b11a5">00105</a>     <span class="keyword">const</span> <span class="keywordtype">char</span>*         <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#4869a7e8d066518cde910559619b11a5">getMaterialName</a>(int32_t <span class="keywordtype">id</span>)<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }
 <a name="l00106"></a>00106 
 <a name="l00110"></a><a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#166b9ee741b2c887f059d476ee0c17cc">00110</a>     int32_t     <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#166b9ee741b2c887f059d476ee0c17cc">getMaterialCount</a>() { <span class="keywordflow">return</span> 0; };
 <a name="l00111"></a>00111 

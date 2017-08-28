@@ -368,11 +368,11 @@ void BlastController::drawUI()
 	{
 		bool refresh = false;
 		refresh |= ImGui::Checkbox("Use Shear Damage", &m_extImpactDamageManagerSettings.shearDamage);
-		refresh |= ImGui::DragFloat("Impulse Threshold (Min)", &m_extImpactDamageManagerSettings.impulseMinThreshold);
-		refresh |= ImGui::DragFloat("Impulse Threshold (Max)", &m_extImpactDamageManagerSettings.impulseMaxThreshold);
-		refresh |= ImGui::DragFloat("Damage (Max)", &m_extImpactDamageManagerSettings.damageMax);
+		refresh |= ImGui::DragFloat("Material Hardness", &m_extImpactDamageManagerSettings.hardness);
 		refresh |= ImGui::DragFloat("Damage Radius (Max)", &m_extImpactDamageManagerSettings.damageRadiusMax);
-		refresh |= ImGui::DragFloat("Damage Attenuation", &m_extImpactDamageManagerSettings.damageAttenuation, 1.0f, 0.0f, 1.0f);
+		refresh |= ImGui::DragFloat("Damage Threshold (Min)", &m_extImpactDamageManagerSettings.damageThresholdMin, 1.0f, 0.0f, 1.0f);
+		refresh |= ImGui::DragFloat("Damage Threshold (Max)", &m_extImpactDamageManagerSettings.damageThresholdMax, 1.0f, 0.0f, 1.0f);
+		refresh |= ImGui::DragFloat("Damage Falloff Radius Factor", &m_extImpactDamageManagerSettings.damageFalloffRadiusFactor, 1.0f, 0.0f, 32.0f);
 		refresh |= ImGui::Checkbox("Impact Damage To Stress Solver", &m_impactDamageToStressEnabled);
 
 		if (refresh)
