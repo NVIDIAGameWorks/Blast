@@ -184,7 +184,7 @@ AuthoringResult* NvBlastExtAuthoringProcessFracture(FractureTool& fTool, BlastBo
 	{
 		uint32_t chunkIndex = chunkReorderInvMap[i];
 		aResult.geometryOffset[i+1] = aResult.geometryOffset[i] + fTool.getBaseMesh(chunkIndex, chunkGeometry[i]);
-		aResult.assetToFractureChunkIdMap[i] = chunkIndex;
+		aResult.assetToFractureChunkIdMap[i] = fTool.getChunkId(chunkIndex);
 	}
 	aResult.geometry = SAFE_ARRAY_NEW(Triangle, aResult.geometryOffset[chunkCount]);
 	for (uint32_t i = 0; i < chunkCount; ++i)
