@@ -90,8 +90,15 @@ Blast tools and sample executables, along with all necessary supporting librarie
 [blast_tools_and_samples-windows.zip](blast_tools_and_samples-windows.zip) file.  This allows someone without a development environment to use these
 applications.
 
+Unreal Engine 4 Plugin
+----------------------
+
+Here: https://github.com/NvPhysX/UnrealEngine/tree/Blast
+
+Includes authoring in UnrealEd and sample maps.
+
 Gallery
----------
+-------
 
 ### Tower explosion
 ![Alt text](/images/tower_explode.png?raw=true "Blast Sample: tower explode")
