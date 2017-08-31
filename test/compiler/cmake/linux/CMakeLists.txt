@@ -2,6 +2,13 @@
 
 SET(CMAKE_CXX_FLAGS "-Wextra -fdiagnostics-show-option -fno-rtti -fno-exceptions -m64 -msse2 -mfpmath=sse -fpic -ffast-math -fno-exceptions -fno-rtti -Wno-invalid-offsetof -Wno-unknown-pragmas -Wno-multichar -Wno-sign-compare -std=c++0x")
 
+if (CMAKE_COMPILER_IS_GNUCXX)
+    #Starting with 6.0 -fPIE is the default and our gtest build can't link with this
+    if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "6.0")
+        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -no-pie")
+    endif()
+endif()
+
 SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -gdwarf-2")
 SET(CMAKE_CXX_FLAGS_CHECKED "-O3 -g3 -gdwarf-2 -fno-strict-aliasing")
 SET(CMAKE_CXX_FLAGS_PROFILE "-O3 -fno-strict-aliasing")

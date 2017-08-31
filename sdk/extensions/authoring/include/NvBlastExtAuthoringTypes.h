@@ -150,7 +150,7 @@ struct Facet
 	int32_t		materialId;
 	int32_t		smoothingGroup;
 
-	Facet(int32_t fEdge = 0, uint32_t eCount = 0, int32_t materialId = 0, int32_t userData = 0, int32_t smoothingGroup = 0) : firstEdgeNumber(fEdge), edgesCount(eCount), materialId(materialId), userData(userData), smoothingGroup(smoothingGroup) {}
+	Facet(int32_t fEdge = 0, uint32_t eCount = 0, int32_t materialId = 0, int32_t userData = 0, int32_t smoothingGroup = 0) : firstEdgeNumber(fEdge), edgesCount(eCount), userData(userData), materialId(materialId), smoothingGroup(smoothingGroup) {}
 };
 
 /**
