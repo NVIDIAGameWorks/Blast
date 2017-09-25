@@ -95,6 +95,8 @@ Unreal Engine 4 Plugin
 
 Here: https://github.com/NvPhysX/UnrealEngine/tree/Blast
 
+UE4 github access is required to access this repo, more info: https://developer.nvidia.com/nvidia-gameworks-and-ue4
+
 Includes authoring in UnrealEd and sample maps.
 
 Gallery
