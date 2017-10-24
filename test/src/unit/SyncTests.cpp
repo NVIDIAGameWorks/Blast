@@ -141,12 +141,19 @@ protected:
 		// add sync as listener to family #1
 		families[1]->addListener(*sync);
 
+		// damage params
+		CSParams cs0(1, 0.0f);
+		NvBlastExtProgramParams csParams0 = { &cs0, nullptr };
+		NvBlastExtRadialDamageDesc radialDamage0 = m_test->getRadialDamageDesc(0, 0, 0);
+		NvBlastExtProgramParams radialParams0 = { &radialDamage0, nullptr };
+		NvBlastExtRadialDamageDesc radialDamage1 = m_test->getRadialDamageDesc(0, 0, 0, 10.0f, 10.0f, 0.1f);
+		NvBlastExtProgramParams radialParams1 = { &radialDamage1, nullptr };
+
 		// damage family #0 (make it split)
 		{
 			TkActor* actor;
 			families[0]->getActors(&actor, 1);
-			CSParams p(1, 0.0f);
-			actor->damage(m_test->getCubeSlicerProgram(), &p, sizeof(p), m_test->getDefaultMaterial());
+			actor->damage(m_test->getCubeSlicerProgram(), &csParams0);
 		}
 
 		// process
@@ -164,8 +171,7 @@ protected:
 		{
 			TkActor* actor;
 			families[0]->getActors(&actor, 1, 1);
-			NvBlastExtRadialDamageDesc radialDamage = m_test->getRadialDamageDesc(0, 0, 0);
-			actor->damage(m_test->getFalloffProgram(), &radialDamage, sizeof(radialDamage), m_test->getDefaultMaterial());
+			actor->damage(m_test->getFalloffProgram(), &radialParams0);
 		}
 
 
@@ -174,7 +180,7 @@ protected:
 			TkActor* actor;
 			families[1]->getActors(&actor, 1);
 			NvBlastExtRadialDamageDesc radialDamage = m_test->getRadialDamageDesc(0, 0, 0, 10.0f, 10.0f, 0.1f);
-			actor->damage(m_test->getFalloffProgram(), &radialDamage, sizeof(radialDamage), m_test->getDefaultMaterial());
+			actor->damage(m_test->getFalloffProgram(), &radialParams1);
 		}
 
 		// process

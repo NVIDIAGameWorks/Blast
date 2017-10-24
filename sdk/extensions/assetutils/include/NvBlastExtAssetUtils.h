@@ -77,30 +77,48 @@ New bond descriptors may be given to bond support chunks from different componen
 
 An NvBlastAsset may appear more than once in the components array.
 
+This function will call NvBlastEnsureAssetExactSupportCoverage on the returned chunk descriptors.  It will also
+call NvBlastReorderAssetDescChunks if the user passes in valid arrays for chunkReorderMap and chunkReorderMapSize.
+Otherwise, the user must ensure that the returned chunk descriptors are in a valid order is valid before using them.
+
 NOTE: This function allocates memory using the allocator in NvBlastGlobals, to create the new chunk and bond
 descriptor arrays referenced in the returned NvBlastAssetDesc.  The user must free this memory after use with
 NVBLAST_FREE appied to the pointers in the returned NvBlastAssetDesc.
 
-\param[in]	components		An array of assets to merge, of size componentCount.
-\param[in]	rotations		An array of rotations to apply to the geometric data in the chunks and bonds,
-							stored quaternion format. The quaternions MUST be normalized.  If NULL, no rotations are applied.
-							If not NULL, the array must be of size componentCount.
-\param[in]	translations	An array of transforms to apply to the geometric data in the chunks and bonds.
-							If NULL, no translations are applied.  If not NULL, the array must be of size componentCount.
-\param[in]	componentCount	The size of the components and relativeTransforms arrays.
-\param[in]	newBondDescs	Descriptors of type NvBlastExtAssetUtilsBondDesc for new bonds between components, of size newBondCount.  If NULL, newBondCount must be 0.
-\param[in]	newBondCount	The size of the newBondDescs array.
+\param[in]	components			An array of assets to merge, of size componentCount.
+\param[in]	scales				An array of scales to apply to the geometric data in the chunks and bonds.
+								If NULL, no scales are applied.  If not NULL, the array must be of size componentCount.
+\param[in]	rotations			An array of rotations to apply to the geometric data in the chunks and bonds,
+								stored quaternion format. The quaternions MUST be normalized.  If NULL, no rotations are applied.
+								If not NULL, the array must be of size componentCount.
+\param[in]	translations		An array of translations to apply to the geometric data in the chunks and bonds.
+								If NULL, no translations are applied.  If not NULL, the array must be of size componentCount.
+\param[in]	componentCount		The size of the components and relativeTransforms arrays.
+\param[in]	newBondDescs		Descriptors of type NvBlastExtAssetUtilsBondDesc for new bonds between components, of size newBondCount.  If NULL, newBondCount must be 0.
+\param[in]	newBondCount		The size of the newBondDescs array.
+\param[in]	chunkIndexOffsets	If not NULL, must point to a uin32_t array of size componentCount.  It will be filled with the starting elements in chunkReorderMap corresponding to
+								each component.
+\param[in]	chunkReorderMap		If not NULL, the returned descriptor is run through NvBlastReorderAssetDescChunks, to ensure that it is a valid asset descriptor.  In the process, chunks
+								may be reordered (in addition to their natural re-indexing due to them all being placed in one array).  To map from the old chunk indexing for the various
+								component assets to the chunk indexing used in the returned descriptor, set chunkReorderMap to point to a uin32_t array of size equal to the total number
+								of chunks in all components, and pass in a non-NULL value to chunkIndexOffsets as described above.  Then, for component index c and chunk index k within
+								that component, the new chunk index is given by: index = chunkReorderMap[ k + chunkIndexOffsets[c] ].
+\param[in]	chunkReorderMapSize	The size of the array passed into chunkReorderMap, if chunkReorderMap is not NULL.  This is for safety, so that this function does not overwrite chunkReorderMap.
 
 \return an asset descriptor that will build an asset which merges the components, using NvBlastCreateAsset.
 */
 NVBLAST_API NvBlastAssetDesc NvBlastExtAssetUtilsMergeAssets
 (
 	const NvBlastAsset** components,
+	const NvcVec3* scales,
 	const NvcQuat* rotations,
 	const NvcVec3* translations,
 	uint32_t componentCount,
 	const NvBlastExtAssetUtilsBondDesc* newBondDescs,
-	uint32_t newBondCount
+	uint32_t newBondCount,
+	uint32_t* chunkIndexOffsets,
+	uint32_t* chunkReorderMap,
+	uint32_t chunkReorderMapSize
 );
 
 

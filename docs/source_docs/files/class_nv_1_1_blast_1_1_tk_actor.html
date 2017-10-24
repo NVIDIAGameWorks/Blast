@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
@@ -60,13 +61,9 @@ Inheritance diagram for Nv::Blast::TkActor:</div>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html#a02c42add8033877003cd907a0818785">applyFracture</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *eventBuffers, const <a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commands)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html#ebce969be0d9ee8bdab44722ec0e07b5">damage</a> (const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> &amp;program, const void *damageDesc, uint32_t descSize, const void *material)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html#4969506ea54271b432ee5de4145779a6">damage</a> (const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> &amp;program, const void *programParams)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html#c072b97e44f217ed8862965b4bfc292b">damage</a> (const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> &amp;program, const void *damageDesc, uint32_t descSize)=0</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html#8e78694fbc1df790b198ec3dcc0a2a05">damage</a> (const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> &amp;program, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *programParams)=0</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html#0391f391ab66d732c549c53da515a5b2">generateFracture</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commands, const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> &amp;program, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *programParams) const =0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html#ee5e7fdfa7cd0b33f5ba92168841d4b2">generateFracture</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commands, const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> &amp;program, const void *programParams) const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html#3f6fc8b1d10cbcadc0accdb50d86ca50">getActorLL</a> () const =0</td></tr>
 
@@ -142,7 +139,7 @@ NOTE: Calls NvBlastActorApplyFracture internally. see NvBlastActorApplyFracture 
 
 </div>
 </div><p>
-<a class="anchor" name="ebce969be0d9ee8bdab44722ec0e07b5"></a><!-- doxytag: member="Nv::Blast::TkActor::damage" ref="ebce969be0d9ee8bdab44722ec0e07b5" args="(const NvBlastDamageProgram &amp;program, const void *damageDesc, uint32_t descSize, const void *material)=0" -->
+<a class="anchor" name="4969506ea54271b432ee5de4145779a6"></a><!-- doxytag: member="Nv::Blast::TkActor::damage" ref="4969506ea54271b432ee5de4145779a6" args="(const NvBlastDamageProgram &amp;program, const void *programParams)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -156,109 +153,6 @@ NOTE: Calls NvBlastActorApplyFracture internally. see NvBlastActorApplyFracture 
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const void *&nbsp;</td>
-          <td class="paramname"> <em>damageDesc</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>descSize</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const void *&nbsp;</td>
-          <td class="paramname"> <em>material</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Apply damage to this actor.<p>
-Actual damage processing is deferred till the group worker process() call. Sets actor in 'pending' state.<p>
-Damage Desc will be stacked into <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>. <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> will be passed into shader.<p>
-This function overload explicitly sets a material to be passed into <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>, it must be valid until the group endProcess() call.<p>
-<dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>program</em>&nbsp;</td><td>A <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> containing damage shaders. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>damageDesc</em>&nbsp;</td><td>Parameters to be put in <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>, have to be POD type (will be copied). </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>descSize</em>&nbsp;</td><td>Size of damageDesc in bytes. Required to copy and store Damage Desc. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>material</em>&nbsp;</td><td>Material to be passed into <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>. Must be valid until the group endProcess() call. </td></tr>
-  </table>
-</dl>
-
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#afd7d9e1c47c9632092aadb39ba5b7d2">Nv::Blast::TkActorImpl</a>.</p>
-
-</div>
-</div><p>
-<a class="anchor" name="c072b97e44f217ed8862965b4bfc292b"></a><!-- doxytag: member="Nv::Blast::TkActor::damage" ref="c072b97e44f217ed8862965b4bfc292b" args="(const NvBlastDamageProgram &amp;program, const void *damageDesc, uint32_t descSize)=0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void Nv::Blast::TkActor::damage           </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> &amp;&nbsp;</td>
-          <td class="paramname"> <em>program</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const void *&nbsp;</td>
-          <td class="paramname"> <em>damageDesc</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>descSize</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Apply damage to this actor.<p>
-Actual damage processing is deferred till the group worker process() call. Sets actor in 'pending' state.<p>
-Damage Desc will be stacked into <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>. <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> will be passed into shader.<p>
-Material set on actor's family will be passed into <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>.<p>
-<dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>program</em>&nbsp;</td><td>A <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> containing damage shaders. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>damageDesc</em>&nbsp;</td><td>Parameters to be put in <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>, have to be POD type (will be copied). </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>descSize</em>&nbsp;</td><td>Size of damageDesc in bytes. Required to copy and store Damage Desc. </td></tr>
-  </table>
-</dl>
-
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#fed3d99110af373fdb1cb4a6ab73ba0e">Nv::Blast::TkActorImpl</a>.</p>
-
-</div>
-</div><p>
-<a class="anchor" name="8e78694fbc1df790b198ec3dcc0a2a05"></a><!-- doxytag: member="Nv::Blast::TkActor::damage" ref="8e78694fbc1df790b198ec3dcc0a2a05" args="(const NvBlastDamageProgram &amp;program, const NvBlastProgramParams *programParams)=0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void Nv::Blast::TkActor::damage           </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> &amp;&nbsp;</td>
-          <td class="paramname"> <em>program</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *&nbsp;</td>
           <td class="paramname"> <em>programParams</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -281,11 +175,11 @@ It's the user's responsibility to keep programParams pointer alive until the gro
   </table>
 </dl>
 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#3646bdcfc06059418696658bd4b9b881">Nv::Blast::TkActorImpl</a>.</p>
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#ad1cd1ea227c3fcf9d6ebee0328f6c55">Nv::Blast::TkActorImpl</a>.</p>
 
 </div>
 </div><p>
-<a class="anchor" name="0391f391ab66d732c549c53da515a5b2"></a><!-- doxytag: member="Nv::Blast::TkActor::generateFracture" ref="0391f391ab66d732c549c53da515a5b2" args="(NvBlastFractureBuffers *commands, const NvBlastDamageProgram &amp;program, const NvBlastProgramParams *programParams) const =0" -->
+<a class="anchor" name="ee5e7fdfa7cd0b33f5ba92168841d4b2"></a><!-- doxytag: member="Nv::Blast::TkActor::generateFracture" ref="ee5e7fdfa7cd0b33f5ba92168841d4b2" args="(NvBlastFractureBuffers *commands, const NvBlastDamageProgram &amp;program, const void *programParams) const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -304,7 +198,7 @@ It's the user's responsibility to keep programParams pointer alive until the gro
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *&nbsp;</td>
+          <td class="paramtype">const void *&nbsp;</td>
           <td class="paramname"> <em>programParams</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -328,7 +222,7 @@ NOTE: Wrapper function over low-level function call, see NvBlastActorGenerateFra
   </table>
 </dl>
 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#4c2bbedb04b44c81462abf93534dca2d">Nv::Blast::TkActorImpl</a>.</p>
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_tk_actor_impl.html#f66fd11ec8170f46385e1b5445316962">Nv::Blast::TkActorImpl</a>.</p>
 
 </div>
 </div><p>

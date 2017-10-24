@@ -62,9 +62,9 @@ TkActorImpl* TkActorImpl::create(const TkActorDesc& desc)
 
 	TkActorImpl* actor = family->addActor(actorLL);
 
-	// Add internal joints
 	if (actor != nullptr)
 	{
+		// Add internal joints
 		const uint32_t internalJointCount = asset->getJointDescCountInternal();
 		const TkAssetJointDesc* jointDescs = asset->getJointDescsInternal();
 		const NvBlastSupportGraph graph = asset->getGraph();
@@ -82,6 +82,9 @@ TkActorImpl* TkActorImpl::create(const TkActorDesc& desc)
 			TkJointImpl* joint = new (joints + jointNum) TkJointImpl(jointDesc, family);
 			actor->addJoint(joint->m_links[0]);
 		}
+
+		// Mark as damaged to trigger first split call. It could be the case that asset is already split into few actors initially.
+		actor->markAsDamaged();
 	}
 
 	return actor;
@@ -277,7 +280,7 @@ TkActorImpl::operator Nv::Blast::TkActorData() const
 }
 
 
-void TkActorImpl::damage(const NvBlastDamageProgram& program, const NvBlastProgramParams* programParams)
+void TkActorImpl::damage(const NvBlastDamageProgram& program, const void* programParams)
 {
 	BLAST_PROFILE_SCOPE_L("TkActor::damage");
 
@@ -295,57 +298,13 @@ void TkActorImpl::damage(const NvBlastDamageProgram& program, const NvBlastProgr
 
 	if (NvBlastActorCanFracture(m_actorLL, logLL))
 	{
-		m_damageBuffer.pushBack(DamageData(program, programParams));
+		m_damageBuffer.pushBack(DamageData{ program, programParams});
 		makePending();
 	}
 }
 
 
-void TkActorImpl::damage(const NvBlastDamageProgram& program, const void* damageDesc, uint32_t descSize)
-{
-	damage(program, damageDesc, descSize, m_family->getMaterial());
-}
-
-
-void TkActorImpl::damage(const NvBlastDamageProgram& program, const void* damageDesc, uint32_t descSize, const void* material)
-{
-	BLAST_PROFILE_SCOPE_L("TkActor::damage");
-
-	if (m_group == nullptr)
-	{
-		NVBLAST_LOG_WARNING("TkActor::damage: actor is not in a group, cannot fracture.");
-		return;
-	}
-
-	if (m_group->isProcessing())
-	{
-		NVBLAST_LOG_WARNING("TkActor::damage: group is being processed, cannot fracture this actor.");
-		return;
-	}
-
-	if (NvBlastActorCanFracture(m_actorLL, logLL))
-	{
-		bool appended = false;
-		for (auto& damageData : m_damageBuffer)
-		{
-			if (damageData.tryAppend(program, material, damageDesc, descSize))
-			{
-				appended = true;
-				break;
-			}
-		}
-
-		if (!appended)
-		{
-			m_damageBuffer.pushBack(DamageData(program, material, damageDesc, descSize));
-		}
-
-		makePending();
-	}
-}
-
-
-void TkActorImpl::generateFracture(NvBlastFractureBuffers* commands, const NvBlastDamageProgram& program, const NvBlastProgramParams* programParams) const
+void TkActorImpl::generateFracture(NvBlastFractureBuffers* commands, const NvBlastDamageProgram& program, const void* programParams) const
 {
 	BLAST_PROFILE_SCOPE_L("TkActor::generateFracture");
 
@@ -409,43 +368,6 @@ bool TkActorImpl::isBoundToWorld() const
 	return NvBlastActorIsBoundToWorld(m_actorLL, logLL);
 }
 
-
-//////// TkActorImpl::DamageData methods ////////
-
-static bool operator==(const NvBlastDamageProgram& lhs, const NvBlastDamageProgram& rhs)
-{
-	return lhs.graphShaderFunction == rhs.graphShaderFunction && lhs.subgraphShaderFunction == rhs.subgraphShaderFunction;
-}
-
-
-TkActorImpl::DamageData::DamageData(const NvBlastDamageProgram& program, const NvBlastProgramParams* params)
-	: m_program(program), m_programParams(params), m_damageDescCount(0)
-{
-}
-
-
-TkActorImpl::DamageData::DamageData(const NvBlastDamageProgram& program, const void* material, const void* desc, uint32_t descSize)
-	: m_program(program), m_material(material), m_damageDescs((char*)desc, (char*)desc + descSize), m_damageDescCount(1)
-{
-}
-
-
-bool TkActorImpl::DamageData::tryAppend(const NvBlastDamageProgram& program, const void* material, const void* desc, uint32_t descSize)
-{
-	if (getType() == Buffered && m_program == program && m_material == material)
-	{
-		const uint32_t currentDescSize = m_damageDescs.size() / m_damageDescCount;
-		if (descSize == currentDescSize)
-		{
-			const uint32_t s = m_damageDescs.size();
-			m_damageDescs.resizeUninitialized(s + static_cast<uint32_t>(descSize));
-			memcpy(m_damageDescs.begin() + s, desc, descSize);
-			m_damageDescCount++;
-			return true;
-		}
-	}
-	return false;
-}
 
 } // namespace Blast
 } // namespace Nv

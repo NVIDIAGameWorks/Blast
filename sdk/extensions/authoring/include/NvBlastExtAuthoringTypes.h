@@ -146,11 +146,11 @@ struct Facet
 {
 	int32_t		firstEdgeNumber;
 	uint32_t	edgesCount;
-	int32_t		userData;
+	int64_t		userData;
 	int32_t		materialId;
 	int32_t		smoothingGroup;
 
-	Facet(int32_t fEdge = 0, uint32_t eCount = 0, int32_t materialId = 0, int32_t userData = 0, int32_t smoothingGroup = 0) : firstEdgeNumber(fEdge), edgesCount(eCount), userData(userData), materialId(materialId), smoothingGroup(smoothingGroup) {}
+	Facet(int32_t fEdge = 0, uint32_t eCount = 0, int32_t materialId = 0, int64_t userData = 0, int32_t smoothingGroup = 0) : firstEdgeNumber(fEdge), edgesCount(eCount), userData(userData), materialId(materialId), smoothingGroup(smoothingGroup) {}
 };
 
 /**

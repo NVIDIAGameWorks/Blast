@@ -65,4 +65,6 @@ inline uint32_t getAssetDescMissingCoverageCount()
 void generateCube(GeneratorAsset& cubeAsset, NvBlastAssetDesc& assetDesc, size_t maxDepth, size_t width, 
 	int32_t supportDepth = -1, CubeAssetGenerator::BondFlags bondFlags = CubeAssetGenerator::ALL_INTERNAL_BONDS);
 
+void generateRandomCube(GeneratorAsset& cubeAsset, NvBlastAssetDesc& assetDesc, uint32_t minChunkCount, uint32_t maxChunkCount);
+
 #endif // #ifdef TESTASSETS_H

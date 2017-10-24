@@ -66,7 +66,7 @@ public:
 
 	//////// public API ////////
 
-	bool overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*)> hitCall);
+	bool overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*, BlastFamily&)> hitCall);
 
 	void updatePreSplit(float dt);
 	void updateAfterSplit(float dt);
@@ -82,6 +82,8 @@ public:
 		DEBUG_RENDER_CENTROIDS,
 		DEBUG_RENDER_HEALTH_GRAPH_CENTROIDS,
 		DEBUG_RENDER_JOINTS,
+		DEBUG_RENDER_AABB_TREE_CENTROIDS,
+		DEBUG_RENDER_AABB_TREE_SEGMENTS,
 		DEBUG_RENDER_STRESS_GRAPH,
 		DEBUG_RENDER_STRESS_GRAPH_NODES_IMPULSES,
 		DEBUG_RENDER_STRESS_GRAPH_BONDS_IMPULSES,
@@ -98,6 +100,11 @@ public:
 	const ExtPxFamily* getFamily() const
 	{
 		return m_pxFamily;
+	}
+
+	const NvBlastExtMaterial& getMaterial() const
+	{
+		return m_settings.material;
 	}
 
 	uint32_t getActorCount() const;
@@ -120,6 +127,7 @@ public:
 	void resetStress();
 
 	void refreshStressSolverSettings();
+	void refreshDamageAcceleratorSettings();
 
 	void reloadStressSolver();
 
@@ -131,6 +139,7 @@ public:
 		bool						stressSolverEnabled;
 		ExtStressSolverSettings		stressSolverSettings;
 		bool						stressDamageEnabled;
+		bool						damageAcceleratorEnabled;
 		NvBlastExtMaterial			material;
 	};
 
@@ -216,6 +225,7 @@ private:
 	double													 m_stressSolveTime;
 	std::set<ExtPxActor*>								     m_actors;
 	std::set<const ExtPxActor*>						         m_actorsToUpdateHealth;
+	int														 m_debugRenderDepth;
 };
 
 

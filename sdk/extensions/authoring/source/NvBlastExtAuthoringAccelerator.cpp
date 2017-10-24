@@ -594,9 +594,9 @@ void IntersectionTestingAccelerator::setState(const Vertex* pos, const Edge* ed,
 	}
 	for (uint32_t i = 0; i < mCubes.size(); ++i)
 	{
+		if (!mSpatialMap[i].empty())
 		if (testFacetUnitCubeIntersection(pos, ed, fc, mCubes[i], 0.001f))
 		{
-			if (!mSpatialMap[i].empty())
 				cellList.push_back(i);
 		}
 	}
@@ -641,6 +641,204 @@ void IntersectionTestingAccelerator::setState(const PxVec3& p)
 		cellList.pop_back();
 	}
 }
+
+
+#define SWEEP_RESOLUTION 2048
+
+
+void buildIndex(std::vector<SegmentToIndex>& segm, float offset, float mlt, std::vector<std::vector<uint32_t>>& blocks)
+{
+	std::set<uint32_t> currentEnabled;
+	uint32_t lastBlock = 0;
+	for (uint32_t i = 0; i < segm.size(); ++i)
+	{
+		uint32_t currentBlock = (segm[i].coord - offset) * mlt;
+		if (currentBlock >= SWEEP_RESOLUTION) break;
+		if (currentBlock != lastBlock)
+		{
+			for (uint32_t j = lastBlock + 1; j <= currentBlock; ++j)
+			{
+				for (auto id : currentEnabled)
+					blocks[j].push_back(id);
+			}
+			lastBlock = currentBlock;
+		}
+		if (segm[i].end == false)
+		{
+			blocks[lastBlock].push_back(segm[i].index);
+			currentEnabled.insert(segm[i].index);
+		}
+		else
+		{
+			currentEnabled.erase(segm[i].index);
+		}
+	}
+	
+}
+
+
+SweepingAccelerator::SweepingAccelerator(Nv::Blast::Mesh* in)
+{
+	PxBounds3 bnd;
+
+	const Vertex* verts = in->getVertices();
+	const Edge* edges = in->getEdges();
+
+	facetCount = in->getFacetCount();
+
+	foundx.resize(facetCount, 0);
+	foundy.resize(facetCount, 0);
+
+
+	std::vector<SegmentToIndex> xevs;
+	std::vector<SegmentToIndex> yevs;
+	std::vector<SegmentToIndex> zevs;
+
+
+	for (uint32_t i = 0; i < in->getFacetCount(); ++i)
+	{
+		const Facet* fc = in->getFacet(i);
+		bnd.setEmpty();
+		for (uint32_t v = 0; v < fc->edgesCount; ++v)
+		{
+			bnd.include(verts[edges[v + fc->firstEdgeNumber].s].p);
+		}
+		bnd.scaleFast(1.1f);
+		xevs.push_back(SegmentToIndex(bnd.minimum.x, i, false));
+		xevs.push_back(SegmentToIndex(bnd.maximum.x, i, true));
+
+		yevs.push_back(SegmentToIndex(bnd.minimum.y, i, false));
+		yevs.push_back(SegmentToIndex(bnd.maximum.y, i, true));
+
+		zevs.push_back(SegmentToIndex(bnd.minimum.z, i, false));
+		zevs.push_back(SegmentToIndex(bnd.maximum.z, i, true));
+
+	}
+
+	std::sort(xevs.begin(), xevs.end());
+	std::sort(yevs.begin(), yevs.end());
+	std::sort(zevs.begin(), zevs.end());
+
+	
+	minimal.x = xevs[0].coord;
+	minimal.y = yevs[0].coord;
+	minimal.z = zevs[0].coord;
+
+	
+	maximal.x = xevs.back().coord;
+	maximal.y = yevs.back().coord;
+	maximal.z = zevs.back().coord;
+
+		
+	rescale = (maximal - minimal) * 1.01f;
+	rescale.x = 1.0f / rescale.x * SWEEP_RESOLUTION;
+	rescale.y = 1.0f / rescale.y * SWEEP_RESOLUTION;
+	rescale.z = 1.0f / rescale.z * SWEEP_RESOLUTION;
+
+	xSegm.resize(SWEEP_RESOLUTION);
+	ySegm.resize(SWEEP_RESOLUTION);
+	zSegm.resize(SWEEP_RESOLUTION);
+
+
+	buildIndex(xevs, minimal.x, rescale.x, xSegm);
+	buildIndex(yevs, minimal.y, rescale.y, ySegm);
+	buildIndex(zevs, minimal.z, rescale.z, zSegm);
+
+	
+	iterId = 1;
+	current = 0;
+}
+
+void SweepingAccelerator::setState(const Vertex* pos, const Edge* ed, const Facet& fc)
+{
+	current = 0;
+	indices.clear();
+	
+	PxBounds3 bnd;
+	bnd.setEmpty();
+	for (uint32_t i = 0; i < fc.edgesCount; ++i)
+	{
+		bnd.include(pos[ed[fc.firstEdgeNumber + i].s].p);
+	}
+	bnd.scaleFast(1.1);
+	uint32_t start = (std::max(0.0f, bnd.minimum.x - minimal.x)) * rescale.x;
+	uint32_t end = (std::max(0.0f, bnd.maximum.x - minimal.x)) * rescale.x;
+	for (uint32_t i = start; i <= end && i < SWEEP_RESOLUTION; ++i)
+	{
+		for (auto id : xSegm[i])
+		{
+			foundx[id] = iterId;
+		}
+	}
+	start = (std::max(0.0f, bnd.minimum.y - minimal.y)) * rescale.y;
+	end = (std::max(0.0f, bnd.maximum.y - minimal.y)) * rescale.y;
+	for (uint32_t i = start; i <= end && i < SWEEP_RESOLUTION; ++i)
+	{
+		for (auto id : ySegm[i])
+		{
+			foundy[id] = iterId;
+		}
+	}
+	start = (std::max(0.0f, bnd.minimum.z - minimal.z)) * rescale.z;
+	end = (std::max(0.0f, bnd.maximum.z - minimal.z)) * rescale.z;
+	for (uint32_t i = start; i <= end && i < SWEEP_RESOLUTION; ++i)
+	{
+		for (auto id : zSegm[i])
+		{
+			if (foundy[id] == iterId && foundx[id] == iterId)
+			{
+				foundx[id] = iterId + 1;
+				foundy[id] = iterId + 1;
+				indices.push_back(id);
+			}
+		}
+	}
+
+	iterId += 2;
+}
+
+
+void SweepingAccelerator::setState(const physx::PxVec3& point) {
+	
+	indices.clear();
+
+	/*for (uint32_t i = 0; i < facetCount; ++i)
+	{
+		indices.push_back(i);
+	}*/
+
+	uint32_t xIndex = (point.x - minimal.x) * rescale.x;
+	uint32_t yIndex = (point.y- minimal.y) * rescale.y;
+
+	for (uint32_t i = 0; i < xSegm[xIndex].size(); ++i)
+	{
+		foundx[xSegm[xIndex][i]] = iterId;
+	}
+	for (uint32_t i = 0; i < ySegm[yIndex].size(); ++i)
+	{
+		if (foundx[ySegm[yIndex][i]] == iterId)
+		{
+			indices.push_back(ySegm[yIndex][i]);
+		}
+	}
+	iterId++;
+	current = 0;
+	NV_UNUSED(point);
+}
+int32_t SweepingAccelerator::getNextFacet()
+{
+	if (static_cast<uint32_t>(current) < indices.size())
+	{
+		++current;
+		return indices[current - 1];
+	}
+	else
+		return -1;
+}
+
+
+
+
 
 
 } // namespace Blast

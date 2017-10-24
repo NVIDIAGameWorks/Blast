@@ -36,58 +36,113 @@
 
 namespace Nv
 {
-namespace Blast
-{
+	namespace Blast
+	{
 
-class Mesh;
+		class Mesh;
 
 
-/**
-	Acceleration structure interface.
-*/
-class SpatialAccelerator
+		/**
+			Acceleration structure interface.
+		*/
+		class SpatialAccelerator
+		{
+		public:
+			/**
+				Set state of accelerator to return all facets which possibly can intersect given facet.
+				\param[in] pos Vertex buffer
+				\param[in] ed Edge buffer
+				\param[in] fc Facet which should be tested.
+			*/
+			virtual void	setState(const Vertex* pos, const Edge* ed, const Facet& fc) = 0;
+			/**
+				Set state of accelerator to return all facets which possibly can cover given point. Needed for testing whether point is inside mesh.
+				\param[in] point Point which should be tested.
+			*/
+			virtual void	setState(const physx::PxVec3& point) = 0;
+			/**
+				Recieve next facet for setted state.
+				\return Next facet index, or -1 if no facets left.
+			*/
+			virtual int32_t	getNextFacet() = 0;
+
+			
+			virtual ~SpatialAccelerator() {};
+		};
+
+
+		/**
+			Dummy accelerator iterates through all facets of mesh.
+		*/
+		class DummyAccelerator : public SpatialAccelerator
+		{
+		public:
+			/**
+				\param[in] count Mesh facets count for which accelerator should be built.
+			*/
+			DummyAccelerator(int32_t count);
+			virtual void setState(const Vertex* pos, const Edge* ed, const Facet& fc);
+			virtual void setState(const physx::PxVec3& point);
+			virtual int32_t getNextFacet();
+
+		private:
+			int32_t count;
+			int32_t current;
+		};
+
+		struct SegmentToIndex
+		{
+			float coord;
+			uint32_t index;
+			bool end;
+
+			SegmentToIndex(float c, uint32_t i, bool end) : coord(c), index(i), end(end) {};
+
+			bool operator<(const SegmentToIndex& in) const
+			{
+				if (coord < in.coord) return true;
+				if (coord > in.coord) return false;
+				return end < in.end;
+			}
+		};
+
+
+class SweepingAccelerator : public SpatialAccelerator
 {
 public:
 	/**
-		Set state of accelerator to return all facets which possibly can intersect given facet.
-		\param[in] pos Vertex buffer
-		\param[in] ed Edge buffer
-		\param[in] fc Facet which should be tested.
+	\param[in] count Mesh facets count for which accelerator should be built.
 	*/
-	virtual void	setState(const Vertex* pos, const Edge* ed, const Facet& fc) = 0;
-	/**
-		Set state of accelerator to return all facets which possibly can cover given point. Needed for testing whether point is inside mesh.
-		\param[in] point Point which should be tested.
-	*/
-	virtual void	setState(const physx::PxVec3& point) = 0;
-	/**
-		Recieve next facet for setted state.
-		\return Next facet index, or -1 if no facets left.
-	*/
-	virtual int32_t	getNextFacet() = 0;
-
-	virtual ~SpatialAccelerator() {};
-};
-
-
-/**
-	Dummy accelerator iterates through all facets of mesh.
-*/
-class DummyAccelerator : public SpatialAccelerator
-{
-public:
-	/**
-		\param[in] count Mesh facets count for which accelerator should be built.
-	*/
-	DummyAccelerator(int32_t count);
+	SweepingAccelerator(Nv::Blast::Mesh* in);
 	virtual void setState(const Vertex* pos, const Edge* ed, const Facet& fc);
 	virtual void setState(const physx::PxVec3& point);
 	virtual int32_t getNextFacet();
 
 private:
-	int32_t count;
+
+
+	/*
+		For fast point test.
+	*/
+	std::vector<std::vector<uint32_t> > xSegm;
+	std::vector<std::vector<uint32_t> > ySegm;
+	std::vector<std::vector<uint32_t> > zSegm;
+	std::vector<uint32_t> indices;
+	std::vector<uint32_t> foundx;
+	std::vector<uint32_t> foundy;
+
+	uint32_t iterId;
 	int32_t current;
+	uint32_t facetCount;
+
+	physx::PxVec3 minimal;
+	physx::PxVec3 maximal;
+
+	physx::PxVec3 rescale;
+	
+
 };
+
 
 /**
 	Accelerator which builds map from 3d grid to initial mesh facets. 

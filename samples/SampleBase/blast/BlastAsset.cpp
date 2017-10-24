@@ -29,12 +29,21 @@
 #include "BlastAsset.h"
 #include "NvBlastExtPxAsset.h"
 #include "NvBlastTkAsset.h"
+#include "NvBlastExtDamageShaders.h"
 #include <algorithm>
 
 
 BlastAsset::BlastAsset(Renderer& renderer)
-	: m_renderer(renderer), m_bondHealthMax(1.0f), m_supportChunkHealthMax(1.0f)
+	: m_renderer(renderer), m_bondHealthMax(1.0f), m_supportChunkHealthMax(1.0f), m_damageAccelerator(nullptr)
 {
+}
+
+BlastAsset::~BlastAsset()
+{
+	if (m_damageAccelerator)
+	{
+		m_damageAccelerator->release();
+	}
 }
 
 void BlastAsset::initialize()
@@ -68,6 +77,8 @@ void BlastAsset::initialize()
 	{
 		m_supportChunkHealthMax = actorDesc.uniformInitialLowerSupportChunkHealth;
 	}
+
+	m_damageAccelerator = NvBlastExtDamageAcceleratorCreate(m_pxAsset->getTkAsset().getAssetLL(), 3);
 }
 
 size_t BlastAsset::getBlastAssetSize() const

@@ -39,6 +39,7 @@ using namespace physx;
 class Renderer;
 class BlastFamily;
 class PhysXController;
+class NvBlastExtDamageAccelerator;
 
 namespace Nv
 {
@@ -62,7 +63,7 @@ public:
 	//////// ctor ////////
 
 	BlastAsset(Renderer& renderer);
-	virtual ~BlastAsset() {}
+	virtual ~BlastAsset();
 
 
 	//////// desc ////////
@@ -85,7 +86,7 @@ public:
 
 	//////// data getters  ////////
 
-	const ExtPxAsset* getPxAsset() const
+	ExtPxAsset* getPxAsset() const
 	{ 
 		return m_pxAsset;
 	}
@@ -102,6 +103,10 @@ public:
 		return m_bondHealthMax;
 	}
 
+	NvBlastExtDamageAccelerator* getAccelerator() const
+	{
+		return m_damageAccelerator;
+	}
 
 protected:
 	//////// internal operations ////////
@@ -116,9 +121,10 @@ protected:
 
 	//////// internal data ////////
 
-	ExtPxAsset*			m_pxAsset;
-	float				m_bondHealthMax;
-	float				m_supportChunkHealthMax;
+	ExtPxAsset*			         m_pxAsset;
+	float				         m_bondHealthMax;
+	float				         m_supportChunkHealthMax;
+	NvBlastExtDamageAccelerator* m_damageAccelerator;
 };
 
 

@@ -167,34 +167,31 @@ struct CSParams
 	float coord;
 };
 
-static void CubeSlicer(NvBlastFractureBuffers* outbuf, const NvBlastGraphShaderActor* actor, const NvBlastProgramParams* params)
+static void CubeSlicer(NvBlastFractureBuffers* outbuf, const NvBlastGraphShaderActor* actor, const void* params)
 {
 	uint32_t bondFractureCount = 0;
 	uint32_t bondFractureCountMax = outbuf->bondFractureCount;
 
-	for (size_t i = 0; i < params->damageDescCount; ++i)
-	{
-		const CSParams& p = (reinterpret_cast<const CSParams*> (params->damageDescBuffer))[i];
+	const CSParams& p = *reinterpret_cast<const CSParams*> (reinterpret_cast<const NvBlastExtProgramParams*>(params)->damageDesc);
 
-		uint32_t currentNodeIndex = actor->firstGraphNodeIndex;
-		while (!Nv::Blast::isInvalidIndex(currentNodeIndex))
+	uint32_t currentNodeIndex = actor->firstGraphNodeIndex;
+	while (!Nv::Blast::isInvalidIndex(currentNodeIndex))
+	{
+		for (uint32_t adj = actor->adjacencyPartition[currentNodeIndex]; adj < actor->adjacencyPartition[currentNodeIndex + 1]; ++adj)
 		{
-			for (uint32_t adj = actor->adjacencyPartition[currentNodeIndex]; adj < actor->adjacencyPartition[currentNodeIndex + 1]; ++adj)
+			if (currentNodeIndex < actor->adjacentNodeIndices[adj])
 			{
-				if (currentNodeIndex < actor->adjacentNodeIndices[adj])
+				if (actor->assetBonds[actor->adjacentBondIndices[adj]].centroid[p.axis] == p.coord && bondFractureCount < bondFractureCountMax)
 				{
-					if (actor->assetBonds[actor->adjacentBondIndices[adj]].centroid[p.axis] == p.coord && bondFractureCount < bondFractureCountMax)
-					{
-						NvBlastBondFractureData& data = outbuf->bondFractures[bondFractureCount++];
-						data.userdata = 0;
-						data.nodeIndex0 = currentNodeIndex;
-						data.nodeIndex1 = actor->adjacentNodeIndices[adj];
-						data.health = 1.0f;
-					}
+					NvBlastBondFractureData& data = outbuf->bondFractures[bondFractureCount++];
+					data.userdata = 0;
+					data.nodeIndex0 = currentNodeIndex;
+					data.nodeIndex1 = actor->adjacentNodeIndices[adj];
+					data.health = 1.0f;
 				}
 			}
-			currentNodeIndex = actor->graphNodeIndexLinks[currentNodeIndex];
 		}
+		currentNodeIndex = actor->graphNodeIndexLinks[currentNodeIndex];
 	}
 
 	outbuf->bondFractureCount = bondFractureCount;

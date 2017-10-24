@@ -106,7 +106,7 @@ bool shouldSwap(const PxVec3& a, const PxVec3& b)
 
 
 /**
-Vertex-edge shadowing functions
+	Vertex-edge shadowing functions
 */
 int32_t shadowing01(Vertex sEdge, Vertex eEdge, const PxVec3& p, Vertex& onEdgePoint, bool& hasOnEdge)
 {
@@ -147,9 +147,15 @@ int32_t shadowing01(Vertex sEdge, Vertex eEdge, const PxVec3& p, Vertex& onEdgeP
 	}
 	return 0;
 }
-int32_t shadowing10(const Vertex& sEdge, const Vertex& eEdge, const PxVec3& p, Vertex& onEdgePoint, bool& hasOnEdge)
+int32_t shadowing10(Vertex sEdge, Vertex eEdge, const PxVec3& p, Vertex& onEdgePoint, bool& hasOnEdge)
 {
 	int32_t winding = veStatus10(sEdge.p, eEdge.p, p);
+
+	if (sEdge.p.x > eEdge.p.x)
+	{
+		std::swap(sEdge, eEdge);
+	}
+
 	if (winding != 0)
 	{
 		float t = (p.x - sEdge.p.x) / (eEdge.p.x - sEdge.p.x);
@@ -180,11 +186,16 @@ int32_t shadowing10(const Vertex& sEdge, const Vertex& eEdge, const PxVec3& p, V
 	return 0;
 }
 
-int32_t shadowing01(const PxVec3& sEdge, const PxVec3& eEdge, const PxVec3& p)
+int32_t shadowing01(PxVec3 sEdge, PxVec3 eEdge, const PxVec3& p)
 {
 	int32_t winding = veStatus01(sEdge, eEdge, p);
+
 	if (winding != 0)
 	{
+		if (sEdge.x > eEdge.x)
+		{
+			std::swap(sEdge, eEdge);
+		}
 		float t = ((p.x - sEdge.x) / (eEdge.x - sEdge.x));
 		PxVec3 onEdgePoint;
 		if (t >= 1)
@@ -201,11 +212,16 @@ int32_t shadowing01(const PxVec3& sEdge, const PxVec3& eEdge, const PxVec3& p)
 	return 0;
 }
 
-int32_t shadowing10(const PxVec3& sEdge, const PxVec3& eEdge, const PxVec3& p)
+int32_t shadowing10(PxVec3 sEdge, PxVec3 eEdge, const PxVec3& p)
 {
 	int32_t winding = veStatus10(sEdge, eEdge, p);
 	if (winding != 0)
 	{
+		if (sEdge.x > eEdge.x)
+		{
+			std::swap(sEdge, eEdge);
+		}
+
 		float t = ((p.x - sEdge.x) / (eEdge.x - sEdge.x));
 		PxVec3 onEdgePoint;
 		if (t >= 1)
@@ -242,7 +258,7 @@ int32_t vfStatus02(const PxVec3& p, const Vertex* points, const Edge* edges, int
 			{
 				out[0] = pnt;
 			}
-			if (p.y < pnt.p.y && pnt.p.y < out[1].p.y)
+			if (p.y <= pnt.p.y && pnt.p.y < out[1].p.y)
 			{
 				out[1] = pnt;
 			}
@@ -301,7 +317,7 @@ int32_t vfStatus20(const PxVec3& p, const Vertex* points, const Edge* edges, int
 			{
 				out[0] = pnt;
 			}
-			if (p.y < pnt.p.y && pnt.p.y < out[1].p.y)
+			if (p.y <= pnt.p.y && pnt.p.y < out[1].p.y)
 			{
 				out[1] = pnt;
 			}
@@ -567,7 +583,14 @@ int32_t edgeFacetIntersection21(const Vertex& edSt, const Vertex& edEnd, const V
 
 	for (int32_t ed = 0; ed < edgesCount; ++ed)
 	{
-		shadowingType = edgeEdgeShadowing(points[edges[ed].s], points[edges[ed].e], edSt, edEnd, p1, p2, hasPoint);
+		if (shouldSwap(points[edges[ed].s].p, points[edges[ed].e].p))
+		{
+			shadowingType = -edgeEdgeShadowing(points[edges[ed].e], points[edges[ed].s], edSt, edEnd, p1, p2, hasPoint);
+		}
+		else
+		{
+			shadowingType = edgeEdgeShadowing(points[edges[ed].s], points[edges[ed].e], edSt, edEnd, p1, p2, hasPoint);
+		}
 		status -= shadowingType;
 		if (shadowingType == 0)
 		{
@@ -762,6 +785,7 @@ void BooleanEvaluator::buildFaceFaceIntersections(BooleanConf mode)
 				{
 					statusValue = edgeFacetIntersection12(meshAPoints[fae->s], meshAPoints[fae->e], mMeshB->getVertices(), facetBEdges, facetBEdgeCount, newPointA, newPointB);
 				}
+				
 				inclusionValue = -inclusionValueEdgeFace(mode, statusValue);
 				if (inclusionValue > 0)
 				{
@@ -1301,7 +1325,7 @@ Mesh* BooleanEvaluator::createNewMesh()
 	int32_t lastPos = 0;
 	int32_t lastParent = mEdgeAggregate[0].parent;
 	uint32_t collected = 0;
-	int32_t userData = 0;
+	int64_t userData = 0;
 	int32_t materialId = 0;
 	int32_t smoothingGroup = 0;
 

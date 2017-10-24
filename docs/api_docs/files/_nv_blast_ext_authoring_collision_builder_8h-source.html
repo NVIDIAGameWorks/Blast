@@ -67,31 +67,50 @@
 <a name="l00046"></a>00046 {
 <a name="l00047"></a>00047 
 <a name="l00048"></a>00048 <span class="keyword">struct </span>CollisionHull;
-<a name="l00049"></a>00049 
-<a name="l00055"></a><a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">00055</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">ConvexMeshBuilder</a>
-<a name="l00056"></a>00056 {
-<a name="l00057"></a>00057 <span class="keyword">public</span>:
-<a name="l00058"></a><a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#e5a4759e5763c616fef308a12b671305">00058</a>     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#e5a4759e5763c616fef308a12b671305">~ConvexMeshBuilder</a>() {}
-<a name="l00059"></a>00059 
-<a name="l00063"></a>00063     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#67c62d633c355aeac7869b2c77b8737b">release</a>() = 0;
-<a name="l00064"></a>00064 
-<a name="l00071"></a>00071     <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>*          <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#def1399d5caf565a55c88559589ef9d1">buildCollisionGeometry</a>(uint32_t verticesCount, <span class="keyword">const</span> physx::PxVec3* vertexData) = 0;
-<a name="l00072"></a>00072 
-<a name="l00080"></a>00080     <span class="keyword">virtual</span> physx::PxConvexMesh*    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#f11590ccfc3ca91561f45822a512bd3e">buildConvexMesh</a>(uint32_t verticesCount, <span class="keyword">const</span> physx::PxVec3* vertexData) = 0;
-<a name="l00081"></a>00081 
-<a name="l00082"></a>00082 
-<a name="l00089"></a>00089     <span class="keyword">virtual</span> physx::PxConvexMesh*    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#f11590ccfc3ca91561f45822a512bd3e">buildConvexMesh</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>&amp; hull) = 0;
-<a name="l00090"></a>00090 
-<a name="l00091"></a>00091 
-<a name="l00104"></a>00104     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#18827ae5019d32f05bda0b53aeb142dd">trimCollisionGeometry</a>(uint32_t chunksCount, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** in, <span class="keyword">const</span> uint32_t* chunkDepth) = 0;
-<a name="l00105"></a>00105 
-<a name="l00106"></a>00106 };
+<a name="l00049"></a>00049 <span class="keyword">struct </span>Triangle;
+<a name="l00050"></a>00050 
+<a name="l00051"></a><a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html">00051</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html">CollisionParams</a>
+<a name="l00052"></a>00052 {
+<a name="l00053"></a><a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html#76f1a721b186883c0b2833c897591957">00053</a>     <a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html#76f1a721b186883c0b2833c897591957">CollisionParams</a>()
+<a name="l00054"></a>00054     {
+<a name="l00055"></a>00055         <a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html#25d7280cf536f46c6dce79aa7d6d6a6f">setDefault</a>();
+<a name="l00056"></a>00056     }
+<a name="l00057"></a><a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html#25d7280cf536f46c6dce79aa7d6d6a6f">00057</a>     <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html#25d7280cf536f46c6dce79aa7d6d6a6f">setDefault</a>()
+<a name="l00058"></a>00058     {
+<a name="l00059"></a>00059         <a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html#1060b90f555676f8295d1b4c1a2f88f5">maximumNumberOfHulls</a> = 8;
+<a name="l00060"></a>00060         <a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html#006243734d40ef20236ac207a2f7391e">voxelGridResolution</a> = 1000000;
+<a name="l00061"></a>00061     }
+<a name="l00062"></a><a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html#1060b90f555676f8295d1b4c1a2f88f5">00062</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html#1060b90f555676f8295d1b4c1a2f88f5">maximumNumberOfHulls</a>; <span class="comment">// Maximum number of convex hull generated for one chunk. If equal to 1 convex decomposition is disabled.</span>
+<a name="l00063"></a><a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html#006243734d40ef20236ac207a2f7391e">00063</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html#006243734d40ef20236ac207a2f7391e">voxelGridResolution</a>; <span class="comment">// Voxel grid resolution used for chunk convex decomposition.</span>
+<a name="l00064"></a>00064 };
+<a name="l00065"></a>00065 
+<a name="l00071"></a><a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">00071</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">ConvexMeshBuilder</a>
+<a name="l00072"></a>00072 {
+<a name="l00073"></a>00073 <span class="keyword">public</span>:
+<a name="l00074"></a><a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#e5a4759e5763c616fef308a12b671305">00074</a>     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#e5a4759e5763c616fef308a12b671305">~ConvexMeshBuilder</a>() {}
+<a name="l00075"></a>00075 
+<a name="l00079"></a>00079     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#67c62d633c355aeac7869b2c77b8737b">release</a>() = 0;
+<a name="l00080"></a>00080 
+<a name="l00087"></a>00087     <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>*          <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#def1399d5caf565a55c88559589ef9d1">buildCollisionGeometry</a>(uint32_t verticesCount, <span class="keyword">const</span> physx::PxVec3* vertexData) = 0;
+<a name="l00088"></a>00088 
+<a name="l00096"></a>00096     <span class="keyword">virtual</span> physx::PxConvexMesh*    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#f11590ccfc3ca91561f45822a512bd3e">buildConvexMesh</a>(uint32_t verticesCount, <span class="keyword">const</span> physx::PxVec3* vertexData) = 0;
+<a name="l00097"></a>00097 
+<a name="l00098"></a>00098 
+<a name="l00105"></a>00105     <span class="keyword">virtual</span> physx::PxConvexMesh*    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#f11590ccfc3ca91561f45822a512bd3e">buildConvexMesh</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>&amp; hull) = 0;
+<a name="l00106"></a>00106 
 <a name="l00107"></a>00107 
-<a name="l00108"></a>00108 } <span class="comment">// namespace Blast</span>
-<a name="l00109"></a>00109 } <span class="comment">// namespace Nv</span>
-<a name="l00110"></a>00110 
-<a name="l00111"></a>00111 
-<a name="l00112"></a>00112 <span class="preprocessor">#endif // ifndef NVBLASTEXTAUTHORINGCOLLISIONBUILDER_H</span>
+<a name="l00120"></a>00120     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#18827ae5019d32f05bda0b53aeb142dd">trimCollisionGeometry</a>(uint32_t chunksCount, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** in, <span class="keyword">const</span> uint32_t* chunkDepth) = 0;
+<a name="l00121"></a>00121 
+<a name="l00122"></a>00122 
+<a name="l00126"></a>00126     <span class="keyword">virtual</span> int32_t                 <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#1632eb2729cbe16455c2d8db6e629687">buildMeshConvexDecomposition</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Nv::Blast::Triangle</a>* mesh, uint32_t triangleCount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html">CollisionParams</a>&amp; params, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** &amp;convexes) = 0;
+<a name="l00127"></a>00127 
+<a name="l00128"></a>00128 };
+<a name="l00129"></a>00129 
+<a name="l00130"></a>00130 } <span class="comment">// namespace Blast</span>
+<a name="l00131"></a>00131 } <span class="comment">// namespace Nv</span>
+<a name="l00132"></a>00132 
+<a name="l00133"></a>00133 
+<a name="l00134"></a>00134 <span class="preprocessor">#endif // ifndef NVBLASTEXTAUTHORINGCOLLISIONBUILDER_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

@@ -146,9 +146,25 @@ public:
 		\return						Number of created bonds
 	*/
 	virtual int32_t	bondsFromPrefractured(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
-		const bool*& chunkIsSupport, NvBlastBondDesc*& resultBondDescs,
+		const bool* chunkIsSupport, NvBlastBondDesc*& resultBondDescs,
 		BondGenerationConfig conf = BondGenerationConfig()) = 0;
-				
+	
+	/**
+		Creates bond description for prefractured meshes, when there is no info about which chunks should be connected with bond.
+		This uses the same process as bondsFromPrefractured using the BondGenMode::AVERAGE mode however the existing collision data is used.
+		\note User should call NVBLAST_FREE for resultBondDescs when it not needed anymore.
+		\param[in] meshCount		Number of meshes
+		\param[in] convexHullOffset	Pointer to array of convex hull offsets for each mesh. 
+									Containts meshCount + 1 element, last one is total number of hulls in the geometry
+		\param[in] chunkHulls		Pointer to array of convex hulls. 
+									Hulls from convexHullOffset[i] to convexHullOffset[i+1] correspond to i-th mesh.
+		\param[in] chunkIsSupport	Pointer to array of flags, if true - chunk is support. Array size should be equal to chunk count in tool.
+		\param[in] meshGroups		Pointer to array of group ids for each mesh, bonds will not be generated between meshs of the same group. If null each mesh is assumed to be in it's own group.
+		\param[out] resultBondDescs	Pointer to array of result bonds.
+		\return						Number of created bonds
+	*/
+	virtual int32_t	bondsFromPrefractured(uint32_t meshCount, const uint32_t* convexHullOffset, const CollisionHull** chunkHulls,
+		const bool* chunkIsSupport, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs) = 0;
 };
 
 }	// namespace Blast

@@ -42,6 +42,7 @@ void CubeAssetGenerator::generate(GeneratorAsset& asset, const Settings& setting
 	std::vector<GeneratorAsset::Vec3> depthSlicesPerAxisTotal;
 	uint32_t currentID = 0;
 	GeneratorAsset::Vec3 extents = settings.extents;
+	asset.extents = extents;
 
 	// Iterate over depths and create children
 	for (uint32_t depth = 0; depth < settings.depths.size(); depth++)

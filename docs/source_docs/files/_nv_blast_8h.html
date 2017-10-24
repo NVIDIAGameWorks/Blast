@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
@@ -48,7 +49,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#20bf7daebbc3804766c32fd6bd624a07">NvBlastActorCanFracture</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#90905cf877bade454668e46621478840">NvBlastActorGenerateFracture</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> program, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *programParams, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn, <a class="el" href="struct_nv_blast_timers.html">NvBlastTimers</a> *timers)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#befb2480ab1985d6fed58583050d57d2">NvBlastActorGenerateFracture</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> program, const void *programParams, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn, <a class="el" href="struct_nv_blast_timers.html">NvBlastTimers</a> *timers)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#95a908aa7b6e14e1ed881bf3cfe810d6">NvBlastActorGetMaxActorCountForSplit</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
@@ -298,7 +299,7 @@ Deactivate an actor within its family. Conceptually this is "destroying" the act
 
 </div>
 </div><p>
-<a class="anchor" name="90905cf877bade454668e46621478840"></a><!-- doxytag: member="NvBlast.h::NvBlastActorGenerateFracture" ref="90905cf877bade454668e46621478840" args="(NvBlastFractureBuffers *commandBuffers, const NvBlastActor *actor, const NvBlastDamageProgram program, const NvBlastProgramParams *programParams, NvBlastLog logFn, NvBlastTimers *timers)" -->
+<a class="anchor" name="befb2480ab1985d6fed58583050d57d2"></a><!-- doxytag: member="NvBlast.h::NvBlastActorGenerateFracture" ref="befb2480ab1985d6fed58583050d57d2" args="(NvBlastFractureBuffers *commandBuffers, const NvBlastActor *actor, const NvBlastDamageProgram program, const void *programParams, NvBlastLog logFn, NvBlastTimers *timers)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -323,7 +324,7 @@ Deactivate an actor within its family. Conceptually this is "destroying" the act
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *&nbsp;</td>
+          <td class="paramtype">const void *&nbsp;</td>
           <td class="paramname"> <em>programParams</em>, </td>
         </tr>
         <tr>

@@ -25,7 +25,7 @@
 //
 // Copyright (c) 2016-2017 NVIDIA Corporation. All rights reserved.
 
-
+#include <NvBlastGlobals.h>
 #include "NvBlastExtAuthoringCollisionBuilderImpl.h"
 #include <PxConvexMesh.h>
 #include <PxVec3.h>
@@ -38,21 +38,41 @@
 #include <NvBlastExtAuthoringBooleanTool.h>
 #include <NvBlastExtAuthoringMeshImpl.h>
 
+#include <VHACD.h>
+
 using namespace physx;
 
-#define SAFE_ARRAY_NEW(T, x) ((x) > 0) ? new T[x] : nullptr;
-#define SAFE_ARRAY_DELETE(x) if (x != nullptr) {delete[] x; x = nullptr;}
+#define SAFE_ARRAY_NEW(T, x) ((x) > 0) ? reinterpret_cast<T*>(NVBLAST_ALLOC(sizeof(T) * (x))) : nullptr;
+#define SAFE_ARRAY_DELETE(x) if (x != nullptr) {NVBLAST_FREE(x); x = nullptr;}
 
 namespace Nv
 {
 namespace Blast
 {
 
-void CollisionHullImpl::release()
+CollisionHullImpl::~CollisionHullImpl()
 {
 	SAFE_ARRAY_DELETE(points);
 	SAFE_ARRAY_DELETE(indices);
 	SAFE_ARRAY_DELETE(polygonData);
+}
+
+CollisionHullImpl::CollisionHullImpl(const CollisionHull& hullToCopy)
+{
+	pointsCount = hullToCopy.pointsCount;
+	indicesCount = hullToCopy.indicesCount;
+	polygonDataCount = hullToCopy.polygonDataCount;
+
+	points = SAFE_ARRAY_NEW(physx::PxVec3, pointsCount);
+	indices = SAFE_ARRAY_NEW(uint32_t, indicesCount);
+	polygonData = SAFE_ARRAY_NEW(CollisionHull::HullPolygon, polygonDataCount);
+	memcpy(points, hullToCopy.points, sizeof(points[0]) * pointsCount);
+	memcpy(indices, hullToCopy.indices, sizeof(indices[0]) * indicesCount);
+	memcpy(polygonData, hullToCopy.polygonData, sizeof(polygonData[0]) * polygonDataCount);
+}
+
+void CollisionHullImpl::release()
+{
 	delete this;
 }
 
@@ -312,6 +332,76 @@ void ConvexMeshBuilderImpl::release()
 {
 	delete this;
 }
+
+int32_t	ConvexMeshBuilderImpl::buildMeshConvexDecomposition(const Triangle* mesh, uint32_t triangleCount, const CollisionParams& iparams, CollisionHull**& convexes)
+{
+	std::vector<float> coords(triangleCount * 9);
+	std::vector<uint32_t> indices(triangleCount * 3);
+
+	uint32_t indx = 0;
+	uint32_t indxCoord = 0;
+
+	PxBounds3 chunkBound = PxBounds3::empty();
+	for (uint32_t i = 0; i < triangleCount; ++i)
+	{
+		for (auto& t : { mesh[i].a.p , mesh[i].b.p , mesh[i].c.p })
+		{
+
+			chunkBound.include(t);
+			coords[indxCoord] = t.x;
+			coords[indxCoord + 1] = t.y;
+			coords[indxCoord + 2] = t.z;
+			indxCoord += 3;
+		}
+		indices[indx] = indx;
+		indices[indx + 1] = indx + 1;
+		indices[indx + 2] = indx + 2;
+		indx += 3;
+	}
+
+	PxVec3 rsc = chunkBound.getDimensions();
+
+	for (uint32_t i = 0; i < coords.size(); i += 3)
+	{
+		coords[i] = (coords[i] - chunkBound.minimum.x) / rsc.x;
+		coords[i + 1] = (coords[i + 1] - chunkBound.minimum.y) / rsc.y;
+		coords[i + 2] = (coords[i + 2] - chunkBound.minimum.z) / rsc.z;
+	}
+	
+	VHACD::IVHACD* decomposer = VHACD::CreateVHACD();
+
+	VHACD::IVHACD::Parameters vhacdParam;
+	vhacdParam.m_maxConvexHulls = iparams.maximumNumberOfHulls;
+	vhacdParam.m_resolution = iparams.voxelGridResolution;
+
+	decomposer->Compute(coords.data(), triangleCount * 3, indices.data(), triangleCount, vhacdParam);
+
+	const uint32_t nConvexHulls = decomposer->GetNConvexHulls();
+	convexes = SAFE_ARRAY_NEW(CollisionHull*, nConvexHulls);
+
+	for (uint32_t i = 0; i < nConvexHulls; ++i)
+	{
+		VHACD::IVHACD::ConvexHull hl;
+		decomposer->GetConvexHull(i, hl);
+		std::vector<PxVec3> vertices;
+		for (uint32_t v = 0; v < hl.m_nPoints; ++v)
+		{
+			vertices.push_back(PxVec3(hl.m_points[v * 3], hl.m_points[v * 3 + 1], hl.m_points[v * 3 + 2]));
+			vertices.back().x = vertices.back().x * rsc.x + chunkBound.minimum.x;
+			vertices.back().y = vertices.back().y * rsc.y + chunkBound.minimum.y;
+			vertices.back().z = vertices.back().z * rsc.z + chunkBound.minimum.z;
+
+		}
+		convexes[i] = buildCollisionGeometry(vertices.size(), vertices.data());
+	}
+	//VHACD::~VHACD called from release does nothign and does not call Clean()
+	decomposer->Clean();
+	decomposer->Release();
+
+	return nConvexHulls;
+}
+
+
 
 } // namespace Blast
 } // namespace Nv

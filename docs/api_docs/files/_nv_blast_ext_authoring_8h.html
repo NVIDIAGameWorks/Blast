@@ -45,7 +45,13 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html">Nv::Blast::VoronoiSitesGenerator</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#cd91ba6bf9cb55758bd477fe114e318b">NvBlastExtAuthoringCreateVoronoiSitesGenerator</a> (<a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a> *mesh, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">Nv::Blast::RandomGeneratorBase</a> *rng)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#fc4ad1bb81e743f4937ac98fb5702241">NvBlastExtAuthoringProcessFracture</a> (<a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">Nv::Blast::FractureTool</a> &amp;fTool, <a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">Nv::Blast::BlastBondGenerator</a> &amp;bondGenerator, <a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> &amp;collisionBuilder, int32_t defaultSupportDepth=-1)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#e55d9c352e91a06cc9148b7551c8b577">NvBlastExtAuthoringFindAssetConnectingBonds</a> (const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> **components, const physx::PxVec3 *scales, const physx::PxQuat *rotations, const physx::PxVec3 *translations, const uint32_t **convexHullOffsets, const <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> ***chunkHulls, uint32_t componentCount, <a class="el" href="struct_nv_blast_ext_asset_utils_bond_desc.html">NvBlastExtAssetUtilsBondDesc</a> *&amp;newBondDescs)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#79a3a6e8cafaa0f497adda5441921a5f">NvBlastExtAuthoringProcessFracture</a> (<a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">Nv::Blast::FractureTool</a> &amp;fTool, <a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">Nv::Blast::BlastBondGenerator</a> &amp;bondGenerator, <a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> &amp;collisionBuilder, const <a class="el" href="struct_nv_1_1_blast_1_1_collision_params.html">Nv::Blast::CollisionParams</a> &amp;collisionParam, int32_t defaultSupportDepth=-1)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#4a464adf7a9cb3176512d90e1a78fd72">NvBlastExtAuthoringTransformCollisionHull</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> *hull, const physx::PxVec3 *scaling, const physx::PxQuat *rotation, const physx::PxVec3 *translation)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#a00ed5b44c9d85ba4f623c4221cbf125">NvBlastExtAuthoringTransformCollisionHullInPlace</a> (<a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> *hull, const physx::PxVec3 *scaling, const physx::PxQuat *rotation, const physx::PxVec3 *translation)</td></tr>
 
 </table>
 <hr><h2>Function Documentation</h2>
@@ -250,7 +256,89 @@ Voronoi sites should not be generated outside of the fractured mesh, so VoronoiS
 
 </div>
 </div><p>
-<a class="anchor" name="fc4ad1bb81e743f4937ac98fb5702241"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringProcessFracture" ref="fc4ad1bb81e743f4937ac98fb5702241" args="(Nv::Blast::FractureTool &amp;fTool, Nv::Blast::BlastBondGenerator &amp;bondGenerator, Nv::Blast::ConvexMeshBuilder &amp;collisionBuilder, int32_t defaultSupportDepth=&#45;1)" -->
+<a class="anchor" name="e55d9c352e91a06cc9148b7551c8b577"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringFindAssetConnectingBonds" ref="e55d9c352e91a06cc9148b7551c8b577" args="(const NvBlastAsset **components, const physx::PxVec3 *scales, const physx::PxQuat *rotations, const physx::PxVec3 *translations, const uint32_t **convexHullOffsets, const Nv::Blast::CollisionHull ***chunkHulls, uint32_t componentCount, NvBlastExtAssetUtilsBondDesc *&amp;newBondDescs)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t NvBlastExtAuthoringFindAssetConnectingBonds           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> **&nbsp;</td>
+          <td class="paramname"> <em>components</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramname"> <em>scales</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const physx::PxQuat *&nbsp;</td>
+          <td class="paramname"> <em>rotations</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramname"> <em>translations</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t **&nbsp;</td>
+          <td class="paramname"> <em>convexHullOffsets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> ***&nbsp;</td>
+          <td class="paramname"> <em>chunkHulls</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>componentCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_ext_asset_utils_bond_desc.html">NvBlastExtAssetUtilsBondDesc</a> *&amp;&nbsp;</td>
+          <td class="paramname"> <em>newBondDescs</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Finds bonds connecting chunks in a list of assets<p>
+New bond descriptors may be given to bond support chunks from different components.<p>
+An <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> may appear more than once in the components array.<p>
+NOTE: This function allocates memory using the allocator in NvBlastGlobals, to create the new bond descriptor arrays returned. The user must free this memory after use with NVBLAST_FREE<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>components</em>&nbsp;</td><td>An array of assets to merge, of size componentCount. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>scales</em>&nbsp;</td><td>If not NULL, an array of size componentCount of scales to apply to the geometric data in the chunks and bonds. If NULL, no scaling is applied. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>rotations</em>&nbsp;</td><td>If not NULL, an array of size componentCount of rotations to apply to the geometric data in the chunks and bonds. The quaternions MUST be normalized. If NULL, no rotations are applied. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>translations</em>&nbsp;</td><td>If not NULL, an array of of size componentCount of translations to apply to the geometric data in the chunks and bonds. If NULL, no translations are applied. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>convexHullOffsets</em>&nbsp;</td><td>For each component, an array of chunkSize+1 specifying the start of the convex hulls for that chunk inside the chunkHulls array for that component. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkHulls</em>&nbsp;</td><td>For each component, an array of CollisionHull* specifying the collision geometry for the chunks in that component. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>componentCount</em>&nbsp;</td><td>The size of the components and relativeTransforms arrays. </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>newBondDescs</em>&nbsp;</td><td>Descriptors of type <a class="el" href="struct_nv_blast_ext_asset_utils_bond_desc.html">NvBlastExtAssetUtilsBondDesc</a> for new bonds between components.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>the number of bonds in newBondDescs </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="79a3a6e8cafaa0f497adda5441921a5f"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringProcessFracture" ref="79a3a6e8cafaa0f497adda5441921a5f" args="(Nv::Blast::FractureTool &amp;fTool, Nv::Blast::BlastBondGenerator &amp;bondGenerator, Nv::Blast::ConvexMeshBuilder &amp;collisionBuilder, const Nv::Blast::CollisionParams &amp;collisionParam, int32_t defaultSupportDepth=&#45;1)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -275,6 +363,12 @@ Voronoi sites should not be generated outside of the fractured mesh, so VoronoiS
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_collision_params.html">Nv::Blast::CollisionParams</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>collisionParam</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">int32_t&nbsp;</td>
           <td class="paramname"> <em>defaultSupportDepth</em> = <code>-1</code></td><td>&nbsp;</td>
         </tr>
@@ -295,9 +389,108 @@ Performs pending fractures and generates fractured asset, render and collision g
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>bondGenerator</em>&nbsp;</td><td>Bond generator created by NvBlastExtAuthoringCreateBondGenerator </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>collisionBuilder</em>&nbsp;</td><td>Collision builder created by NvBlastExtAuthoringCreateConvexMeshBuilder </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>defaultSupportDepth</em>&nbsp;</td><td>All new chunks will be marked as support if its depth equal to defaultSupportDepth. By default leaves (chunks without children) marked as support. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>collisionParam</em>&nbsp;</td><td>Parameters of collision hulls generation. </td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>Authoring result </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="4a464adf7a9cb3176512d90e1a78fd72"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringTransformCollisionHull" ref="4a464adf7a9cb3176512d90e1a78fd72" args="(const Nv::Blast::CollisionHull *hull, const physx::PxVec3 *scaling, const physx::PxQuat *rotation, const physx::PxVec3 *translation)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a>* NvBlastExtAuthoringTransformCollisionHull           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> *&nbsp;</td>
+          <td class="paramname"> <em>hull</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramname"> <em>scaling</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const physx::PxQuat *&nbsp;</td>
+          <td class="paramname"> <em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramname"> <em>translation</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Transforms collision hull in place using scale, rotation, transform. <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>hull</em>&nbsp;</td><td>Pointer to the hull to be transformed (modified). </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>scale</em>&nbsp;</td><td>Pointer to scale to be applied. Can be nullptr. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>rotation</em>&nbsp;</td><td>Pointer to rotation to be applied. Can be nullptr. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>translation</em>&nbsp;</td><td>Pointer to translation to be applied. Can be nullptr. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="a00ed5b44c9d85ba4f623c4221cbf125"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringTransformCollisionHullInPlace" ref="a00ed5b44c9d85ba4f623c4221cbf125" args="(Nv::Blast::CollisionHull *hull, const physx::PxVec3 *scaling, const physx::PxQuat *rotation, const physx::PxVec3 *translation)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NvBlastExtAuthoringTransformCollisionHullInPlace           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> *&nbsp;</td>
+          <td class="paramname"> <em>hull</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramname"> <em>scaling</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const physx::PxQuat *&nbsp;</td>
+          <td class="paramname"> <em>rotation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramname"> <em>translation</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Transforms collision hull in place using scale, rotation, transform. <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>hull</em>&nbsp;</td><td>Pointer to the hull to be transformed (modified). </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>scale</em>&nbsp;</td><td>Pointer to scale to be applied. Can be nullptr. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>rotation</em>&nbsp;</td><td>Pointer to rotation to be applied. Can be nullptr. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>translation</em>&nbsp;</td><td>Pointer to translation to be applied. Can be nullptr. </td></tr>
+  </table>
+</dl>
 
 </div>
 </div><p>

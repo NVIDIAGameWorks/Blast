@@ -60,7 +60,7 @@ public:
 
 	//////// ctor ////////
 
-	ExtPxFamilyImpl(ExtPxManagerImpl& manager, TkFamily& tkFamily, const ExtPxAsset& pxAsset);
+	ExtPxFamilyImpl(ExtPxManagerImpl& manager, TkFamily& tkFamily, ExtPxAsset& pxAsset);
 	~ExtPxFamilyImpl();
 
 	virtual void release() override;
@@ -98,7 +98,7 @@ public:
 		return m_subchunkShapes.begin();
 	}
 
-	virtual const ExtPxAsset&				getPxAsset() const override
+	virtual ExtPxAsset&						getPxAsset() const override
 	{
 		return m_pxAsset;
 	}
@@ -126,6 +126,16 @@ public:
 	virtual const ExtPxActorDescTemplate*	getPxActorDesc() const override
 	{
 		return m_pxActorDescTemplate;
+	}
+
+	virtual const NvBlastExtMaterial*		getMaterial() const override
+	{
+		return m_material;
+	}
+
+	virtual void							setMaterial(const NvBlastExtMaterial* material) override
+	{
+		m_material = material;
 	}
 
 	virtual void							subscribe(ExtPxListener& listener) override
@@ -161,10 +171,11 @@ private:
 
 	ExtPxManagerImpl&						m_manager;
 	TkFamily&								m_tkFamily;
-	const ExtPxAsset&						m_pxAsset;
+	ExtPxAsset&								m_pxAsset;
 	ExtPxSpawnSettings						m_spawnSettings;
 	const ExtPxShapeDescTemplate*			m_pxShapeDescTemplate;
 	const ExtPxActorDescTemplate*			m_pxActorDescTemplate;
+	const NvBlastExtMaterial*				m_material;
 	bool									m_isSpawned;
 	PxTransform								m_initialTransform;
 	PxVec3									m_initialScale;

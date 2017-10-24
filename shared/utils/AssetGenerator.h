@@ -69,6 +69,7 @@ public:
 	std::vector<NvBlastChunkDesc> solverChunks;
 	std::vector<NvBlastBondDesc> solverBonds;
 	std::vector<BlastChunkCube> chunks;
+	Vec3 extents;
 };
 
 

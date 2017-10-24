@@ -43,6 +43,7 @@
 #include "NvBlastExtPxManager.h"
 #include "NvBlastExtPxFamily.h"
 #include "NvBlastExtPxActor.h"
+#include "NvBlastExtPxAsset.h"
 #include "NvBlastExtSerialization.h"
 #include "NvBlastExtTkSerialization.h"
 #include "NvBlastExtPxSerialization.h"
@@ -83,7 +84,7 @@ static physx::PxJoint* createPxJointCallback(ExtPxActor* actor0, const physx::Px
 BlastController::BlastController() 
 : m_eventCallback(nullptr), debugRenderMode(BlastFamily::DEBUG_RENDER_DISABLED), m_impactDamageEnabled(true), 
 m_impactDamageToStressEnabled(false), m_rigidBodyLimitEnabled(true), m_rigidBodyLimit(40000), m_blastAssetsSize(0), debugRenderScale(0.01f),
-m_taskManager(nullptr), m_extGroupTaskManager(nullptr)
+m_taskManager(nullptr), m_extGroupTaskManager(nullptr), m_damageDescBuffer(64 * 1024), m_damageParamsBuffer(1024)
 {
 	m_impactDamageToStressFactor = 0.01f;
 	m_draggingToStressFactor = 100.0f;
@@ -174,6 +175,51 @@ void BlastController::notifyPhysXControllerRelease()
 		m_taskManager = nullptr;
 	}
 }
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//												Deffered/Immediate damage
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void BlastController::deferDamage(ExtPxActor *actor, BlastFamily& family, const NvBlastDamageProgram& program, const void* damageDesc, uint32_t damageDescSize)
+{
+	const void* bufferedDamageDesc = m_damageDescBuffer.push(damageDesc, damageDescSize);
+	PX_ASSERT_WITH_MESSAGE(bufferedDamageDesc, "Damage desc buffer exhausted.");
+
+	NvBlastExtProgramParams programParams = { bufferedDamageDesc, &family.getMaterial(), actor->getFamily().getPxAsset().getAccelerator() };
+
+	const void* bufferedProgramParams = m_damageParamsBuffer.push(&programParams, sizeof(NvBlastExtProgramParams));
+	PX_ASSERT_WITH_MESSAGE(bufferedProgramParams, "Damage params buffer exhausted.");
+
+	if (bufferedDamageDesc && bufferedProgramParams)
+	{
+		actor->getTkActor().damage(program, bufferedProgramParams);
+	}
+}
+
+NvBlastFractureBuffers& BlastController::getFractureBuffers(ExtPxActor* actor)
+{
+	const TkAsset* tkAsset = actor->getTkActor().getAsset();
+	const uint32_t chunkCount = tkAsset->getChunkCount();
+	const uint32_t bondCount = tkAsset->getBondCount();
+
+	m_fractureBuffers.bondFractureCount = bondCount;
+	m_fractureBuffers.chunkFractureCount = chunkCount;
+	m_fractureData.resize((uint32_t)(m_fractureBuffers.bondFractureCount * sizeof(NvBlastBondFractureData) + m_fractureBuffers.chunkFractureCount * sizeof(NvBlastChunkFractureData))); // chunk count + bond count
+	m_fractureBuffers.chunkFractures = reinterpret_cast<NvBlastChunkFractureData*>(m_fractureData.data());
+	m_fractureBuffers.bondFractures = reinterpret_cast<NvBlastBondFractureData*>(&m_fractureData.data()[m_fractureBuffers.chunkFractureCount * sizeof(NvBlastChunkFractureData)]);
+	return m_fractureBuffers;
+}
+
+void BlastController::immediateDamage(ExtPxActor *actor, BlastFamily& family, const NvBlastDamageProgram& program, const void* damageDesc)
+{
+	NvBlastExtProgramParams programParams = { damageDesc, &family.getMaterial(), actor->getFamily().getPxAsset().getAccelerator() };
+
+	NvBlastFractureBuffers& fractureEvents = getFractureBuffers(actor);
+	actor->getTkActor().generateFracture(&fractureEvents, program, &programParams);
+	actor->getTkActor().applyFracture(nullptr, &fractureEvents);
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //												Impact damage
@@ -334,6 +380,9 @@ void BlastController::Animate(double dt)
 
 #endif
 
+	m_damageParamsBuffer.clear();
+	m_damageDescBuffer.clear();
+
 	PROFILER_END();
 
 	getPhysXController().simulationBegin(dt);
@@ -437,7 +486,7 @@ void BlastController::recalculateAssetsSize()
 	}
 }
 
-bool BlastController::overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*)> hitCall)
+bool BlastController::overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*, BlastFamily&)> hitCall)
 {
 	PROFILER_SCOPED_FUNCTION();
 

@@ -67,105 +67,111 @@
 <a name="l00046"></a>00046 }
 <a name="l00047"></a>00047 }
 <a name="l00048"></a>00048 
-<a name="l00049"></a>00049 
-<a name="l00050"></a>00050 <span class="keyword">namespace </span>Nv
-<a name="l00051"></a>00051 {
-<a name="l00052"></a>00052 <span class="keyword">namespace </span>Blast
+<a name="l00049"></a>00049 <span class="keyword">class </span><a class="code" href="class_nv_blast_ext_damage_accelerator.html">NvBlastExtDamageAccelerator</a>;
+<a name="l00050"></a>00050 
+<a name="l00051"></a>00051 
+<a name="l00052"></a>00052 <span class="keyword">namespace </span>Nv
 <a name="l00053"></a>00053 {
-<a name="l00054"></a>00054 
-<a name="l00055"></a>00055 
-<a name="l00062"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html">00062</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html">ExtPxAssetDesc</a> : <span class="keyword">public</span> <a class="code" href="struct_nv_1_1_blast_1_1_tk_asset_desc.html">TkAssetDesc</a>
-<a name="l00063"></a>00063 {
-<a name="l00069"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html">00069</a>     <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html">SubchunkDesc</a>
-<a name="l00070"></a>00070     {
-<a name="l00071"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html#d5dbb42eb8ca089f7f7a6d9061035178">00071</a>         physx::PxTransform          <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html#d5dbb42eb8ca089f7f7a6d9061035178" title="convex local transform">transform</a>;          
-<a name="l00072"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html#e94db08a254603567004e5818142f5bc">00072</a>         physx::PxConvexMeshGeometry <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html#e94db08a254603567004e5818142f5bc" title="convex geometry">geometry</a>;           
-<a name="l00073"></a>00073     };
-<a name="l00074"></a>00074 
-<a name="l00080"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">00080</a>     <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">ChunkDesc</a>
-<a name="l00081"></a>00081     {
-<a name="l00082"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html#3887825dc8fa6157aeb007585b2ed85d">00082</a>         <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html">SubchunkDesc</a>*   <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html#3887825dc8fa6157aeb007585b2ed85d" title="array of subchunks for chunk, can be empty">subchunks</a>;          
-<a name="l00083"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html#b1393ee5bdc8736add5b46bb0e63c7b8">00083</a>         uint32_t        <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html#b1393ee5bdc8736add5b46bb0e63c7b8" title="size array of subchunks for chunk, can be 0">subchunkCount</a>;      
-<a name="l00084"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html#463a8ed9f91a74cc7bad49ba94c45f6f">00084</a>         <span class="keywordtype">bool</span>            <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html#463a8ed9f91a74cc7bad49ba94c45f6f" title="is chunk static. Static chunk makes PxActor Kinematic.">isStatic</a>;           
-<a name="l00085"></a>00085     };
-<a name="l00086"></a>00086 
-<a name="l00087"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html#39e1228a08020f762b83e81cc4f615dc">00087</a>     <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">ChunkDesc</a>*  <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html#39e1228a08020f762b83e81cc4f615dc" title="array of chunks in asset, should be of size chunkCount (">pxChunks</a>;       
-<a name="l00088"></a>00088 };
-<a name="l00089"></a>00089 
-<a name="l00090"></a>00090 
-<a name="l00096"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">00096</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a>
-<a name="l00097"></a>00097 {
-<a name="l00098"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html#38d62b26d068141c048b6b5ee69e7443">00098</a>     physx::PxTransform          <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html#38d62b26d068141c048b6b5ee69e7443" title="convex local transform">transform</a>;          
-<a name="l00099"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html#30887ab12bc560a3adfd854aaea2c17f">00099</a>     physx::PxConvexMeshGeometry <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html#30887ab12bc560a3adfd854aaea2c17f" title="convex geometry">geometry</a>;           
-<a name="l00100"></a>00100 };
-<a name="l00101"></a>00101 
-<a name="l00102"></a>00102 
-<a name="l00108"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">00108</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a>
-<a name="l00109"></a>00109 {
-<a name="l00110"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html#ee67c70b4ba1104ef3eaf78b2a94d8f8">00110</a>     uint32_t    <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html#ee67c70b4ba1104ef3eaf78b2a94d8f8" title="first Subchunk index in Subchunk&amp;#39;s array in ExtPhyicsAsset">firstSubchunkIndex</a>; 
-<a name="l00111"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html#b72119e6ade5758ec1c8874894d53ab2">00111</a>     uint32_t    <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html#b72119e6ade5758ec1c8874894d53ab2" title="Subchunk count. Can be 0.">subchunkCount</a>;      
-<a name="l00112"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html#6e532ee5ae271c1dad75afed166a1981">00112</a>     <span class="keywordtype">bool</span>        <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html#6e532ee5ae271c1dad75afed166a1981" title="is chunk static (kinematic)?.">isStatic</a>;           
-<a name="l00113"></a>00113 };
-<a name="l00114"></a>00114 
-<a name="l00115"></a>00115 
-<a name="l00121"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">00121</a> <span class="keyword">class </span>NV_DLL_EXPORT <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>
-<a name="l00122"></a>00122 {
-<a name="l00123"></a>00123 <span class="keyword">public</span>:
-<a name="l00124"></a>00124 
-<a name="l00133"></a>00133     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>*              create(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html">ExtPxAssetDesc</a>&amp; desc, <a class="code" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a>&amp; framework);
-<a name="l00134"></a>00134 
-<a name="l00143"></a>00143     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>*              create(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tk_asset_desc.html">TkAssetDesc</a>&amp; desc, <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a>* pxChunks, <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a>* pxSubchunks, <a class="code" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a>&amp; framework);
-<a name="l00144"></a>00144 
-<a name="l00145"></a>00145 
-<a name="l00146"></a>00146     <span class="comment">/*</span>
-<a name="l00147"></a>00147 <span class="comment">        Factory method for deserialization</span>
-<a name="l00148"></a>00148 <span class="comment"></span>
-<a name="l00149"></a>00149 <span class="comment">        Doesn't specify chunks or subchunks as they'll be fed in during deserialization to avoid copying stuff around.</span>
-<a name="l00150"></a>00150 <span class="comment">    </span>
-<a name="l00151"></a>00151 <span class="comment">    */</span>
-<a name="l00152"></a>00152     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>*              create(<a class="code" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a>* asset);
-<a name="l00153"></a>00153 
-<a name="l00154"></a>00154     <span class="comment">/*</span>
-<a name="l00155"></a>00155 <span class="comment">    Create a new ExtPxAsset.</span>
-<a name="l00156"></a>00156 <span class="comment"></span>
-<a name="l00157"></a>00157 <span class="comment">    \param[in]  asset           TkAsset from which ExtPxAsset will be created</span>
-<a name="l00158"></a>00158 <span class="comment">    \param[in]  chunks          Array of physics chunks descriptors</span>
-<a name="l00159"></a>00159 <span class="comment">    \param[in]  chunkCount      Size of chunks descriptors array</span>
-<a name="l00160"></a>00160 <span class="comment"></span>
-<a name="l00161"></a>00161 <span class="comment"></span>
-<a name="l00162"></a>00162 <span class="comment">    \return the new ExtPxAsset if successful, NULL otherwise.</span>
-<a name="l00163"></a>00163 <span class="comment">        </span>
-<a name="l00164"></a>00164 <span class="comment">    */</span>
-<a name="l00165"></a>00165     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>*              create(<a class="code" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a>* asset, <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">ExtPxAssetDesc::ChunkDesc</a>* chunks, uint32_t chunkCount);
-<a name="l00166"></a>00166 
-<a name="l00170"></a>00170     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    release() = 0;
-<a name="l00171"></a>00171 
-<a name="l00177"></a>00177     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a>&amp;          getTkAsset() <span class="keyword">const</span> = 0;
-<a name="l00178"></a>00178 
-<a name="l00184"></a>00184     <span class="keyword">virtual</span> uint32_t                getChunkCount() <span class="keyword">const</span> = 0;
-<a name="l00185"></a>00185 
-<a name="l00191"></a>00191     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a>*       getChunks() <span class="keyword">const</span> = 0;
-<a name="l00192"></a>00192     
-<a name="l00199"></a>00199     <span class="keyword">virtual</span> uint32_t                getSubchunkCount() <span class="keyword">const</span> = 0;
-<a name="l00200"></a>00200     
-<a name="l00206"></a>00206     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a>*    getSubchunks() <span class="keyword">const</span> = 0;
-<a name="l00207"></a>00207 
-<a name="l00221"></a>00221     <span class="keyword">virtual</span> <a class="code" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>&amp;       getDefaultActorDesc() = 0;
-<a name="l00222"></a>00222 
-<a name="l00223"></a>00223     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>&amp; getDefaultActorDesc() <span class="keyword">const</span> = 0;
+<a name="l00054"></a>00054 <span class="keyword">namespace </span>Blast
+<a name="l00055"></a>00055 {
+<a name="l00056"></a>00056 
+<a name="l00057"></a>00057 
+<a name="l00064"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html">00064</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html">ExtPxAssetDesc</a> : <span class="keyword">public</span> <a class="code" href="struct_nv_1_1_blast_1_1_tk_asset_desc.html">TkAssetDesc</a>
+<a name="l00065"></a>00065 {
+<a name="l00071"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html">00071</a>     <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html">SubchunkDesc</a>
+<a name="l00072"></a>00072     {
+<a name="l00073"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html#d5dbb42eb8ca089f7f7a6d9061035178">00073</a>         physx::PxTransform          <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html#d5dbb42eb8ca089f7f7a6d9061035178" title="convex local transform">transform</a>;          
+<a name="l00074"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html#e94db08a254603567004e5818142f5bc">00074</a>         physx::PxConvexMeshGeometry <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html#e94db08a254603567004e5818142f5bc" title="convex geometry">geometry</a>;           
+<a name="l00075"></a>00075     };
+<a name="l00076"></a>00076 
+<a name="l00082"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">00082</a>     <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">ChunkDesc</a>
+<a name="l00083"></a>00083     {
+<a name="l00084"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html#3887825dc8fa6157aeb007585b2ed85d">00084</a>         <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html">SubchunkDesc</a>*   <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html#3887825dc8fa6157aeb007585b2ed85d" title="array of subchunks for chunk, can be empty">subchunks</a>;          
+<a name="l00085"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html#b1393ee5bdc8736add5b46bb0e63c7b8">00085</a>         uint32_t        <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html#b1393ee5bdc8736add5b46bb0e63c7b8" title="size array of subchunks for chunk, can be 0">subchunkCount</a>;      
+<a name="l00086"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html#463a8ed9f91a74cc7bad49ba94c45f6f">00086</a>         <span class="keywordtype">bool</span>            <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html#463a8ed9f91a74cc7bad49ba94c45f6f" title="is chunk static. Static chunk makes PxActor Kinematic.">isStatic</a>;           
+<a name="l00087"></a>00087     };
+<a name="l00088"></a>00088 
+<a name="l00089"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html#39e1228a08020f762b83e81cc4f615dc">00089</a>     <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">ChunkDesc</a>*  <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html#39e1228a08020f762b83e81cc4f615dc" title="array of chunks in asset, should be of size chunkCount (">pxChunks</a>;       
+<a name="l00090"></a>00090 };
+<a name="l00091"></a>00091 
+<a name="l00092"></a>00092 
+<a name="l00098"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">00098</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a>
+<a name="l00099"></a>00099 {
+<a name="l00100"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html#38d62b26d068141c048b6b5ee69e7443">00100</a>     physx::PxTransform          <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html#38d62b26d068141c048b6b5ee69e7443" title="convex local transform">transform</a>;          
+<a name="l00101"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html#30887ab12bc560a3adfd854aaea2c17f">00101</a>     physx::PxConvexMeshGeometry <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html#30887ab12bc560a3adfd854aaea2c17f" title="convex geometry">geometry</a>;           
+<a name="l00102"></a>00102 };
+<a name="l00103"></a>00103 
+<a name="l00104"></a>00104 
+<a name="l00110"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">00110</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a>
+<a name="l00111"></a>00111 {
+<a name="l00112"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html#ee67c70b4ba1104ef3eaf78b2a94d8f8">00112</a>     uint32_t    <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html#ee67c70b4ba1104ef3eaf78b2a94d8f8" title="first Subchunk index in Subchunk&amp;#39;s array in ExtPhyicsAsset">firstSubchunkIndex</a>; 
+<a name="l00113"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html#b72119e6ade5758ec1c8874894d53ab2">00113</a>     uint32_t    <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html#b72119e6ade5758ec1c8874894d53ab2" title="Subchunk count. Can be 0.">subchunkCount</a>;      
+<a name="l00114"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html#6e532ee5ae271c1dad75afed166a1981">00114</a>     <span class="keywordtype">bool</span>        <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html#6e532ee5ae271c1dad75afed166a1981" title="is chunk static (kinematic)?.">isStatic</a>;           
+<a name="l00115"></a>00115 };
+<a name="l00116"></a>00116 
+<a name="l00117"></a>00117 
+<a name="l00123"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">00123</a> <span class="keyword">class </span>NV_DLL_EXPORT <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>
+<a name="l00124"></a>00124 {
+<a name="l00125"></a>00125 <span class="keyword">public</span>:
+<a name="l00126"></a>00126 
+<a name="l00135"></a>00135     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>*              create(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html">ExtPxAssetDesc</a>&amp; desc, <a class="code" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a>&amp; framework);
+<a name="l00136"></a>00136 
+<a name="l00145"></a>00145     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>*              create(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tk_asset_desc.html">TkAssetDesc</a>&amp; desc, <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a>* pxChunks, <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a>* pxSubchunks, <a class="code" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a>&amp; framework);
+<a name="l00146"></a>00146 
+<a name="l00147"></a>00147 
+<a name="l00148"></a>00148     <span class="comment">/*</span>
+<a name="l00149"></a>00149 <span class="comment">        Factory method for deserialization</span>
+<a name="l00150"></a>00150 <span class="comment"></span>
+<a name="l00151"></a>00151 <span class="comment">        Doesn't specify chunks or subchunks as they'll be fed in during deserialization to avoid copying stuff around.</span>
+<a name="l00152"></a>00152 <span class="comment">    </span>
+<a name="l00153"></a>00153 <span class="comment">    */</span>
+<a name="l00154"></a>00154     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>*              create(<a class="code" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a>* asset);
+<a name="l00155"></a>00155 
+<a name="l00156"></a>00156     <span class="comment">/*</span>
+<a name="l00157"></a>00157 <span class="comment">    Create a new ExtPxAsset.</span>
+<a name="l00158"></a>00158 <span class="comment"></span>
+<a name="l00159"></a>00159 <span class="comment">    \param[in]  asset           TkAsset from which ExtPxAsset will be created</span>
+<a name="l00160"></a>00160 <span class="comment">    \param[in]  chunks          Array of physics chunks descriptors</span>
+<a name="l00161"></a>00161 <span class="comment">    \param[in]  chunkCount      Size of chunks descriptors array</span>
+<a name="l00162"></a>00162 <span class="comment"></span>
+<a name="l00163"></a>00163 <span class="comment"></span>
+<a name="l00164"></a>00164 <span class="comment">    \return the new ExtPxAsset if successful, NULL otherwise.</span>
+<a name="l00165"></a>00165 <span class="comment">        </span>
+<a name="l00166"></a>00166 <span class="comment">    */</span>
+<a name="l00167"></a>00167     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>*              create(<a class="code" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a>* asset, <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">ExtPxAssetDesc::ChunkDesc</a>* chunks, uint32_t chunkCount);
+<a name="l00168"></a>00168 
+<a name="l00172"></a>00172     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    release() = 0;
+<a name="l00173"></a>00173 
+<a name="l00179"></a>00179     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a>&amp;          getTkAsset() <span class="keyword">const</span> = 0;
+<a name="l00180"></a>00180 
+<a name="l00186"></a>00186     <span class="keyword">virtual</span> uint32_t                getChunkCount() <span class="keyword">const</span> = 0;
+<a name="l00187"></a>00187 
+<a name="l00193"></a>00193     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a>*       getChunks() <span class="keyword">const</span> = 0;
+<a name="l00194"></a>00194     
+<a name="l00201"></a>00201     <span class="keyword">virtual</span> uint32_t                getSubchunkCount() <span class="keyword">const</span> = 0;
+<a name="l00202"></a>00202     
+<a name="l00208"></a>00208     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a>*    getSubchunks() <span class="keyword">const</span> = 0;
+<a name="l00209"></a>00209 
+<a name="l00223"></a>00223     <span class="keyword">virtual</span> <a class="code" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>&amp;       getDefaultActorDesc() = 0;
 <a name="l00224"></a>00224 
-<a name="l00228"></a>00228     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    setUniformHealth(<span class="keywordtype">bool</span> enabled) = 0;
-<a name="l00229"></a>00229 
-<a name="l00233"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html#adbfad94aec1aaf6e431482cc4d659f9">00233</a>     <span class="keywordtype">void</span>*   userData;
-<a name="l00234"></a>00234 };
-<a name="l00235"></a>00235 
+<a name="l00225"></a>00225     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>&amp; getDefaultActorDesc() <span class="keyword">const</span> = 0;
+<a name="l00226"></a>00226 
+<a name="l00230"></a>00230     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    setUniformHealth(<span class="keywordtype">bool</span> enabled) = 0;
+<a name="l00231"></a>00231 
+<a name="l00235"></a>00235     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    setAccelerator(<a class="code" href="class_nv_blast_ext_damage_accelerator.html">NvBlastExtDamageAccelerator</a>* accelerator) = 0;
 <a name="l00236"></a>00236 
-<a name="l00237"></a>00237 
-<a name="l00238"></a>00238 } <span class="comment">// namespace Blast</span>
-<a name="l00239"></a>00239 } <span class="comment">// namespace Nv</span>
-<a name="l00240"></a>00240 
+<a name="l00240"></a>00240     <span class="keyword">virtual</span> <a class="code" href="class_nv_blast_ext_damage_accelerator.html">NvBlastExtDamageAccelerator</a>* getAccelerator() <span class="keyword">const</span> = 0;
 <a name="l00241"></a>00241 
-<a name="l00242"></a>00242 <span class="preprocessor">#endif // ifndef NVBLASTEXTPXASSET_H</span>
+<a name="l00245"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html#adbfad94aec1aaf6e431482cc4d659f9">00245</a>     <span class="keywordtype">void</span>*   userData;
+<a name="l00246"></a>00246 };
+<a name="l00247"></a>00247 
+<a name="l00248"></a>00248 
+<a name="l00249"></a>00249 
+<a name="l00250"></a>00250 } <span class="comment">// namespace Blast</span>
+<a name="l00251"></a>00251 } <span class="comment">// namespace Nv</span>
+<a name="l00252"></a>00252 
+<a name="l00253"></a>00253 
+<a name="l00254"></a>00254 <span class="preprocessor">#endif // ifndef NVBLASTEXTPXASSET_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

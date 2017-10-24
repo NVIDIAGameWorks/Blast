@@ -461,7 +461,8 @@ int main(int argc, const char* const* argv)
 
 	Nv::Blast::BlastBondGenerator* bondGenerator = NvBlastExtAuthoringCreateBondGenerator(gCooking, &gPhysics->getPhysicsInsertionCallback());
 	Nv::Blast::ConvexMeshBuilder* collisionBuilder = NvBlastExtAuthoringCreateConvexMeshBuilder(gCooking, &gPhysics->getPhysicsInsertionCallback());
-	Nv::Blast::AuthoringResult* result = NvBlastExtAuthoringProcessFracture(*fTool, *bondGenerator, *collisionBuilder);
+	Nv::Blast::CollisionParams collisionParameter;
+	Nv::Blast::AuthoringResult* result = NvBlastExtAuthoringProcessFracture(*fTool, *bondGenerator, *collisionBuilder, collisionParameter);
 	NvBlastTkFrameworkCreate();
 
 	collisionBuilder->release();

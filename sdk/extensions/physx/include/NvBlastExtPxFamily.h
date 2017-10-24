@@ -41,6 +41,8 @@ class PxScene;
 class PxTransform;
 }
 
+struct NvBlastExtMaterial;
+
 
 namespace Nv
 {
@@ -163,7 +165,7 @@ public:
 
 	\return a pointer to the (const) ExtPxAsset object.
 	*/
-	virtual const ExtPxAsset&				getPxAsset() const = 0;
+	virtual ExtPxAsset&						getPxAsset() const = 0;
 
 	/**
 	Set the default material to be used for PxRigidDynamic creation.
@@ -201,6 +203,20 @@ public:
 	\return a pointer to the default PxActor desc. Can be nullptr.
 	*/
 	virtual const ExtPxActorDescTemplate*	getPxActorDesc() const = 0;
+
+	/**
+	The default material associated with this actor family.
+
+	\return a pointer to the default material.
+	*/
+	virtual const NvBlastExtMaterial*		getMaterial() const = 0;
+
+	/**
+	Set the default material associated with this actor family.
+
+	\param[in] material			The material to be the new default.
+	*/
+	virtual void							setMaterial(const NvBlastExtMaterial* material) = 0;
 
 	/**
 	Add a user implementation of ExtPxListener to this family's list of listeners.  

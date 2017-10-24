@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
@@ -79,7 +80,7 @@
 <a name="l00047"></a>00047 <span class="keyword">template</span>&lt;&gt;
 <a name="l00048"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_serialization_c_a_p_n.html#13630a46f76760c38463a0124fa3a0a2">00048</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_serialization_c_a_p_n.html">ExtSerializationCAPN&lt;TkAsset, Serialization::TkAsset::Reader, Serialization::TkAsset::Builder&gt;::serializeIntoBuilder</a>(<a class="code" href="class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1_builder.html">Serialization::TkAsset::Builder</a>&amp; assetBuilder, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a>* asset)
 <a name="l00049"></a>00049 {
-<a name="l00050"></a>00050     <span class="keywordflow">return</span> TkAssetDTO::serialize(assetBuilder, asset);
+<a name="l00050"></a>00050     <span class="keywordflow">return</span> <a class="code" href="bt_vector3_8h.html#8452b542ab5c406144bb9086b8be1c45">TkAssetDTO::serialize</a>(assetBuilder, asset);
 <a name="l00051"></a>00051 }
 <a name="l00052"></a>00052 
 <a name="l00053"></a>00053 <span class="keyword">template</span>&lt;&gt;

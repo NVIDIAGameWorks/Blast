@@ -103,13 +103,11 @@ public:
 
 	virtual uint32_t			getSplitMaxActorCount() const override;
 
-	virtual void				damage(const NvBlastDamageProgram& program, const NvBlastProgramParams* programParams) override;
-	virtual void				damage(const NvBlastDamageProgram& program, const void* damageDesc, uint32_t descSize) override;
-	virtual void				damage(const NvBlastDamageProgram& program, const void* damageDesc, uint32_t descSize, const void* material) override;
+	virtual void				damage(const NvBlastDamageProgram& program, const void* programParams) override;
 
 	virtual bool				isPending() const override;
 
-	virtual void				generateFracture(NvBlastFractureBuffers* commands, const NvBlastDamageProgram& program, const NvBlastProgramParams* programParams) const override;
+	virtual void				generateFracture(NvBlastFractureBuffers* commands, const NvBlastDamageProgram& program, const void* programParams) const override;
 
 	virtual void				applyFracture(NvBlastFractureBuffers* eventBuffers, const NvBlastFractureBuffers* commands) override;
 
@@ -211,36 +209,6 @@ public:
 
 private:
 	/**
-	Used to buffer damage for deferred fracture generation. Unifies 2 different ways to pass and store damage data.
-	*/
-	struct DamageData
-	{
-		DamageData(const NvBlastDamageProgram& program, const NvBlastProgramParams* params);
-		DamageData(const NvBlastDamageProgram& program, const void* material, const void* desc, uint32_t descSize);
-
-		bool tryAppend(const NvBlastDamageProgram& program, const void* material, const void* desc, uint32_t descSize);
-		void generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBlastActor* actorLL, NvBlastTimers* timers) const;
-
-		enum Type
-		{
-			Plain,
-			Buffered
-		};
-
-		Type getType() const;
-
-		NvBlastDamageProgram  m_program;
-		union
-		{
-			const void*					m_material;			//!< for Buffered type
-			const NvBlastProgramParams*	m_programParams;	//!< for Plain type
-		};
-		Array<char>::type	m_damageDescs;
-		uint32_t			m_damageDescCount;
-	};
-
-
-	/**
 	Functions to raise or check 'damaged' state: this actor will take the split step.
 	'damaged' actors automatically become 'pending' also.
 	*/
@@ -259,17 +227,22 @@ private:
 	void						addJoint(TkJointLink& jointLink);
 	void						removeJoint(TkJointLink& jointLink);
 
+	struct DamageData
+	{
+		NvBlastDamageProgram program;
+		const void*			 programParams;
+	};
 
 	// Data
 
-	NvBlastActor*							m_actorLL;			//!< The low-level actor associated with this actor
-	TkFamilyImpl*							m_family;			//!< The TkFamilyImpl to which this actor belongs
-	TkGroupImpl*							m_group;			//!< The TkGroupImpl (if any) to which this actor belongs
-	uint32_t								m_groupJobIndex;	//!< The index of this actor's job within its group's job list
-	physx::PxFlags<TkActorFlag::Enum, char>	m_flags;			//!< Status flags for this actor
-	Array<DamageData>::type					m_damageBuffer;		//!< Buffered damage input
-	uint32_t								m_jointCount;		//!< The number of joints referenced in m_jointList
-	DList									m_jointList;		//!< A doubly-linked list of joint references
+	NvBlastActor*							m_actorLL;			  //!< The low-level actor associated with this actor
+	TkFamilyImpl*							m_family;			  //!< The TkFamilyImpl to which this actor belongs
+	TkGroupImpl*							m_group;			  //!< The TkGroupImpl (if any) to which this actor belongs
+	uint32_t								m_groupJobIndex;	  //!< The index of this actor's job within its group's job list
+	physx::PxFlags<TkActorFlag::Enum, char>	m_flags;			  //!< Status flags for this actor
+	Array<DamageData>::type					m_damageBuffer;		  //!< Buffered damage input
+	uint32_t								m_jointCount;		  //!< The number of joints referenced in m_jointList
+	DList									m_jointList;		  //!< A doubly-linked list of joint references
 
 //#if NV_PROFILE
 	NvBlastTimers							m_timers;			//!< If profiling, each actor stores timing data
@@ -347,32 +320,6 @@ NV_INLINE void TkActorImpl::removeJoint(TkJointLink& jointLink)
 	{
 		--m_jointCount;
 		m_jointList.remove(jointLink);
-	}
-}
-
-
-//////// TkActorImpl::DamageData inline methods ////////
-
-NV_INLINE TkActorImpl::DamageData::Type TkActorImpl::DamageData::getType() const
-{
-	return m_damageDescCount > 0 ? Buffered : Plain;
-}
-
-
-NV_INLINE void TkActorImpl::DamageData::generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBlastActor* actorLL, NvBlastTimers* timers) const
-{
-	if (getType() == Plain)
-	{
-		NvBlastActorGenerateFracture(commandBuffers, actorLL, m_program, m_programParams, logLL, timers);
-	}
-	else
-	{
-		const NvBlastProgramParams programParams = {
-			m_damageDescs.begin(),
-			m_damageDescCount,
-			m_material,
-		};
-		NvBlastActorGenerateFracture(commandBuffers, actorLL, m_program, &programParams, logLL, timers);
 	}
 }
 

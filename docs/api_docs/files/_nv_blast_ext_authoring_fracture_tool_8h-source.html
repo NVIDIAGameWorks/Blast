@@ -90,7 +90,7 @@
 <a name="l00086"></a>00086 
 <a name="l00090"></a><a class="code" href="struct_nv_1_1_blast_1_1_slicing_configuration.html#9340925b188fdac3155f81a7625a219f">00090</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_slicing_configuration.html#9340925b188fdac3155f81a7625a219f">noiseOctaveNumber</a> = 1;
 <a name="l00091"></a>00091 
-<a name="l00095"></a><a class="code" href="struct_nv_1_1_blast_1_1_slicing_configuration.html#e862c635e541abe1e056a4a41c7cf1dc">00095</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_slicing_configuration.html#e862c635e541abe1e056a4a41c7cf1dc">surfaceResolution</a> = 1;
+<a name="l00095"></a><a class="code" href="struct_nv_1_1_blast_1_1_slicing_configuration.html#8c8da622c931ed7fd40f240611454436">00095</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_slicing_configuration.html#8c8da622c931ed7fd40f240611454436">surfaceResolution</a> = 1;
 <a name="l00096"></a>00096 };
 <a name="l00097"></a>00097 
 <a name="l00098"></a>00098 
@@ -177,12 +177,16 @@
 <a name="l00351"></a>00351     <span class="keyword">virtual</span> int32_t                                 <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#7ce2d9ab0cf8d3f03982b53bb4dc3d81">islandDetectionAndRemoving</a>(int32_t chunkId) = 0;
 <a name="l00352"></a>00352 
 <a name="l00357"></a>00357     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#5710c73457bcceba3f20d130e231a028">isMeshContainOpenEdges</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* input) = 0;
-<a name="l00358"></a>00358 };
-<a name="l00359"></a>00359 
-<a name="l00360"></a>00360 } <span class="comment">// namespace Blast</span>
-<a name="l00361"></a>00361 } <span class="comment">// namespace Nv</span>
-<a name="l00362"></a>00362 
-<a name="l00363"></a>00363 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORINGFRACTURETOOL_H</span>
+<a name="l00358"></a>00358 
+<a name="l00364"></a>00364     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#eaa46bf5fe4fe7035ac624f49ade64a8">deleteAllChildrenOfChunk</a>(int32_t chunkId) = 0;
+<a name="l00365"></a>00365 
+<a name="l00366"></a>00366     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#bc9766f9ef9efc4fd5f36813f28cc705">uniteChunks</a>(uint32_t maxAtLevel, uint32_t maxGroupSize) = 0;
+<a name="l00367"></a>00367 };
+<a name="l00368"></a>00368 
+<a name="l00369"></a>00369 } <span class="comment">// namespace Blast</span>
+<a name="l00370"></a>00370 } <span class="comment">// namespace Nv</span>
+<a name="l00371"></a>00371 
+<a name="l00372"></a>00372 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORINGFRACTURETOOL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

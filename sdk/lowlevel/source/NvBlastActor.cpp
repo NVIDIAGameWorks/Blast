@@ -187,7 +187,7 @@ uint32_t Actor::damageBond(const NvBlastBondFractureData& cmd)
 }
 
 
-void Actor::generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBlastDamageProgram& program, const NvBlastProgramParams* programParams, 
+void Actor::generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBlastDamageProgram& program, const void* programParams, 
 	NvBlastLog logFn, NvBlastTimers* timers) const
 {
 	NVBLASTLL_CHECK(commandBuffers != nullptr, logFn, "Actor::generateFracture: NULL commandBuffers pointer input.", return);
@@ -214,6 +214,9 @@ void Actor::generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBla
 	if (graphNodeCount > 1 && program.graphShaderFunction != nullptr)
 	{
 		const NvBlastGraphShaderActor shaderActor = {
+			getIndex(),
+			getGraphNodeCount(),
+			graph->m_nodeCount,
 			getFirstGraphNodeIndex(),
 			getGraphNodeIndexLinks(),
 			graph->getChunkIndices(),
@@ -223,7 +226,8 @@ void Actor::generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBla
 			getBonds(),
 			getChunks(),
 			getBondHealths(),
-			getLowerSupportChunkHealths()
+			getLowerSupportChunkHealths(),
+			getFamilyHeader()->getFamilyGraph()->getIslandIds()
 		};
 
 		program.graphShaderFunction(commandBuffers, &shaderActor, programParams);
@@ -817,7 +821,7 @@ void NvBlastActorGenerateFracture
 	NvBlastFractureBuffers* commandBuffers,
 	const NvBlastActor* actor,
 	const NvBlastDamageProgram program,
-	const NvBlastProgramParams* programParams,
+	const void* programParams,
 	NvBlastLog logFn,
 	NvBlastTimers* timers
 )

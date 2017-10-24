@@ -124,7 +124,8 @@ TARGET_INCLUDE_DIRECTORIES(BlastUnitTests
 	PRIVATE ${BLAST_ROOT_DIR}/sdk/profiler
 	PRIVATE ${BLAST_ROOT_DIR}/sdk/lowlevel/include
 	PRIVATE ${BLAST_ROOT_DIR}/sdk/lowlevel/source
-	PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/serialization/source
+	PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/assetutils/source
+	PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/assetutils/include
 	PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/serialization/include
 	PRIVATE ${BLAST_ROOT_DIR}/shared/utils
 
@@ -155,7 +156,7 @@ MESSAGE("UnitTests LL: ${BLASTUNITTESTS_PLATFORM_LINKED_LIBS}")
 # Do final direct sets after the target has been defined
 TARGET_LINK_LIBRARIES(BlastUnitTests 
 
-	PRIVATE NvBlastExtShaders NvBlastExtPhysX NvBlastTk NvBlastExtSerialization ${GOOGLETEST_LIBRARIES} 
+	PRIVATE NvBlastExtShaders NvBlastExtPhysX NvBlastTk NvBlastExtSerialization NvBlastExtAssetUtils ${GOOGLETEST_LIBRARIES} 
 	PRIVATE ${BLASTUNITTESTS_PLATFORM_LINKED_LIBS}
 
 	PUBLIC $<$<CONFIG:debug>:${PXFOUNDATION_LIB_DEBUG}> $<$<CONFIG:debug>:${PXTASK_LIB_DEBUG}>

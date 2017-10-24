@@ -48,18 +48,15 @@ static void blast
 	bondEvents.resize(testAsset->solverBonds.size());
 
 	NvBlastExtRadialDamageDesc damage[] = {
-		{
-			compressiveDamage,
-			{ localPos.x, localPos.y, localPos.z },
-			minRadius,
-			maxRadius
-		}							
+		compressiveDamage,
+		{ localPos.x, localPos.y, localPos.z },
+		minRadius,
+		maxRadius
 	};
 
-	NvBlastProgramParams programParams =
+	NvBlastExtProgramParams programParams =
 	{
-		&damage,
-		1,
+		damage,
 		nullptr
 	};
 
@@ -127,43 +124,9 @@ public:
 
 		for (uint32_t assetNum = 0; assetNum < assetCount; ++assetNum)
 		{
-			CubeAssetGenerator::Settings settings;
-			settings.extents = GeneratorAsset::Vec3(1, 1, 1);
-			CubeAssetGenerator::DepthInfo depthInfo;
-			depthInfo.slicesPerAxis = GeneratorAsset::Vec3(1, 1, 1);
-			depthInfo.flag = NvBlastChunkDesc::Flags::NoFlags;
-			settings.depths.push_back(depthInfo);
-			uint32_t chunkCount = 1;
-			while (chunkCount < minChunkCount)
-			{
-				uint32_t chunkMul;
-				do
-				{
-					depthInfo.slicesPerAxis = GeneratorAsset::Vec3((float)(1 + rand() % 4), (float)(1 + rand() % 4), (float)(1 + rand() % 4));
-					chunkMul = (uint32_t)(depthInfo.slicesPerAxis.x * depthInfo.slicesPerAxis.y * depthInfo.slicesPerAxis.z);
-				} while (chunkMul == 1);
-				if (chunkCount*chunkMul > maxChunkCount)
-				{
-					break;
-				}
-				chunkCount *= chunkMul;
-				settings.depths.push_back(depthInfo);
-				settings.extents = settings.extents * depthInfo.slicesPerAxis;
-			}
-			settings.depths.back().flag = NvBlastChunkDesc::SupportFlag;	// Leaves are support
-
-			// Make largest direction unit size
-			settings.extents = settings.extents * (1.0f / std::max(settings.extents.x, std::max(settings.extents.y, settings.extents.z)));
-
-			// Create asset
-			GeneratorAsset testAsset;
-			CubeAssetGenerator::generate(testAsset, settings);
-
+			GeneratorAsset cube;
 			NvBlastAssetDesc desc;
-			desc.chunkDescs = testAsset.solverChunks.data();
-			desc.chunkCount = (uint32_t)testAsset.solverChunks.size();
-			desc.bondDescs = testAsset.solverBonds.data();
-			desc.bondCount = (uint32_t)testAsset.solverBonds.size();
+			generateRandomCube(cube, desc, minChunkCount, maxChunkCount);
 
 			{
 				std::vector<char> scratch;
@@ -193,11 +156,11 @@ public:
 					actors.insert(actor);
 					for (uint32_t damageNum = 0; damageNum < damageCount; ++damageNum)
 					{
-						GeneratorAsset::Vec3 localPos = settings.extents*GeneratorAsset::Vec3((float)rand() / RAND_MAX - 0.5f, (float)rand() / RAND_MAX - 0.5f, (float)rand() / RAND_MAX - 0.5f);
+						GeneratorAsset::Vec3 localPos = cube.extents*GeneratorAsset::Vec3((float)rand() / RAND_MAX - 0.5f, (float)rand() / RAND_MAX - 0.5f, (float)rand() / RAND_MAX - 0.5f);
 
 						NvBlastTimers timers;
 						NvBlastTimersReset(&timers);
-						blast(actors, &testAsset, localPos, relativeDamageRadius, relativeDamageRadius*1.2f, compressiveDamage, timers);
+						blast(actors, &cube, localPos, relativeDamageRadius, relativeDamageRadius*1.2f, compressiveDamage, timers);
 						const std::string timingName = std::string(testName) + " asset " + std::to_string(assetNum) + " family " + std::to_string(familyNum) + " damage " + std::to_string(damageNum);
 						BlastBasePerfTestStrict::reportData(timingName + " material", timers.material);
 						BlastBasePerfTestStrict::reportData(timingName + " fracture", timers.fracture);
@@ -220,7 +183,7 @@ public:
 	}
 };
 
-
+#if 0
 // Tests
 TEST_F(PerfTest, DamageLeafSupportActorsTestVisibility)
 {
@@ -237,3 +200,4 @@ TEST_F(PerfTest, DamageLeafSupportActorsTestVisibility)
 	}
 	std::cout << "done." << std::endl;
 }
+#endif

@@ -39,6 +39,7 @@
 
 class Renderable;
 class RenderMaterial;
+class BlastFamily;
 
 namespace Nv
 {
@@ -122,7 +123,16 @@ private:
 			Line
 		};
 
-		typedef std::function<void(const Damager* damager, Nv::Blast::ExtPxActor* actor, physx::PxVec3 origin, physx::PxVec3 position, physx::PxVec3 normal)> ExecuteFn;
+		struct DamageData
+		{
+			physx::PxVec3 origin;
+			physx::PxVec3 hitPosition;
+			physx::PxVec3 hitNormal;
+			physx::PxVec3 weaponDir;
+			physx::PxVec3 previousWeaponDir;
+		};
+
+		typedef std::function<void(const Damager* damager, Nv::Blast::ExtPxActor* actor, BlastFamily& family, const DamageData& damageData)> ExecuteFn;
 
 		const char*				uiName;
 		NvBlastDamageProgram	program;
@@ -143,6 +153,8 @@ private:
 	physx::PxVec2            m_lastMousePos;
 	bool                     m_isMousePressed;
 	uint32_t                 m_damageCountWhilePressed;
+	physx::PxVec3			 m_previousPickDir;
+	bool					 m_prevWasHit;
 };
 
 #endif

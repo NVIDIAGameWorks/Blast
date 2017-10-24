@@ -67,13 +67,11 @@ TEST_F(APITest, Basic)
 	NvBlastActor* actor = NvBlastFamilyCreateFirstActor(family, &actorDesc, scratch.data(), messageLog);
 	EXPECT_TRUE(actor != nullptr);
 
-	NvBlastExtRadialDamageDesc damage[] = {
-		{
-			10.0f,					// compressive
-			{ 0.0f, 0.0f, 0.0f },	// position
-			4.0f,					// min radius - maximum damage
-			6.0f					// max radius - zero damage
-		}							//				linear falloff
+	NvBlastExtRadialDamageDesc damage = {
+		10.0f,					// compressive
+		{ 0.0f, 0.0f, 0.0f },	// position
+		4.0f,					// min radius - maximum damage
+		6.0f					// max radius - zero damage
 	};
 
 	NvBlastBondFractureData outFracture[12]; /*num lower-support chunks + bonds?*/
@@ -84,9 +82,7 @@ TEST_F(APITest, Basic)
 	events.chunkFractureCount = 0;
 	events.chunkFractures = nullptr;
 
-	NvBlastProgramParams programParams;
-	programParams.damageDescCount = 1;
-	programParams.damageDescBuffer = &damage;
+	NvBlastExtProgramParams programParams = { &damage, nullptr };
 
 	NvBlastDamageProgram program = {
 		NvBlastExtFalloffGraphShader,
@@ -187,9 +183,7 @@ TEST_F(APITest, DamageBondsCompressive)
 		6, 0, outCommands, nullptr
 	};
 
-	NvBlastProgramParams programParams;
-	programParams.damageDescCount = 1;
-	programParams.damageDescBuffer = &damage;
+	NvBlastExtProgramParams programParams = { &damage, nullptr };
 
 	NvBlastDamageProgram program = {
 		NvBlastExtFalloffGraphShader,
@@ -1203,13 +1197,11 @@ TEST_F(APITest, FractureWithBondDuplicates)
 	// split in 2
 	std::vector<NvBlastActor*> actors;
 	{
-		NvBlastExtRadialDamageDesc damage[] = {
-			{
-				10.0f,					// compressive
-				{ 0.0f, 0.0f, 0.0f },	// position
-				100.0f,					// min radius - maximum damage
-				100.0f					// max radius - zero damage
-			}							//				linear falloff
+		NvBlastExtRadialDamageDesc damage = {
+			10.0f,					// compressive
+			{ 0.0f, 0.0f, 0.0f },	// position
+			100.0f,					// min radius - maximum damage
+			100.0f					// max radius - zero damage
 		};
 
 		NvBlastBondFractureData outBondFracture[bondCount];
@@ -1221,9 +1213,7 @@ TEST_F(APITest, FractureWithBondDuplicates)
 		events.chunkFractureCount = 2;
 		events.chunkFractures = outChunkFracture;
 
-		NvBlastProgramParams programParams;
-		programParams.damageDescCount = 1;
-		programParams.damageDescBuffer = &damage;
+		NvBlastExtProgramParams programParams = { &damage, nullptr };
 
 		NvBlastDamageProgram program = {
 			NvBlastExtFalloffGraphShader,
@@ -1366,13 +1356,11 @@ TEST_F(APITest, NoBondsSausage)
 	}
 
 	// damage
-	NvBlastExtRadialDamageDesc damage[] = {
-		{
-			10.0f,					// compressive
-			{ 0.0f, 0.0f, 0.0f },	// position
-			4.0f,					// min radius - maximum damage
-			6.0f					// max radius - zero damage
-		}							//				linear falloff
+	NvBlastExtRadialDamageDesc damage = {
+		10.0f,					// compressive
+		{ 0.0f, 0.0f, 0.0f },	// position
+		4.0f,					// min radius - maximum damage
+		6.0f					// max radius - zero damage
 	};
 
 	NvBlastBondFractureData outBondFracture[2];
@@ -1384,9 +1372,7 @@ TEST_F(APITest, NoBondsSausage)
 	events.chunkFractureCount = 2;
 	events.chunkFractures = outChunkFracture;
 
-	NvBlastProgramParams programParams;
-	programParams.damageDescCount = 1;
-	programParams.damageDescBuffer = &damage;
+	NvBlastExtProgramParams programParams = { &damage, nullptr };
 
 	NvBlastDamageProgram program = {
 		NvBlastExtFalloffGraphShader,

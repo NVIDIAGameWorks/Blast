@@ -50,8 +50,14 @@ namespace Blast
 {
 
 
-ExtPxFamilyImpl::ExtPxFamilyImpl(ExtPxManagerImpl& manager, TkFamily& tkFamily, const ExtPxAsset& pxAsset)
-	:  m_manager(manager), m_tkFamily(tkFamily), m_pxAsset(pxAsset), m_pxShapeDescTemplate(nullptr), m_pxActorDescTemplate(nullptr), m_isSpawned(false)
+ExtPxFamilyImpl::ExtPxFamilyImpl(ExtPxManagerImpl& manager, TkFamily& tkFamily, ExtPxAsset& pxAsset)
+	: m_manager(manager)
+	, m_tkFamily(tkFamily)
+	, m_pxAsset(pxAsset)
+	, m_pxShapeDescTemplate(nullptr)
+	, m_pxActorDescTemplate(nullptr)
+	, m_material(nullptr)
+	, m_isSpawned(false)
 {
 	m_subchunkShapes.resize(static_cast<uint32_t>(m_pxAsset.getSubchunkCount()));
 

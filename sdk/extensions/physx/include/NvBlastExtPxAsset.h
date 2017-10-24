@@ -46,6 +46,8 @@ class PxFileBuf;
 }
 }
 
+class NvBlastExtDamageAccelerator;
+
 
 namespace Nv
 {
@@ -226,6 +228,16 @@ public:
 	Set if uniform health values should be used in NvBlastActorDesc or per bond/chunk ones. @see getDefaultActorDesc.
 	*/
 	virtual void					setUniformHealth(bool enabled) = 0;
+
+	/**
+	Set damage accelerator associated with this asset.
+	*/
+	virtual void					setAccelerator(NvBlastExtDamageAccelerator* accelerator) = 0;
+
+	/**
+	Set damage accelerator associated with this asset.
+	*/
+	virtual NvBlastExtDamageAccelerator* getAccelerator() const = 0;
 
 	/**
 	Pointer field available to the user.

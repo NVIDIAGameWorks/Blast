@@ -3,6 +3,41 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Blast(tm) SDK 1.1.1 (10-Oct-2017)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Changes
+-------
+* NvBlastProgramParams moved to NvBlastExtDamageShaders
+* Materials removed from NvBlastTk
+
+New Features
+------------
+* Damage shader acceleration structure
+* Extended support structures via new asset merge functions in NvBlastExtAssetUtils
+* Ability to scale asset components when merging assets with NvBlastExtAssetUtilsMergeAssets
+* NvBlastExtAuthoring
+** Option to fit multiple convex hulls to a chunk (uses VHACD)
+** deleteAllChildrenOfChunk and uniteChunks APIs
+* Triangle damage shader for swept segments
+* Impact damage spread shaders
+
+Bug fixes
+---------
+* Linux build fixes
+* NvBlastExtAuthoring
+** Fracturing tools chunk index fix
+** VoronoiSitesGeneratorImpl::generateInSphere fix
+** More consistent use of NVBLAST_ALLOC and NVBLAST_FREE
+** Boolean tool bug fix
+
+Known Issues
+------------
+* Damage shaders in extensions can miss bonds if the damage volume is too small.
+* Authoring code does not use the user-defined allocator (NvBlastGlobals) exclusively.
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Blast(tm) SDK 1.1 (28-Aug-2017)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

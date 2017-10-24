@@ -49,12 +49,12 @@ NVBLASTTK_DEFINE_TYPE_IDENTIFIABLE(Family);
 
 //////// Member functions ////////
 
-TkFamilyImpl::TkFamilyImpl() : m_familyLL(nullptr), m_internalJointCount(0), m_asset(nullptr), m_material(nullptr)
+TkFamilyImpl::TkFamilyImpl() : m_familyLL(nullptr), m_internalJointCount(0), m_asset(nullptr)
 {
 }
 
 
-TkFamilyImpl::TkFamilyImpl(const NvBlastID& id) : TkFamilyType(id), m_familyLL(nullptr), m_internalJointCount(0), m_asset(nullptr), m_material(nullptr)
+TkFamilyImpl::TkFamilyImpl(const NvBlastID& id) : TkFamilyType(id), m_familyLL(nullptr), m_internalJointCount(0), m_asset(nullptr)
 {
 }
 

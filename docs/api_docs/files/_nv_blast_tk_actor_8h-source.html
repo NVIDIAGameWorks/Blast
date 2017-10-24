@@ -99,28 +99,24 @@
 <a name="l00159"></a>00159 
 <a name="l00165"></a>00165     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#2079bb8ac6d223c5941357994e8ae522">isPending</a>() <span class="keyword">const</span> = 0;
 <a name="l00166"></a>00166 
-<a name="l00177"></a>00177     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#8e78694fbc1df790b198ec3dcc0a2a05">damage</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* programParams) = 0;
+<a name="l00177"></a>00177     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#4969506ea54271b432ee5de4145779a6">damage</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <span class="keywordtype">void</span>* programParams) = 0;
 <a name="l00178"></a>00178 
-<a name="l00192"></a>00192     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#8e78694fbc1df790b198ec3dcc0a2a05">damage</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <span class="keywordtype">void</span>* damageDesc, uint32_t descSize) = 0;
-<a name="l00193"></a>00193 
-<a name="l00208"></a>00208     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#8e78694fbc1df790b198ec3dcc0a2a05">damage</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <span class="keywordtype">void</span>* damageDesc, uint32_t descSize, <span class="keyword">const</span> <span class="keywordtype">void</span>* material) = 0;
-<a name="l00209"></a>00209 
-<a name="l00222"></a>00222     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#0391f391ab66d732c549c53da515a5b2">generateFracture</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commands, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* programParams) <span class="keyword">const</span> = 0;
-<a name="l00223"></a>00223 
-<a name="l00233"></a>00233     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#a02c42add8033877003cd907a0818785">applyFracture</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* eventBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commands) = 0;
+<a name="l00191"></a>00191     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#ee5e7fdfa7cd0b33f5ba92168841d4b2">generateFracture</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commands, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>&amp; program, <span class="keyword">const</span> <span class="keywordtype">void</span>* programParams) <span class="keyword">const</span> = 0;
+<a name="l00192"></a>00192 
+<a name="l00202"></a>00202     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#a02c42add8033877003cd907a0818785">applyFracture</a>(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* eventBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commands) = 0;
+<a name="l00203"></a>00203 
+<a name="l00209"></a>00209     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#e1582f709880a58d222530b6095da48e">getJointCount</a>() <span class="keyword">const</span> = 0;
+<a name="l00210"></a>00210 
+<a name="l00219"></a>00219     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#d4f8ce52518ca4654e1c16485fb13d8f">getJoints</a>(<a class="code" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a>** joints, uint32_t jointsSize) <span class="keyword">const</span> = 0;
+<a name="l00220"></a>00220 
+<a name="l00228"></a>00228     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#834a7e291fd82ee3b36ad0fc6f349399">isBoundToWorld</a>() <span class="keyword">const</span> = 0;
+<a name="l00229"></a>00229 };
+<a name="l00230"></a>00230 
+<a name="l00231"></a>00231 } <span class="comment">// namespace Blast</span>
+<a name="l00232"></a>00232 } <span class="comment">// namespace Nv</span>
+<a name="l00233"></a>00233 
 <a name="l00234"></a>00234 
-<a name="l00240"></a>00240     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#e1582f709880a58d222530b6095da48e">getJointCount</a>() <span class="keyword">const</span> = 0;
-<a name="l00241"></a>00241 
-<a name="l00250"></a>00250     <span class="keyword">virtual</span> uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#d4f8ce52518ca4654e1c16485fb13d8f">getJoints</a>(<a class="code" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a>** joints, uint32_t jointsSize) <span class="keyword">const</span> = 0;
-<a name="l00251"></a>00251 
-<a name="l00259"></a>00259     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                <a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html#834a7e291fd82ee3b36ad0fc6f349399">isBoundToWorld</a>() <span class="keyword">const</span> = 0;
-<a name="l00260"></a>00260 };
-<a name="l00261"></a>00261 
-<a name="l00262"></a>00262 } <span class="comment">// namespace Blast</span>
-<a name="l00263"></a>00263 } <span class="comment">// namespace Nv</span>
-<a name="l00264"></a>00264 
-<a name="l00265"></a>00265 
-<a name="l00266"></a>00266 <span class="preprocessor">#endif // ifndef NVBLASTTKACTOR_H</span>
+<a name="l00235"></a>00235 <span class="preprocessor">#endif // ifndef NVBLASTTKACTOR_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

@@ -174,7 +174,17 @@ TEST_F(TkTestStrict, ActorDamageGroup)
 	m_groupTM->setGroup(group);
 
 	NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0);
+	NvBlastExtProgramParams radialDamageParams = { &radialDamage, nullptr };
+
 	NvBlastExtShearDamageDesc shearDamage = getShearDamageDesc(0, 0, 0);
+	NvBlastExtProgramParams shearDamageParams = { &shearDamage, nullptr };
+
+	CSParams csDamage0(0, 0.0f);
+	NvBlastExtProgramParams csDamageParams0 = { &csDamage0, nullptr };
+	CSParams csDamage1(1, 0.0f);
+	NvBlastExtProgramParams csDamageParams1 = { &csDamage1, nullptr };
+	CSParams csDamage2(2, 0.0f);
+	NvBlastExtProgramParams csDamageParams2 = { &csDamage2, nullptr };
 
 	std::vector<TkFamily*> families;
 	TkFamily* trackedFamily;
@@ -212,8 +222,6 @@ TEST_F(TkTestStrict, ActorDamageGroup)
 		TkActor* cubeActor2 = fwk->createActor(cubeAD);
 		EXPECT_TRUE(cubeActor2 != nullptr);
 
-		CSParams p(0, 0.0f);
-
 		expectedVisibleChunks[&cubeActor1->getFamily()] = ExpectedVisibleChunks(2, 4); // split in 2, 4 chunks each
 		expectedVisibleChunks[&cubeActor2->getFamily()] = ExpectedVisibleChunks(1, 1); // not split
 
@@ -234,8 +242,8 @@ TEST_F(TkTestStrict, ActorDamageGroup)
 		families.push_back(&actor1->getFamily());
 		families.push_back(&actor2->getFamily());
 
-		cubeActor1->damage(getCubeSlicerProgram(), &p, sizeof(p), getDefaultMaterial());
-		actor1->damage(getFalloffProgram(), &radialDamage, sizeof(radialDamage), getDefaultMaterial());
+		cubeActor1->damage(getCubeSlicerProgram(), &csDamageParams0);
+		actor1->damage(getFalloffProgram(), &radialDamageParams);
 	}
 
 	EXPECT_FALSE(group->endProcess());
@@ -251,8 +259,7 @@ TEST_F(TkTestStrict, ActorDamageGroup)
 		trackedFamily->getActors(actors.data(), static_cast<uint32_t>(actors.size()));
 		for (TkActor* actor : actors)
 		{
-			CSParams p(1, 0.0f);
-			actor->damage(getCubeSlicerProgram(), &p, sizeof(p), getDefaultMaterial());
+			actor->damage(getCubeSlicerProgram(), &csDamageParams1);
 		}
 	}
 	expectedVisibleChunks[trackedFamily] = ExpectedVisibleChunks(4, 2);
@@ -268,8 +275,7 @@ TEST_F(TkTestStrict, ActorDamageGroup)
 		trackedFamily->getActors(actors.data(), static_cast<uint32_t>(actors.size()));
 		for (TkActor* actor : actors)
 		{
-			CSParams p(2, 0.0f);
-			actor->damage(getCubeSlicerProgram(), &p, sizeof(p), getDefaultMaterial());
+			actor->damage(getCubeSlicerProgram(), &csDamageParams2);
 		}
 	}
 
@@ -287,7 +293,7 @@ TEST_F(TkTestStrict, ActorDamageGroup)
 		TEST_ZONE_BEGIN("damage");
 		for (TkActor* actor : actors)
 		{
-			actor->damage(getFalloffProgram(), &radialDamage, sizeof(radialDamage), getDefaultMaterial());
+			actor->damage(getFalloffProgram(), &radialDamageParams);
 		}
 		TEST_ZONE_END("damage");
 	}
@@ -306,7 +312,7 @@ TEST_F(TkTestStrict, ActorDamageGroup)
 		TEST_ZONE_BEGIN("damage");
 		for (TkActor* actor : actors)
 		{
-			actor->damage(getShearProgram(), &shearDamage, sizeof(shearDamage), getDefaultMaterial());
+			actor->damage(getShearProgram(), &shearDamageParams);
 		}
 		TEST_ZONE_END("damage");
 	}
@@ -322,7 +328,7 @@ TEST_F(TkTestStrict, ActorDamageGroup)
 		TEST_ZONE_BEGIN("damage");
 		for (TkActor* actor : actors)
 		{
-			actor->damage(getShearProgram(), &shearDamage, sizeof(shearDamage), getDefaultMaterial());
+			actor->damage(getShearProgram(), &shearDamageParams);
 		}
 		TEST_ZONE_END("damage");
 	}
@@ -365,6 +371,13 @@ TEST_F(TkTestStrict, ActorDamageMultiGroup)
 	std::vector<TkFamily*> families(2);
 	std::map<TkFamily*, ExpectedVisibleChunks> expectedVisibleChunks;
 
+	CSParams csDamage0(0, 0.0f);
+	NvBlastExtProgramParams csDamageParams0 = { &csDamage0, nullptr };
+	CSParams csDamage1(1, 0.0f);
+	NvBlastExtProgramParams csDamageParams1 = { &csDamage1, nullptr };
+	CSParams csDamage2(2, 0.0f);
+	NvBlastExtProgramParams csDamageParams2 = { &csDamage2, nullptr };
+
 	// prepare 2 equal actors/families and damage
 	{
 		GeneratorAsset cube;
@@ -395,12 +408,10 @@ TEST_F(TkTestStrict, ActorDamageMultiGroup)
 		families[1] = (&cubeActor1->getFamily());
 
 		{
-			CSParams p0(0, 0.0f);
-			CSParams p1(1, 0.0f);
-			cubeActor0->damage(getCubeSlicerProgram(), &p0, sizeof(p0), getDefaultMaterial());
-			cubeActor0->damage(getCubeSlicerProgram(), &p1, sizeof(p1), getDefaultMaterial());
+			cubeActor0->damage(getCubeSlicerProgram(), &csDamageParams0);
+			cubeActor0->damage(getCubeSlicerProgram(), &csDamageParams1);
 
-			cubeActor1->damage(getCubeSlicerProgram(), &p0, sizeof(p0), getDefaultMaterial());
+			cubeActor1->damage(getCubeSlicerProgram(), &csDamageParams0);
 		}
 
 		expectedVisibleChunks[families[0]] = ExpectedVisibleChunks(4, 2); // split in 4, 2 chunks each
@@ -466,11 +477,9 @@ TEST_F(TkTestStrict, ActorDamageMultiGroup)
 			combinations.emplace(pair(actor->getGroup(), &actor->getFamily()));
 			if (actor->getVisibleChunkCount() == 4)
 			{
-				CSParams p1(1, 0.0f);
-				actor->damage(getCubeSlicerProgram(), &p1, sizeof(p1), getDefaultMaterial());
+				actor->damage(getCubeSlicerProgram(), &csDamageParams1);
 			}
-			CSParams p2(2, 0.0f);
-			actor->damage(getCubeSlicerProgram(), &p2, sizeof(p2), getDefaultMaterial());
+			actor->damage(getCubeSlicerProgram(), &csDamageParams2);
 		}
 		EXPECT_EQ(combinations.size(), 4);
 
@@ -505,7 +514,9 @@ TEST_F(TkTestStrict, ActorDamageMultiGroup)
 	std::default_random_engine re;
 	{
 		NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0);
+		NvBlastExtProgramParams radialDamageParams = { &radialDamage, nullptr };
 		NvBlastExtShearDamageDesc shearDamage = getShearDamageDesc(0, 0, 0);
+		NvBlastExtProgramParams shearDamageParams = { &shearDamage, nullptr };
 
 		std::vector<TkActor*> actors;
 		while (1)
@@ -529,11 +540,11 @@ TEST_F(TkTestStrict, ActorDamageMultiGroup)
 
 				if (actor->getGraphNodeCount() > 1)
 				{
-					actor->damage(getFalloffProgram(), &radialDamage, sizeof(radialDamage), getDefaultMaterial());
+					actor->damage(getFalloffProgram(), &radialDamageParams);
 				}
 				else
 				{
-					actor->damage(getShearProgram(), &shearDamage, sizeof(shearDamage), getDefaultMaterial());
+					actor->damage(getShearProgram(), &shearDamageParams);
 				}
 
 				if (re() % 1000 < 500)
@@ -632,36 +643,34 @@ TEST_F(TkTestStrict, ActorDamageBufferedDamage)
 
 		// 2 of damage types would be through user's NvBlastDamageProgram, this pointer must live till group->sync()
 		NvBlastExtRadialDamageDesc userR0 = getRadialDamageDesc(P, P, 0, R, R);
-		NvBlastProgramParams userProgramParams0 =
-		{
-			&userR0,	// damageDescBuffer
-			1,			// damageDescCount
-			nullptr,	// material
-		};
+		NvBlastExtProgramParams userProgramParams0 = { &userR0,	nullptr	};
 
 		NvBlastExtRadialDamageDesc userR1 = getRadialDamageDesc(-P, P, 0, R, R);
-		NvBlastProgramParams userProgramParams1 =
-		{
-			&userR1,	// damageDescBuffer
-			1,			// damageDescCount
-			nullptr,	// material
-		};
+		NvBlastExtProgramParams userProgramParams1 = { &userR1, nullptr	};
+
+		CSParams csDamage0(0, 0.0f);
+		NvBlastExtProgramParams csDamageParams0 = { &csDamage0, nullptr };
+		CSParams csDamage1(1, 0.0f);
+		NvBlastExtProgramParams csDamageParams1 = { &csDamage1, nullptr };
+		CSParams csDamage2(2, 0.0f);
+		NvBlastExtProgramParams csDamageParams2 = { &csDamage2, nullptr };
+
+		NvBlastExtRadialDamageDesc r0 = getRadialDamageDesc(P, -P, 0, R, R);
+		NvBlastExtProgramParams rDamageParams0 = { &r0, nullptr };
+		NvBlastExtRadialDamageDesc r1 = getRadialDamageDesc(-P, -P, 0, R, R);
+		NvBlastExtProgramParams rDamageParams1 = { &r1, nullptr };
+
 
 		// fill damage functions, shuffle and apply
 		{
-			CSParams p0(0, 0.0f);
-			CSParams p1(1, 0.0f);
-			CSParams p2(2, 0.0f);
-			NvBlastExtRadialDamageDesc r0 = getRadialDamageDesc(P, -P, 0, R, R);
-			NvBlastExtRadialDamageDesc r1 = getRadialDamageDesc(-P, -P, 0, R, R);
 
 			const uint32_t damageCount = 7;
 			std::vector<std::function<void(void)>> damageFns(damageCount);
-			damageFns[0] = [&]() { actor->damage(getCubeSlicerProgram(), &p0, sizeof(p0), getDefaultMaterial()); };
-			damageFns[1] = [&]() { actor->damage(getCubeSlicerProgram(), &p1, sizeof(p1), getDefaultMaterial()); };
-			damageFns[2] = [&]() { actor->damage(getCubeSlicerProgram(), &p2, sizeof(p2), getDefaultMaterial()); };
-			damageFns[3] = [&]() { actor->damage(getFalloffProgram(), &r0, sizeof(r0), getDefaultMaterial()); };
-			damageFns[4] = [&]() { actor->damage(getFalloffProgram(), &r1, sizeof(r1), getDefaultMaterial()); };
+			damageFns[0] = [&]() { actor->damage(getCubeSlicerProgram(), &csDamageParams0); };
+			damageFns[1] = [&]() { actor->damage(getCubeSlicerProgram(), &csDamageParams1); };
+			damageFns[2] = [&]() { actor->damage(getCubeSlicerProgram(), &csDamageParams2); };
+			damageFns[3] = [&]() { actor->damage(getFalloffProgram(), &rDamageParams0); };
+			damageFns[4] = [&]() { actor->damage(getFalloffProgram(), &rDamageParams1); };
 			damageFns[5] = [&]() { actor->damage(getFalloffProgram(), &userProgramParams0); };
 			damageFns[6] = [&]() { actor->damage(getFalloffProgram(), &userProgramParams1); };
 
@@ -858,9 +867,12 @@ TEST_F(TkTestAllowWarnings, DISABLED_FamilySerialization)
 		uint32_t expectedActorCount = 16;
 
 		// cube slicer params
-		CSParams p0(0, 0.0f);
-		CSParams p1(1, 0.0f);
-		CSParams p2(2, 0.0f);
+		CSParams csDamage0(0, 0.0f);
+		NvBlastExtProgramParams csDamageParams0 = { &csDamage0, nullptr };
+		CSParams csDamage1(1, 0.0f);
+		NvBlastExtProgramParams csDamageParams1 = { &csDamage1, nullptr };
+		CSParams csDamage2(2, 0.0f);
+		NvBlastExtProgramParams csDamageParams2 = { &csDamage2, nullptr };
 
 		// fallof params
 		const float P = 0.5f;
@@ -869,16 +881,20 @@ TEST_F(TkTestAllowWarnings, DISABLED_FamilySerialization)
 		NvBlastExtRadialDamageDesc r1 = getRadialDamageDesc(-P, P, 0, R, R);
 		NvBlastExtRadialDamageDesc r2 = getRadialDamageDesc(P, -P, 0, R, R);
 		NvBlastExtRadialDamageDesc r3 = getRadialDamageDesc(-P, -P, 0, R, R);
+		NvBlastExtProgramParams r0p = { &r0, nullptr };
+		NvBlastExtProgramParams r1p = { &r1, nullptr };
+		NvBlastExtProgramParams r2p = { &r2, nullptr };
+		NvBlastExtProgramParams r3p = { &r3, nullptr };
 
 		const uint32_t damageCount = 7;
 		std::vector<std::function<void(TkActor* a)>> damageFns(damageCount);
-		damageFns[0] = [&](TkActor* a) { a->damage(getCubeSlicerProgram(), &p0, sizeof(p0), getDefaultMaterial()); };
-		damageFns[1] = [&](TkActor* a) { a->damage(getCubeSlicerProgram(), &p1, sizeof(p1), getDefaultMaterial()); };
-		damageFns[2] = [&](TkActor* a) { a->damage(getCubeSlicerProgram(), &p2, sizeof(p2), getDefaultMaterial()); };
-		damageFns[3] = [&](TkActor* a) { a->damage(getFalloffProgram(), &r0, sizeof(r0), getDefaultMaterial()); };
-		damageFns[4] = [&](TkActor* a) { a->damage(getFalloffProgram(), &r1, sizeof(r1), getDefaultMaterial()); };
-		damageFns[5] = [&](TkActor* a) { a->damage(getFalloffProgram(), &r2, sizeof(r2), getDefaultMaterial()); };
-		damageFns[6] = [&](TkActor* a) { a->damage(getFalloffProgram(), &r3, sizeof(r3), getDefaultMaterial()); };
+		damageFns[0] = [&](TkActor* a) { a->damage(getCubeSlicerProgram(), &csDamageParams0); };
+		damageFns[1] = [&](TkActor* a) { a->damage(getCubeSlicerProgram(), &csDamageParams1); };
+		damageFns[2] = [&](TkActor* a) { a->damage(getCubeSlicerProgram(), &csDamageParams2); };
+		damageFns[3] = [&](TkActor* a) { a->damage(getFalloffProgram(), &r0p); };
+		damageFns[4] = [&](TkActor* a) { a->damage(getFalloffProgram(), &r1p); };
+		damageFns[5] = [&](TkActor* a) { a->damage(getFalloffProgram(), &r2p); };
+		damageFns[6] = [&](TkActor* a) { a->damage(getFalloffProgram(), &r3p); };
 
 		std::vector<TkActor*> actors(64);
 
@@ -939,10 +955,11 @@ TEST_F(TkTestStrict, GroupStats)
 	group->addActor(*cubeActor4);
 
 	NvBlastExtRadialDamageDesc r0 = getRadialDamageDesc(0.0f, 0.0f, 0.0f);
-	cubeActor1->damage(getFalloffProgram(), &r0, sizeof(r0));
-	cubeActor2->damage(getFalloffProgram(), &r0, sizeof(r0));
-	cubeActor3->damage(getFalloffProgram(), &r0, sizeof(r0));
-	cubeActor4->damage(getFalloffProgram(), &r0, sizeof(r0));
+	NvBlastExtProgramParams radialDamageParams = { &r0, nullptr };
+	cubeActor1->damage(getFalloffProgram(), &radialDamageParams);
+	cubeActor2->damage(getFalloffProgram(), &radialDamageParams);
+	cubeActor3->damage(getFalloffProgram(), &radialDamageParams);
+	cubeActor4->damage(getFalloffProgram(), &radialDamageParams);
 
 	Nv::Blast::Time time;
 	m_groupTM->process();
@@ -1077,7 +1094,8 @@ TEST_F(TkTestStrict, FractureReportSupport)
 
 	// this will trigger hierarchical chunk fracture
 	NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0);
-	actor->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
+	NvBlastExtProgramParams radialDamageParams = { &radialDamage, nullptr };
+	actor->damage(getFalloffProgram(), &radialDamageParams);
 
 	m_groupTM->process();
 	m_groupTM->wait();
@@ -1219,7 +1237,8 @@ TEST_F(TkTestStrict, FractureReportGraph)
 
 	// this will trigger one bond to break
 	NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0, 0.5f, 0.5f);
-	rootActor->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
+	NvBlastExtProgramParams radialDamageParams = { &radialDamage, nullptr };
+	rootActor->damage(getFalloffProgram(), &radialDamageParams);
 
 	m_groupTM->process();
 	m_groupTM->wait();
@@ -1266,7 +1285,8 @@ TEST_F(TkTestStrict, SplitWarning) // GWD-167
 	group->addActor(*actor);
 
 	NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0);
-	actor->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
+	NvBlastExtProgramParams radialDamageParams = { &radialDamage, nullptr };
+	actor->damage(getFalloffProgram(), &radialDamageParams);
 
 	m_groupTM->process();
 	m_groupTM->wait();
@@ -1362,10 +1382,11 @@ TEST_F(TkTestAllowWarnings, ChangeThreadCountToZero)
 	group->addActor(*actor4);
 
 	NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0);
-	actor1->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
-	actor2->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
-	actor3->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
-	actor4->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
+	NvBlastExtProgramParams radialDamageParams = { &radialDamage, nullptr };
+	actor1->damage(getFalloffProgram(), &radialDamageParams);
+	actor2->damage(getFalloffProgram(), &radialDamageParams);
+	actor3->damage(getFalloffProgram(), &radialDamageParams);
+	actor4->damage(getFalloffProgram(), &radialDamageParams);
 
 	m_groupTM->process();
 	m_groupTM->wait();
@@ -1463,10 +1484,11 @@ TEST_F(TkTestStrict, ChangeThreadCountUp)
 	group->addActor(*actor4);
 
 	NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0);
-	actor1->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
-	actor2->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
-	actor3->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
-	actor4->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
+	NvBlastExtProgramParams radialDamageParams = { &radialDamage, nullptr };
+	actor1->damage(getFalloffProgram(), &radialDamageParams);
+	actor2->damage(getFalloffProgram(), &radialDamageParams);
+	actor3->damage(getFalloffProgram(), &radialDamageParams);
+	actor4->damage(getFalloffProgram(), &radialDamageParams);
 
 	m_taskman->setCpuDispatcher(*disp4);
 	//group->setWorkerCount(m_taskman->getCpuDispatcher()->getWorkerCount());
@@ -1562,10 +1584,15 @@ TEST_F(TkTestAllowWarnings, GroupNoWorkers)
 	group->addActor(*actor4);
 
 	NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0);
-	actor1->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
-	actor2->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
-	actor3->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
-	actor4->damage(getFalloffProgram(), &radialDamage, sizeof(NvBlastExtRadialDamageDesc), getDefaultMaterial());
+	NvBlastExtProgramParams programParams = {
+		&radialDamage,
+		getDefaultMaterial()
+	};
+
+	actor1->damage(getFalloffProgram(), &programParams);
+	actor2->damage(getFalloffProgram(), &programParams);
+	actor3->damage(getFalloffProgram(), &programParams);
+	actor4->damage(getFalloffProgram(), &programParams);
 
 	m_groupTM->process();
 	m_groupTM->wait();

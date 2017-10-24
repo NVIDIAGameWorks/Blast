@@ -50,6 +50,8 @@
 #include "NvBlastExtSerializationInternal.h"
 #endif
 
+#include "NvBlastExtAssetUtils.h"
+
 #pragma warning( pop )
 
 #include <fstream>
@@ -373,8 +375,149 @@ public:
 			EXPECT_FALSE(isIdentity);
 		}
 	}
+
+	void mergeAssetTest(const NvBlastAssetDesc& desc, bool fail)
+	{
+		std::vector<char> scratch;
+
+		scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(&desc, messageLog));
+		void* mem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&desc, messageLog));
+		NvBlastAsset* asset = NvBlastCreateAsset(mem, &desc, scratch.data(), messageLog);
+		EXPECT_TRUE(asset != nullptr);
+		if (asset == nullptr)
+		{
+			free(mem);
+			return;
+		}
+
+		// Merge two copies of this asset together
+		const NvBlastAsset* components[2] = { asset, asset };
+		const NvcVec3 translations[2] = { { 0, 0, 0 },{ 2, 0, 0 } };
+
+		const NvBlastBond bond = { { 1.0f, 0.0f, 0.0f }, 1.0f,{ 1.0f, 0.0f, 0.0f }, 0 };
+
+		NvBlastExtAssetUtilsBondDesc newBondDescs[4];
+		for (int i = 0; i < 4; ++i)
+		{
+			newBondDescs[i].bond = bond;
+			newBondDescs[i].chunkIndices[0] = 2 * (i + 1);
+			newBondDescs[i].chunkIndices[1] = 2 * i + 1;
+			newBondDescs[i].componentIndices[0] = 0;
+			newBondDescs[i].componentIndices[1] = 1;
+		}
+
+		// Create a merged descriptor
+		std::vector<uint32_t> chunkIndexOffsets(2);
+		std::vector<uint32_t> chunkReorderMap(2 * desc.chunkCount);
+
+		NvBlastAssetDesc mergedDesc = NvBlastExtAssetUtilsMergeAssets(components, nullptr, nullptr, translations, 2, newBondDescs, 4, chunkIndexOffsets.data(), chunkReorderMap.data(), 2 * desc.chunkCount);
+		EXPECT_EQ(2 * desc.bondCount + 4, mergedDesc.bondCount);
+		EXPECT_EQ(2 * desc.chunkCount, mergedDesc.chunkCount);
+		for (uint32_t i = 0; i < 2 * desc.chunkCount; ++i)
+		{
+			EXPECT_LT(chunkReorderMap[i], 2 * desc.chunkCount);
+		}
+		EXPECT_EQ(0, chunkIndexOffsets[0]);
+		EXPECT_EQ(desc.chunkCount, chunkIndexOffsets[1]);
+
+		scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(&mergedDesc, messageLog));
+		mem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&mergedDesc, messageLog));
+		NvBlastAsset* mergedAsset = NvBlastCreateAsset(mem, &mergedDesc, scratch.data(), messageLog);
+		EXPECT_TRUE(mergedAsset != nullptr);
+		if (mergedAsset == nullptr)
+		{
+			free(mem);
+			return;
+		}
+
+		NVBLAST_FREE(const_cast<NvBlastBondDesc*>(mergedDesc.bondDescs));
+		NVBLAST_FREE(const_cast<NvBlastChunkDesc*>(mergedDesc.chunkDescs));
+		NVBLAST_FREE(mergedAsset);
+
+		if (!fail)
+		{
+			mergedDesc = NvBlastExtAssetUtilsMergeAssets(components, nullptr, nullptr, translations, 2, newBondDescs, 4, nullptr, chunkReorderMap.data(), 2 * desc.chunkCount);
+			EXPECT_EQ(2 * desc.bondCount + 4, mergedDesc.bondCount);
+			EXPECT_EQ(2 * desc.chunkCount, mergedDesc.chunkCount);
+			for (uint32_t i = 0; i < 2 * desc.chunkCount; ++i)
+			{
+				EXPECT_LT(chunkReorderMap[i], 2 * desc.chunkCount);
+			}
+			scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(&mergedDesc, messageLog));
+			mem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&mergedDesc, messageLog));
+			mergedAsset = NvBlastCreateAsset(mem, &mergedDesc, scratch.data(), messageLog);
+			EXPECT_TRUE(mergedAsset != nullptr);
+			free(mem);
+			NVBLAST_FREE(const_cast<NvBlastBondDesc*>(mergedDesc.bondDescs));
+			NVBLAST_FREE(const_cast<NvBlastChunkDesc*>(mergedDesc.chunkDescs));
+		}
+		else
+		{
+			// We don't pass in a valid chunkReorderMap so asset creation should fail
+			mergedDesc = NvBlastExtAssetUtilsMergeAssets(components, nullptr, nullptr, translations, 2, newBondDescs, 4, chunkIndexOffsets.data(), nullptr, 0);
+			EXPECT_EQ(2 * desc.bondCount + 4, mergedDesc.bondCount);
+			EXPECT_EQ(2 * desc.chunkCount, mergedDesc.chunkCount);
+			EXPECT_EQ(0, chunkIndexOffsets[0]);
+			EXPECT_EQ(desc.chunkCount, chunkIndexOffsets[1]);
+			scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(&mergedDesc, messageLog));
+			mem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&mergedDesc, messageLog));
+			mergedAsset = NvBlastCreateAsset(mem, &mergedDesc, scratch.data(), messageLog);
+			EXPECT_TRUE(mergedAsset == nullptr);
+			free(mem);
+			NVBLAST_FREE(const_cast<NvBlastBondDesc*>(mergedDesc.bondDescs));
+			NVBLAST_FREE(const_cast<NvBlastChunkDesc*>(mergedDesc.chunkDescs));
+
+			mergedDesc = NvBlastExtAssetUtilsMergeAssets(components, nullptr, nullptr, translations, 2, newBondDescs, 4, nullptr, nullptr, 0);
+			EXPECT_EQ(2 * desc.bondCount + 4, mergedDesc.bondCount);
+			EXPECT_EQ(2 * desc.chunkCount, mergedDesc.chunkCount);
+			scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(&mergedDesc, messageLog));
+			mem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&mergedDesc, messageLog));
+			mergedAsset = NvBlastCreateAsset(mem, &mergedDesc, scratch.data(), messageLog);
+			EXPECT_TRUE(mergedAsset == nullptr);
+			free(mem);
+			NVBLAST_FREE(const_cast<NvBlastBondDesc*>(mergedDesc.bondDescs));
+			NVBLAST_FREE(const_cast<NvBlastChunkDesc*>(mergedDesc.chunkDescs));
+
+			// We lie and say the chunkReorderMap is not large enough.  It should be filled with 0xFFFFFFFF up to the size we gave
+			mergedDesc = NvBlastExtAssetUtilsMergeAssets(components, nullptr, nullptr, translations, 2, newBondDescs, 4, nullptr, chunkReorderMap.data(), desc.chunkCount);
+			EXPECT_EQ(2 * desc.bondCount + 4, mergedDesc.bondCount);
+			EXPECT_EQ(2 * desc.chunkCount, mergedDesc.chunkCount);
+			for (uint32_t i = 0; i < desc.chunkCount; ++i)
+			{
+				EXPECT_TRUE(Nv::Blast::isInvalidIndex(chunkReorderMap[i]));
+			}
+			scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(&mergedDesc, messageLog));
+			mem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&mergedDesc, messageLog));
+			mergedAsset = NvBlastCreateAsset(mem, &mergedDesc, scratch.data(), messageLog);
+			EXPECT_TRUE(mergedAsset == nullptr);
+			free(mem);
+			NVBLAST_FREE(const_cast<NvBlastBondDesc*>(mergedDesc.bondDescs));
+			NVBLAST_FREE(const_cast<NvBlastChunkDesc*>(mergedDesc.chunkDescs));
+
+			mergedDesc = NvBlastExtAssetUtilsMergeAssets(components, nullptr, nullptr, translations, 2, newBondDescs, 4, chunkIndexOffsets.data(), chunkReorderMap.data(), desc.chunkCount);
+			EXPECT_EQ(2 * desc.bondCount + 4, mergedDesc.bondCount);
+			EXPECT_EQ(2 * desc.chunkCount, mergedDesc.chunkCount);
+			for (uint32_t i = 0; i < desc.chunkCount; ++i)
+			{
+				EXPECT_TRUE(Nv::Blast::isInvalidIndex(chunkReorderMap[i]));
+			}
+			EXPECT_EQ(0, chunkIndexOffsets[0]);
+			EXPECT_EQ(desc.chunkCount, chunkIndexOffsets[1]);
+			scratch.resize((size_t)NvBlastGetRequiredScratchForCreateAsset(&mergedDesc, messageLog));
+			mem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&mergedDesc, messageLog));
+			mergedAsset = NvBlastCreateAsset(mem, &mergedDesc, scratch.data(), messageLog);
+			EXPECT_TRUE(mergedAsset == nullptr);
+			free(mem);
+			NVBLAST_FREE(const_cast<NvBlastBondDesc*>(mergedDesc.bondDescs));
+			NVBLAST_FREE(const_cast<NvBlastChunkDesc*>(mergedDesc.chunkDescs));
+		}
+
+		// Finally free the original asset
+		NVBLAST_FREE(asset);
+	}
 };
 
+typedef AssetTest<-1, 0> AssetTestAllowErrorsSilently;
 typedef AssetTest<NvBlastMessage::Error, 0> AssetTestAllowWarningsSilently;
 typedef AssetTest<NvBlastMessage::Error, 1> AssetTestAllowWarnings;
 typedef AssetTest<NvBlastMessage::Warning, 1> AssetTestStrict;
@@ -672,4 +815,44 @@ TEST_F(AssetTestAllowWarningsSilently, BuildAssetsShufflingChunkDescriptorsUsing
 	{
 		buildAssetShufflingDescriptors(&g_assetDescsMissingCoverage[i], g_assetsFromMissingCoverageExpectedValues[i], 10, true);
 	}
+}
+
+TEST_F(AssetTestStrict, MergeAssetsUpperSupportOnly)
+{
+	mergeAssetTest(g_assetDescs[0], false);
+}
+
+TEST_F(AssetTestStrict, MergeAssetsWithSubsupport)
+{
+	mergeAssetTest(g_assetDescs[1], false);
+}
+
+TEST_F(AssetTestStrict, MergeAssetsWithWorldBondsUpperSupportOnly)
+{
+	mergeAssetTest(g_assetDescs[3], false);
+}
+
+TEST_F(AssetTestStrict, MergeAssetsWithWorldBondsWithSubsupport)
+{
+	mergeAssetTest(g_assetDescs[4], false);
+}
+
+TEST_F(AssetTestAllowErrorsSilently, MergeAssetsUpperSupportOnlyExpectFail)
+{
+	mergeAssetTest(g_assetDescs[0], true);
+}
+
+TEST_F(AssetTestAllowErrorsSilently, MergeAssetsWithSubsupportExpectFail)
+{
+	mergeAssetTest(g_assetDescs[1], true);
+}
+
+TEST_F(AssetTestAllowErrorsSilently, MergeAssetsWithWorldBondsUpperSupportOnlyExpectFail)
+{
+	mergeAssetTest(g_assetDescs[3], true);
+}
+
+TEST_F(AssetTestAllowErrorsSilently, MergeAssetsWithWorldBondsWithSubsupportExpectFail)
+{
+	mergeAssetTest(g_assetDescs[4], true);
 }

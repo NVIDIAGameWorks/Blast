@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
@@ -74,7 +75,7 @@ Inheritance diagram for Nv::Blast::Actor:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_actor.html#372818aee680b0cefdcd27010234826e">findIslands</a> (void *scratch)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_actor.html#ad84134173598b48fa4620fc46e90eeb">generateFracture</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> &amp;program, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *programParams, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn, <a class="el" href="struct_nv_blast_timers.html">NvBlastTimers</a> *timers) const </td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_actor.html#6a49c4fb6e6999f6e46f34baaf771a0d">generateFracture</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> &amp;program, const void *programParams, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn, <a class="el" href="struct_nv_blast_timers.html">NvBlastTimers</a> *timers) const </td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">const <a class="el" href="class_nv_1_1_blast_1_1_asset.html">Asset</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_actor.html#01efe9a7ce4758228ff7fbfc18439e89">getAsset</a> () const </td></tr>
 
@@ -460,7 +461,7 @@ Perform islands search. Bonds which are broken when their health values drop to 
 
 </div>
 </div><p>
-<a class="anchor" name="ad84134173598b48fa4620fc46e90eeb"></a><!-- doxytag: member="Nv::Blast::Actor::generateFracture" ref="ad84134173598b48fa4620fc46e90eeb" args="(NvBlastFractureBuffers *commandBuffers, const NvBlastDamageProgram &amp;program, const NvBlastProgramParams *programParams, NvBlastLog logFn, NvBlastTimers *timers) const " -->
+<a class="anchor" name="6a49c4fb6e6999f6e46f34baaf771a0d"></a><!-- doxytag: member="Nv::Blast::Actor::generateFracture" ref="6a49c4fb6e6999f6e46f34baaf771a0d" args="(NvBlastFractureBuffers *commandBuffers, const NvBlastDamageProgram &amp;program, const void *programParams, NvBlastLog logFn, NvBlastTimers *timers) const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -479,7 +480,7 @@ Perform islands search. Bonds which are broken when their health values drop to 
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *&nbsp;</td>
+          <td class="paramtype">const void *&nbsp;</td>
           <td class="paramname"> <em>programParams</em>, </td>
         </tr>
         <tr>
@@ -1110,6 +1111,7 @@ This function will not split a leaf chunk actor. In that case, the actor is not 
         <tr>
           <td class="memname">NV_INLINE bool Nv::Blast::Actor::release           </td>
           <td>(</td>
+          <td class="paramtype">void&nbsp;</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
           <td></td>

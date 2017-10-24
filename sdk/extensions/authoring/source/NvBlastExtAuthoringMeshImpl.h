@@ -170,7 +170,7 @@ private:
 	\param[in] size		Cutting box size
 	\param[in] id	Cutting box ID
 */
-void	setCuttingBox(const physx::PxVec3& point, const physx::PxVec3& normal, Mesh* mesh, float size, int32_t id);
+void	setCuttingBox(const physx::PxVec3& point, const physx::PxVec3& normal, Mesh* mesh, float size, int64_t id);
 /**
 	Create cutting box at some particular position.
 	\param[in] point	Cutting face center
@@ -178,7 +178,7 @@ void	setCuttingBox(const physx::PxVec3& point, const physx::PxVec3& normal, Mesh
 	\param[in] size		Cutting box size
 	\param[in] id	Cutting box ID
 */
-Mesh*	getCuttingBox(const physx::PxVec3& point, const physx::PxVec3& normal, float size, int32_t id, int32_t interiorMaterialId);
+Mesh*	getCuttingBox(const physx::PxVec3& point, const physx::PxVec3& normal, float size, int64_t id, int32_t interiorMaterialId);
 
 /**
 	Create box at some particular position.
@@ -208,7 +208,7 @@ Mesh* getNoisyCuttingBoxPair(const physx::PxVec3& point, const physx::PxVec3& no
 	\param[in] mesh		Cutting box mesh
 	\param[in] id	Cutting box ID
 */
-void inverseNormalAndSetIndices(Mesh* mesh, int32_t id);
+void inverseNormalAndSetIndices(Mesh* mesh, int64_t id);
 
 } // namespace Blast
 } // namespace Nv

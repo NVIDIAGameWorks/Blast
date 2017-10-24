@@ -119,20 +119,6 @@ public:
 	\param[in] group			The group for new actors to be placed in.
 	*/
 	virtual void					reinitialize(const NvBlastFamily* newFamily, TkGroup* group = nullptr) = 0;
-
-	/**
-	The default material to be passed into NvBlastDamageProgram when a TkActor in this family is damaged.
-
-	\return a pointer to the default material.
-	*/
-	virtual const void*				getMaterial() const = 0;
-
-	/**
-	Set the default material to be passed into NvBlastDamageProgram when a TkActor in this family is damaged.  Must be valid till group endProcess() call.
-
-	\param[in] material			The material to be the new default.
-	*/
-	virtual void					setMaterial(const void* material) = 0;
 };
 
 } // namespace Blast

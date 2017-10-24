@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
@@ -76,35 +77,50 @@
 <a name="l00039"></a>00039 
 <a name="l00040"></a><a class="code" href="struct_nv_1_1_blast_1_1_collision_hull_impl.html">00040</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_collision_hull_impl.html">CollisionHullImpl</a> : <span class="keyword">public</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>
 <a name="l00041"></a>00041 {
-<a name="l00042"></a>00042     <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull_impl.html#f9155c164b6a1af20db676c862aa9d6a">release</a>() <span class="keyword">override</span>;
-<a name="l00043"></a>00043 };
-<a name="l00044"></a>00044     
-<a name="l00045"></a><a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html">00045</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html">ConvexMeshBuilderImpl</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">ConvexMeshBuilder</a>
-<a name="l00046"></a>00046 {
-<a name="l00047"></a>00047 <span class="keyword">public</span>:
-<a name="l00048"></a>00048 
-<a name="l00052"></a><a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#ac9a3c9256ac22abc3337261bd6116d7">00052</a>     <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#ac9a3c9256ac22abc3337261bd6116d7">ConvexMeshBuilderImpl</a>(physx::PxCooking* cooking, physx::PxPhysicsInsertionCallback* insertionCallback) : mInsertionCallback(insertionCallback), mCooking(cooking) {}
-<a name="l00053"></a>00053 
-<a name="l00054"></a>00054     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#7e114105b16606f5b70232259ebfd532">release</a>() <span class="keyword">override</span>;
-<a name="l00055"></a>00055 
-<a name="l00056"></a>00056     <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>*          <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#cdab150fc26452835820b42e4880516d">buildCollisionGeometry</a>(uint32_t verticesCount, <span class="keyword">const</span> physx::PxVec3* vertexData) <span class="keyword">override</span>;
-<a name="l00057"></a>00057 
-<a name="l00058"></a>00058     <span class="keyword">virtual</span> physx::PxConvexMesh*    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#4ef11e3e38a8069b37169c5e18d810be">buildConvexMesh</a>(uint32_t verticesCount, <span class="keyword">const</span> physx::PxVec3* vertexData) <span class="keyword">override</span>;
-<a name="l00059"></a>00059 
-<a name="l00060"></a>00060     <span class="keyword">virtual</span> physx::PxConvexMesh*    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#4ef11e3e38a8069b37169c5e18d810be">buildConvexMesh</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>&amp; hull) <span class="keyword">override</span>;
-<a name="l00061"></a>00061     
-<a name="l00062"></a>00062     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#83fb48e5b7abff3e91655382327c2e05">trimCollisionGeometry</a>(uint32_t chunksCount, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** in, <span class="keyword">const</span> uint32_t* chunkDepth) <span class="keyword">override</span>;
-<a name="l00063"></a>00063 
-<a name="l00064"></a>00064 <span class="keyword">private</span>:
-<a name="l00065"></a>00065     physx::PxPhysicsInsertionCallback*  mInsertionCallback;
-<a name="l00066"></a>00066     physx::PxCooking*                   mCooking;
-<a name="l00067"></a>00067 };
+<a name="l00042"></a>00042     <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull_impl.html#880f602b6b2aaebaed4c8cfa454f46ac">~CollisionHullImpl</a>();
+<a name="l00043"></a><a class="code" href="struct_nv_1_1_blast_1_1_collision_hull_impl.html#3dc144b46172ea16b2365b3a5f04d3c8">00043</a>     <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull_impl.html#3dc144b46172ea16b2365b3a5f04d3c8">CollisionHullImpl</a>()
+<a name="l00044"></a>00044     {
+<a name="l00045"></a>00045         pointsCount = 0;
+<a name="l00046"></a>00046         indicesCount = 0;
+<a name="l00047"></a>00047         polygonDataCount = 0;
+<a name="l00048"></a>00048         points = <span class="keyword">nullptr</span>;
+<a name="l00049"></a>00049         indices = <span class="keyword">nullptr</span>;
+<a name="l00050"></a>00050         polygonData = <span class="keyword">nullptr</span>;
+<a name="l00051"></a>00051     }
+<a name="l00052"></a>00052 
+<a name="l00053"></a>00053     <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull_impl.html#3dc144b46172ea16b2365b3a5f04d3c8">CollisionHullImpl</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>&amp; hullToCopy);
+<a name="l00054"></a>00054 
+<a name="l00055"></a>00055     <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull_impl.html#f9155c164b6a1af20db676c862aa9d6a">release</a>() <span class="keyword">override</span>;
+<a name="l00056"></a>00056 };
+<a name="l00057"></a>00057     
+<a name="l00058"></a><a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html">00058</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html">ConvexMeshBuilderImpl</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">ConvexMeshBuilder</a>
+<a name="l00059"></a>00059 {
+<a name="l00060"></a>00060 <span class="keyword">public</span>:
+<a name="l00061"></a>00061 
+<a name="l00065"></a><a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#ac9a3c9256ac22abc3337261bd6116d7">00065</a>     <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#ac9a3c9256ac22abc3337261bd6116d7">ConvexMeshBuilderImpl</a>(physx::PxCooking* cooking, physx::PxPhysicsInsertionCallback* insertionCallback) : mInsertionCallback(insertionCallback), mCooking(cooking) {}
+<a name="l00066"></a>00066 
+<a name="l00067"></a>00067     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#7e114105b16606f5b70232259ebfd532">release</a>() <span class="keyword">override</span>;
 <a name="l00068"></a>00068 
-<a name="l00069"></a>00069 } <span class="comment">// namespace Blast</span>
-<a name="l00070"></a>00070 } <span class="comment">// namespace Nv</span>
-<a name="l00071"></a>00071 
+<a name="l00069"></a>00069     <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>*          <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#cdab150fc26452835820b42e4880516d">buildCollisionGeometry</a>(uint32_t verticesCount, <span class="keyword">const</span> physx::PxVec3* vertexData) <span class="keyword">override</span>;
+<a name="l00070"></a>00070 
+<a name="l00071"></a>00071     <span class="keyword">virtual</span> physx::PxConvexMesh*    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#4ef11e3e38a8069b37169c5e18d810be">buildConvexMesh</a>(uint32_t verticesCount, <span class="keyword">const</span> physx::PxVec3* vertexData) <span class="keyword">override</span>;
 <a name="l00072"></a>00072 
-<a name="l00073"></a>00073 <span class="preprocessor">#endif // ifndef NVBLASTEXTAUTHORINGCOLLISIONBUILDERIIMPL_H</span>
+<a name="l00073"></a>00073     <span class="keyword">virtual</span> physx::PxConvexMesh*    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#4ef11e3e38a8069b37169c5e18d810be">buildConvexMesh</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>&amp; hull) <span class="keyword">override</span>;
+<a name="l00074"></a>00074     
+<a name="l00075"></a>00075     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#83fb48e5b7abff3e91655382327c2e05">trimCollisionGeometry</a>(uint32_t chunksCount, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** in, <span class="keyword">const</span> uint32_t* chunkDepth) <span class="keyword">override</span>;
+<a name="l00076"></a>00076 
+<a name="l00077"></a>00077     <span class="keyword">virtual</span> int32_t                 <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html#0d8b7ab626867277ee6b960988968888">buildMeshConvexDecomposition</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* mesh, uint32_t triangleCount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html">CollisionParams</a>&amp; params, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>**&amp; convexes) <span class="keyword">override</span>;
+<a name="l00078"></a>00078 
+<a name="l00079"></a>00079 <span class="keyword">private</span>:
+<a name="l00080"></a>00080     physx::PxPhysicsInsertionCallback*  mInsertionCallback;
+<a name="l00081"></a>00081     physx::PxCooking*                   mCooking;
+<a name="l00082"></a>00082 };
+<a name="l00083"></a>00083 
+<a name="l00084"></a>00084 } <span class="comment">// namespace Blast</span>
+<a name="l00085"></a>00085 } <span class="comment">// namespace Nv</span>
+<a name="l00086"></a>00086 
+<a name="l00087"></a>00087 
+<a name="l00088"></a>00088 <span class="preprocessor">#endif // ifndef NVBLASTEXTAUTHORINGCOLLISIONBUILDERIIMPL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

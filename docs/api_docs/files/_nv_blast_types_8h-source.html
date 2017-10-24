@@ -258,50 +258,46 @@
 <a name="l00487"></a>00487 
 <a name="l00491"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html">00491</a> <span class="keyword">struct </span><a class="code" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a>
 <a name="l00492"></a>00492 {
-<a name="l00493"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#c504dff11ba8d936e7dc508ce1e4d71e">00493</a>     uint32_t            firstGraphNodeIndex;    
-<a name="l00494"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#b33f3af55cf81d8cb0b3cce0504c2e51">00494</a>     <span class="keyword">const</span> uint32_t*     graphNodeIndexLinks;    
-<a name="l00495"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#7d93e1fd93ea0d30f9e7c580fabd89fa">00495</a>     <span class="keyword">const</span> uint32_t*     chunkIndices;           
-<a name="l00496"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#6e4ce5f47dabfa8657173e085f1708c9">00496</a>     <span class="keyword">const</span> uint32_t*     adjacencyPartition;     
-<a name="l00497"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#80b1bd8d6d2a405ddb24959ca7c066bf">00497</a>     <span class="keyword">const</span> uint32_t*     adjacentNodeIndices;    
-<a name="l00498"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#71d549a44c8aa5a13f9d3e36f7ff27a3">00498</a>     <span class="keyword">const</span> uint32_t*     adjacentBondIndices;    
-<a name="l00499"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#ebb7e8d55ddf8cb2ef71326632952cfe">00499</a>     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_bond.html">NvBlastBond</a>*  assetBonds;             
-<a name="l00500"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#57bf267baa9b5397af645203592a0a40">00500</a>     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_chunk.html">NvBlastChunk</a>* assetChunks;            
-<a name="l00501"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#0d24558f3c19292188acb08665500390">00501</a>     <span class="keyword">const</span> <span class="keywordtype">float</span>*        familyBondHealths;      
-<a name="l00502"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#2dcbf1a8af0917a3989d356e1691ab26">00502</a>     <span class="keyword">const</span> <span class="keywordtype">float</span>*        supportChunkHealths;    
-<a name="l00503"></a>00503 };
-<a name="l00504"></a>00504 
-<a name="l00505"></a>00505 
-<a name="l00519"></a><a class="code" href="struct_nv_blast_program_params.html">00519</a> <span class="keyword">struct </span><a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>
-<a name="l00520"></a>00520 {
-<a name="l00521"></a><a class="code" href="struct_nv_blast_program_params.html#06148e3848aad3d50314fbcc1112ebaa">00521</a>     <span class="keyword">const</span> <span class="keywordtype">void</span>* damageDescBuffer;   
-<a name="l00522"></a><a class="code" href="struct_nv_blast_program_params.html#bd83ddf22befbefb1e83b9f5b357a3d7">00522</a>     uint32_t    damageDescCount;    
-<a name="l00523"></a><a class="code" href="struct_nv_blast_program_params.html#c1f01f891ced7e44de751b4e398f6bca">00523</a>     <span class="keyword">const</span> <span class="keywordtype">void</span>* material;           
-<a name="l00524"></a>00524 };
-<a name="l00525"></a>00525 
-<a name="l00526"></a>00526 
-<a name="l00530"></a><a class="code" href="struct_nv_blast_subgraph_shader_actor.html">00530</a> <span class="keyword">struct </span><a class="code" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a>
-<a name="l00531"></a>00531 {
-<a name="l00532"></a><a class="code" href="struct_nv_blast_subgraph_shader_actor.html#33350ae02e48d5b93b20bf40f3992431">00532</a>     uint32_t            chunkIndex;     
-<a name="l00533"></a><a class="code" href="struct_nv_blast_subgraph_shader_actor.html#6a9b6ce5e41217116491b9b027425703">00533</a>     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_chunk.html">NvBlastChunk</a>* assetChunks;    
-<a name="l00534"></a>00534 };
-<a name="l00535"></a>00535 
-<a name="l00536"></a>00536 
-<a name="l00562"></a><a class="code" href="_nv_blast_types_8h.html#f1fde0d45c48f0575e67f1df5860f940">00562</a> <span class="keyword">typedef</span> void(*<a class="code" href="_nv_blast_types_8h.html#f1fde0d45c48f0575e67f1df5860f940">NvBlastGraphShaderFunction</a>)(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
-<a name="l00563"></a>00563 
-<a name="l00564"></a>00564 
-<a name="l00590"></a><a class="code" href="_nv_blast_types_8h.html#33a8ca70a1399b8b42a968c93f89ff50">00590</a> <span class="keyword">typedef</span> void(*<a class="code" href="_nv_blast_types_8h.html#33a8ca70a1399b8b42a968c93f89ff50">NvBlastSubgraphShaderFunction</a>)(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a>* actor, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>* params);
-<a name="l00591"></a>00591 
+<a name="l00493"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#2692d368ec1c3a96345643b744920a4b">00493</a>     uint32_t            actorIndex;             
+<a name="l00494"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#67e59c295b84a97dc493e2ac824fb0d7">00494</a>     uint32_t            graphNodeCount;         
+<a name="l00495"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#eb7929bcf27fd95c49fdd5bd8909a9b9">00495</a>     uint32_t            assetNodeCount;         
+<a name="l00496"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#c504dff11ba8d936e7dc508ce1e4d71e">00496</a>     uint32_t            firstGraphNodeIndex;    
+<a name="l00497"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#b33f3af55cf81d8cb0b3cce0504c2e51">00497</a>     <span class="keyword">const</span> uint32_t*     graphNodeIndexLinks;    
+<a name="l00498"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#7d93e1fd93ea0d30f9e7c580fabd89fa">00498</a>     <span class="keyword">const</span> uint32_t*     chunkIndices;           
+<a name="l00499"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#6e4ce5f47dabfa8657173e085f1708c9">00499</a>     <span class="keyword">const</span> uint32_t*     adjacencyPartition;     
+<a name="l00500"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#80b1bd8d6d2a405ddb24959ca7c066bf">00500</a>     <span class="keyword">const</span> uint32_t*     adjacentNodeIndices;    
+<a name="l00501"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#71d549a44c8aa5a13f9d3e36f7ff27a3">00501</a>     <span class="keyword">const</span> uint32_t*     adjacentBondIndices;    
+<a name="l00502"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#ebb7e8d55ddf8cb2ef71326632952cfe">00502</a>     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_bond.html">NvBlastBond</a>*  assetBonds;             
+<a name="l00503"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#57bf267baa9b5397af645203592a0a40">00503</a>     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_chunk.html">NvBlastChunk</a>* assetChunks;            
+<a name="l00504"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#0d24558f3c19292188acb08665500390">00504</a>     <span class="keyword">const</span> <span class="keywordtype">float</span>*        familyBondHealths;      
+<a name="l00505"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#2dcbf1a8af0917a3989d356e1691ab26">00505</a>     <span class="keyword">const</span> <span class="keywordtype">float</span>*        supportChunkHealths;    
+<a name="l00506"></a><a class="code" href="struct_nv_blast_graph_shader_actor.html#e890e417040d5998f4b6a0bc7a317aec">00506</a>     <span class="keyword">const</span> uint32_t*     nodeActorIndices;       
+<a name="l00507"></a>00507 };
+<a name="l00508"></a>00508 
+<a name="l00509"></a>00509 
+<a name="l00513"></a><a class="code" href="struct_nv_blast_subgraph_shader_actor.html">00513</a> <span class="keyword">struct </span><a class="code" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a>
+<a name="l00514"></a>00514 {
+<a name="l00515"></a><a class="code" href="struct_nv_blast_subgraph_shader_actor.html#33350ae02e48d5b93b20bf40f3992431">00515</a>     uint32_t            chunkIndex;     
+<a name="l00516"></a><a class="code" href="struct_nv_blast_subgraph_shader_actor.html#6a9b6ce5e41217116491b9b027425703">00516</a>     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_chunk.html">NvBlastChunk</a>* assetChunks;    
+<a name="l00517"></a>00517 };
+<a name="l00518"></a>00518 
+<a name="l00519"></a>00519 
+<a name="l00545"></a><a class="code" href="_nv_blast_types_8h.html#89d08b7b5d43deebfb0148e7c593b7de">00545</a> <span class="keyword">typedef</span> void(*<a class="code" href="_nv_blast_types_8h.html#89d08b7b5d43deebfb0148e7c593b7de">NvBlastGraphShaderFunction</a>)(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a>* actor, <span class="keyword">const</span> <span class="keywordtype">void</span>* programParams);
+<a name="l00546"></a>00546 
+<a name="l00547"></a>00547 
+<a name="l00573"></a><a class="code" href="_nv_blast_types_8h.html#ed8e609201278d8682041939a5bbfd58">00573</a> <span class="keyword">typedef</span> void(*<a class="code" href="_nv_blast_types_8h.html#ed8e609201278d8682041939a5bbfd58">NvBlastSubgraphShaderFunction</a>)(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandBuffers, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a>* actor, <span class="keyword">const</span> <span class="keywordtype">void</span>* programParams);
+<a name="l00574"></a>00574 
+<a name="l00575"></a>00575 
+<a name="l00584"></a><a class="code" href="struct_nv_blast_damage_program.html">00584</a> <span class="keyword">struct </span><a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>
+<a name="l00585"></a>00585 {
+<a name="l00586"></a><a class="code" href="struct_nv_blast_damage_program.html#cbd3cd5f64dd5e3880cd4eb2e044ff8e">00586</a>     <a class="code" href="_nv_blast_types_8h.html#89d08b7b5d43deebfb0148e7c593b7de">NvBlastGraphShaderFunction</a>      graphShaderFunction;
+<a name="l00587"></a><a class="code" href="struct_nv_blast_damage_program.html#dafc94c7f45e08017491cdf1657e84dc">00587</a>     <a class="code" href="_nv_blast_types_8h.html#ed8e609201278d8682041939a5bbfd58">NvBlastSubgraphShaderFunction</a>   subgraphShaderFunction;
+<a name="l00588"></a>00588 };
+<a name="l00589"></a>00589 
+<a name="l00590"></a>00590 
 <a name="l00592"></a>00592 
-<a name="l00601"></a><a class="code" href="struct_nv_blast_damage_program.html">00601</a> <span class="keyword">struct </span><a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a>
-<a name="l00602"></a>00602 {
-<a name="l00603"></a><a class="code" href="struct_nv_blast_damage_program.html#cbd3cd5f64dd5e3880cd4eb2e044ff8e">00603</a>     <a class="code" href="_nv_blast_types_8h.html#f1fde0d45c48f0575e67f1df5860f940">NvBlastGraphShaderFunction</a>      graphShaderFunction;
-<a name="l00604"></a><a class="code" href="struct_nv_blast_damage_program.html#dafc94c7f45e08017491cdf1657e84dc">00604</a>     <a class="code" href="_nv_blast_types_8h.html#33a8ca70a1399b8b42a968c93f89ff50">NvBlastSubgraphShaderFunction</a>   subgraphShaderFunction;
-<a name="l00605"></a>00605 };
-<a name="l00606"></a>00606 
-<a name="l00607"></a>00607 
-<a name="l00609"></a>00609 
-<a name="l00610"></a>00610 
-<a name="l00611"></a>00611 <span class="preprocessor">#endif // ifndef NVBLASTTYPES_H</span>
+<a name="l00593"></a>00593 
+<a name="l00594"></a>00594 <span class="preprocessor">#endif // ifndef NVBLASTTYPES_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

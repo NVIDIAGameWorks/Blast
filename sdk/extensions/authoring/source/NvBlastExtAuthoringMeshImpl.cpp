@@ -226,7 +226,7 @@ void getTangents(PxVec3& normal, PxVec3& t1, PxVec3& t2)
 	t2 = t1.cross(normal);
 }
 
-Mesh* getCuttingBox(const PxVec3& point, const PxVec3& normal, float size, int32_t id, int32_t interiorMaterialId)
+Mesh* getCuttingBox(const PxVec3& point, const PxVec3& normal, float size, int64_t id, int32_t interiorMaterialId)
 {
 	PxVec3 lNormal = normal.getNormalized();
 	PxVec3 t1, t2;
@@ -315,7 +315,7 @@ Mesh* getCuttingBox(const PxVec3& point, const PxVec3& normal, float size, int32
 	return new MeshImpl(positions.data(), edges.data(), facets.data(), static_cast<uint32_t>(positions.size()), static_cast<uint32_t>(edges.size()), static_cast<uint32_t>(facets.size()));
 }
 
-void inverseNormalAndSetIndices(Mesh* mesh, int32_t id)
+void inverseNormalAndSetIndices(Mesh* mesh, int64_t id)
 {
 	for (uint32_t i = 0; i < mesh->getVerticesCount(); ++i)
 	{
@@ -364,7 +364,7 @@ void MeshImpl::setSmoothingGroup(const int32_t* smoothingGroups)
 }
 
 
-void setCuttingBox(const PxVec3& point, const PxVec3& normal, Mesh* mesh, float size, int32_t id)
+void setCuttingBox(const PxVec3& point, const PxVec3& normal, Mesh* mesh, float size, int64_t id)
 {
 	PxVec3 t1, t2;
 	PxVec3 lNormal = normal.getNormalized();
@@ -453,9 +453,15 @@ Mesh* getNoisyCuttingBoxPair(const physx::PxVec3& point, const physx::PxVec3& no
 			uint32_t start = edges.size();
 			edges.push_back(Edge(i * (resolution + 1) + j, i * (resolution + 1) + j + 1));
 			edges.push_back(Edge(i * (resolution + 1) + j + 1, (i + 1) * (resolution + 1) + j + 1));
+			edges.push_back(Edge((i + 1) * (resolution + 1) + j + 1, i * (resolution + 1) + j));
+			facets.push_back(Facet(start, 3, interiorMaterialId, id, -1));
+
+			start = edges.size();
+			edges.push_back(Edge(i * (resolution + 1) + j, (i + 1) * (resolution + 1) + j + 1));
 			edges.push_back(Edge((i + 1) * (resolution + 1) + j + 1, (i + 1) * (resolution + 1) + j));
-			edges.push_back(Edge((i + 1) * (resolution + 1) + j, i * (resolution + 1) + j));
-			facets.push_back(Facet(start, 4, interiorMaterialId, id, -1));
+			edges.push_back(Edge((i + 1) * (resolution + 1) + j, (i) * (resolution + 1) + j));
+			facets.push_back(Facet(start, 3, interiorMaterialId, id, -1));
+
 		}
 	}
 	uint32_t offset = (resolution + 1) * (resolution + 1);

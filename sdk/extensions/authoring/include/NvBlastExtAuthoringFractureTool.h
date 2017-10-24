@@ -92,7 +92,7 @@ struct SlicingConfiguration
 	/**
 		Cutting surface resolution.
 	*/
-	int32_t surfaceResolution = 1;
+	uint32_t surfaceResolution = 1;
 };
 
 
@@ -355,6 +355,15 @@ public:
 		\return true if mesh contains open edges
 	*/
 	virtual bool									isMeshContainOpenEdges(const Mesh* input) = 0;
+
+	/**
+		Delete all children for specified chunk (also recursively delete chidren of children).
+		\param[in] chunkId Chunk ID which children should be deleted
+		\return true if one or more chunks were removed
+	*/
+	virtual bool									deleteAllChildrenOfChunk(int32_t chunkId) = 0;
+
+	virtual void									uniteChunks(uint32_t maxAtLevel, uint32_t maxGroupSize) = 0;
 };
 
 } // namespace Blast

@@ -72,26 +72,30 @@
 <a name="l00069"></a>00069 };
 <a name="l00070"></a>00070 
 <a name="l00071"></a>00071 
-<a name="l00096"></a>00096 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="struct_nv_blast_asset_desc.html">NvBlastAssetDesc</a> <a class="code" href="_nv_blast_ext_asset_utils_8h.html#1486283b3fce176c10246113da3a7633">NvBlastExtAssetUtilsMergeAssets</a>
-<a name="l00097"></a>00097 (
-<a name="l00098"></a>00098     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_asset.html">NvBlastAsset</a>** components,
-<a name="l00099"></a>00099     <span class="keyword">const</span> <a class="code" href="struct_nvc_quat.html">NvcQuat</a>* rotations,
-<a name="l00100"></a>00100     <span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>* translations,
-<a name="l00101"></a>00101     uint32_t componentCount,
-<a name="l00102"></a>00102     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_ext_asset_utils_bond_desc.html">NvBlastExtAssetUtilsBondDesc</a>* newBondDescs,
-<a name="l00103"></a>00103     uint32_t newBondCount
-<a name="l00104"></a>00104 );
-<a name="l00105"></a>00105 
-<a name="l00106"></a>00106 
-<a name="l00117"></a>00117 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_asset_utils_8h.html#c37d2686e8dc06a250d84e5d58ae5f6e">NvBlastExtAssetTransformInPlace</a>
-<a name="l00118"></a>00118 (
-<a name="l00119"></a>00119     <a class="code" href="struct_nv_blast_asset.html">NvBlastAsset</a>* asset,
-<a name="l00120"></a>00120     <span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>* scale,
-<a name="l00121"></a>00121     <span class="keyword">const</span> <a class="code" href="struct_nvc_quat.html">NvcQuat</a>* rotation,
-<a name="l00122"></a>00122     <span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>* translation
-<a name="l00123"></a>00123 );
+<a name="l00110"></a>00110 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="struct_nv_blast_asset_desc.html">NvBlastAssetDesc</a> <a class="code" href="_nv_blast_ext_asset_utils_8h.html#51725c40995e0c86428bdc9fb5450f48">NvBlastExtAssetUtilsMergeAssets</a>
+<a name="l00111"></a>00111 (
+<a name="l00112"></a>00112     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_asset.html">NvBlastAsset</a>** components,
+<a name="l00113"></a>00113     <span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>* scales,
+<a name="l00114"></a>00114     <span class="keyword">const</span> <a class="code" href="struct_nvc_quat.html">NvcQuat</a>* rotations,
+<a name="l00115"></a>00115     <span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>* translations,
+<a name="l00116"></a>00116     uint32_t componentCount,
+<a name="l00117"></a>00117     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_ext_asset_utils_bond_desc.html">NvBlastExtAssetUtilsBondDesc</a>* newBondDescs,
+<a name="l00118"></a>00118     uint32_t newBondCount,
+<a name="l00119"></a>00119     uint32_t* chunkIndexOffsets,
+<a name="l00120"></a>00120     uint32_t* chunkReorderMap,
+<a name="l00121"></a>00121     uint32_t chunkReorderMapSize
+<a name="l00122"></a>00122 );
+<a name="l00123"></a>00123 
 <a name="l00124"></a>00124 
-<a name="l00125"></a>00125 <span class="preprocessor">#endif // ifndef NVBLASTEXTASSETUTILS_H</span>
+<a name="l00135"></a>00135 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_asset_utils_8h.html#c37d2686e8dc06a250d84e5d58ae5f6e">NvBlastExtAssetTransformInPlace</a>
+<a name="l00136"></a>00136 (
+<a name="l00137"></a>00137     <a class="code" href="struct_nv_blast_asset.html">NvBlastAsset</a>* asset,
+<a name="l00138"></a>00138     <span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>* scale,
+<a name="l00139"></a>00139     <span class="keyword">const</span> <a class="code" href="struct_nvc_quat.html">NvcQuat</a>* rotation,
+<a name="l00140"></a>00140     <span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>* translation
+<a name="l00141"></a>00141 );
+<a name="l00142"></a>00142 
+<a name="l00143"></a>00143 <span class="preprocessor">#endif // ifndef NVBLASTEXTASSETUTILS_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

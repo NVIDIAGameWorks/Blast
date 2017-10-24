@@ -31,6 +31,8 @@
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#04bb5dd940274a9c8b097cc9f06d0708">createChunkMesh</a> (int32_t chunkId)=0</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#eaa46bf5fe4fe7035ac624f49ade64a8">deleteAllChildrenOfChunk</a> (int32_t chunkId)=0</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#8830959a8f7e4babc1983ea31c61ef5d">finalizeFracturing</a> ()=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#ea8f1d386c70af0ea67bed2c353e57a1">getBaseMesh</a> (int32_t chunkIndex, <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *&amp;output)=0</td></tr>
@@ -72,6 +74,8 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c14c1ff1d50756694be24c34476af965">setSourceMesh</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *mesh)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c61aa65dde3c085450e8256a838a487f">slicing</a> (uint32_t chunkId, <a class="el" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a> conf, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#bc9766f9ef9efc4fd5f36813f28cc705">uniteChunks</a> (uint32_t maxAtLevel, uint32_t maxGroupSize)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#4f3ef816a0f201da675be379691193d1">voronoiFracturing</a> (uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, const physx::PxVec3 &amp;scale, const physx::PxQuat &amp;rotation, bool replaceChunk)=0</td></tr>
 
@@ -120,6 +124,32 @@
 
 <p>
 Get chunk mesh in polygonal representation. User's code should release it after usage. 
+</div>
+</div><p>
+<a class="anchor" name="eaa46bf5fe4fe7035ac624f49ade64a8"></a><!-- doxytag: member="Nv::Blast::FractureTool::deleteAllChildrenOfChunk" ref="eaa46bf5fe4fe7035ac624f49ade64a8" args="(int32_t chunkId)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool Nv::Blast::FractureTool::deleteAllChildrenOfChunk           </td>
+          <td>(</td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkId</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Delete all children for specified chunk (also recursively delete chidren of children). <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkId</em>&nbsp;</td><td>Chunk ID which children should be deleted </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true if one or more chunks were removed </dd></dl>
+
 </div>
 </div><p>
 <a class="anchor" name="8830959a8f7e4babc1983ea31c61ef5d"></a><!-- doxytag: member="Nv::Blast::FractureTool::finalizeFracturing" ref="8830959a8f7e4babc1983ea31c61ef5d" args="()=0" -->
@@ -683,6 +713,35 @@ Fractures specified chunk with slicing method. <dl compact><dt><b>Parameters:</b
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>If 0, fracturing is successful. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="bc9766f9ef9efc4fd5f36813f28cc705"></a><!-- doxytag: member="Nv::Blast::FractureTool::uniteChunks" ref="bc9766f9ef9efc4fd5f36813f28cc705" args="(uint32_t maxAtLevel, uint32_t maxGroupSize)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::FractureTool::uniteChunks           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>maxAtLevel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>maxGroupSize</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
 
 </div>
 </div><p>

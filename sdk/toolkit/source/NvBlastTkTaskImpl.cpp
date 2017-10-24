@@ -180,7 +180,7 @@ void TkWorker::process(TkWorkerJob& j)
 		NvBlastFractureBuffers commandBuffer = m_tempBuffer;
 
 		BLAST_PROFILE_ZONE_BEGIN("Material");
-		damage.generateFracture(&commandBuffer, actorLL, timers);
+		NvBlastActorGenerateFracture(&commandBuffer, actorLL, damage.program, damage.programParams, logLL, timers);
 		BLAST_PROFILE_ZONE_END("Material");
 
 		if (commandBuffer.chunkFractureCount > 0 || commandBuffer.bondFractureCount > 0)

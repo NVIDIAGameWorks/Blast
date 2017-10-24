@@ -35,6 +35,8 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual physx::PxConvexMesh *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#f11590ccfc3ca91561f45822a512bd3e">buildConvexMesh</a> (uint32_t verticesCount, const physx::PxVec3 *vertexData)=0</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#1632eb2729cbe16455c2d8db6e629687">buildMeshConvexDecomposition</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Nv::Blast::Triangle</a> *mesh, uint32_t triangleCount, const <a class="el" href="struct_nv_1_1_blast_1_1_collision_params.html">CollisionParams</a> &amp;params, <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> **&amp;convexes)=0</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#67c62d633c355aeac7869b2c77b8737b">release</a> ()=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html#18827ae5019d32f05bda0b53aeb142dd">trimCollisionGeometry</a> (uint32_t chunksCount, <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> **in, const uint32_t *chunkDepth)=0</td></tr>
@@ -160,6 +162,47 @@ Method creates PxConvexMesh from provided array of vertices. <dl compact><dt><b>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>pointer to the PxConvexMesh object if it was built successfully, 'nullptr' otherwise. </dd></dl>
 
+</div>
+</div><p>
+<a class="anchor" name="1632eb2729cbe16455c2d8db6e629687"></a><!-- doxytag: member="Nv::Blast::ConvexMeshBuilder::buildMeshConvexDecomposition" ref="1632eb2729cbe16455c2d8db6e629687" args="(const Nv::Blast::Triangle *mesh, uint32_t triangleCount, const CollisionParams &amp;params, CollisionHull **&amp;convexes)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int32_t Nv::Blast::ConvexMeshBuilder::buildMeshConvexDecomposition           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Nv::Blast::Triangle</a> *&nbsp;</td>
+          <td class="paramname"> <em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>triangleCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_collision_params.html">CollisionParams</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> **&amp;&nbsp;</td>
+          <td class="paramname"> <em>convexes</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Create mesh convex decomposition 
 </div>
 </div><p>
 <a class="anchor" name="67c62d633c355aeac7869b2c77b8737b"></a><!-- doxytag: member="Nv::Blast::ConvexMeshBuilder::release" ref="67c62d633c355aeac7869b2c77b8737b" args="()=0" -->

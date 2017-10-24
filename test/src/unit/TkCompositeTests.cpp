@@ -327,8 +327,9 @@ public:
 
 		group->addActor(*actor1);
 
-		CSParams p(2, 0.0f);
-		actor1->damage(getCubeSlicerProgram(), &p, sizeof(p), getDefaultMaterial());
+		CSParams cs2(2, 0.0f);
+		NvBlastExtProgramParams csParams2 = { &cs2, nullptr };
+		actor1->damage(getCubeSlicerProgram(), &csParams2);
 
 		EXPECT_EQ((size_t)0, tracker.joints.size());
 
@@ -363,9 +364,10 @@ public:
 		}
 
 		NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0);
+		NvBlastExtProgramParams radialParams = { &radialDamage, nullptr };
 		for (TkActor* actor : actors)
 		{
-			actor->damage(getFalloffProgram(), &radialDamage, sizeof(radialDamage), getDefaultMaterial());
+			actor->damage(getFalloffProgram(), &radialParams);
 		}
 
 		m_groupTM->process();
@@ -464,11 +466,13 @@ public:
 
 		EXPECT_EQ(compJointCount, tracker.joints.size());
 
+		CSParams cs2(2, 0.0f);
+		NvBlastExtProgramParams csParams2 = { &cs2, nullptr };
+
 		size_t totalActorCount = 0;
 		for (uint32_t i = 0; i < 4; ++i)
 		{
-			CSParams p(2, 0.0f);
-			actors[i]->damage(getCubeSlicerProgram(), &p, sizeof(p), getDefaultMaterial());
+			actors[i]->damage(getCubeSlicerProgram(), &csParams2);
 
 			m_groupTM->process();
 			m_groupTM->wait();
@@ -515,9 +519,10 @@ public:
 		}
 
 		NvBlastExtRadialDamageDesc radialDamage = getRadialDamageDesc(0, 0, 0);
+		NvBlastExtProgramParams radialParams = { &radialDamage, nullptr };
 		for (TkActor* actor : actors)
 		{
-			actor->damage(getFalloffProgram(), &radialDamage, sizeof(radialDamage), getDefaultMaterial());
+			actor->damage(getFalloffProgram(), &radialParams);
 		}
 
 		m_groupTM->process();
@@ -625,9 +630,11 @@ public:
 		tracker.joints.insert(joint);
 
 		NvBlastExtRadialDamageDesc radialDamage1 = getRadialDamageDesc(0, 1, 0, 2, 2);
-		actor1->damage(getFalloffProgram(), &radialDamage1, sizeof(radialDamage1), getDefaultMaterial());
+		NvBlastExtProgramParams radialParams1 = { &radialDamage1, nullptr };
+		actor1->damage(getFalloffProgram(), &radialParams1);
 		NvBlastExtRadialDamageDesc radialDamage2 = getRadialDamageDesc(0, -1, 0, 2, 2);
-		actor2->damage(getFalloffProgram(), &radialDamage2, sizeof(radialDamage2), getDefaultMaterial());
+		NvBlastExtProgramParams radialParams2 = { &radialDamage2, nullptr };
+		actor2->damage(getFalloffProgram(), &radialParams2);
 
 		m_groupTM->process();
 		m_groupTM->wait();

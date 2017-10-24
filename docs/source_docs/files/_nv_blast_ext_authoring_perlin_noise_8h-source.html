@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
@@ -270,7 +271,7 @@
 <a name="l00248"></a>00248     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    SEED_NOISE_GEN = 1013;
 <a name="l00249"></a>00249     <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span>    SHIFT_NOISE_GEN = 8;
 <a name="l00250"></a>00250 
-<a name="l00251"></a>00251     <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">int</span> fastfloor(<span class="keywordtype">float</span> x)
+<a name="l00251"></a>00251     <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <span class="keywordtype">int</span> fastfloor(<span class="keywordtype">float</span> <a class="code" href="bt_vector3_8h.html#0d05bb202a57e1c47ae0eeeec2502c1b" title="Return the x value.">x</a>)
 <a name="l00252"></a>00252     {
 <a name="l00253"></a>00253         <span class="keywordflow">return</span> (x &gt;= 0) ? (int)x : (<span class="keywordtype">int</span>)(x - 1);
 <a name="l00254"></a>00254     }
@@ -285,7 +286,7 @@
 <a name="l00269"></a>00269     <span class="comment">// 4D simplex noise</span>
 <a name="l00270"></a>00270     <span class="comment">// returns: (x,y,z) = noise grad, w = noise value</span>
 <a name="l00271"></a>00271 
-<a name="l00281"></a><a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#4651bada29932a13dc3808ce94f22219">00281</a>     physx::PxVec4 <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#4651bada29932a13dc3808ce94f22219">eval4D</a>(<span class="keywordtype">float</span> x, <span class="keywordtype">float</span> y, <span class="keywordtype">float</span> z, <span class="keywordtype">float</span> w, <span class="keywordtype">int</span> seed)
+<a name="l00281"></a><a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#4651bada29932a13dc3808ce94f22219">00281</a>     physx::PxVec4 <a class="code" href="class_nv_1_1_blast_1_1_simplex_noise.html#4651bada29932a13dc3808ce94f22219">eval4D</a>(<span class="keywordtype">float</span> x, <span class="keywordtype">float</span> <a class="code" href="bt_vector3_8h.html#88617d2888b444b2ad2384b17b0eeadf" title="Return the y value.">y</a>, <span class="keywordtype">float</span> <a class="code" href="bt_vector3_8h.html#49dd8d4770be4de32dd57f9b926aa396" title="Return the z value.">z</a>, <span class="keywordtype">float</span> <a class="code" href="bt_vector3_8h.html#c0e6714ccdb1e845d1c5cc79c057331a" title="Return the w value.">w</a>, <span class="keywordtype">int</span> seed)
 <a name="l00282"></a>00282     {
 <a name="l00283"></a>00283         <span class="comment">// The skewing and unskewing factors are hairy again for the 4D case</span>
 <a name="l00284"></a>00284         <span class="keyword">const</span> <span class="keywordtype">float</span> F4 = (physx::PxSqrt(5.0f) - 1.0f) / 4.0f;

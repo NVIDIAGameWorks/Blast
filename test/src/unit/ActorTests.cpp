@@ -109,19 +109,16 @@ static void blast(std::set<NvBlastActor*>& actorsToDamage, GeneratorAsset* testA
 	std::vector<char> splitScratch;
 	std::vector<NvBlastActor*> newActorsBuffer(testAsset->solverChunks.size());
 
-	NvBlastExtRadialDamageDesc damage[] = {
-		{
-			compressiveDamage,
-			{ localPos.x, localPos.y, localPos.z },
-			minRadius,
-			maxRadius
-		}
+	NvBlastExtRadialDamageDesc damage = {
+		compressiveDamage,
+		{ localPos.x, localPos.y, localPos.z },
+		minRadius,
+		maxRadius
 	};
 
-	NvBlastProgramParams programParams =
+	NvBlastExtProgramParams programParams =
 	{
 		&damage,
-		1,
 		nullptr
 	};
 

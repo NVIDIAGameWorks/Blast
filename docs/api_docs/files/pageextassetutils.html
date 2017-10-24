@@ -61,7 +61,7 @@ newBondDesc[0].componentIndices[0] = 0; <span class="comment">// Connect asset i
 newBondDesc[0].componentIndices[1] = 1; <span class="comment">// .. to the asset in components[1]</span>
 
 <span class="comment">// Create merged asset descriptor</span>
-<a class="code" href="struct_nv_blast_asset_desc.html">NvBlastAssetDesc</a> mergedDesc = <a class="code" href="_nv_blast_ext_asset_utils_8h.html#1486283b3fce176c10246113da3a7633">NvBlastExtAssetUtilsMergeAssets</a>(components, NULL, translations, 2, newBondDescs, newBondCount);
+<a class="code" href="struct_nv_blast_asset_desc.html">NvBlastAssetDesc</a> mergedDesc = <a class="code" href="_nv_blast_ext_asset_utils_8h.html#51725c40995e0c86428bdc9fb5450f48">NvBlastExtAssetUtilsMergeAssets</a>(components, NULL, translations, 2, newBondDescs, newBondCount);
 </pre></div><p>
 Note, we passed in NULL for the list of relative rotations, meaning no asset will be rotated.<p>
 Also note, the new bond descriptors can just as well apply to a single asset (by setting both component indices to the same index), allowing the user to create additional bonds within a single asset if desired.<p>

@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
@@ -104,7 +105,7 @@
 <a name="l00132"></a>00132 
 <a name="l00136"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#11d8ab3b4c7040389b3b552d07e4da57">00136</a>     <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#11d8ab3b4c7040389b3b552d07e4da57">FractureToolImpl</a>()
 <a name="l00137"></a>00137     {
-<a name="l00138"></a>00138         <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c081193444f3a4f25e8b66021a812539">mPlaneIndexerOffset</a> = 1;
+<a name="l00138"></a>00138         <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#1cf29d3d972240ac368f6acef7bcb93b">mPlaneIndexerOffset</a> = 1;
 <a name="l00139"></a>00139         <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#77957e191451f94d3753e31695c37914">mChunkIdCounter</a> = 0;
 <a name="l00140"></a>00140         <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#bcc6a73e16008d488bbf81623ec5a33e">mRemoveIslands</a> = <span class="keyword">false</span>;
 <a name="l00141"></a>00141         <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#e9fdc3a9dd7eefe632a24c7abb6c4962">mInteriorMaterialId</a> = <a class="code" href="_nv_blast_ext_authoring_types_8h.html#4b5be3049d66fc468db102281f6c068b">MATERIAL_INTERIOR</a>;
@@ -167,34 +168,43 @@
 <a name="l00310"></a>00310 
 <a name="l00315"></a>00315     <span class="keywordtype">bool</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#41b5acb435a88c4cd06912ac75bc7f19">isMeshContainOpenEdges</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* input) <span class="keyword">override</span>;
 <a name="l00316"></a>00316 
-<a name="l00317"></a>00317 <span class="keyword">private</span>:    
-<a name="l00318"></a>00318     <span class="keywordtype">void</span>                                    eraseChunk(int32_t chunkId);    
-<a name="l00319"></a>00319     <span class="keywordtype">bool</span>                                    isAncestorForChunk(int32_t ancestorId, int32_t chunkId);
-<a name="l00320"></a>00320     <span class="keywordtype">void</span>                                    deleteAllChildsOfChunk(int32_t chunkId);
-<a name="l00321"></a>00321     int32_t                                 slicingNoisy(uint32_t chunkId, <a class="code" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a> conf, <span class="keywordtype">bool</span> replaceChunk, <a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a>* rnd);
-<a name="l00322"></a>00322 
-<a name="l00323"></a>00323 <span class="keyword">protected</span>:
-<a name="l00327"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3853cd248b6b0531f18f8cf1711bc90f">00327</a>     <span class="keywordtype">float</span>                               <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3853cd248b6b0531f18f8cf1711bc90f">mScaleFactor</a>;
-<a name="l00328"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#d7a1b834ea7653d69e10dca1f7a12e48">00328</a>     physx::PxVec3                       <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#d7a1b834ea7653d69e10dca1f7a12e48">mOffset</a>;
-<a name="l00329"></a>00329 
-<a name="l00330"></a>00330     <span class="comment">/* Chunk mesh wrappers */</span>
-<a name="l00331"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c2202d728cefb26446a60593b03dcbe1">00331</a>     std::vector&lt;Triangulator*&gt;          <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c2202d728cefb26446a60593b03dcbe1">mChunkPostprocessors</a>;
-<a name="l00332"></a>00332 
+<a name="l00317"></a>00317     <span class="keywordtype">bool</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#fe1100c6aa5907b10ae574d18152c5ac">deleteAllChildrenOfChunk</a>(int32_t chunkId) <span class="keyword">override</span>;
+<a name="l00318"></a>00318 
+<a name="l00319"></a>00319     <span class="keywordtype">void</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#f4598d30b4a393693a7a405854aa6674">uniteChunks</a>(uint32_t maxAtLevel, uint32_t maxGroupSize) <span class="keyword">override</span>;
+<a name="l00320"></a>00320     
+<a name="l00321"></a>00321 
+<a name="l00322"></a>00322 <span class="keyword">private</span>:    
+<a name="l00323"></a>00323     <span class="keywordtype">void</span>                                    eraseChunk(int32_t chunkId);    
+<a name="l00324"></a>00324     <span class="keywordtype">bool</span>                                    isAncestorForChunk(int32_t ancestorId, int32_t chunkId);
+<a name="l00325"></a>00325     int32_t                                 slicingNoisy(uint32_t chunkId, <a class="code" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a> conf, <span class="keywordtype">bool</span> replaceChunk, <a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a>* rnd);
+<a name="l00326"></a>00326     uint32_t                                stretchGroup(<span class="keyword">const</span> std::vector&lt;uint32_t&gt;&amp; group, std::vector&lt;std::vector&lt;uint32_t&gt;&gt;&amp; graph);
+<a name="l00327"></a>00327     <span class="keywordtype">void</span>                                    rebuildAdjGraph(<span class="keyword">const</span> std::vector&lt;uint32_t&gt;&amp; chunksToRebuild, std::vector&lt;std::vector&lt;uint32_t&gt; &gt;&amp; chunkGraph);
+<a name="l00328"></a>00328     
+<a name="l00332"></a>00332     uint32_t                                createNewChunk(uint32_t parentId);
 <a name="l00333"></a>00333 
-<a name="l00334"></a>00334     
-<a name="l00335"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c081193444f3a4f25e8b66021a812539">00335</a>     int32_t                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c081193444f3a4f25e8b66021a812539">mPlaneIndexerOffset</a>;
-<a name="l00336"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#77957e191451f94d3753e31695c37914">00336</a>     int32_t                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#77957e191451f94d3753e31695c37914">mChunkIdCounter</a>;
-<a name="l00337"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#516359070dc5bf6cd0770d3e33b8c8d1">00337</a>     std::vector&lt;ChunkInfo&gt;              <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#516359070dc5bf6cd0770d3e33b8c8d1">mChunkData</a>;
-<a name="l00338"></a>00338 
-<a name="l00339"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#bcc6a73e16008d488bbf81623ec5a33e">00339</a>     <span class="keywordtype">bool</span>                                <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#bcc6a73e16008d488bbf81623ec5a33e">mRemoveIslands</a>;
-<a name="l00340"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#e9fdc3a9dd7eefe632a24c7abb6c4962">00340</a>     int32_t                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#e9fdc3a9dd7eefe632a24c7abb6c4962">mInteriorMaterialId</a>;
-<a name="l00341"></a>00341 };
-<a name="l00342"></a>00342 
-<a name="l00343"></a>00343 } <span class="comment">// namespace Blast</span>
-<a name="l00344"></a>00344 } <span class="comment">// namespace Nv</span>
+<a name="l00334"></a>00334 
+<a name="l00335"></a>00335 <span class="keyword">protected</span>:
+<a name="l00339"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3853cd248b6b0531f18f8cf1711bc90f">00339</a>     <span class="keywordtype">float</span>                               <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3853cd248b6b0531f18f8cf1711bc90f">mScaleFactor</a>;
+<a name="l00340"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#d7a1b834ea7653d69e10dca1f7a12e48">00340</a>     physx::PxVec3                       <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#d7a1b834ea7653d69e10dca1f7a12e48">mOffset</a>;
+<a name="l00341"></a>00341 
+<a name="l00342"></a>00342     <span class="comment">/* Chunk mesh wrappers */</span>
+<a name="l00343"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c2202d728cefb26446a60593b03dcbe1">00343</a>     std::vector&lt;Triangulator*&gt;          <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c2202d728cefb26446a60593b03dcbe1">mChunkPostprocessors</a>;
+<a name="l00344"></a>00344 
 <a name="l00345"></a>00345 
-<a name="l00346"></a>00346 
-<a name="l00347"></a>00347 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORINGFRACTURETOOLIMPL_H</span>
+<a name="l00346"></a>00346     
+<a name="l00347"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#1cf29d3d972240ac368f6acef7bcb93b">00347</a>     int64_t                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#1cf29d3d972240ac368f6acef7bcb93b">mPlaneIndexerOffset</a>;
+<a name="l00348"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#77957e191451f94d3753e31695c37914">00348</a>     int32_t                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#77957e191451f94d3753e31695c37914">mChunkIdCounter</a>;
+<a name="l00349"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#516359070dc5bf6cd0770d3e33b8c8d1">00349</a>     std::vector&lt;ChunkInfo&gt;              <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#516359070dc5bf6cd0770d3e33b8c8d1">mChunkData</a>;
+<a name="l00350"></a>00350 
+<a name="l00351"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#bcc6a73e16008d488bbf81623ec5a33e">00351</a>     <span class="keywordtype">bool</span>                                <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#bcc6a73e16008d488bbf81623ec5a33e">mRemoveIslands</a>;
+<a name="l00352"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#e9fdc3a9dd7eefe632a24c7abb6c4962">00352</a>     int32_t                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#e9fdc3a9dd7eefe632a24c7abb6c4962">mInteriorMaterialId</a>;
+<a name="l00353"></a>00353 };
+<a name="l00354"></a>00354 
+<a name="l00355"></a>00355 } <span class="comment">// namespace Blast</span>
+<a name="l00356"></a>00356 } <span class="comment">// namespace Nv</span>
+<a name="l00357"></a>00357 
+<a name="l00358"></a>00358 
+<a name="l00359"></a>00359 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORINGFRACTURETOOLIMPL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

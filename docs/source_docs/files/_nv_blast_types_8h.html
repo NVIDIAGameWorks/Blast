@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
@@ -80,8 +81,6 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_message.html">NvBlastMessage</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a></td></tr>
-
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_blast_support_graph.html">NvBlastSupportGraph</a></td></tr>
@@ -90,21 +89,21 @@
 
 <tr><td colspan="2"><br><h2>Typedefs</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">typedef void(*&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_types_8h.html#f1fde0d45c48f0575e67f1df5860f940">NvBlastGraphShaderFunction</a> )(<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a> *actor, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *params)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">typedef void(*&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_types_8h.html#89d08b7b5d43deebfb0148e7c593b7de">NvBlastGraphShaderFunction</a> )(<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a> *actor, const void *programParams)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">typedef void(*&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_types_8h.html#33a8ca70a1399b8b42a968c93f89ff50">NvBlastSubgraphShaderFunction</a> )(<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a> *actor, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *params)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">typedef void(*&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_types_8h.html#ed8e609201278d8682041939a5bbfd58">NvBlastSubgraphShaderFunction</a> )(<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a> *actor, const void *programParams)</td></tr>
 
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">typedef void(*&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> )(int type, const char *msg, const char *file, int line)</td></tr>
 
 </table>
 <hr><h2>Typedef Documentation</h2>
-<a class="anchor" name="f1fde0d45c48f0575e67f1df5860f940"></a><!-- doxytag: member="NvBlastTypes.h::NvBlastGraphShaderFunction" ref="f1fde0d45c48f0575e67f1df5860f940" args=")(NvBlastFractureBuffers *commandBuffers, const NvBlastGraphShaderActor *actor, const NvBlastProgramParams *params)" -->
+<a class="anchor" name="89d08b7b5d43deebfb0148e7c593b7de"></a><!-- doxytag: member="NvBlastTypes.h::NvBlastGraphShaderFunction" ref="89d08b7b5d43deebfb0148e7c593b7de" args=")(NvBlastFractureBuffers *commandBuffers, const NvBlastGraphShaderActor *actor, const void *programParams)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef void(* <a class="el" href="_nv_blast_types_8h.html#f1fde0d45c48f0575e67f1df5860f940">NvBlastGraphShaderFunction</a>)(<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a> *actor, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *params)          </td>
+          <td class="memname">typedef void(* <a class="el" href="_nv_blast_types_8h.html#89d08b7b5d43deebfb0148e7c593b7de">NvBlastGraphShaderFunction</a>)(<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_graph_shader_actor.html">NvBlastGraphShaderActor</a> *actor, const void *programParams)          </td>
         </tr>
       </table>
 </div>
@@ -117,7 +116,7 @@ From a an input actor data (<a class="el" href="struct_nv_blast_graph_shader_act
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>commandBuffers</em>&nbsp;</td><td>The resulting health damage to apply. Typically requires an array of size (number of support chunks) + (number of bonds) of the processed asset but may depend on the actual implementation. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>actor</em>&nbsp;</td><td>The actor representation used for creating commands. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>params</em>&nbsp;</td><td>A set of parameters defined by the damage shader implementer.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>programParams</em>&nbsp;</td><td>A set of parameters defined by the damage shader implementer.</td></tr>
   </table>
 </dl>
 Interpretation of <a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>: As input: Counters denote available entries for FractureData. Chunk and Bond userdata are not used. Health values are not used.<p>
@@ -142,12 +141,12 @@ Function pointer type for logging.<p>
 When a function with this signature is passed into Blast functions with an NvBlastLog argument, Blast will use it to report errors, warnings, and other information. 
 </div>
 </div><p>
-<a class="anchor" name="33a8ca70a1399b8b42a968c93f89ff50"></a><!-- doxytag: member="NvBlastTypes.h::NvBlastSubgraphShaderFunction" ref="33a8ca70a1399b8b42a968c93f89ff50" args=")(NvBlastFractureBuffers *commandBuffers, const NvBlastSubgraphShaderActor *actor, const NvBlastProgramParams *params)" -->
+<a class="anchor" name="ed8e609201278d8682041939a5bbfd58"></a><!-- doxytag: member="NvBlastTypes.h::NvBlastSubgraphShaderFunction" ref="ed8e609201278d8682041939a5bbfd58" args=")(NvBlastFractureBuffers *commandBuffers, const NvBlastSubgraphShaderActor *actor, const void *programParams)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef void(* <a class="el" href="_nv_blast_types_8h.html#33a8ca70a1399b8b42a968c93f89ff50">NvBlastSubgraphShaderFunction</a>)(<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a> *actor, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *params)          </td>
+          <td class="memname">typedef void(* <a class="el" href="_nv_blast_types_8h.html#ed8e609201278d8682041939a5bbfd58">NvBlastSubgraphShaderFunction</a>)(<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_subgraph_shader_actor.html">NvBlastSubgraphShaderActor</a> *actor, const void *programParams)          </td>
         </tr>
       </table>
 </div>
@@ -160,7 +159,7 @@ From a an input actor data (<a class="el" href="struct_nv_blast_subgraph_shader_
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>commandBuffers</em>&nbsp;</td><td>The resulting health damage to apply. Typically requires an array of size (number of support chunks) + (number of bonds) of the processed asset but may depend on the actual implementation. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>actor</em>&nbsp;</td><td>The actor representation used for creating commands. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>params</em>&nbsp;</td><td>A set of parameters defined by the damage shader implementer.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>programParams</em>&nbsp;</td><td>A set of parameters defined by the damage shader implementer.</td></tr>
   </table>
 </dl>
 Interpretation of <a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>: As input: Counters denote available entries for FractureData. Chunk and Bond userdata are not used. Health values are not used.<p>

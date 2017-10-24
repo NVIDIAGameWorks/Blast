@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
@@ -70,13 +71,9 @@ Inheritance diagram for Nv::Blast::TkFamily:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_family.html#2a7f616590d03b66e1fb894627319e00">getFamilyLL</a> () const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const void *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_family.html#46490cb5e1e2372876bfcf50402c8bc4">getMaterial</a> () const =0</td></tr>
-
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_family.html#ff0ddc7484f6ee0dad8ee0e2f97be370">reinitialize</a> (const <a class="el" href="struct_nv_blast_family.html">NvBlastFamily</a> *newFamily, <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a> *group=nullptr)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_family.html#a456973bc9ddd753483ef5d7211e73c9">removeListener</a> (<a class="el" href="class_nv_1_1_blast_1_1_tk_event_listener.html">TkEventListener</a> &amp;l)=0</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_tk_family.html#72e431a2ea635a195ad30a07ed05af20">setMaterial</a> (const void *material)=0</td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
@@ -240,27 +237,6 @@ Access to underlying low-level family.<p>
 
 </div>
 </div><p>
-<a class="anchor" name="46490cb5e1e2372876bfcf50402c8bc4"></a><!-- doxytag: member="Nv::Blast::TkFamily::getMaterial" ref="46490cb5e1e2372876bfcf50402c8bc4" args="() const =0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual const void* Nv::Blast::TkFamily::getMaterial           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td> const<code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-The default material to be passed into <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> when a <a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a> in this family is damaged.<p>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>a pointer to the default material. </dd></dl>
-
-</div>
-</div><p>
 <a class="anchor" name="ff0ddc7484f6ee0dad8ee0e2f97be370"></a><!-- doxytag: member="Nv::Blast::TkFamily::reinitialize" ref="ff0ddc7484f6ee0dad8ee0e2f97be370" args="(const NvBlastFamily *newFamily, TkGroup *group=nullptr)=0" -->
 <div class="memitem">
 <div class="memproto">
@@ -318,32 +294,6 @@ Remove a TkEventReciever from this family's list of listeners.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>l</em>&nbsp;</td><td>The event listener to remove. </td></tr>
-  </table>
-</dl>
-
-</div>
-</div><p>
-<a class="anchor" name="72e431a2ea635a195ad30a07ed05af20"></a><!-- doxytag: member="Nv::Blast::TkFamily::setMaterial" ref="72e431a2ea635a195ad30a07ed05af20" args="(const void *material)=0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void Nv::Blast::TkFamily::setMaterial           </td>
-          <td>(</td>
-          <td class="paramtype">const void *&nbsp;</td>
-          <td class="paramname"> <em>material</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Set the default material to be passed into <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> when a <a class="el" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a> in this family is damaged. Must be valid till group endProcess() call.<p>
-<dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>material</em>&nbsp;</td><td>The material to be the new default. </td></tr>
   </table>
 </dl>
 

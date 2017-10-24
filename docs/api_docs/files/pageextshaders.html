@@ -22,9 +22,9 @@
 <div class="contents">
 <h1><a class="anchor" name="pageextshaders">Damage Shaders (NvBlastExtShaders) </a></h1>The Blast&trade; damage shader extension provides basic implementations of programs generating fracture commands, the first step in breaking a Blast&trade; Actor, see <a class="el" href="pagellapi.html#splitting">Damage and Fracturing</a>. These programs come as two shader functions (callbacks): one for Actors with a support graph, and one for Actors with just one chunk, respectively. The <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> containing both shaders can be used for low-level directly (NvBlastActorGenerateFracture) or for TkActor's damage and fracture functions.<p>
 For example, one may construct a damage program using the "shear" damage shaders declared in <a class="el" href="_nv_blast_ext_damage_shaders_8h.html">NvBlastExtDamageShaders.h</a>:<p>
-<div class="fragment"><pre class="fragment">    <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> damageProgram = { <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#4c050e75d4b9ddfcd3e85a620d21e029">NvBlastExtShearGraphShader</a>, <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#1dd2944861a3adaccd62165b952f3440">NvBlastExtShearSubgraphShader</a> };
+<div class="fragment"><pre class="fragment">    <a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> damageProgram = { <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#a49711a370498c4da36bd9dac4d1bbd9">NvBlastExtShearGraphShader</a>, <a class="code" href="_nv_blast_ext_damage_shaders_8h.html#3103465d5c665418138ea5e93a62ac73">NvBlastExtShearSubgraphShader</a> };
 </pre></div><p>
-The appropriate shader ("graph" or "subgraph") will be called for an Actor being processed, along with the Actor's necessary geometry and program parameters. The parameters (<a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a>) are set to contain<p>
+The appropriate shader ("graph" or "subgraph") will be called for an Actor being processed, along with the Actor's necessary geometry and program parameters. The parameters (NvBlastProgramParams) are set to contain<p>
 1. Material, something that describes an Actor properties (e.g. mass, stiffness, fragility) which are not expected to be changed often.<p>
 2. Damage description, something that describes a particular damage event (e.g. position, radius and force of explosion).<p>
 For example:<p>
@@ -39,8 +39,8 @@ A Tk layer example follows.<p>
     tkGroup-&gt;process();
 </pre></div><p>
 In contrast, the user is responsible for providing all the damage descriptions persisting through the low-level NvBlastActorGenerateFracture call when not using the Tk layer:<p>
-<div class="fragment"><pre class="fragment">    <a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> programParams = { damageDescs, 2, &amp;material };
-    <a class="code" href="_nv_blast_8h.html#6a40c4286de500e8545babfb9c517789">NvBlastActorGenerateFracture</a>(commandBuffers, actor, damageProgram, &amp;programParams, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>);
+<div class="fragment"><pre class="fragment">    NvBlastProgramParams programParams = { damageDescs, 2, &amp;material };
+    <a class="code" href="_nv_blast_8h.html#7bf6cbcc95e377f61dbd1ab87bf6facc">NvBlastActorGenerateFracture</a>(commandBuffers, actor, damageProgram, &amp;programParams, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>);
 </pre></div> </div>
 <!-- start footer part -->
 <div class="footer">

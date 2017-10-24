@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
@@ -52,7 +53,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_asset_utils_8h.html#93400dd7095443ef1af37d43077a4e8a">NvBlastExtAssetUtilsAddWorldBonds</a> (const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> *asset, const uint32_t *worldBoundChunks, uint32_t worldBoundChunkCount, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *bondDirections, const uint32_t *bondUserData)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API <a class="el" href="struct_nv_blast_asset_desc.html">NvBlastAssetDesc</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_asset_utils_8h.html#2b75dab42d0fa66f1bed0592f6058e36">NvBlastExtAssetUtilsMergeAssets</a> (const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> **components, const <a class="el" href="struct_nvc_quat.html">NvcQuat</a> *rotations, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *translations, uint32_t componentCount, const <a class="el" href="struct_nv_blast_ext_asset_utils_bond_desc.html">NvBlastExtAssetUtilsBondDesc</a> *newBondDescs, uint32_t newBondCount)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API <a class="el" href="struct_nv_blast_asset_desc.html">NvBlastAssetDesc</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_asset_utils_8h.html#f3bdbe570cddbaa96d3a5269e7d1385d">NvBlastExtAssetUtilsMergeAssets</a> (const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> **components, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *scales, const <a class="el" href="struct_nvc_quat.html">NvcQuat</a> *rotations, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *translations, uint32_t componentCount, const <a class="el" href="struct_nv_blast_ext_asset_utils_bond_desc.html">NvBlastExtAssetUtilsBondDesc</a> *newBondDescs, uint32_t newBondCount, uint32_t *chunkIndexOffsets, uint32_t *chunkReorderMap, uint32_t chunkReorderMapSize)</td></tr>
 
 </table>
 <hr><h2>Function Documentation</h2>
@@ -164,7 +165,7 @@ Reauthor the provided asset to bond the specified support chunks to the world.<p
 
 </div>
 </div><p>
-<a class="anchor" name="2b75dab42d0fa66f1bed0592f6058e36"></a><!-- doxytag: member="NvBlastExtAssetUtils.h::NvBlastExtAssetUtilsMergeAssets" ref="2b75dab42d0fa66f1bed0592f6058e36" args="(const NvBlastAsset **components, const NvcQuat *rotations, const NvcVec3 *translations, uint32_t componentCount, const NvBlastExtAssetUtilsBondDesc *newBondDescs, uint32_t newBondCount)" -->
+<a class="anchor" name="f3bdbe570cddbaa96d3a5269e7d1385d"></a><!-- doxytag: member="NvBlastExtAssetUtils.h::NvBlastExtAssetUtilsMergeAssets" ref="f3bdbe570cddbaa96d3a5269e7d1385d" args="(const NvBlastAsset **components, const NvcVec3 *scales, const NvcQuat *rotations, const NvcVec3 *translations, uint32_t componentCount, const NvBlastExtAssetUtilsBondDesc *newBondDescs, uint32_t newBondCount, uint32_t *chunkIndexOffsets, uint32_t *chunkReorderMap, uint32_t chunkReorderMapSize)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -173,6 +174,12 @@ Reauthor the provided asset to bond the specified support chunks to the world.<p
           <td>(</td>
           <td class="paramtype">const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> **&nbsp;</td>
           <td class="paramname"> <em>components</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td>
+          <td class="paramname"> <em>scales</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -202,7 +209,25 @@ Reauthor the provided asset to bond the specified support chunks to the world.<p
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>newBondCount</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>newBondCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>chunkIndexOffsets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>chunkReorderMap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkReorderMapSize</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -217,15 +242,20 @@ Reauthor the provided asset to bond the specified support chunks to the world.<p
 Creates an asset descriptor which will build an asset that merges several assets. Each asset (or component) is given a transform, applied to the geometric information in the chunk and bond descriptors.<p>
 New bond descriptors may be given to bond support chunks from different components.<p>
 An <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> may appear more than once in the components array.<p>
+This function will call NvBlastEnsureAssetExactSupportCoverage on the returned chunk descriptors. It will also call NvBlastReorderAssetDescChunks if the user passes in valid arrays for chunkReorderMap and chunkReorderMapSize. Otherwise, the user must ensure that the returned chunk descriptors are in a valid order is valid before using them.<p>
 NOTE: This function allocates memory using the allocator in NvBlastGlobals, to create the new chunk and bond descriptor arrays referenced in the returned <a class="el" href="struct_nv_blast_asset_desc.html">NvBlastAssetDesc</a>. The user must free this memory after use with NVBLAST_FREE appied to the pointers in the returned <a class="el" href="struct_nv_blast_asset_desc.html">NvBlastAssetDesc</a>.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>components</em>&nbsp;</td><td>An array of assets to merge, of size componentCount. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>scales</em>&nbsp;</td><td>An array of scales to apply to the geometric data in the chunks and bonds. If NULL, no scales are applied. If not NULL, the array must be of size componentCount. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>rotations</em>&nbsp;</td><td>An array of rotations to apply to the geometric data in the chunks and bonds, stored quaternion format. The quaternions MUST be normalized. If NULL, no rotations are applied. If not NULL, the array must be of size componentCount. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>translations</em>&nbsp;</td><td>An array of transforms to apply to the geometric data in the chunks and bonds. If NULL, no translations are applied. If not NULL, the array must be of size componentCount. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>translations</em>&nbsp;</td><td>An array of translations to apply to the geometric data in the chunks and bonds. If NULL, no translations are applied. If not NULL, the array must be of size componentCount. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>componentCount</em>&nbsp;</td><td>The size of the components and relativeTransforms arrays. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>newBondDescs</em>&nbsp;</td><td>Descriptors of type <a class="el" href="struct_nv_blast_ext_asset_utils_bond_desc.html">NvBlastExtAssetUtilsBondDesc</a> for new bonds between components, of size newBondCount. If NULL, newBondCount must be 0. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>newBondCount</em>&nbsp;</td><td>The size of the newBondDescs array.</td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>newBondCount</em>&nbsp;</td><td>The size of the newBondDescs array. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIndexOffsets</em>&nbsp;</td><td>If not NULL, must point to a uin32_t array of size componentCount. It will be filled with the starting elements in chunkReorderMap corresponding to each component. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkReorderMap</em>&nbsp;</td><td>If not NULL, the returned descriptor is run through NvBlastReorderAssetDescChunks, to ensure that it is a valid asset descriptor. In the process, chunks may be reordered (in addition to their natural re-indexing due to them all being placed in one array). To map from the old chunk indexing for the various component assets to the chunk indexing used in the returned descriptor, set chunkReorderMap to point to a uin32_t array of size equal to the total number of chunks in all components, and pass in a non-NULL value to chunkIndexOffsets as described above. Then, for component index c and chunk index k within that component, the new chunk index is given by: index = chunkReorderMap[ k + chunkIndexOffsets[c] ]. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkReorderMapSize</em>&nbsp;</td><td>The size of the array passed into chunkReorderMap, if chunkReorderMap is not NULL. This is for safety, so that this function does not overwrite chunkReorderMap.</td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>an asset descriptor that will build an asset which merges the components, using NvBlastCreateAsset. </dd></dl>

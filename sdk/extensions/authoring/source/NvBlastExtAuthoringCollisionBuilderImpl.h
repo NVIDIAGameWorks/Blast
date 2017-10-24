@@ -39,6 +39,19 @@ namespace Blast
 
 struct CollisionHullImpl : public CollisionHull
 {
+	~CollisionHullImpl();
+	CollisionHullImpl()
+	{
+		pointsCount = 0;
+		indicesCount = 0;
+		polygonDataCount = 0;
+		points = nullptr;
+		indices = nullptr;
+		polygonData = nullptr;
+	}
+
+	CollisionHullImpl(const CollisionHull& hullToCopy);
+
 	void release() override;
 };
 	
@@ -60,6 +73,8 @@ public:
 	virtual physx::PxConvexMesh*	buildConvexMesh(const CollisionHull& hull) override;
 	
 	virtual void					trimCollisionGeometry(uint32_t chunksCount, CollisionHull** in, const uint32_t* chunkDepth) override;
+
+	virtual int32_t					buildMeshConvexDecomposition(const Triangle* mesh, uint32_t triangleCount, const CollisionParams& params, CollisionHull**& convexes) override;
 
 private:
 	physx::PxPhysicsInsertionCallback*	mInsertionCallback;

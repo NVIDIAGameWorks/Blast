@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
@@ -190,7 +191,7 @@
 <a name="l00208"></a>00208     {
 <a name="l00209"></a>00209         m_cur = m_buf;
 <a name="l00210"></a>00210         m_end = m_buf + size;
-<a name="l00211"></a>00211         <span class="keyword">const</span> uint16_t x = <a class="code" href="class_nv_1_1_blast_1_1_ext_i_stream.html#37d0ed5cee3979398dfe959cbaf09e9343f604265f7e73d375f7d21ec9892b90">LittleEndian</a>;
+<a name="l00211"></a>00211         <span class="keyword">const</span> uint16_t <a class="code" href="bt_vector3_8h.html#0d05bb202a57e1c47ae0eeeec2502c1b" title="Return the x value.">x</a> = <a class="code" href="class_nv_1_1_blast_1_1_ext_i_stream.html#37d0ed5cee3979398dfe959cbaf09e9343f604265f7e73d375f7d21ec9892b90">LittleEndian</a>;
 <a name="l00212"></a>00212         m_flags = *<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;x);
 <a name="l00213"></a>00213     }
 <a name="l00214"></a>00214 
@@ -243,11 +244,11 @@
 <a name="l00261"></a>00261     <span class="keywordtype">bool</span>    canRead(<span class="keywordtype">size_t</span> size)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_cur + size &lt;= m_end; }
 <a name="l00262"></a>00262 
 <a name="l00263"></a>00263     <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;
-<a name="l00264"></a>00264     <span class="keyword">friend</span>  <a class="code" href="class_nv_1_1_blast_1_1_ext_i_stream.html#16eb4b1c0361d1e3542f37cf374e5df6">ExtIStream</a>&amp; <a class="code" href="class_nv_1_1_blast_1_1_ext_i_stream.html#3352b5fd41876d4f885c2a58a3b0af09">operator &gt;&gt; </a>(<a class="code" href="class_nv_1_1_blast_1_1_ext_i_stream.html#16eb4b1c0361d1e3542f37cf374e5df6">ExtIStream</a>&amp; s, T&amp; x);
+<a name="l00264"></a>00264     <span class="keyword">friend</span>  <a class="code" href="class_nv_1_1_blast_1_1_ext_i_stream.html#16eb4b1c0361d1e3542f37cf374e5df6">ExtIStream</a>&amp; <a class="code" href="class_nv_1_1_blast_1_1_ext_i_stream.html#3352b5fd41876d4f885c2a58a3b0af09">operator &gt;&gt; </a>(<a class="code" href="class_nv_1_1_blast_1_1_ext_i_stream.html#16eb4b1c0361d1e3542f37cf374e5df6">ExtIStream</a>&amp; s, T&amp; <a class="code" href="bt_vector3_8h.html#0d05bb202a57e1c47ae0eeeec2502c1b" title="Return the x value.">x</a>);
 <a name="l00265"></a>00265 };
 <a name="l00266"></a>00266 
 <a name="l00267"></a>00267 <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;
-<a name="l00268"></a><a class="code" href="namespace_nv_1_1_blast.html#0b6eef048652bbd2ede8acb4bd7de14e">00268</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <a class="code" href="class_nv_1_1_blast_1_1_ext_i_stream.html">ExtIStream</a>&amp; <a class="code" href="namespace_nv_1_1_blast.html#0b6eef048652bbd2ede8acb4bd7de14e">operator &gt;&gt; </a>(<a class="code" href="class_nv_1_1_blast_1_1_ext_i_stream.html">ExtIStream</a>&amp; s, T&amp; x)
+<a name="l00268"></a><a class="code" href="namespace_nv_1_1_blast.html#0b6eef048652bbd2ede8acb4bd7de14e">00268</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> <a class="code" href="class_nv_1_1_blast_1_1_ext_i_stream.html">ExtIStream</a>&amp; <a class="code" href="namespace_nv_1_1_blast.html#0b6eef048652bbd2ede8acb4bd7de14e">operator &gt;&gt; </a>(<a class="code" href="class_nv_1_1_blast_1_1_ext_i_stream.html">ExtIStream</a>&amp; s, T&amp; <a class="code" href="bt_vector3_8h.html#0d05bb202a57e1c47ae0eeeec2502c1b" title="Return the x value.">x</a>)
 <a name="l00269"></a>00269 {
 <a name="l00270"></a>00270     <span class="keywordflow">if</span> (s.<a class="code" href="class_nv_1_1_blast_1_1_ext_i_stream.html#43a5061a0c413a68ec25ed3d1bfca481">canRead</a>(<span class="keyword">sizeof</span>(T)))
 <a name="l00271"></a>00271     {

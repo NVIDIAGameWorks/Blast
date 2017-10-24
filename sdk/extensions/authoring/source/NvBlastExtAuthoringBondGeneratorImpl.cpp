@@ -35,6 +35,7 @@
 
 #include <NvBlastExtAuthoringBondGeneratorImpl.h>
 #include <NvBlast.h>
+#include <NvBlastGlobals.h>
 #include "NvBlastExtTriangleProcessor.h"
 #include "NvBlastExtApexSharedParts.h"
 #include "NvBlastExtAuthoringCollisionBuilderImpl.h"
@@ -50,7 +51,7 @@
 using physx::PxVec3;
 using physx::PxBounds3;
 
-#define SAFE_ARRAY_NEW(T, x) ((x) > 0) ? new T[x] : nullptr;
+#define SAFE_ARRAY_NEW(T, x) ((x) > 0) ? reinterpret_cast<T*>(NVBLAST_ALLOC(sizeof(T) * (x))) : nullptr;
 
 //#define DEBUG_OUTPUT
 #ifdef DEBUG_OUTPUT
@@ -241,56 +242,76 @@ namespace Nv
 			return area * 0.5f;
 		}
 
-		int32_t BlastBondGeneratorImpl::createFullBondListAveraged(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry, 
-			const bool* supportFlags, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf)
+		int32_t BlastBondGeneratorImpl::createFullBondListAveraged(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry, const CollisionHull** chunkHulls,
+			const bool* supportFlags, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf)
 		{
 			NV_UNUSED(conf);
 
 			std::vector<std::vector<PxVec3> > chunksPoints(meshCount);
-
-			for (uint32_t i = 0; i < meshCount; ++i)
+			if (!chunkHulls)
 			{
-				if (!supportFlags[i])
+				for (uint32_t i = 0; i < meshCount; ++i)
 				{
-					continue;
-				}
-				uint32_t count = geometryOffset[i + 1] - geometryOffset[i];
-				for (uint32_t j = 0; j < count; ++j)
-				{
-					chunksPoints[i].push_back(geometry[geometryOffset[i] + j].a.p);
-					chunksPoints[i].push_back(geometry[geometryOffset[i] + j].b.p);
-					chunksPoints[i].push_back(geometry[geometryOffset[i] + j].c.p);
+					if (!supportFlags[i])
+					{
+						continue;
+					}
+					uint32_t count = geometryOffset[i + 1] - geometryOffset[i];
+					for (uint32_t j = 0; j < count; ++j)
+					{
+						chunksPoints[i].push_back(geometry[geometryOffset[i] + j].a.p);
+						chunksPoints[i].push_back(geometry[geometryOffset[i] + j].b.p);
+						chunksPoints[i].push_back(geometry[geometryOffset[i] + j].c.p);
+					}
 				}
 			}
 
-			Nv::Blast::ConvexMeshBuilderImpl builder(mPxCooking, mPxInsertionCallback);
+			std::unique_ptr<Nv::Blast::ConvexMeshBuilderImpl> builder;
+			std::vector<std::vector<std::vector<PxVec3>>> hullPoints(meshCount);
 
-			std::vector<CollisionHull*> cHulls(meshCount);
-
-			for (uint32_t i = 0; i < meshCount; ++i)
-			{
-				if (!supportFlags[i])
-				{
-					continue;
-				}
-				cHulls[i] = builder.buildCollisionGeometry(chunksPoints[i].size(), chunksPoints[i].data());
-			}
-
-			std::vector<std::vector<PxVec3> > hullPoints(cHulls.size());
-
-			for (uint32_t chunk = 0; chunk < cHulls.size(); ++chunk)
+			for (uint32_t chunk = 0; chunk < meshCount; ++chunk)
 			{
 				if (!supportFlags[chunk])
 				{
 					continue;
 				}
-
-				hullPoints[chunk].resize(cHulls[chunk]->pointsCount);
-				for (uint32_t i = 0; i < cHulls[chunk]->pointsCount; ++i)
+				CollisionHull* tempHullPtr = nullptr;
+				uint32_t hullCountForMesh = 0;
+				const CollisionHull** beginChunkHulls = nullptr;
+				if (chunkHulls)
 				{
-					hullPoints[chunk][i] = cHulls[chunk]->points[i];
+					hullCountForMesh = geometryOffset[chunk + 1] - geometryOffset[chunk];
+					beginChunkHulls = chunkHulls + geometryOffset[chunk];
 				}
-				cHulls[chunk]->release();
+				else
+				{
+					//build a convex hull and store it in the temp slot
+					if (!builder)
+					{
+						builder = std::unique_ptr<Nv::Blast::ConvexMeshBuilderImpl>(new Nv::Blast::ConvexMeshBuilderImpl(mPxCooking, mPxInsertionCallback));
+					}
+
+					tempHullPtr = builder->buildCollisionGeometry(chunksPoints[chunk].size(), chunksPoints[chunk].data());
+					hullCountForMesh = 1;
+					beginChunkHulls = const_cast<const CollisionHull**>(&tempHullPtr);
+				}
+
+				hullPoints[chunk].resize(hullCountForMesh);
+				for (uint32_t hull = 0; hull < hullCountForMesh; ++hull)
+				{
+					auto& curHull = hullPoints[chunk][hull];
+					const uint32_t pointCount = beginChunkHulls[hull]->pointsCount;
+					curHull.resize(pointCount);
+					for (uint32_t i = 0; i < pointCount; ++i)
+					{
+						curHull[i] = beginChunkHulls[hull]->points[i];
+					}
+				}
+
+				if (tempHullPtr)
+				{
+					tempHullPtr->release();
+				}
 			}
 
 			TriangleProcessor trProcessor;
@@ -301,33 +322,46 @@ namespace Nv
 				{
 					continue;
 				}
+				const uint32_t ihullCount = hullPoints[i].size();
 				for (uint32_t j = i + 1; j < meshCount; ++j)
 				{
-					if (!supportFlags[i])
+					if (!supportFlags[j])
 					{
 						continue;
 					}
-					PxVec3 normal;
-					PxVec3 centroid;
 
-					float area = processWithMidplanes(&trProcessor, chunksPoints[i], chunksPoints[j], hullPoints[i], hullPoints[j], normal, centroid);
-
-					if (area > 0)
+					if (meshGroups && meshGroups[i] == meshGroups[j])
 					{
-						NvBlastBondDesc bDesc;
-						bDesc.chunkIndices[0] = i;
-						bDesc.chunkIndices[1] = j;
-						bDesc.bond.area = area;
-						bDesc.bond.centroid[0] = centroid.x;
-						bDesc.bond.centroid[1] = centroid.y;
-						bDesc.bond.centroid[2] = centroid.z;
+						//Same group no need to find bonds
+						continue;
+					}
 
-						bDesc.bond.normal[0] = normal.x;
-						bDesc.bond.normal[1] = normal.y;
-						bDesc.bond.normal[2] = normal.z;
+					const uint32_t jhullCount = hullPoints[j].size();
+					for (uint32_t ihull = 0; ihull < ihullCount; ++ihull)
+					{
+						for (uint32_t jhull = 0; jhull < jhullCount; ++jhull)
+						{
+							PxVec3 normal;
+							PxVec3 centroid;
 
+							float area = processWithMidplanes(&trProcessor, chunksPoints[i].empty() ? hullPoints[i][ihull] : chunksPoints[i], chunksPoints[j].empty() ? hullPoints[j][jhull] : chunksPoints[j], hullPoints[i][ihull], hullPoints[j][jhull], normal, centroid);
+							if (area > 0)
+							{
+								NvBlastBondDesc bDesc;
+								bDesc.chunkIndices[0] = i;
+								bDesc.chunkIndices[1] = j;
+								bDesc.bond.area = area;
+								bDesc.bond.centroid[0] = centroid.x;
+								bDesc.bond.centroid[1] = centroid.y;
+								bDesc.bond.centroid[2] = centroid.z;
 
-						mResultBondDescs.push_back(bDesc);
+								bDesc.bond.normal[0] = normal.x;
+								bDesc.bond.normal[1] = normal.y;
+								bDesc.bond.normal[2] = normal.z;
+
+								mResultBondDescs.push_back(bDesc);
+							}
+						}
 					}
 
 				}
@@ -1024,19 +1058,27 @@ namespace Nv
 		}
 
 		int32_t	BlastBondGeneratorImpl::bondsFromPrefractured(uint32_t meshCount, const uint32_t* geometryCount, const Triangle* geometry,
-			const bool*& chunkIsSupport, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf)
+			const bool* chunkIsSupport, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf)
 		{
 			int32_t ret_val = 0;
 			switch (conf.bondMode)
 			{
 			case BondGenerationConfig::AVERAGE:
-				ret_val = createFullBondListAveraged(meshCount, geometryCount, geometry, chunkIsSupport, resultBondDescs, conf);
+				ret_val = createFullBondListAveraged(meshCount, geometryCount, geometry, nullptr, chunkIsSupport, nullptr, resultBondDescs, conf);
 				break;
 			case BondGenerationConfig::EXACT:
 				ret_val = createFullBondListExact(meshCount, geometryCount, geometry, chunkIsSupport, resultBondDescs, conf);
 				break;
 			}
 			return ret_val;
+		}
+
+
+		int32_t BlastBondGeneratorImpl::bondsFromPrefractured(uint32_t meshCount, const uint32_t* convexHullOffset, const CollisionHull** chunkHulls, const bool* chunkIsSupport, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs)
+		{
+			BondGenerationConfig conf;
+			conf.bondMode = BondGenerationConfig::AVERAGE;
+			return createFullBondListAveraged(meshCount, convexHullOffset, nullptr, chunkHulls, chunkIsSupport, meshGroups, resultBondDescs, conf);
 		}
 
 		void BlastBondGeneratorImpl::release()

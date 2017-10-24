@@ -72,7 +72,7 @@ Used to create Physics Family.
 */
 struct ExtPxFamilyDesc
 {
-	const ExtPxAsset*		pxAsset;		//!< px asset to create from, pointer will be stored in family.
+	ExtPxAsset*				pxAsset;		//!< px asset to create from, pointer will be stored in family.
 	const NvBlastActorDesc*	actorDesc;		//!< actor descriptor to be used when creating TkActor. If nullptr, default NvBlastActorDesc from ExtPxAsset will be used.
 	TkGroup*				group;			//!< if not nullptr, created TkActor will be placed in group
 };

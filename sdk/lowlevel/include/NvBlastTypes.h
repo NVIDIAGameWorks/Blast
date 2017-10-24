@@ -490,6 +490,9 @@ A single actor's representation used by NvBlastGraphShaderFunction.
 */
 struct NvBlastGraphShaderActor
 {
+	uint32_t			actorIndex;				//!<	Actor's index.
+	uint32_t			graphNodeCount;			//!<	Actor's graph node count.
+	uint32_t			assetNodeCount;			//!<	Asset node count.
 	uint32_t			firstGraphNodeIndex;	//!<	Entry index for graphNodeIndexLinks
 	const uint32_t*		graphNodeIndexLinks;	//!<	Linked index list of connected nodes.  Traversable with nextIndex = graphNodeIndexLinks[currentIndex], terminates with 0xFFFFFFFF.
 	const uint32_t*		chunkIndices;			//!<	Graph's map from node index to support chunk index.
@@ -500,27 +503,7 @@ struct NvBlastGraphShaderActor
 	const NvBlastChunk*	assetChunks;			//!<	NvBlastChunks geometry in the NvBlastAsset.
 	const float*		familyBondHealths;		//!<	Actual bond health values for broken bond detection.
 	const float*		supportChunkHealths;	//!<	Actual chunk health values for dead chunk detection.
-};
-
-
-/**
-Damage program params.
-
-Custom user params to be passed in shader functions. This structure hints recommended parameters layout, but it
-doesn't required to be this way. 
-
-The idea of this 'hint' is that damage parameters are basically 2 entities: material + damage description.
-1. Material is something that describes an actor properties (e.g. mass, stiffness, fragility) which are not expected to be changed often.
-2. Damage description is something that describes particular damage event (e.g. position, radius and force of explosion).
-
-Also this damage program hints that there could be more than one damage event happening and processed per one shader call (for efficiency reasons). 
-So different damage descriptions can be stacked and passed in one shader call (while material is kept the same obviously).
-*/
-struct NvBlastProgramParams
-{
-	const void*	damageDescBuffer;	//!<	array of damage descriptions
-	uint32_t	damageDescCount;	//!<	number of damage descriptions in array
-	const void*	material;			//!<	pointer to material
+	const uint32_t*		nodeActorIndices;		//!<	Family's map from node index to actor index.
 };
 
 
@@ -544,7 +527,7 @@ creates a list of NvBlastFractureCommand to be applied to the respective NvBlast
 										Typically requires an array of size (number of support chunks) + (number of bonds) of the processed asset
 										but may depend on the actual implementation.
 \param[in]		actor					The actor representation used for creating commands.
-\param[in]		params					A set of parameters defined by the damage shader implementer.
+\param[in]		programParams			A set of parameters defined by the damage shader implementer.
 
 Interpretation of NvBlastFractureBuffers:
 As input:
@@ -559,7 +542,7 @@ Health values denote how much damage is to be applied.
 
 @see NvBlastFractureBuffers NvBlastGraphShaderActor
 */
-typedef void(*NvBlastGraphShaderFunction)(NvBlastFractureBuffers* commandBuffers, const NvBlastGraphShaderActor* actor, const NvBlastProgramParams* params);
+typedef void(*NvBlastGraphShaderFunction)(NvBlastFractureBuffers* commandBuffers, const NvBlastGraphShaderActor* actor, const void* programParams);
 
 
 /**
@@ -572,7 +555,7 @@ creates a list of NvBlastFractureCommand to be applied to the respective NvBlast
 										Typically requires an array of size (number of support chunks) + (number of bonds) of the processed asset
 										but may depend on the actual implementation.
 \param[in]		actor					The actor representation used for creating commands.
-\param[in]		params					A set of parameters defined by the damage shader implementer.
+\param[in]		programParams			A set of parameters defined by the damage shader implementer.
 
 Interpretation of NvBlastFractureBuffers:
 As input:
@@ -587,7 +570,7 @@ Health values denote how much damage is to be applied.
 
 @see NvBlastFractureBuffers NvBlastSubgraphShaderActor
 */
-typedef void(*NvBlastSubgraphShaderFunction)(NvBlastFractureBuffers* commandBuffers, const NvBlastSubgraphShaderActor* actor, const NvBlastProgramParams* params);
+typedef void(*NvBlastSubgraphShaderFunction)(NvBlastFractureBuffers* commandBuffers, const NvBlastSubgraphShaderActor* actor, const void* programParams);
 
 
 /**

@@ -82,10 +82,6 @@ public:
 	virtual const TkAsset*			getAsset() const override;
 
 	virtual void					reinitialize(const NvBlastFamily* newFamily, TkGroup* group) override;
-
-	virtual const void*				getMaterial() const override;
-
-	virtual void					setMaterial(const void* material) override;
 	// End TkFamily
 
 	// Public methods
@@ -145,7 +141,6 @@ private:
 	Array<JointSet*>::type		m_jointSets;
 	FamilyIDMap					m_familyIDMap;
 	const TkAssetImpl*			m_asset;
-	const void*					m_material;
 
 	TkEventQueue				m_queue;
 };
@@ -184,18 +179,6 @@ NV_INLINE TkActorImpl* TkFamilyImpl::getActorByActorLL(const NvBlastActor* actor
 {
 	uint32_t index = NvBlastActorGetIndex(actorLL, logLL);
 	return getActorByIndex(index);
-}
-
-
-NV_INLINE const void* TkFamilyImpl::getMaterial() const
-{
-	return m_material;
-}
-
-
-NV_INLINE void TkFamilyImpl::setMaterial(const void* material)
-{
-	m_material = material;
 }
 
 

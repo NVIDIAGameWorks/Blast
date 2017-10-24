@@ -30,6 +30,7 @@
 #include "NvBlastExtPxManager.h"
 #include "NvBlastExtPxFamily.h"
 #include "NvBlastExtPxActor.h"
+#include "NvBlastExtPxAsset.h"
 #include "NvBlastExtPxListener.h"
 
 #include "NvBlastAssert.h"
@@ -365,13 +366,13 @@ void ExtImpactDamageManagerImpl::damageActor(ExtPxActor* actor, PxShape* /*shape
 
 	const float damage = m_settings.hardness > 0.f ? force.magnitude() / m_settings.hardness : 0.f;
 
-	const void* material = actor->getTkActor().getFamily().getMaterial();
+	const NvBlastExtMaterial* material = actor->getFamily().getMaterial();
 	if (!material)
 	{
 		return;
 	}
 
-	float normalizedDamage = reinterpret_cast<const NvBlastExtMaterial*>(material)->getNormalizedDamage(damage);
+	float normalizedDamage = material->getNormalizedDamage(damage);
 	if (normalizedDamage == 0.f || normalizedDamage < m_settings.damageThresholdMin)
 	{
 		return;
@@ -382,24 +383,22 @@ void ExtImpactDamageManagerImpl::damageActor(ExtPxActor* actor, PxShape* /*shape
 	const float minDistance = m_settings.damageRadiusMax * normalizedDamage;
 	const float maxDistance = minDistance * PxClamp<float>(m_settings.damageFalloffRadiusFactor, 1, 32);
 
-	NvBlastProgramParams programParams;
-	programParams.damageDescCount = 1;
-	programParams.material = nullptr;
+	NvBlastExtProgramParams programParams(nullptr);
+	programParams.material = material;
+	programParams.accelerator = actor->getFamily().getPxAsset().getAccelerator();
 	NvBlastDamageProgram program;
 
 	if (m_settings.shearDamage)
 	{
-		NvBlastExtShearDamageDesc desc[] = {
-			{
-				normalizedDamage,
-				{ normal[0], normal[1], normal[2] },
-				{ position[0], position[1], position[2] },
-				minDistance,
-				maxDistance
-			}
+		NvBlastExtShearDamageDesc desc = {
+			normalizedDamage,
+			{ normal[0], normal[1], normal[2] },
+			{ position[0], position[1], position[2] },
+			minDistance,
+			maxDistance
 		};
 
-		programParams.damageDescBuffer = &desc;
+		programParams.damageDesc = &desc;
 
 		program.graphShaderFunction = NvBlastExtShearGraphShader;
 		program.subgraphShaderFunction = NvBlastExtShearSubgraphShader;
@@ -410,19 +409,17 @@ void ExtImpactDamageManagerImpl::damageActor(ExtPxActor* actor, PxShape* /*shape
 	}
 	else
 	{
-		NvBlastExtRadialDamageDesc desc[] = {
-			{
-				normalizedDamage,
-				{ position[0], position[1], position[2] },
-				minDistance,
-				maxDistance
-			}
+		NvBlastExtImpactSpreadDamageDesc desc = {
+			normalizedDamage,
+			{ position[0], position[1], position[2] },
+			minDistance,
+			maxDistance
 		};
 
-		programParams.damageDescBuffer = &desc;
+		programParams.damageDesc = &desc;
 
-		program.graphShaderFunction = NvBlastExtFalloffGraphShader;
-		program.subgraphShaderFunction = NvBlastExtFalloffSubgraphShader;
+		program.graphShaderFunction = NvBlastExtImpactSpreadGraphShader;
+		program.subgraphShaderFunction = NvBlastExtImpactSpreadSubgraphShader;
 
 		NvBlastFractureBuffers fractureEvents = m_fractureBuffers;
 		actor->getTkActor().generateFracture(&fractureEvents, program, &programParams);

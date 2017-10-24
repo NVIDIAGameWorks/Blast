@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
@@ -63,10 +64,12 @@ Inheritance diagram for Nv::Blast::ExtPxFamily:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#c19550a524c2b63373b545a8cae231a8">getActors</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a> **buffer, uint32_t bufferSize) const =0</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_blast_ext_material.html">NvBlastExtMaterial</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#a5144cabdc42112d0d415937580f08dd">getMaterial</a> () const =0</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <br class="typebreak">
 <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_actor_desc_template.html">ExtPxActorDescTemplate</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#cecdf23f9baaac8e045d78bb432fe897">getPxActorDesc</a> () const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#a097c93fe482395290543e9583b5bf67">getPxAsset</a> () const =0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#ca4f0294ea39d1ddf2f4a1d02fc05be7">getPxAsset</a> () const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <br class="typebreak">
 <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_shape_desc_template.html">ExtPxShapeDescTemplate</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#96744a318e9000a40f21d9751929bac9">getPxShapeDescTemplate</a> () const =0</td></tr>
@@ -79,6 +82,8 @@ Inheritance diagram for Nv::Blast::ExtPxFamily:</div>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#d0f72e382eeabf2d51529b806e7714cc">postSplitUpdate</a> ()=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#b425c68d1091043121c686fa9b4267cb">release</a> ()=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#8895d32707f5da13866d1cdc5e178292">setMaterial</a> (const <a class="el" href="struct_nv_blast_ext_material.html">NvBlastExtMaterial</a> *material)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#96a7d858c51c04cdf9354d95ec773868">setMaterial</a> (physx::PxMaterial &amp;material)=0</td></tr>
 
@@ -185,6 +190,29 @@ Retrieve an array of pointers (into the user-supplied buffer) to actors.<p>
 
 </div>
 </div><p>
+<a class="anchor" name="a5144cabdc42112d0d415937580f08dd"></a><!-- doxytag: member="Nv::Blast::ExtPxFamily::getMaterial" ref="a5144cabdc42112d0d415937580f08dd" args="() const =0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const <a class="el" href="struct_nv_blast_ext_material.html">NvBlastExtMaterial</a>* Nv::Blast::ExtPxFamily::getMaterial           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+The default material associated with this actor family.<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>a pointer to the default material. </dd></dl>
+
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1final.html#f358e9be435fc60498fae140fa0f9bba">Nv::Blast::final</a>.</p>
+
+</div>
+</div><p>
 <a class="anchor" name="cecdf23f9baaac8e045d78bb432fe897"></a><!-- doxytag: member="Nv::Blast::ExtPxFamily::getPxActorDesc" ref="cecdf23f9baaac8e045d78bb432fe897" args="() const =0" -->
 <div class="memitem">
 <div class="memproto">
@@ -208,12 +236,12 @@ Get the default ExtPxPxActorDesc to be used on all newly created PxActors.<p>
 
 </div>
 </div><p>
-<a class="anchor" name="a097c93fe482395290543e9583b5bf67"></a><!-- doxytag: member="Nv::Blast::ExtPxFamily::getPxAsset" ref="a097c93fe482395290543e9583b5bf67" args="() const =0" -->
+<a class="anchor" name="ca4f0294ea39d1ddf2f4a1d02fc05be7"></a><!-- doxytag: member="Nv::Blast::ExtPxFamily::getPxAsset" ref="ca4f0294ea39d1ddf2f4a1d02fc05be7" args="() const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>&amp; Nv::Blast::ExtPxFamily::getPxAsset           </td>
+          <td class="memname">virtual <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>&amp; Nv::Blast::ExtPxFamily::getPxAsset           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
@@ -227,7 +255,7 @@ Get the default ExtPxPxActorDesc to be used on all newly created PxActors.<p>
 Every family has an associated asset.<p>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>a pointer to the (const) <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a> object. </dd></dl>
 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1final.html#c700c9a07161686d66b6fc2f4a3f93bb">Nv::Blast::final</a>.</p>
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1final.html#2723382c6ac86b8362aa1dced1fc5a85">Nv::Blast::final</a>.</p>
 
 </div>
 </div><p>
@@ -270,7 +298,7 @@ Get the default ExtPxPxShapeDesc to be used on all newly created PxShapes.<p>
 <div class="memdoc">
 
 <p>
-Access an array of shapes of subchunks. The size of array is equal <a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#a097c93fe482395290543e9583b5bf67">getPxAsset()</a>-&gt;getSubchunkCount(). For every corresponding subchunk it contains pointer to created PxShape or nullptr.<p>
+Access an array of shapes of subchunks. The size of array is equal <a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#ca4f0294ea39d1ddf2f4a1d02fc05be7">getPxAsset()</a>-&gt;getSubchunkCount(). For every corresponding subchunk it contains pointer to created PxShape or nullptr.<p>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>the pointer to subchunk shapes array. </dd></dl>
 
 <p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1final.html#0f89afb9e1d8fdee379ca6e0457a9784">Nv::Blast::final</a>.</p>
@@ -337,7 +365,35 @@ Call after split.
 
 <p>
 Release this family. 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1final.html#85b59d35d9ca4987554efed048c47d99">Nv::Blast::final</a>, <a class="el" href="class_nv_1_1_blast_1_1final.html#9cb3febd1db68fb5a90c3f70e00aa330">Nv::Blast::final</a>, <a class="el" href="class_nv_1_1_blast_1_1final.html#9cb3febd1db68fb5a90c3f70e00aa330">Nv::Blast::final</a>, <a class="el" href="class_nv_1_1_blast_1_1final.html#9cb3febd1db68fb5a90c3f70e00aa330">Nv::Blast::final</a>, and <a class="el" href="class_nv_1_1_blast_1_1final.html#9cb3febd1db68fb5a90c3f70e00aa330">Nv::Blast::final</a>.</p>
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1final.html#85b59d35d9ca4987554efed048c47d99">Nv::Blast::final</a>, <a class="el" href="class_nv_1_1_blast_1_1final.html#9cb3febd1db68fb5a90c3f70e00aa330">Nv::Blast::final</a>, <a class="el" href="class_nv_1_1_blast_1_1final.html#9cb3febd1db68fb5a90c3f70e00aa330">Nv::Blast::final</a>, <a class="el" href="class_nv_1_1_blast_1_1final.html#9cb3febd1db68fb5a90c3f70e00aa330">Nv::Blast::final</a>, <a class="el" href="class_nv_1_1_blast_1_1final.html#9cb3febd1db68fb5a90c3f70e00aa330">Nv::Blast::final</a>, and <a class="el" href="class_nv_1_1_blast_1_1final.html#9cb3febd1db68fb5a90c3f70e00aa330">Nv::Blast::final</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="8895d32707f5da13866d1cdc5e178292"></a><!-- doxytag: member="Nv::Blast::ExtPxFamily::setMaterial" ref="8895d32707f5da13866d1cdc5e178292" args="(const NvBlastExtMaterial *material)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::ExtPxFamily::setMaterial           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_blast_ext_material.html">NvBlastExtMaterial</a> *&nbsp;</td>
+          <td class="paramname"> <em>material</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set the default material associated with this actor family.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>material</em>&nbsp;</td><td>The material to be the new default. </td></tr>
+  </table>
+</dl>
+
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1final.html#1c502fb7b0a704ac4f19c5511cddd542">Nv::Blast::final</a>.</p>
 
 </div>
 </div><p>

@@ -174,38 +174,7 @@ public:
 	\param[in] program				A NvBlastDamageProgram containing damage shaders.
 	\param[in] programParams		Parameters for the NvBlastDamageProgram.
 	*/
-	virtual void				damage(const NvBlastDamageProgram& program, const NvBlastProgramParams* programParams) = 0;
-
-	/**
-	Apply damage to this actor.
-
-	Actual damage processing is deferred till the group worker process() call. Sets actor in 'pending' state.
-
-	Damage Desc will be stacked into NvBlastProgramParams. NvBlastProgramParams will be passed into shader.
-
-	Material set on actor's family will be passed into NvBlastProgramParams.
-
-	\param[in] program				A NvBlastDamageProgram containing damage shaders.
-	\param[in] damageDesc			Parameters to be put in NvBlastProgramParams, have to be POD type (will be copied).
-	\param[in] descSize				Size of damageDesc in bytes. Required to copy and store Damage Desc.
-	*/
-	virtual void				damage(const NvBlastDamageProgram& program, const void* damageDesc, uint32_t descSize) = 0;
-
-	/**
-	Apply damage to this actor.
-
-	Actual damage processing is deferred till the group worker process() call. Sets actor in 'pending' state.
-
-	Damage Desc will be stacked into NvBlastDamageProgram. NvBlastDamageProgram will be passed into shader.
-
-	This function overload explicitly sets a material to be passed into NvBlastProgramParams, it must be valid until the group endProcess() call.
-
-	\param[in] program				A NvBlastDamageProgram containing damage shaders.
-	\param[in] damageDesc			Parameters to be put in NvBlastDamageProgram, have to be POD type (will be copied).
-	\param[in] descSize				Size of damageDesc in bytes. Required to copy and store Damage Desc.
-	\param[in] material				Material to be passed into NvBlastProgramParams. Must be valid until the group endProcess() call.
-	*/
-	virtual void				damage(const NvBlastDamageProgram& program, const void* damageDesc, uint32_t descSize, const void* material) = 0;
+	virtual void				damage(const NvBlastDamageProgram& program, const void* programParams) = 0;
 
 	/**
 	Creates fracture commands for the actor using an NvBlastMaterialFunction.
@@ -219,7 +188,7 @@ public:
 	\param[in]		program			A NvBlastDamageProgram containing damage shaders.
 	\param[in]		programParams	Parameters for the NvBlastDamageProgram.
 	*/
-	virtual void				generateFracture(NvBlastFractureBuffers* commands, const NvBlastDamageProgram& program, const NvBlastProgramParams* programParams) const = 0;
+	virtual void				generateFracture(NvBlastFractureBuffers* commands, const NvBlastDamageProgram& program, const void* programParams) const = 0;
 
 	/**
 	Function applies the direct fracture and breaks graph bonds/edges as necessary. Sets actor in 'pending' state if any bonds or chunks were damaged. Dispatches FractureCommand events.

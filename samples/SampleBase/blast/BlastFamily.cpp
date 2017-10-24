@@ -58,9 +58,11 @@ BlastFamily::BlastFamily(PhysXController& physXController, ExtPxManager& pxManag
 	, m_totalVisibleChunkCount(0)
 	, m_stressSolver(nullptr)
 	, m_spawned(false)
+	, m_debugRenderDepth(-1)
 {
 	m_settings.stressSolverEnabled = false;
 	m_settings.stressDamageEnabled = false;
+	m_settings.damageAcceleratorEnabled = true;
 }
 
 BlastFamily::~BlastFamily()
@@ -82,10 +84,13 @@ void BlastFamily::initialize(const BlastAsset::ActorDesc& desc)
 	familyDesc.group = desc.group;
 	familyDesc.pxAsset = m_blastAsset.getPxAsset();
 	m_pxFamily = m_pxManager.createFamily(familyDesc);
+	m_pxFamily->setMaterial(&m_settings.material);
+
 
 	m_tkFamily = &m_pxFamily->getTkFamily();
 	m_tkFamily->setID(desc.id);
-	m_tkFamily->setMaterial(&m_settings.material);
+
+	refreshDamageAcceleratorSettings();
 	
 	m_familySize = NvBlastFamilyGetSize(m_tkFamily->getFamilyLL(), nullptr);
 
@@ -196,6 +201,16 @@ void BlastFamily::drawUI()
 	ImGui::DragFloat("Min Damage Threshold", &m_settings.material.minDamageThreshold, 0.01f, 0.f, m_settings.material.maxDamageThreshold);
 	ImGui::DragFloat("Max Damage Threshold", &m_settings.material.maxDamageThreshold, 0.01f, m_settings.material.minDamageThreshold, 1.f);
 
+	if (ImGui::Checkbox("AABB Tree (Damage Accelerator)", &m_settings.damageAcceleratorEnabled))
+	{
+		refreshDamageAcceleratorSettings();
+	}
+	if (m_settings.damageAcceleratorEnabled)
+	{
+		ImGui::DragInt("AABB Tree debug depth", &m_debugRenderDepth);
+	}
+
+
 	ImGui::Spacing();
 
 	// Stress Solver Settings
@@ -274,13 +289,19 @@ void BlastFamily::setSettings(const Settings& settings)
 
 	m_settings = settings;
 	refreshStressSolverSettings();
+	refreshDamageAcceleratorSettings();
 
 	if (reloadStressSolverNeeded)
 	{
 		reloadStressSolver();
 	}
 
-	m_tkFamily->setMaterial(&m_settings.material);
+	m_pxFamily->setMaterial(&m_settings.material);
+}
+
+void BlastFamily::refreshDamageAcceleratorSettings()
+{
+	m_pxFamily->getPxAsset().setAccelerator(m_settings.damageAcceleratorEnabled ? m_blastAsset.getAccelerator() : nullptr);
 }
 
 void BlastFamily::refreshStressSolverSettings()
@@ -451,6 +472,20 @@ void BlastFamily::fillDebugRender(DebugRenderBuffer& debugRenderBuffer, DebugRen
 			}
 		}
 
+		// AABB tree
+		if (mode == DEBUG_RENDER_AABB_TREE_CENTROIDS || mode == DEBUG_RENDER_AABB_TREE_SEGMENTS)
+		{
+			if (m_settings.damageAcceleratorEnabled && m_blastAsset.getAccelerator() && nodeCount > graph.nodeCount / 2)
+			{
+				const auto buffer = m_blastAsset.getAccelerator()->fillDebugRender(m_debugRenderDepth, mode == DEBUG_RENDER_AABB_TREE_SEGMENTS);
+				if (buffer.lineCount)
+				{
+					const auto lines = reinterpret_cast<const PxDebugLine*>(buffer.lines);
+					debugRenderBuffer.m_lines.insert(debugRenderBuffer.m_lines.end(), lines, lines + buffer.lineCount);
+				}
+			}
+		}
+
 		// transform all added lines from local to global
 		PxTransform localToGlobal = pxActor->getPhysXActor().getGlobalPose();
 		for (uint32_t i = lineStartIndex; i < debugRenderBuffer.m_lines.size(); i++)
@@ -525,7 +560,7 @@ private:
 	PxOverlapHit						m_hitBuffer[1000];
 };
 
-bool BlastFamily::overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*)> hitCall)
+bool BlastFamily::overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*, BlastFamily&)> hitCall)
 {
 	std::set<ExtPxActor*> actorsToDamage;
 #if 1
@@ -540,7 +575,7 @@ bool BlastFamily::overlap(const PxGeometry& geometry, const PxTransform& pose, s
 
 	for (auto actor : actorsToDamage)
 	{
-		hitCall(actor);
+		hitCall(actor, *this);
 	}
 
 	return !actorsToDamage.empty();

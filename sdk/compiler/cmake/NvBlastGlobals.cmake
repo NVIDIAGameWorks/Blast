@@ -23,6 +23,7 @@ SET(PUBLIC_FILES
 	${GLOBALS_DIR}/include/NvBlastGlobals.h
 	${GLOBALS_DIR}/include/NvBlastAllocator.h
 	${GLOBALS_DIR}/include/NvBlastProfiler.h
+	${GLOBALS_DIR}/include/NvBlastDebugRender.h
 )
 
 ADD_LIBRARY(NvBlastGlobals SHARED 

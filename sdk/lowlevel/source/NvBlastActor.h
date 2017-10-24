@@ -331,7 +331,7 @@ public:
 	/**
 	See NvBlastActorGenerateFracture
 	*/
-	void				generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBlastDamageProgram& program, const NvBlastProgramParams* programParams, NvBlastLog logFn, NvBlastTimers* timers) const;
+	void				generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBlastDamageProgram& program, const void* programParams, NvBlastLog logFn, NvBlastTimers* timers) const;
 
 	/**
 	Damage bond between two chunks by health amount (instance graph also will be notified in case bond is broken after).

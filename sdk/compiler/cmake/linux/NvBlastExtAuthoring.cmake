@@ -24,6 +24,8 @@ SET(BLAST_EXT_SHARED_LIB_TYPE SHARED)
 #This option doesn't work on Clang
 IF (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	SET(BLASTEXT_PLATFORM_COMPILE_OPTIONS "-Wno-maybe-uninitialized" "-fexceptions" "-Wno-unused-parameter")
+	SET(VHACD_COMPILE_FLAGS "-Wno-type-limits -Wno-ignored-qualifiers -Wno-unused-result")
 ELSE ()
 	SET(BLASTEXT_PLATFORM_COMPILE_OPTIONS "-Wno-return-type-c-linkage" "-pedantic" "-fexceptions" "-Wno-unused-parameter")
+	SET(VHACD_COMPILE_FLAGS "-Wno-logical-op-parentheses -Wno-ignored-qualifiers")
 ENDIF()

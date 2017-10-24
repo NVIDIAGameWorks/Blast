@@ -740,7 +740,7 @@ NVBLAST_API void NvBlastActorGenerateFracture
 	NvBlastFractureBuffers* commandBuffers,
 	const NvBlastActor* actor,
 	const NvBlastDamageProgram program, 
-	const NvBlastProgramParams* programParams,
+	const void* programParams,
 	NvBlastLog logFn, 
 	NvBlastTimers* timers
 );

@@ -29,6 +29,9 @@
 <a href="class_nv_1_1_blast_1_1_ext_px_asset-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <br class="typebreak">
+<a class="el" href="class_nv_blast_ext_damage_accelerator.html">NvBlastExtDamageAccelerator</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#94844717a6b533ddfb2f947fcf2e5005">getAccelerator</a> () const =0</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#b1c8b490b88f68d7a11f08aa23a49fc4">getChunkCount</a> () const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#0cd345a19090b1a5b332650f976041e2">getChunks</a> () const =0</td></tr>
@@ -44,6 +47,8 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="class_nv_1_1_blast_1_1_tk_asset.html">TkAsset</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#e77912a2a63b1de21e4dedf0edfdb7e3">getTkAsset</a> () const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#2d2e7f6418c5faa72daca12816ce1e14">release</a> ()=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#38648d6ac6bf81b0a689ad0007c7a7e0">setAccelerator</a> (<a class="el" href="class_nv_blast_ext_damage_accelerator.html">NvBlastExtDamageAccelerator</a> *accelerator)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html#0fff64440baf6cd557941d79a9f53d1a">setUniformHealth</a> (bool enabled)=0</td></tr>
 
@@ -214,6 +219,25 @@ Create a new <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPx
 
 </div>
 </div><p>
+<a class="anchor" name="94844717a6b533ddfb2f947fcf2e5005"></a><!-- doxytag: member="Nv::Blast::ExtPxAsset::getAccelerator" ref="94844717a6b533ddfb2f947fcf2e5005" args="() const =0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="class_nv_blast_ext_damage_accelerator.html">NvBlastExtDamageAccelerator</a>* Nv::Blast::ExtPxAsset::getAccelerator           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set damage accelerator associated with this asset. 
+</div>
+</div><p>
 <a class="anchor" name="b1c8b490b88f68d7a11f08aa23a49fc4"></a><!-- doxytag: member="Nv::Blast::ExtPxAsset::getChunkCount" ref="b1c8b490b88f68d7a11f08aa23a49fc4" args="() const =0" -->
 <div class="memitem">
 <div class="memproto">
@@ -377,6 +401,26 @@ Every <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</
 
 <p>
 Release this <a class="el" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>. 
+</div>
+</div><p>
+<a class="anchor" name="38648d6ac6bf81b0a689ad0007c7a7e0"></a><!-- doxytag: member="Nv::Blast::ExtPxAsset::setAccelerator" ref="38648d6ac6bf81b0a689ad0007c7a7e0" args="(NvBlastExtDamageAccelerator *accelerator)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::ExtPxAsset::setAccelerator           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_nv_blast_ext_damage_accelerator.html">NvBlastExtDamageAccelerator</a> *&nbsp;</td>
+          <td class="paramname"> <em>accelerator</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set damage accelerator associated with this asset. 
 </div>
 </div><p>
 <a class="anchor" name="0fff64440baf6cd557941d79a9f53d1a"></a><!-- doxytag: member="Nv::Blast::ExtPxAsset::setUniformHealth" ref="0fff64440baf6cd557941d79a9f53d1a" args="(bool enabled)=0" -->

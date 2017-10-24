@@ -210,7 +210,7 @@ Examples of the three TkActor damage methods are given below.<p>
 <br>
  <h3><a class="anchor" name="multiple_damage">
 Multiple Damage Descriptors using NvBlastProgramParams</a></h3>
-<b>N.B. - with this method of damage, the lifetime of the <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> <em>must</em> extend at least until the TkGroup::endProcess call for the actor.</b><p>
+<b>N.B. - with this method of damage, the lifetime of the NvBlastProgramParams <em>must</em> extend at least until the TkGroup::endProcess call for the actor.</b><p>
 <div class="fragment"><pre class="fragment"><a class="code" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> program =
 {
     myGraphShaderFunction,      <span class="comment">// A function with the NvBlastGraphShaderFunction signature</span>
@@ -242,7 +242,7 @@ material.minDamageThreshold = 0.1f;
 material.maxDamageThreshold = 0.8f;
 
 <span class="comment">// Set the damage params struct</span>
-<a class="code" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> params = { damageDescs, 2, &amp;material };
+NvBlastProgramParams params = { damageDescs, 2, &amp;material };
 
 <span class="comment">// Apply damage</span>
 actor-&gt;damage(program, &amp;params);    <span class="comment">// params must be kept around until TkGroup::endProcess is called!</span>

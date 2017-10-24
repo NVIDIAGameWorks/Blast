@@ -31,7 +31,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#5261035f206eb5fb1a1822323ff8d725">NvBlastActorCanFracture</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#6a40c4286de500e8545babfb9c517789">NvBlastActorGenerateFracture</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> program, const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *programParams, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn, <a class="el" href="struct_nv_blast_timers.html">NvBlastTimers</a> *timers)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#7bf6cbcc95e377f61dbd1ab87bf6facc">NvBlastActorGenerateFracture</a> (<a class="el" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a> *commandBuffers, const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, const <a class="el" href="struct_nv_blast_damage_program.html">NvBlastDamageProgram</a> program, const void *programParams, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn, <a class="el" href="struct_nv_blast_timers.html">NvBlastTimers</a> *timers)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_8h.html#0142a22e103d7726b58d976925504f9c">NvBlastActorGetMaxActorCountForSplit</a> (const <a class="el" href="struct_nv_blast_actor.html">NvBlastActor</a> *actor, <a class="el" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn)</td></tr>
 
@@ -280,7 +280,7 @@ Deactivate an actor within its family. Conceptually this is "destroying" the act
 
 </div>
 </div><p>
-<a class="anchor" name="6a40c4286de500e8545babfb9c517789"></a><!-- doxytag: member="NvBlast.h::NvBlastActorGenerateFracture" ref="6a40c4286de500e8545babfb9c517789" args="(NvBlastFractureBuffers *commandBuffers, const NvBlastActor *actor, const NvBlastDamageProgram program, const NvBlastProgramParams *programParams, NvBlastLog logFn, NvBlastTimers *timers)" -->
+<a class="anchor" name="7bf6cbcc95e377f61dbd1ab87bf6facc"></a><!-- doxytag: member="NvBlast.h::NvBlastActorGenerateFracture" ref="7bf6cbcc95e377f61dbd1ab87bf6facc" args="(NvBlastFractureBuffers *commandBuffers, const NvBlastActor *actor, const NvBlastDamageProgram program, const void *programParams, NvBlastLog logFn, NvBlastTimers *timers)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -305,7 +305,7 @@ Deactivate an actor within its family. Conceptually this is "destroying" the act
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="struct_nv_blast_program_params.html">NvBlastProgramParams</a> *&nbsp;</td>
+          <td class="paramtype">const void *&nbsp;</td>
           <td class="paramname"> <em>programParams</em>, </td>
         </tr>
         <tr>

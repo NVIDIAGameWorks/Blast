@@ -99,6 +99,7 @@ public:
 		case NvBlastMessage::Info:		failMask |= Nv::Blast::ErrorCode::eDEBUG_INFO;
 		case NvBlastMessage::Warning:	failMask |= Nv::Blast::ErrorCode::eDEBUG_WARNING;
 		case NvBlastMessage::Error:		failMask |= Nv::Blast::ErrorCode::eABORT | Nv::Blast::ErrorCode::eABORT | Nv::Blast::ErrorCode::eINTERNAL_ERROR | Nv::Blast::ErrorCode::eOUT_OF_MEMORY | Nv::Blast::ErrorCode::eINVALID_OPERATION | Nv::Blast::ErrorCode::eINVALID_PARAMETER;
+		default: break;
 		}
 
 		if (!(failMask & code) && Verbosity <= 0)

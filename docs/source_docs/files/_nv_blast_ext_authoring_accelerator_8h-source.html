@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
@@ -73,93 +74,145 @@
 <a name="l00036"></a>00036 
 <a name="l00037"></a>00037 <span class="keyword">namespace </span>Nv
 <a name="l00038"></a>00038 {
-<a name="l00039"></a>00039 <span class="keyword">namespace </span>Blast
-<a name="l00040"></a>00040 {
+<a name="l00039"></a>00039     <span class="keyword">namespace </span>Blast
+<a name="l00040"></a>00040     {
 <a name="l00041"></a>00041 
-<a name="l00042"></a>00042 <span class="keyword">class </span>Mesh;
+<a name="l00042"></a>00042         <span class="keyword">class </span>Mesh;
 <a name="l00043"></a>00043 
 <a name="l00044"></a>00044 
-<a name="l00048"></a><a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">00048</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>
-<a name="l00049"></a>00049 {
-<a name="l00050"></a>00050 <span class="keyword">public</span>:
-<a name="l00057"></a>00057     <span class="keyword">virtual</span> <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#406b30c6eecd98771493fb182275d831">setState</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* pos, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* ed, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>&amp; fc) = 0;
-<a name="l00062"></a>00062     <span class="keyword">virtual</span> <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#406b30c6eecd98771493fb182275d831">setState</a>(<span class="keyword">const</span> physx::PxVec3&amp; point) = 0;
-<a name="l00067"></a>00067     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#691d335077de5aabf9d01817c5266bd8">getNextFacet</a>() = 0;
+<a name="l00048"></a><a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">00048</a>         <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>
+<a name="l00049"></a>00049         {
+<a name="l00050"></a>00050         <span class="keyword">public</span>:
+<a name="l00057"></a>00057             <span class="keyword">virtual</span> <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#406b30c6eecd98771493fb182275d831">setState</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* pos, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* ed, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>&amp; fc) = 0;
+<a name="l00062"></a>00062             <span class="keyword">virtual</span> <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#406b30c6eecd98771493fb182275d831">setState</a>(<span class="keyword">const</span> physx::PxVec3&amp; point) = 0;
+<a name="l00067"></a>00067             <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#691d335077de5aabf9d01817c5266bd8">getNextFacet</a>() = 0;
 <a name="l00068"></a>00068 
-<a name="l00069"></a><a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#499c8dc6cb684d8830662451f2f1dd5a">00069</a>     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#499c8dc6cb684d8830662451f2f1dd5a">~SpatialAccelerator</a>() {};
-<a name="l00070"></a>00070 };
-<a name="l00071"></a>00071 
+<a name="l00069"></a>00069             
+<a name="l00070"></a><a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#499c8dc6cb684d8830662451f2f1dd5a">00070</a>             <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#499c8dc6cb684d8830662451f2f1dd5a">~SpatialAccelerator</a>() {};
+<a name="l00071"></a>00071         };
 <a name="l00072"></a>00072 
-<a name="l00076"></a><a class="code" href="class_nv_1_1_blast_1_1_dummy_accelerator.html">00076</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_dummy_accelerator.html">DummyAccelerator</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>
-<a name="l00077"></a>00077 {
-<a name="l00078"></a>00078 <span class="keyword">public</span>:
-<a name="l00082"></a>00082     <a class="code" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#5b164cf3944cfd733cf425cd340155a3">DummyAccelerator</a>(int32_t count);
-<a name="l00083"></a>00083     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#86de630e31259aecd6f72604469ca5d6">setState</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* pos, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* ed, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>&amp; fc);
-<a name="l00084"></a>00084     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#86de630e31259aecd6f72604469ca5d6">setState</a>(<span class="keyword">const</span> physx::PxVec3&amp; point);
-<a name="l00085"></a>00085     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#8922a9b3750aaa6a5f434d90cec48d00">getNextFacet</a>();
-<a name="l00086"></a>00086 
-<a name="l00087"></a>00087 <span class="keyword">private</span>:
-<a name="l00088"></a>00088     int32_t count;
-<a name="l00089"></a>00089     int32_t current;
-<a name="l00090"></a>00090 };
-<a name="l00091"></a>00091 
-<a name="l00097"></a><a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html">00097</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html">BBoxBasedAccelerator</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>
-<a name="l00098"></a>00098 {
-<a name="l00099"></a>00099 <span class="keyword">public</span>:
-<a name="l00104"></a>00104     <a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#3ed9ee4f95e167190f9ad263a21494d3">BBoxBasedAccelerator</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, int32_t resolution);
-<a name="l00105"></a>00105     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#b8af0589b8c79c37fa683137d44f2ee0">~BBoxBasedAccelerator</a>();
-<a name="l00106"></a>00106     int32_t <a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#2b6aeb41c4d89f9aa94702c7e73337bc">getNextFacet</a>();
-<a name="l00107"></a>00107     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#1528052be86f88831e4960f73d4dba64">setState</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* pos, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* ed, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>&amp; fc);
-<a name="l00108"></a>00108     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#1528052be86f88831e4960f73d4dba64">setState</a>(<span class="keyword">const</span> physx::PxVec3&amp; p);
-<a name="l00109"></a>00109 <span class="keyword">private</span>:
-<a name="l00110"></a>00110 
-<a name="l00111"></a>00111     <span class="keywordtype">bool</span> testCellPolygonIntersection(int32_t cellId, physx::PxBounds3&amp; facetBB);
-<a name="l00112"></a>00112     <span class="keywordtype">void</span> buildAccelStructure(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* pos, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* edges, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>* fc, int32_t facetCount);
-<a name="l00113"></a>00113 
-<a name="l00114"></a>00114     int32_t mResolution;
-<a name="l00115"></a>00115     physx::PxBounds3 mBounds;
-<a name="l00116"></a>00116     physx::PxBounds3 facetBox;
-<a name="l00117"></a>00117     std::vector&lt; std::vector&lt;int32_t&gt; &gt; mSpatialMap;
-<a name="l00118"></a>00118     std::vector&lt;physx::PxBounds3&gt; mCells;
-<a name="l00119"></a>00119 
-<a name="l00120"></a>00120     
-<a name="l00121"></a>00121     <span class="comment">// Iterator data</span>
-<a name="l00122"></a>00122     std::vector&lt;uint32_t&gt; alreadyGotFlag;
-<a name="l00123"></a>00123     uint32_t alreadyGotValue;
-<a name="l00124"></a>00124     std::vector&lt;int32_t&gt; cellList;
-<a name="l00125"></a>00125     int32_t mIteratorCell;
-<a name="l00126"></a>00126     int32_t mIteratorFacet;
-<a name="l00127"></a>00127 };
-<a name="l00128"></a>00128 
-<a name="l00129"></a>00129 
-<a name="l00130"></a>00130 
-<a name="l00139"></a><a class="code" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html">00139</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html">IntersectionTestingAccelerator</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>
-<a name="l00140"></a>00140 {
-<a name="l00141"></a>00141 <span class="keyword">public</span>:
-<a name="l00142"></a>00142     <a class="code" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#26025c41c017a0033e8d7b6a5fa945c3">IntersectionTestingAccelerator</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, int32_t resolution);
-<a name="l00143"></a>00143     int32_t <a class="code" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#2505fd584aab07f7001a4c9f9a8804e2">getNextFacet</a>();
-<a name="l00144"></a>00144     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#370488e08a2a2740456c031ae69e8ead">setState</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* pos, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* ed, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>&amp; fc);
-<a name="l00145"></a>00145     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#370488e08a2a2740456c031ae69e8ead">setState</a>(<span class="keyword">const</span> physx::PxVec3&amp; p);
+<a name="l00073"></a>00073 
+<a name="l00077"></a><a class="code" href="class_nv_1_1_blast_1_1_dummy_accelerator.html">00077</a>         <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_dummy_accelerator.html">DummyAccelerator</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>
+<a name="l00078"></a>00078         {
+<a name="l00079"></a>00079         <span class="keyword">public</span>:
+<a name="l00083"></a>00083             <a class="code" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#5b164cf3944cfd733cf425cd340155a3">DummyAccelerator</a>(int32_t count);
+<a name="l00084"></a>00084             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#86de630e31259aecd6f72604469ca5d6">setState</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* pos, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* ed, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>&amp; fc);
+<a name="l00085"></a>00085             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#86de630e31259aecd6f72604469ca5d6">setState</a>(<span class="keyword">const</span> physx::PxVec3&amp; point);
+<a name="l00086"></a>00086             <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#8922a9b3750aaa6a5f434d90cec48d00">getNextFacet</a>();
+<a name="l00087"></a>00087 
+<a name="l00088"></a>00088         <span class="keyword">private</span>:
+<a name="l00089"></a>00089             int32_t count;
+<a name="l00090"></a>00090             int32_t current;
+<a name="l00091"></a>00091         };
+<a name="l00092"></a>00092 
+<a name="l00093"></a><a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html">00093</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html">SegmentToIndex</a>
+<a name="l00094"></a>00094         {
+<a name="l00095"></a><a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#5e224ca8a22c2e8f71dfc999beef7f1c">00095</a>             <span class="keywordtype">float</span> <a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#5e224ca8a22c2e8f71dfc999beef7f1c">coord</a>;
+<a name="l00096"></a><a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#541cf82975e53fedb2dfe4bb5fa968f2">00096</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#541cf82975e53fedb2dfe4bb5fa968f2">index</a>;
+<a name="l00097"></a><a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#0571e651471fa2a0251049c7eadde59a">00097</a>             <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#0571e651471fa2a0251049c7eadde59a">end</a>;
+<a name="l00098"></a>00098 
+<a name="l00099"></a><a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#e648b740f1f16d190960cdd65613631a">00099</a>             <a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#e648b740f1f16d190960cdd65613631a">SegmentToIndex</a>(<span class="keywordtype">float</span> c, uint32_t i, <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#0571e651471fa2a0251049c7eadde59a">end</a>) : <a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#5e224ca8a22c2e8f71dfc999beef7f1c">coord</a>(c), <a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#541cf82975e53fedb2dfe4bb5fa968f2">index</a>(i), end(end) {};
+<a name="l00100"></a>00100 
+<a name="l00101"></a><a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#e272f10eb34fb9015b355fac26401305">00101</a>             <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#e272f10eb34fb9015b355fac26401305">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html">SegmentToIndex</a>&amp; in)<span class="keyword"> const</span>
+<a name="l00102"></a>00102 <span class="keyword">            </span>{
+<a name="l00103"></a>00103                 <span class="keywordflow">if</span> (<a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#5e224ca8a22c2e8f71dfc999beef7f1c">coord</a> &lt; in.<a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#5e224ca8a22c2e8f71dfc999beef7f1c">coord</a>) <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00104"></a>00104                 <span class="keywordflow">if</span> (<a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#5e224ca8a22c2e8f71dfc999beef7f1c">coord</a> &gt; in.<a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#5e224ca8a22c2e8f71dfc999beef7f1c">coord</a>) <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00105"></a>00105                 <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#0571e651471fa2a0251049c7eadde59a">end</a> &lt; in.<a class="code" href="struct_nv_1_1_blast_1_1_segment_to_index.html#0571e651471fa2a0251049c7eadde59a">end</a>;
+<a name="l00106"></a>00106             }
+<a name="l00107"></a>00107         };
+<a name="l00108"></a>00108 
+<a name="l00109"></a>00109 
+<a name="l00110"></a><a class="code" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html">00110</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html">SweepingAccelerator</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>
+<a name="l00111"></a>00111 {
+<a name="l00112"></a>00112 <span class="keyword">public</span>:
+<a name="l00116"></a>00116     <a class="code" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#edd11ecc891c00c187803dbb6edea59f">SweepingAccelerator</a>(<a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a>* in);
+<a name="l00117"></a>00117     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#32c1136d78aabc9173b464ee718cb007">setState</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* pos, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* ed, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>&amp; fc);
+<a name="l00118"></a>00118     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#32c1136d78aabc9173b464ee718cb007">setState</a>(<span class="keyword">const</span> physx::PxVec3&amp; point);
+<a name="l00119"></a>00119     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#b792564b022c12e010b2f695b4d0d0b7">getNextFacet</a>();
+<a name="l00120"></a>00120 
+<a name="l00121"></a>00121 <span class="keyword">private</span>:
+<a name="l00122"></a>00122 
+<a name="l00123"></a>00123 
+<a name="l00124"></a>00124     <span class="comment">/*</span>
+<a name="l00125"></a>00125 <span class="comment">        For fast point test.</span>
+<a name="l00126"></a>00126 <span class="comment">    */</span>
+<a name="l00127"></a>00127     std::vector&lt;std::vector&lt;uint32_t&gt; &gt; xSegm;
+<a name="l00128"></a>00128     std::vector&lt;std::vector&lt;uint32_t&gt; &gt; ySegm;
+<a name="l00129"></a>00129     std::vector&lt;std::vector&lt;uint32_t&gt; &gt; zSegm;
+<a name="l00130"></a>00130     std::vector&lt;uint32_t&gt; indices;
+<a name="l00131"></a>00131     std::vector&lt;uint32_t&gt; foundx;
+<a name="l00132"></a>00132     std::vector&lt;uint32_t&gt; foundy;
+<a name="l00133"></a>00133 
+<a name="l00134"></a>00134     uint32_t iterId;
+<a name="l00135"></a>00135     int32_t current;
+<a name="l00136"></a>00136     uint32_t facetCount;
+<a name="l00137"></a>00137 
+<a name="l00138"></a>00138     physx::PxVec3 minimal;
+<a name="l00139"></a>00139     physx::PxVec3 maximal;
+<a name="l00140"></a>00140 
+<a name="l00141"></a>00141     physx::PxVec3 rescale;
+<a name="l00142"></a>00142     
+<a name="l00143"></a>00143 
+<a name="l00144"></a>00144 };
+<a name="l00145"></a>00145 
 <a name="l00146"></a>00146 
-<a name="l00147"></a>00147 
-<a name="l00148"></a>00148 <span class="keyword">private</span>:
-<a name="l00149"></a>00149     std::vector&lt; std::vector&lt;int32_t&gt; &gt; mSpatialMap;
-<a name="l00150"></a>00150     std::vector&lt;physx::PxBounds3&gt; mCubes;
-<a name="l00151"></a>00151     int32_t mResolution;
-<a name="l00152"></a>00152 
-<a name="l00153"></a>00153     <span class="comment">// Iterator data</span>
-<a name="l00154"></a>00154     std::vector&lt;uint32_t&gt; alreadyGotFlag;
-<a name="l00155"></a>00155     uint32_t alreadyGotValue;
-<a name="l00156"></a>00156     std::vector&lt;int32_t&gt; cellList;
-<a name="l00157"></a>00157     int32_t mIteratorCell;
-<a name="l00158"></a>00158     int32_t mIteratorFacet;
-<a name="l00159"></a>00159 };
-<a name="l00160"></a>00160 
-<a name="l00161"></a>00161 } <span class="comment">// namespace Blast</span>
-<a name="l00162"></a>00162 } <span class="comment">// namsepace Nv</span>
-<a name="l00163"></a>00163 
-<a name="l00164"></a>00164 
-<a name="l00165"></a>00165 <span class="preprocessor">#endif // ifndef NVBLASTEXTAUTHORINGACCELERATOR_H</span>
+<a name="l00152"></a><a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html">00152</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html">BBoxBasedAccelerator</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>
+<a name="l00153"></a>00153 {
+<a name="l00154"></a>00154 <span class="keyword">public</span>:
+<a name="l00159"></a>00159     <a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#3ed9ee4f95e167190f9ad263a21494d3">BBoxBasedAccelerator</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, int32_t resolution);
+<a name="l00160"></a>00160     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#b8af0589b8c79c37fa683137d44f2ee0">~BBoxBasedAccelerator</a>();
+<a name="l00161"></a>00161     int32_t <a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#2b6aeb41c4d89f9aa94702c7e73337bc">getNextFacet</a>();
+<a name="l00162"></a>00162     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#1528052be86f88831e4960f73d4dba64">setState</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* pos, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* ed, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>&amp; fc);
+<a name="l00163"></a>00163     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#1528052be86f88831e4960f73d4dba64">setState</a>(<span class="keyword">const</span> physx::PxVec3&amp; p);
+<a name="l00164"></a>00164 <span class="keyword">private</span>:
+<a name="l00165"></a>00165 
+<a name="l00166"></a>00166     <span class="keywordtype">bool</span> testCellPolygonIntersection(int32_t cellId, physx::PxBounds3&amp; facetBB);
+<a name="l00167"></a>00167     <span class="keywordtype">void</span> buildAccelStructure(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* pos, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* edges, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>* fc, int32_t facetCount);
+<a name="l00168"></a>00168 
+<a name="l00169"></a>00169     int32_t mResolution;
+<a name="l00170"></a>00170     physx::PxBounds3 mBounds;
+<a name="l00171"></a>00171     physx::PxBounds3 facetBox;
+<a name="l00172"></a>00172     std::vector&lt; std::vector&lt;int32_t&gt; &gt; mSpatialMap;
+<a name="l00173"></a>00173     std::vector&lt;physx::PxBounds3&gt; mCells;
+<a name="l00174"></a>00174 
+<a name="l00175"></a>00175     
+<a name="l00176"></a>00176     <span class="comment">// Iterator data</span>
+<a name="l00177"></a>00177     std::vector&lt;uint32_t&gt; alreadyGotFlag;
+<a name="l00178"></a>00178     uint32_t alreadyGotValue;
+<a name="l00179"></a>00179     std::vector&lt;int32_t&gt; cellList;
+<a name="l00180"></a>00180     int32_t mIteratorCell;
+<a name="l00181"></a>00181     int32_t mIteratorFacet;
+<a name="l00182"></a>00182 };
+<a name="l00183"></a>00183 
+<a name="l00184"></a>00184 
+<a name="l00185"></a>00185 
+<a name="l00194"></a><a class="code" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html">00194</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html">IntersectionTestingAccelerator</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>
+<a name="l00195"></a>00195 {
+<a name="l00196"></a>00196 <span class="keyword">public</span>:
+<a name="l00197"></a>00197     <a class="code" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#26025c41c017a0033e8d7b6a5fa945c3">IntersectionTestingAccelerator</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, int32_t resolution);
+<a name="l00198"></a>00198     int32_t <a class="code" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#2505fd584aab07f7001a4c9f9a8804e2">getNextFacet</a>();
+<a name="l00199"></a>00199     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#370488e08a2a2740456c031ae69e8ead">setState</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* pos, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a>* ed, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>&amp; fc);
+<a name="l00200"></a>00200     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#370488e08a2a2740456c031ae69e8ead">setState</a>(<span class="keyword">const</span> physx::PxVec3&amp; p);
+<a name="l00201"></a>00201 
+<a name="l00202"></a>00202 
+<a name="l00203"></a>00203 <span class="keyword">private</span>:
+<a name="l00204"></a>00204     std::vector&lt; std::vector&lt;int32_t&gt; &gt; mSpatialMap;
+<a name="l00205"></a>00205     std::vector&lt;physx::PxBounds3&gt; mCubes;
+<a name="l00206"></a>00206     int32_t mResolution;
+<a name="l00207"></a>00207 
+<a name="l00208"></a>00208     <span class="comment">// Iterator data</span>
+<a name="l00209"></a>00209     std::vector&lt;uint32_t&gt; alreadyGotFlag;
+<a name="l00210"></a>00210     uint32_t alreadyGotValue;
+<a name="l00211"></a>00211     std::vector&lt;int32_t&gt; cellList;
+<a name="l00212"></a>00212     int32_t mIteratorCell;
+<a name="l00213"></a>00213     int32_t mIteratorFacet;
+<a name="l00214"></a>00214 };
+<a name="l00215"></a>00215 
+<a name="l00216"></a>00216 } <span class="comment">// namespace Blast</span>
+<a name="l00217"></a>00217 } <span class="comment">// namsepace Nv</span>
+<a name="l00218"></a>00218 
+<a name="l00219"></a>00219 
+<a name="l00220"></a>00220 <span class="preprocessor">#endif // ifndef NVBLASTEXTAUTHORINGACCELERATOR_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

@@ -105,6 +105,16 @@ public:
 
 	virtual void					setUniformHealth(bool enabled) override;
 
+	virtual void					setAccelerator(NvBlastExtDamageAccelerator* accelerator) override
+	{
+		m_accelerator = accelerator;
+	}
+
+	virtual NvBlastExtDamageAccelerator* getAccelerator() const override
+	{
+		return m_accelerator;
+	}
+
 
 	//////// internal public methods ////////
 
@@ -137,12 +147,13 @@ private:
 
 	 //////// data ////////
 
-	TkAsset*					m_tkAsset;
-	Array<ExtPxChunk>::type		m_chunks;
-	Array<ExtPxSubchunk>::type	m_subchunks;
-	Array<float>::type			m_bondHealths;
-	Array<float>::type			m_supportChunkHealths;
-	NvBlastActorDesc			m_defaultActorDesc;
+	TkAsset*					 m_tkAsset;
+	Array<ExtPxChunk>::type		 m_chunks;
+	Array<ExtPxSubchunk>::type	 m_subchunks;
+	Array<float>::type			 m_bondHealths;
+	Array<float>::type			 m_supportChunkHealths;
+	NvBlastExtDamageAccelerator* m_accelerator;
+	NvBlastActorDesc			 m_defaultActorDesc;
 };
 
 } // namespace Blast

@@ -314,11 +314,23 @@ public:
 	*/
 	bool									isMeshContainOpenEdges(const Mesh* input) override;
 
+	bool									deleteAllChildrenOfChunk(int32_t chunkId) override;
+
+	void									uniteChunks(uint32_t maxAtLevel, uint32_t maxGroupSize) override;
+	
+
 private:	
 	void									eraseChunk(int32_t chunkId);	
 	bool									isAncestorForChunk(int32_t ancestorId, int32_t chunkId);
-	void									deleteAllChildsOfChunk(int32_t chunkId);
 	int32_t									slicingNoisy(uint32_t chunkId, SlicingConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd);
+	uint32_t								stretchGroup(const std::vector<uint32_t>& group, std::vector<std::vector<uint32_t>>& graph);
+	void									rebuildAdjGraph(const std::vector<uint32_t>& chunksToRebuild, std::vector<std::vector<uint32_t> >& chunkGraph);
+	
+	/**
+		Returns newly created chunk index in mChunkData.
+	*/
+	uint32_t								createNewChunk(uint32_t parentId);
+
 
 protected:
 	/**
@@ -332,7 +344,7 @@ protected:
 
 
 	
-	int32_t								mPlaneIndexerOffset;
+	int64_t								mPlaneIndexerOffset;
 	int32_t								mChunkIdCounter;
 	std::vector<ChunkInfo>				mChunkData;
 

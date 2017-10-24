@@ -212,11 +212,15 @@ NvBlastAsset* NvBlastExtAssetUtilsAddWorldBonds
 NvBlastAssetDesc NvBlastExtAssetUtilsMergeAssets
 (
 	const NvBlastAsset** components,
+	const NvcVec3* scales,
 	const NvcQuat* rotations,
 	const NvcVec3* translations,
 	uint32_t componentCount,
 	const NvBlastExtAssetUtilsBondDesc* newBondDescs,
-	uint32_t newBondCount
+	uint32_t newBondCount,
+	uint32_t* chunkIndexOffsets,
+	uint32_t* chunkReorderMap,
+	uint32_t chunkReorderMapSize
 )
 {
 	// Count the total number of chunks and bonds in the new asset
@@ -233,7 +237,11 @@ NvBlastAssetDesc NvBlastExtAssetUtilsMergeAssets
 	NvBlastBondDesc* bondDescs = static_cast<NvBlastBondDesc*>(NVBLAST_ALLOC(totalBondCount * sizeof(NvBlastBondDesc)));
 
 	// Create a list of chunk index offsets per component
-	uint32_t* chunkIndexOffsets = static_cast<uint32_t*>(NvBlastAlloca(componentCount * sizeof(uint32_t)));
+	uint32_t* offsetStackAlloc = static_cast<uint32_t*>(NvBlastAlloca(componentCount * sizeof(uint32_t)));
+	if (chunkIndexOffsets == nullptr)
+	{
+		chunkIndexOffsets = offsetStackAlloc;	// Use local stack alloc if no array is provided
+	}
 
 	// Fill the chunk and bond descriptors from the components
 	uint32_t chunkCount = 0;
@@ -244,6 +252,14 @@ NvBlastAssetDesc NvBlastExtAssetUtilsMergeAssets
 		uint32_t componentChunkCount;
 		uint32_t componentBondCount;
 		fillChunkAndBondDescriptorsFromAsset(componentChunkCount, componentBondCount, chunkDescs + chunkCount, bondDescs + bondCount, components[c]);
+		// Fix chunks' parent indices
+		for (uint32_t i = 0; i < componentChunkCount; ++i)
+		{
+			if (!isInvalidIndex(chunkDescs[chunkCount + i].parentChunkIndex))
+			{
+				chunkDescs[chunkCount + i].parentChunkIndex += chunkCount;
+			}
+		}
 		// Fix bonds' chunk indices
 		for (uint32_t i = 0; i < componentBondCount; ++i)
 		{
@@ -257,6 +273,34 @@ NvBlastAssetDesc NvBlastExtAssetUtilsMergeAssets
 			}
 		}
 		// Transform geometric data
+		if (scales != nullptr)
+		{
+			const NvcVec3& S = scales[c];
+			NvcVec3 cofS = { S.y * S.z, S.z * S.x, S.x * S.y };
+			float absDetS = S.x * S.y * S.z;
+			const float sgnDetS = absDetS < 0.0f ? -1.0f : 1.0f;
+			absDetS *= sgnDetS;
+			for (uint32_t i = 0; i < componentChunkCount; ++i)
+			{
+				scale(reinterpret_cast<NvcVec3&>(chunkDescs[chunkCount + i].centroid), S);
+				chunkDescs[chunkCount + i].volume *= absDetS;
+			}
+			for (uint32_t i = 0; i < componentBondCount; ++i)
+			{
+				NvBlastBond& bond = bondDescs[bondCount + i].bond;
+				scale(reinterpret_cast<NvcVec3&>(bond.normal), cofS);
+				float renorm = sqrtf(bond.normal[0] * bond.normal[0] + bond.normal[1] * bond.normal[1] + bond.normal[2] * bond.normal[2]);
+				bond.area *= renorm;
+				if (renorm != 0)
+				{
+					renorm = sgnDetS / renorm;
+					bond.normal[0] *= renorm;
+					bond.normal[1] *= renorm;
+					bond.normal[2] *= renorm;
+				}
+				scale(reinterpret_cast<NvcVec3&>(bond.centroid), S);
+			}
+		}
 		if (rotations != nullptr)
 		{
 			for (uint32_t i = 0; i < componentChunkCount; ++i)
@@ -301,6 +345,29 @@ NvBlastAssetDesc NvBlastExtAssetUtilsMergeAssets
 	assetDesc.chunkDescs = chunkDescs;
 	assetDesc.bondCount = bondCount;
 	assetDesc.bondDescs = bondDescs;
+
+	// Massage the descriptors so that they are valid for scratch creation
+	void* scratch = NVBLAST_ALLOC(chunkCount * sizeof(NvBlastChunkDesc));	// Enough for NvBlastEnsureAssetExactSupportCoverage and NvBlastReorderAssetDescChunks
+
+	NvBlastEnsureAssetExactSupportCoverage(chunkDescs, chunkCount, scratch, logLL);
+
+	if (chunkReorderMapSize < chunkCount)
+	{
+		if (chunkReorderMap != nullptr)
+		{
+			// Chunk reorder map is not large enough.  Fill it with invalid indices and don't use it.
+			memset(chunkReorderMap, 0xFF, chunkReorderMapSize * sizeof(uint32_t));
+			NVBLAST_LOG_WARNING("NvBlastExtAssetUtilsMergeAssets: insufficient chunkReorderMap array passed in.  NvBlastReorderAssetDescChunks will not be used.");
+		}
+		chunkReorderMap = nullptr;	// Don't use
+	}
+
+	if (chunkReorderMap != nullptr)
+	{
+		NvBlastReorderAssetDescChunks(chunkDescs, chunkCount, bondDescs, bondCount, chunkReorderMap, true, scratch, logLL);
+	}
+
+	NVBLAST_FREE(scratch);
 
 	return assetDesc;
 }
@@ -382,7 +449,7 @@ void NvBlastExtAssetTransformInPlace(NvBlastAsset* asset, const NvcVec3* scaling
 			cofS.y = S.z * S.x;
 			cofS.z = S.x * S.y;
 			absDetS = S.x * S.y * S.z;
-			sgnDetS = absDetS < 0 ? -1 : 1;
+			sgnDetS = absDetS < 0.0f ? -1.0f : 1.0f;
 			absDetS *= sgnDetS;
 		}
 

@@ -65,8 +65,11 @@ public:
 		NvBlastBondDesc*& resultBond, BondGenerationConfig cfg) override;
 
 	virtual int32_t	bondsFromPrefractured(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
-		const bool*& chunkIsSupport, NvBlastBondDesc*& resultBondDescs,
+		const bool* chunkIsSupport, NvBlastBondDesc*& resultBondDescs,
 		BondGenerationConfig conf = BondGenerationConfig()) override;
+
+	virtual int32_t	bondsFromPrefractured(uint32_t meshCount, const uint32_t* convexHullOffset, const CollisionHull** chunkHulls,
+		const bool* chunkIsSupport, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs) override;
 				
 private:
 	float	processWithMidplanes(	TriangleProcessor* trProcessor, 
@@ -74,8 +77,8 @@ private:
 									const std::vector<physx::PxVec3>& hull1p, const std::vector<physx::PxVec3>& hull2p, 
 									physx::PxVec3& normal, physx::PxVec3& centroid);
 
-	int32_t	createFullBondListAveraged(	uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry, 
-										const bool* supportFlags, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf);
+	int32_t	createFullBondListAveraged(	uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry, const CollisionHull** chunkHulls,
+										const bool* supportFlags, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf);
 	int32_t	createFullBondListExact(	uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
 										const bool* supportFlags, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf);
 	int32_t	createFullBondListExactInternal(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,

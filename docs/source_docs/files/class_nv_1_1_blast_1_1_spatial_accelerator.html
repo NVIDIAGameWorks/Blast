@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
@@ -52,6 +53,7 @@ Inheritance diagram for Nv::Blast::SpatialAccelerator:</div>
 <area href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html" alt="Nv::Blast::BBoxBasedAccelerator" shape="rect" coords="0,56,239,80">
 <area href="class_nv_1_1_blast_1_1_dummy_accelerator.html" alt="Nv::Blast::DummyAccelerator" shape="rect" coords="249,56,488,80">
 <area href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html" alt="Nv::Blast::IntersectionTestingAccelerator" shape="rect" coords="498,56,737,80">
+<area href="class_nv_1_1_blast_1_1_sweeping_accelerator.html" alt="Nv::Blast::SweepingAccelerator" shape="rect" coords="747,56,986,80">
 </map>
 </div>
 
@@ -108,7 +110,7 @@ Acceleration structure interface. <hr><h2>Constructor &amp; Destructor Documenta
 <p>
 Recieve next facet for setted state. <dl class="return" compact><dt><b>Returns:</b></dt><dd>Next facet index, or -1 if no facets left. </dd></dl>
 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#8922a9b3750aaa6a5f434d90cec48d00">Nv::Blast::DummyAccelerator</a>, <a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#2b6aeb41c4d89f9aa94702c7e73337bc">Nv::Blast::BBoxBasedAccelerator</a>, and <a class="el" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#2505fd584aab07f7001a4c9f9a8804e2">Nv::Blast::IntersectionTestingAccelerator</a>.</p>
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#8922a9b3750aaa6a5f434d90cec48d00">Nv::Blast::DummyAccelerator</a>, <a class="el" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#b792564b022c12e010b2f695b4d0d0b7">Nv::Blast::SweepingAccelerator</a>, <a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#2b6aeb41c4d89f9aa94702c7e73337bc">Nv::Blast::BBoxBasedAccelerator</a>, and <a class="el" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#2505fd584aab07f7001a4c9f9a8804e2">Nv::Blast::IntersectionTestingAccelerator</a>.</p>
 
 </div>
 </div><p>
@@ -135,7 +137,7 @@ Set state of accelerator to return all facets which possibly can cover given poi
   </table>
 </dl>
 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#d2b99528d24f1d76f5c28cc94ce1a335">Nv::Blast::DummyAccelerator</a>, <a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#fac607b42cdfb95555f5822c3e7d6af7">Nv::Blast::BBoxBasedAccelerator</a>, and <a class="el" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#4deab8d9ac9830c9f985e3c852c43361">Nv::Blast::IntersectionTestingAccelerator</a>.</p>
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#d2b99528d24f1d76f5c28cc94ce1a335">Nv::Blast::DummyAccelerator</a>, <a class="el" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#021aff716a1506a2fec1ef7893011e82">Nv::Blast::SweepingAccelerator</a>, <a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#fac607b42cdfb95555f5822c3e7d6af7">Nv::Blast::BBoxBasedAccelerator</a>, and <a class="el" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#4deab8d9ac9830c9f985e3c852c43361">Nv::Blast::IntersectionTestingAccelerator</a>.</p>
 
 </div>
 </div><p>
@@ -179,7 +181,7 @@ Set state of accelerator to return all facets which possibly can intersect given
   </table>
 </dl>
 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#86de630e31259aecd6f72604469ca5d6">Nv::Blast::DummyAccelerator</a>, <a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#1528052be86f88831e4960f73d4dba64">Nv::Blast::BBoxBasedAccelerator</a>, and <a class="el" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#370488e08a2a2740456c031ae69e8ead">Nv::Blast::IntersectionTestingAccelerator</a>.</p>
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#86de630e31259aecd6f72604469ca5d6">Nv::Blast::DummyAccelerator</a>, <a class="el" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#32c1136d78aabc9173b464ee718cb007">Nv::Blast::SweepingAccelerator</a>, <a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#1528052be86f88831e4960f73d4dba64">Nv::Blast::BBoxBasedAccelerator</a>, and <a class="el" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html#370488e08a2a2740456c031ae69e8ead">Nv::Blast::IntersectionTestingAccelerator</a>.</p>
 
 </div>
 </div><p>

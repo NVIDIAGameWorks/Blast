@@ -39,6 +39,7 @@
 #include "NvBlastTkFamily.h"
 #include "NvBlastExtDamageShaders.h"
 #include "NvBlastExtPxActor.h"
+#include "NvBlastExtPxFamily.h"
 
 #include "PxRigidDynamic.h"
 #include "PxScene.h"
@@ -68,12 +69,12 @@ DamageToolController::DamageToolController()
 	// damage amount calc using NvBlastExtMaterial
 	auto getDamageAmountFn = [](const float damage, ExtPxActor* actor)
 	{
-		const void* material = actor->getTkActor().getFamily().getMaterial();
-		return material ? reinterpret_cast<const NvBlastExtMaterial*>(material)->getNormalizedDamage(damage) : 0.f;
+		const NvBlastExtMaterial* material = actor->getFamily().getMaterial();
+		return material ? material->getNormalizedDamage(damage) : 0.f;
 	};
 
 	// Damage functions
-	auto radialDamageExecute = [&](const Damager* damager, ExtPxActor* actor, PxVec3 origin, PxVec3 position, PxVec3 normal)
+	auto radialDamageExecute = [&](const Damager* damager, ExtPxActor* actor, BlastFamily& family, const Damager::DamageData& data)
 	{
 		const float damage = getDamageAmountFn(m_damage, actor);
 		if (damage > 0.f)
@@ -81,58 +82,95 @@ DamageToolController::DamageToolController()
 			NvBlastExtRadialDamageDesc desc =
 			{
 				damage,
-				{ position.x, position.y, position.z },
+				{ data.hitPosition.x, data.hitPosition.y, data.hitPosition.z },
 				damager->radius,
 				damager->radius * 1.6f
 			};
 
-			actor->getTkActor().damage(damager->program, &desc, sizeof(desc));
+			getBlastController().deferDamage(actor, family, damager->program, &desc, sizeof(desc));
 		}
 	};
-	auto lineSegmentDamageExecute = [&](const Damager* damager, ExtPxActor* actor, PxVec3 origin, PxVec3 position, PxVec3 normal)
+	auto sliceDamageExecute = [&](const Damager* damager, ExtPxActor* actor, BlastFamily& family, const Damager::DamageData& data)
 	{
 		const float damage = getDamageAmountFn(m_damage, actor);
 		if (damage > 0.f)
 		{
-			PxVec3 dir = (position - origin).getNormalized();
-			PxVec3 farEnd = origin + dir * 10000.0f;
+			PxVec3 farEnd = data.origin + data.weaponDir * 1000.0f;
+			PxVec3 farEndPrev = data.origin + data.previousWeaponDir * 1000.0f;
 
-			NvBlastExtSegmentRadialDamageDesc desc =
+			NvBlastExtTriangleIntersectionDamageDesc desc =
 			{
 				damage,
-				{ origin.x, origin.y, origin.z },
+				{ data.origin.x, data.origin.y, data.origin.z },
+				{ farEnd.x, farEnd.y, farEnd.z },
+				{ farEndPrev.x, farEndPrev.y, farEndPrev.z },
+			};
+
+			getBlastController().deferDamage(actor, family, damager->program, &desc, sizeof(desc));
+		}
+	};
+	auto capsuleDamageExecute = [&](const Damager* damager, ExtPxActor* actor, BlastFamily& family, const Damager::DamageData& data)
+	{
+		const float damage = getDamageAmountFn(m_damage, actor);
+		if (damage > 0.f)
+		{
+			PxVec3 dir = (data.hitPosition - data.origin).getNormalized();
+			PxVec3 farEnd = data.origin + dir * 10000.0f;
+
+			NvBlastExtCapsuleRadialDamageDesc desc =
+			{
+				damage,
+				{ data.origin.x, data.origin.y, data.origin.z },
 				{ farEnd.x, farEnd.y, farEnd.z },
 				damager->radius,
 				damager->radius * 1.6f
 			};
 
-			actor->getTkActor().damage(damager->program, &desc, sizeof(desc));
+			getBlastController().deferDamage(actor, family, damager->program, &desc, sizeof(desc));
 		}
 	};
-	auto shearDamageExecute = [&](const Damager* damager, ExtPxActor* actor, PxVec3 origin, PxVec3 position, PxVec3 normal)
+	auto impulseSpreadDamageExecute = [&](const Damager* damager, ExtPxActor* actor, BlastFamily& family, const Damager::DamageData& data)
+	{
+		const float damage = m_damage;
+		if (damage > 0.f)
+		{
+			PxVec3 impactNormal = -data.hitNormal;
+
+			NvBlastExtImpactSpreadDamageDesc desc =
+			{
+				damage,
+				{ data.hitPosition.x, data.hitPosition.y, data.hitPosition.z },
+				damager->radius,
+				damager->radius * 1.6f
+			};
+
+			getBlastController().immediateDamage(actor, family, damager->program, &desc);
+		}
+	};
+	auto shearDamageExecute = [&](const Damager* damager, ExtPxActor* actor, BlastFamily& family, const Damager::DamageData& data)
 	{
 		const float damage = getDamageAmountFn(m_damage, actor);
 		if (damage > 0.f)
 		{
-			PxVec3 impactNormal = -normal;
+			PxVec3 impactNormal = -data.hitNormal;
 
 			NvBlastExtShearDamageDesc desc =
 			{
 				damage,
 				{ impactNormal.x, impactNormal.y, impactNormal.z },
-				{ position.x, position.y, position.z },
+				{ data.hitPosition.x, data.hitPosition.y, data.hitPosition.z },
 				damager->radius,
 				damager->radius * 1.6f
 			};
 
-			actor->getTkActor().damage(damager->program, &desc, sizeof(desc));
+			getBlastController().deferDamage(actor, family, damager->program, &desc, sizeof(desc));
 		}
 	};
-	auto stressDamageExecute = [&](const Damager* damager, ExtPxActor* actor, PxVec3 origin, PxVec3 position, PxVec3 normal)
+	auto stressDamageExecute = [&](const Damager* damager, ExtPxActor* actor, BlastFamily& family, const Damager::DamageData& data)
 	{
-		PxVec3 force = -m_stressForceFactor * normal * actor->getPhysXActor().getMass();
+		PxVec3 force = -m_stressForceFactor * data.hitNormal * actor->getPhysXActor().getMass();
 
-		getBlastController().stressDamage(actor, position, force);
+		getBlastController().stressDamage(actor, data.hitPosition, force);
 	};
 
 	// Damage Tools:
@@ -157,11 +195,24 @@ DamageToolController::DamageToolController()
 
 	{
 		Damager dam;
-		dam.uiName = "Segment Damage (Falloff)";
-		dam.program = NvBlastDamageProgram{ NvBlastExtSegmentFalloffGraphShader, NvBlastExtSegmentFalloffSubgraphShader };
+		dam.uiName = "Slice Damage";
+		dam.program = NvBlastDamageProgram{ NvBlastExtTriangleIntersectionGraphShader, NvBlastExtTriangleIntersectionSubgraphShader };
 		dam.pointerType = Damager::PointerType::Line;
 		dam.pointerColor = DirectX::XMFLOAT4(0.1f, 1.0f, 0.1f, 0.4f);
-		dam.executeFunction = lineSegmentDamageExecute;
+		dam.executeFunction = sliceDamageExecute;
+		dam.damageWhilePressed = true;
+		dam.radius = .2f;
+		dam.radiusLimit = .2f;
+		m_damagers.push_back(dam);
+	}
+
+	{
+		Damager dam;
+		dam.uiName = "Capsule Damage (Falloff)";
+		dam.program = NvBlastDamageProgram{ NvBlastExtCapsuleFalloffGraphShader, NvBlastExtCapsuleFalloffSubgraphShader };
+		dam.pointerType = Damager::PointerType::Line;
+		dam.pointerColor = DirectX::XMFLOAT4(0.1f, 1.0f, 0.1f, 0.4f);
+		dam.executeFunction = capsuleDamageExecute;
 		dam.damageWhilePressed = true;
 		dam.radius = .2f;
 		dam.radiusLimit = 20.0f;
@@ -170,8 +221,18 @@ DamageToolController::DamageToolController()
 
 	{
 		Damager dam;
+		dam.uiName = "Impact Spread Damage";
+		dam.program = NvBlastDamageProgram { NvBlastExtImpactSpreadGraphShader, NvBlastExtImpactSpreadSubgraphShader };
+		dam.pointerType = Damager::PointerType::Sphere;
+		dam.pointerColor = DirectX::XMFLOAT4(0.5f, 1.0f, 0.5f, 0.4f);
+		dam.executeFunction = impulseSpreadDamageExecute;
+		m_damagers.push_back(dam);
+	}
+
+	{
+		Damager dam;
 		dam.uiName = "Shear Damage";
-		dam.program = NvBlastDamageProgram { NvBlastExtShearGraphShader, NvBlastExtShearSubgraphShader };
+		dam.program = NvBlastDamageProgram{ NvBlastExtShearGraphShader, NvBlastExtShearSubgraphShader };
 		dam.pointerType = Damager::PointerType::Sphere;
 		dam.pointerColor = DirectX::XMFLOAT4(0.5f, 1.0f, 0.5f, 0.4f);
 		dam.executeFunction = shearDamageExecute;
@@ -243,6 +304,8 @@ void DamageToolController::Animate(double dt)
 	// damage mode
 	if (m_damageMode)
 	{
+		const Damager& damager = m_damagers[m_damagerIndex];
+
 		// ray cast according to camera + mouse ray
 		PxVec3 eyePos, pickDir;
 		getPhysXController().getEyePoseAndPickDir(m_lastMousePos.x, m_lastMousePos.y, eyePos, pickDir);
@@ -253,21 +316,24 @@ void DamageToolController::Animate(double dt)
 		getPhysXController().getPhysXScene().raycast(eyePos, pickDir, PX_MAX_F32, hit1, PxHitFlag::ePOSITION | PxHitFlag::eNORMAL);
 		hit = hit1.block;
 
-		if (hit.shape)
+		if (hit.shape || (m_prevWasHit && damager.pointerType == Damager::Line))
 		{
 			PxMat44 cameraViewInv = XMMATRIXToPxMat44(getRenderer().getCamera().GetViewMatrix()).inverseRT();
 			PxVec3 weaponOrigin = eyePos + cameraViewInv.rotate(WEAPON_POSITION_IN_VIEW);
+			PxVec3 weaponDir = (hit.position - weaponOrigin).getNormalized();
 
 			// damage function
-			const Damager& damager = m_damagers[m_damagerIndex];
-			auto damageFunction = [&](ExtPxActor* actor)
+			auto damageFunction = [&](ExtPxActor* actor, BlastFamily& family)
 			{
 				auto t0 = actor->getPhysXActor().getGlobalPose();
 				PxTransform t(t0.getInverse());
-				PxVec3 localNormal = t.rotate(hit.normal);
-				PxVec3 localPosition = t.transform(hit.position);
-				PxVec3 localOrigin = t.transform(weaponOrigin);
-				damager.executeFunction(&damager, actor, localOrigin, localPosition, localNormal);
+				Damager::DamageData data;
+				data.hitNormal = t.rotate(hit.normal);
+				data.hitPosition = t.transform(hit.position);
+				data.origin = t.transform(weaponOrigin);
+				data.weaponDir = t.rotate(weaponDir);
+				data.previousWeaponDir = t.rotate(m_previousPickDir);
+				damager.executeFunction(&damager, actor, family, data);
 			};
 
 			// should damage? 
@@ -324,6 +390,13 @@ void DamageToolController::Animate(double dt)
 			{
 				PX_ASSERT(false);
 			}
+
+			m_previousPickDir = weaponDir;
+			m_prevWasHit = true;
+		}
+		else
+		{
+			m_prevWasHit = false;
 		}
 	}
 }

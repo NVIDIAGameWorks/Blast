@@ -23,6 +23,7 @@
   <div class="tabs">
     <ul>
       <li><a href="main.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="pages.html"><span>User's&nbsp;Guide</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
@@ -96,7 +97,7 @@
 <a name="l00059"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#01ea0c2730c4bedfacf00327930428ff">00059</a>     friend ExtPxManagerImpl;
 <a name="l00060"></a>00060 
 <a name="l00062"></a>00062 
-<a name="l00063"></a>00063     ExtPxFamilyImpl(ExtPxManagerImpl&amp; manager, <a class="code" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a>&amp; tkFamily, const <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>&amp; pxAsset);
+<a name="l00063"></a>00063     ExtPxFamilyImpl(ExtPxManagerImpl&amp; manager, <a class="code" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a>&amp; tkFamily, <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>&amp; pxAsset);
 <a name="l00064"></a>00064     ~ExtPxFamilyImpl();
 <a name="l00065"></a>00065 
 <a name="l00066"></a>00066     virtual <span class="keywordtype">void</span> release() override;
@@ -133,7 +134,7 @@
 <a name="l00098"></a>00098         <span class="keywordflow">return</span> m_subchunkShapes.begin();
 <a name="l00099"></a>00099     }
 <a name="l00100"></a>00100 
-<a name="l00101"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#c700c9a07161686d66b6fc2f4a3f93bb">00101</a>     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>&amp;               getPxAsset()<span class="keyword"> const override</span>
+<a name="l00101"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#2723382c6ac86b8362aa1dced1fc5a85">00101</a>     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>&amp;                     getPxAsset()<span class="keyword"> const override</span>
 <a name="l00102"></a>00102 <span class="keyword">    </span>{
 <a name="l00103"></a>00103         <span class="keywordflow">return</span> m_pxAsset;
 <a name="l00104"></a>00104     }
@@ -163,58 +164,69 @@
 <a name="l00128"></a>00128         <span class="keywordflow">return</span> m_pxActorDescTemplate;
 <a name="l00129"></a>00129     }
 <a name="l00130"></a>00130 
-<a name="l00131"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#8d02f38c4dbe02470bada3f48d27e179">00131</a>     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            subscribe(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_listener.html">ExtPxListener</a>&amp; listener)<span class="keyword"> override</span>
+<a name="l00131"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#f358e9be435fc60498fae140fa0f9bba">00131</a>     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_blast_ext_material.html">NvBlastExtMaterial</a>*       getMaterial()<span class="keyword"> const override</span>
 <a name="l00132"></a>00132 <span class="keyword">    </span>{
-<a name="l00133"></a>00133         m_listeners.pushBack(&amp;listener);
+<a name="l00133"></a>00133         <span class="keywordflow">return</span> m_material;
 <a name="l00134"></a>00134     }
 <a name="l00135"></a>00135 
-<a name="l00136"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#5ee7e8f12a169ea48e351aab521a728d">00136</a>     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            unsubscribe(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_listener.html">ExtPxListener</a>&amp; listener)<span class="keyword"> override</span>
+<a name="l00136"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#1c502fb7b0a704ac4f19c5511cddd542">00136</a>     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            setMaterial(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_ext_material.html">NvBlastExtMaterial</a>* material)<span class="keyword"> override</span>
 <a name="l00137"></a>00137 <span class="keyword">    </span>{
-<a name="l00138"></a>00138         m_listeners.findAndReplaceWithLast(&amp;listener);
+<a name="l00138"></a>00138         m_material = material;
 <a name="l00139"></a>00139     }
 <a name="l00140"></a>00140 
-<a name="l00141"></a>00141     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            postSplitUpdate() <span class="keyword">override</span>;
-<a name="l00142"></a>00142 
-<a name="l00144"></a>00144 
-<a name="l00145"></a>00145     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            receive(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tk_event.html">TkEvent</a>* events, uint32_t eventCount) <span class="keyword">override</span>;
-<a name="l00146"></a>00146 
-<a name="l00147"></a>00147 
-<a name="l00149"></a>00149 
-<a name="l00150"></a>00150     <span class="keywordtype">void</span>                                    dispatchActorCreated(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>&amp; actor);
-<a name="l00151"></a>00151     <span class="keywordtype">void</span>                                    dispatchActorDestroyed(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>&amp; actor);
+<a name="l00141"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#8d02f38c4dbe02470bada3f48d27e179">00141</a>     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            subscribe(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_listener.html">ExtPxListener</a>&amp; listener)<span class="keyword"> override</span>
+<a name="l00142"></a>00142 <span class="keyword">    </span>{
+<a name="l00143"></a>00143         m_listeners.pushBack(&amp;listener);
+<a name="l00144"></a>00144     }
+<a name="l00145"></a>00145 
+<a name="l00146"></a><a class="code" href="class_nv_1_1_blast_1_1final.html#5ee7e8f12a169ea48e351aab521a728d">00146</a>     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            unsubscribe(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_listener.html">ExtPxListener</a>&amp; listener)<span class="keyword"> override</span>
+<a name="l00147"></a>00147 <span class="keyword">    </span>{
+<a name="l00148"></a>00148         m_listeners.findAndReplaceWithLast(&amp;listener);
+<a name="l00149"></a>00149     }
+<a name="l00150"></a>00150 
+<a name="l00151"></a>00151     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            postSplitUpdate() <span class="keyword">override</span>;
 <a name="l00152"></a>00152 
-<a name="l00153"></a>00153 
-<a name="l00154"></a>00154 <span class="keyword">private</span>:
+<a name="l00154"></a>00154 
+<a name="l00155"></a>00155     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            receive(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tk_event.html">TkEvent</a>* events, uint32_t eventCount) <span class="keyword">override</span>;
 <a name="l00156"></a>00156 
-<a name="l00157"></a>00157     <span class="keywordtype">void</span>                                    createActors(<a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a>** tkActors, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html">PxActorCreateInfo</a>* pxActorInfos, uint32_t count);
-<a name="l00158"></a>00158     <span class="keywordtype">void</span>                                    destroyActors(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>** actors, uint32_t count);
+<a name="l00157"></a>00157 
 <a name="l00159"></a>00159 
-<a name="l00161"></a>00161 
-<a name="l00162"></a>00162     ExtPxManagerImpl&amp;                       m_manager;
-<a name="l00163"></a>00163     <a class="code" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a>&amp;                               m_tkFamily;
-<a name="l00164"></a>00164     <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>&amp;                       m_pxAsset;
-<a name="l00165"></a>00165     <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_spawn_settings.html">ExtPxSpawnSettings</a>                      m_spawnSettings;
-<a name="l00166"></a>00166     <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_shape_desc_template.html">ExtPxShapeDescTemplate</a>*           m_pxShapeDescTemplate;
-<a name="l00167"></a>00167     <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_actor_desc_template.html">ExtPxActorDescTemplate</a>*           m_pxActorDescTemplate;
-<a name="l00168"></a>00168     <span class="keywordtype">bool</span>                                    m_isSpawned;
-<a name="l00169"></a>00169     PxTransform                             m_initialTransform;
-<a name="l00170"></a>00170     PxVec3                                  m_initialScale;
-<a name="l00171"></a>00171     <a class="code" href="struct_nv_1_1_blast_1_1_hash_set.html">HashSet&lt;ExtPxActor*&gt;::type</a>              m_actors;
-<a name="l00172"></a>00172     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;TkActor*&gt;::type</a>                   m_culledActors;
-<a name="l00173"></a>00173     <a class="code" href="struct_nv_1_1_blast_1_1_inline_array.html">InlineArray&lt;ExtPxListener*, 4&gt;::type</a>    m_listeners;
-<a name="l00174"></a>00174     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;PxShape*&gt;::type</a>                   m_subchunkShapes;
-<a name="l00175"></a>00175     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;TkActor*&gt;::type</a>                   m_newActorsBuffer;
-<a name="l00176"></a>00176     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;PxActorCreateInfo&gt;::type</a>          m_newActorCreateInfo;
-<a name="l00177"></a>00177     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;PxActor*&gt;::type</a>                   m_physXActorsBuffer;
-<a name="l00178"></a>00178     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;ExtPxActor*&gt;::type</a>                m_actorsBuffer;
-<a name="l00179"></a>00179     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;uint32_t&gt;::type</a>                   m_indicesScratch;
-<a name="l00180"></a>00180 };
-<a name="l00181"></a>00181 
-<a name="l00182"></a>00182 } <span class="comment">// namespace Blast</span>
-<a name="l00183"></a>00183 } <span class="comment">// namespace Nv</span>
-<a name="l00184"></a>00184 
-<a name="l00185"></a>00185 
-<a name="l00186"></a>00186 <span class="preprocessor">#endif // ifndef NVBLASTEXTPXFAMILYIMPL_H</span>
+<a name="l00160"></a>00160     <span class="keywordtype">void</span>                                    dispatchActorCreated(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>&amp; actor);
+<a name="l00161"></a>00161     <span class="keywordtype">void</span>                                    dispatchActorDestroyed(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>&amp; actor);
+<a name="l00162"></a>00162 
+<a name="l00163"></a>00163 
+<a name="l00164"></a>00164 <span class="keyword">private</span>:
+<a name="l00166"></a>00166 
+<a name="l00167"></a>00167     <span class="keywordtype">void</span>                                    createActors(<a class="code" href="class_nv_1_1_blast_1_1_tk_actor.html">TkActor</a>** tkActors, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_px_actor_create_info.html">PxActorCreateInfo</a>* pxActorInfos, uint32_t count);
+<a name="l00168"></a>00168     <span class="keywordtype">void</span>                                    destroyActors(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>** actors, uint32_t count);
+<a name="l00169"></a>00169 
+<a name="l00171"></a>00171 
+<a name="l00172"></a>00172     ExtPxManagerImpl&amp;                       m_manager;
+<a name="l00173"></a>00173     <a class="code" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a>&amp;                               m_tkFamily;
+<a name="l00174"></a>00174     <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>&amp;                             m_pxAsset;
+<a name="l00175"></a>00175     <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_spawn_settings.html">ExtPxSpawnSettings</a>                      m_spawnSettings;
+<a name="l00176"></a>00176     <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_shape_desc_template.html">ExtPxShapeDescTemplate</a>*           m_pxShapeDescTemplate;
+<a name="l00177"></a>00177     <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_actor_desc_template.html">ExtPxActorDescTemplate</a>*           m_pxActorDescTemplate;
+<a name="l00178"></a>00178     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_ext_material.html">NvBlastExtMaterial</a>*               m_material;
+<a name="l00179"></a>00179     <span class="keywordtype">bool</span>                                    m_isSpawned;
+<a name="l00180"></a>00180     PxTransform                             m_initialTransform;
+<a name="l00181"></a>00181     PxVec3                                  m_initialScale;
+<a name="l00182"></a>00182     <a class="code" href="struct_nv_1_1_blast_1_1_hash_set.html">HashSet&lt;ExtPxActor*&gt;::type</a>              m_actors;
+<a name="l00183"></a>00183     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;TkActor*&gt;::type</a>                   m_culledActors;
+<a name="l00184"></a>00184     <a class="code" href="struct_nv_1_1_blast_1_1_inline_array.html">InlineArray&lt;ExtPxListener*, 4&gt;::type</a>    m_listeners;
+<a name="l00185"></a>00185     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;PxShape*&gt;::type</a>                   m_subchunkShapes;
+<a name="l00186"></a>00186     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;TkActor*&gt;::type</a>                   m_newActorsBuffer;
+<a name="l00187"></a>00187     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;PxActorCreateInfo&gt;::type</a>          m_newActorCreateInfo;
+<a name="l00188"></a>00188     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;PxActor*&gt;::type</a>                   m_physXActorsBuffer;
+<a name="l00189"></a>00189     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;ExtPxActor*&gt;::type</a>                m_actorsBuffer;
+<a name="l00190"></a>00190     <a class="code" href="struct_nv_1_1_blast_1_1_array.html">Array&lt;uint32_t&gt;::type</a>                   m_indicesScratch;
+<a name="l00191"></a>00191 };
+<a name="l00192"></a>00192 
+<a name="l00193"></a>00193 } <span class="comment">// namespace Blast</span>
+<a name="l00194"></a>00194 } <span class="comment">// namespace Nv</span>
+<a name="l00195"></a>00195 
+<a name="l00196"></a>00196 
+<a name="l00197"></a>00197 <span class="preprocessor">#endif // ifndef NVBLASTEXTPXFAMILYIMPL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

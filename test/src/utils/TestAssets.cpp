@@ -28,6 +28,7 @@
 
 #include "TestAssets.h"
 #include "AssetGenerator.h"
+#include <algorithm>
 
 const NvBlastChunkDesc g_cube1ChunkDescs[9] =
 {
@@ -377,4 +378,43 @@ void generateCube(GeneratorAsset& cubeAsset, NvBlastAssetDesc& assetDesc, size_t
 	assetDesc.bondDescs = cubeAsset.solverBonds.data();
 	assetDesc.chunkCount = (uint32_t)cubeAsset.chunks.size();
 	assetDesc.chunkDescs = cubeAsset.solverChunks.data();
+}
+
+void generateRandomCube(GeneratorAsset& cubeAsset, NvBlastAssetDesc& desc, uint32_t minChunkCount, uint32_t maxChunkCount)
+{
+	CubeAssetGenerator::Settings settings;
+	settings.extents = GeneratorAsset::Vec3(1, 1, 1);
+	CubeAssetGenerator::DepthInfo depthInfo;
+	depthInfo.slicesPerAxis = GeneratorAsset::Vec3(1, 1, 1);
+	depthInfo.flag = NvBlastChunkDesc::Flags::NoFlags;
+	settings.depths.push_back(depthInfo);
+	uint32_t chunkCount = 1;
+	while (chunkCount < minChunkCount)
+	{
+		uint32_t chunkMul;
+		do
+		{
+			depthInfo.slicesPerAxis = GeneratorAsset::Vec3((float)(1 + rand() % 4), (float)(1 + rand() % 4), (float)(1 + rand() % 4));
+			chunkMul = (uint32_t)(depthInfo.slicesPerAxis.x * depthInfo.slicesPerAxis.y * depthInfo.slicesPerAxis.z);
+		} while (chunkMul == 1);
+		if (chunkCount*chunkMul > maxChunkCount)
+		{
+			break;
+		}
+		chunkCount *= chunkMul;
+		settings.depths.push_back(depthInfo);
+		settings.extents = settings.extents * depthInfo.slicesPerAxis;
+	}
+	settings.depths.back().flag = NvBlastChunkDesc::SupportFlag;	// Leaves are support
+
+																	// Make largest direction unit size
+	settings.extents = settings.extents * (1.0f / std::max(settings.extents.x, std::max(settings.extents.y, settings.extents.z)));
+
+	// Create asset
+	CubeAssetGenerator::generate(cubeAsset, settings);
+
+	desc.chunkDescs = cubeAsset.solverChunks.data();
+	desc.chunkCount = (uint32_t)cubeAsset.solverChunks.size();
+	desc.bondDescs = cubeAsset.solverBonds.data();
+	desc.bondCount = (uint32_t)cubeAsset.solverBonds.size();
 }

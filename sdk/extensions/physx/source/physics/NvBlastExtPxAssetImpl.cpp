@@ -52,8 +52,9 @@ namespace Blast
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ExtPxAssetImpl::ExtPxAssetImpl(const ExtPxAssetDesc& desc, TkFramework& framework)
+	: m_accelerator(nullptr)
 #if !defined(NV_VC) || NV_VC >= 14
-	: m_defaultActorDesc { 1.0f, nullptr, 1.0f, nullptr }
+	, m_defaultActorDesc { 1.0f, nullptr, 1.0f, nullptr }
 {
 #else
 {
@@ -65,8 +66,9 @@ ExtPxAssetImpl::ExtPxAssetImpl(const ExtPxAssetDesc& desc, TkFramework& framewor
 }
 
 ExtPxAssetImpl::ExtPxAssetImpl(const TkAssetDesc& desc, ExtPxChunk* pxChunks, ExtPxSubchunk* pxSubchunks, TkFramework& framework)
+	: m_accelerator(nullptr)
 #if !defined(NV_VC) || NV_VC >= 14
-	: m_defaultActorDesc{ 1.0f, nullptr, 1.0f, nullptr }
+	, m_defaultActorDesc{ 1.0f, nullptr, 1.0f, nullptr }
 {
 #else
 {
@@ -79,6 +81,7 @@ ExtPxAssetImpl::ExtPxAssetImpl(const TkAssetDesc& desc, ExtPxChunk* pxChunks, Ex
 
 ExtPxAssetImpl::ExtPxAssetImpl(TkAsset* asset, ExtPxAssetDesc::ChunkDesc* chunks, uint32_t chunkCount)
 	: m_tkAsset(asset)
+	, m_accelerator(nullptr)
 #if !defined(NV_VC) || NV_VC >= 14
 	, m_defaultActorDesc{ 1.0f, nullptr, 1.0f, nullptr }
 {
@@ -94,6 +97,7 @@ ExtPxAssetImpl::ExtPxAssetImpl(TkAsset* asset, ExtPxAssetDesc::ChunkDesc* chunks
 
 ExtPxAssetImpl::ExtPxAssetImpl(TkAsset* asset)
 	: m_tkAsset(asset)
+	, m_accelerator(nullptr)
 #if !defined(NV_VC) || NV_VC >= 14
 	, m_defaultActorDesc { 1.0f, nullptr, 1.0f, nullptr }
 {

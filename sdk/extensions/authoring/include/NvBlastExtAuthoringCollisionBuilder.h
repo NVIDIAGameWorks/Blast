@@ -46,6 +46,22 @@ namespace Blast
 {
 
 struct CollisionHull;
+struct Triangle;
+
+struct CollisionParams
+{
+	CollisionParams()
+	{
+		setDefault();
+	}
+	void setDefault()
+	{
+		maximumNumberOfHulls = 8;
+		voxelGridResolution = 1000000;
+	}
+	uint32_t maximumNumberOfHulls; // Maximum number of convex hull generated for one chunk. If equal to 1 convex decomposition is disabled.
+	uint32_t voxelGridResolution; // Voxel grid resolution used for chunk convex decomposition.
+};
 
 /**
 	ConvexMeshBuilder provides routine to build collision hulls from array of vertices.
@@ -102,6 +118,12 @@ public:
 
 	*/
 	virtual void					trimCollisionGeometry(uint32_t chunksCount, CollisionHull** in, const uint32_t* chunkDepth) = 0;
+
+
+	/**
+		Create mesh convex decomposition
+	*/
+	virtual int32_t					buildMeshConvexDecomposition(const Nv::Blast::Triangle* mesh, uint32_t triangleCount, const CollisionParams& params, CollisionHull** &convexes) = 0;
 
 };
 

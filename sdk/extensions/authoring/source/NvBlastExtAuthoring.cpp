@@ -19,6 +19,7 @@
 #include "NvBlast.h"
 #include "NvBlastGlobals.h"
 #include "NvBlastExtPxAsset.h"
+#include "NvBlastExtAssetUtils.h"
 
 #include <algorithm>
 #include <memory>
@@ -26,8 +27,8 @@
 using namespace Nv::Blast;
 using namespace physx;
 
-#define SAFE_ARRAY_NEW(T, x) ((x) > 0) ? new T[x] : nullptr;
-#define SAFE_ARRAY_DELETE(x) if (x != nullptr) {delete[] x; x = nullptr;}
+#define SAFE_ARRAY_NEW(T, x) ((x) > 0) ? reinterpret_cast<T*>(NVBLAST_ALLOC(sizeof(T) * (x))) : nullptr;
+#define SAFE_ARRAY_DELETE(x) if (x != nullptr) {NVBLAST_FREE(x); x = nullptr;}
 
 Mesh* NvBlastExtAuthoringCreateMesh(const PxVec3* position, const PxVec3* normals, const PxVec2* uv, uint32_t verticesCount, const uint32_t* indices, uint32_t indicesCount)
 {
@@ -59,34 +60,139 @@ ConvexMeshBuilder* NvBlastExtAuthoringCreateConvexMeshBuilder(PxCooking* cooking
 	return new ConvexMeshBuilderImpl(cooking, insertionCallback);
 }
 
-void buildPhysicsChunks(ConvexMeshBuilder& collisionBuilder, AuthoringResult& result)
+
+void NvBlastExtAuthoringTransformCollisionHullInPlace(CollisionHull* hull, const physx::PxVec3* scaling, const physx::PxQuat* rotation, const physx::PxVec3* translation)
 {
-	uint32_t chunkCount = (uint32_t)result.chunkCount;
-	result.collisionHullOffset = SAFE_ARRAY_NEW(uint32_t, chunkCount + 1);
-	result.collisionHullOffset[0] = 0;
-	result.collisionHull = SAFE_ARRAY_NEW(CollisionHull*, chunkCount);
-	result.physicsSubchunks = SAFE_ARRAY_NEW(ExtPxSubchunk, chunkCount);
-	result.physicsChunks = SAFE_ARRAY_NEW(ExtPxChunk, chunkCount);
-	for (uint32_t i = 0; i < chunkCount; ++i)
+	// Local copies of scaling (S), rotation (R), and translation (T)
+	physx::PxVec3 S = { 1, 1, 1 };
+	physx::PxQuat R = { 0, 0, 0, 1 };
+	physx::PxVec3 T = { 0, 0, 0 };
+	physx::PxVec3 cofS = { 1, 1, 1 };
+	float sgnDetS = 1;
+
 	{
-		std::vector<physx::PxVec3> vertices;
-		for (uint32_t p = result.geometryOffset[i]; p < result.geometryOffset[i+1]; ++p)
+		if (rotation)
 		{
-			Nv::Blast::Triangle& tri = result.geometry[p];
-			vertices.push_back(tri.a.p);
-			vertices.push_back(tri.b.p);
-			vertices.push_back(tri.c.p);
+			R = *rotation;
 		}
 
-		result.collisionHullOffset[i + 1] = result.collisionHullOffset[i] + 1;
-		result.collisionHull[i] = collisionBuilder.buildCollisionGeometry((uint32_t)vertices.size(), vertices.data());
-		result.physicsSubchunks[i].transform = physx::PxTransform(physx::PxIdentity);
-		result.physicsSubchunks[i].geometry = physx::PxConvexMeshGeometry(collisionBuilder.buildConvexMesh(*result.collisionHull[i]));
+		if (scaling)
+		{
+			S = *scaling;
+			cofS.x = S.y * S.z;
+			cofS.y = S.z * S.x;
+			cofS.z = S.x * S.y;
+			sgnDetS = (S.x * S.y * S.z < 0) ? -1 : 1;
+		}
 
-		result.physicsChunks[i].isStatic = false;
-		result.physicsChunks[i].subchunkCount = 1;
-		result.physicsChunks[i].firstSubchunkIndex = i;
-		//outPhysicsChunks.get()[i].subchunks = &outPhysicsSubchunks[i];
+		if (translation)
+		{
+			T = *translation;
+		}
+	}
+
+	const uint32_t pointCount = hull->pointsCount;
+	for (uint32_t pi = 0; pi < pointCount; pi++)
+	{
+		physx::PxVec3& p = hull->points[pi];
+		p = (R.rotate(p.multiply(S)) + T);
+	}
+	
+	const uint32_t planeCount = hull->polygonDataCount;
+	for (uint32_t pi = 0; pi < planeCount; pi++)
+	{
+		float* plane = hull->polygonData[pi].mPlane;
+		physx::PxPlane pxPlane(plane[0], plane[1], plane[2], plane[3]);
+		PxVec3 transformedNormal = sgnDetS*R.rotate(pxPlane.n.multiply(cofS)).getNormalized();
+		PxVec3 transformedPt = R.rotate(pxPlane.pointInPlane().multiply(S)) + T;
+		
+		physx::PxPlane transformedPlane(transformedPt, transformedNormal);
+		plane[0] = transformedPlane.n[0];
+		plane[1] = transformedPlane.n[1];
+		plane[2] = transformedPlane.n[2];
+		plane[3] = transformedPlane.d;
+	}
+}
+
+
+CollisionHull* NvBlastExtAuthoringTransformCollisionHull(const CollisionHull* hull, const physx::PxVec3* scaling, const physx::PxQuat* rotation, const physx::PxVec3* translation)
+{
+	CollisionHullImpl* ret = new CollisionHullImpl(*hull);
+	NvBlastExtAuthoringTransformCollisionHullInPlace(ret, scaling, rotation, translation);
+	return ret;
+}
+
+void buildPhysicsChunks(ConvexMeshBuilder& collisionBuilder, AuthoringResult& result, const CollisionParams& params)
+{
+	uint32_t chunkCount = (uint32_t)result.chunkCount;
+	if (params.maximumNumberOfHulls == 1)
+	{
+		result.collisionHullOffset = SAFE_ARRAY_NEW(uint32_t, chunkCount + 1);
+		result.collisionHullOffset[0] = 0;
+		result.collisionHull = SAFE_ARRAY_NEW(CollisionHull*, chunkCount);
+		result.physicsSubchunks = SAFE_ARRAY_NEW(ExtPxSubchunk, chunkCount);
+		result.physicsChunks = SAFE_ARRAY_NEW(ExtPxChunk, chunkCount);
+		for (uint32_t i = 0; i < chunkCount; ++i)
+		{
+			std::vector<physx::PxVec3> vertices;
+			for (uint32_t p = result.geometryOffset[i]; p < result.geometryOffset[i + 1]; ++p)
+			{
+				Nv::Blast::Triangle& tri = result.geometry[p];
+				vertices.push_back(tri.a.p);
+				vertices.push_back(tri.b.p);
+				vertices.push_back(tri.c.p);
+			}
+			result.collisionHullOffset[i + 1] = result.collisionHullOffset[i] + 1;
+			result.collisionHull[i] = collisionBuilder.buildCollisionGeometry((uint32_t)vertices.size(), vertices.data());
+			result.physicsSubchunks[i].transform = physx::PxTransform(physx::PxIdentity);
+			result.physicsSubchunks[i].geometry = physx::PxConvexMeshGeometry(collisionBuilder.buildConvexMesh(*result.collisionHull[i]));
+
+			result.physicsChunks[i].isStatic = false;
+			result.physicsChunks[i].subchunkCount = 1;
+			result.physicsChunks[i].firstSubchunkIndex = i;
+			//outPhysicsChunks.get()[i].subchunks = &outPhysicsSubchunks[i];
+		}
+	}
+	else
+	{
+		std::vector<std::vector<CollisionHull*> > hulls(chunkCount);
+		int32_t totalHulls = 0;
+		for (uint32_t i = 0; i < chunkCount; ++i)
+		{
+			CollisionHull** tempHull;
+
+			int32_t newHulls = collisionBuilder.buildMeshConvexDecomposition(result.geometry + result.geometryOffset[i], 
+												result.geometryOffset[i + 1] - result.geometryOffset[i], params, tempHull);
+			totalHulls += newHulls;			
+			for (int32_t h = 0; h < newHulls; ++h)
+			{
+				hulls[i].push_back(tempHull[h]);
+			}
+			SAFE_ARRAY_DELETE(tempHull);
+		}
+
+		result.collisionHullOffset = SAFE_ARRAY_NEW(uint32_t, chunkCount + 1);
+		result.collisionHullOffset[0] = 0;
+		result.collisionHull = SAFE_ARRAY_NEW(CollisionHull*, totalHulls);
+		result.physicsSubchunks = SAFE_ARRAY_NEW(ExtPxSubchunk, totalHulls);
+		result.physicsChunks = SAFE_ARRAY_NEW(ExtPxChunk, chunkCount);
+
+		int32_t firstSubchunk = 0;
+		for (uint32_t i = 0; i < chunkCount; ++i)
+		{
+			result.collisionHullOffset[i + 1] = result.collisionHullOffset[i] + hulls[i].size();
+			int32_t off = result.collisionHullOffset[i];
+			for (uint32_t subhull = 0; subhull < hulls[i].size(); ++subhull)
+			{
+				result.collisionHull[off + subhull] = hulls[i][subhull];
+				result.physicsSubchunks[firstSubchunk + subhull].transform = physx::PxTransform(physx::PxIdentity);
+				result.physicsSubchunks[firstSubchunk + subhull].geometry = physx::PxConvexMeshGeometry(collisionBuilder.buildConvexMesh(*hulls[i][subhull]));
+			}			
+			result.physicsChunks[i].isStatic = false;
+			result.physicsChunks[i].subchunkCount = static_cast<uint32_t>(hulls[i].size());
+			result.physicsChunks[i].firstSubchunkIndex = firstSubchunk;
+			firstSubchunk += result.physicsChunks[i].subchunkCount;
+		}
 	}
 }
 
@@ -121,7 +227,7 @@ struct AuthoringResultImpl : public AuthoringResult
 	}
 };
 
-AuthoringResult* NvBlastExtAuthoringProcessFracture(FractureTool& fTool, BlastBondGenerator& bondGenerator, ConvexMeshBuilder& collisionBuilder, int32_t defaultSupportDepth)
+AuthoringResult* NvBlastExtAuthoringProcessFracture(FractureTool& fTool, BlastBondGenerator& bondGenerator, ConvexMeshBuilder& collisionBuilder, const CollisionParams& collisionParam, int32_t defaultSupportDepth)
 {
 	fTool.finalizeFracturing();
 	const uint32_t chunkCount = fTool.getChunkCount();
@@ -220,7 +326,7 @@ AuthoringResult* NvBlastExtAuthoringProcessFracture(FractureTool& fTool, BlastBo
 	//std::cout << "MAX: " << maxX << ", " << maxY << ", " << maxZ << std::endl;
 
 	// prepare physics data (convexes)
-	buildPhysicsChunks(collisionBuilder, aResult);
+	buildPhysicsChunks(collisionBuilder, aResult, collisionParam);
 
 	// set NvBlastChunk volume from Px geometry
 	for (uint32_t i = 0; i < chunkCount; i++)
@@ -259,4 +365,104 @@ AuthoringResult* NvBlastExtAuthoringProcessFracture(FractureTool& fTool, BlastBo
 	ret->materialCount = 0;
 	ret->materialNames = nullptr;
 	return ret;
+}
+
+uint32_t NvBlastExtAuthoringFindAssetConnectingBonds
+(
+	const NvBlastAsset** components,
+	const physx::PxVec3* scales,
+	const physx::PxQuat* rotations,
+	const physx::PxVec3* translations,
+	const uint32_t** convexHullOffsets,
+	const CollisionHull*** chunkHulls,
+	uint32_t componentCount,
+	NvBlastExtAssetUtilsBondDesc*& newBondDescs
+)
+{
+	//We don't need to use any of the cooking related parts of this
+	BlastBondGeneratorImpl bondGenerator(nullptr, nullptr);
+
+	std::vector<uint32_t> componentChunkOffsets;
+	componentChunkOffsets.reserve(componentCount + 1);
+	componentChunkOffsets.push_back(0);
+	
+	std::vector<uint32_t> combinedConvexHullOffsets;
+	std::vector<const CollisionHull*> combinedConvexHulls;
+	std::vector<CollisionHull*> hullsToRelease;
+	combinedConvexHullOffsets.push_back(0);
+
+	std::vector<uint32_t> originalComponentIndex;
+
+	const physx::PxVec3 identityScale(1);
+
+	//Combine our hull lists into a single combined list for bondsFromPrefractured
+	for (uint32_t c = 0; c < componentCount; c++)
+	{
+		const uint32_t chunkCount = NvBlastAssetGetChunkCount(components[c], &logLL);
+		const physx::PxVec3* scale = scales ? scales + c : nullptr;
+		const physx::PxQuat* rotation = rotations ? rotations + c : nullptr;
+		const physx::PxVec3* translation = translations ? translations + c : nullptr;
+
+		componentChunkOffsets.push_back(chunkCount + componentChunkOffsets.back());
+		for (uint32_t chunk = 0; chunk < chunkCount; chunk++)
+		{
+			const uint32_t hullsStart = convexHullOffsets[c][chunk];
+			const uint32_t hullsEnd = convexHullOffsets[c][chunk + 1];
+			for (uint32_t hull = hullsStart; hull < hullsEnd; hull++)
+			{
+				if ((scale != nullptr && *scale != identityScale) || (rotation != nullptr && !rotation->isIdentity()) || (translation != nullptr && !translation->isZero()))
+				{
+					hullsToRelease.emplace_back(NvBlastExtAuthoringTransformCollisionHull(chunkHulls[c][hull], scale, rotation, translation));
+					combinedConvexHulls.emplace_back(hullsToRelease.back());
+				}
+				else
+				{
+					//No need to transform
+					combinedConvexHulls.emplace_back(chunkHulls[c][hull]);
+				}
+			}
+			combinedConvexHullOffsets.push_back((hullsEnd - hullsStart) + combinedConvexHullOffsets.back());
+			originalComponentIndex.push_back(c);
+		}
+	}
+	const uint32_t totalChunkCount = componentChunkOffsets.back();
+	//Can't use std::vector<bool> since we need a bool* later
+	std::unique_ptr<bool[]> isSupportChunk(new bool[totalChunkCount]);
+	for (uint32_t c = 0; c < componentCount; c++)
+	{
+		const uint32_t chunkCount = componentChunkOffsets[c + 1] - componentChunkOffsets[c];
+		NvBlastSupportGraph supportGraph = NvBlastAssetGetSupportGraph(components[c], &logLL);
+		for (uint32_t chunk = 0; chunk < chunkCount; chunk++)
+		{
+			auto chunkIndiciesEnd = supportGraph.chunkIndices + supportGraph.nodeCount;
+			isSupportChunk[chunk + componentChunkOffsets[c]] = (std::find(supportGraph.chunkIndices, chunkIndiciesEnd, chunk) != chunkIndiciesEnd);
+		}
+	}
+
+	//Find the bonds
+	NvBlastBondDesc* newBonds = nullptr;
+	const int32_t newBoundCount = bondGenerator.bondsFromPrefractured(totalChunkCount, combinedConvexHullOffsets.data(), combinedConvexHulls.data(), isSupportChunk.get(), originalComponentIndex.data(), newBonds);
+
+	//Convert the bonds back to per-component chunks
+	newBondDescs = SAFE_ARRAY_NEW(NvBlastExtAssetUtilsBondDesc, newBoundCount);
+	for (int32_t nb = 0; nb < newBoundCount; ++nb)
+	{
+		newBondDescs[nb].bond = newBonds[nb].bond;
+		for (uint32_t ci = 0; ci < 2; ++ci)
+		{
+			uint32_t absChunkIdx = newBonds[nb].chunkIndices[ci];
+			uint32_t componentIdx = originalComponentIndex[absChunkIdx];
+			newBondDescs[nb].componentIndices[ci] = componentIdx;
+			newBondDescs[nb].chunkIndices[ci] = absChunkIdx - componentChunkOffsets[componentIdx];
+		}
+	}
+	//Don't need this anymore
+	NVBLAST_FREE(newBonds);
+
+	for (CollisionHull* hull : hullsToRelease)
+	{
+		hull->release();
+	}
+
+	return newBoundCount;
 }

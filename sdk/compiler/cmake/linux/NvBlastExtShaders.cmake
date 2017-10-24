@@ -20,4 +20,4 @@ SET(BLASTEXT_COMPILE_DEFS
 
 SET(BLAST_EXT_SHARED_LIB_TYPE SHARED)
 
-SET(BLASTEXT_PLATFORM_COMPILE_OPTIONS "-Wno-unknown-pragmas" "-pedantic")
+SET(BLASTEXT_PLATFORM_COMPILE_OPTIONS "-Wno-unknown-pragmas" "-Wno-return-type-c-linkage" "-pedantic")

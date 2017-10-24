@@ -29,7 +29,9 @@
 <a href="class_nv_1_1_blast_1_1_blast_bond_generator-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#7779c52ba27636aa313704b5a650d220">bondsFromPrefractured</a> (uint32_t meshCount, const uint32_t *geometryOffset, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *geometry, const bool *&amp;chunkIsSupport, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;resultBondDescs, <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf=<a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>())=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#14f3609b33b7bc3ab532a98886d3bc96">bondsFromPrefractured</a> (uint32_t meshCount, const uint32_t *convexHullOffset, const <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> **chunkHulls, const bool *chunkIsSupport, const uint32_t *meshGroups, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;resultBondDescs)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#b46d8ec3bbe7968279efe6258550acd1">bondsFromPrefractured</a> (uint32_t meshCount, const uint32_t *geometryOffset, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *geometry, const bool *chunkIsSupport, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;resultBondDescs, <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf=<a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>())=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#fbf304132c5600fbe6b4f423ac2e2452">buildDescFromInternalFracture</a> (<a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> *tool, const bool *chunkIsSupport, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;resultBondDescs, <a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *&amp;resultChunkDescriptors)=0</td></tr>
 
@@ -64,7 +66,72 @@ Tool for gathering bond information from provided mesh geometry <hr><h2>Construc
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="7779c52ba27636aa313704b5a650d220"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::bondsFromPrefractured" ref="7779c52ba27636aa313704b5a650d220" args="(uint32_t meshCount, const uint32_t *geometryOffset, const Triangle *geometry, const bool *&amp;chunkIsSupport, NvBlastBondDesc *&amp;resultBondDescs, BondGenerationConfig conf=BondGenerationConfig())=0" -->
+<a class="anchor" name="14f3609b33b7bc3ab532a98886d3bc96"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::bondsFromPrefractured" ref="14f3609b33b7bc3ab532a98886d3bc96" args="(uint32_t meshCount, const uint32_t *convexHullOffset, const CollisionHull **chunkHulls, const bool *chunkIsSupport, const uint32_t *meshGroups, NvBlastBondDesc *&amp;resultBondDescs)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int32_t Nv::Blast::BlastBondGenerator::bondsFromPrefractured           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>meshCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>convexHullOffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> **&nbsp;</td>
+          <td class="paramname"> <em>chunkHulls</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool *&nbsp;</td>
+          <td class="paramname"> <em>chunkIsSupport</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>meshGroups</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;&nbsp;</td>
+          <td class="paramname"> <em>resultBondDescs</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Creates bond description for prefractured meshes, when there is no info about which chunks should be connected with bond. This uses the same process as bondsFromPrefractured using the BondGenMode::AVERAGE mode however the existing collision data is used. <dl class="note" compact><dt><b>Note:</b></dt><dd>User should call NVBLAST_FREE for resultBondDescs when it not needed anymore. </dd></dl>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>meshCount</em>&nbsp;</td><td>Number of meshes </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>convexHullOffset</em>&nbsp;</td><td>Pointer to array of convex hull offsets for each mesh. Containts meshCount + 1 element, last one is total number of hulls in the geometry </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkHulls</em>&nbsp;</td><td>Pointer to array of convex hulls. Hulls from convexHullOffset[i] to convexHullOffset[i+1] correspond to i-th mesh. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIsSupport</em>&nbsp;</td><td>Pointer to array of flags, if true - chunk is support. Array size should be equal to chunk count in tool. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>meshGroups</em>&nbsp;</td><td>Pointer to array of group ids for each mesh, bonds will not be generated between meshs of the same group. If null each mesh is assumed to be in it's own group. </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>resultBondDescs</em>&nbsp;</td><td>Pointer to array of result bonds. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>Number of created bonds </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="b46d8ec3bbe7968279efe6258550acd1"></a><!-- doxytag: member="Nv::Blast::BlastBondGenerator::bondsFromPrefractured" ref="b46d8ec3bbe7968279efe6258550acd1" args="(uint32_t meshCount, const uint32_t *geometryOffset, const Triangle *geometry, const bool *chunkIsSupport, NvBlastBondDesc *&amp;resultBondDescs, BondGenerationConfig conf=BondGenerationConfig())=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -89,7 +156,7 @@ Tool for gathering bond information from provided mesh geometry <hr><h2>Construc
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const bool *&amp;&nbsp;</td>
+          <td class="paramtype">const bool *&nbsp;</td>
           <td class="paramname"> <em>chunkIsSupport</em>, </td>
         </tr>
         <tr>
