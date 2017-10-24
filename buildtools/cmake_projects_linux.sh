@@ -16,8 +16,8 @@ set -e
 # Common cmd line params
 CMAKE_CMD_LINE_PARAMS="-DTARGET_BUILD_PLATFORM=linux -DBL_LIB_OUTPUT_DIR=$BLAST_ROOT_DIR/lib/linux64-gcc -DBL_DLL_OUTPUT_DIR=$BLAST_ROOT_DIR/bin/linux64-gcc -DBL_EXE_OUTPUT_DIR=$BLAST_ROOT_DIR/bin/linux64-gcc"
 
-#configs=("debug" "profile" "checked" "release")
-configs=("debug" "release")
+configs=("debug" "profile" "checked" "release")
+#configs=("debug" "release")
 for config in "${configs[@]}"
 do
 	# Generate  projects
