@@ -174,6 +174,11 @@ public:
 	void									setSourceMesh(const Mesh* mesh) override;
 
 	/**
+		Set chunk mesh, parentId should be valid, return id of new chunk.
+	*/
+	int32_t									setChunkMesh(const Mesh* mesh, int32_t parentId) override;
+
+	/**
 		Get chunk mesh in polygonal representation
 	*/
 	Mesh*									createChunkMesh(int32_t chunkId) override;

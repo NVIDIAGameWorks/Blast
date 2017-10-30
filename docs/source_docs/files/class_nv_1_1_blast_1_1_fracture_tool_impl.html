@@ -98,6 +98,8 @@ Inheritance diagram for Nv::Blast::FractureToolImpl:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#1ccbcbfde4e58f8357a589ae56ff043f">reset</a> () override</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c466495627ca99252433c7e1c702c7f9">setChunkMesh</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *mesh, int32_t parentId) override</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c9c8e18748b18fa6dd29a328eaf63026">setInteriorMaterialId</a> (int32_t materialId) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#92dec92822ab9e0807400a7d63bfc553">setRemoveIslands</a> (bool isRemoveIslands) override</td></tr>
@@ -706,6 +708,37 @@ Replaces an material id on faces with a new one
 <p>
 Reset <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> state. 
 <p>Implements <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#b462c92fa47a5359bf3d19cf44af80f4">Nv::Blast::FractureTool</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="c466495627ca99252433c7e1c702c7f9"></a><!-- doxytag: member="Nv::Blast::FractureToolImpl::setChunkMesh" ref="c466495627ca99252433c7e1c702c7f9" args="(const Mesh *mesh, int32_t parentId) override" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t Nv::Blast::FractureToolImpl::setChunkMesh           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td>
+          <td class="paramname"> <em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>parentId</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [override, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set chunk mesh, parentId should be valid, return id of new chunk. 
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#ecd9be996bba9329418fd91db8235ebe">Nv::Blast::FractureTool</a>.</p>
 
 </div>
 </div><p>

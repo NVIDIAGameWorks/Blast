@@ -1079,21 +1079,70 @@ void FractureToolImpl::setSourceMesh(const Mesh* meshInput)
 	}
 
 
-	mChunkData.resize(1);
-	mChunkData[0].meshData = new MeshImpl(*reinterpret_cast <const MeshImpl*>(meshInput));
-	mChunkData[0].parent = -1;
-	mChunkData[0].isLeaf = true;
-	mChunkData[0].chunkId = mChunkIdCounter++;
-	Mesh* mesh = mChunkData[0].meshData;
+	//mChunkData.resize(1);
+	//mChunkData[0].meshData = new MeshImpl(*reinterpret_cast <const MeshImpl*>(meshInput));
+	//mChunkData[0].parent = -1;
+	//mChunkData[0].isLeaf = true;
+	//mChunkData[0].chunkId = mChunkIdCounter++;
+	//Mesh* mesh = mChunkData[0].meshData;
 
 	/**
 	Move to origin and scale to unit cube
 	*/
 
-	mOffset = (mesh->getBoundingBox().maximum + mesh->getBoundingBox().minimum) * 0.5f;
-	PxVec3 bbSizes = (mesh->getBoundingBox().maximum - mesh->getBoundingBox().minimum);
+	mOffset = (meshInput->getBoundingBox().maximum + meshInput->getBoundingBox().minimum) * 0.5f;
+	PxVec3 bbSizes = (meshInput->getBoundingBox().maximum - meshInput->getBoundingBox().minimum);
 
 	mScaleFactor = std::max(bbSizes.x, std::max(bbSizes.y, bbSizes.z));
+
+	setChunkMesh(meshInput, -1);
+
+	//Vertex* verticesBuffer = mesh->getVerticesWritable();
+	//for (uint32_t i = 0; i < mesh->getVerticesCount(); ++i)
+	//{
+	//	verticesBuffer[i].p = (verticesBuffer[i].p - mOffset) * (1.0f / mScaleFactor);
+	//}
+
+	//mesh->getBoundingBoxWritable().minimum = (mesh->getBoundingBox().minimum - mOffset) * (1.0f / mScaleFactor);
+	//mesh->getBoundingBoxWritable().maximum = (mesh->getBoundingBox().maximum - mOffset) * (1.0f / mScaleFactor);
+
+
+	//for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
+	//{
+	//	mesh->getFacetWritable(i)->userData = 0; // Mark facet as initial boundary facet
+	//}
+}
+
+int32_t	FractureToolImpl::setChunkMesh(const Mesh* meshInput, int32_t parentId)
+{
+	ChunkInfo* parent = nullptr;
+	for (size_t i = 0; i < mChunkData.size(); i++)
+	{
+		if (mChunkData[i].chunkId == parentId)
+		{
+			parent = &mChunkData[i];
+		}
+	}
+	if (meshInput == nullptr || (parent == nullptr && parentId != -1))
+	{
+		return -1;
+	}
+
+	mChunkData.push_back(ChunkInfo());
+	auto& chunk = mChunkData.back();
+	chunk.meshData = new MeshImpl(*reinterpret_cast <const MeshImpl*>(meshInput));
+	chunk.parent = parentId;
+	chunk.isLeaf = true;
+	if ((size_t)parentId < mChunkData.size())
+	{
+		mChunkData[parentId].isLeaf = false;
+	}
+	chunk.chunkId = mChunkIdCounter++;
+	Mesh* mesh = chunk.meshData;
+
+	/**
+	Move to origin and scale to unit cube
+	*/
 
 	Vertex* verticesBuffer = mesh->getVerticesWritable();
 	for (uint32_t i = 0; i < mesh->getVerticesCount(); ++i)
@@ -1109,8 +1158,9 @@ void FractureToolImpl::setSourceMesh(const Mesh* meshInput)
 	{
 		mesh->getFacetWritable(i)->userData = 0; // Mark facet as initial boundary facet
 	}
-}
 
+	return chunk.chunkId;
+}
 
 void FractureToolImpl::release()
 {

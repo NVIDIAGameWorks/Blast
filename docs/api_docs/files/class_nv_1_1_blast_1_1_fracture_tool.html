@@ -67,6 +67,8 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#b462c92fa47a5359bf3d19cf44af80f4">reset</a> ()=0</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#ecd9be996bba9329418fd91db8235ebe">setChunkMesh</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *mesh, int32_t parentId)=0</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c8c4f90133fdf32969cad6e4c520414f">setInteriorMaterialId</a> (int32_t materialId)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#251738022e498b819e88536577470735">setRemoveIslands</a> (bool isRemoveIslands)=0</td></tr>
@@ -599,6 +601,35 @@ Replaces an material id on faces with a new one
 
 <p>
 Reset <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> state. 
+</div>
+</div><p>
+<a class="anchor" name="ecd9be996bba9329418fd91db8235ebe"></a><!-- doxytag: member="Nv::Blast::FractureTool::setChunkMesh" ref="ecd9be996bba9329418fd91db8235ebe" args="(const Mesh *mesh, int32_t parentId)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int32_t Nv::Blast::FractureTool::setChunkMesh           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td>
+          <td class="paramname"> <em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>parentId</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set chunk mesh, parentId should be valid, return id of new chunk. 
 </div>
 </div><p>
 <a class="anchor" name="c8c4f90133fdf32969cad6e4c520414f"></a><!-- doxytag: member="Nv::Blast::FractureTool::setInteriorMaterialId" ref="c8c4f90133fdf32969cad6e4c520414f" args="(int32_t materialId)=0" -->

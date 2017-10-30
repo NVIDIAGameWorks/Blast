@@ -204,6 +204,11 @@ public:
 	virtual void									setSourceMesh(const Mesh* mesh) = 0;
 
 	/**
+		Set chunk mesh, parentId should be valid, return id of new chunk.
+	*/
+	virtual int32_t									setChunkMesh(const Mesh* mesh, int32_t parentId) = 0;
+
+	/**
 	Set the material id to use for new interior faces. Defaults to MATERIAL_INTERIOR
 	*/
 	virtual void									setInteriorMaterialId(int32_t materialId) = 0;
