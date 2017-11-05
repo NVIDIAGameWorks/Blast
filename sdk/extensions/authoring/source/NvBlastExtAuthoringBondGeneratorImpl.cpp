@@ -47,6 +47,7 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <set>
 
 using physx::PxVec3;
 using physx::PxBounds3;
@@ -242,6 +243,33 @@ namespace Nv
 			return area * 0.5f;
 		}
 
+
+		struct BondGenerationCandidate
+		{
+			PxVec3 point;
+			bool end;
+			uint32_t parentChunk;
+			uint32_t parentComponent;
+			BondGenerationCandidate();
+			BondGenerationCandidate(const PxVec3& p, bool isEnd, uint32_t pr, uint32_t c) :point(p), end(isEnd), parentChunk(pr), parentComponent(c)
+			{	};
+
+			bool operator<(const BondGenerationCandidate& in) const
+			{
+				if (point.x < in.point.x) return true;
+				if (point.x > in.point.x) return false;
+
+				if (point.y < in.point.y) return true;
+				if (point.y > in.point.y) return false;
+
+				if (point.z < in.point.z) return true;
+				if (point.z > in.point.z) return false;
+
+				return end < in.end;
+			};
+		};
+
+
 		int32_t BlastBondGeneratorImpl::createFullBondListAveraged(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry, const CollisionHull** chunkHulls,
 			const bool* supportFlags, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf)
 		{
@@ -268,6 +296,8 @@ namespace Nv
 
 			std::unique_ptr<Nv::Blast::ConvexMeshBuilderImpl> builder;
 			std::vector<std::vector<std::vector<PxVec3>>> hullPoints(meshCount);
+			std::vector<BondGenerationCandidate> candidates;
+
 
 			for (uint32_t chunk = 0; chunk < meshCount; ++chunk)
 			{
@@ -275,6 +305,7 @@ namespace Nv
 				{
 					continue;
 				}
+				PxBounds3 bnd(PxBounds3::empty());
 				CollisionHull* tempHullPtr = nullptr;
 				uint32_t hullCountForMesh = 0;
 				const CollisionHull** beginChunkHulls = nullptr;
@@ -305,6 +336,7 @@ namespace Nv
 					for (uint32_t i = 0; i < pointCount; ++i)
 					{
 						curHull[i] = beginChunkHulls[hull]->points[i];
+						bnd.include(curHull[i]);
 					}
 				}
 
@@ -312,30 +344,42 @@ namespace Nv
 				{
 					tempHullPtr->release();
 				}
+				bnd.scaleFast(1.1f);
+				candidates.push_back(BondGenerationCandidate(bnd.minimum, false, chunk, meshGroups[chunk]));
+				candidates.push_back(BondGenerationCandidate(bnd.maximum, true, chunk, meshGroups[chunk]));
+			}
+
+			std::sort(candidates.begin(), candidates.end());
+
+			std::set<uint32_t> listOfActiveChunks;
+			std::vector<std::vector<uint32_t> > possibleBondGraph(meshCount); 
+
+			for (uint32_t idx = 0; idx < candidates.size(); ++idx)
+			{				
+				if (!candidates[idx].end) // If new candidate
+				{
+					for (uint32_t activeChunk : listOfActiveChunks)
+					{
+						if (candidates[activeChunk].parentComponent == candidates[idx].parentComponent) continue; // Don't connect components with itself.
+						possibleBondGraph[activeChunk].push_back(candidates[idx].parentChunk);
+					}
+					listOfActiveChunks.insert(candidates[idx].parentChunk);
+				}
+				else
+				{
+					listOfActiveChunks.erase(candidates[idx].parentChunk);
+				}
 			}
 
 			TriangleProcessor trProcessor;
 			std::vector<NvBlastBondDesc> mResultBondDescs;
 			for (uint32_t i = 0; i < meshCount; ++i)
 			{
-				if (!supportFlags[i])
-				{
-					continue;
-				}
 				const uint32_t ihullCount = hullPoints[i].size();
-				for (uint32_t j = i + 1; j < meshCount; ++j)
+				for (uint32_t tj = 0; tj < possibleBondGraph[i].size(); ++tj)
 				{
-					if (!supportFlags[j])
-					{
-						continue;
-					}
-
-					if (meshGroups && meshGroups[i] == meshGroups[j])
-					{
-						//Same group no need to find bonds
-						continue;
-					}
-
+					uint32_t j = possibleBondGraph[i][tj];
+					
 					const uint32_t jhullCount = hullPoints[j].size();
 					for (uint32_t ihull = 0; ihull < ihullCount; ++ihull)
 					{
