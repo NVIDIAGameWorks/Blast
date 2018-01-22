@@ -59,8 +59,14 @@ public:
 	*/
 	std::vector<Triangle>&			getBaseMesh()
 	{
+		return mBaseMeshUVFittedTriangles;
+	}
+
+	std::vector<Triangle>&			getBaseMeshNotFitted()
+	{
 		return mBaseMeshResultTriangles;
 	}
+
 
 	/**
 		\return Return array of TriangleIndexed of base mesh. Each TriangleIndexed contains index of corresponding vertex in internal vertex buffer.
@@ -96,7 +102,11 @@ public:
 	*/
 	void							reset();
 
+	int32_t&						getParentChunkId() { return parentChunkId; };
+
 private:
+
+	int32_t							parentChunkId;
 
 	int32_t							addVerticeIfNotExist(const Vertex& p);
 	void							addEdgeIfValid(EdgeWithParent& ed);
@@ -128,6 +138,7 @@ private:
 		Final triangles
 	*/
 	std::vector<Triangle>								mBaseMeshResultTriangles;
+	std::vector<Triangle>								mBaseMeshUVFittedTriangles;
 };
 
 } // namespace Blast

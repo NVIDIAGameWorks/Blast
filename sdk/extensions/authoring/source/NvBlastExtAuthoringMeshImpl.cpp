@@ -12,13 +12,17 @@
 
 #include "NvBlastExtAuthoringMeshImpl.h"
 #include "NvBlastExtAuthoringTypes.h"
-#include <string.h>
 #include "NvBlastExtAuthoringPerlinNoise.h"
+#include <NvBlastAssert.h>
+#include "PxMath.h"
 #include <cmath>
+#include <string.h>
 
 using physx::PxVec2;
 using physx::PxVec3;
 using physx::PxBounds3;
+
+#define UV_SCALE 1.f
 
 namespace Nv
 {
@@ -212,7 +216,7 @@ void MeshImpl::recalculateBoundingBox()
 
 
 
-void getTangents(PxVec3& normal, PxVec3& t1, PxVec3& t2)
+void getTangents(const PxVec3& normal, PxVec3& t1, PxVec3& t2)
 {
 
 	if (std::abs(normal.z) < 0.9)
@@ -260,17 +264,17 @@ Mesh* getCuttingBox(const PxVec3& point, const PxVec3& normal, float size, int64
 	positions[7].n = -lNormal;
 
 	positions[0].uv[0] = PxVec2(0, 0);
-	positions[1].uv[0] = PxVec2(10, 0);
+	positions[1].uv[0] = PxVec2(UV_SCALE, 0);
 
-	positions[2].uv[0] = PxVec2(10, 10);
-	positions[3].uv[0] = PxVec2(0, 10);
+	positions[2].uv[0] = PxVec2(UV_SCALE, UV_SCALE);
+	positions[3].uv[0] = PxVec2(0, UV_SCALE);
 
 
 	positions[4].uv[0] = PxVec2(0, 0);
-	positions[5].uv[0] = PxVec2(10, 0);
+	positions[5].uv[0] = PxVec2(UV_SCALE, 0);
 
-	positions[6].uv[0] = PxVec2(10, 10);
-	positions[7].uv[0] = PxVec2(0, 10);
+	positions[6].uv[0] = PxVec2(UV_SCALE, UV_SCALE);
+	positions[7].uv[0] = PxVec2(0, UV_SCALE);
 
 
 	std::vector<Edge> edges;
@@ -422,12 +426,15 @@ Mesh* getNoisyCuttingBoxPair(const physx::PxVec3& point, const physx::PxVec3& no
 	PxVec3 t2d = -t2 * 2.0f * jaggedPlaneSize / resolution;
 
 	int32_t vrtId = 0;
+	float invRes = 1.f / resolution;
 	for (uint32_t i = 0; i < resolution + 1; ++i)
 	{
 		PxVec3 lcPosit = cPosit;
 		for (uint32_t j = 0; j < resolution + 1; ++j)
 		{
 			vertices[vrtId].p = lcPosit;
+			vertices[vrtId].uv[0].x = invRes * i * UV_SCALE;
+			vertices[vrtId].uv[0].y = invRes * j * UV_SCALE;
 			lcPosit += t1d;
 			vrtId++;
 		}
@@ -570,17 +577,17 @@ Mesh* getBigBox(const PxVec3& point, float size, int32_t interiorMaterialId)
 	positions[7].p = point + (t1 - t2 + normal) * size;
 
 	positions[0].uv[0] = PxVec2(0, 0);
-	positions[1].uv[0] = PxVec2(10, 0);
+	positions[1].uv[0] = PxVec2(UV_SCALE, 0);
 
-	positions[2].uv[0] = PxVec2(10, 10);
-	positions[3].uv[0] = PxVec2(0, 10);
+	positions[2].uv[0] = PxVec2(UV_SCALE, UV_SCALE);
+	positions[3].uv[0] = PxVec2(0, UV_SCALE);
 
 
 	positions[4].uv[0] = PxVec2(0, 0);
-	positions[5].uv[0] = PxVec2(10, 0);
+	positions[5].uv[0] = PxVec2(UV_SCALE, 0);
 
-	positions[6].uv[0] = PxVec2(10, 10);
-	positions[7].uv[0] = PxVec2(0, 10);
+	positions[6].uv[0] = PxVec2(UV_SCALE, UV_SCALE);
+	positions[7].uv[0] = PxVec2(0, UV_SCALE);
 
 
 	std::vector<Edge> edges;
@@ -624,6 +631,54 @@ Mesh* getBigBox(const PxVec3& point, float size, int32_t interiorMaterialId)
 	facets.push_back(Facet(20, 4, interiorMaterialId, 0, -1));
 	for (int i = 0; i < 8; ++i)
 		positions[i].n = PxVec3(0, 0, 0);
+	return new MeshImpl(positions.data(), edges.data(), facets.data(), static_cast<uint32_t>(positions.size()), static_cast<uint32_t>(edges.size()), static_cast<uint32_t>(facets.size()));
+}
+
+Mesh* getCuttingCylinder(uint32_t pointCount, const physx::PxVec3* points, const physx::PxTransform& transform, float height, int64_t id, int32_t interiorMaterialId)
+{
+	std::vector<Vertex> positions(pointCount * 2);
+	std::vector<Edge> edges(pointCount * 6);
+	std::vector<Facet> facets(pointCount + 2);
+
+	for (uint32_t i = 0; i < pointCount; i++)
+	{
+		uint32_t i1 = i + pointCount;
+		uint32_t i2 = i1 + 1;
+		uint32_t i3 = i + 1;
+
+		auto& p0 = positions[i];
+		auto& p1 = positions[i1];
+		p0.n = p1.n = PxVec3(0, 0, 0);
+		p0.p = p1.p = points[i];
+		p0.p.z = -height;
+		p1.p.z = height;
+		p0.p = transform.transform(p0.p);
+		p1.p = transform.transform(p1.p);
+		p0.uv[0] = PxVec2(0.f, UV_SCALE * i / pointCount);
+		p1.uv[0] = PxVec2(UV_SCALE, UV_SCALE * i / pointCount);
+
+		int32_t edgeIdx = 4 * i;
+		edges[edgeIdx + 0] = Edge(i, i3);
+		edges[edgeIdx + 1] = Edge(i3, i2);
+		edges[edgeIdx + 2] = Edge(i2, i1);
+		edges[edgeIdx + 3] = Edge(i1, i);
+		facets[i] = Facet(edgeIdx, 4, interiorMaterialId, id, -1);
+
+		edges[5 * pointCount + i    ] = Edge(i1, i2);
+		edges[5 * pointCount - i - 1] = Edge(i3, i);
+	}
+
+	int32_t edgeIdx = 4 * (pointCount - 1);
+	edges[edgeIdx + 0].e = 0;
+	edges[edgeIdx + 1].s = 0;
+	edges[edgeIdx + 1].e = pointCount;
+	edges[edgeIdx + 2].s = pointCount;
+
+	//top and bottom faces
+	edges[4 * pointCount].s = 0;
+	edges[6 * pointCount - 1].e = pointCount;
+	facets[pointCount + 0] = Facet(4 * pointCount, pointCount, interiorMaterialId, 0, -1);
+	facets[pointCount + 1] = Facet(5 * pointCount, pointCount, interiorMaterialId, 0, -1);
 	return new MeshImpl(positions.data(), edges.data(), facets.data(), static_cast<uint32_t>(positions.size()), static_cast<uint32_t>(edges.size()), static_cast<uint32_t>(facets.size()));
 }
 

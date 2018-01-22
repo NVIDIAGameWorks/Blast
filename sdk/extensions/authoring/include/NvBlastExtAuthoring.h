@@ -43,6 +43,7 @@ namespace Nv
 	{
 		class Mesh;
 		class VoronoiSitesGenerator;
+		class CutoutSet;
 		class FractureTool;
 		class ConvexMeshBuilder;
 		class BlastBondGenerator;
@@ -71,6 +72,22 @@ NVBLAST_API Nv::Blast::Mesh* NvBlastExtAuthoringCreateMesh(const physx::PxVec3* 
 	const physx::PxVec2* uv, uint32_t verticesCount, const uint32_t* indices, uint32_t indicesCount);
 
 /**
+Constructs mesh object from array of vertices, edges and facets.
+User should call release() after usage.
+
+\param[in] vertices			Array for Nv::Blast::Vertex
+\param[in] edges			Array for Nv::Blast::Edge
+\param[in] facets			Array for Nv::Blast::Facet
+\param[in] verticesCount	Number of vertices in mesh
+\param[in] edgesCount		Number of edges in mesh
+\param[in] facetsCount		Number of facets in mesh
+
+\return pointer to Nv::Blast::Mesh if it was created succefully otherwise return nullptr
+*/
+NVBLAST_API Nv::Blast::Mesh* NvBlastExtAuthoringCreateMeshFromFacets(const void* vertices, const void* edges, const void* facets,
+	uint32_t verticesCount, uint32_t edgesCount, uint32_t facetsCount);
+
+/**
 Voronoi sites should not be generated outside of the fractured mesh, so VoronoiSitesGenerator
 should be supplied with fracture mesh.
 \param[in] mesh			Fracture mesh
@@ -79,6 +96,27 @@ should be supplied with fracture mesh.
 */
 NVBLAST_API Nv::Blast::VoronoiSitesGenerator* NvBlastExtAuthoringCreateVoronoiSitesGenerator(Nv::Blast::Mesh* mesh,
 	Nv::Blast::RandomGeneratorBase* rng);
+
+/** Instantiates a blank CutoutSet */
+NVBLAST_API Nv::Blast::CutoutSet* NvBlastExtAuthoringCreateCutoutSet();
+
+/**
+Builds a cutout set (which must have been initially created by createCutoutSet()).
+Uses a bitmap described by pixelBuffer, bufferWidth, and bufferHeight.  Each pixel is represented
+by one byte in the buffer.
+
+\param cutoutSet		the CutoutSet to build
+\param pixelBuffer		pointer to be beginning of the pixel buffer
+\param bufferWidth		the width of the buffer in pixels
+\param bufferHeight		the height of the buffer in pixels
+\param segmentationErrorThreshold	Reduce the number of vertices on curve untill segmentation error is smaller then specified. By default set it to 0.001.
+\param snapThreshold	the pixel distance at which neighboring cutout vertices and segments may be fudged into alignment. By default set it to 1.
+\param periodic			whether or not to use periodic boundary conditions when creating cutouts from the map
+\param expandGaps		expand cutout regions to gaps or keep it as is
+
+*/
+NVBLAST_API void NvBlastExtAuthoringBuildCutoutSet(Nv::Blast::CutoutSet& cutoutSet, const uint8_t* pixelBuffer, 
+	uint32_t bufferWidth, uint32_t bufferHeight, float segmentationErrorThreshold, float snapThreshold, bool periodic, bool expandGaps);
 
 /**
 Create FractureTool object.
@@ -145,6 +183,16 @@ Performs pending fractures and generates fractured asset, render and collision g
 NVBLAST_API Nv::Blast::AuthoringResult* NvBlastExtAuthoringProcessFracture(Nv::Blast::FractureTool& fTool,
 	Nv::Blast::BlastBondGenerator& bondGenerator, Nv::Blast::ConvexMeshBuilder& collisionBuilder, const Nv::Blast::CollisionParams& collisionParam, int32_t defaultSupportDepth = -1);
 
+/**
+Updates graphics mesh only
+
+\param[in]  fTool				Fracture tool created by NvBlastExtAuthoringCreateFractureTool
+\param[out] ares				AuthoringResult object which contains chunks, for which rendermeshes will be updated (e.g. to tweak UVs).
+*/
+NVBLAST_API void NvBlastExtUpdateGraphicsMesh(Nv::Blast::FractureTool& fTool, Nv::Blast::AuthoringResult& ares);
+
+
+
 
 /**
 	Creates MeshCleaner object
@@ -173,7 +221,7 @@ descriptor arrays returned. The user must free this memory after use with NVBLAS
 \param[in]	chunkHulls			For each component, an array of CollisionHull* specifying the collision geometry for the chunks in that component.
 \param[in]	componentCount		The size of the components and relativeTransforms arrays.
 \param[out]	newBondDescs		Descriptors of type NvBlastExtAssetUtilsBondDesc for new bonds between components.
-
+\param[in]	maxSeparation		Maximal distance between chunks which can be connected by bond.
 \return the number of bonds in newBondDescs
 */
 NVBLAST_API uint32_t NvBlastExtAuthoringFindAssetConnectingBonds
@@ -185,7 +233,8 @@ NVBLAST_API uint32_t NvBlastExtAuthoringFindAssetConnectingBonds
 	const uint32_t** convexHullOffsets,
 	const Nv::Blast::CollisionHull*** chunkHulls,
 	uint32_t componentCount,
-	NvBlastExtAssetUtilsBondDesc*& newBondDescs
+	NvBlastExtAssetUtilsBondDesc*& newBondDescs,
+	float maxSeparation = 0.0f
 );
 
 #endif // ifndef NVBLASTAUTHORING_H

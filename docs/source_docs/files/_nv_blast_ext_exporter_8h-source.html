@@ -84,116 +84,124 @@
 <a name="l00046"></a>00046 <span class="keyword">struct </span>AuthoringResult;
 <a name="l00047"></a>00047 <span class="keyword">struct </span>CollisionHull;
 <a name="l00048"></a>00048 
-<a name="l00049"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">00049</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>
+<a name="l00049"></a><a class="code" href="struct_nv_1_1_blast_1_1_materials.html">00049</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_materials.html">Materials</a>
 <a name="l00050"></a>00050 {
-<a name="l00051"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#7f7c8fb6f3d9f53bf3deef296a620fe5">00051</a>     <a class="code" href="struct_nv_blast_asset.html">NvBlastAsset</a>* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#7f7c8fb6f3d9f53bf3deef296a620fe5">asset</a>; <span class="comment">//Blast asset</span>
-<a name="l00052"></a>00052 
-<a name="l00053"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#1f65943048a8a5091e3a518ad33ffa34">00053</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#1f65943048a8a5091e3a518ad33ffa34">positionsCount</a>; <span class="comment">//Number of positions</span>
+<a name="l00051"></a><a class="code" href="struct_nv_1_1_blast_1_1_materials.html#e58d98b16f1026a42ee8ccfa9eac5f6b">00051</a>     <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code" href="struct_nv_1_1_blast_1_1_materials.html#e58d98b16f1026a42ee8ccfa9eac5f6b">name</a>;
+<a name="l00052"></a><a class="code" href="struct_nv_1_1_blast_1_1_materials.html#fb1aba0b4c7098f7b4673261a88d5ee9">00052</a>     <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code" href="struct_nv_1_1_blast_1_1_materials.html#fb1aba0b4c7098f7b4673261a88d5ee9">diffuse_tex</a>;
+<a name="l00053"></a>00053 };
 <a name="l00054"></a>00054 
-<a name="l00055"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#2fdc2eb1919de073682ef56696ed987b">00055</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#2fdc2eb1919de073682ef56696ed987b">normalsCount</a>; <span class="comment">//Number of normals</span>
-<a name="l00056"></a>00056 
-<a name="l00057"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#0deee2a8bd5930e7289a361ec9c3465a">00057</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#0deee2a8bd5930e7289a361ec9c3465a">uvsCount</a>; <span class="comment">//Number of textures uv</span>
+<a name="l00055"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">00055</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>
+<a name="l00056"></a>00056 {
+<a name="l00057"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#7f7c8fb6f3d9f53bf3deef296a620fe5">00057</a>     <a class="code" href="struct_nv_blast_asset.html">NvBlastAsset</a>* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#7f7c8fb6f3d9f53bf3deef296a620fe5">asset</a>; <span class="comment">//Blast asset</span>
 <a name="l00058"></a>00058 
-<a name="l00059"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#ed0789e9e2befe53ff915fe6d01c9c3b">00059</a>     physx::PxVec3* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#ed0789e9e2befe53ff915fe6d01c9c3b">positions</a>; <span class="comment">//Array of positions</span>
+<a name="l00059"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#1f65943048a8a5091e3a518ad33ffa34">00059</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#1f65943048a8a5091e3a518ad33ffa34">positionsCount</a>; <span class="comment">//Number of positions</span>
 <a name="l00060"></a>00060 
-<a name="l00061"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#3024761481666b5abf201f3b8299db62">00061</a>     physx::PxVec3* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#3024761481666b5abf201f3b8299db62">normals</a>; <span class="comment">//Array of normals</span>
+<a name="l00061"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#2fdc2eb1919de073682ef56696ed987b">00061</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#2fdc2eb1919de073682ef56696ed987b">normalsCount</a>; <span class="comment">//Number of normals</span>
 <a name="l00062"></a>00062 
-<a name="l00063"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#ef5f08eb396ff4645b696fd8ebc3b4ed">00063</a>     physx::PxVec2* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#ef5f08eb396ff4645b696fd8ebc3b4ed">uvs</a>; <span class="comment">//Array of textures uv</span>
+<a name="l00063"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#0deee2a8bd5930e7289a361ec9c3465a">00063</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#0deee2a8bd5930e7289a361ec9c3465a">uvsCount</a>; <span class="comment">//Number of textures uv</span>
 <a name="l00064"></a>00064 
-<a name="l00065"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#be4f127b644d544d86d7d91039e008cc">00065</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#be4f127b644d544d86d7d91039e008cc">meshCount</a>; <span class="comment">//Number of meshes (chunks)</span>
+<a name="l00065"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#ed0789e9e2befe53ff915fe6d01c9c3b">00065</a>     physx::PxVec3* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#ed0789e9e2befe53ff915fe6d01c9c3b">positions</a>; <span class="comment">//Array of positions</span>
 <a name="l00066"></a>00066 
-<a name="l00067"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#8186645cb97a75ddf9c5d01c26929aa5">00067</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#8186645cb97a75ddf9c5d01c26929aa5">submeshCount</a>; <span class="comment">//Number of submeshes</span>
+<a name="l00067"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#3024761481666b5abf201f3b8299db62">00067</a>     physx::PxVec3* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#3024761481666b5abf201f3b8299db62">normals</a>; <span class="comment">//Array of normals</span>
 <a name="l00068"></a>00068 
-<a name="l00069"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#cdf9612bfadf170ec24d54a4f0331169">00069</a>     <span class="keyword">const</span> <span class="keywordtype">char</span>** <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#cdf9612bfadf170ec24d54a4f0331169">submeshNames</a>; <span class="comment">//Equal to material names</span>
+<a name="l00069"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#ef5f08eb396ff4645b696fd8ebc3b4ed">00069</a>     physx::PxVec2* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#ef5f08eb396ff4645b696fd8ebc3b4ed">uvs</a>; <span class="comment">//Array of textures uv</span>
 <a name="l00070"></a>00070 
-<a name="l00071"></a>00071 
-<a name="l00077"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#c5da07eb5e955933b2a66172086ca1e3">00077</a>     uint32_t* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#c5da07eb5e955933b2a66172086ca1e3">submeshOffsets</a>;
-<a name="l00078"></a>00078 
-<a name="l00079"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#f4f59c67fa80d8d885279ad6baaf4621">00079</a>     uint32_t* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#f4f59c67fa80d8d885279ad6baaf4621">posIndex</a>; <span class="comment">//Array of position indices</span>
-<a name="l00080"></a>00080 
-<a name="l00081"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#4e60dfee2036e0d6147e17978f8f8ec0">00081</a>     uint32_t* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#4e60dfee2036e0d6147e17978f8f8ec0">normIndex</a>; <span class="comment">//Array of normals indices</span>
-<a name="l00082"></a>00082 
-<a name="l00083"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#7492221e24b7476226c98c09a3c9e975">00083</a>     uint32_t* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#7492221e24b7476226c98c09a3c9e975">texIndex</a>; <span class="comment">//Array of texture indices</span>
+<a name="l00071"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#be4f127b644d544d86d7d91039e008cc">00071</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#be4f127b644d544d86d7d91039e008cc">meshCount</a>; <span class="comment">//Number of meshes (chunks)</span>
+<a name="l00072"></a>00072 
+<a name="l00073"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#8186645cb97a75ddf9c5d01c26929aa5">00073</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#8186645cb97a75ddf9c5d01c26929aa5">submeshCount</a>; <span class="comment">//Number of submeshes</span>
+<a name="l00074"></a>00074 
+<a name="l00075"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#fcaa1c78b5b46f20f3ad71aefd7438f1">00075</a>     <a class="code" href="struct_nv_1_1_blast_1_1_materials.html">Materials</a>* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#fcaa1c78b5b46f20f3ad71aefd7438f1">submeshMats</a>; 
+<a name="l00076"></a>00076 
+<a name="l00077"></a>00077 
+<a name="l00083"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#c5da07eb5e955933b2a66172086ca1e3">00083</a>     uint32_t* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#c5da07eb5e955933b2a66172086ca1e3">submeshOffsets</a>;
 <a name="l00084"></a>00084 
-<a name="l00085"></a>00085 
-<a name="l00091"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#0ce1720fca4452f6fc3df794ca659ec3">00091</a>     uint32_t* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#0ce1720fca4452f6fc3df794ca659ec3">hullsOffsets</a>;
-<a name="l00092"></a>00092 
-<a name="l00093"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#bd261e53e4fdcb448336643a9c0ee373">00093</a>     <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#bd261e53e4fdcb448336643a9c0ee373">hulls</a>; <span class="comment">//Array of pointers to hull for all meshes</span>
-<a name="l00094"></a>00094 };
-<a name="l00095"></a>00095 
-<a name="l00099"></a><a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html">00099</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html">IMeshFileReader</a>
-<a name="l00100"></a>00100 {
-<a name="l00101"></a>00101 <span class="keyword">public</span>:
-<a name="l00102"></a>00102     
-<a name="l00106"></a>00106     <span class="keyword">virtual</span> <span class="keywordtype">void</span>            <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#f42b5decf7c2527a2879526218ff1457">release</a>() = 0;
-<a name="l00107"></a>00107 
-<a name="l00108"></a>00108     <span class="comment">/*</span>
-<a name="l00109"></a>00109 <span class="comment">        Load from the specified file path</span>
-<a name="l00110"></a>00110 <span class="comment">    */</span>
-<a name="l00111"></a>00111     <span class="keyword">virtual</span> <span class="keywordtype">void</span>            <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#7de7c52ffac1608fc1a8ded9cf5d9877">loadFromFile</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* filename) = 0;
-<a name="l00112"></a>00112 
-<a name="l00116"></a>00116     <span class="keyword">virtual</span> uint32_t        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#a3490dad05f3e1c701c5e4c6a8bf8fcc">getVerticesCount</a>() <span class="keyword">const</span> = 0;
-<a name="l00117"></a>00117 
-<a name="l00121"></a>00121     <span class="keyword">virtual</span> uint32_t        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#90fefa5f9bb97a6fa1620d21dde91f1b">getIndicesCount</a>() <span class="keyword">const</span> = 0;
-<a name="l00122"></a>00122 
-<a name="l00126"></a>00126     <span class="keyword">virtual</span> physx::PxVec3*  <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#f17eaa1f59013c225ac6ef35ce7c181e">getPositionArray</a>() = 0;
-<a name="l00127"></a>00127 
-<a name="l00131"></a>00131     <span class="keyword">virtual</span> physx::PxVec3*  <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#4a42fc1404f946de90572e439c73d3c0">getNormalsArray</a>() = 0;
-<a name="l00132"></a>00132 
-<a name="l00136"></a>00136     <span class="keyword">virtual</span> physx::PxVec2*  <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#de95470ff6a168f79386b20613437228">getUvArray</a>() = 0;
-<a name="l00137"></a>00137 
-<a name="l00141"></a>00141     <span class="keyword">virtual</span> int32_t*        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#de11b237f952e345a0fe51ea723bbf78">getMaterialIds</a>() = 0;
-<a name="l00142"></a>00142 
-<a name="l00146"></a>00146     <span class="keyword">virtual</span> int32_t*        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#bc8eec8be3fec8415a7ca40e5b1d7976">getSmoothingGroups</a>() = 0;
-<a name="l00147"></a>00147 
-<a name="l00151"></a>00151     <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">char</span>*     <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#a369ee4923ae0cfff1c65155f2926a32">getMaterialName</a>(int32_t <span class="keywordtype">id</span>) = 0;
-<a name="l00152"></a>00152 
-<a name="l00156"></a>00156     <span class="keyword">virtual</span> int32_t         <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#37cba744c380c56f62a9bc0e181e410a">getMaterialCount</a>() = 0;
-<a name="l00157"></a>00157 
+<a name="l00085"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#f4f59c67fa80d8d885279ad6baaf4621">00085</a>     uint32_t* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#f4f59c67fa80d8d885279ad6baaf4621">posIndex</a>; <span class="comment">//Array of position indices</span>
+<a name="l00086"></a>00086 
+<a name="l00087"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#4e60dfee2036e0d6147e17978f8f8ec0">00087</a>     uint32_t* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#4e60dfee2036e0d6147e17978f8f8ec0">normIndex</a>; <span class="comment">//Array of normals indices</span>
+<a name="l00088"></a>00088 
+<a name="l00089"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#7492221e24b7476226c98c09a3c9e975">00089</a>     uint32_t* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#7492221e24b7476226c98c09a3c9e975">texIndex</a>; <span class="comment">//Array of texture indices</span>
+<a name="l00090"></a>00090 
+<a name="l00091"></a>00091 
+<a name="l00097"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#0ce1720fca4452f6fc3df794ca659ec3">00097</a>     uint32_t* <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#0ce1720fca4452f6fc3df794ca659ec3">hullsOffsets</a>;
+<a name="l00098"></a>00098 
+<a name="l00099"></a><a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#bd261e53e4fdcb448336643a9c0ee373">00099</a>     <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#bd261e53e4fdcb448336643a9c0ee373">hulls</a>; <span class="comment">//Array of pointers to hull for all meshes</span>
+<a name="l00100"></a>00100 };
+<a name="l00101"></a>00101 
+<a name="l00105"></a><a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html">00105</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html">IMeshFileReader</a>
+<a name="l00106"></a>00106 {
+<a name="l00107"></a>00107 <span class="keyword">public</span>:
+<a name="l00108"></a>00108     
+<a name="l00112"></a>00112     <span class="keyword">virtual</span> <span class="keywordtype">void</span>            <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#f42b5decf7c2527a2879526218ff1457">release</a>() = 0;
+<a name="l00113"></a>00113 
+<a name="l00114"></a>00114     <span class="comment">/*</span>
+<a name="l00115"></a>00115 <span class="comment">        Load from the specified file path</span>
+<a name="l00116"></a>00116 <span class="comment">    */</span>
+<a name="l00117"></a>00117     <span class="keyword">virtual</span> <span class="keywordtype">void</span>            <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#7de7c52ffac1608fc1a8ded9cf5d9877">loadFromFile</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* filename) = 0;
+<a name="l00118"></a>00118 
+<a name="l00122"></a>00122     <span class="keyword">virtual</span> uint32_t        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#a3490dad05f3e1c701c5e4c6a8bf8fcc">getVerticesCount</a>() <span class="keyword">const</span> = 0;
+<a name="l00123"></a>00123 
+<a name="l00127"></a>00127     <span class="keyword">virtual</span> uint32_t        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#90fefa5f9bb97a6fa1620d21dde91f1b">getIndicesCount</a>() <span class="keyword">const</span> = 0;
+<a name="l00128"></a>00128 
+<a name="l00132"></a>00132     <span class="keyword">virtual</span> physx::PxVec3*  <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#f17eaa1f59013c225ac6ef35ce7c181e">getPositionArray</a>() = 0;
+<a name="l00133"></a>00133 
+<a name="l00137"></a>00137     <span class="keyword">virtual</span> physx::PxVec3*  <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#4a42fc1404f946de90572e439c73d3c0">getNormalsArray</a>() = 0;
+<a name="l00138"></a>00138 
+<a name="l00142"></a>00142     <span class="keyword">virtual</span> physx::PxVec2*  <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#de95470ff6a168f79386b20613437228">getUvArray</a>() = 0;
+<a name="l00143"></a>00143 
+<a name="l00147"></a>00147     <span class="keyword">virtual</span> int32_t*        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#de11b237f952e345a0fe51ea723bbf78">getMaterialIds</a>() = 0;
+<a name="l00148"></a>00148 
+<a name="l00152"></a>00152     <span class="keyword">virtual</span> int32_t*        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#bc8eec8be3fec8415a7ca40e5b1d7976">getSmoothingGroups</a>() = 0;
+<a name="l00153"></a>00153 
+<a name="l00157"></a>00157     <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">char</span>*     <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#a369ee4923ae0cfff1c65155f2926a32">getMaterialName</a>(int32_t <span class="keywordtype">id</span>) = 0;
 <a name="l00158"></a>00158 
-<a name="l00159"></a>00159 
-<a name="l00163"></a>00163     <span class="keyword">virtual</span> uint32_t*       <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#060e4fcdcc016bdbc60231983851d701">getIndexArray</a>() = 0;
+<a name="l00162"></a>00162     <span class="keyword">virtual</span> int32_t         <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#37cba744c380c56f62a9bc0e181e410a">getMaterialCount</a>() = 0;
+<a name="l00163"></a>00163 
 <a name="l00164"></a>00164 
 <a name="l00165"></a>00165 
-<a name="l00169"></a>00169     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>            <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#2784c55010ab4f9befe8db7e635dfb23">isCollisionLoaded</a>() = 0;
+<a name="l00169"></a>00169     <span class="keyword">virtual</span> uint32_t*       <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#060e4fcdcc016bdbc60231983851d701">getIndexArray</a>() = 0;
 <a name="l00170"></a>00170 
-<a name="l00179"></a>00179     <span class="keyword">virtual</span> uint32_t        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#128ff819638921a9c76e1829e85998d8">getCollision</a>(uint32_t*&amp; hullsOffset, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>**&amp; hulls) = 0;
-<a name="l00180"></a>00180 
-<a name="l00181"></a>00181 };
-<a name="l00182"></a>00182 
-<a name="l00186"></a><a class="code" href="class_nv_1_1_blast_1_1_i_fbx_file_reader.html">00186</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_i_fbx_file_reader.html">IFbxFileReader</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html">IMeshFileReader</a>
-<a name="l00187"></a>00187 {
-<a name="l00188"></a>00188 <span class="keyword">public</span>:
-<a name="l00196"></a>00196     <span class="keyword">virtual</span> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_i_fbx_file_reader.html#59308d15d712d7066d3be4a5504dfd0d">getBoneInfluences</a>(uint32_t*&amp; out) = 0;
-<a name="l00197"></a>00197 
-<a name="l00201"></a>00201     <span class="keyword">virtual</span> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_i_fbx_file_reader.html#ce489d8ed2f4ac97a1752efe62fbd632">getBoneCount</a>() = 0;
-<a name="l00202"></a>00202 };
+<a name="l00171"></a>00171 
+<a name="l00175"></a>00175     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>            <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#2784c55010ab4f9befe8db7e635dfb23">isCollisionLoaded</a>() = 0;
+<a name="l00176"></a>00176 
+<a name="l00185"></a>00185     <span class="keyword">virtual</span> uint32_t        <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#128ff819638921a9c76e1829e85998d8">getCollision</a>(uint32_t*&amp; hullsOffset, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>**&amp; hulls) = 0;
+<a name="l00186"></a>00186 
+<a name="l00187"></a>00187 };
+<a name="l00188"></a>00188 
+<a name="l00192"></a><a class="code" href="class_nv_1_1_blast_1_1_i_fbx_file_reader.html">00192</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_i_fbx_file_reader.html">IFbxFileReader</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html">IMeshFileReader</a>
+<a name="l00193"></a>00193 {
+<a name="l00194"></a>00194 <span class="keyword">public</span>:
+<a name="l00202"></a>00202     <span class="keyword">virtual</span> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_i_fbx_file_reader.html#59308d15d712d7066d3be4a5504dfd0d">getBoneInfluences</a>(uint32_t*&amp; out) = 0;
 <a name="l00203"></a>00203 
-<a name="l00207"></a><a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html">00207</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html">IMeshFileWriter</a>
-<a name="l00208"></a>00208 {
-<a name="l00209"></a>00209 <span class="keyword">public</span>:
-<a name="l00210"></a>00210 
-<a name="l00214"></a>00214     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html#24095d9c25e0eb11a7a4b9a05450b6a7">release</a>() = 0;
-<a name="l00215"></a>00215 
-<a name="l00219"></a>00219     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html#605c88816a8d81f4084c1bbf53b32dae">appendMesh</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">AuthoringResult</a>&amp; aResult, <span class="keyword">const</span> <span class="keywordtype">char</span>* assetName, <span class="keywordtype">bool</span> nonSkinned = <span class="keyword">false</span>) = 0;
-<a name="l00220"></a>00220 
-<a name="l00224"></a>00224     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html#605c88816a8d81f4084c1bbf53b32dae">appendMesh</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData, <span class="keyword">const</span> <span class="keywordtype">char</span>* assetName, <span class="keywordtype">bool</span> nonSkinned = <span class="keyword">false</span>) = 0;
-<a name="l00225"></a>00225 
-<a name="l00229"></a>00229     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html#b2505850e86c4e21134992138322bf0c">saveToFile</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* assetName, <span class="keyword">const</span> <span class="keywordtype">char</span>* outputPath) = 0;
-<a name="l00230"></a>00230 };
+<a name="l00207"></a>00207     <span class="keyword">virtual</span> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_i_fbx_file_reader.html#ce489d8ed2f4ac97a1752efe62fbd632">getBoneCount</a>() = 0;
+<a name="l00208"></a>00208 };
+<a name="l00209"></a>00209 
+<a name="l00213"></a><a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html">00213</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html">IMeshFileWriter</a>
+<a name="l00214"></a>00214 {
+<a name="l00215"></a>00215 <span class="keyword">public</span>:
+<a name="l00216"></a>00216 
+<a name="l00220"></a>00220     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html#24095d9c25e0eb11a7a4b9a05450b6a7">release</a>() = 0;
+<a name="l00221"></a>00221 
+<a name="l00225"></a>00225     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html#605c88816a8d81f4084c1bbf53b32dae">appendMesh</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">AuthoringResult</a>&amp; aResult, <span class="keyword">const</span> <span class="keywordtype">char</span>* assetName, <span class="keywordtype">bool</span> nonSkinned = <span class="keyword">false</span>) = 0;
+<a name="l00226"></a>00226 
+<a name="l00230"></a>00230     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html#605c88816a8d81f4084c1bbf53b32dae">appendMesh</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData, <span class="keyword">const</span> <span class="keywordtype">char</span>* assetName, <span class="keywordtype">bool</span> nonSkinned = <span class="keyword">false</span>) = 0;
 <a name="l00231"></a>00231 
-<a name="l00232"></a>00232 }
-<a name="l00233"></a>00233 }
-<a name="l00234"></a>00234 
-<a name="l00238"></a>00238 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html">Nv::Blast::IMeshFileReader</a>* <a class="code" href="_nv_blast_ext_exporter_8h.html#e38d259688a8b5074189938d60dedfe2">NvBlastExtExporterCreateObjFileReader</a>();
-<a name="l00239"></a>00239 
-<a name="l00243"></a>00243 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_i_fbx_file_reader.html">Nv::Blast::IFbxFileReader</a>* <a class="code" href="_nv_blast_ext_exporter_8h.html#302f46e929b1cc4ac3b8fbc77270515a">NvBlastExtExporterCreateFbxFileReader</a>();
-<a name="l00244"></a>00244 
-<a name="l00248"></a>00248 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html">Nv::Blast::IMeshFileWriter</a>* <a class="code" href="_nv_blast_ext_exporter_8h.html#7b6a3dd6fc49b09064b457596a3b0526">NvBlastExtExporterCreateObjFileWriter</a>();
-<a name="l00249"></a>00249 
-<a name="l00255"></a>00255 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html">Nv::Blast::IMeshFileWriter</a>* <a class="code" href="_nv_blast_ext_exporter_8h.html#beabdaf317cf004af21fb7a7f4937658">NvBlastExtExporterCreateFbxFileWriter</a>(<span class="keywordtype">bool</span> outputFBXAscii = <span class="keyword">false</span>);
-<a name="l00256"></a>00256 
-<a name="l00257"></a>00257 <span class="preprocessor">#endif //NVBLASTEXTEXPORTER_H</span>
+<a name="l00235"></a>00235     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html#b2505850e86c4e21134992138322bf0c">saveToFile</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* assetName, <span class="keyword">const</span> <span class="keywordtype">char</span>* outputPath) = 0;
+<a name="l00236"></a>00236 
+<a name="l00240"></a>00240     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html#18469d1d4da25447686b3b38010f930a">setInteriorIndex</a>(int32_t index) = 0;
+<a name="l00241"></a>00241 };
+<a name="l00242"></a>00242 
+<a name="l00243"></a>00243 }
+<a name="l00244"></a>00244 }
+<a name="l00245"></a>00245 
+<a name="l00249"></a>00249 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html">Nv::Blast::IMeshFileReader</a>* <a class="code" href="_nv_blast_ext_exporter_8h.html#e38d259688a8b5074189938d60dedfe2">NvBlastExtExporterCreateObjFileReader</a>();
+<a name="l00250"></a>00250 
+<a name="l00254"></a>00254 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_i_fbx_file_reader.html">Nv::Blast::IFbxFileReader</a>* <a class="code" href="_nv_blast_ext_exporter_8h.html#302f46e929b1cc4ac3b8fbc77270515a">NvBlastExtExporterCreateFbxFileReader</a>();
+<a name="l00255"></a>00255 
+<a name="l00259"></a>00259 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html">Nv::Blast::IMeshFileWriter</a>* <a class="code" href="_nv_blast_ext_exporter_8h.html#7b6a3dd6fc49b09064b457596a3b0526">NvBlastExtExporterCreateObjFileWriter</a>();
+<a name="l00260"></a>00260 
+<a name="l00266"></a>00266 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html">Nv::Blast::IMeshFileWriter</a>* <a class="code" href="_nv_blast_ext_exporter_8h.html#beabdaf317cf004af21fb7a7f4937658">NvBlastExtExporterCreateFbxFileWriter</a>(<span class="keywordtype">bool</span> outputFBXAscii = <span class="keyword">false</span>);
+<a name="l00267"></a>00267 
+<a name="l00268"></a>00268 <span class="preprocessor">#endif //NVBLASTEXTEXPORTER_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

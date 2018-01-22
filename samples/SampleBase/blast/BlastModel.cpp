@@ -104,6 +104,86 @@ BlastModelPtr BlastModel::loadFromFbxFile(const char* path)
 }
 
 
+void loadMeshes(std::vector<BlastModel::Chunk::Mesh>& meshes, tinyobj::mesh_t mesh)
+{
+	// Check if all faces are triangles
+	bool allTriangles = true;
+	for (uint32_t i = 0; i < mesh.num_vertices.size(); ++i)
+	{
+		if (mesh.num_vertices[i] != 3)
+		{
+			allTriangles = false;
+			break;
+		}
+	}
+	if (!allTriangles) return;
+
+	std::map<int32_t, uint32_t> matIdToMesh;
+	for (int32_t mt : mesh.material_ids)
+	{
+		auto it = matIdToMesh.find(mt);
+		if (it == matIdToMesh.end())
+		{
+			meshes.push_back(BlastModel::Chunk::Mesh());
+			matIdToMesh[mt] = uint32_t(meshes.size()) - 1;
+		}
+	}
+
+	std::vector<SimpleMesh::Vertex> oldVertices(mesh.positions.size() / 3);
+	std::vector<uint32_t> oldIndexToNew;
+
+	for (uint32_t i = 0; i < oldVertices.size(); ++i)
+	{
+		oldVertices[i].position.x = mesh.positions[i * 3];
+		oldVertices[i].position.y = mesh.positions[i * 3 + 1];
+		oldVertices[i].position.z = mesh.positions[i * 3 + 2];
+
+		oldVertices[i].normal.x = mesh.normals[i * 3];
+		oldVertices[i].normal.y = mesh.normals[i * 3 + 1];
+		oldVertices[i].normal.z = mesh.normals[i * 3 + 2];
+
+		oldVertices[i].uv.x = mesh.texcoords[i * 2];
+		oldVertices[i].uv.y = mesh.texcoords[i * 2 + 1];
+	}
+
+	for (auto matmapping : matIdToMesh)
+	{
+		int32_t mid = matmapping.first;
+		auto sampleMesh = &meshes[matmapping.second];
+		sampleMesh->materialIndex = (mid >= 0)? mid : 0;
+		oldIndexToNew.assign(oldVertices.size(), -1);
+		
+		PxVec3 emin(FLT_MAX, FLT_MAX, FLT_MAX);
+		PxVec3 emax(FLT_MIN, FLT_MIN, FLT_MIN);
+
+
+		for (uint32_t i = 0; i < mesh.indices.size() / 3; i++)
+		{
+			if (mesh.material_ids[i] != mid) continue;
+			for (int32_t vi = 2; vi >= 0; --vi)
+			{
+				int32_t idx = mesh.indices[i * 3 + vi];
+				if (oldIndexToNew[idx] == -1)
+				{
+					oldIndexToNew[idx] = (uint32_t)sampleMesh->mesh.vertices.size();
+					sampleMesh->mesh.vertices.push_back(oldVertices[idx]);
+
+					emin = emin.minimum(sampleMesh->mesh.vertices.back().position);
+					emax = emax.maximum(sampleMesh->mesh.vertices.back().position);				
+				}
+				sampleMesh->mesh.indices.push_back(oldIndexToNew[idx]);
+
+				// assign extents
+				sampleMesh->mesh.extents = (emax - emin) * 0.5f;
+
+				// get the center
+				sampleMesh->mesh.center = emin + sampleMesh->mesh.extents;
+			}
+		}
+	}
+}
+
+
 BlastModelPtr BlastModel::loadFromFileTinyLoader(const char* path)
 {
 	std::shared_ptr<BlastModel> model = std::shared_ptr<BlastModel>(new BlastModel());
@@ -153,94 +233,18 @@ BlastModelPtr BlastModel::loadFromFileTinyLoader(const char* path)
 		for (uint32_t m = 0; m < shapes.size(); m++)
 		{
 			tinyobj::shape_t& pMesh = shapes[m];
-			uint32_t materialIndex;
+			int32_t materialIndex = 0;	// This is actually not set
 			uint32_t chunkIndex;
-			sscanf(pMesh.name.data(), "%d_%d", &chunkIndex, &materialIndex);
+			int32_t sc = sscanf(pMesh.name.data(), "%d_%d", &chunkIndex, &materialIndex);
+			if (sc == 0)
+			{
+				return nullptr;
+			}
 			if (model->chunks.size() <= chunkIndex)
 			{
 				model->chunks.resize(chunkIndex + 1);
 			}
-			model->chunks[chunkIndex].meshes.push_back(Chunk::Mesh());
-			Chunk::Mesh& mesh = model->chunks[chunkIndex].meshes.back();
-
-			mesh.materialIndex = materialIndex;
-			SimpleMesh& chunkMesh = mesh.mesh;
-
-			PxVec3 emin(FLT_MAX, FLT_MAX, FLT_MAX);
-			PxVec3 emax(FLT_MIN, FLT_MIN, FLT_MIN);
-
-
-
-			// create an index buffer
-			chunkMesh.indices.resize(pMesh.mesh.indices.size());
-
-			// Check if all faces are triangles
-			bool allTriangles = true;
-			for (uint32_t i = 0; i < pMesh.mesh.num_vertices.size(); ++i)
-			{
-				if (pMesh.mesh.num_vertices[i] != 3)
-				{
-					allTriangles = false;
-					break;
-				}
-			}
-
-			if (pMesh.mesh.indices.size() > 0 && allTriangles)
-			{
-				for (uint32_t i = 0; i < pMesh.mesh.indices.size(); i += 3)
-				{
-					chunkMesh.indices[i] = (uint32_t)pMesh.mesh.indices[i + 2];
-					chunkMesh.indices[i + 1] = (uint32_t)pMesh.mesh.indices[i + 1];
-					chunkMesh.indices[i + 2] = (uint32_t)pMesh.mesh.indices[i];
-				}
-			}
-			// create vertex buffer
-			chunkMesh.vertices.resize(pMesh.mesh.positions.size() / 3);
-			// copy positions
-			uint32_t indexer = 0;
-			for (uint32_t i = 0; i < pMesh.mesh.positions.size() / 3; i++)
-			{
-				chunkMesh.vertices[i].position.x = pMesh.mesh.positions[indexer];
-				chunkMesh.vertices[i].position.y = pMesh.mesh.positions[indexer + 1];
-				chunkMesh.vertices[i].position.z = pMesh.mesh.positions[indexer + 2];
-				indexer += 3;
-				// calc min/max
-				emin = emin.minimum(chunkMesh.vertices[i].position);
-				emax = emax.maximum(chunkMesh.vertices[i].position);
-			}
-
-			// copy normals
-			if (pMesh.mesh.normals.size() > 0)
-			{
-				indexer = 0;
-				for (uint32_t i = 0; i < pMesh.mesh.normals.size() / 3; i++)
-				{
-					chunkMesh.vertices[i].normal.x = pMesh.mesh.normals[indexer];
-					chunkMesh.vertices[i].normal.y = pMesh.mesh.normals[indexer + 1];
-					chunkMesh.vertices[i].normal.z = pMesh.mesh.normals[indexer + 2];
-
-					indexer += 3;
-				}
-			}
-
-			// copy uv
-			if (pMesh.mesh.texcoords.size() > 0)
-			{
-				indexer = 0;
-				for (uint32_t i = 0; i < pMesh.mesh.texcoords.size() / 2; i++)
-				{
-					chunkMesh.vertices[i].uv.x = pMesh.mesh.texcoords[indexer];
-					chunkMesh.vertices[i].uv.y = pMesh.mesh.texcoords[indexer + 1];
-					indexer += 2;
-				}
-			}
-
-			// assign extents
-			chunkMesh.extents = (emax - emin) * 0.5f;
-
-			// get the center
-			chunkMesh.center = emin + chunkMesh.extents;
-
+			loadMeshes(model->chunks.back().meshes, pMesh.mesh);
 		}
 	}
 

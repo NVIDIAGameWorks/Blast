@@ -23,11 +23,23 @@
 #include "NvBlastExtAuthoringTriangulator.h"
 #include "NvBlastExtAuthoringBooleanTool.h"
 #include "NvBlastExtAuthoringAccelerator.h"
+#include "NvBlastExtAuthoringCutout.h"
 #include "NvBlast.h"
 #include "NvBlastGlobals.h"
 #include "NvBlastExtAuthoringPerlinNoise.h"
 #include <NvBlastAssert.h>
 using namespace physx;
+
+#ifndef SAFE_DELETE
+#define SAFE_DELETE(p)                                                                                                 \
+	{                                                                                                                  \
+		if(p)                                                                                                          \
+		{                                                                                                              \
+			delete (p);                                                                                                \
+			(p) = NULL;                                                                                                \
+		}                                                                                                              \
+	}
+#endif
 
 #define DEFAULT_BB_ACCELARATOR_RES 10
 #define SLICING_INDEXER_OFFSET (1ll << 32)
@@ -421,6 +433,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 		if (resultMesh)
 		{
 			mChunkData.push_back(ChunkInfo());
+			mChunkData.back().isChanged = true;
 			mChunkData.back().isLeaf = true;
 			mChunkData.back().meshData = resultMesh;
 			mChunkData.back().parent = parentChunk;
@@ -601,6 +614,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 		{
 			mChunkData.push_back(ChunkInfo());
 			mChunkData.back().isLeaf = true;
+			mChunkData.back().isChanged = true;
 			mChunkData.back().meshData = resultMesh;
 			mChunkData.back().parent = parentChunk;
 			mChunkData.back().chunkId = mChunkIdCounter++;
@@ -627,9 +641,9 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 	return 0;
 }
 
-int32_t FractureToolImpl::slicing(uint32_t chunkId, SlicingConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd)
+int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& conf, bool replaceChunk, RandomGeneratorBase* rnd)
 {
-	if (conf.noiseAmplitude != 0)
+	if (conf.noise.amplitude != 0)
 	{
 		return slicingNoisy(chunkId, conf, replaceChunk, rnd);
 	}
@@ -676,6 +690,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, SlicingConfiguration conf, b
 
 	ChunkInfo ch;
 	ch.isLeaf = true;
+	ch.isChanged = true;
 	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
 	std::vector<ChunkInfo> xSlicedChunks;
 	std::vector<ChunkInfo> ySlicedChunks;
@@ -816,7 +831,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, SlicingConfiguration conf, b
 	return 0;
 }
 
-int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, SlicingConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd)
+int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfiguration& conf, bool replaceChunk, RandomGeneratorBase* rnd)
 {
 	if (replaceChunk && chunkId == 0)
 	{
@@ -860,6 +875,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, SlicingConfiguration co
 
 	ChunkInfo ch;
 	ch.isLeaf = true;
+	ch.isChanged = true;
 	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
 	std::vector<ChunkInfo> xSlicedChunks;
 	std::vector<ChunkInfo> ySlicedChunks;
@@ -873,7 +889,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, SlicingConfiguration co
 	{
 		PxVec3 randVect = PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
 		PxVec3 lDir = dir + randVect * conf.angle_variations;
-		slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, conf.surfaceResolution, mPlaneIndexerOffset, conf.noiseAmplitude, conf.noiseFrequency, conf.noiseOctaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
+		slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, conf.noise.surfaceResolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude, conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
 	//	DummyAccelerator accel(mesh->getFacetCount());
 		SweepingAccelerator accel(mesh);
 		SweepingAccelerator dummy(slBox);
@@ -883,7 +899,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, SlicingConfiguration co
 		{
 			xSlicedChunks.push_back(ch);
 		}
-		inverseNormalAndSetIndices(slBox, -mPlaneIndexerOffset);
+		inverseNormalAndSetIndices(slBox, -(mPlaneIndexerOffset + SLICING_INDEXER_OFFSET));
 		++mPlaneIndexerOffset;
 		bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
 		Mesh* result = bTool.createNewMesh();
@@ -915,7 +931,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, SlicingConfiguration co
 			PxVec3 randVect = PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
 			PxVec3 lDir = dir + randVect * conf.angle_variations;
 
-			slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, conf.surfaceResolution, mPlaneIndexerOffset, conf.noiseAmplitude, conf.noiseFrequency, conf.noiseOctaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
+			slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, conf.noise.surfaceResolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude, conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
 		//	DummyAccelerator accel(mesh->getFacetCount());
 			SweepingAccelerator accel(mesh);
 			SweepingAccelerator dummy(slBox);
@@ -925,7 +941,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, SlicingConfiguration co
 			{
 				ySlicedChunks.push_back(ch);
 			}
-			inverseNormalAndSetIndices(slBox, -mPlaneIndexerOffset);
+			inverseNormalAndSetIndices(slBox, -(mPlaneIndexerOffset + SLICING_INDEXER_OFFSET));
 			++mPlaneIndexerOffset;
 			bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
 			Mesh* result = bTool.createNewMesh();
@@ -956,7 +972,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, SlicingConfiguration co
 		{
 			PxVec3 randVect = PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
 			PxVec3 lDir = dir + randVect * conf.angle_variations;
-			slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, conf.surfaceResolution, mPlaneIndexerOffset, conf.noiseAmplitude, conf.noiseFrequency, conf.noiseOctaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
+			slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, conf.noise.surfaceResolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude, conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
 	//		DummyAccelerator accel(mesh->getFacetCount());
 			SweepingAccelerator accel(mesh);
 			SweepingAccelerator dummy(slBox);
@@ -968,7 +984,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, SlicingConfiguration co
 				mChunkData.push_back(ch);
 				newlyCreatedChunksIds.push_back(ch.chunkId);
 			}
-			inverseNormalAndSetIndices(slBox, -mPlaneIndexerOffset);
+			inverseNormalAndSetIndices(slBox, -(mPlaneIndexerOffset + SLICING_INDEXER_OFFSET));
 			++mPlaneIndexerOffset;
 			bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
 			Mesh* result = bTool.createNewMesh();
@@ -1008,8 +1024,184 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, SlicingConfiguration co
 
 	return 0;
 }
+int32_t	FractureToolImpl::cut(uint32_t chunkId, const physx::PxVec3& normal, const physx::PxVec3& point, const NoiseConfiguration& noise, bool replaceChunk, RandomGeneratorBase* rnd)
+{
+	if (replaceChunk && chunkId == 0)
+	{
+		return 1;
+	}
 
+	int32_t chunkIndex = getChunkIndex(chunkId);
+	if (chunkIndex == -1)
+	{
+		return 1;
+	}
+	if (!mChunkData[chunkIndex].isLeaf)
+	{
+		deleteAllChildrenOfChunk(chunkId);
+	}
+	chunkIndex = getChunkIndex(chunkId);
 
+	Mesh* mesh = new MeshImpl(*reinterpret_cast <MeshImpl*>(mChunkData[chunkIndex].meshData));
+	BooleanEvaluator bTool;
+
+	ChunkInfo ch;
+	ch.chunkId = -1;
+	ch.isLeaf = true;
+	ch.isChanged = true;
+	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
+	float noisyPartSize = 1.2f;
+	
+	// Perform cut
+	Mesh* slBox = getNoisyCuttingBoxPair((point - mOffset) / mScaleFactor, normal, 40, noisyPartSize, noise.surfaceResolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, noise.amplitude, noise.frequency, noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
+	SweepingAccelerator accel(mesh);
+	SweepingAccelerator dummy(slBox);
+	bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_DIFFERENCE());
+	ch.meshData = bTool.createNewMesh();
+	inverseNormalAndSetIndices(slBox, -(mPlaneIndexerOffset + SLICING_INDEXER_OFFSET));
+	++mPlaneIndexerOffset;
+	bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
+	Mesh* result = bTool.createNewMesh();
+	delete slBox;
+	delete mesh;
+	mesh = result;
+	
+	if (mesh == 0) //Return if it doesn't cut specified chunk
+	{
+		return 1;
+	}
+
+	if (!mChunkData[chunkIndex].isLeaf)
+	{
+		deleteAllChildrenOfChunk(chunkId);
+	}
+	chunkIndex = getChunkIndex(chunkId);
+
+	int32_t firstChunkId = -1;
+	if (ch.meshData != 0)
+	{
+		ch.chunkId = mChunkIdCounter++;
+		mChunkData.push_back(ch);
+		firstChunkId = ch.chunkId;
+	}
+	if (mesh != 0)
+	{
+		ch.chunkId = mChunkIdCounter++;
+		ch.meshData = mesh;
+		mChunkData.push_back(ch);
+	}
+	
+	mChunkData[chunkIndex].isLeaf = false;
+	if (replaceChunk)
+	{
+		eraseChunk(chunkId);
+	}
+
+	if (mRemoveIslands && firstChunkId >= 0)
+	{
+		islandDetectionAndRemoving(firstChunkId);
+		if (mesh != 0)
+		{
+			islandDetectionAndRemoving(ch.chunkId);
+		}
+	}
+
+	return 0;
+}
+
+int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, bool replaceChunk, RandomGeneratorBase* /*rnd*/)
+{
+	if (replaceChunk && chunkId == 0)
+	{
+		return 1;
+	}
+
+	int32_t chunkIndex = getChunkIndex(chunkId);
+	if (chunkIndex == -1)
+	{
+		return 1;
+	}
+	if (!mChunkData[chunkIndex].isLeaf)
+	{
+		deleteAllChildrenOfChunk(chunkId);
+	}
+	chunkIndex = getChunkIndex(chunkId);
+	Nv::Blast::CutoutSet& cutoutSet = *conf.cutoutSet;
+
+	Mesh* mesh = new MeshImpl(*reinterpret_cast <MeshImpl*>(mChunkData[chunkIndex].meshData));
+	float extrusionLength = mesh->getBoundingBox().getDimensions().magnitude();
+	auto scale = conf.scale / mScaleFactor;
+	conf.transform.p = (conf.transform.p - mOffset) / mScaleFactor;
+	if (scale.x < 0.f || scale.y < 0.f)
+	{
+		scale = physx::PxVec2(extrusionLength);
+	}
+	if (conf.isRelativeTransform)
+	{
+		conf.transform.p += mesh->getBoundingBox().getCenter() / mScaleFactor;
+	}
+	float xDim = cutoutSet.getDimensions().x;
+	float yDim = cutoutSet.getDimensions().y;
+
+	BooleanEvaluator bTool;
+	ChunkInfo ch;
+	ch.isLeaf = true;
+	ch.isChanged = true;
+	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
+	std::vector<uint32_t> newlyCreatedChunksIds;
+
+	for (uint32_t c = 0; c < cutoutSet.getCutoutCount(); c++)
+	{
+		uint32_t vertCount = cutoutSet.getCutoutVertexCount(c);
+		std::vector<physx::PxVec3> verts(vertCount);
+		for (uint32_t v = 0; v < vertCount; v++)
+		{
+			auto vert = cutoutSet.getCutoutVertex(c, v);
+			vert.x = (vert.x / xDim - 0.5f) * scale.x;
+			vert.y = (vert.y / yDim - 0.5f) * scale.y;
+			verts[v] = vert;
+		}
+		Mesh* cutoutMesh = getCuttingCylinder(verts.size(), verts.data(), conf.transform, 2.f * extrusionLength, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, mInteriorMaterialId);
+		SweepingAccelerator accel(mesh);
+		SweepingAccelerator dummy(cutoutMesh);
+		bTool.performBoolean(mesh, cutoutMesh, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
+		ch.meshData = bTool.createNewMesh();
+		if (ch.meshData != 0)
+		{
+			ch.chunkId = mChunkIdCounter++;
+			newlyCreatedChunksIds.push_back(ch.chunkId);
+			mChunkData.push_back(ch);
+		}
+		inverseNormalAndSetIndices(cutoutMesh, -(mPlaneIndexerOffset++ + SLICING_INDEXER_OFFSET));
+		bTool.performBoolean(mesh, cutoutMesh, &accel, &dummy, BooleanConfigurations::BOOLEAN_DIFFERENCE());
+		Mesh* result = bTool.createNewMesh();
+		delete mesh;
+		mesh = result;
+		if (mesh == nullptr)
+		{
+			break;
+		}
+		SAFE_DELETE(cutoutMesh)
+	}
+
+	SAFE_DELETE(mesh);
+
+	mChunkData[chunkIndex].isLeaf = false;
+	if (replaceChunk)
+	{
+		eraseChunk(chunkId);
+	}
+
+	if (mRemoveIslands)
+	{
+		for (auto chunkToCheck : newlyCreatedChunksIds)
+		{
+			islandDetectionAndRemoving(chunkToCheck);
+		}
+	}
+
+	return 0;
+}
 
 int32_t FractureToolImpl::getChunkIndex(int32_t chunkId)
 {
@@ -1133,6 +1325,7 @@ int32_t	FractureToolImpl::setChunkMesh(const Mesh* meshInput, int32_t parentId)
 	chunk.meshData = new MeshImpl(*reinterpret_cast <const MeshImpl*>(meshInput));
 	chunk.parent = parentId;
 	chunk.isLeaf = true;
+	chunk.isChanged = true;
 	if ((size_t)parentId < mChunkData.size())
 	{
 		mChunkData[parentId].isLeaf = false;
@@ -1153,10 +1346,12 @@ int32_t	FractureToolImpl::setChunkMesh(const Mesh* meshInput, int32_t parentId)
 	mesh->getBoundingBoxWritable().minimum = (mesh->getBoundingBox().minimum - mOffset) * (1.0f / mScaleFactor);
 	mesh->getBoundingBoxWritable().maximum = (mesh->getBoundingBox().maximum - mOffset) * (1.0f / mScaleFactor);
 
-
-	for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
+	if (parentId == -1) // We are setting root mesh. Set all facets as boundary.
 	{
-		mesh->getFacetWritable(i)->userData = 0; // Mark facet as initial boundary facet
+		for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
+		{
+			mesh->getFacetWritable(i)->userData = 0; // Mark facet as initial boundary facet
+		}
 	}
 
 	return chunk.chunkId;
@@ -1244,20 +1439,39 @@ bool FractureToolImpl::deleteAllChildrenOfChunk(int32_t chunkId)
 
 void FractureToolImpl::finalizeFracturing()
 {
-	for (uint32_t i = 0; i < mChunkPostprocessors.size(); ++i)
+	std::vector<Triangulator* > oldTriangulators = mChunkPostprocessors;
+	std::map<int32_t, int32_t> chunkIdToTriangulator;
+	std::set<uint32_t> newChunkMask;
+	for (uint32_t i = 0; i < oldTriangulators.size(); ++i)
 	{
-		delete mChunkPostprocessors[i];
+		chunkIdToTriangulator[oldTriangulators[i]->getParentChunkId()] = i;
 	}
+	mChunkPostprocessors.clear();
 	mChunkPostprocessors.resize(mChunkData.size());
+	newChunkMask.insert(0xffffffff); // To trigger masking mode, if newChunkMask will happen to be empty, all UVs will be updated.
 	for (uint32_t i = 0; i < mChunkPostprocessors.size(); ++i)
 	{
-		mChunkPostprocessors[i] = new Triangulator();
+
+		auto it = chunkIdToTriangulator.find(mChunkData[i].chunkId);
+		if (mChunkData[i].isChanged || it == chunkIdToTriangulator.end())
+		{
+			if (it != chunkIdToTriangulator.end())
+			{
+				delete oldTriangulators[it->second];
+				oldTriangulators[it->second] = nullptr;
+			}
+			mChunkPostprocessors[i] = new Triangulator();
+			mChunkPostprocessors[i]->triangulate(mChunkData[i].meshData);
+			mChunkPostprocessors[i]->getParentChunkId() = mChunkData[i].chunkId;
+			newChunkMask.insert(mChunkData[i].chunkId);
+			mChunkData[i].isChanged = false;
+		}
+		else
+		{
+			mChunkPostprocessors[i] = oldTriangulators[it->second];
+		}
 	}
 	
-	for (uint32_t i = 0; i < mChunkPostprocessors.size(); ++i)
-	{
-		mChunkPostprocessors[i]->triangulate(mChunkData[i].meshData);
-	}
 	std::vector<int32_t> badOnes;
 	for (uint32_t i = 0; i < mChunkPostprocessors.size(); ++i)
 	{
@@ -1279,7 +1493,7 @@ void FractureToolImpl::finalizeFracturing()
 		std::swap(mChunkData[badOnes[i]], mChunkData.back());
 		mChunkData.pop_back();
 	}
-
+	fitAllUvToRect(1.0f, newChunkMask);
 }
 
 uint32_t FractureToolImpl::getChunkCount() const
@@ -1287,9 +1501,9 @@ uint32_t FractureToolImpl::getChunkCount() const
 	return (uint32_t)mChunkData.size();
 }
 
-const ChunkInfo& FractureToolImpl::getChunkInfo(int32_t chunkId)
+const ChunkInfo& FractureToolImpl::getChunkInfo(int32_t chunkIndex)
 {
-	return mChunkData[chunkId];
+	return mChunkData[chunkIndex];
 }
 
 uint32_t FractureToolImpl::getBaseMesh(int32_t chunkIndex, Triangle*& output)
@@ -1299,7 +1513,7 @@ uint32_t FractureToolImpl::getBaseMesh(int32_t chunkIndex, Triangle*& output)
 	{		
 		return 0; // finalizeFracturing() should be called before getting mesh!
 	}
-	auto baseMesh = mChunkPostprocessors[chunkIndex]->getBaseMesh();
+	auto& baseMesh = mChunkPostprocessors[chunkIndex]->getBaseMesh();
 	output = new Triangle[baseMesh.size()];
 	memcpy(output, baseMesh.data(), baseMesh.size() * sizeof(Triangle));
 
@@ -1315,6 +1529,29 @@ uint32_t FractureToolImpl::getBaseMesh(int32_t chunkIndex, Triangle*& output)
 
 	return baseMesh.size();
 }
+
+uint32_t FractureToolImpl::updateBaseMesh(int32_t chunkIndex, Triangle* output)
+{
+	NVBLAST_ASSERT(mChunkPostprocessors.size() > 0);
+	if (mChunkPostprocessors.size() == 0)
+	{
+		return 0; // finalizeFracturing() should be called before getting mesh!
+	}
+	auto& baseMesh = mChunkPostprocessors[chunkIndex]->getBaseMesh();
+	memcpy(output, baseMesh.data(), baseMesh.size() * sizeof(Triangle));
+
+	/* Scale mesh back */
+
+	for (uint32_t i = 0; i < baseMesh.size(); ++i)
+	{
+		Triangle& triangle = output[i];
+		triangle.a.p = triangle.a.p * mScaleFactor + mOffset;
+		triangle.b.p = triangle.b.p * mScaleFactor + mOffset;
+		triangle.c.p = triangle.c.p * mScaleFactor + mOffset;
+	}
+	return baseMesh.size();
+}
+
 
 float getVolume(std::vector<Triangle>& triangles)
 {
@@ -1682,8 +1919,115 @@ uint32_t FractureToolImpl::createNewChunk(uint32_t parent)
 	mChunkData.back().chunkId = mChunkIdCounter++;
 	mChunkData.back().meshData = nullptr;
 	mChunkData.back().isLeaf = false;
+	mChunkData.back().isChanged = true;
 	return mChunkData.size() - 1;
 }
+
+
+void FractureToolImpl::fitUvToRect(float side, uint32_t chunk)
+{
+	int32_t index = getChunkIndex(chunk);
+	if (mChunkPostprocessors.empty()) // It seems finalize have not been called, call it here. 
+	{
+		finalizeFracturing();
+	}
+	if (index == -1  || (int32_t)mChunkPostprocessors.size() <= index)
+	{
+		return; // We dont have such chunk tringulated;
+	}
+	PxBounds3 bnd;
+	bnd.setEmpty();
+	
+	std::vector<Triangle>& ctrs = mChunkPostprocessors[index]->getBaseMesh();
+	std::vector<Triangle>& output = mChunkPostprocessors[index]->getBaseMesh();
+
+	for (uint32_t trn = 0; trn < ctrs.size(); ++trn)
+	{
+		if (ctrs[trn].userData == 0) continue;
+		bnd.include(PxVec3(ctrs[trn].a.uv[0].x, ctrs[trn].a.uv[0].y, 0.0f));
+		bnd.include(PxVec3(ctrs[trn].b.uv[0].x, ctrs[trn].b.uv[0].y, 0.0f));
+		bnd.include(PxVec3(ctrs[trn].c.uv[0].x, ctrs[trn].c.uv[0].y, 0.0f));
+	}
+
+	float xscale = side / (bnd.maximum.x - bnd.minimum.x);
+	float yscale = side / (bnd.maximum.y - bnd.minimum.y);
+	xscale = std::min(xscale, yscale); // To have uniform scaling
+
+	for (uint32_t trn = 0; trn < ctrs.size(); ++trn)
+	{
+		if (ctrs[trn].userData == 0) continue;
+		output[trn].a.uv[0].x = (ctrs[trn].a.uv[0].x - bnd.minimum.x) * xscale;
+		output[trn].b.uv[0].x = (ctrs[trn].b.uv[0].x - bnd.minimum.x) * xscale;
+		output[trn].c.uv[0].x = (ctrs[trn].c.uv[0].x - bnd.minimum.x) * xscale;
+
+		output[trn].a.uv[0].y = (ctrs[trn].a.uv[0].y - bnd.minimum.y) * xscale;
+		output[trn].b.uv[0].y = (ctrs[trn].b.uv[0].y - bnd.minimum.y) * xscale;
+		output[trn].c.uv[0].y = (ctrs[trn].c.uv[0].y - bnd.minimum.y) * xscale;
+	}
+}
+
+void FractureToolImpl::fitAllUvToRect(float side)
+{
+	std::set<uint32_t> mask;
+	fitAllUvToRect(side, mask);
+}
+
+void FractureToolImpl::fitAllUvToRect(float side, std::set<uint32_t>& mask)
+{
+	if (mChunkPostprocessors.empty()) // It seems finalize have not been called, call it here. 
+	{
+		finalizeFracturing();
+	}
+	if (mChunkPostprocessors.empty())
+	{
+		return; // We dont have triangulated chunks.
+	}
+	PxBounds3 bnd;
+	bnd.setEmpty();
+
+	for (uint32_t chunk = 0; chunk < mChunkData.size(); ++chunk)
+	{
+		Mesh* m = mChunkData[chunk].meshData;
+		const Edge* edges = m->getEdges();
+		const Vertex* vertices = m->getVertices();
+
+		for (uint32_t trn = 0; trn < m->getFacetCount(); ++trn)
+		{
+			if (m->getFacet(trn)->userData == 0) continue;
+			for (uint32_t ei = 0; ei < m->getFacet(trn)->edgesCount; ++ei)
+			{
+				int32_t v1 = edges[m->getFacet(trn)->firstEdgeNumber + ei].s;
+				int32_t v2 = edges[m->getFacet(trn)->firstEdgeNumber + ei].e;
+				bnd.include(PxVec3(vertices[v1].uv[0].x, vertices[v1].uv[0].y, 0.0f));
+				bnd.include(PxVec3(vertices[v2].uv[0].x, vertices[v2].uv[0].y, 0.0f));
+			}
+		}
+	}
+	float xscale = side / (bnd.maximum.x - bnd.minimum.x);
+	float yscale = side / (bnd.maximum.y - bnd.minimum.y);
+	xscale = std::min(xscale, yscale); // To have uniform scaling
+
+	for (uint32_t chunk = 0; chunk < mChunkPostprocessors.size(); ++chunk)
+	{
+		if (!mask.empty() && mask.find(mChunkPostprocessors[chunk]->getParentChunkId()) == mask.end()) continue;
+		std::vector<Triangle>& ctrs = mChunkPostprocessors[chunk]->getBaseMeshNotFitted();
+		std::vector<Triangle>& output = mChunkPostprocessors[chunk]->getBaseMesh();
+
+		for (uint32_t trn = 0; trn < ctrs.size(); ++trn)
+		{
+			if (ctrs[trn].userData == 0) continue;
+			output[trn].a.uv[0].x = (ctrs[trn].a.uv[0].x - bnd.minimum.x) * xscale;
+			output[trn].b.uv[0].x = (ctrs[trn].b.uv[0].x - bnd.minimum.x) * xscale;
+			output[trn].c.uv[0].x = (ctrs[trn].c.uv[0].x - bnd.minimum.x) * xscale;
+
+			output[trn].a.uv[0].y = (ctrs[trn].a.uv[0].y - bnd.minimum.y) * xscale;
+			output[trn].b.uv[0].y = (ctrs[trn].b.uv[0].y - bnd.minimum.y) * xscale;
+			output[trn].c.uv[0].y = (ctrs[trn].c.uv[0].y - bnd.minimum.y) * xscale;
+		}
+	}
+}
+
+
 
 void FractureToolImpl::rebuildAdjGraph(const std::vector<uint32_t>& chunks, std::vector<std::vector<uint32_t> >& chunkGraph)
 {

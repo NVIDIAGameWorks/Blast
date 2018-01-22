@@ -87,61 +87,72 @@
 <a name="l00056"></a>00056 
 <a name="l00060"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#76e1c257449e53049c62984e1e95b44d">00060</a>     std::vector&lt;Triangle&gt;&amp;          <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#76e1c257449e53049c62984e1e95b44d">getBaseMesh</a>()
 <a name="l00061"></a>00061     {
-<a name="l00062"></a>00062         <span class="keywordflow">return</span> mBaseMeshResultTriangles;
+<a name="l00062"></a>00062         <span class="keywordflow">return</span> mBaseMeshUVFittedTriangles;
 <a name="l00063"></a>00063     }
 <a name="l00064"></a>00064 
-<a name="l00068"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#fa48ddb045fffaded4b1ad09302a34c7">00068</a>     std::vector&lt;TriangleIndexed&gt;&amp;   <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#fa48ddb045fffaded4b1ad09302a34c7">getBaseMeshIndexed</a>()
-<a name="l00069"></a>00069     {
-<a name="l00070"></a>00070         <span class="keywordflow">return</span> mBaseMeshTriangles;
-<a name="l00071"></a>00071     }
-<a name="l00075"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#2138ec663adee80577dae6cc275b7ece">00075</a>     std::vector&lt;uint32_t&gt;&amp;          <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#2138ec663adee80577dae6cc275b7ece">getBaseMapping</a>()
-<a name="l00076"></a>00076     {
-<a name="l00077"></a>00077         <span class="keywordflow">return</span> mBaseMapping;
-<a name="l00078"></a>00078     };
-<a name="l00082"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#7de0951574f73e310626823228c0f005">00082</a>     std::vector&lt;int32_t&gt;&amp;           <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#7de0951574f73e310626823228c0f005">getPositionedMapping</a>()
-<a name="l00083"></a>00083     {
-<a name="l00084"></a>00084         <span class="keywordflow">return</span> mPositionMappedVrt;
-<a name="l00085"></a>00085     };
-<a name="l00089"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#d99ae2011c5aee476fffd79ff9ac4672">00089</a>     uint32_t                        <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#d99ae2011c5aee476fffd79ff9ac4672">getWeldedVerticesCount</a>()
-<a name="l00090"></a>00090     {
-<a name="l00091"></a>00091         <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(mVertices.size());
-<a name="l00092"></a>00092     }   
-<a name="l00093"></a>00093 
-<a name="l00097"></a>00097     <span class="keywordtype">void</span>                            <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#a76275caaab7c2212cca640722d91ca6">reset</a>();
-<a name="l00098"></a>00098 
-<a name="l00099"></a>00099 <span class="keyword">private</span>:
-<a name="l00100"></a>00100 
-<a name="l00101"></a>00101     int32_t                         addVerticeIfNotExist(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; p);
-<a name="l00102"></a>00102     <span class="keywordtype">void</span>                            addEdgeIfValid(<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">EdgeWithParent</a>&amp; ed);
-<a name="l00103"></a>00103     
-<a name="l00104"></a>00104     <span class="comment">/* Data used before triangulation to build polygon loops*/</span>
-<a name="l00105"></a>00105 
-<a name="l00106"></a>00106     std::vector&lt;Vertex&gt;                                 mVertices;
-<a name="l00107"></a>00107     std::vector&lt;EdgeWithParent&gt;                         mBaseMeshEdges;
-<a name="l00108"></a>00108     std::map&lt;Vertex, int32_t, VrtComp&gt;                  mVertMap;
-<a name="l00109"></a>00109     std::map&lt;EdgeWithParent, int32_t, EdgeComparator&gt;   mEdgeMap;
-<a name="l00110"></a>00110     std::vector&lt;uint32_t&gt;                               mBaseMapping;
-<a name="l00111"></a>00111     std::vector&lt;int32_t&gt;                                mPositionMappedVrt;
-<a name="l00112"></a>00112     <span class="comment">/* ------------------------------------------------------------ */</span>
-<a name="l00113"></a>00113 
-<a name="l00114"></a>00114 
-<a name="l00118"></a>00118     <span class="keywordtype">void</span>                            prepare(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
-<a name="l00119"></a>00119 
-<a name="l00120"></a>00120         
-<a name="l00121"></a>00121             
-<a name="l00122"></a>00122     <span class="keywordtype">void</span>                            triangulatePolygonWithEarClipping(std::vector&lt;uint32_t&gt;&amp; inputPolygon, <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* vert, <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> dir);
-<a name="l00123"></a>00123     <span class="keywordtype">void</span>                            buildPolygonAndTriangulate(std::vector&lt;Edge&gt;&amp; edges, <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* vertices, int32_t userData, int32_t materialId, int32_t smoothingGroup);
-<a name="l00124"></a>00124     <span class="keywordtype">void</span>                            computePositionedMapping();
-<a name="l00125"></a>00125     
-<a name="l00126"></a>00126     std::vector&lt;TriangleIndexed&gt;                        mBaseMeshTriangles; 
-<a name="l00130"></a>00130     std::vector&lt;Triangle&gt;                               mBaseMeshResultTriangles;
-<a name="l00131"></a>00131 };
-<a name="l00132"></a>00132 
-<a name="l00133"></a>00133 } <span class="comment">// namespace Blast</span>
-<a name="l00134"></a>00134 } <span class="comment">// namespace Nv</span>
-<a name="l00135"></a>00135 
-<a name="l00136"></a>00136 
-<a name="l00137"></a>00137 <span class="preprocessor">#endif  // ifndef NVBLASTEXTAUTHORINGTRIANGULATOR_H</span>
+<a name="l00065"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#fb79de514677eec79c20e4d296736f0e">00065</a>     std::vector&lt;Triangle&gt;&amp;          <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#fb79de514677eec79c20e4d296736f0e">getBaseMeshNotFitted</a>()
+<a name="l00066"></a>00066     {
+<a name="l00067"></a>00067         <span class="keywordflow">return</span> mBaseMeshResultTriangles;
+<a name="l00068"></a>00068     }
+<a name="l00069"></a>00069 
+<a name="l00070"></a>00070 
+<a name="l00074"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#fa48ddb045fffaded4b1ad09302a34c7">00074</a>     std::vector&lt;TriangleIndexed&gt;&amp;   <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#fa48ddb045fffaded4b1ad09302a34c7">getBaseMeshIndexed</a>()
+<a name="l00075"></a>00075     {
+<a name="l00076"></a>00076         <span class="keywordflow">return</span> mBaseMeshTriangles;
+<a name="l00077"></a>00077     }
+<a name="l00081"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#2138ec663adee80577dae6cc275b7ece">00081</a>     std::vector&lt;uint32_t&gt;&amp;          <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#2138ec663adee80577dae6cc275b7ece">getBaseMapping</a>()
+<a name="l00082"></a>00082     {
+<a name="l00083"></a>00083         <span class="keywordflow">return</span> mBaseMapping;
+<a name="l00084"></a>00084     };
+<a name="l00088"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#7de0951574f73e310626823228c0f005">00088</a>     std::vector&lt;int32_t&gt;&amp;           <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#7de0951574f73e310626823228c0f005">getPositionedMapping</a>()
+<a name="l00089"></a>00089     {
+<a name="l00090"></a>00090         <span class="keywordflow">return</span> mPositionMappedVrt;
+<a name="l00091"></a>00091     };
+<a name="l00095"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#d99ae2011c5aee476fffd79ff9ac4672">00095</a>     uint32_t                        <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#d99ae2011c5aee476fffd79ff9ac4672">getWeldedVerticesCount</a>()
+<a name="l00096"></a>00096     {
+<a name="l00097"></a>00097         <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(mVertices.size());
+<a name="l00098"></a>00098     }   
+<a name="l00099"></a>00099 
+<a name="l00103"></a>00103     <span class="keywordtype">void</span>                            <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#a76275caaab7c2212cca640722d91ca6">reset</a>();
+<a name="l00104"></a>00104 
+<a name="l00105"></a><a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#109f341cad221c76f8eecbdd641b566e">00105</a>     int32_t&amp;                        <a class="code" href="class_nv_1_1_blast_1_1_triangulator.html#109f341cad221c76f8eecbdd641b566e">getParentChunkId</a>() { <span class="keywordflow">return</span> parentChunkId; };
+<a name="l00106"></a>00106 
+<a name="l00107"></a>00107 <span class="keyword">private</span>:
+<a name="l00108"></a>00108 
+<a name="l00109"></a>00109     int32_t                         parentChunkId;
+<a name="l00110"></a>00110 
+<a name="l00111"></a>00111     int32_t                         addVerticeIfNotExist(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; p);
+<a name="l00112"></a>00112     <span class="keywordtype">void</span>                            addEdgeIfValid(<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">EdgeWithParent</a>&amp; ed);
+<a name="l00113"></a>00113     
+<a name="l00114"></a>00114     <span class="comment">/* Data used before triangulation to build polygon loops*/</span>
+<a name="l00115"></a>00115 
+<a name="l00116"></a>00116     std::vector&lt;Vertex&gt;                                 mVertices;
+<a name="l00117"></a>00117     std::vector&lt;EdgeWithParent&gt;                         mBaseMeshEdges;
+<a name="l00118"></a>00118     std::map&lt;Vertex, int32_t, VrtComp&gt;                  mVertMap;
+<a name="l00119"></a>00119     std::map&lt;EdgeWithParent, int32_t, EdgeComparator&gt;   mEdgeMap;
+<a name="l00120"></a>00120     std::vector&lt;uint32_t&gt;                               mBaseMapping;
+<a name="l00121"></a>00121     std::vector&lt;int32_t&gt;                                mPositionMappedVrt;
+<a name="l00122"></a>00122     <span class="comment">/* ------------------------------------------------------------ */</span>
+<a name="l00123"></a>00123 
+<a name="l00124"></a>00124 
+<a name="l00128"></a>00128     <span class="keywordtype">void</span>                            prepare(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
+<a name="l00129"></a>00129 
+<a name="l00130"></a>00130         
+<a name="l00131"></a>00131             
+<a name="l00132"></a>00132     <span class="keywordtype">void</span>                            triangulatePolygonWithEarClipping(std::vector&lt;uint32_t&gt;&amp; inputPolygon, <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* vert, <a class="code" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> dir);
+<a name="l00133"></a>00133     <span class="keywordtype">void</span>                            buildPolygonAndTriangulate(std::vector&lt;Edge&gt;&amp; edges, <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* vertices, int32_t userData, int32_t materialId, int32_t smoothingGroup);
+<a name="l00134"></a>00134     <span class="keywordtype">void</span>                            computePositionedMapping();
+<a name="l00135"></a>00135     
+<a name="l00136"></a>00136     std::vector&lt;TriangleIndexed&gt;                        mBaseMeshTriangles; 
+<a name="l00140"></a>00140     std::vector&lt;Triangle&gt;                               mBaseMeshResultTriangles;
+<a name="l00141"></a>00141     std::vector&lt;Triangle&gt;                               mBaseMeshUVFittedTriangles;
+<a name="l00142"></a>00142 };
+<a name="l00143"></a>00143 
+<a name="l00144"></a>00144 } <span class="comment">// namespace Blast</span>
+<a name="l00145"></a>00145 } <span class="comment">// namespace Nv</span>
+<a name="l00146"></a>00146 
+<a name="l00147"></a>00147 
+<a name="l00148"></a>00148 <span class="preprocessor">#endif  // ifndef NVBLASTEXTAUTHORINGTRIANGULATOR_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

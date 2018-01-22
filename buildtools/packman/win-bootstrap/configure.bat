@@ -1,4 +1,4 @@
-@set PM_PACKMAN_VERSION=4.0-rc3
+@set PM_PACKMAN_VERSION=4.0.1
 
 :: Specify where config file could exist
 @set PM_CONFIG_PATH=%~dp0..\packman_config.txt
@@ -45,7 +45,7 @@
 @set PM_PYTHON_PACKAGE=python@2.7.6-windows-x86.exe
 @for /f "delims=" %%a in ('powershell -ExecutionPolicy ByPass -NoLogo -NoProfile -File "%~dp0\generate_temp_file_name.ps1"') do @set TEMP_FILE_NAME=%%a
 @set TARGET=%TEMP_FILE_NAME%.exe
-@call "%~dp0fetch_file.cmd" s3 %PM_PYTHON_PACKAGE% UNUSED_BOGUS_GUID %TARGET%
+@call "%~dp0fetch_file_from_s3.cmd" %PM_PYTHON_PACKAGE% %TARGET%
 @if errorlevel 1 goto ERROR
 
 @echo Unpacking ...
@@ -69,7 +69,7 @@
 @set PM_MODULE_PACKAGE=packman@%PM_PACKMAN_VERSION%-common.zip
 @for /f "delims=" %%a in ('powershell -ExecutionPolicy ByPass -NoLogo -NoProfile -File "%~dp0\generate_temp_file_name.ps1"') do @set TEMP_FILE_NAME=%%a
 @set TARGET=%TEMP_FILE_NAME%
-@call "%~dp0fetch_file.cmd" s3 %PM_MODULE_PACKAGE% UNUSED_BOGUS_GUID %TARGET%
+@call "%~dp0fetch_file_from_s3.cmd" %PM_MODULE_PACKAGE% %TARGET%
 @if errorlevel 1 goto ERROR
 
 @echo Unpacking ...

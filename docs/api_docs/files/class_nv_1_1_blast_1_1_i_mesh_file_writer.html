@@ -37,6 +37,8 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html#b2505850e86c4e21134992138322bf0c">saveToFile</a> (const char *assetName, const char *outputPath)=0</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html#18469d1d4da25447686b3b38010f930a">setInteriorIndex</a> (int32_t index)=0</td></tr>
+
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 An interface for <a class="el" href="namespace_nv_1_1_blast.html">Blast</a> mesh file writer <hr><h2>Member Function Documentation</h2>
@@ -156,6 +158,26 @@ Delete this object
 
 <p>
 Save scene to file. 
+</div>
+</div><p>
+<a class="anchor" name="18469d1d4da25447686b3b38010f930a"></a><!-- doxytag: member="Nv::Blast::IMeshFileWriter::setInteriorIndex" ref="18469d1d4da25447686b3b38010f930a" args="(int32_t index)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::IMeshFileWriter::setInteriorIndex           </td>
+          <td>(</td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>index</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set material index for interior surface. By default new material will be created; 
 </div>
 </div><p>
 <hr>The documentation for this class was generated from the following file:<ul>

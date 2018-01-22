@@ -31,9 +31,17 @@
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#04bb5dd940274a9c8b097cc9f06d0708">createChunkMesh</a> (int32_t chunkId)=0</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#36b1f5a608fb87c0da383e32e7f09bf1">cut</a> (uint32_t chunkId, const physx::PxVec3 &amp;normal, const physx::PxVec3 &amp;position, const <a class="el" href="struct_nv_1_1_blast_1_1_noise_configuration.html">NoiseConfiguration</a> &amp;noise, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#247f0e36c015237002dc87675562289b">cutout</a> (uint32_t chunkId, <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a> conf, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd)=0</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#eaa46bf5fe4fe7035ac624f49ade64a8">deleteAllChildrenOfChunk</a> (int32_t chunkId)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#8830959a8f7e4babc1983ea31c61ef5d">finalizeFracturing</a> ()=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#a9a87637d6d190d71678f0fb9a100bfd">fitAllUvToRect</a> (float side)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#db1c311cbb3d84c7bfbfd12abe01af0b">fitUvToRect</a> (float side, uint32_t chunkId)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#ea8f1d386c70af0ea67bed2c353e57a1">getBaseMesh</a> (int32_t chunkIndex, <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *&amp;output)=0</td></tr>
 
@@ -75,9 +83,11 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c14c1ff1d50756694be24c34476af965">setSourceMesh</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *mesh)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c61aa65dde3c085450e8256a838a487f">slicing</a> (uint32_t chunkId, <a class="el" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a> conf, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#45e8a5d3b6d98da1b44b6888a5054cce">slicing</a> (uint32_t chunkId, const <a class="el" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a> &amp;conf, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#bc9766f9ef9efc4fd5f36813f28cc705">uniteChunks</a> (uint32_t maxAtLevel, uint32_t maxGroupSize)=0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#384be45a1310ee0652d315127e62da22">updateBaseMesh</a> (int32_t chunkIndex, <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *output)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#4f3ef816a0f201da675be379691193d1">voronoiFracturing</a> (uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, const physx::PxVec3 &amp;scale, const physx::PxQuat &amp;rotation, bool replaceChunk)=0</td></tr>
 
@@ -128,6 +138,120 @@
 Get chunk mesh in polygonal representation. User's code should release it after usage. 
 </div>
 </div><p>
+<a class="anchor" name="36b1f5a608fb87c0da383e32e7f09bf1"></a><!-- doxytag: member="Nv::Blast::FractureTool::cut" ref="36b1f5a608fb87c0da383e32e7f09bf1" args="(uint32_t chunkId, const physx::PxVec3 &amp;normal, const physx::PxVec3 &amp;position, const NoiseConfiguration &amp;noise, bool replaceChunk, RandomGeneratorBase *rnd)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int32_t Nv::Blast::FractureTool::cut           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
+          <td class="paramname"> <em>normal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
+          <td class="paramname"> <em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_noise_configuration.html">NoiseConfiguration</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>noise</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>replaceChunk</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *&nbsp;</td>
+          <td class="paramname"> <em>rnd</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Cut chunk with plane. <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkId</em>&nbsp;</td><td>Chunk to fracture </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>normal</em>&nbsp;</td><td>Plane normal </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>position</em>&nbsp;</td><td>Point on plane </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>noise</em>&nbsp;</td><td>Noise configuration for plane-chunk intersection, see <a class="el" href="struct_nv_1_1_blast_1_1_noise_configuration.html">NoiseConfiguration</a>. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>replaceChunk</em>&nbsp;</td><td>if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them. Case replaceChunk == true &amp;&amp; chunkId == 0 considered as wrong input parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>rnd</em>&nbsp;</td><td>User supplied random number generator</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>If 0, fracturing is successful. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="247f0e36c015237002dc87675562289b"></a><!-- doxytag: member="Nv::Blast::FractureTool::cutout" ref="247f0e36c015237002dc87675562289b" args="(uint32_t chunkId, CutoutConfiguration conf, bool replaceChunk, RandomGeneratorBase *rnd)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int32_t Nv::Blast::FractureTool::cutout           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a>&nbsp;</td>
+          <td class="paramname"> <em>conf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>replaceChunk</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *&nbsp;</td>
+          <td class="paramname"> <em>rnd</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Cutout fracture for specified chunk. <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkId</em>&nbsp;</td><td>Chunk to fracture </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>conf</em>&nbsp;</td><td>Cutout parameters, see <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a>. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>replaceChunk</em>&nbsp;</td><td>if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them. Case replaceChunk == true &amp;&amp; chunkId == 0 considered as wrong input parameters </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>rnd</em>&nbsp;</td><td>User supplied random number generator</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>If 0, fracturing is successful. </dd></dl>
+
+</div>
+</div><p>
 <a class="anchor" name="eaa46bf5fe4fe7035ac624f49ade64a8"></a><!-- doxytag: member="Nv::Blast::FractureTool::deleteAllChildrenOfChunk" ref="eaa46bf5fe4fe7035ac624f49ade64a8" args="(int32_t chunkId)=0" -->
 <div class="memitem">
 <div class="memproto">
@@ -171,6 +295,66 @@ Delete all children for specified chunk (also recursively delete chidren of chil
 
 <p>
 Creates resulting fractured mesh geometry from intermediate format 
+</div>
+</div><p>
+<a class="anchor" name="a9a87637d6d190d71678f0fb9a100bfd"></a><!-- doxytag: member="Nv::Blast::FractureTool::fitAllUvToRect" ref="a9a87637d6d190d71678f0fb9a100bfd" args="(float side)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::FractureTool::fitAllUvToRect           </td>
+          <td>(</td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>side</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Rescale interior uv coordinates of all existing chunks to fit square of given size, relative sizes will be preserved. <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>side</em>&nbsp;</td><td>Size of square side </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="db1c311cbb3d84c7bfbfd12abe01af0b"></a><!-- doxytag: member="Nv::Blast::FractureTool::fitUvToRect" ref="db1c311cbb3d84c7bfbfd12abe01af0b" args="(float side, uint32_t chunkId)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::FractureTool::fitUvToRect           </td>
+          <td>(</td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>side</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkId</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Rescale interior uv coordinates of given chunk to fit square of given size. <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>side</em>&nbsp;</td><td>Size of square side </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkId</em>&nbsp;</td><td>Chunk ID for which UVs should be scaled. </td></tr>
+  </table>
+</dl>
+
 </div>
 </div><p>
 <a class="anchor" name="ea8f1d386c70af0ea67bed2c353e57a1"></a><!-- doxytag: member="Nv::Blast::FractureTool::getBaseMesh" ref="ea8f1d386c70af0ea67bed2c353e57a1" args="(int32_t chunkIndex, Triangle *&amp;output)=0" -->
@@ -268,7 +452,7 @@ Get result geometry without noise as vertex and index buffers, where index buffe
 <div class="memdoc">
 
 <p>
-
+Returns overall number of chunks in fracture. 
 </div>
 </div><p>
 <a class="anchor" name="c99cb91a13255929a52d9a2623ac207b"></a><!-- doxytag: member="Nv::Blast::FractureTool::getChunkDepth" ref="c99cb91a13255929a52d9a2623ac207b" args="(int32_t chunkId)=0" -->
@@ -697,7 +881,7 @@ Set automatic islands removing. May cause instabilities. <dl compact><dt><b>Para
 Set input mesh which will be fractured, <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> will be reseted. 
 </div>
 </div><p>
-<a class="anchor" name="c61aa65dde3c085450e8256a838a487f"></a><!-- doxytag: member="Nv::Blast::FractureTool::slicing" ref="c61aa65dde3c085450e8256a838a487f" args="(uint32_t chunkId, SlicingConfiguration conf, bool replaceChunk, RandomGeneratorBase *rnd)=0" -->
+<a class="anchor" name="45e8a5d3b6d98da1b44b6888a5054cce"></a><!-- doxytag: member="Nv::Blast::FractureTool::slicing" ref="45e8a5d3b6d98da1b44b6888a5054cce" args="(uint32_t chunkId, const SlicingConfiguration &amp;conf, bool replaceChunk, RandomGeneratorBase *rnd)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -710,7 +894,7 @@ Set input mesh which will be fractured, <a class="el" href="class_nv_1_1_blast_1
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a>&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>conf</em>, </td>
         </tr>
         <tr>
@@ -773,6 +957,49 @@ Fractures specified chunk with slicing method. <dl compact><dt><b>Parameters:</b
 <div class="memdoc">
 
 <p>
+Optimize chunk hierarhy for better runtime performance. It tries to unite chunks to groups of some size in order to transform flat hierarchy (all chunks are children of single root) to tree like hieracrhy with limited number of children for each chunk. <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>maxAtLevel</em>&nbsp;</td><td>If number of children of some chunk less then maxAtLevel then it would be considered as already optimized and skipped. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>maxGroupSize</em>&nbsp;</td><td>Max number of children for processed chunks. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="384be45a1310ee0652d315127e62da22"></a><!-- doxytag: member="Nv::Blast::FractureTool::updateBaseMesh" ref="384be45a1310ee0652d315127e62da22" args="(int32_t chunkIndex, Triangle *output)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual uint32_t Nv::Blast::FractureTool::updateBaseMesh           </td>
+          <td>(</td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *&nbsp;</td>
+          <td class="paramname"> <em>output</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Update chunk base mesh <dl class="note" compact><dt><b>Note:</b></dt><dd>Doesn't allocates output array, Triangle* output should be preallocated by user </dd></dl>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIndex</em>&nbsp;</td><td>Chunk index </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>output</em>&nbsp;</td><td>Array of triangles to be filled </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>number of triangles in base mesh </dd></dl>
 
 </div>
 </div><p>

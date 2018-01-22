@@ -4,7 +4,7 @@ import sys
 
 def get_packman_module_dir():
     root_dir = os.environ['PM_PACKAGES_ROOT']
-    common_dir = '4.0-rc3-common'
+    common_dir = '4.0.1-common'
     module_dir = os.path.join(root_dir, 'packman', common_dir)
     return module_dir
 

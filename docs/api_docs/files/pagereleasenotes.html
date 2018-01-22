@@ -24,6 +24,41 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Blast(tm) SDK 1.1.2 (16-Jan-2018)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Changes
+-------
+* Improvements to uniteChunks for hierarchy optimization.
+* NvBlastExtAuthoringFindAssetConnectingBonds optimized.
+
+New Features
+------------
+* FractureTool::setChunkMesh method.
+* Distance threshold added to NvBlastExtAuthoringFindAssetConnectingBonds.
+* NvBlastExtExporter: IMeshFileWriter::setInteriorIndex function, for control of interior material.
+* Cutout and cut fracture methods: NvBlastExtAuthoringCreateCutoutSet and Nv::Blast::CutoutSet API, FractureTool::cut and FractureTool::cutout APIs.
+* NvBlastExtAuthoring:
+** NvBlastExtAuthoringCreateMeshFromFacets function.
+** NvBlastExtUpdateGraphicsMesh function.
+* UV fitting on interior materials using new FractureTool::fitUvToRect and FractureTool::fitAllUvToRect functions.
+* Multi-material support in OBJ file format.
+
+Bug fixes
+---------
+* Fixed bug causing normals on every other depth level to be flipped when exporting Blast meshes.
+* Fixed bug where faces are missed after hierarchy optimization on a sliced mesh.
+* Fixed subtree chunk count generated in Nv::Blast::Asset::Create (led to a crash in authoring tools, fracturing a pre-fractured mesh).
+* Fixed a crash when loading an obj with bad material indices.
+* Fixed Actor::split so that visibility lists are correctly updated even when the number of split actors exceeds newActorsMaxCount.
+
+Known Issues
+------------
+* Damage shaders in extensions can miss bonds if the damage volume is too small.
+* Authoring code does not use the user-defined allocator (NvBlastGlobals) exclusively.
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Blast(tm) SDK 1.1.1 (10-Oct-2017)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

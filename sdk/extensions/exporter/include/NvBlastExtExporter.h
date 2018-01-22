@@ -46,6 +46,12 @@ namespace Blast
 struct AuthoringResult;
 struct CollisionHull;
 
+struct Materials
+{
+	const char* name;
+	const char* diffuse_tex;
+};
+
 struct ExporterMeshData
 {
 	NvBlastAsset* asset; //Blast asset
@@ -66,7 +72,7 @@ struct ExporterMeshData
 
 	uint32_t submeshCount; //Number of submeshes
 
-	const char** submeshNames; //Equal to material names
+	Materials* submeshMats; 
 
 
 	/**
@@ -227,6 +233,11 @@ public:
 	Save scene to file.
 	*/
 	virtual bool saveToFile(const char* assetName, const char* outputPath) = 0;
+
+	/**
+		Set material index for interior surface. By default new material will be created;
+	*/
+	virtual void setInteriorIndex(int32_t index) = 0;
 };
 
 }

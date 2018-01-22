@@ -69,13 +69,13 @@ public:
 		BondGenerationConfig conf = BondGenerationConfig()) override;
 
 	virtual int32_t	bondsFromPrefractured(uint32_t meshCount, const uint32_t* convexHullOffset, const CollisionHull** chunkHulls,
-		const bool* chunkIsSupport, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs) override;
+		const bool* chunkIsSupport, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, float maxSeparation) override;
 				
 private:
 	float	processWithMidplanes(	TriangleProcessor* trProcessor, 
 									const std::vector<physx::PxVec3>& chunk1Points, const std::vector<physx::PxVec3>& chunk2Points, 
 									const std::vector<physx::PxVec3>& hull1p, const std::vector<physx::PxVec3>& hull2p, 
-									physx::PxVec3& normal, physx::PxVec3& centroid);
+									physx::PxVec3& normal, physx::PxVec3& centroid, float maxSeparation);
 
 	int32_t	createFullBondListAveraged(	uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry, const CollisionHull** chunkHulls,
 										const bool* supportFlags, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf);

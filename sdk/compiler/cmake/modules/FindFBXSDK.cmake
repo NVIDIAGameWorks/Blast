@@ -10,7 +10,9 @@ include(FindPackageHandleStandardArgs)
 
 # TODO: Do the version stuff properly!
 find_path(FBXSDK_PATH include/fbxsdk.h
-	PATHS ${GW_DEPS_ROOT}/FBXSDK/${FBXSDK_FIND_VERSION}
+	PATHS 
+	$ENV{PM_FBXSDK_PATH}
+	${GW_DEPS_ROOT}/FBXSDK/${FBXSDK_FIND_VERSION}
 )
 
 if (STATIC_WINCRT)

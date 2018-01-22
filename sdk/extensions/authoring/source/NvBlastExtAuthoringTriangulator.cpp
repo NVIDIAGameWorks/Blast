@@ -47,20 +47,21 @@
 using physx::PxVec3;
 using physx::PxVec2;
 
-#define TWO_VERTICES_THRESHOLD 1e-7
-
 namespace Nv
 {
 namespace Blast
 {
-
+NV_FORCE_INLINE bool compareTwoFloats(float a, float b)
+{
+	return std::abs(b - a) <= FLT_EPSILON * std::abs(b + a);
+}
 NV_FORCE_INLINE bool compareTwoVertices(const PxVec3& a, const PxVec3& b)
 {
-	return std::abs(b.x - a.x) < TWO_VERTICES_THRESHOLD && std::abs(b.y - a.y) < TWO_VERTICES_THRESHOLD && std::abs(b.z - a.z) < TWO_VERTICES_THRESHOLD;
+	return compareTwoFloats(a.x, b.x) && compareTwoFloats(a.y, b.y) && compareTwoFloats(a.z, b.z);
 }
 NV_FORCE_INLINE bool compareTwoVertices(const PxVec2& a, const PxVec2& b)
 {
-	return std::abs(b.x - a.x) < TWO_VERTICES_THRESHOLD && std::abs(b.y - a.y) < TWO_VERTICES_THRESHOLD;
+	return compareTwoFloats(a.x, b.x) && compareTwoFloats(a.y, b.y);
 }
 
 NV_FORCE_INLINE float getRotation(const PxVec2& a, const PxVec2& b)
@@ -68,7 +69,7 @@ NV_FORCE_INLINE float getRotation(const PxVec2& a, const PxVec2& b)
 	return a.x * b.y - a.y * b.x;
 }
 
-inline bool pointInside(PxVec2 a, PxVec2 b, PxVec2 c, PxVec2 pnt)
+NV_FORCE_INLINE bool pointInside(PxVec2 a, PxVec2 b, PxVec2 c, PxVec2 pnt)
 {
 	if (compareTwoVertices(a, pnt) || compareTwoVertices(b, pnt) || compareTwoVertices(c, pnt))
 	{
@@ -471,7 +472,10 @@ NV_FORCE_INLINE void Triangulator::addEdgeIfValid(EdgeWithParent& ed)
 			mBaseMeshEdges[it->second].s = ed.s;
 			mBaseMeshEdges[it->second].e = ed.e;
 		}
-		mBaseMeshEdges[it->second].s = NOT_VALID_VERTEX;
+		else
+		{
+			mBaseMeshEdges[it->second].s = NOT_VALID_VERTEX;
+		}
 	}
 }
 
@@ -504,7 +508,7 @@ void Triangulator::prepare(const Mesh* mesh)
 			temp.push_back(mBaseMeshEdges[i]);
 		}
 	}
-
+	mBaseMeshEdges = temp;
 }
 
 void Triangulator::reset()
@@ -560,6 +564,7 @@ void Triangulator::triangulate(const Mesh* mesh)
 		mBaseMeshResultTriangles.back().smoothingGroup = mBaseMeshTriangles[i].smoothingGroup;
 
 	}
+	mBaseMeshUVFittedTriangles = mBaseMeshResultTriangles; // Uvs will be fitted later, in FractureTool.
 	computePositionedMapping();
 }
 

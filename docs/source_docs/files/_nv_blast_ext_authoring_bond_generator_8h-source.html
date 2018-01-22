@@ -90,53 +90,54 @@
 <a name="l00052"></a>00052 <span class="keyword">class </span>TriangleProcessor;
 <a name="l00053"></a>00053 <span class="keyword">struct </span>PlaneChunkIndexer;
 <a name="l00054"></a>00054 
-<a name="l00060"></a><a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">00060</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>
-<a name="l00061"></a>00061 {
-<a name="l00062"></a><a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#039dca7ff2ee57fcf96ce5aad570cf67494d2f564cd543f0cc61762451a6c745">00062</a>     <span class="keyword">enum</span> <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#039dca7ff2ee57fcf96ce5aad570cf67">BondGenMode</a> { <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#039dca7ff2ee57fcf96ce5aad570cf67494d2f564cd543f0cc61762451a6c745">EXACT</a>, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#039dca7ff2ee57fcf96ce5aad570cf67f8d9fd52be0dd6e99bde1fffd8975258">AVERAGE</a> };
-<a name="l00063"></a><a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#592968d7782ca9c3b9652268afac78de">00063</a>     <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#039dca7ff2ee57fcf96ce5aad570cf67">BondGenMode</a> <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#592968d7782ca9c3b9652268afac78de">bondMode</a>;
-<a name="l00064"></a>00064 };
-<a name="l00065"></a>00065 
-<a name="l00066"></a>00066 
-<a name="l00067"></a><a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html">00067</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html">PlaneChunkIndexer</a>
-<a name="l00068"></a>00068 {
-<a name="l00069"></a><a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#dce6708f168dcfeae9fc050aebe8a604">00069</a>     <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#dce6708f168dcfeae9fc050aebe8a604">PlaneChunkIndexer</a>(int32_t <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#8e162e0f4064a7371039968158c86d2f">chunkId</a>, int32_t <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#80203dd762ab3448bf15ebb38035b0c6">trId</a>, physx::PxPlane pl) : chunkId(chunkId), trId(trId), <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#912cc41daee00b48598c1fc62092440c">plane</a>(pl) {}
-<a name="l00070"></a><a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#8e162e0f4064a7371039968158c86d2f">00070</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#8e162e0f4064a7371039968158c86d2f">chunkId</a>;
-<a name="l00071"></a><a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#80203dd762ab3448bf15ebb38035b0c6">00071</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#80203dd762ab3448bf15ebb38035b0c6">trId</a>;
-<a name="l00072"></a><a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#912cc41daee00b48598c1fc62092440c">00072</a>     physx::PxPlane <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#912cc41daee00b48598c1fc62092440c">plane</a>;
-<a name="l00073"></a>00073 };
-<a name="l00074"></a>00074 
-<a name="l00075"></a>00075 
-<a name="l00080"></a><a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">00080</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">BlastBondGenerator</a>
-<a name="l00081"></a>00081 {
-<a name="l00082"></a>00082 <span class="keyword">public</span>:
-<a name="l00083"></a><a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#922132c5bfe713b12cf061147106e00f">00083</a>     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#922132c5bfe713b12cf061147106e00f">~BlastBondGenerator</a>() {}
-<a name="l00084"></a>00084 
-<a name="l00088"></a>00088     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#f9a062b2696ecd7764eb5e196b959f64">release</a>() = 0;
-<a name="l00089"></a>00089 
-<a name="l00099"></a>00099     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#fbf304132c5600fbe6b4f423ac2e2452">buildDescFromInternalFracture</a>(<a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a>* tool, <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport, 
-<a name="l00100"></a>00100         <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs, <a class="code" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a>*&amp; resultChunkDescriptors) = 0;
-<a name="l00101"></a>00101 
-<a name="l00102"></a>00102 
-<a name="l00113"></a>00113     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#0a562f5a63aba0efbc7df017e77d5c8e">createBondBetweenMeshes</a>(uint32_t meshACount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* meshA, uint32_t meshBCount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* meshB, 
-<a name="l00114"></a>00114         <a class="code" href="struct_nv_blast_bond.html">NvBlastBond</a>&amp; resultBond, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf = <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>()) = 0;
-<a name="l00115"></a>00115 
-<a name="l00130"></a>00130     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#0a562f5a63aba0efbc7df017e77d5c8e">createBondBetweenMeshes</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
-<a name="l00131"></a>00131         uint32_t overlapsCount, <span class="keyword">const</span> uint32_t* overlapsA, <span class="keyword">const</span> uint32_t* overlapsB, 
-<a name="l00132"></a>00132         <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBond, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> cfg) = 0;
-<a name="l00133"></a>00133 
-<a name="l00134"></a>00134 
-<a name="l00148"></a>00148     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#b46d8ec3bbe7968279efe6258550acd1">bondsFromPrefractured</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
-<a name="l00149"></a>00149         <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs,
-<a name="l00150"></a>00150         <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf = <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>()) = 0;
-<a name="l00151"></a>00151     
-<a name="l00166"></a>00166     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#b46d8ec3bbe7968279efe6258550acd1">bondsFromPrefractured</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* convexHullOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** chunkHulls,
-<a name="l00167"></a>00167         <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport, <span class="keyword">const</span> uint32_t* meshGroups, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs) = 0;
-<a name="l00168"></a>00168 };
-<a name="l00169"></a>00169 
-<a name="l00170"></a>00170 }   <span class="comment">// namespace Blast</span>
-<a name="l00171"></a>00171 }   <span class="comment">// namespace Nv</span>
-<a name="l00172"></a>00172 
-<a name="l00173"></a>00173 <span class="preprocessor">#endif // NVBLASTEXTAUTHORINGBONDGENERATOR_H</span>
+<a name="l00061"></a><a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">00061</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>
+<a name="l00062"></a>00062 {
+<a name="l00063"></a><a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#039dca7ff2ee57fcf96ce5aad570cf67494d2f564cd543f0cc61762451a6c745">00063</a>     <span class="keyword">enum</span> <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#039dca7ff2ee57fcf96ce5aad570cf67">BondGenMode</a> { <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#039dca7ff2ee57fcf96ce5aad570cf67494d2f564cd543f0cc61762451a6c745">EXACT</a>, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#039dca7ff2ee57fcf96ce5aad570cf67f8d9fd52be0dd6e99bde1fffd8975258">AVERAGE</a> };
+<a name="l00064"></a><a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#eda86ef2c94ee551fbbfa123564e3418">00064</a>     <span class="keywordtype">float</span> <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#eda86ef2c94ee551fbbfa123564e3418">maxSeparation</a>;
+<a name="l00065"></a><a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#592968d7782ca9c3b9652268afac78de">00065</a>     <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#039dca7ff2ee57fcf96ce5aad570cf67">BondGenMode</a> <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#592968d7782ca9c3b9652268afac78de">bondMode</a>;
+<a name="l00066"></a>00066 };
+<a name="l00067"></a>00067 
+<a name="l00068"></a>00068 
+<a name="l00069"></a><a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html">00069</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html">PlaneChunkIndexer</a>
+<a name="l00070"></a>00070 {
+<a name="l00071"></a><a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#dce6708f168dcfeae9fc050aebe8a604">00071</a>     <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#dce6708f168dcfeae9fc050aebe8a604">PlaneChunkIndexer</a>(int32_t <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#8e162e0f4064a7371039968158c86d2f">chunkId</a>, int32_t <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#80203dd762ab3448bf15ebb38035b0c6">trId</a>, physx::PxPlane pl) : chunkId(chunkId), trId(trId), <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#912cc41daee00b48598c1fc62092440c">plane</a>(pl) {}
+<a name="l00072"></a><a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#8e162e0f4064a7371039968158c86d2f">00072</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#8e162e0f4064a7371039968158c86d2f">chunkId</a>;
+<a name="l00073"></a><a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#80203dd762ab3448bf15ebb38035b0c6">00073</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#80203dd762ab3448bf15ebb38035b0c6">trId</a>;
+<a name="l00074"></a><a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#912cc41daee00b48598c1fc62092440c">00074</a>     physx::PxPlane <a class="code" href="struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#912cc41daee00b48598c1fc62092440c">plane</a>;
+<a name="l00075"></a>00075 };
+<a name="l00076"></a>00076 
+<a name="l00077"></a>00077 
+<a name="l00082"></a><a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">00082</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">BlastBondGenerator</a>
+<a name="l00083"></a>00083 {
+<a name="l00084"></a>00084 <span class="keyword">public</span>:
+<a name="l00085"></a><a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#922132c5bfe713b12cf061147106e00f">00085</a>     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#922132c5bfe713b12cf061147106e00f">~BlastBondGenerator</a>() {}
+<a name="l00086"></a>00086 
+<a name="l00090"></a>00090     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#f9a062b2696ecd7764eb5e196b959f64">release</a>() = 0;
+<a name="l00091"></a>00091 
+<a name="l00101"></a>00101     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#fbf304132c5600fbe6b4f423ac2e2452">buildDescFromInternalFracture</a>(<a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a>* tool, <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport, 
+<a name="l00102"></a>00102         <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs, <a class="code" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a>*&amp; resultChunkDescriptors) = 0;
+<a name="l00103"></a>00103 
+<a name="l00104"></a>00104 
+<a name="l00115"></a>00115     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#0a562f5a63aba0efbc7df017e77d5c8e">createBondBetweenMeshes</a>(uint32_t meshACount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* meshA, uint32_t meshBCount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* meshB, 
+<a name="l00116"></a>00116         <a class="code" href="struct_nv_blast_bond.html">NvBlastBond</a>&amp; resultBond, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf = <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>()) = 0;
+<a name="l00117"></a>00117 
+<a name="l00132"></a>00132     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#0a562f5a63aba0efbc7df017e77d5c8e">createBondBetweenMeshes</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
+<a name="l00133"></a>00133         uint32_t overlapsCount, <span class="keyword">const</span> uint32_t* overlapsA, <span class="keyword">const</span> uint32_t* overlapsB, 
+<a name="l00134"></a>00134         <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBond, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> cfg) = 0;
+<a name="l00135"></a>00135 
+<a name="l00136"></a>00136 
+<a name="l00150"></a>00150     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#b46d8ec3bbe7968279efe6258550acd1">bondsFromPrefractured</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
+<a name="l00151"></a>00151         <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs,
+<a name="l00152"></a>00152         <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf = <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>()) = 0;
+<a name="l00153"></a>00153     
+<a name="l00168"></a>00168     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#b46d8ec3bbe7968279efe6258550acd1">bondsFromPrefractured</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* convexHullOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** chunkHulls,
+<a name="l00169"></a>00169         <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport, <span class="keyword">const</span> uint32_t* meshGroups, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs, <span class="keywordtype">float</span> maxSeparation) = 0;
+<a name="l00170"></a>00170 };
+<a name="l00171"></a>00171 
+<a name="l00172"></a>00172 }   <span class="comment">// namespace Blast</span>
+<a name="l00173"></a>00173 }   <span class="comment">// namespace Nv</span>
+<a name="l00174"></a>00174 
+<a name="l00175"></a>00175 <span class="preprocessor">#endif // NVBLASTEXTAUTHORINGBONDGENERATOR_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

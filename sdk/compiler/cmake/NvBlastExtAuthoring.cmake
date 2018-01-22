@@ -29,8 +29,9 @@ SET(PUBLIC_FILES
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringFractureTool.h
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringMesh.h
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringTypes.h
-	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoring.h     	
+	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoring.h
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringMeshCleaner.h
+	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringCutout.h
 )
 
 SET(EXT_AUTHORING_FILES
@@ -60,6 +61,8 @@ SET(EXT_AUTHORING_FILES
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoring.cpp
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringMeshCleanerImpl.h
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringMeshCleanerImpl.cpp
+	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringCutoutImpl.h
+	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringCutoutImpl.cpp
 )
 
 SET(VHACD_SOURCE_FILES

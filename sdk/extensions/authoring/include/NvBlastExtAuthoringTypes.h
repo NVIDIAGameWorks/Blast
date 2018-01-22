@@ -90,6 +90,14 @@ struct Triangle
 	{
 		return ((b.p - a.p).cross(c.p - a.p));
 	}
+	inline Vertex& getVertex(uint32_t index)
+	{
+		return (&a)[index];
+	}
+	inline const Vertex& getVertex(uint32_t index) const
+	{
+		return (&a)[index];
+	}
 };
 
 

@@ -56,10 +56,12 @@ struct PlaneChunkIndexer;
 	Bond interface generation configuration
 	EXACT - common surface will be searched
 	AVERAGE - Inerface is approximated by projections or intersecitons with midplane
+	maxSeparation - for AVERAGE mode. Maximum distance between chunks and midplane used in decision whether create bond or chunks are too far from each other.
 */
 struct BondGenerationConfig
 {
 	enum BondGenMode { EXACT, AVERAGE };
+	float maxSeparation;
 	BondGenMode bondMode;
 };
 
@@ -164,7 +166,7 @@ public:
 		\return						Number of created bonds
 	*/
 	virtual int32_t	bondsFromPrefractured(uint32_t meshCount, const uint32_t* convexHullOffset, const CollisionHull** chunkHulls,
-		const bool* chunkIsSupport, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs) = 0;
+		const bool* chunkIsSupport, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, float maxSeparation) = 0;
 };
 
 }	// namespace Blast

@@ -34,7 +34,7 @@
 #include <vector>
 #include <PxVec2.h>
 #include <PxVec3.h>
-
+#include <string>
 struct NvBlastAsset;
 
 namespace Nv
@@ -46,7 +46,7 @@ class ObjFileWriter : public IMeshFileWriter
 {
 public:
 
-	ObjFileWriter() {};
+	ObjFileWriter(): mIntSurfaceMatIndex(-1), interiorNameStr("INTERIOR_MATERIAL") {  };
 	~ObjFileWriter() = default;
 
 	virtual void release() override;
@@ -63,8 +63,15 @@ public:
 	*/
 	virtual bool saveToFile(const char* assetName, const char* outputPath) override;
 
+	/**
+		Set interior material index. Not supported in OBJ since AuthoringTool doesn't created OBJ with materials currently.
+	*/
+	virtual void setInteriorIndex(int32_t index) override;
+
 private:
 	std::shared_ptr<ExporterMeshData> mMeshData;
+	int32_t mIntSurfaceMatIndex;
+	std::string	interiorNameStr;
 };
 
 }

@@ -14,6 +14,7 @@
 #include "NvBlastExtAuthoringFractureToolImpl.h"
 #include "NvBlastExtAuthoringCollisionBuilderImpl.h"
 #include "NvBlastExtAuthoringBondGeneratorImpl.h"
+#include "NvBlastExtAuthoringCutoutImpl.h"
 #include "NvBlastTypes.h"
 #include "NvBlastIndexFns.h"
 #include "NvBlast.h"
@@ -35,6 +36,11 @@ Mesh* NvBlastExtAuthoringCreateMesh(const PxVec3* position, const PxVec3* normal
 	return new MeshImpl(position, normals, uv, verticesCount, indices, indicesCount);
 }
 
+Mesh* NvBlastExtAuthoringCreateMeshFromFacets(const void* vertices, const void* edges, const void* facets, uint32_t verticesCount, uint32_t edgesCount, uint32_t facetsCount)
+{
+	return new MeshImpl((Vertex*)vertices, (Edge*)edges, (Facet*)facets, verticesCount, edgesCount, facetsCount);
+}
+
 MeshCleaner* NvBlastExtAuthoringCreateMeshCleaner()
 {
 	return new MeshCleanerImpl;
@@ -43,6 +49,17 @@ MeshCleaner* NvBlastExtAuthoringCreateMeshCleaner()
 VoronoiSitesGenerator* NvBlastExtAuthoringCreateVoronoiSitesGenerator(Mesh* mesh, RandomGeneratorBase* rng)
 {
 	return new VoronoiSitesGeneratorImpl(mesh, rng);
+}
+
+CutoutSet* NvBlastExtAuthoringCreateCutoutSet()
+{
+	return new CutoutSetImpl();
+}
+
+void NvBlastExtAuthoringBuildCutoutSet(CutoutSet& cutoutSet, const uint8_t* pixelBuffer, uint32_t bufferWidth, uint32_t bufferHeight, 
+	float segmentationErrorThreshold, float snapThreshold, bool periodic, bool expandGaps)
+{
+	::createCutoutSet(*(CutoutSetImpl*)&cutoutSet, pixelBuffer, bufferWidth, bufferHeight, segmentationErrorThreshold, snapThreshold, periodic, expandGaps);
 }
 
 FractureTool* NvBlastExtAuthoringCreateFractureTool()
@@ -297,6 +314,8 @@ AuthoringResult* NvBlastExtAuthoringProcessFracture(FractureTool& fTool, BlastBo
 	{
 		uint32_t trianglesCount = aResult.geometryOffset[i + 1] - aResult.geometryOffset[i];
 		memcpy(aResult.geometry + aResult.geometryOffset[i], chunkGeometry[i], trianglesCount * sizeof(Nv::Blast::Triangle));
+		delete chunkGeometry[i];
+		chunkGeometry[i] = nullptr;
 	}
 
 	float maxX = INT32_MIN;
@@ -376,7 +395,8 @@ uint32_t NvBlastExtAuthoringFindAssetConnectingBonds
 	const uint32_t** convexHullOffsets,
 	const CollisionHull*** chunkHulls,
 	uint32_t componentCount,
-	NvBlastExtAssetUtilsBondDesc*& newBondDescs
+	NvBlastExtAssetUtilsBondDesc*& newBondDescs,
+	float maxSeparation
 )
 {
 	//We don't need to use any of the cooking related parts of this
@@ -441,7 +461,7 @@ uint32_t NvBlastExtAuthoringFindAssetConnectingBonds
 
 	//Find the bonds
 	NvBlastBondDesc* newBonds = nullptr;
-	const int32_t newBoundCount = bondGenerator.bondsFromPrefractured(totalChunkCount, combinedConvexHullOffsets.data(), combinedConvexHulls.data(), isSupportChunk.get(), originalComponentIndex.data(), newBonds);
+	const int32_t newBoundCount = bondGenerator.bondsFromPrefractured(totalChunkCount, combinedConvexHullOffsets.data(), combinedConvexHulls.data(), isSupportChunk.get(), originalComponentIndex.data(), newBonds, maxSeparation);
 
 	//Convert the bonds back to per-component chunks
 	newBondDescs = SAFE_ARRAY_NEW(NvBlastExtAssetUtilsBondDesc, newBoundCount);
@@ -465,4 +485,14 @@ uint32_t NvBlastExtAuthoringFindAssetConnectingBonds
 	}
 
 	return newBoundCount;
+}
+
+
+void NvBlastExtUpdateGraphicsMesh(Nv::Blast::FractureTool& fTool, Nv::Blast::AuthoringResult& aResult)
+{
+	uint32_t chunkCount = fTool.getChunkCount();
+	for (uint32_t i = 0; i < chunkCount; ++i)
+	{
+		fTool.updateBaseMesh(i, aResult.geometry + aResult.geometryOffset[i]);
+	}
 }

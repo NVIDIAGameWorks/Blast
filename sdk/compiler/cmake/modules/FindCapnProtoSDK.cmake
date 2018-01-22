@@ -9,7 +9,9 @@ include(FindPackageHandleStandardArgs)
 
 # TODO: Do the version stuff properly!
 find_path(CAPNPROTOSDK_PATH src/capnp/message.h
-	PATHS ${GW_DEPS_ROOT}/$ENV{PM_CapnProto_NAME}/${CapnProtoSDK_FIND_VERSION}
+	PATHS 
+	$ENV{PM_CapnProto_PATH}
+	${GW_DEPS_ROOT}/$ENV{PM_CapnProto_NAME}/${CapnProtoSDK_FIND_VERSION}
 )
 
 if (TARGET_BUILD_PLATFORM STREQUAL "Windows")

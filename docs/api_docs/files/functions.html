@@ -103,6 +103,8 @@ Here is a list of all class members with links to the classes they belong to:
 , <a class="el" href="class_nv_1_1_blast_1_1_allocator_callback.html#e0303f5b6c3993251bdf790f43ef4e90">Nv::Blast::AllocatorCallback</a>
 <li>Allocator()
 : <a class="el" href="class_nv_1_1_blast_1_1_allocator.html#27443f120df80394ff9800159b366eea">Nv::Blast::Allocator</a>
+<li>amplitude
+: <a class="el" href="struct_nv_1_1_blast_1_1_noise_configuration.html#882e9f74aadf9384b68ab6b92006247c">Nv::Blast::NoiseConfiguration</a>
 <li>angle_variations
 : <a class="el" href="struct_nv_1_1_blast_1_1_slicing_configuration.html#8bff4d55245144ddd63013e245c1a7cc">Nv::Blast::SlicingConfiguration</a>
 <li>ApexImporterConfig()
@@ -110,7 +112,7 @@ Here is a list of all class members with links to the classes they belong to:
 <li>ApexImportTool()
 : <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#9d630b32d1a0ae5fe3a044417cc64736">Nv::Blast::ApexImporter::ApexImportTool</a>
 <li>appendMesh()
-: <a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html#605c88816a8d81f4084c1bbf53b32dae">Nv::Blast::IMeshFileWriter</a>
+: <a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html#c14e455289f1642fa7515873e89e8ea6">Nv::Blast::IMeshFileWriter</a>
 <li>applyDamage()
 : <a class="el" href="class_nv_1_1_blast_1_1_ext_impact_damage_manager.html#613f6c52b8406b9cedb154498a29529b">Nv::Blast::ExtImpactDamageManager</a>
 <li>applyFracture()
@@ -121,18 +123,16 @@ Here is a list of all class members with links to the classes they belong to:
 <li>area
 : <a class="el" href="struct_nv_blast_bond.html#5dc5d104d61919d19968ce77b7db9bba">NvBlastBond</a>
 <li>Asset
-: <a class="el" href="struct_nv_1_1_blast_1_1_ll_object_type_i_d.html#e8bf597dc1e1e242817ae55ba0d632c4982a9d27b7909cf9d7e3ce490cbb5d4a">Nv::Blast::LlObjectTypeID</a>
-, <a class="el" href="struct_nv_1_1_blast_1_1_tk_object_type_i_d.html#74dfb65256e079e10e40afa11bd7937391e23bb0f555f807a27f1f1b37cf1a3d">Nv::Blast::TkObjectTypeID</a>
+: <a class="el" href="struct_nv_1_1_blast_1_1_tk_object_type_i_d.html#74dfb65256e079e10e40afa11bd7937391e23bb0f555f807a27f1f1b37cf1a3d">Nv::Blast::TkObjectTypeID</a>
+, <a class="el" href="struct_nv_1_1_blast_1_1_ll_object_type_i_d.html#e8bf597dc1e1e242817ae55ba0d632c4982a9d27b7909cf9d7e3ce490cbb5d4a">Nv::Blast::LlObjectTypeID</a>
+, <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_object_type_i_d.html#416ed61e2f3847ceaab50ddd9512417b3aa2dc54683584ca4747dbbe64eedfb1">Nv::Blast::ExtPxObjectTypeID</a>
 <li>asset
-: <a class="el" href="struct_nv_1_1_blast_1_1_tk_actor_desc.html#70c0d996c924c3c0656b17228413d19c">Nv::Blast::TkActorDesc</a>
-<li>Asset
-: <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_object_type_i_d.html#416ed61e2f3847ceaab50ddd9512417b3aa2dc54683584ca4747dbbe64eedfb1">Nv::Blast::ExtPxObjectTypeID</a>
-<li>asset
-: <a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#82eea5edda9545d420939ef6a79aea7b">Nv::Blast::AuthoringResult</a>
+: <a class="el" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#7f7c8fb6f3d9f53bf3deef296a620fe5">Nv::Blast::ExporterMeshData</a>
 <li>Asset
 : <a class="el" href="struct_nv_1_1_blast_1_1_tk_type_index.html#57681ffd26c84b5272b7e0c23103493a0785a75fbc075612bffb021a49526ba2">Nv::Blast::TkTypeIndex</a>
 <li>asset
-: <a class="el" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html#7f7c8fb6f3d9f53bf3deef296a620fe5">Nv::Blast::ExporterMeshData</a>
+: <a class="el" href="struct_nv_1_1_blast_1_1_tk_actor_desc.html#70c0d996c924c3c0656b17228413d19c">Nv::Blast::TkActorDesc</a>
+, <a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#82eea5edda9545d420939ef6a79aea7b">Nv::Blast::AuthoringResult</a>
 <li>assetBonds
 : <a class="el" href="struct_nv_blast_graph_shader_actor.html#ebb7e8d55ddf8cb2ef71326632952cfe">NvBlastGraphShaderActor</a>
 <li>assetChunks
@@ -145,9 +145,9 @@ Here is a list of all class members with links to the classes they belong to:
 <li>assetToFractureChunkIdMap
 : <a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#94609b5ad4dabb8c32f858c531b81ed4">Nv::Blast::AuthoringResult</a>
 <li>attachPositions
-: <a class="el" href="struct_nv_1_1_blast_1_1_tk_joint_data.html#cd1894619d5abd13a48e57833736ed3d">Nv::Blast::TkJointData</a>
+: <a class="el" href="struct_nv_1_1_blast_1_1_tk_joint_desc.html#34dab72bc3d33c4927c00f870f93ae37">Nv::Blast::TkJointDesc</a>
 , <a class="el" href="struct_nv_1_1_blast_1_1_tk_asset_joint_desc.html#89508d6669e2375c5896ae37bad6d09d">Nv::Blast::TkAssetJointDesc</a>
-, <a class="el" href="struct_nv_1_1_blast_1_1_tk_joint_desc.html#34dab72bc3d33c4927c00f870f93ae37">Nv::Blast::TkJointDesc</a>
+, <a class="el" href="struct_nv_1_1_blast_1_1_tk_joint_data.html#cd1894619d5abd13a48e57833736ed3d">Nv::Blast::TkJointData</a>
 <li>AVERAGE
 : <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html#039dca7ff2ee57fcf96ce5aad570cf67f8d9fd52be0dd6e99bde1fffd8975258">Nv::Blast::BondGenerationConfig</a>
 </ul>

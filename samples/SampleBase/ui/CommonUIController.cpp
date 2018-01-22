@@ -353,7 +353,7 @@ void CommonUIController::drawUI()
 				addParam(PxVisualizationParameter::eBODY_MASS_AXES, "Body Mass Axes");
 				addParam(PxVisualizationParameter::eBODY_LIN_VELOCITY, "Body Lin Velocity");
 				addParam(PxVisualizationParameter::eBODY_ANG_VELOCITY, "Body Ang Velocity");
-				addParam(PxVisualizationParameter::eBODY_JOINT_GROUPS, "Body Joint");
+				//addParam(PxVisualizationParameter::eBODY_JOINT_GROUPS, "Body Joint");
 				addParam(PxVisualizationParameter::eCONTACT_POINT, "Contact Point");
 				addParam(PxVisualizationParameter::eCONTACT_NORMAL, "Contact Normal");
 				addParam(PxVisualizationParameter::eCONTACT_ERROR, "Contact Error");

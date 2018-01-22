@@ -8,7 +8,9 @@ include(FindPackageHandleStandardArgs)
 
 # TODO: Do the version stuff properly!
 find_path(GOOGLETEST_PATH include/gtest/gtest.h
-	PATHS ${GW_DEPS_ROOT}/$ENV{PM_googletest_NAME}/${GoogleTestNV_FIND_VERSION}
+	PATHS 
+	$ENV{PM_googletest_PATH}
+	${GW_DEPS_ROOT}/$ENV{PM_googletest_NAME}/${GoogleTestNV_FIND_VERSION}
 )
 
 if (TARGET_BUILD_PLATFORM STREQUAL "Windows")

@@ -110,46 +110,50 @@
 <a name="l00085"></a>00085 
 <a name="l00089"></a>00089     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_fbx_file_writer.html#0668e627638c4fa6669ef3bb2143a222">saveToFile</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* assetName, <span class="keyword">const</span> <span class="keywordtype">char</span>* outputPath) <span class="keyword">override</span>;
 <a name="l00090"></a>00090 
-<a name="l00094"></a><a class="code" href="class_nv_1_1_blast_1_1_fbx_file_writer.html#514d9fc24e80c0e4b0c992021a782049">00094</a>     <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_fbx_file_writer.html#514d9fc24e80c0e4b0c992021a782049">bOutputFBXAscii</a>;
+<a name="l00094"></a>00094     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fbx_file_writer.html#465c0280b5d55e60efba19488f7066da">setInteriorIndex</a>(int32_t index) <span class="keyword">override</span>;
 <a name="l00095"></a>00095 
-<a name="l00096"></a>00096 <span class="keyword">private</span>:
-<a name="l00097"></a>00097     std::vector&lt;fbxsdk::FbxSurfaceMaterial*&gt; mMaterials;
-<a name="l00098"></a>00098     fbxsdk::FbxScene* mScene;
-<a name="l00099"></a>00099     fbxsdk::FbxDisplayLayer* mRenderLayer;
+<a name="l00099"></a><a class="code" href="class_nv_1_1_blast_1_1_fbx_file_writer.html#514d9fc24e80c0e4b0c992021a782049">00099</a>     <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_fbx_file_writer.html#514d9fc24e80c0e4b0c992021a782049">bOutputFBXAscii</a>;
 <a name="l00100"></a>00100 
-<a name="l00101"></a>00101     <span class="comment">//TODO we should track for every memory allocation and deallocate it not only for sdkManager</span>
-<a name="l00102"></a>00102     std::shared_ptr&lt;fbxsdk::FbxManager&gt; sdkManager;
-<a name="l00103"></a>00103     std::map&lt;uint32_t, fbxsdk::FbxNode*&gt; chunkNodes;
-<a name="l00104"></a>00104     std::map&lt;uint32_t, physx::PxVec3&gt; worldChunkPivots;
+<a name="l00101"></a>00101 <span class="keyword">private</span>:
+<a name="l00102"></a>00102     std::vector&lt;fbxsdk::FbxSurfaceMaterial*&gt; mMaterials;
+<a name="l00103"></a>00103     fbxsdk::FbxScene* mScene;
+<a name="l00104"></a>00104     fbxsdk::FbxDisplayLayer* mRenderLayer;
 <a name="l00105"></a>00105 
-<a name="l00106"></a>00106     <span class="keywordtype">bool</span> appendNonSkinnedMesh(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">AuthoringResult</a>&amp; aResult, <span class="keyword">const</span> <span class="keywordtype">char</span>* assetName);
-<a name="l00107"></a>00107     <span class="keywordtype">bool</span> appendNonSkinnedMesh(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData, <span class="keyword">const</span> <span class="keywordtype">char</span>* assetName);
-<a name="l00108"></a>00108     <span class="keywordtype">void</span> createMaterials(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData);
-<a name="l00109"></a>00109     <span class="keywordtype">void</span> createMaterials(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">AuthoringResult</a>&amp; aResult);
+<a name="l00106"></a>00106     <span class="comment">//TODO we should track for every memory allocation and deallocate it not only for sdkManager</span>
+<a name="l00107"></a>00107     std::shared_ptr&lt;fbxsdk::FbxManager&gt; sdkManager;
+<a name="l00108"></a>00108     std::map&lt;uint32_t, fbxsdk::FbxNode*&gt; chunkNodes;
+<a name="l00109"></a>00109     std::map&lt;uint32_t, physx::PxVec3&gt; worldChunkPivots;
 <a name="l00110"></a>00110 
-<a name="l00115"></a>00115     <span class="keywordtype">bool</span> appendCollisionMesh(uint32_t meshCount, uint32_t* offsets, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** hulls, <span class="keyword">const</span> <span class="keywordtype">char</span>* assetName);
-<a name="l00116"></a>00116 
-<a name="l00117"></a>00117     uint32_t addCollisionHulls(uint32_t chunkIndex, fbxsdk::FbxDisplayLayer* displayLayer, fbxsdk::FbxNode* parentNode, uint32_t hullsCount, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** hulls);
-<a name="l00118"></a>00118     uint32_t createChunkRecursive(uint32_t currentCpIdx, uint32_t chunkIndex, fbxsdk::FbxNode *meshNode, fbxsdk::FbxNode* parentNode, fbxsdk::FbxSkin* skin, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">AuthoringResult</a>&amp; aResult);
-<a name="l00119"></a>00119     uint32_t createChunkRecursive(uint32_t currentCpIdx, uint32_t chunkIndex, fbxsdk::FbxNode *meshNode, fbxsdk::FbxNode* parentNode, fbxsdk::FbxSkin* skin, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData);
-<a name="l00120"></a>00120 
-<a name="l00121"></a>00121     <span class="keywordtype">void</span> createChunkRecursiveNonSkinned(<span class="keyword">const</span> std::string&amp; meshName, uint32_t chunkIndex, fbxsdk::FbxNode* parentNode,
-<a name="l00122"></a>00122         <span class="keyword">const</span> std::vector&lt;fbxsdk::FbxSurfaceMaterial*&gt;&amp; materials, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">AuthoringResult</a>&amp; aResult);
-<a name="l00123"></a>00123 
-<a name="l00124"></a>00124     <span class="keywordtype">void</span> createChunkRecursiveNonSkinned(<span class="keyword">const</span> std::string&amp; meshName, uint32_t chunkIndex, fbxsdk::FbxNode* parentNode,
-<a name="l00125"></a>00125         <span class="keyword">const</span> std::vector&lt;fbxsdk::FbxSurfaceMaterial*&gt;&amp; materials, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData);
-<a name="l00126"></a>00126 
-<a name="l00127"></a>00127     <span class="keywordtype">void</span> addControlPoints(fbxsdk::FbxMesh* mesh, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData);
-<a name="l00128"></a>00128     <span class="keywordtype">void</span> addBindPose();
-<a name="l00129"></a>00129 
-<a name="l00130"></a>00130     <span class="keywordtype">void</span> generateSmoothingGroups(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
-<a name="l00131"></a>00131     <span class="keywordtype">void</span> removeDuplicateControlPoints(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
-<a name="l00132"></a>00132 };
-<a name="l00133"></a>00133 
-<a name="l00134"></a>00134 }
-<a name="l00135"></a>00135 }
-<a name="l00136"></a>00136 
-<a name="l00137"></a>00137 <span class="preprocessor">#endif // NVBLASTEXTEXPORTERFBXWRITER_H</span>
+<a name="l00111"></a>00111     <span class="keywordtype">bool</span> appendNonSkinnedMesh(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">AuthoringResult</a>&amp; aResult, <span class="keyword">const</span> <span class="keywordtype">char</span>* assetName);
+<a name="l00112"></a>00112     <span class="keywordtype">bool</span> appendNonSkinnedMesh(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData, <span class="keyword">const</span> <span class="keywordtype">char</span>* assetName);
+<a name="l00113"></a>00113     <span class="keywordtype">void</span> createMaterials(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData);
+<a name="l00114"></a>00114     <span class="keywordtype">void</span> createMaterials(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">AuthoringResult</a>&amp; aResult);
+<a name="l00115"></a>00115 
+<a name="l00120"></a>00120     <span class="keywordtype">bool</span> appendCollisionMesh(uint32_t meshCount, uint32_t* offsets, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** hulls, <span class="keyword">const</span> <span class="keywordtype">char</span>* assetName);
+<a name="l00121"></a>00121 
+<a name="l00122"></a>00122     uint32_t addCollisionHulls(uint32_t chunkIndex, fbxsdk::FbxDisplayLayer* displayLayer, fbxsdk::FbxNode* parentNode, uint32_t hullsCount, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** hulls);
+<a name="l00123"></a>00123     uint32_t createChunkRecursive(uint32_t currentCpIdx, uint32_t chunkIndex, fbxsdk::FbxNode *meshNode, fbxsdk::FbxNode* parentNode, fbxsdk::FbxSkin* skin, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">AuthoringResult</a>&amp; aResult);
+<a name="l00124"></a>00124     uint32_t createChunkRecursive(uint32_t currentCpIdx, uint32_t chunkIndex, fbxsdk::FbxNode *meshNode, fbxsdk::FbxNode* parentNode, fbxsdk::FbxSkin* skin, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData);
+<a name="l00125"></a>00125 
+<a name="l00126"></a>00126     <span class="keywordtype">void</span> createChunkRecursiveNonSkinned(<span class="keyword">const</span> std::string&amp; meshName, uint32_t chunkIndex, fbxsdk::FbxNode* parentNode,
+<a name="l00127"></a>00127         <span class="keyword">const</span> std::vector&lt;fbxsdk::FbxSurfaceMaterial*&gt;&amp; materials, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">AuthoringResult</a>&amp; aResult);
+<a name="l00128"></a>00128 
+<a name="l00129"></a>00129     <span class="keywordtype">void</span> createChunkRecursiveNonSkinned(<span class="keyword">const</span> std::string&amp; meshName, uint32_t chunkIndex, fbxsdk::FbxNode* parentNode,
+<a name="l00130"></a>00130         <span class="keyword">const</span> std::vector&lt;fbxsdk::FbxSurfaceMaterial*&gt;&amp; materials, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData);
+<a name="l00131"></a>00131 
+<a name="l00132"></a>00132     <span class="keywordtype">void</span> addControlPoints(fbxsdk::FbxMesh* mesh, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData);
+<a name="l00133"></a>00133     <span class="keywordtype">void</span> addBindPose();
+<a name="l00134"></a>00134 
+<a name="l00135"></a>00135     <span class="keywordtype">void</span> generateSmoothingGroups(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
+<a name="l00136"></a>00136     <span class="keywordtype">void</span> removeDuplicateControlPoints(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
+<a name="l00137"></a>00137 
+<a name="l00138"></a>00138     int32_t mInteriorIndex;
+<a name="l00139"></a>00139 };
+<a name="l00140"></a>00140 
+<a name="l00141"></a>00141 }
+<a name="l00142"></a>00142 }
+<a name="l00143"></a>00143 
+<a name="l00144"></a>00144 <span class="preprocessor">#endif // NVBLASTEXTEXPORTERFBXWRITER_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

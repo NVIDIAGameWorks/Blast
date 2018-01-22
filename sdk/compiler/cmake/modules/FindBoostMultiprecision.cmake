@@ -8,6 +8,7 @@ INCLUDE(FindPackageHandleStandardArgs)
 #TODO: Proper version support
 FIND_PATH(		BOOSTMULTIPRECISION_PATH boost/multiprecision
 				PATHS 
+				$ENV{PM_BoostMultiprecision_PATH}
 				${GW_DEPS_ROOT}/BoostMultiprecision/${BoostMultiprecision_FIND_VERSION}
 				)
 

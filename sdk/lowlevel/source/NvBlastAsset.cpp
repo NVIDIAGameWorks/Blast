@@ -591,7 +591,7 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 		{
 			break;	// Only iterate through root chunks at this level
 		}
-		const uint32_t enumeratedChunkCount = enumerateChunkHierarchyBreadthFirst(breadthFirstChunkIndices, desc->chunkCount, chunks, startChunkIndex, false);
+		const uint32_t enumeratedChunkCount = enumerateChunkHierarchyBreadthFirst(breadthFirstChunkIndices, desc->chunkCount, chunks, startChunkIndex);
 		for (uint32_t chunkNum = enumeratedChunkCount; chunkNum--;)
 		{
 			const uint32_t chunkIndex = breadthFirstChunkIndices[chunkNum];
@@ -600,8 +600,10 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 			{
 				subtreeLeafChunkCounts[chunkIndex] = 1;
 			}
-			NVBLAST_ASSERT(!isInvalidIndex(chunk.parentChunkIndex));	// Parent index is valid because root chunk is not included in this list (because of 'false' passed into enumerateChunkHierarchyBreadthFirst, above)
-			subtreeLeafChunkCounts[chunk.parentChunkIndex] += subtreeLeafChunkCounts[chunkIndex];
+			if (!isInvalidIndex(chunk.parentChunkIndex))
+			{
+				subtreeLeafChunkCounts[chunk.parentChunkIndex] += subtreeLeafChunkCounts[chunkIndex];
+			}
 		}
 	}
 

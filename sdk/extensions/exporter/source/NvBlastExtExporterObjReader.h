@@ -90,9 +90,9 @@ public:
 	virtual uint32_t* getIndexArray() override;
 
 	/**
-		Get loaded per triangle material ids. Currently not supported by OBJ.
+		Get loaded per triangle material ids.
 	*/
-	int32_t*		getMaterialIds() override { return nullptr; };
+	int32_t*		getMaterialIds() override { return mPerFaceMatId.data(); };
 
 	/**
 		Get loaded per triangle smoothing groups. Currently not supported by OBJ.
@@ -100,20 +100,24 @@ public:
 	int32_t*		getSmoothingGroups() override { return nullptr; };
 
 	/**
-		Get material name. Currently not supported by OBJ.
+		Get material name.
 	*/
-	const char*			getMaterialName(int32_t id) override { return nullptr; }
+	const char*			getMaterialName(int32_t id) override { return mMaterialNames[id].c_str(); }
 
 	/**
 		Get material count.
 	*/
-	int32_t		getMaterialCount() { return 0; };
+	int32_t		getMaterialCount() { return mMaterialNames.size(); };
 
 private:
 	std::vector<physx::PxVec3>	mVertexPositions;
 	std::vector<physx::PxVec3>	mVertexNormals;
 	std::vector<physx::PxVec2>	mVertexUv;
 	std::vector<uint32_t>		mIndices;
+
+	std::vector<std::string>	mMaterialNames;
+	std::vector<int32_t>		mPerFaceMatId;
+
 };
 
 }

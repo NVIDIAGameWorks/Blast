@@ -149,7 +149,7 @@ namespace Nv
 		};
 
 		float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcessor, const std::vector<PxVec3>& chunk1Points, const std::vector<PxVec3>& chunk2Points,
-			const std::vector<PxVec3>& hull1p, const std::vector<PxVec3>& hull2p, PxVec3& normal, PxVec3& centroid)
+			const std::vector<PxVec3>& hull1p, const std::vector<PxVec3>& hull2p, PxVec3& normal, PxVec3& centroid, float maxSeparation)
 		{
 			PxBounds3 bounds;
 			PxBounds3 aBounds;
@@ -185,7 +185,7 @@ namespace Nv
 			chunk2Centroid *= (1.0f / chunk2Points.size());
 
 			Separation separation;
-			if (!importerHullsInProximityApexFree(hull1p.size(), hull1p.data(), aBounds, PxTransform(PxIdentity), PxVec3(1, 1, 1), hull2p.size(), hull2p.data(), bBounds, PxTransform(PxIdentity), PxVec3(1, 1, 1), 0.000, &separation))
+			if (!importerHullsInProximityApexFree(hull1p.size(), hull1p.data(), aBounds, PxTransform(PxIdentity), PxVec3(1, 1, 1), hull2p.size(), hull2p.data(), bBounds, PxTransform(PxIdentity), PxVec3(1, 1, 1), 2.0f * maxSeparation, &separation))
 			{
 				return 0.0;
 			}
@@ -198,13 +198,13 @@ namespace Nv
 			}
 			std::vector<PxVec3> interfacePoints;
 
-			float firstCentroidSide = midplane.distance(chunk1Centroid);
-			float secondCentroidSide = midplane.distance(chunk2Centroid);
+			float firstCentroidSide = (midplane.distance(chunk1Centroid) > 0) ? 1 : -1;
+			float secondCentroidSide = (midplane.distance(chunk2Centroid) > 0) ? 1 : -1;
 
 			for (uint32_t i = 0; i < chunk1Points.size(); ++i)
 			{
 				float dst = midplane.distance(chunk1Points[i]);
-				if (dst * firstCentroidSide < 0)
+				if (dst * firstCentroidSide < maxSeparation)
 				{
 					interfacePoints.push_back(chunk1Points[i]);
 				}
@@ -213,7 +213,7 @@ namespace Nv
 			for (uint32_t i = 0; i < chunk2Points.size(); ++i)
 			{
 				float dst = midplane.distance(chunk2Points[i]);
-				if (dst * secondCentroidSide < 0)
+				if (dst * secondCentroidSide < maxSeparation)
 				{
 					interfacePoints.push_back(chunk2Points[i]);
 				}
@@ -272,8 +272,7 @@ namespace Nv
 
 		int32_t BlastBondGeneratorImpl::createFullBondListAveraged(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry, const CollisionHull** chunkHulls,
 			const bool* supportFlags, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf)
-		{
-			NV_UNUSED(conf);
+		{	
 
 			std::vector<std::vector<PxVec3> > chunksPoints(meshCount);
 			if (!chunkHulls)
@@ -344,9 +343,14 @@ namespace Nv
 				{
 					tempHullPtr->release();
 				}
-				bnd.scaleFast(1.1f);
-				candidates.push_back(BondGenerationCandidate(bnd.minimum, false, chunk, meshGroups[chunk]));
-				candidates.push_back(BondGenerationCandidate(bnd.maximum, true, chunk, meshGroups[chunk]));
+				float minSide = bnd.getDimensions().abs().minElement();
+				if (minSide > 0.f)
+				{
+					float scaling = std::max(1.1f, conf.maxSeparation / (minSide));
+					bnd.scaleFast(scaling);
+				}
+				candidates.push_back(BondGenerationCandidate(bnd.minimum, false, chunk, meshGroups != nullptr ? meshGroups[chunk] : 0));
+				candidates.push_back(BondGenerationCandidate(bnd.maximum, true, chunk, meshGroups != nullptr ? meshGroups[chunk] : 0));
 			}
 
 			std::sort(candidates.begin(), candidates.end());
@@ -360,7 +364,7 @@ namespace Nv
 				{
 					for (uint32_t activeChunk : listOfActiveChunks)
 					{
-						if (candidates[activeChunk].parentComponent == candidates[idx].parentComponent) continue; // Don't connect components with itself.
+						if (meshGroups != nullptr && (meshGroups[activeChunk] == candidates[idx].parentComponent)) continue; // Don't connect components with itself.
 						possibleBondGraph[activeChunk].push_back(candidates[idx].parentChunk);
 					}
 					listOfActiveChunks.insert(candidates[idx].parentChunk);
@@ -388,7 +392,7 @@ namespace Nv
 							PxVec3 normal;
 							PxVec3 centroid;
 
-							float area = processWithMidplanes(&trProcessor, chunksPoints[i].empty() ? hullPoints[i][ihull] : chunksPoints[i], chunksPoints[j].empty() ? hullPoints[j][jhull] : chunksPoints[j], hullPoints[i][ihull], hullPoints[j][jhull], normal, centroid);
+							float area = processWithMidplanes(&trProcessor, chunksPoints[i].empty() ? hullPoints[i][ihull] : chunksPoints[i], chunksPoints[j].empty() ? hullPoints[j][jhull] : chunksPoints[j], hullPoints[i][ihull], hullPoints[j][jhull], normal, centroid, conf.maxSeparation);
 							if (area > 0)
 							{
 								NvBlastBondDesc bDesc;
@@ -1118,9 +1122,10 @@ namespace Nv
 		}
 
 
-		int32_t BlastBondGeneratorImpl::bondsFromPrefractured(uint32_t meshCount, const uint32_t* convexHullOffset, const CollisionHull** chunkHulls, const bool* chunkIsSupport, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs)
+		int32_t BlastBondGeneratorImpl::bondsFromPrefractured(uint32_t meshCount, const uint32_t* convexHullOffset, const CollisionHull** chunkHulls, const bool* chunkIsSupport, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, float maxSeparation)
 		{
 			BondGenerationConfig conf;
+			conf.maxSeparation = maxSeparation;
 			conf.bondMode = BondGenerationConfig::AVERAGE;
 			return createFullBondListAveraged(meshCount, convexHullOffset, nullptr, chunkHulls, chunkIsSupport, meshGroups, resultBondDescs, conf);
 		}

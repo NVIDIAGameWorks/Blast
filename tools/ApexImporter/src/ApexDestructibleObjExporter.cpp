@@ -120,7 +120,7 @@ bool ApexDestructibleGeometryExporter::exportToFile(NvBlastAsset* asset, const D
 	Nv::Blast::ExporterMeshData meshData;
 	meshData.asset = asset;
 	meshData.submeshCount = rAsset->getSubmeshCount();
-	meshData.submeshNames = new const char*[meshData.submeshCount];
+	meshData.submeshMats = new Materials[meshData.submeshCount];
 	std::vector<std::string> materialPathes;
 	materialPathes.reserve(meshData.submeshCount);
 	// gather materials
@@ -132,7 +132,8 @@ bool ApexDestructibleGeometryExporter::exportToFile(NvBlastAsset* asset, const D
 			materialPath << m_materialsDir << "\\" << materialName;
 			std::string texturePath = getTextureFromMaterial(materialPath.str().c_str());
 			materialPathes.push_back(texturePath);
-			meshData.submeshNames[submeshIndex] = materialPathes[submeshIndex].c_str();
+			meshData.submeshMats[submeshIndex].diffuse_tex = materialPathes[submeshIndex].c_str();
+			meshData.submeshMats[submeshIndex].name = materialPathes[submeshIndex].c_str();
 		}
 	}
 	struct vc3Comp
@@ -410,7 +411,7 @@ bool ApexDestructibleGeometryExporter::exportToFile(NvBlastAsset* asset, const D
 		delete[] meshData.positions;
 		delete[] meshData.submeshOffsets;
 		delete[] meshData.texIndex;
-		delete[] meshData.submeshNames;
+		delete[] meshData.submeshMats;
 		delete[] meshData.uvs;
 	}
 

@@ -262,7 +262,8 @@ void Actor::generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBla
 
 size_t Actor::splitRequiredScratch() const
 {
-	return FamilyGraph::findIslandsRequiredScratch(getGraph()->m_nodeCount);
+	// Scratch is reused, just need the max of these two values
+	return std::max(m_graphNodeCount * sizeof(uint32_t), static_cast<size_t>(FamilyGraph::findIslandsRequiredScratch(getGraph()->m_nodeCount)));
 }
 
 
@@ -334,6 +335,27 @@ uint32_t Actor::split(NvBlastActorSplitEvent* result, uint32_t newActorsMaxCount
 		}
 #endif
 
+		// Reuse scratch for node list
+		uint32_t* graphNodeIndexList = reinterpret_cast<uint32_t*>(scratch);
+
+		// Get the family header
+		FamilyHeader* header = getFamilyHeader();
+		NVBLAST_ASSERT(header != nullptr);	// If m_actorEntryDataIndex is valid, this should be too
+
+		// Record nodes in this actor before splitting
+		const uint32_t* graphNodeIndexLinks = header->getGraphNodeIndexLinks(); // Get the links for the graph nodes
+		uint32_t graphNodeIndexCount = 0;
+		for (uint32_t graphNodeIndex = m_firstGraphNodeIndex; !isInvalidIndex(graphNodeIndex); graphNodeIndex = graphNodeIndexLinks[graphNodeIndex])
+		{
+			if (graphNodeIndexCount >= m_graphNodeCount)
+			{
+				// Safety, splitRequiredScratch() only guarantees m_graphNodeCount elements.  In any case, this condition shouldn't happen.
+				NVBLAST_ASSERT(graphNodeIndexCount < m_graphNodeCount);
+				break;
+			}
+			graphNodeIndexList[graphNodeIndexCount++] = graphNodeIndex;
+		}
+
 		actorsCount = partitionMultipleGraphNodes(newActors, newActorsMaxCount, logFn);
 
 		if (actorsCount > 1)
@@ -345,19 +367,40 @@ uint32_t Actor::split(NvBlastActorSplitEvent* result, uint32_t newActorsMaxCount
 			}
 #endif
 
-			// Recalculate visible chunk lists if the graph nodes have been redistributed
+			// Get various pointers and values to iterate 
+			const Asset* asset = getAsset();
+			Actor* actors = header->getActors();
+			IndexDLink<uint32_t>* visibleChunkIndexLinks = header->getVisibleChunkIndexLinks();
+			uint32_t* chunkActorIndices = header->getChunkActorIndices();
+			const SupportGraph& graph = asset->m_graph;
+			const uint32_t* graphChunkIndices = graph.getChunkIndices();
+			const NvBlastChunk* chunks = asset->getChunks();
+			const uint32_t upperSupportChunkCount = asset->getUpperSupportChunkCount();
+			const uint32_t* familyGraphIslandIDs = header->getFamilyGraph()->getIslandIds();
+
+			// Iterate over all graph nodes and update visible chunk lists
+			for (uint32_t graphNodeNum = 0; graphNodeNum < graphNodeIndexCount; ++graphNodeNum)
+			{
+				const uint32_t graphNodeIndex = graphNodeIndexList[graphNodeNum];
+				const uint32_t supportChunkIndex = graphChunkIndices[graphNodeIndex];
+				if (!isInvalidIndex(supportChunkIndex))	// Invalid if this is the world chunk
+				{
+					updateVisibleChunksFromSupportChunk<Actor>(actors, visibleChunkIndexLinks, chunkActorIndices, familyGraphIslandIDs[graphNodeIndex], graphChunkIndices[graphNodeIndex], chunks, upperSupportChunkCount);
+				}
+			}
+
+			// Remove actors with no visible chunks - this can happen if we've split such that the world node is by itself
 			uint32_t actualActorsCount = 0;
 			for (uint32_t i = 0; i < actorsCount; ++i)
 			{
 				newActors[actualActorsCount] = newActors[i];
-				newActors[actualActorsCount]->updateVisibleChunksFromGraphNodes();
-				if (newActors[actualActorsCount]->getVisibleChunkCount() > 0)	// If we've split such that the world node is by itself, it will have no visible chunks
+				if (newActors[actualActorsCount]->getVisibleChunkCount() > 0)
 				{
 					++actualActorsCount;
 				}
 				else
 				{
-					getFamilyHeader()->returnActor(*newActors[actualActorsCount]);
+					header->returnActor(*newActors[actualActorsCount]);
 				}
 			}
 			actorsCount = actualActorsCount;

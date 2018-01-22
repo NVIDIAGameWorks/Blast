@@ -41,6 +41,7 @@
 #include "NvBlastExtAuthoringMesh.h"
 #include "NvBlastExtAuthoringBondGenerator.h"
 #include "NvBlastExtAuthoringCollisionBuilder.h"
+#include "NvBlastExtAuthoringCutout.h"
 #include "NvBlastExtAuthoringFractureTool.h"
 #include "BlastDataExporter.h"
 #include "SimpleRandomGenerator.h"
@@ -81,9 +82,33 @@ struct TCLAPint3
 	}
 };
 
+struct TCLAPfloat3
+{
+	float x, y, z;
+	TCLAPfloat3(float x, float y, float z) :x(x), y(y), z(z) {};
+	TCLAPfloat3() :x(0), y(0), z(0) {};
+	TCLAPfloat3& operator=(const std::string &inp)
+	{
+		std::istringstream stream(inp);
+		if (!(stream >> x >> y >> z))
+			throw TCLAP::ArgParseException(inp + " is not float3");
+		return *this;
+	}
+
+	operator physx::PxVec3()
+	{
+		return physx::PxVec3(x, y, z);
+	}
+};
+
 namespace TCLAP {
 	template<>
 	struct ArgTraits<TCLAPint3> {
+		typedef StringLike ValueCategory;
+	};
+
+	template<>
+	struct ArgTraits<TCLAPfloat3> {
 		typedef StringLike ValueCategory;
 	};
 }
@@ -122,6 +147,82 @@ bool mkDirRecursively(const std::string& path)
 		indx = path.find_first_of("\\/", indx + 1);
 	}
 	return isDirectoryExist(path);
+}
+
+unsigned char *LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bitmapInfoHeader)
+{
+	FILE *filePtr; //our file pointer
+	BITMAPFILEHEADER bitmapFileHeader; //our bitmap file header
+	unsigned char *bitmapImage;  //store image data
+	//int imageIdx = 0;  //image index counter
+	unsigned char tempRGB;  //our swap variable
+
+							//open filename in read binary mode
+	filePtr = fopen(filename, "rb");
+	if (filePtr == NULL)
+		return NULL;
+
+	//read the bitmap file header
+	fread(&bitmapFileHeader, sizeof(BITMAPFILEHEADER), 1, filePtr);
+
+	//verify that this is a bmp file by check bitmap id
+	if (bitmapFileHeader.bfType != 0x4D42)
+	{
+		fclose(filePtr);
+		return NULL;
+	}
+
+	//read the bitmap info header
+	fread(bitmapInfoHeader, sizeof(BITMAPINFOHEADER), 1, filePtr); // small edit. forgot to add the closing bracket at sizeof
+
+																   //move file point to the begging of bitmap data
+	fseek(filePtr, bitmapFileHeader.bfOffBits, SEEK_SET);
+
+	//Only incompressed 24 byte RGB is supported
+	if (bitmapInfoHeader->biCompression != BI_RGB || bitmapInfoHeader->biBitCount != 24)
+	{
+		return nullptr;
+	}
+	else
+	{
+		bitmapInfoHeader->biSizeImage = 3 * bitmapInfoHeader->biHeight * bitmapInfoHeader->biHeight;
+	}
+
+	//allocate enough memory for the bitmap image data
+	bitmapImage = (unsigned char*)malloc(bitmapInfoHeader->biSizeImage);
+
+	//verify memory allocation
+	if (!bitmapImage)
+	{
+		free(bitmapImage);
+		fclose(filePtr);
+		return NULL;
+	}
+
+	//read in the bitmap image data
+	fread(bitmapImage, sizeof(uint8_t), bitmapInfoHeader->biSizeImage, filePtr);
+
+	//make sure bitmap image data was read
+	if (bitmapImage == NULL)
+	{
+		fclose(filePtr);
+		return NULL;
+	}
+
+	//swap the r and b values to get RGB (bitmap is BGR)
+	if (bitmapInfoHeader->biBitCount > 1)
+	{
+		for (uint32_t imageIdx = 0; imageIdx < bitmapInfoHeader->biSizeImage; imageIdx += 3) // fixed semicolon
+		{
+			tempRGB = bitmapImage[imageIdx];
+			bitmapImage[imageIdx] = bitmapImage[imageIdx + 2];
+			bitmapImage[imageIdx + 2] = tempRGB;
+		}
+	}
+
+	//close file and return bitmap iamge data
+	fclose(filePtr);
+	return bitmapImage;
 }
 
 bool initPhysX()
@@ -233,8 +334,11 @@ int main(int argc, const char* const* argv)
 	TCLAP::SwitchArg nonSkinnedFBX("", "nonskinned", "Output a non-skinned FBX file", false);
 	cmd.add(nonSkinnedFBX);
 
+	TCLAP::ValueArg<int32_t> interiorMatId("", "interiorMat", "Use to setup interior material id, by default new material for internal surface will be created.", false, -1, "by default -1");
+	cmd.add(interiorMatId);
 
-	TCLAP::ValueArg<unsigned char> fracturingMode("", "mode", "Fracturing mode", false, 'v', "v - voronoi, c - clustered voronoi, s - slicing.");
+	TCLAP::ValueArg<unsigned char> fracturingMode("", "mode", "Fracturing mode", false, 'v',
+		"v - voronoi, c - clustered voronoi, s - slicing, p - plane cut, u - cutout.");
 	cmd.add(fracturingMode);
 	TCLAP::ValueArg<uint32_t> cellsCount("", "cells", "Voronoi cells count", false, 5, "by default 5");
 	cmd.add(cellsCount);
@@ -251,6 +355,15 @@ int main(int argc, const char* const* argv)
 
 	TCLAP::ValueArg<float> offsetVariation("", "ovar", "Slicing offset variation", false, 0.0, "by default 0.0");
 	cmd.add(offsetVariation);
+
+	TCLAP::ValueArg<TCLAPfloat3> point("", "point", "Plane surface point", false, TCLAPfloat3(0, 0, 0), "by default 0 0 0");
+	cmd.add(point);
+
+	TCLAP::ValueArg<TCLAPfloat3> normal("", "normal", "Plane surface normal", false, TCLAPfloat3(1, 0, 0), "by default 1 0 0");
+    cmd.add(normal);
+
+	TCLAP::ValueArg<std::string> cutoutBitmapPath("", "cutoutBitmap", "Path to *.bmp file with cutout bitmap", false, ".", "by defualt empty");
+	cmd.add(cutoutBitmapPath);
 
 	try
 	{
@@ -452,6 +565,58 @@ int main(int argc, const char* const* argv)
 			}
 			break;
 		}
+		case 'p':
+		{
+			std::cout << "Plane cut fracturing..." << std::endl;
+			NoiseConfiguration noise;
+			if (fTool->cut(0, normal.getValue(), point.getValue(), noise, false, &rng) != 0)
+			{
+				std::cerr << "Failed to fracture with Cutout (in half-space, plane cut)" << std::endl;
+				return -1;
+			}
+			break;
+		}
+		case 'u':
+		{
+			std::cout << "Cutout fracturing..." << std::endl;
+			CutoutConfiguration cutoutConfig;
+			physx::PxVec3 axis = normal.getValue();
+			if (axis.isZero())
+			{
+				axis = PxVec3(0.f, 0.f, 1.f);
+			}
+			axis.normalize();
+			float d = axis.dot(physx::PxVec3(0.f, 0.f, 1.f));
+			if (d < (1e-6f - 1.0f))
+			{
+				cutoutConfig.transform.q = physx::PxQuat(physx::PxPi, PxVec3(1.f, 0.f, 0.f));
+			}
+			else if (d < 1.f)
+			{
+				float s = physx::PxSqrt((1 + d) * 2);
+				float invs = 1 / s;
+				auto c = axis.cross(PxVec3(0.f, 0.f, 1.f));
+				cutoutConfig.transform.q = physx::PxQuat(c.x * invs, c.y * invs, c.z * invs, s * 0.5f);
+				cutoutConfig.transform.q.normalize();
+			}
+			cutoutConfig.transform.p = point.getValue();
+			if (cutoutBitmapPath.isSet())
+			{
+				BITMAPINFOHEADER header;
+				uint8_t* bitmap = LoadBitmapFile(cutoutBitmapPath.getValue().c_str(), &header);
+				if (bitmap != nullptr)
+				{
+					cutoutConfig.cutoutSet = NvBlastExtAuthoringCreateCutoutSet();
+					NvBlastExtAuthoringBuildCutoutSet(*cutoutConfig.cutoutSet, bitmap, header.biWidth, header.biHeight, 0.001f, 1.f, false, true);
+				}
+			}
+			if (fTool->cutout(0, cutoutConfig, false, &rng) != 0)
+			{
+				std::cerr << "Failed to fracture with Cutout" << std::endl;
+				return -1;
+			}
+			break;
+		}
 		default:
 			std::cerr << "Unknown mode" << std::endl;
 			return -1;
@@ -462,6 +627,8 @@ int main(int argc, const char* const* argv)
 	Nv::Blast::BlastBondGenerator* bondGenerator = NvBlastExtAuthoringCreateBondGenerator(gCooking, &gPhysics->getPhysicsInsertionCallback());
 	Nv::Blast::ConvexMeshBuilder* collisionBuilder = NvBlastExtAuthoringCreateConvexMeshBuilder(gCooking, &gPhysics->getPhysicsInsertionCallback());
 	Nv::Blast::CollisionParams collisionParameter;
+	collisionParameter.maximumNumberOfHulls = 1;
+	collisionParameter.voxelGridResolution = 0;
 	Nv::Blast::AuthoringResult* result = NvBlastExtAuthoringProcessFracture(*fTool, *bondGenerator, *collisionBuilder, collisionParameter);
 	NvBlastTkFrameworkCreate();
 
@@ -491,6 +658,10 @@ int main(int argc, const char* const* argv)
 	if (bOutputObjFile)
 	{
 		std::shared_ptr<IMeshFileWriter> fileWriter(NvBlastExtExporterCreateObjFileWriter(), [](IMeshFileWriter* p) {p->release(); });
+		if (interiorMatId.isSet() && interiorMatId.getValue() >= 0)
+		{
+			fileWriter->setInteriorIndex(interiorMatId.getValue());
+		}
 		fileWriter->appendMesh(*result, assetName.c_str());
 		if (!fileWriter->saveToFile(assetName.c_str(), outDir.c_str()))
 		{
@@ -502,6 +673,10 @@ int main(int argc, const char* const* argv)
 	if (bOutputFbxFile)
 	{
 		std::shared_ptr<IMeshFileWriter> fileWriter(NvBlastExtExporterCreateFbxFileWriter(bOutputFBXAscii), [](IMeshFileWriter* p) {p->release(); });
+		if (interiorMatId.isSet() && interiorMatId.getValue() >= 0)
+		{
+			fileWriter->setInteriorIndex(interiorMatId.getValue());
+		}
 		fileWriter->appendMesh(*result, assetName.c_str(), nonSkinnedFBX.isSet());
 		if (!fileWriter->saveToFile(assetName.c_str(), outDir.c_str()))
 		{

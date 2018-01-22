@@ -72,7 +72,7 @@
 <a name="l00034"></a>00034 <span class="preprocessor">#include &lt;vector&gt;</span>
 <a name="l00035"></a>00035 <span class="preprocessor">#include &lt;PxVec2.h&gt;</span>
 <a name="l00036"></a>00036 <span class="preprocessor">#include &lt;PxVec3.h&gt;</span>
-<a name="l00037"></a>00037 
+<a name="l00037"></a>00037 <span class="preprocessor">#include &lt;string&gt;</span>
 <a name="l00038"></a>00038 <span class="keyword">struct </span><a class="code" href="struct_nv_blast_asset.html">NvBlastAsset</a>;
 <a name="l00039"></a>00039 
 <a name="l00040"></a>00040 <span class="keyword">namespace </span>Nv
@@ -84,7 +84,7 @@
 <a name="l00046"></a>00046 {
 <a name="l00047"></a>00047 <span class="keyword">public</span>:
 <a name="l00048"></a>00048 
-<a name="l00049"></a><a class="code" href="class_nv_1_1_blast_1_1_obj_file_writer.html#1e7247051563470428d3ed7a6c86bfd5">00049</a>     <a class="code" href="class_nv_1_1_blast_1_1_obj_file_writer.html#1e7247051563470428d3ed7a6c86bfd5">ObjFileWriter</a>() {};
+<a name="l00049"></a><a class="code" href="class_nv_1_1_blast_1_1_obj_file_writer.html#1e7247051563470428d3ed7a6c86bfd5">00049</a>     <a class="code" href="class_nv_1_1_blast_1_1_obj_file_writer.html#1e7247051563470428d3ed7a6c86bfd5">ObjFileWriter</a>(): mIntSurfaceMatIndex(-1), interiorNameStr(<span class="stringliteral">"INTERIOR_MATERIAL"</span>) {  };
 <a name="l00050"></a>00050     <a class="code" href="class_nv_1_1_blast_1_1_obj_file_writer.html#2bb17ff0f2032e8b2d98fbe22aa91488">~ObjFileWriter</a>() = <span class="keywordflow">default</span>;
 <a name="l00051"></a>00051 
 <a name="l00052"></a>00052     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_obj_file_writer.html#c2bcc5fcc4b90751a5ff71171669cfbc">release</a>() <span class="keyword">override</span>;
@@ -95,14 +95,18 @@
 <a name="l00060"></a>00060 
 <a name="l00064"></a>00064     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_obj_file_writer.html#2ee6cae4a2caa5bb5023c28939264711">saveToFile</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* assetName, <span class="keyword">const</span> <span class="keywordtype">char</span>* outputPath) <span class="keyword">override</span>;
 <a name="l00065"></a>00065 
-<a name="l00066"></a>00066 <span class="keyword">private</span>:
-<a name="l00067"></a>00067     std::shared_ptr&lt;ExporterMeshData&gt; mMeshData;
-<a name="l00068"></a>00068 };
-<a name="l00069"></a>00069 
-<a name="l00070"></a>00070 }
-<a name="l00071"></a>00071 }
-<a name="l00072"></a>00072 
-<a name="l00073"></a>00073 <span class="preprocessor">#endif // NVBLASTEXTEXPORTEROBJWRITER_H</span>
+<a name="l00069"></a>00069     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_obj_file_writer.html#07b444569eb997b320441af487e2e077">setInteriorIndex</a>(int32_t index) <span class="keyword">override</span>;
+<a name="l00070"></a>00070 
+<a name="l00071"></a>00071 <span class="keyword">private</span>:
+<a name="l00072"></a>00072     std::shared_ptr&lt;ExporterMeshData&gt; mMeshData;
+<a name="l00073"></a>00073     int32_t mIntSurfaceMatIndex;
+<a name="l00074"></a>00074     std::string interiorNameStr;
+<a name="l00075"></a>00075 };
+<a name="l00076"></a>00076 
+<a name="l00077"></a>00077 }
+<a name="l00078"></a>00078 }
+<a name="l00079"></a>00079 
+<a name="l00080"></a>00080 <span class="preprocessor">#endif // NVBLASTEXTEXPORTEROBJWRITER_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

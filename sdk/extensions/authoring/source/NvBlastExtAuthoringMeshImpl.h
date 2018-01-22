@@ -206,9 +206,19 @@ Mesh* getNoisyCuttingBoxPair(const physx::PxVec3& point, const physx::PxVec3& no
 /**
 	Inverses normals of cutting box and sets indices. 
 	\param[in] mesh		Cutting box mesh
-	\param[in] id	Cutting box ID
+	\param[in] id		Cutting box ID
 */
 void inverseNormalAndSetIndices(Mesh* mesh, int64_t id);
+
+/**
+	Create cutting cylinder (extrusion of specified loop) at some particular position.
+	\param[in] pointCount	Number of points in loop
+	\param[in] points		Array of points for loop
+	\param[in] transform	Cutting cylinder transform
+	\param[in] height		Cutting cylinder height
+	\param[in] id			Cutting cylinder ID
+*/
+Mesh*	getCuttingCylinder(uint32_t pointCount, const physx::PxVec3* points, const physx::PxTransform& transform, float height, int64_t id, int32_t interiorMaterialId);
 
 } // namespace Blast
 } // namespace Nv

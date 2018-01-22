@@ -84,9 +84,14 @@ public:
 	virtual bool appendMesh(const ExporterMeshData& meshData, const char* assetName, bool nonSkinned) override;
 
 	/**
-	Save scene to file.
+		Save scene to file.
 	*/
 	virtual bool saveToFile(const char* assetName, const char* outputPath) override;
+
+	/**
+		Set interior material index.
+	*/
+	virtual void setInteriorIndex(int32_t index) override;
 
 	/**
 		Set true if FBX should be saved in ASCII mode.
@@ -129,6 +134,8 @@ private:
 
 	void generateSmoothingGroups(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
 	void removeDuplicateControlPoints(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
+
+	int32_t mInteriorIndex;
 };
 
 }

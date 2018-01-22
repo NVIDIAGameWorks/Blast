@@ -60,7 +60,18 @@ void ObjFileReader::loadFromFile(const char* filename)
 	std::vector<tinyobj::material_t> mats;
 	std::string err;
 	std::string mtlPath;
-	bool ret = tinyobj::LoadObj(shapes, mats, err, filename);
+
+	int32_t lastDelimeter = strlen(filename);
+	
+	while (lastDelimeter > 0 && filename[lastDelimeter] != '/' && filename[lastDelimeter] != '\\')
+	{
+		lastDelimeter--;
+	}
+	mtlPath = std::string(filename, filename + lastDelimeter);
+	mtlPath += '/';
+	
+	bool ret = tinyobj::LoadObj(shapes, mats, err, filename, mtlPath.c_str());
+	
 	// can't load?
 	if (!ret)
 	{
@@ -69,6 +80,18 @@ void ObjFileReader::loadFromFile(const char* filename)
 	if (shapes.size() > 1)
 	{
 		std::cout << "Can load only one object per mesh" << std::endl;
+	}
+
+	if (!mats.empty())
+	{
+		if (mats.size() == 1 && mats[0].name == "")
+		{
+			mats[0].name = "Default";
+		}
+		for (uint32_t i = 0; i < mats.size(); ++i)
+		{
+				mMaterialNames.push_back(mats[i].name);
+		}
 	}
 
 	mVertexPositions.clear();
@@ -93,6 +116,14 @@ void ObjFileReader::loadFromFile(const char* filename)
 	}
 
 	mIndices = shapes[0].mesh.indices;
+	mPerFaceMatId = shapes[0].mesh.material_ids;
+	for (uint32_t i = 0; i < mPerFaceMatId.size(); ++i)
+	{
+		if (mPerFaceMatId[i] == -1) // TinyOBJ loader sets ID to -1 when .mtl file not found. Set to default 0 material.
+		{
+			mPerFaceMatId[i] = 0;
+		}
+	}
 
 }
 

@@ -39,6 +39,7 @@ namespace Blast
 class SpatialAccelerator;
 class Triangulator;
 class Mesh;
+class CutoutSet;
 
 /*
 	Chunk data, chunk with chunkId == 0 is always source mesh.
@@ -49,52 +50,96 @@ struct ChunkInfo
 	int32_t	parent;
 	int32_t	chunkId;
 	bool	isLeaf;
+	bool	isChanged;
 };
 
+/*
+	Noise fracturing configuration for chunks's faces
+*/
+struct NoiseConfiguration
+{
+	/**
+	Noisy slicing configutaion:
+
+	Amplitude of cutting surface noise. If it is 0 - noise is disabled.
+	*/
+	float	amplitude = 0.f;
+
+	/**
+	Frequencey of cutting surface noise.
+	*/
+	float	frequency = 1.f;
+
+	/**
+	Octave number in slicing surface noise.
+	*/
+	uint32_t octaveNumber = 1;
+
+	/**
+	Cutting surface resolution.
+	*/
+	uint32_t surfaceResolution = 1;
+};
 
 /*
 	Slicing fracturing configuration
 */
 struct SlicingConfiguration
 {
-	/** 
+	/**
 		Number of slices in each direction
 	*/
 	int32_t	x_slices = 1, y_slices = 1, z_slices = 1;
-	
-	/** 
+
+	/**
 		Offset variation, value in [0, 1]
 	*/
 	float	offset_variations = 0.f;
-	
-	/** 
+
+	/**
 		Angle variation, value in [0, 1]
 	*/
 	float	angle_variations = 0.f;
 
-	/**
-		Noisy slicing configutaion:
-
-		Amplitude of cutting surface noise. If it is 0 - noise is disabled.
+	/*
+		Noise parameters for faces between sliced chunks
 	*/
-	float	noiseAmplitude = 0.f;
-	
-	/**
-		Frequencey of cutting surface noise. 
-	*/
-	float	noiseFrequency = 1.f;
-
-	/**
-		Octave number in slicing surface noise.
-	*/
-	uint32_t noiseOctaveNumber = 1;
-
-	/**
-		Cutting surface resolution.
-	*/
-	uint32_t surfaceResolution = 1;
+	NoiseConfiguration noise;
 };
 
+/**
+	Cutout fracturing configuration
+*/
+struct CutoutConfiguration
+{
+	/**
+		Set of grouped convex loop patterns for cutout in normal direction.
+		Not required for PLANE_ONLY mode
+	*/
+	CutoutSet* cutoutSet = nullptr;
+
+	/**
+		Transform for initial pattern position and orientation.
+		By default 2d pattern lies in XY plane (Y is up) the center of pattern is (0, 0)
+	*/
+	physx::PxTransform transform = physx::PxTransform(physx::PxIdentity);
+
+	/**
+		Scale for pattern. Unscaled pattern has size (1, 1).
+		For negative scale pattern will be placed at the center of chunk and scaled with max distance between points of its AABB
+	*/
+	physx::PxVec2 scale = physx::PxVec2(-1, -1);
+
+	/**
+		If relative transform is set - position will be displacement vector from chunk's center. Otherwise from global origin.
+	*/
+	bool isRelativeTransform = true;
+
+	/**
+		Noise parameters for cutout surface, see NoiseConfiguration.
+	*/
+	NoiseConfiguration noise;
+};
 
 /**
 	Class for voronoi sites generation inside supplied mesh.
@@ -159,11 +204,13 @@ public:
 		\param[in] center		Center of sphere
 	*/
 	virtual void						generateInSphere(const uint32_t count, const float radius, const physx::PxVec3& center) = 0;
+
 	/**
 		Set stencil mesh. With stencil mesh sites are generated only inside both of fracture and stencil meshes. 
 		\param[in] stencil		Stencil mesh.
 	*/
 	virtual void						setStencil(const Mesh* stencil) = 0;
+
 	/**
 		Removes stencil mesh
 	*/
@@ -269,7 +316,33 @@ public:
 
 		\return   If 0, fracturing is successful.
 	*/
-	virtual int32_t									slicing(uint32_t chunkId, SlicingConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd) = 0;
+	virtual int32_t									slicing(uint32_t chunkId, const SlicingConfiguration& conf, bool replaceChunk, RandomGeneratorBase* rnd) = 0;
+
+	/**
+		Cut chunk with plane.
+		\param[in] chunkId				Chunk to fracture
+		\param[in] normal				Plane normal
+		\param[in] position				Point on plane
+		\param[in] noise				Noise configuration for plane-chunk intersection, see NoiseConfiguration.
+		\param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them.
+		Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
+		\param[in] rnd					User supplied random number generator
+
+		\return   If 0, fracturing is successful.
+	*/
+	virtual int32_t									cut(uint32_t chunkId, const physx::PxVec3& normal, const physx::PxVec3& position, const NoiseConfiguration& noise, bool replaceChunk, RandomGeneratorBase* rnd) = 0;
+
+	/**
+		Cutout fracture for specified chunk.
+		\param[in] chunkId				Chunk to fracture
+		\param[in] conf					Cutout parameters, see CutoutConfiguration.
+		\param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them.
+										Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
+		\param[in] rnd					User supplied random number generator
+
+		\return   If 0, fracturing is successful.
+	*/
+	virtual int32_t									cutout(uint32_t chunkId, CutoutConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd) = 0;
 
 
 	/**
@@ -277,6 +350,9 @@ public:
 	*/
 	virtual void									finalizeFracturing() = 0;
 	
+	/**
+		Returns overall number of chunks in fracture.
+	*/
 	virtual uint32_t								getChunkCount() const = 0;
 
 	/**
@@ -300,6 +376,15 @@ public:
 		\return number of triangles in base mesh
 	*/
 	virtual uint32_t								getBaseMesh(int32_t chunkIndex, Triangle*& output) = 0;
+
+	/**
+		Update chunk base mesh
+		\note Doesn't allocates output array, Triangle* output should be preallocated by user
+		\param[in] chunkIndex Chunk index
+		\param[out] output Array of triangles to be filled
+		\return number of triangles in base mesh
+	*/
+	virtual uint32_t								updateBaseMesh(int32_t chunkIndex, Triangle* output) = 0;
 
 	/**
 		Return index of chunk with specified chunkId
@@ -329,7 +414,6 @@ public:
 		\return Number of chunks in array
 	*/
 	virtual uint32_t								getChunksIdAtDepth(uint32_t depth, int32_t*& chunkIds) = 0;
-
 
 	/**
 		Get result geometry without noise as vertex and index buffers, where index buffers contain series of triplets
@@ -368,7 +452,28 @@ public:
 	*/
 	virtual bool									deleteAllChildrenOfChunk(int32_t chunkId) = 0;
 
+	/**
+		Optimize chunk hierarhy for better runtime performance. 
+		It tries to unite chunks to groups of some size in order to transform flat hierarchy (all chunks are children of single root) 
+		to tree like hieracrhy with limited number of children for each chunk.
+		\param[in] maxAtLevel	If number of children of some chunk less then maxAtLevel then it would be considered as already optimized and skipped.
+		\param[in] maxGroupSize	Max number of children for processed chunks.
+	*/
 	virtual void									uniteChunks(uint32_t maxAtLevel, uint32_t maxGroupSize) = 0;
+
+	/**
+		Rescale interior uv coordinates of given chunk to fit square of given size.
+		\param[in] side Size of square side
+		\param[in] chunkId Chunk ID for which UVs should be scaled.
+	*/
+	virtual void									fitUvToRect(float side, uint32_t chunkId) = 0;
+
+	/**
+		Rescale interior uv coordinates of all existing chunks to fit square of given size, relative sizes will be preserved.
+		\param[in] side Size of square side
+	*/
+	virtual void									fitAllUvToRect(float side) = 0;
+
 };
 
 } // namespace Blast

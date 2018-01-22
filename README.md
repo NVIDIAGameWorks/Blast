@@ -1,4 +1,4 @@
-Blast 1.1.1
+Blast 1.1.2
 ===========
 
 ![Alt text](/images/blast.png?raw=true "Blast Intro")
@@ -93,8 +93,8 @@ applications.
 Unreal Engine 4 Plugin
 ----------------------
 
-4.17 branch: https://github.com/NvPhysX/UnrealEngine/tree/Blast-4.17  
-4.18 branch: https://github.com/NvPhysX/UnrealEngine/tree/Blast-4.18
+UE4.17.2: https://github.com/NvPhysX/UnrealEngine/tree/Blast-4.17
+UE4.18.0: https://github.com/NvPhysX/UnrealEngine/tree/Blast-4.18
 
 UE4 github access is required to access this repo, more info: https://developer.nvidia.com/nvidia-gameworks-and-ue4
 

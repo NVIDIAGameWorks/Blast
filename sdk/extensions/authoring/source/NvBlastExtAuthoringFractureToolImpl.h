@@ -14,6 +14,7 @@
 #include "NvBlastExtAuthoringFractureTool.h"
 #include "NvBlastExtAuthoringMesh.h"
 #include <vector>
+#include <set>
 
 namespace Nv
 {
@@ -114,8 +115,8 @@ public:
 
 private:
 	std::vector <physx::PxVec3>	mGeneratedSites;
-	const Mesh*						mMesh;
-	const Mesh*						mStencil;
+	const Mesh*					mMesh;
+	const Mesh*					mStencil;
 	RandomGeneratorBase*		mRnd;
 	SpatialAccelerator*			mAccelerator;
 };
@@ -224,7 +225,34 @@ public:
 
 		\return   If 0, fracturing is successful.
 	*/
-	int32_t									slicing(uint32_t chunkId, SlicingConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd) override;
+	int32_t									slicing(uint32_t chunkId, const SlicingConfiguration& conf, bool replaceChunk, RandomGeneratorBase* rnd) override;
+
+
+	/**
+	Cut chunk with plane.
+	\param[in] chunkId				Chunk to fracture
+	\param[in] normal				Plane normal
+	\param[in] position				Point on plane
+	\param[in] noise				Noise configuration for plane-chunk intersection, see NoiseConfiguration.
+	\param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them.
+	Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
+	\param[in] rnd					User supplied random number generator
+
+	\return   If 0, fracturing is successful.
+	*/
+	int32_t									cut(uint32_t chunkId, const physx::PxVec3& normal, const physx::PxVec3& position, const NoiseConfiguration& noise, bool replaceChunk, RandomGeneratorBase* rnd) override;
+
+	/**
+	Cutout fracture for specified chunk.
+	\param[in] chunkId				Chunk to fracture
+	\param[in] conf					Cutout parameters, see CutoutConfiguration.
+	\param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them.
+	Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
+	\param[in] rnd					User supplied random number generator
+
+	\return   If 0, fracturing is successful.
+	*/
+	int32_t									cutout(uint32_t chunkId, CutoutConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd) override;
 
 
 	/**
@@ -256,6 +284,15 @@ public:
 		\return number of triangles in base mesh
 	*/
 	uint32_t								getBaseMesh(int32_t chunkIndex, Triangle*& output) override;
+
+	/**
+		Update chunk base mesh
+		\note Doesn't allocates output array, Triangle* output should be preallocated by user
+		\param[in] chunkIndex Chunk index
+		\param[out] output Array of triangles to be filled
+		\return number of triangles in base mesh
+	*/
+	uint32_t								updateBaseMesh(int32_t chunkIndex, Triangle* output) override;
 
 	/**
 		Return index of chunk with specified chunkId
@@ -324,13 +361,29 @@ public:
 	void									uniteChunks(uint32_t maxAtLevel, uint32_t maxGroupSize) override;
 	
 
+	/**
+		Rescale interior uv coordinates of given chunk to fit square of given size. 
+		\param[in] side Size of square side
+		\param[in] chunkId Chunk ID for which UVs should be scaled.
+	*/
+	void									fitUvToRect(float side, uint32_t chunkId) override;
+
+	/**
+		Rescale interior uv coordinates of all existing chunks to fit square of given size, relative sizes will be preserved.
+		\param[in] side Size of square side
+	*/
+	void									fitAllUvToRect(float side) override;
+
+
+
 private:	
 	void									eraseChunk(int32_t chunkId);	
 	bool									isAncestorForChunk(int32_t ancestorId, int32_t chunkId);
-	int32_t									slicingNoisy(uint32_t chunkId, SlicingConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd);
+	int32_t									slicingNoisy(uint32_t chunkId, const SlicingConfiguration& conf, bool replaceChunk, RandomGeneratorBase* rnd);
 	uint32_t								stretchGroup(const std::vector<uint32_t>& group, std::vector<std::vector<uint32_t>>& graph);
 	void									rebuildAdjGraph(const std::vector<uint32_t>& chunksToRebuild, std::vector<std::vector<uint32_t> >& chunkGraph);
-	
+	void									fitAllUvToRect(float side, std::set<uint32_t>& mask);
+
 	/**
 		Returns newly created chunk index in mChunkData.
 	*/

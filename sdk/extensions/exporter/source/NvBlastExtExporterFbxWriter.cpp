@@ -69,6 +69,8 @@ FbxFileWriter::FbxFileWriter():
 	mRenderLayer = FbxDisplayLayer::Create(mScene, FbxUtils::getRenderGeometryLayerName().c_str());
 	mRenderLayer->Show.Set(true);
 	mRenderLayer->Color.Set(FbxDouble3(0.0f, 1.0f, 0.0f));
+
+	mInteriorIndex = -1;
 }
 
 void FbxFileWriter::release()
@@ -89,12 +91,18 @@ void FbxFileWriter::createMaterials(const ExporterMeshData& aResult)
 	
 	for (uint32_t i = 0; i < aResult.submeshCount; ++i)
 	{
-		FbxSurfacePhong* material = FbxSurfacePhong::Create(sdkManager.get(), aResult.submeshNames[i]);
+		FbxSurfacePhong* material = FbxSurfacePhong::Create(sdkManager.get(), aResult.submeshMats[i].name);
 		material->Diffuse.Set(FbxDouble3(float(rand()) / RAND_MAX , float(rand()) / RAND_MAX, float(rand()) / RAND_MAX));
 		material->DiffuseFactor.Set(1.0);
 		mMaterials.push_back(material);
 	}
 }
+
+void FbxFileWriter::setInteriorIndex(int32_t index)
+{
+	mInteriorIndex = index;
+}
+
 
 void FbxFileWriter::createMaterials(const AuthoringResult& aResult)
 {
@@ -113,10 +121,19 @@ void FbxFileWriter::createMaterials(const AuthoringResult& aResult)
 		material->DiffuseFactor.Set(1.0);
 		mMaterials.push_back(material);
 	}
-	FbxSurfacePhong* interiorMat = FbxSurfacePhong::Create(sdkManager.get(), "Interior_Material");
-	interiorMat->Diffuse.Set(FbxDouble3(1.0, 0.0, 0.5));
-	interiorMat->DiffuseFactor.Set(1.0);
-	mMaterials.push_back(interiorMat);
+	if (mInteriorIndex == -1) // No material setted. Create new one.
+	{
+		FbxSurfacePhong* interiorMat = FbxSurfacePhong::Create(sdkManager.get(), "Interior_Material");
+		interiorMat->Diffuse.Set(FbxDouble3(1.0, 0.0, 0.5));
+		interiorMat->DiffuseFactor.Set(1.0);
+		mMaterials.push_back(interiorMat);
+	}
+	else
+	{
+		if (mInteriorIndex < 0) mInteriorIndex = 0;
+		if (static_cast<size_t>(mInteriorIndex) >= mMaterials.size()) mInteriorIndex = 0;
+	}
+
 }
 
 
@@ -416,7 +433,7 @@ uint32_t FbxFileWriter::createChunkRecursive(uint32_t currentCpIdx, uint32_t chu
 		mesh->AddPolygon(currentCpIdx + cpIdx + 1);
 		mesh->AddPolygon(currentCpIdx + cpIdx + 2);
 		mesh->EndPolygon();
-		int32_t material = (tri.materialId != MATERIAL_INTERIOR) ? ((tri.materialId < int32_t(mMaterials.size() - 1)) ? tri.materialId : 0) : int32_t(mMaterials.size() - 1);
+		int32_t material = (tri.materialId != MATERIAL_INTERIOR) ? ((tri.materialId < int32_t(mMaterials.size())) ? tri.materialId : 0) : ((mInteriorIndex == -1) ? int32_t(mMaterials.size() - 1): mInteriorIndex);
 		matElement->GetIndexArray().SetAt(polyCount, material);
 		if (smElement)
 		{
@@ -648,7 +665,7 @@ void FbxFileWriter::createChunkRecursiveNonSkinned(const std::string& meshName, 
 			geUV->GetDirectArray().Add(uv);
 		}
 		mesh->EndPolygon();
-		int32_t material = (geo.materialId != MATERIAL_INTERIOR) ? ((geo.materialId < int32_t(mMaterials.size() - 1))? geo.materialId : 0) : int32_t(mMaterials.size() - 1);
+		int32_t material = (geo.materialId != MATERIAL_INTERIOR) ? ((geo.materialId < int32_t(mMaterials.size()))? geo.materialId : 0) : ((mInteriorIndex == -1)? int32_t(mMaterials.size() - 1) : mInteriorIndex);
 		matElement->GetIndexArray().SetAt(polyCount, material);
 
 		if (smElement)
