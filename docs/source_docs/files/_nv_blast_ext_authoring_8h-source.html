@@ -135,29 +135,33 @@
 <a name="l00183"></a>00183 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a>* <a class="code" href="_nv_blast_ext_authoring_8h.html#a6ed285a916f8dd64001820d1633bb4e">NvBlastExtAuthoringProcessFracture</a>(<a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html">Nv::Blast::FractureTool</a>&amp; fTool,
 <a name="l00184"></a>00184     <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">Nv::Blast::BlastBondGenerator</a>&amp; bondGenerator, <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a>&amp; collisionBuilder, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html">Nv::Blast::CollisionParams</a>&amp; collisionParam, int32_t defaultSupportDepth = -1);
 <a name="l00185"></a>00185 
-<a name="l00192"></a>00192 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_authoring_8h.html#de75005f859c5cead3f89cee9c345af8">NvBlastExtUpdateGraphicsMesh</a>(<a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html">Nv::Blast::FractureTool</a>&amp; fTool, <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a>&amp; ares);
+<a name="l00192"></a>00192 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_authoring_8h.html#f7f3ac8b4a132b584eff789062a59dfd">NvBlastExtAuthoringUpdateGraphicsMesh</a>(<a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html">Nv::Blast::FractureTool</a>&amp; fTool, <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a>&amp; ares);
 <a name="l00193"></a>00193 
-<a name="l00194"></a>00194 
-<a name="l00195"></a>00195 
-<a name="l00196"></a>00196 
-<a name="l00201"></a>00201 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_mesh_cleaner.html">Nv::Blast::MeshCleaner</a>* <a class="code" href="_nv_blast_ext_authoring_8h.html#d8620704c7b10e310df502a8c8998a17">NvBlastExtAuthoringCreateMeshCleaner</a>();
-<a name="l00202"></a>00202 
-<a name="l00203"></a>00203 
-<a name="l00204"></a>00204 
-<a name="l00227"></a>00227 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> uint32_t <a class="code" href="_nv_blast_ext_authoring_8h.html#913c91f5df4128e885a8103e7b82f2c3">NvBlastExtAuthoringFindAssetConnectingBonds</a>
-<a name="l00228"></a>00228 (
-<a name="l00229"></a>00229     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_asset.html">NvBlastAsset</a>** components,
-<a name="l00230"></a>00230     <span class="keyword">const</span> physx::PxVec3* scales,
-<a name="l00231"></a>00231     <span class="keyword">const</span> physx::PxQuat* rotations,
-<a name="l00232"></a>00232     <span class="keyword">const</span> physx::PxVec3* translations,
-<a name="l00233"></a>00233     <span class="keyword">const</span> uint32_t** convexHullOffsets,
-<a name="l00234"></a>00234     <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a>*** chunkHulls,
-<a name="l00235"></a>00235     uint32_t componentCount,
-<a name="l00236"></a>00236     <a class="code" href="struct_nv_blast_ext_asset_utils_bond_desc.html">NvBlastExtAssetUtilsBondDesc</a>*&amp; newBondDescs,
-<a name="l00237"></a>00237     <span class="keywordtype">float</span> maxSeparation = 0.0f
-<a name="l00238"></a>00238 );
-<a name="l00239"></a>00239 
-<a name="l00240"></a>00240 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORING_H</span>
+<a name="l00203"></a>00203 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_authoring_8h.html#cbe20a13f4898cfec0b83fabbb5b8364">NvBlastExtAuthoringBuildCollisionMeshes</a>
+<a name="l00204"></a>00204 (
+<a name="l00205"></a>00205     <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a>&amp; ares, 
+<a name="l00206"></a>00206     <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a>&amp; collisionBuilder, 
+<a name="l00207"></a>00207     <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_params.html">Nv::Blast::CollisionParams</a>&amp; collisionParam, 
+<a name="l00208"></a>00208     uint32_t chunksToProcessCount,
+<a name="l00209"></a>00209     uint32_t* chunksToProcess
+<a name="l00210"></a>00210 );
+<a name="l00211"></a>00211 
+<a name="l00216"></a>00216 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_mesh_cleaner.html">Nv::Blast::MeshCleaner</a>* <a class="code" href="_nv_blast_ext_authoring_8h.html#d8620704c7b10e310df502a8c8998a17">NvBlastExtAuthoringCreateMeshCleaner</a>();
+<a name="l00217"></a>00217 
+<a name="l00240"></a>00240 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> uint32_t <a class="code" href="_nv_blast_ext_authoring_8h.html#913c91f5df4128e885a8103e7b82f2c3">NvBlastExtAuthoringFindAssetConnectingBonds</a>
+<a name="l00241"></a>00241 (
+<a name="l00242"></a>00242     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_asset.html">NvBlastAsset</a>** components,
+<a name="l00243"></a>00243     <span class="keyword">const</span> physx::PxVec3* scales,
+<a name="l00244"></a>00244     <span class="keyword">const</span> physx::PxQuat* rotations,
+<a name="l00245"></a>00245     <span class="keyword">const</span> physx::PxVec3* translations,
+<a name="l00246"></a>00246     <span class="keyword">const</span> uint32_t** convexHullOffsets,
+<a name="l00247"></a>00247     <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a>*** chunkHulls,
+<a name="l00248"></a>00248     uint32_t componentCount,
+<a name="l00249"></a>00249     <a class="code" href="struct_nv_blast_ext_asset_utils_bond_desc.html">NvBlastExtAssetUtilsBondDesc</a>*&amp; newBondDescs,
+<a name="l00250"></a>00250     <span class="keywordtype">float</span> maxSeparation = 0.0f
+<a name="l00251"></a>00251 );
+<a name="l00252"></a>00252 
+<a name="l00253"></a>00253 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORING_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

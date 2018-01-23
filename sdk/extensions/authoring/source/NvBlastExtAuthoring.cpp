@@ -139,7 +139,7 @@ CollisionHull* NvBlastExtAuthoringTransformCollisionHull(const CollisionHull* hu
 	return ret;
 }
 
-void buildPhysicsChunks(ConvexMeshBuilder& collisionBuilder, AuthoringResult& result, const CollisionParams& params)
+void buildPhysicsChunks(ConvexMeshBuilder& collisionBuilder, AuthoringResult& result, const CollisionParams& params, uint32_t chunksToProcessCount = 0, uint32_t* chunksToProcess = nullptr)
 {
 	uint32_t chunkCount = (uint32_t)result.chunkCount;
 	if (params.maximumNumberOfHulls == 1)
@@ -172,10 +172,27 @@ void buildPhysicsChunks(ConvexMeshBuilder& collisionBuilder, AuthoringResult& re
 	}
 	else
 	{
+		std::set<int32_t> chunkSet;
+		for (uint32_t c = 0; c < chunksToProcessCount; c++)
+		{
+			chunkSet.insert(chunksToProcess[c]);
+		}
 		std::vector<std::vector<CollisionHull*> > hulls(chunkCount);
 		int32_t totalHulls = 0;
 		for (uint32_t i = 0; i < chunkCount; ++i)
 		{
+			if (chunkSet.size() > 0 && chunkSet.find(i) == chunkSet.end())
+			{
+				int32_t newHulls = result.collisionHullOffset[i + 1] - result.collisionHullOffset[i];
+				int32_t off = result.collisionHullOffset[i];
+				for (int32_t subhull = 0; subhull < newHulls; ++subhull)
+				{
+					hulls[i].push_back(result.collisionHull[off + subhull]);
+				}
+				totalHulls += newHulls;
+				continue;
+			}
+
 			CollisionHull** tempHull;
 
 			int32_t newHulls = collisionBuilder.buildMeshConvexDecomposition(result.geometry + result.geometryOffset[i], 
@@ -187,6 +204,11 @@ void buildPhysicsChunks(ConvexMeshBuilder& collisionBuilder, AuthoringResult& re
 			}
 			SAFE_ARRAY_DELETE(tempHull);
 		}
+
+		SAFE_ARRAY_DELETE(result.collisionHullOffset);
+		SAFE_ARRAY_DELETE(result.collisionHull);
+		SAFE_ARRAY_DELETE(result.physicsSubchunks);
+		SAFE_ARRAY_DELETE(result.physicsChunks);
 
 		result.collisionHullOffset = SAFE_ARRAY_NEW(uint32_t, chunkCount + 1);
 		result.collisionHullOffset[0] = 0;
@@ -488,11 +510,17 @@ uint32_t NvBlastExtAuthoringFindAssetConnectingBonds
 }
 
 
-void NvBlastExtUpdateGraphicsMesh(Nv::Blast::FractureTool& fTool, Nv::Blast::AuthoringResult& aResult)
+void NvBlastExtAuthoringUpdateGraphicsMesh(Nv::Blast::FractureTool& fTool, Nv::Blast::AuthoringResult& aResult)
 {
 	uint32_t chunkCount = fTool.getChunkCount();
 	for (uint32_t i = 0; i < chunkCount; ++i)
 	{
 		fTool.updateBaseMesh(i, aResult.geometry + aResult.geometryOffset[i]);
 	}
+}
+
+void NvBlastExtAuthoringBuildCollisionMeshes(Nv::Blast::AuthoringResult& ares, Nv::Blast::ConvexMeshBuilder& collisionBuilder,
+	const Nv::Blast::CollisionParams& collisionParam, uint32_t chunksToProcessCount, uint32_t* chunksToProcess)
+{
+	buildPhysicsChunks(collisionBuilder, ares, collisionParam, chunksToProcessCount, chunksToProcess);
 }

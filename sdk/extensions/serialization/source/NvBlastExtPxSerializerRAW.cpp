@@ -203,7 +203,7 @@ ExtPxAsset* deserializeExtPxAsset(ExtIStream& stream, TkFramework& framework, ph
 		}
 		defaultActorDesc.initialBondHealths = bondHealthCount ? bondHealths.begin() : nullptr;
 
-		auto& supportChunkHealths = asset->getBondHealthsArray();
+		auto& supportChunkHealths = asset->getSupportChunkHealthsArray();
 		uint32_t supportChunkHealthCount;
 		stream >> supportChunkHealthCount;
 		supportChunkHealths.resize(supportChunkHealthCount);

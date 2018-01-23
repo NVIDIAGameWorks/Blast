@@ -373,6 +373,10 @@ int32_t	ConvexMeshBuilderImpl::buildMeshConvexDecomposition(const Triangle* mesh
 	VHACD::IVHACD::Parameters vhacdParam;
 	vhacdParam.m_maxConvexHulls = iparams.maximumNumberOfHulls;
 	vhacdParam.m_resolution = iparams.voxelGridResolution;
+	vhacdParam.m_concavity = iparams.concavity;
+	vhacdParam.m_oclAcceleration = false;
+	//TODO vhacdParam.m_callback
+	vhacdParam.m_minVolumePerCH = 0.003f; // 1.f / (3 * vhacdParam.m_resolution ^ (1 / 3));
 
 	decomposer->Compute(coords.data(), triangleCount * 3, indices.data(), triangleCount, vhacdParam);
 

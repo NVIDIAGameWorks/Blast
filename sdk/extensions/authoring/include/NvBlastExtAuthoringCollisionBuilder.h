@@ -57,10 +57,14 @@ struct CollisionParams
 	void setDefault()
 	{
 		maximumNumberOfHulls = 8;
+		maximumNumberOfVerticesPerHull = 64;
 		voxelGridResolution = 1000000;
+		concavity = 0.0025f;
 	}
 	uint32_t maximumNumberOfHulls; // Maximum number of convex hull generated for one chunk. If equal to 1 convex decomposition is disabled.
-	uint32_t voxelGridResolution; // Voxel grid resolution used for chunk convex decomposition.
+	uint32_t maximumNumberOfVerticesPerHull; // Controls the maximum number of triangles per convex-hull (default=64, range=4-1024)
+	uint32_t voxelGridResolution; // Voxel grid resolution used for chunk convex decomposition (default=1,000,000, range=10,000-16,000,000).
+	float concavity; // Value between 0 and 1, controls how accurate hull generation is
 };
 
 /**

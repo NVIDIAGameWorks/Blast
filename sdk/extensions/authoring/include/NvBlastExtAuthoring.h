@@ -189,18 +189,31 @@ Updates graphics mesh only
 \param[in]  fTool				Fracture tool created by NvBlastExtAuthoringCreateFractureTool
 \param[out] ares				AuthoringResult object which contains chunks, for which rendermeshes will be updated (e.g. to tweak UVs).
 */
-NVBLAST_API void NvBlastExtUpdateGraphicsMesh(Nv::Blast::FractureTool& fTool, Nv::Blast::AuthoringResult& ares);
+NVBLAST_API void NvBlastExtAuthoringUpdateGraphicsMesh(Nv::Blast::FractureTool& fTool, Nv::Blast::AuthoringResult& ares);
 
+/**
+Build collision meshes
 
-
+\param[in,out]	ares				AuthoringResult object which contains chunks, for which collision meshes will be built.
+\param[in]		collisionBuilder	Reference to ConvexMeshBuilder instance.
+\param[in]		collisionParam		Parameters of collision hulls generation.
+\param[in]		chunksToProcessCount Number of chunk indices in chunksToProcess memory buffer.
+\param[in]		chunksToProcess		Chunk indices for which collision mesh should be built.
+*/
+NVBLAST_API void NvBlastExtAuthoringBuildCollisionMeshes
+(
+	Nv::Blast::AuthoringResult& ares, 
+	Nv::Blast::ConvexMeshBuilder& collisionBuilder, 
+	const Nv::Blast::CollisionParams& collisionParam, 
+	uint32_t chunksToProcessCount,
+	uint32_t* chunksToProcess
+);
 
 /**
 	Creates MeshCleaner object
 	\return pointer to Nv::Blast::Mesh if it was created succefully otherwise return nullptr
 */
 NVBLAST_API Nv::Blast::MeshCleaner* NvBlastExtAuthoringCreateMeshCleaner();
-
-
 
 /**
 Finds bonds connecting chunks in a list of assets
