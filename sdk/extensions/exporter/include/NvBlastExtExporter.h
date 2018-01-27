@@ -46,7 +46,7 @@ namespace Blast
 struct AuthoringResult;
 struct CollisionHull;
 
-struct Materials
+struct Material
 {
 	const char* name;
 	const char* diffuse_tex;
@@ -72,7 +72,7 @@ struct ExporterMeshData
 
 	uint32_t submeshCount; //Number of submeshes
 
-	Materials* submeshMats; 
+	Material* submeshMats; 
 
 
 	/**

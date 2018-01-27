@@ -10,8 +10,10 @@ SET(IMPORT_EXT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/extensions/import/source)
 SET(IMPORT_EXT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/extensions/import/include)
 SET(PHYSX_EXT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/extensions/physx/include)
 
+
+SET(APEX_MODULES_DIR ${PROJECT_SOURCE_DIR}/extensions/import/apexmodules)
+
 FIND_PACKAGE(PhysXSDK $ENV{PM_PhysX_VERSION} REQUIRED)
-FIND_PACKAGE(ApexSDK $ENV{PM_Apex_VERSION} REQUIRED)
 FIND_PACKAGE(PxSharedSDK $ENV{PM_PxShared_VERSION} REQUIRED)
 
 # Include here after the directories are defined so that the platform specific file can use the variables.
@@ -28,24 +30,32 @@ SET(PUBLIC_FILES
 	${IMPORT_EXT_INCLUDE_DIR}/NvBlastExtApexImportTool.h
 )
 
+SET(NV_PARAM_INCLUDE ${APEX_MODULES_DIR}/include)
+
+
 SET(EXT_IMPORT_FILES
-	${IMPORT_EXT_SOURCE_DIR}/NvBlastExtApexDestruction.cpp
-	${IMPORT_EXT_SOURCE_DIR}/NvBlastExtApexDestruction.h
 	${IMPORT_EXT_SOURCE_DIR}/NvBlastExtApexImportTool.cpp
-	${IMPORT_EXT_SOURCE_DIR}/NvBlastExtScopedResource.cpp
-	${IMPORT_EXT_SOURCE_DIR}/NvBlastExtScopedResource.h
 )
+
+file(GLOB_RECURSE MODULES_SOURCES ${APEX_MODULES_DIR}/modules/*.cpp ${APEX_MODULES_DIR}/modules/*.h)
+file(GLOB_RECURSE NV_PARAM_SOURCES ${APEX_MODULES_DIR}/NvParameterized/*.cpp ${APEX_MODULES_DIR}/NvParameterized/*.h ${APEX_MODULES_DIR}/NvParameterized/*.inl)
+  
+
 
 ADD_LIBRARY(NvBlastExtImport STATIC
 	${COMMON_FILES}
 	${PUBLIC_FILES}
-
+	${MODULES_SOURCES}
 	${EXT_IMPORT_FILES}
+	${NV_PARAM_SOURCES}	
 )
 
 SOURCE_GROUP("common" FILES ${COMMON_FILES})
 SOURCE_GROUP("public" FILES ${PUBLIC_FILES})
 SOURCE_GROUP("src" FILES ${EXT_IMPORT_FILES})
+
+SOURCE_GROUP("modules" FILES ${MODULES_SOURCES})
+SOURCE_GROUP("NvParameterized" FILES ${NV_PARAM_SOURCES})
 
 
 # Target specific compile options
@@ -55,6 +65,8 @@ TARGET_INCLUDE_DIRECTORIES(NvBlastExtImport
 
 	PUBLIC ${PROJECT_SOURCE_DIR}/lowlevel/include
 	PUBLIC ${PROJECT_SOURCE_DIR}/toolkit/include
+	PUBLIC ${PROJECT_SOURCE_DIR}/extensions/exporter/include
+	
 	PUBLIC ${PHYSX_EXT_INCLUDE_DIR}
 	PUBLIC ${IMPORT_EXT_INCLUDE_DIR}
 
@@ -64,8 +76,26 @@ TARGET_INCLUDE_DIRECTORIES(NvBlastExtImport
 	PRIVATE ${IMPORT_EXT_SOURCE_DIR}
 
 	PRIVATE ${PHYSXSDK_INCLUDE_DIRS}
-	PRIVATE ${APEXSDK_INCLUDE_DIRS}
 	PRIVATE ${PXSHAREDSDK_INCLUDE_DIRS}
+	
+	PRIVATE ${APEX_MODULES_DIR}/modules/common/include/autogen
+	PRIVATE ${APEX_MODULES_DIR}/modules/common/include
+	PRIVATE ${APEX_MODULES_DIR}/modules/common_legacy/include/autogen
+	PRIVATE ${APEX_MODULES_DIR}/modules/common_legacy/include
+	
+	PRIVATE ${APEX_MODULES_DIR}/modules/destructible/include/autogen
+	PRIVATE ${APEX_MODULES_DIR}/modules/destructible_legacy/include/autogen
+	PRIVATE ${APEX_MODULES_DIR}/modules/destructible_legacy/include
+	
+	PRIVATE ${APEX_MODULES_DIR}/modules/framework/include/autogen
+	PRIVATE ${APEX_MODULES_DIR}/modules/framework_legacy/include/autogen
+	PRIVATE ${APEX_MODULES_DIR}/modules/framework_legacy/include
+	
+	PRIVATE ${APEX_MODULES_DIR}/nvparutils
+	
+	PRIVATE ${APEX_MODULES_DIR}/NvParameterized/include
+	
+	
 )
 
 TARGET_COMPILE_DEFINITIONS(NvBlastExtImport
@@ -88,8 +118,9 @@ SET_TARGET_PROPERTIES(NvBlastExtImport PROPERTIES
 TARGET_LINK_LIBRARIES(NvBlastExtImport 
 	PRIVATE NvBlast NvBlastTk NvBlastExtAuthoring
 	PUBLIC ${BLASTEXT_PLATFORM_LINKED_LIBS}
-	PUBLIC $<$<CONFIG:debug>:${APEXFRAMEWORK_LIB_DEBUG}> $<$<CONFIG:debug>:${PSFASTXML_LIB_DEBUG}>
-	PUBLIC $<$<CONFIG:checked>:${APEXFRAMEWORK_LIB_CHECKED}> $<$<CONFIG:checked>:${PSFASTXML_LIB_CHECKED}>
-	PUBLIC $<$<CONFIG:profile>:${APEXFRAMEWORK_LIB_PROFILE}> $<$<CONFIG:profile>:${PSFASTXML_LIB_PROFILE}>
-	PUBLIC $<$<CONFIG:release>:${APEXFRAMEWORK_LIB}> $<$<CONFIG:release>:${PSFASTXML_LIB}>
+	PUBLIC $<$<CONFIG:debug>:${PSFASTXML_LIB_DEBUG}>
+	PUBLIC $<$<CONFIG:checked>:${PSFASTXML_LIB_CHECKED}>
+	PUBLIC $<$<CONFIG:profile>:${PSFASTXML_LIB_PROFILE}>
+	PUBLIC $<$<CONFIG:release>:${PSFASTXML_LIB}>
+	
 )

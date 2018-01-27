@@ -187,7 +187,7 @@ NVBLAST_API Nv::Blast::AuthoringResult* NvBlastExtAuthoringProcessFracture(Nv::B
 Updates graphics mesh only
 
 \param[in]  fTool				Fracture tool created by NvBlastExtAuthoringCreateFractureTool
-\param[out] ares				AuthoringResult object which contains chunks, for which rendermeshes will be updated (e.g. to tweak UVs).
+\param[out] ares				AuthoringResult object which contains chunks, for which rendermeshes will be updated (e.g. to tweak UVs). Initially should be created by NvBlastExtAuthoringProcessFracture.
 */
 NVBLAST_API void NvBlastExtAuthoringUpdateGraphicsMesh(Nv::Blast::FractureTool& fTool, Nv::Blast::AuthoringResult& ares);
 

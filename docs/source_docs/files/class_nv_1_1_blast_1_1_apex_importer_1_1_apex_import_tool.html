@@ -51,31 +51,37 @@
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#9d630b32d1a0ae5fe3a044417cc64736">ApexImportTool</a> ()</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#a0c95716aa842fb18e0977b0318e4f94">getCollisionGeometry</a> (const nvidia::apex::DestructibleAsset *apexAsset, uint32_t chunkCount, std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, const std::vector&lt; uint32_t &gt; &amp;apexChunkFlags, std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">ExtPxAssetDesc::ChunkDesc</a> &gt; &amp;physicsChunks, std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html">ExtPxAssetDesc::SubchunkDesc</a> &gt; &amp;physicsSubchunks, std::vector&lt; std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> * &gt; &gt; &amp;hullsDesc)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#b5fa57e2d728ad0d68edf309eecb9612">getCollisionGeometry</a> (const NvParameterized::Interface *assetPrm, uint32_t chunkCount, std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, const std::vector&lt; uint32_t &gt; &amp;apexChunkFlags, std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">ExtPxAssetDesc::ChunkDesc</a> &gt; &amp;physicsChunks, std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html">ExtPxAssetDesc::SubchunkDesc</a> &gt; &amp;physicsSubchunks, std::vector&lt; std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> * &gt; &gt; &amp;hullsDesc)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#2d991b76f5a435d93672620a4fbd3e9c">importApexAsset</a> (std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, const nvidia::apex::DestructibleAsset *apexAsset, std::vector&lt; <a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> &gt; &amp;chunkDescriptors, std::vector&lt; <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> &gt; &amp;bondDescriptors, std::vector&lt; uint32_t &gt; &amp;flags, const <a class="el" href="struct_nv_1_1_blast_1_1_apex_importer_1_1_apex_importer_config.html">ApexImporterConfig</a> &amp;config)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxCooking *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#1c3e20969c95c5c39e77543e49a2dbb8">getCooking</a> ()</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#60a3a1e60440d30039cf3fd59804c140">importApexAsset</a> (std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, const nvidia::apex::DestructibleAsset *apexAsset, std::vector&lt; <a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> &gt; &amp;chunkDescriptors, std::vector&lt; <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> &gt; &amp;bondDescriptors, std::vector&lt; uint32_t &gt; &amp;flags)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxPhysics *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#015bbfbc6490c8be1283e23c95a9e69d">getPxSdk</a> ()</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#c657208fbafb257614a067c5c6ac1569">initialize</a> (nvidia::apex::ApexSDK *apexSdk, nvidia::apex::ModuleDestructible *moduleDestructible)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#66c2e8fca2b7b2325db26d5adab4ef86">importApexAsset</a> (std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, NvParameterized::Interface *assetNvIfc, std::vector&lt; <a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> &gt; &amp;chunkDescriptors, std::vector&lt; <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> &gt; &amp;bondDescriptors, std::vector&lt; uint32_t &gt; &amp;flags, const <a class="el" href="struct_nv_1_1_blast_1_1_apex_importer_1_1_apex_importer_config.html">ApexImporterConfig</a> &amp;config)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#d519acf4f77a862ea9df0209c52d9d3f">initialize</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#0ee66e5d4314a43efb2bbe79d0fa3d54">importApexAsset</a> (std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, NvParameterized::Interface *assetNvIfc, std::vector&lt; <a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> &gt; &amp;chunkDescriptors, std::vector&lt; <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> &gt; &amp;bondDescriptors, std::vector&lt; uint32_t &gt; &amp;flags)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#69bbab7d8a35c53deb6126a4216f8ff1">importRendermesh</a> (const std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, const NvParameterized::Interface *assetNvIfc, <a class="el" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">Nv::Blast::ExporterMeshData</a> *outputData, const char *materialsDir)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#54dfbbc568827019198eda587f498dff">isValid</a> ()</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">nvidia::apex::DestructibleAsset *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#a96db2d5f3538636b810031892d288aa">loadAssetFromFile</a> (nvidia::PxFileBuf *stream)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#b194abf90da84bd9a72ec73b9e79d4b2">loadAssetFromFile</a> (nvidia::PxFileBuf *stream, NvParameterized::Serializer::DeserializedData &amp;data)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#9bc31d185c168009c602ff8e21622681">saveAsset</a> (const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> *asset, nvidia::PxFileBuf *stream)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#a76c30a1b4458cd225bc0c75738656b1">~ApexImportTool</a> ()</td></tr>
 
-<tr><td colspan="2"><br><h2>Public Attributes</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html">ApexDestruction</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#4abf22c6e37ad3a46c4f69c7dae35794">m_apexDestruction</a></td></tr>
-
 <tr><td colspan="2"><br><h2>Protected Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#96767b146ba38ccebce457280da2945c">ApexImportTool</a> (const <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html">ApexImportTool</a> &amp;)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html">ApexImportTool</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#cb4b98384b693351b6968f3ab5862c6f">operator=</a> (const <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html">ApexImportTool</a> &amp;)</td></tr>
+
+<tr><td colspan="2"><br><h2>Protected Attributes</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxCooking *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#d5c4c3553756255ef278dddce2fe1ccd">m_Cooking</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxFoundation *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#aad46c0766884673960f8f2205b926af">m_Foundation</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxPhysics *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#7fc6ad22ebb8a62d777d5e9633163177">m_PhysxSDK</a></td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
@@ -96,7 +102,7 @@
 <div class="memdoc">
 
 <p>
-Constructor should be provided with user defined allocator and massage function: 
+
 </div>
 </div><p>
 <a class="anchor" name="a76c30a1b4458cd225bc0c75738656b1"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::~ApexImportTool" ref="a76c30a1b4458cd225bc0c75738656b1" args="()" -->
@@ -139,15 +145,15 @@ Constructor should be provided with user defined allocator and massage function:
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="a0c95716aa842fb18e0977b0318e4f94"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::getCollisionGeometry" ref="a0c95716aa842fb18e0977b0318e4f94" args="(const nvidia::apex::DestructibleAsset *apexAsset, uint32_t chunkCount, std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, const std::vector&lt; uint32_t &gt; &amp;apexChunkFlags, std::vector&lt; ExtPxAssetDesc::ChunkDesc &gt; &amp;physicsChunks, std::vector&lt; ExtPxAssetDesc::SubchunkDesc &gt; &amp;physicsSubchunks, std::vector&lt; std::vector&lt; CollisionHull * &gt; &gt; &amp;hullsDesc)" -->
+<a class="anchor" name="b5fa57e2d728ad0d68edf309eecb9612"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::getCollisionGeometry" ref="b5fa57e2d728ad0d68edf309eecb9612" args="(const NvParameterized::Interface *assetPrm, uint32_t chunkCount, std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, const std::vector&lt; uint32_t &gt; &amp;apexChunkFlags, std::vector&lt; ExtPxAssetDesc::ChunkDesc &gt; &amp;physicsChunks, std::vector&lt; ExtPxAssetDesc::SubchunkDesc &gt; &amp;physicsSubchunks, std::vector&lt; std::vector&lt; CollisionHull * &gt; &gt; &amp;hullsDesc)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">bool Nv::Blast::ApexImporter::ApexImportTool::getCollisionGeometry           </td>
           <td>(</td>
-          <td class="paramtype">const nvidia::apex::DestructibleAsset *&nbsp;</td>
-          <td class="paramname"> <em>apexAsset</em>, </td>
+          <td class="paramtype">const NvParameterized::Interface *&nbsp;</td>
+          <td class="paramname"> <em>assetPrm</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -198,8 +204,8 @@ Constructor should be provided with user defined allocator and massage function:
 Method creates collision geometry from user-supplied APEX Destructible asset. <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>apexAsset</em>&nbsp;</td><td>Pointer on DestructibleAsset object for which collision geometry should be created. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkCount</em>&nbsp;</td><td><a class="el" href="namespace_nv_1_1_blast.html">Blast</a> asset chunk count, should be equal to number of blast chunk descriptors which are gathered at <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#60a3a1e60440d30039cf3fd59804c140">ApexImportTool::importApexAsset</a>(...) </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkReorderInvMap</em>&nbsp;</td><td>Chunk map from blast chunk to apex chunk filled in <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#60a3a1e60440d30039cf3fd59804c140">ApexImportTool::importApexAsset</a>(...) </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkCount</em>&nbsp;</td><td><a class="el" href="namespace_nv_1_1_blast.html">Blast</a> asset chunk count, should be equal to number of blast chunk descriptors which are gathered at <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#0ee66e5d4314a43efb2bbe79d0fa3d54">ApexImportTool::importApexAsset</a>(...) </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkReorderInvMap</em>&nbsp;</td><td>Chunk map from blast chunk to apex chunk filled in <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#0ee66e5d4314a43efb2bbe79d0fa3d54">ApexImportTool::importApexAsset</a>(...) </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>apexChunkFlags</em>&nbsp;</td><td>Chunk flags array </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>physicsChunks</em>&nbsp;</td><td>Chunk physics info output array </td></tr>
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>physicsSubchunks</em>&nbsp;</td><td>Chunk collision geometry and transformation data output array </td></tr>
@@ -210,7 +216,45 @@ Method creates collision geometry from user-supplied APEX Destructible asset. <d
 
 </div>
 </div><p>
-<a class="anchor" name="2d991b76f5a435d93672620a4fbd3e9c"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::importApexAsset" ref="2d991b76f5a435d93672620a4fbd3e9c" args="(std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, const nvidia::apex::DestructibleAsset *apexAsset, std::vector&lt; NvBlastChunkDesc &gt; &amp;chunkDescriptors, std::vector&lt; NvBlastBondDesc &gt; &amp;bondDescriptors, std::vector&lt; uint32_t &gt; &amp;flags, const ApexImporterConfig &amp;config)" -->
+<a class="anchor" name="1c3e20969c95c5c39e77543e49a2dbb8"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::getCooking" ref="1c3e20969c95c5c39e77543e49a2dbb8" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">physx::PxCooking* Nv::Blast::ApexImporter::ApexImportTool::getCooking           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="015bbfbc6490c8be1283e23c95a9e69d"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::getPxSdk" ref="015bbfbc6490c8be1283e23c95a9e69d" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">physx::PxPhysics* Nv::Blast::ApexImporter::ApexImportTool::getPxSdk           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="66c2e8fca2b7b2325db26d5adab4ef86"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::importApexAsset" ref="66c2e8fca2b7b2325db26d5adab4ef86" args="(std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, NvParameterized::Interface *assetNvIfc, std::vector&lt; NvBlastChunkDesc &gt; &amp;chunkDescriptors, std::vector&lt; NvBlastBondDesc &gt; &amp;bondDescriptors, std::vector&lt; uint32_t &gt; &amp;flags, const ApexImporterConfig &amp;config)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -223,8 +267,8 @@ Method creates collision geometry from user-supplied APEX Destructible asset. <d
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const nvidia::apex::DestructibleAsset *&nbsp;</td>
-          <td class="paramname"> <em>apexAsset</em>, </td>
+          <td class="paramtype">NvParameterized::Interface *&nbsp;</td>
+          <td class="paramname"> <em>assetNvIfc</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -274,7 +318,7 @@ Method builds <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> f
 
 </div>
 </div><p>
-<a class="anchor" name="60a3a1e60440d30039cf3fd59804c140"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::importApexAsset" ref="60a3a1e60440d30039cf3fd59804c140" args="(std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, const nvidia::apex::DestructibleAsset *apexAsset, std::vector&lt; NvBlastChunkDesc &gt; &amp;chunkDescriptors, std::vector&lt; NvBlastBondDesc &gt; &amp;bondDescriptors, std::vector&lt; uint32_t &gt; &amp;flags)" -->
+<a class="anchor" name="0ee66e5d4314a43efb2bbe79d0fa3d54"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::importApexAsset" ref="0ee66e5d4314a43efb2bbe79d0fa3d54" args="(std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, NvParameterized::Interface *assetNvIfc, std::vector&lt; NvBlastChunkDesc &gt; &amp;chunkDescriptors, std::vector&lt; NvBlastBondDesc &gt; &amp;bondDescriptors, std::vector&lt; uint32_t &gt; &amp;flags)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -287,8 +331,8 @@ Method builds <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> f
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const nvidia::apex::DestructibleAsset *&nbsp;</td>
-          <td class="paramname"> <em>apexAsset</em>, </td>
+          <td class="paramtype">NvParameterized::Interface *&nbsp;</td>
+          <td class="paramname"> <em>assetNvIfc</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -331,21 +375,33 @@ Method builds <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> f
 
 </div>
 </div><p>
-<a class="anchor" name="c657208fbafb257614a067c5c6ac1569"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::initialize" ref="c657208fbafb257614a067c5c6ac1569" args="(nvidia::apex::ApexSDK *apexSdk, nvidia::apex::ModuleDestructible *moduleDestructible)" -->
+<a class="anchor" name="69bbab7d8a35c53deb6126a4216f8ff1"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::importRendermesh" ref="69bbab7d8a35c53deb6126a4216f8ff1" args="(const std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, const NvParameterized::Interface *assetNvIfc, Nv::Blast::ExporterMeshData *outputData, const char *materialsDir)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool Nv::Blast::ApexImporter::ApexImportTool::initialize           </td>
+          <td class="memname">bool Nv::Blast::ApexImporter::ApexImportTool::importRendermesh           </td>
           <td>(</td>
-          <td class="paramtype">nvidia::apex::ApexSDK *&nbsp;</td>
-          <td class="paramname"> <em>apexSdk</em>, </td>
+          <td class="paramtype">const std::vector&lt; uint32_t &gt; &amp;&nbsp;</td>
+          <td class="paramname"> <em>chunkReorderInvMap</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">nvidia::apex::ModuleDestructible *&nbsp;</td>
-          <td class="paramname"> <em>moduleDestructible</em></td><td>&nbsp;</td>
+          <td class="paramtype">const NvParameterized::Interface *&nbsp;</td>
+          <td class="paramname"> <em>assetNvIfc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">Nv::Blast::ExporterMeshData</a> *&nbsp;</td>
+          <td class="paramname"> <em>outputData</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&nbsp;</td>
+          <td class="paramname"> <em>materialsDir</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -357,34 +413,7 @@ Method builds <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> f
 <div class="memdoc">
 
 <p>
-Before using <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html">ApexImportTool</a> should be initialized. User can provide existing ApexSDK and ModuleDestructible objects <dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>apexSdk</em>&nbsp;</td><td>Pointer on ApexSDK object </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>moduleDestructible</em>&nbsp;</td><td>Pointer on ModuleDestructible object </td></tr>
-  </table>
-</dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>If true, <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html">ApexImportTool</a> initialized successfully. </dd></dl>
-
-</div>
-</div><p>
-<a class="anchor" name="d519acf4f77a862ea9df0209c52d9d3f"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::initialize" ref="d519acf4f77a862ea9df0209c52d9d3f" args="()" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Nv::Blast::ApexImporter::ApexImportTool::initialize           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Before using <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html">ApexImportTool</a> should be initialized. ApexSDK and ModuleDestructible initialized internally. <dl class="return" compact><dt><b>Returns:</b></dt><dd>If true, <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html">ApexImportTool</a> initialized successfully. </dd></dl>
-
+Method builds <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> form provided DestructibleAsset. DestructibleAsset must contain support graph! 
 </div>
 </div><p>
 <a class="anchor" name="54dfbbc568827019198eda587f498dff"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::isValid" ref="54dfbbc568827019198eda587f498dff" args="()" -->
@@ -403,21 +432,29 @@ Before using <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_i
 <div class="memdoc">
 
 <p>
-Checks whether <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html">ApexImportTool</a> is initialized and can be used. <dl class="return" compact><dt><b>Returns:</b></dt><dd>If true, <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html">ApexImportTool</a> initialized successfully. </dd></dl>
 
 </div>
 </div><p>
-<a class="anchor" name="a96db2d5f3538636b810031892d288aa"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::loadAssetFromFile" ref="a96db2d5f3538636b810031892d288aa" args="(nvidia::PxFileBuf *stream)" -->
+<a class="anchor" name="b194abf90da84bd9a72ec73b9e79d4b2"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::loadAssetFromFile" ref="b194abf90da84bd9a72ec73b9e79d4b2" args="(nvidia::PxFileBuf *stream, NvParameterized::Serializer::DeserializedData &amp;data)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">nvidia::apex::DestructibleAsset* Nv::Blast::ApexImporter::ApexImportTool::loadAssetFromFile           </td>
+          <td class="memname">bool Nv::Blast::ApexImporter::ApexImportTool::loadAssetFromFile           </td>
           <td>(</td>
           <td class="paramtype">nvidia::PxFileBuf *&nbsp;</td>
-          <td class="paramname"> <em>stream</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
+          <td class="paramname"> <em>stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">NvParameterized::Serializer::DeserializedData &amp;&nbsp;</td>
+          <td class="paramname"> <em>data</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
         </tr>
       </table>
 </div>
@@ -490,12 +527,42 @@ Method serializes user-supplied <a class="el" href="struct_nv_blast_asset.html">
 </div>
 </div><p>
 <hr><h2>Member Data Documentation</h2>
-<a class="anchor" name="4abf22c6e37ad3a46c4f69c7dae35794"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::m_apexDestruction" ref="4abf22c6e37ad3a46c4f69c7dae35794" args="" -->
+<a class="anchor" name="d5c4c3553756255ef278dddce2fe1ccd"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::m_Cooking" ref="d5c4c3553756255ef278dddce2fe1ccd" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_destruction.html">ApexDestruction</a>* <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#4abf22c6e37ad3a46c4f69c7dae35794">Nv::Blast::ApexImporter::ApexImportTool::m_apexDestruction</a>          </td>
+          <td class="memname">physx::PxCooking* <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#d5c4c3553756255ef278dddce2fe1ccd">Nv::Blast::ApexImporter::ApexImportTool::m_Cooking</a><code> [protected]</code>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="aad46c0766884673960f8f2205b926af"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::m_Foundation" ref="aad46c0766884673960f8f2205b926af" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">physx::PxFoundation* <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#aad46c0766884673960f8f2205b926af">Nv::Blast::ApexImporter::ApexImportTool::m_Foundation</a><code> [protected]</code>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="7fc6ad22ebb8a62d777d5e9633163177"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::m_PhysxSDK" ref="7fc6ad22ebb8a62d777d5e9633163177" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">physx::PxPhysics* <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#7fc6ad22ebb8a62d777d5e9633163177">Nv::Blast::ApexImporter::ApexImportTool::m_PhysxSDK</a><code> [protected]</code>          </td>
         </tr>
       </table>
 </div>

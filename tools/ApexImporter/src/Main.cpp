@@ -32,10 +32,6 @@
 #endif
 
 #include "PxPhysicsAPI.h"
-#include "Apex.h"
-#include <ModuleDestructible.h>
-#include <DestructibleAsset.h>
-#include "NullRenderer.h"
 #include "NvBlastExtApexImportTool.h"
 #include "Log.h"
 #include <string>
@@ -53,6 +49,8 @@
 #include "NvBlastExtLlSerialization.h"
 #include "NvBlastExtTkSerialization.h"
 #include "NvBlastExtPxSerialization.h"
+#include <nvparameterized\NvSerializer.h>
+#include <PsFileBuffer.h>
 #define DEFAULT_INPUT_FILE "../../../tools/ApexImporter/resources/assets/table.apb"
 #define DEFAULT_OUTPUT_DIR "C:/TestFracturer/"
 #define DEFAULT_ASSET_NAME "table"
@@ -103,18 +101,20 @@ void run(const std::string& inFilepath, const std::string& outDir, const std::st
 	ApexImportTool blast;
 
 	lout() << Log::TYPE_INFO << "ApexImportTool initialization" << std::endl;
-	blast.initialize();
 	if (!blast.isValid())
 	{
 		lout() << Log::TYPE_ERROR << "Failed to create BlastSDK" << std::endl;
 		return;
 	}
 
+
 	// load asset
 	lout() << Log::TYPE_INFO << "Loading asset: " << inFilepath << std::endl;
-	physx::PxFileBuf* apexAssetStream = nvidia::apex::GetApexSDK()->createStream(inFilepath.c_str(), physx::PxFileBuf::OPEN_READ_ONLY);
-	nvidia::apex::DestructibleAsset* apexAsset = blast.loadAssetFromFile(apexAssetStream);
-	if (!apexAsset)
+	physx::PxFileBuf* apexAssetStream = PX_NEW(physx::general_PxIOStream::PsFileBuffer)(inFilepath.c_str(), physx::PxFileBuf::OPEN_READ_ONLY);
+
+	NvParameterized::Serializer::DeserializedData data;
+	blast.loadAssetFromFile(apexAssetStream, data);
+	if (data.size() == 0)
 	{
 		return;
 	}  
@@ -138,14 +138,14 @@ void run(const std::string& inFilepath, const std::string& outDir, const std::st
 	std::vector<ExtPxAssetDesc::ChunkDesc> physicsChunks;
 	std::vector<ExtPxAssetDesc::SubchunkDesc> physicsSubchunks;
 
-	bool result = blast.importApexAsset(chunkReorderInvMap, apexAsset, chunkDesc, bondDescs, flags, config);
+	bool result = blast.importApexAsset(chunkReorderInvMap, data[0], chunkDesc, bondDescs, flags, config);
 	if (!result)
 	{
 		lout() << Log::TYPE_ERROR << "Failed to build Blast asset data" << std::endl;
 		return;
 	};
 	std::vector<std::vector<CollisionHull*>> hulls;
-	result = blast.getCollisionGeometry(apexAsset, static_cast<uint32_t>(chunkDesc.size()), chunkReorderInvMap, flags, physicsChunks, physicsSubchunks, hulls);
+	result = blast.getCollisionGeometry(data[0], static_cast<uint32_t>(chunkDesc.size()), chunkReorderInvMap, flags, physicsChunks, physicsSubchunks, hulls);
 	if (!result)
 	{
 		lout() << Log::TYPE_ERROR << "Failed to build physics data" << std::endl;
@@ -155,7 +155,7 @@ void run(const std::string& inFilepath, const std::string& outDir, const std::st
 
 	// save asset
 	lout() << Log::TYPE_INFO << "Saving blast asset: " << outDir << std::endl;
-	BlastDataExporter blExpr(framework, nvidia::apex::GetApexSDK()->getPhysXSDK(), nvidia::apex::GetApexSDK()->getCookingInterface());
+	BlastDataExporter blExpr(framework, blast.getPxSdk(), blast.getCooking());
 	NvBlastAsset* llAsset = blExpr.createLlBlastAsset(bondDescs, chunkDesc);
 
 	std::cout <<"Chunk count: " << NvBlastAssetGetChunkCount(llAsset, NULL) << std::endl;
@@ -187,11 +187,11 @@ void run(const std::string& inFilepath, const std::string& outDir, const std::st
 	ApexDestructibleGeometryExporter objSaver(inputDir, outDir);
 	if (fbxCollision)
 	{
-		objSaver.exportToFile(llAsset, *apexAsset, assetName, chunkReorderInvMap, fbx, obj, fbxascii, nonSkinned, hulls);
+		objSaver.exportToFile(llAsset, data[0], blast, assetName, chunkReorderInvMap, fbx, obj, fbxascii, nonSkinned, hulls);
 	}
 	else
 	{
-		objSaver.exportToFile(llAsset, *apexAsset, assetName, chunkReorderInvMap, fbx, obj, fbxascii, nonSkinned);
+		objSaver.exportToFile(llAsset, data[0], blast, assetName, chunkReorderInvMap, fbx, obj, fbxascii, nonSkinned);
 	}
 	NVBLAST_FREE(llAsset);
 }

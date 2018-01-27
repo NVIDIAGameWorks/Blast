@@ -3,13 +3,14 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Blast(tm) SDK 1.1.2 (16-Jan-2018)
+Blast(tm) SDK 1.1.2 (26-Jan-2018)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Changes
 -------
 * Improvements to uniteChunks for hierarchy optimization.
 * NvBlastExtAuthoringFindAssetConnectingBonds optimized.
+* APEX dependency has been removed (ExtImport used it).  Now ExtImport has a built-in NvParameterized read that can load an APEX Destructible asset.
 
 New Features
 ------------

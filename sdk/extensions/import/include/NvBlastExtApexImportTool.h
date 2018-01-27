@@ -33,13 +33,24 @@
 #include <vector>
 #include <string>
 #include "NvBlastExtPxAsset.h"
+#include <nvparameterized\NvSerializer.h>
+#include <NvBlastExtExporter.h>
 
 namespace physx
 {
+	class PxFoundation;
+	class PxPhysics;
+	class PxCooking;
+
 namespace general_PxIOStream2
 {
 class PxFileBuf;
 }
+}
+
+namespace NvParameterized
+{
+	class Interface;
 }
 
 namespace nvidia
@@ -100,42 +111,15 @@ class ApexDestruction;
 class ApexImportTool
 {
 public:
-
-	/**	
-		Constructor should be provided with user defined allocator and massage function:
-	*/
 	ApexImportTool();
 	~ApexImportTool();
-
-	//////////////////////////////////////////////////////////////////////////////
-
-	/**
-		Before using ApexImportTool should be initialized. ApexSDK and ModuleDestructible initialized internally.
-		\return		If true, ApexImportTool initialized successfully.
-	*/
-	bool								initialize();
-
-	/**
-		Before using ApexImportTool should be initialized. User can provide existing ApexSDK and ModuleDestructible objects
-		\param[in]	apexSdk					Pointer on ApexSDK object
-		\param[in]	moduleDestructible		Pointer on ModuleDestructible object
-		\return								If true, ApexImportTool initialized successfully.
-	*/
-	bool								initialize(nvidia::apex::ApexSDK* apexSdk, nvidia::apex::ModuleDestructible* moduleDestructible);
-
-	/**
-		Checks whether ApexImportTool is initialized and can be used.
-		\return			If true, ApexImportTool initialized successfully.
-	*/
-	bool								isValid();
-
-
+	
 	/**
 		Method loads APEX Destruction asset from file
 		\param[in] stream		Pointer on PxFileBuf stream with Apex Destruction asset
 		\return					If not 0, pointer on DestructibleAsset object is returned. 
 	*/
-	nvidia::apex::DestructibleAsset*	loadAssetFromFile(nvidia::PxFileBuf* stream);
+	bool	loadAssetFromFile(nvidia::PxFileBuf* stream, NvParameterized::Serializer::DeserializedData& data);
 
 
 	/**
@@ -148,7 +132,7 @@ public:
 		
 		\return							If true, output arrays are filled.
 	*/
-	bool								importApexAsset(std::vector<uint32_t>& chunkReorderInvMap, const nvidia::apex::DestructibleAsset* apexAsset,
+	bool								importApexAsset(std::vector<uint32_t>& chunkReorderInvMap, NvParameterized::Interface* assetNvIfc,
 											std::vector<NvBlastChunkDesc>& chunkDescriptors, std::vector<NvBlastBondDesc>& bondDescriptors, std::vector<uint32_t>& flags);
 
 	/**
@@ -162,9 +146,14 @@ public:
 		\param[in] config				ApexImporterConfig object with conversion parameters, see above.
 		\return							If true, output arrays are filled.
 	*/
-	bool								importApexAsset(std::vector<uint32_t>& chunkReorderInvMap, const nvidia::apex::DestructibleAsset* apexAsset,
+	bool								importApexAsset(std::vector<uint32_t>& chunkReorderInvMap, NvParameterized::Interface* assetNvIfc,
 											std::vector<NvBlastChunkDesc>& chunkDescriptors, std::vector<NvBlastBondDesc>& bondDescriptors, std::vector<uint32_t>& flags,
 											const ApexImporterConfig& config);
+
+	/**
+		Method builds NvBlastAsset form provided DestructibleAsset. DestructibleAsset must contain support graph!
+	*/
+	bool								importRendermesh(const std::vector<uint32_t>& chunkReorderInvMap, const NvParameterized::Interface* assetNvIfc, Nv::Blast::ExporterMeshData* outputData, const char* materialsDir);
 
 
 	/**
@@ -186,22 +175,30 @@ public:
 		\param[out]	hullsDescs				Chunk collision geometry descriptors, can be used to save to some third party format
 		\return								If true - success, output arrays are filled.
 	*/
-	bool								getCollisionGeometry(const nvidia::apex::DestructibleAsset* apexAsset, uint32_t chunkCount, std::vector<uint32_t>& chunkReorderInvMap,
+	bool								getCollisionGeometry(const NvParameterized::Interface* assetPrm, uint32_t chunkCount, std::vector<uint32_t>& chunkReorderInvMap,
 												const std::vector<uint32_t>& apexChunkFlags, std::vector<ExtPxAssetDesc::ChunkDesc>& physicsChunks,
 												std::vector<ExtPxAssetDesc::SubchunkDesc>& physicsSubchunks, std::vector<std::vector<CollisionHull*> >& hullsDesc);
 
-	ApexDestruction*					m_apexDestruction;
 	//////////////////////////////////////////////////////////////////////////////
 
+	bool isValid();
+
+	physx::PxPhysics*		getPxSdk() { return m_PhysxSDK; }
+	physx::PxCooking*		getCooking() { return m_Cooking; };
+
 private:
-	bool								importApexAssetInternal(std::vector<uint32_t>& chunkReorderInvMap, const nvidia::apex::DestructibleAsset* apexAsset,
+	bool								importApexAssetInternal(std::vector<uint32_t>& chunkReorderInvMap, NvParameterized::Interface* assetNvIfc,
 											std::vector<NvBlastChunkDesc>& chunkDescriptors, std::vector<NvBlastBondDesc>& bondDesc, std::vector<uint32_t>& flags,
 											const ApexImporterConfig& configDesc);
-	
 
 protected:
 	ApexImportTool(const ApexImportTool&);
 	ApexImportTool& operator=(const ApexImportTool&);
+
+	physx::PxFoundation*	m_Foundation;
+	physx::PxPhysics*		m_PhysxSDK;
+	physx::PxCooking*		m_Cooking;
+
 };
 
 } // namespace ApexImporter

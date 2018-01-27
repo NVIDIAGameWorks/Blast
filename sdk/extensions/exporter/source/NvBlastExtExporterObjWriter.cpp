@@ -87,7 +87,7 @@ bool ObjFileWriter::appendMesh(const AuthoringResult& aResult, const char* /*ass
 	}
 
 	md.submeshOffsets = new uint32_t[md.meshCount * md.submeshCount + 1];
-	md.submeshMats = new Materials[md.submeshCount];
+	md.submeshMats = new Material[md.submeshCount];
 
 	for (uint32_t i = 0; i < md.submeshCount - additionalMats; ++i)
 	{

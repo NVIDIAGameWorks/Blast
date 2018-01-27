@@ -515,7 +515,7 @@ void NvBlastExtAuthoringUpdateGraphicsMesh(Nv::Blast::FractureTool& fTool, Nv::B
 	uint32_t chunkCount = fTool.getChunkCount();
 	for (uint32_t i = 0; i < chunkCount; ++i)
 	{
-		fTool.updateBaseMesh(i, aResult.geometry + aResult.geometryOffset[i]);
+		fTool.updateBaseMesh(fTool.getChunkIndex(aResult.assetToFractureChunkIdMap[i]), aResult.geometry + aResult.geometryOffset[i]);
 	}
 }
 

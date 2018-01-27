@@ -37,20 +37,49 @@
 
 #include "NvBlastIndexFns.h"
 #include "NvBlastGlobals.h"
-#include "DestructibleAsset.h"
-#include "NvBlastExtApexDestruction.h"
+#include <NvBlastExtExporter.h>
 #include <PxConvexMesh.h>
 #include "PxPhysics.h"
 #include "NvBlastExtAuthoringCollisionBuilder.h"
 #include "NvBlastExtPxAsset.h"
 #include "NvBlastExtAuthoring.h"
 #include "NvBlastExtAuthoringBondGenerator.h"
-
+#include <nvparameterized\NvParameterized.h>
+#include <nvparameterized\NvParamUtils.h>
+#include <DestructibleAssetParameters.h>
+#include <RenderMeshAssetParameters.h>
+#include <VertexBufferParameters.h>
+#include <VertexFormatParameters.h>
+#include <SubmeshParameters.h>
+#include <CachedOverlaps.h>
+#include "PsFastXml.h"
+#include "PsFileBuffer.h"
+#include <BufferF32x3.h>
+#include <BufferF32x2.h>
 #include <algorithm>
+#include <sstream>
 #include <memory>
+#include <map>
+
+
+#include <NvDefaultTraits.h>
+#include <NvSerializerInternal.h>
+#include <PsMutex.h>
+#include <ModuleDestructibleRegistration.h>
+#include <ModuleDestructibleLegacyRegistration.h>
+#include <ModuleCommonRegistration.h>
+#include <ModuleCommonLegacyRegistration.h>
+#include <ModuleFrameworkRegistration.h>
+#include <ModuleFrameworkLegacyRegistration.h>
+#include <PxPhysicsAPI.h>
+
+#include "NvBlastPxCallbacks.h"
 
 using namespace nvidia;
+using namespace physx;
 using namespace apex;
+
+using nvidia::destructible::DestructibleAssetParameters;
 
 namespace Nv
 {
@@ -78,49 +107,103 @@ namespace ApexImporter
 			return diff0 ? diff0 : (((IntPair*)a)->i1 - ((IntPair*)b)->i1);
 		}
 	};
-
-ApexImportTool::ApexImportTool()
-	: m_apexDestruction(NULL)
+	
+bool ApexImportTool::loadAssetFromFile(physx::PxFileBuf* stream, NvParameterized::Serializer::DeserializedData& data)
 {
-}
+	if (stream && stream->isOpen())
+	{
+		NvParameterized::Serializer::SerializeType serType = NvParameterized::Serializer::peekSerializeType(*stream);
+		NvParameterized::Serializer::ErrorType serError;
 
+		NvParameterized::Traits* traits = new NvParameterized::DefaultTraits(NvParameterized::DefaultTraits::BehaviourFlags::DEFAULT_POLICY);
+
+		nvidia::destructible::ModuleDestructibleRegistration::invokeRegistration(traits);
+		ModuleDestructibleLegacyRegistration::invokeRegistration(traits);
+		ModuleCommonRegistration::invokeRegistration(traits);
+		ModuleCommonLegacyRegistration::invokeRegistration(traits);
+		ModuleFrameworkLegacyRegistration::invokeRegistration(traits);
+		ModuleFrameworkRegistration::invokeRegistration(traits);
+		NvParameterized::Serializer* ser = NvParameterized::internalCreateSerializer(serType, traits);
+
+		PX_ASSERT(ser);
+
+		serError = ser->deserialize(*stream, data);
+
+		if (serError == NvParameterized::Serializer::ERROR_NONE && data.size() == 1)
+		{
+			NvParameterized::Interface* params = data[0];
+			if (!physx::shdfnd::strcmp(params->className(), "DestructibleAssetParameters"))
+			{
+				return true;
+			}
+			else
+			{
+				NVBLAST_LOG_ERROR("Error: deserialized data is not an APEX Destructible\n");
+			}
+		}
+		else
+		{
+			NVBLAST_LOG_ERROR("Error: failed to deserialize\n");
+		}
+		ser->release();
+	}
+	return false;
+}
 
 bool ApexImportTool::isValid()
 {
-	return m_apexDestruction && m_apexDestruction->isValid();
+	return m_Foundation && m_PhysxSDK && m_Cooking;
 }
 
-
-bool ApexImportTool::initialize()
+enum ChunkFlags
 {
-	if (isValid())
+	SupportChunk = (1 << 0),
+	UnfracturableChunk = (1 << 1),
+	DescendantUnfractureable = (1 << 2),
+	UndamageableChunk = (1 << 3),
+	UncrumbleableChunk = (1 << 4),
+	RuntimeFracturableChunk = (1 << 5),
+	Instanced = (1 << 8),
+};
+
+uint32_t getPartIndex(const DestructibleAssetParameters* prm, uint32_t id)
+{
+	auto& sch = prm->chunks.buf[id];
+
+	return (sch.flags & ChunkFlags::Instanced) == 0 ? sch.meshPartIndex : prm->chunkInstanceInfo.buf[sch.meshPartIndex].partIndex;
+}
+
+ApexImportTool::ApexImportTool()
+{
+	m_Foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
+	if (!m_Foundation)
 	{
-		return true;
+		NVBLAST_LOG_ERROR("Error: failed to create Foundation\n");
+		return;
 	}
-	NVBLAST_LOG_INFO("APEX initialization");
-	m_apexDestruction = new ApexDestruction();
-	return isValid();
-}
-
-
-bool ApexImportTool::initialize(nvidia::apex::ApexSDK* apexSdk, nvidia::apex::ModuleDestructible* moduleDestructible)
-{
-	if (isValid())
+	physx::PxTolerancesScale scale;
+	m_PhysxSDK = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, scale, true);
+	if (!m_PhysxSDK)
 	{
-		return true;
+		NVBLAST_LOG_ERROR("Error: failed to create PhysX\n");
+		
+		return;
 	}
-	NVBLAST_LOG_INFO("APEX initialization");
-	m_apexDestruction = new ApexDestruction(apexSdk, moduleDestructible);
-	return isValid();
+	
+	physx::PxCookingParams cookingParams(scale);
+	cookingParams.buildGPUData = true;
+	m_Cooking = PxCreateCooking(PX_PHYSICS_VERSION, m_PhysxSDK->getFoundation(), cookingParams);
+	if (!m_Cooking)
+	{
+		NVBLAST_LOG_ERROR("Error: failed to create PhysX Cooking\n");
+		return;
+	}
+
+
 }
 
-DestructibleAsset* ApexImportTool::loadAssetFromFile(physx::PxFileBuf* stream)
-{
-	return m_apexDestruction->loadAsset(stream);
-}
 
-
-bool ApexImportTool::getCollisionGeometry(const nvidia::apex::DestructibleAsset* apexAsset, uint32_t chunkCount, std::vector<uint32_t>& chunkReorderInvMap,
+bool ApexImportTool::getCollisionGeometry(const NvParameterized::Interface* assetPrm, uint32_t chunkCount, std::vector<uint32_t>& chunkReorderInvMap,
 						const std::vector<uint32_t>& apexChunkFlags, std::vector<ExtPxAssetDesc::ChunkDesc>& physicsChunks,
 						std::vector<ExtPxAssetDesc::SubchunkDesc>& physicsSubchunks, std::vector<std::vector<CollisionHull*> >& hullsDesc)
 {
@@ -128,18 +211,22 @@ bool ApexImportTool::getCollisionGeometry(const nvidia::apex::DestructibleAsset*
 	physicsChunks.resize(chunkCount);
 	// prepare physics asset desc (convexes, transforms)
 	std::shared_ptr<ConvexMeshBuilder> collisionBuilder(
-		NvBlastExtAuthoringCreateConvexMeshBuilder(m_apexDestruction->cooking(), &m_apexDestruction->apexSDK()->getPhysXSDK()->getPhysicsInsertionCallback()),
+		NvBlastExtAuthoringCreateConvexMeshBuilder(m_Cooking, &m_PhysxSDK->getPhysicsInsertionCallback()),
 		[](ConvexMeshBuilder* cmb) { cmb->release(); });
 
+	const DestructibleAssetParameters* params = static_cast<const DestructibleAssetParameters*>(assetPrm);
+
 	int32_t apexHullCount = 0;
-	const uint32_t apexChunkCount = apexAsset->getChunkCount();
+	const uint32_t apexChunkCount = params->chunks.arraySizes[0];
+	
 	for (uint32_t chunkIndex = 0; chunkIndex < chunkCount; ++chunkIndex)
 	{
 		uint32_t apexChunkIndex = chunkReorderInvMap[chunkIndex];
 		if (apexChunkIndex < apexChunkCount)
 		{
-			uint32_t partIndex = apexAsset->getPartIndex(apexChunkIndex);
-			apexHullCount += apexAsset->getPartConvexHullCount(partIndex);
+			uint32_t partIndex = getPartIndex(params, apexChunkIndex);
+			uint32_t partConvexHullCount = params->chunkConvexHullStartIndices.buf[partIndex + 1] - params->chunkConvexHullStartIndices.buf[partIndex];
+			apexHullCount += partConvexHullCount;
 		}
 	}
 	physicsSubchunks.reserve(chunkCount);
@@ -151,9 +238,9 @@ bool ApexImportTool::getCollisionGeometry(const nvidia::apex::DestructibleAsset*
 			uint32_t apexChunkIndex = chunkReorderInvMap[chunkIndex];
 			if (apexChunkIndex < apexChunkCount)
 			{
-				uint32_t partIndex = apexAsset->getPartIndex(apexChunkIndex);
-				uint32_t partConvexHullCount = apexAsset->getPartConvexHullCount(partIndex);
-				NvParameterized::Interface** cxInterfaceArray = apexAsset->getPartConvexHullArray(partIndex);
+				uint32_t partIndex = getPartIndex(params, apexChunkIndex);
+				uint32_t partConvexHullCount = params->chunkConvexHullStartIndices.buf[partIndex + 1] - params->chunkConvexHullStartIndices.buf[partIndex];
+				NvParameterized::Interface** cxInterfaceArray = params->chunkConvexHulls.buf + params->chunkConvexHullStartIndices.buf[partIndex];
 				physicsChunks[chunkIndex].subchunkCount = partConvexHullCount;
 				for (uint32_t hull = 0; hull < partConvexHullCount; ++hull)
 				{
@@ -195,44 +282,31 @@ bool ApexImportTool::getCollisionGeometry(const nvidia::apex::DestructibleAsset*
 	return true;
 }
 
-void gatherChunkHullPoints(const DestructibleAsset* apexAsset, std::vector<std::vector<PxVec3> >& hullPoints)
-{
-	hullPoints.resize(apexAsset->getChunkCount());
-	for (uint32_t chunk = 0; chunk < apexAsset->getChunkCount(); ++chunk)
-	{
-		int32_t part = apexAsset->getPartIndex(chunk);
-		NvParameterized::Interface** cxInterfaceArray = apexAsset->getPartConvexHullArray(part);
-		for (uint32_t hull = 0; hull < apexAsset->getPartConvexHullCount(part); ++hull)
-		{
-			NvParameterized::Handle paramHandle(cxInterfaceArray[hull]);
-			int32_t verticesCount = 0;
-			paramHandle.getParameter("vertices");
-			paramHandle.getArraySize(verticesCount);
-			uint32_t oldSize = (uint32_t)hullPoints[chunk].size();
-			hullPoints[chunk].resize(hullPoints[chunk].size() + verticesCount);
-			paramHandle.getParamVec3Array(hullPoints[chunk].data() + oldSize, verticesCount);
-		}
-	}
-}
-PxBounds3 gatherChunkTriangles(const DestructibleAsset* apexAsset, std::vector<uint32_t>& chunkTrianglesOffsets, std::vector<Nv::Blast::Triangle>& chunkTriangles, int32_t posBufferIndex, float scale, PxVec3 offset )
+PxBounds3 gatherChunkTriangles(std::vector<uint32_t>& chunkToPartMp, const nvidia::apex::RenderMeshAssetParameters* rmAsset, std::vector<uint32_t>& chunkTrianglesOffsets, std::vector<Nv::Blast::Triangle>& chunkTriangles, int32_t posBufferIndex, float scale, PxVec3 offset )
 {
 
 	PxBounds3 bnd;
 	bnd.setEmpty();
 	chunkTrianglesOffsets.clear();
-	chunkTrianglesOffsets.resize(apexAsset->getChunkCount() + 1);
+	uint32_t chunkCount = chunkToPartMp.size();
+	chunkTrianglesOffsets.resize(chunkCount + 1);
 	chunkTrianglesOffsets[0] = 0;
-	for (uint32_t chunkIndex = 0; chunkIndex < apexAsset->getChunkCount(); ++chunkIndex)
+	for (uint32_t chunkIndex = 0; chunkIndex < chunkCount; ++chunkIndex)
 	{
-		uint32_t part = apexAsset->getPartIndex(chunkIndex);
-		const RenderMeshAsset* rAsset = apexAsset->getRenderMeshAsset();
-		uint32_t submeshCount = rAsset->getSubmeshCount();
+		uint32_t part = chunkToPartMp[chunkIndex];
+		uint32_t submeshCount = rmAsset->submeshes.arraySizes[0];
 		for (uint32_t submeshIndex = 0; submeshIndex < submeshCount; ++submeshIndex)
 		{
-			const RenderSubmesh& currentSubmesh = rAsset->getSubmesh(submeshIndex);
-			const uint32_t* indexArray = currentSubmesh.getIndexBuffer(part);
-			uint32_t indexCount = currentSubmesh.getIndexCount(part);
-			const PxVec3* positions = reinterpret_cast<const PxVec3*>(currentSubmesh.getVertexBuffer().getBuffer(posBufferIndex));
+			nvidia::apex::SubmeshParameters* submeshPrm = static_cast<nvidia::apex::SubmeshParameters*>(rmAsset->submeshes.buf[submeshIndex]);
+
+			const uint32_t* indexArray = submeshPrm->indexBuffer.buf + submeshPrm->indexPartition.buf[part];
+			uint32_t indexCount = submeshPrm->indexPartition.buf[part + 1] - submeshPrm->indexPartition.buf[part];
+
+			nvidia::apex::VertexBufferParameters* vbuf = static_cast<nvidia::apex::VertexBufferParameters*>(submeshPrm->vertexBuffer);
+
+			nvidia::apex::BufferF32x3* pbuf = static_cast<nvidia::apex::BufferF32x3*>(vbuf->buffers.buf[posBufferIndex]);
+
+			const PxVec3* positions = reinterpret_cast<const PxVec3*>(pbuf->data.buf);
 
 			for (uint32_t i = 0; i < indexCount; i += 3)
 			{
@@ -257,49 +331,64 @@ PxBounds3 gatherChunkTriangles(const DestructibleAsset* apexAsset, std::vector<u
 	return bnd;
 }
 
-bool ApexImportTool::importApexAsset(std::vector<uint32_t>& chunkReorderInvMap, const nvidia::apex::DestructibleAsset* apexAsset,
+bool ApexImportTool::importApexAsset(std::vector<uint32_t>& chunkReorderInvMap, NvParameterized::Interface* assetNvIfc,
 	std::vector<NvBlastChunkDesc>& chunkDescriptors, std::vector<NvBlastBondDesc>& bondDescriptors, std::vector<uint32_t>& apexChunkFlags)
 {
 	ApexImporterConfig configDesc;
 	configDesc.setDefaults();
-	return importApexAsset(chunkReorderInvMap, apexAsset, chunkDescriptors, bondDescriptors, apexChunkFlags, configDesc);
+	return importApexAsset(chunkReorderInvMap, assetNvIfc, chunkDescriptors, bondDescriptors, apexChunkFlags, configDesc);
 }
 
 
-bool ApexImportTool::importApexAsset(std::vector<uint32_t>& chunkReorderInvMap, const nvidia::apex::DestructibleAsset* apexAsset,
+bool ApexImportTool::importApexAsset(std::vector<uint32_t>& chunkReorderInvMap, NvParameterized::Interface* assetNvIfc,
 	std::vector<NvBlastChunkDesc>& chunkDescriptors, std::vector<NvBlastBondDesc>& bondDescriptors, std::vector<uint32_t>& apexChunkFlags, const ApexImporterConfig& configDesc)
 {
-	return importApexAssetInternal(chunkReorderInvMap, apexAsset, chunkDescriptors, bondDescriptors, apexChunkFlags, configDesc);
+	return importApexAssetInternal(chunkReorderInvMap, assetNvIfc, chunkDescriptors, bondDescriptors, apexChunkFlags, configDesc);
 }
 
 
-bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorderInvMap, const nvidia::apex::DestructibleAsset* apexAsset,
+
+
+
+bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorderInvMap, NvParameterized::Interface* assetNvIfc,
 	std::vector<NvBlastChunkDesc>& chunkDescriptors, std::vector<NvBlastBondDesc>& bondsDescriptors, std::vector<uint32_t>& apexChunkFlags, const ApexImporterConfig& configDesc)
 {
-
-	if (!apexAsset)
+	if (!assetNvIfc)
 	{
 		NVBLAST_LOG_ERROR("Error: attempting to import NULL Apex asset.");
 		return false;
 	}
-	
-	// Build chunk descriptors for asset //
-	const uint32_t apexChunkCount = apexAsset->getChunkCount();
-	chunkDescriptors.clear();
-	chunkDescriptors.resize(apexChunkCount);
+	DestructibleAssetParameters* params = static_cast<nvidia::destructible::DestructibleAssetParameters*>(assetNvIfc);
+
+	int32_t apexChunkCount = params->chunks.arraySizes[0];
 	uint32_t rootChunkIndex = 0;
 
-	for (uint32_t i = 0; i < apexChunkCount; ++i)
+	std::vector<uint32_t> chunkToPartMapping(apexChunkCount);
+
+	chunkDescriptors.resize(apexChunkCount);
+
+	nvidia::apex::RenderMeshAssetParameters* rmParam = static_cast<nvidia::apex::RenderMeshAssetParameters*>(params->renderMeshAsset);
+
+	std::vector<PxBounds3> perChunkBounds(apexChunkCount);
+	PxBounds3 allRmBound;
+	allRmBound.setEmpty();
+
+	for (uint32_t i = 0; i < (uint32_t)apexChunkCount; ++i)
 	{
 		// Use bounds center for centroid
-		const PxBounds3 bounds = apexAsset->getChunkActorLocalBounds(i);
+		uint32_t partIndex = getPartIndex(params, i);
+		chunkToPartMapping[i] = partIndex;
+		const PxBounds3 bounds = rmParam->partBounds.buf[partIndex];
+
+		perChunkBounds[i] = bounds;
+		allRmBound.include(bounds);
+	
 		const PxVec3 center = bounds.getCenter();
 		memcpy(chunkDescriptors[i].centroid, &center.x, 3 * sizeof(float));
 
 		// Find chunk volume
-		uint32_t partIndex = apexAsset->getPartIndex(i);
-		uint32_t partConvexHullCount = apexAsset->getPartConvexHullCount(partIndex);
-		NvParameterized::Interface** cxInterfaceArray = apexAsset->getPartConvexHullArray(partIndex);
+		uint32_t partConvexHullCount = params->chunkConvexHullStartIndices.buf[partIndex + 1] - params->chunkConvexHullStartIndices.buf[partIndex];
+		NvParameterized::Interface** cxInterfaceArray = params->chunkConvexHulls.buf + params->chunkConvexHullStartIndices.buf[partIndex];
 		chunkDescriptors[i].volume = 0.0f;
 		for (uint32_t hull = 0; hull < partConvexHullCount; ++hull)
 		{
@@ -310,7 +399,7 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 			chunkDescriptors[i].volume += hullVolume;
 		}
 
-		int32_t parent = apexAsset->getChunkParentIndex(i);
+		int16_t parent = params->chunks.buf[i].parentIndex;
 		if (parent == -1)
 		{
 			rootChunkIndex = i;
@@ -326,22 +415,25 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 	}
 	// Get support graph data from Apex asset //
 
-	const NvParameterized::Interface* assetParameterized = apexAsset->getAssetNvParameterized();
-	uint32_t maximumSupportDepth = 0;
+	const NvParameterized::Interface* assetParameterized = assetNvIfc;
+	uint32_t maximumSupportDepth = 0;	
 
 	NvParameterized::Handle parameterHandle(*assetParameterized);
 	parameterHandle.getParameter("supportDepth");
 	parameterHandle.getParamU32(maximumSupportDepth);
 	std::vector<std::pair<uint32_t, uint32_t> > overlapsBuffer;
-	uint32_t overlapsCount = apexAsset->getCachedOverlapCountAtDepth(maximumSupportDepth);
+	nvidia::destructible::CachedOverlaps* overlapsArray = static_cast<nvidia::destructible::CachedOverlaps*>(params->overlapsAtDepth.buf[maximumSupportDepth]);
+	uint32_t overlapsCount = overlapsArray->overlaps.arraySizes[0];
 	if (overlapsCount != 0)
 	{
-		const IntPair* overlap = reinterpret_cast<const IntPair*>(apexAsset->getCachedOverlapsAtDepth(maximumSupportDepth));
 		for (uint32_t i = 0; i < overlapsCount; ++i)
 		{
-			chunkDescriptors[overlap[i].i0].flags = NvBlastChunkDesc::SupportFlag;
-			chunkDescriptors[overlap[i].i1].flags = NvBlastChunkDesc::SupportFlag;
-			overlapsBuffer.push_back(std::make_pair(overlap[i].i0, overlap[i].i1));
+			uint32_t ov0 = overlapsArray->overlaps.buf[i].i0;
+			uint32_t ov1 = overlapsArray->overlaps.buf[i].i1;
+
+			chunkDescriptors[ov0].flags = NvBlastChunkDesc::SupportFlag;
+			chunkDescriptors[ov1].flags = NvBlastChunkDesc::SupportFlag;
+			overlapsBuffer.push_back(std::make_pair(ov0, ov1));
 		}
 	}
 
@@ -364,17 +456,17 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 	bondsDescriptors.resize(overlapsBuffer.size());
 
 	std::shared_ptr<Nv::Blast::BlastBondGenerator> bondGenTool(
-		NvBlastExtAuthoringCreateBondGenerator(GetApexSDK()->getCookingInterface(), &GetApexSDK()->getPhysXSDK()->getPhysicsInsertionCallback()),
+		NvBlastExtAuthoringCreateBondGenerator(m_Cooking, &m_PhysxSDK->getPhysicsInsertionCallback()),
 		[](Nv::Blast::BlastBondGenerator* bg) {bg->release(); });
 
 	std::vector<uint32_t> chunkTrianglesOffsets;
 	std::vector<Nv::Blast::Triangle> chunkTriangles;
 	
-	PxBounds3 bnds = apexAsset->getRenderMeshAsset()->getBounds();
+	PxBounds3 bnds = allRmBound;
 	PxVec3 offset = bnds.getCenter();
 	float scale = 1.0f / PxMax(PxAbs(bnds.getExtents(0)), PxMax(PxAbs(bnds.getExtents(1)), PxAbs(bnds.getExtents(2))));
 
-	bnds = gatherChunkTriangles(apexAsset, chunkTrianglesOffsets, chunkTriangles, 0, scale, offset);
+	bnds = gatherChunkTriangles(chunkToPartMapping, rmParam, chunkTrianglesOffsets, chunkTriangles, 0, scale, offset);
 
 
 	BondGenerationConfig cf;
@@ -393,8 +485,7 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 	bondGenTool.get()->createBondBetweenMeshes(chunkTrianglesOffsets.size() - 1, chunkTrianglesOffsets.data(), chunkTriangles.data(), 
 		overlapsBuffer.size(), overlapsA.data(), overlapsB.data(), bondsDesc, cf);
 	memcpy(bondsDescriptors.data(), bondsDesc, sizeof(NvBlastBondDesc) * bondsDescriptors.size());
-	delete[] bondsDesc;
-
+	NVBLAST_FREE(bondsDesc);
 
 	float inverScale = 1.0f / scale;
 
@@ -424,8 +515,6 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 		}
 	}
 
-
-
 	apexChunkFlags.clear();
 	apexChunkFlags.resize(chunkDescriptors.size());
 	// externally supported chunks
@@ -433,7 +522,7 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 		for (uint32_t i = 0; i < chunkDescriptors.size(); i++)
 		{
 			uint32_t chunkID = i;
-			const NvParameterized::Interface* assetInterface = apexAsset->getAssetNvParameterized();
+			const NvParameterized::Interface* assetInterface = assetNvIfc;
 			NvParameterized::Handle chunksHandle(*assetInterface, "chunks");
 			chunksHandle.set(chunkID);
 			NvParameterized::Handle flagsHandle(*assetInterface);
@@ -450,7 +539,7 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 				bond.chunkIndices[0] = i;
 				bond.chunkIndices[1] = UINT32_MAX;	// invalid index for "world"
 				bond.bond.area = 0.1f; // ???
-				PxVec3 center = apexAsset->getChunkActorLocalBounds(chunkID).getCenter();
+				PxVec3 center = perChunkBounds[i].getCenter();
 				memcpy(&bond.bond.centroid, &center.x, sizeof(PxVec3));
 				PxVec3 normal = PxVec3(0, 0, 1);
 				memcpy(&bond.bond.normal, &normal.x, sizeof(PxVec3));
@@ -470,6 +559,358 @@ bool ApexImportTool::importApexAssetInternal(std::vector<uint32_t>& chunkReorder
 	Nv::Blast::invertMap(chunkReorderInvMap.data(), chunkReorderMap.data(), static_cast<uint32_t>(chunkReorderMap.size()));
 	return true;
 }
+
+const float VEC_EPS = 1e-4f;
+
+class MaterialXmlParser : public physx::shdfnd::FastXml::Callback
+{
+public:
+	std::string textureFile;
+
+protected:
+	// encountered a comment in the XML
+	virtual bool processComment(const char* /*comment*/)
+	{
+		return true;
+	}
+
+	virtual bool processClose(const char* /*element*/, unsigned int /*depth*/, bool& /*isError*/)
+	{
+		return true;
+	}
+
+	// return true to continue processing the XML document, false to skip.
+	virtual bool processElement(const char* elementName, // name of the element
+		const char* elementData, // element data, null if none
+		const physx::shdfnd::FastXml::AttributePairs& attr,
+		int /*lineno*/) // line number in the source XML file
+	{
+		PX_UNUSED(attr);
+		if (::strcmp(elementName, "sampler2D") == 0)
+		{
+			int nameIndex = -1;
+			for (int i = 0; i < attr.getNbAttr(); i += 2)
+			{
+				if (::strcmp(attr.getKey(i), "name") == 0)
+				{
+					nameIndex = i;
+					break;
+				}
+			}
+
+			if (::strcmp(attr.getValue(nameIndex), "diffuseTexture") == 0)
+			{
+				textureFile = elementData;
+			}
+		}
+
+		return true;
+	}
+};
+
+class PxInputDataFromPxFileBuf : public physx::PxInputData
+{
+public:
+	PxInputDataFromPxFileBuf(physx::PxFileBuf& fileBuf) : mFileBuf(fileBuf) {}
+
+	// physx::PxInputData interface
+	virtual uint32_t	getLength() const
+	{
+		return mFileBuf.getFileLength();
+	}
+
+	virtual void	seek(uint32_t offset)
+	{
+		mFileBuf.seekRead(offset);
+	}
+
+	virtual uint32_t	tell() const
+	{
+		return mFileBuf.tellRead();
+	}
+
+	// physx::PxInputStream interface
+	virtual uint32_t read(void* dest, uint32_t count)
+	{
+		return mFileBuf.read(dest, count);
+	}
+
+	PX_NOCOPY(PxInputDataFromPxFileBuf)
+private:
+	physx::PxFileBuf& mFileBuf;
+};
+
+
+std::string getTextureFromMaterial(const char* materialPath)
+{
+	PsFileBuffer fileBuffer(materialPath, general_PxIOStream2::PxFileBuf::OPEN_READ_ONLY);
+	PxInputDataFromPxFileBuf inputData(fileBuffer);
+	MaterialXmlParser parser;
+	physx::shdfnd::FastXml* xml = physx::shdfnd::createFastXml(&parser);
+	xml->processXml(inputData, false);
+
+	xml->release();
+
+	// trim folders
+	std::string textureFile = parser.textureFile.substr(parser.textureFile.find_last_of("/\\") + 1);
+
+	return textureFile;
+}
+
+#define MAX_PATH_LEN 260
+
+bool ApexImportTool::importRendermesh(const std::vector<uint32_t>& chunkReorderInvMap, const NvParameterized::Interface* assetNvIfc, ExporterMeshData* outputData, const char* materialsDir)
+{
+	const nvidia::destructible::DestructibleAssetParameters* dasset = static_cast<const nvidia::destructible::DestructibleAssetParameters*>(assetNvIfc);
+	const nvidia::apex::RenderMeshAssetParameters* rmAsset = static_cast<const nvidia::apex::RenderMeshAssetParameters*>(dasset->renderMeshAsset);
+
+
+	outputData->submeshCount = rmAsset->submeshes.arraySizes[0];
+	outputData->submeshMats = new Material[outputData->submeshCount];
+	std::vector<Material> materialArray(outputData->submeshCount);
+	std::vector<std::string> materialPathes;
+	materialPathes.reserve(outputData->submeshCount);
+	// gather materials
+	{
+		for (uint32_t submeshIndex = 0; submeshIndex < outputData->submeshCount; ++submeshIndex)
+		{
+			const char* materialName = rmAsset->materialNames.buf[submeshIndex].buf;
+			if (materialsDir != nullptr)
+			{
+				std::ostringstream materialPath;
+				materialPath << materialsDir << "\\" << materialName;
+				std::string texturePath = getTextureFromMaterial(materialPath.str().c_str());
+				int32_t bfs = texturePath.length();
+				char* texPath = new char[bfs + 1];
+				char* matName = new char[bfs + 1];
+				memset(texPath, 0, sizeof(char) * (bfs + 1));
+				memset(matName, 0, sizeof(char) * (bfs + 1));
+				memcpy(texPath, texturePath.data(), sizeof(char) * bfs);
+				memcpy(matName, texturePath.data(),  sizeof(char) * bfs);
+				outputData->submeshMats[submeshIndex].diffuse_tex = texPath;
+				outputData->submeshMats[submeshIndex].name = matName;
+			}
+			else
+			{
+				int32_t bfs = strnlen(materialName, MAX_PATH_LEN);
+				char* texPath = new char[bfs];
+				char* matName = new char[bfs];
+				memset(texPath, 0, sizeof(char) * (bfs + 1));
+				memset(matName, 0, sizeof(char) * (bfs + 1));
+				memcpy(texPath, materialName, sizeof(char) * bfs);
+				memcpy(matName, materialName, sizeof(char) * bfs);
+				outputData->submeshMats[submeshIndex].diffuse_tex = texPath;
+				outputData->submeshMats[submeshIndex].name = matName;
+			}
+		}
+	}
+	struct vc3Comp
+	{
+		bool operator()(const PxVec3& a, const PxVec3& b) const
+		{
+			if (a.x + VEC_EPS < b.x) return true;
+			if (a.x - VEC_EPS > b.x) return false;
+			if (a.y + VEC_EPS < b.y) return true;
+			if (a.y - VEC_EPS > b.y) return false;
+			if (a.z + VEC_EPS < b.z) return true;
+			return false;
+		}
+	};
+	struct vc2Comp
+	{
+		bool operator()(const PxVec2& a, const PxVec2& b) const
+		{
+			if (a.x + VEC_EPS < b.x) return true;
+			if (a.x - VEC_EPS > b.x) return false;
+			if (a.y + VEC_EPS < b.y) return true;
+			return false;
+		}
+	};
+
+	std::vector<PxVec3> compressedPositions;
+	std::vector<PxVec3> compressedNormals;
+	std::vector<PxVec2> compressedTextures;
+
+	std::vector<uint32_t> positionsMapping;
+	std::vector<uint32_t> normalsMapping;
+	std::vector<uint32_t> texturesMapping;
+
+	std::map<PxVec3, uint32_t, vc3Comp> posMap;
+	std::map<PxVec3, uint32_t, vc3Comp> normMap;
+	std::map<PxVec2, uint32_t, vc2Comp> texMap;
+
+
+	// gather data for export
+	{
+		for (uint32_t submeshIndex = 0; submeshIndex < outputData->submeshCount; ++submeshIndex)
+		{
+			nvidia::apex::SubmeshParameters* currentSubmesh = static_cast<nvidia::apex::SubmeshParameters*>(rmAsset->submeshes.buf[submeshIndex]);
+			nvidia::apex::VertexBufferParameters* vbuf = static_cast<nvidia::apex::VertexBufferParameters*>(currentSubmesh->vertexBuffer);
+			nvidia::apex::VertexFormatParameters* vbufFormat = static_cast<nvidia::apex::VertexFormatParameters*>(vbuf->vertexFormat);
+			uint32_t indexCount = vbuf->vertexCount;
+			// Find position buffer index
+			int32_t vbufIds[3]; // 0 - pos, 1 - normals, 2 - t-coord
+			vbufIds[0] = vbufIds[1] = vbufIds[2] = -1;
+			{
+				for (int32_t bid = 0; bid < vbufFormat->bufferFormats.arraySizes[0]; ++bid)
+				{
+					if (vbufFormat->bufferFormats.buf[bid].semantic == RenderVertexSemantic::POSITION)
+					{
+						vbufIds[0] = bid;
+					}
+					if (vbufFormat->bufferFormats.buf[bid].semantic == RenderVertexSemantic::NORMAL)
+					{
+						vbufIds[1] = bid;
+					}
+					if (vbufFormat->bufferFormats.buf[bid].semantic == RenderVertexSemantic::TEXCOORD0)
+					{
+						vbufIds[2] = bid;
+					}
+				}
+			}
+			if (vbufIds[0] != -1)
+			{
+				BufferF32x3* pbuf = static_cast<BufferF32x3*>(vbuf->buffers.buf[vbufIds[0]]);
+				const PxVec3* posistions = pbuf->data.buf;
+				uint32_t oldSize = (uint32_t)positionsMapping.size();
+
+				positionsMapping.resize(oldSize + indexCount);
+				for (uint32_t i = 0; i < indexCount; ++i)
+				{
+					auto it = posMap.find(posistions[i]);
+					if (it == posMap.end())
+					{
+						posMap[posistions[i]] = (uint32_t)compressedPositions.size();
+						positionsMapping[oldSize + i] = (uint32_t)compressedPositions.size();
+						compressedPositions.push_back(posistions[i]);
+					}
+					else
+					{
+						positionsMapping[oldSize + i] = it->second;
+					}
+				}
+			}
+
+			if (vbufIds[1] != -1)
+			{
+				BufferF32x3* pbuf = static_cast<BufferF32x3*>(vbuf->buffers.buf[vbufIds[1]]);
+				const PxVec3* normals = pbuf->data.buf;
+				uint32_t oldSize = (uint32_t)normalsMapping.size();
+				normalsMapping.resize(oldSize + indexCount);
+				for (uint32_t i = 0; i < indexCount; ++i)
+				{
+					auto it = normMap.find(normals[i]);
+					if (it == normMap.end())
+					{
+						normMap[normals[i]] = (uint32_t)compressedNormals.size();
+						normalsMapping[oldSize + i] = (uint32_t)compressedNormals.size();
+						compressedNormals.push_back(normals[i]);
+					}
+					else
+					{
+						normalsMapping[oldSize + i] = it->second;
+					}
+				}
+			}
+			if (vbufIds[2] != -1)
+			{
+				BufferF32x2* pbuf = static_cast<BufferF32x2*>(vbuf->buffers.buf[vbufIds[2]]);
+				const PxVec2* texCoord = reinterpret_cast<PxVec2*>(pbuf->data.buf);
+				uint32_t oldSize = (uint32_t)texturesMapping.size();
+				texturesMapping.resize(oldSize + indexCount);
+				for (uint32_t i = 0; i < indexCount; ++i)
+				{
+					auto it = texMap.find(texCoord[i]);
+					if (it == texMap.end())
+					{
+						texMap[texCoord[i]] = (uint32_t)compressedTextures.size();
+						texturesMapping[oldSize + i] = (uint32_t)compressedTextures.size();
+						compressedTextures.push_back(texCoord[i]);
+					}
+					else
+					{
+						texturesMapping[oldSize + i] = it->second;
+					}
+				}
+			}
+		}
+	}
+		for (uint32_t i = 0; i < compressedTextures.size(); ++i)
+		{
+			std::swap(compressedTextures[i].x, compressedTextures[i].y);
+		}
+
+		outputData->positionsCount = (uint32_t)compressedPositions.size();
+		//meshData.positions = compressedPositions.data();
+		outputData->positions = new PxVec3[outputData->positionsCount];
+		memcpy(outputData->positions, compressedPositions.data(), sizeof(PxVec3) * outputData->positionsCount);
+		outputData->normalsCount = (uint32_t)compressedNormals.size();
+		//meshData.normals = compressedNormals.data();
+		outputData->normals = new PxVec3[outputData->normalsCount];
+		memcpy(outputData->normals, compressedNormals.data(), sizeof(PxVec3) * outputData->normalsCount);
+		outputData->uvsCount = (uint32_t)compressedTextures.size();
+		//meshData.uvs = compressedTextures.data();
+		outputData->uvs = new PxVec2[outputData->uvsCount];
+		memcpy(outputData->uvs, compressedTextures.data(), sizeof(PxVec2) * outputData->uvsCount);
+
+		uint32_t apexChunkCount = dasset->chunks.arraySizes[0];
+		outputData->meshCount = (uint32_t)chunkReorderInvMap.size();
+		outputData->submeshOffsets = new uint32_t[outputData->meshCount * outputData->submeshCount + 1]{ 0 };
+
+		//count total number of indices
+		for (uint32_t chunkIndex = 0; chunkIndex < apexChunkCount; ++chunkIndex)
+		{
+			uint32_t apexChunkIndex = chunkReorderInvMap[chunkIndex];
+			if (apexChunkIndex >= apexChunkCount)
+			{
+				PX_ALWAYS_ASSERT();
+				continue;
+			}
+			uint32_t part = getPartIndex(dasset, chunkIndex);
+			for (uint32_t submeshIndex = 0; submeshIndex < outputData->submeshCount; ++submeshIndex)
+			{					
+				 SubmeshParameters* sm = static_cast<SubmeshParameters*>(rmAsset->submeshes.buf[submeshIndex]);
+				
+				 uint32_t indexCount = sm->indexPartition.buf[part + 1] - sm->indexPartition.buf[part];
+				 uint32_t* firstIdx = outputData->submeshOffsets + chunkIndex * outputData->submeshCount + submeshIndex;
+				*(firstIdx + 1) = *firstIdx + indexCount;
+			}
+		}
+		outputData->posIndex = new uint32_t[outputData->submeshOffsets[outputData->meshCount * outputData->submeshCount]];
+		outputData->normIndex = new uint32_t[outputData->submeshOffsets[outputData->meshCount * outputData->submeshCount]];
+		outputData->texIndex = new uint32_t[outputData->submeshOffsets[outputData->meshCount * outputData->submeshCount]];
+		//copy indices
+		for (uint32_t chunkIndex = 0; chunkIndex < outputData->meshCount; ++chunkIndex)
+		{
+			uint32_t apexChunkIndex = chunkReorderInvMap[chunkIndex];
+			if (apexChunkIndex >= apexChunkCount)
+			{
+				PX_ALWAYS_ASSERT();
+				continue;
+			}
+			uint32_t part = getPartIndex(dasset, chunkIndex);
+			uint32_t offset = 0;
+			for (uint32_t submeshIndex = 0; submeshIndex < outputData->submeshCount; ++submeshIndex)
+			{
+				SubmeshParameters* sm = static_cast<SubmeshParameters*>(rmAsset->submeshes.buf[submeshIndex]);
+				const uint32_t* indexArray = sm->indexBuffer.buf + sm->indexPartition.buf[part];
+				uint32_t indexCount = sm->indexPartition.buf[part + 1] - sm->indexPartition.buf[part];
+
+				uint32_t firstIdx = outputData->submeshOffsets[chunkIndex * outputData->submeshCount + submeshIndex];
+
+				for (uint32_t i = 0; i < indexCount; ++i)
+				{
+					outputData->posIndex[firstIdx + i] = positionsMapping[indexArray[i] + offset];
+					outputData->normIndex[firstIdx + i] = normalsMapping[indexArray[i] + offset];
+					outputData->texIndex[firstIdx + i] = texturesMapping[indexArray[i] + offset];
+				}
+				nvidia::apex::VertexBufferParameters* vbuf = static_cast<nvidia::apex::VertexBufferParameters*>(sm->vertexBuffer);
+				offset += vbuf->vertexCount;
+			}
+		}
+		return true;
+}
+
 
 
 bool ApexImportTool::saveAsset(const NvBlastAsset* asset, PxFileBuf* stream)
@@ -495,7 +936,6 @@ bool ApexImportTool::saveAsset(const NvBlastAsset* asset, PxFileBuf* stream)
 
 ApexImportTool::~ApexImportTool()
 {
-	delete m_apexDestruction;
 }
 
 } // namespace ApexImporter

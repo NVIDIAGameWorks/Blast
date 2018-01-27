@@ -32,7 +32,7 @@ INPUT                  = ../../sdk \
 						 ../_source/copyrights.txt
 FILE_PATTERNS		   = *.h
 RECURSIVE			   = YES
-EXCLUDE_PATTERNS       = NvPreprocessor.h */common/* */ps4/* */xboxone/* */source/* */waiting/*
+EXCLUDE_PATTERNS       = NvPreprocessor.h */common/* */ps4/* */xboxone/* */source/* */waiting/* */apexmodules/*
 CHM_FILE               = chm\Blast.chm
 TOC_EXPAND             = YES
 OUTPUT_DIRECTORY       = ../api_docs/

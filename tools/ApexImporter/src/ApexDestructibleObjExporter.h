@@ -31,8 +31,8 @@
 
 #include <string>
 #include <vector>
-#include "DestructibleAsset.h"
 #include <NvBlastExtAuthoringCollisionBuilder.h>
+#include <NvBlastExtApexImportTool.h>
 
 
 
@@ -55,7 +55,7 @@ public:
 	ApexDestructibleGeometryExporter(std::string materialsDir, std::string exportDir) : m_materialsDir(materialsDir), m_exportDir(exportDir)
 	{}
 
-	bool exportToFile(NvBlastAsset* asset, const nvidia::apex::DestructibleAsset& apexAsset, const std::string& name, 
+	bool exportToFile(NvBlastAsset* asset, const NvParameterized::Interface* dmeshIfs, ApexImporter::ApexImportTool& tool, const std::string& name,
 		const std::vector<uint32_t>& chunkReorderInvMap, bool toFbx, bool toObj, bool fbxascii, bool nonSkinned, 
 		const std::vector<std::vector<CollisionHull*> >& hulls = std::vector<std::vector<CollisionHull*> >());
 
