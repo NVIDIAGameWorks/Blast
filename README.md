@@ -88,6 +88,15 @@ Blast tools and sample executables, along with all necessary supporting librarie
 [blast_tools_and_samples-windows.zip](blast_tools_and_samples-windows.zip) file.  This allows someone without a development environment to use these
 applications.
 
+BlastTool-1.1 (Windows 64-bit only)
+-----------------------------------
+
+BlastTool is a standalone GUI application for authoring Blast assets.  It imports fbx graphics files and exports Blast assets in the low-level, high-level (Tk),
+and ExtPx formats, along with fractured meshes and (optionally) collision geometry in a separate file or embedded in an fbx along with the graphics meshes.
+To use it, unzip the [BlastTool-1.1_win64.zip](BlastTool-1.1_win64.zip) file.
+
+Documentation may be found here: http://gameworksdocs.nvidia.com/Blast/1.1/authoring_docs/index.html
+
 Unreal Engine 4 Plugin
 ----------------------
 
