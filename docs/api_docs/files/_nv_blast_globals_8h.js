@@ -1,0 +1,27 @@
+var _nv_blast_globals_8h =
+[
+    [ "AllocatorCallback", "class_nv_1_1_blast_1_1_allocator_callback.html", "class_nv_1_1_blast_1_1_allocator_callback" ],
+    [ "ErrorCallback", "class_nv_1_1_blast_1_1_error_callback.html", "class_nv_1_1_blast_1_1_error_callback" ],
+    [ "ErrorCode", "struct_nv_1_1_blast_1_1_error_code.html", "struct_nv_1_1_blast_1_1_error_code" ],
+    [ "NVBLAST_ALLOC", "_nv_blast_globals_8h.html#a5d66f893822bf7f14f90e2b5480c6741", null ],
+    [ "NVBLAST_ALLOC_NAMED", "_nv_blast_globals_8h.html#a8b44c099b2f3dd78e4887065cbd3844d", null ],
+    [ "NVBLAST_CHECK", "_nv_blast_globals_8h.html#a12c3113fdc58a74fd2cf9e4839a14d74", null ],
+    [ "NVBLAST_CHECK_DEBUG", "_nv_blast_globals_8h.html#afee8367abfa398f31a979b6a6918492f", null ],
+    [ "NVBLAST_CHECK_ERROR", "_nv_blast_globals_8h.html#a7ac166d3622489e15ed28c5e61b22e0b", null ],
+    [ "NVBLAST_CHECK_INFO", "_nv_blast_globals_8h.html#a9118c6afe116051855dcd7fcd38baa9a", null ],
+    [ "NVBLAST_CHECK_WARNING", "_nv_blast_globals_8h.html#addfc51da498a3e77d748dff30084df79", null ],
+    [ "NVBLAST_DELETE", "_nv_blast_globals_8h.html#a169634cc0a7d8a8567b8b390c926b2e7", null ],
+    [ "NVBLAST_FOURCC", "_nv_blast_globals_8h.html#a05d6e56bfb4bc7ffdaccd9e32ef1551e", null ],
+    [ "NVBLAST_FREE", "_nv_blast_globals_8h.html#af968d9c2dc2aaeb87f55bbd85488f741", null ],
+    [ "NVBLAST_LOG", "_nv_blast_globals_8h.html#aaa478c2c6c4b296431d526caa7ee6369", null ],
+    [ "NVBLAST_LOG_DEBUG", "_nv_blast_globals_8h.html#a840ebe37ee602bb328d88d629f8f3017", null ],
+    [ "NVBLAST_LOG_ERROR", "_nv_blast_globals_8h.html#a67129e1adea0a0ed0c08da1b16497da0", null ],
+    [ "NVBLAST_LOG_INFO", "_nv_blast_globals_8h.html#a9315f52cc9bb2de8f03b544716a06dce", null ],
+    [ "NVBLAST_LOG_WARNING", "_nv_blast_globals_8h.html#a571a982fe46cf7f797e63393a027d359", null ],
+    [ "NVBLAST_NEW", "_nv_blast_globals_8h.html#acae7d0ae139069c3dc07f095d16bff83", null ],
+    [ "logLL", "_nv_blast_globals_8h.html#a1152c58af94417b6861e5bb3695b9ddf", null ],
+    [ "NvBlastGlobalGetAllocatorCallback", "_nv_blast_globals_8h.html#a6960a904cca030a87f4a569d0cd6a4fa", null ],
+    [ "NvBlastGlobalGetErrorCallback", "_nv_blast_globals_8h.html#adfce9f2ac7e3acfdd5c82cdbc9db0f36", null ],
+    [ "NvBlastGlobalSetAllocatorCallback", "_nv_blast_globals_8h.html#a593586b9c9276aecb5a8f552f526f73b", null ],
+    [ "NvBlastGlobalSetErrorCallback", "_nv_blast_globals_8h.html#a67996f009abbedc2d6c769f4af11f95f", null ]
+];

@@ -25,10 +25,18 @@ There are four tools for creation of Blast&trade; assets.<p>
 <br>
  <h2><a class="anchor" name="fracturetool">
 FractureTool</a></h2>
-<a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">Nv::Blast::FractureTool</a> (see <a class="el" href="_nv_blast_ext_authoring_fracture_tool_8h.html">NvBlastExtAuthoringFractureTool.h</a>) is used to fracture an input mesh. It supports Voronoi fracturing and also simple slicing. Internal surfaces of output chunks can be tesselated and noise can be applied to them. The slicing method supports slicing with a noisy slicing surface, which allows the creation of a jagged slicing line. Noisy slicing is switched on by setting a non-zero noise amplitude in slicing parameters (<a class="el" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">Nv::Blast::SlicingConfiguration</a>).<p>
+<a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">Nv::Blast::FractureTool</a> (see <a class="el" href="_nv_blast_ext_authoring_fracture_tool_8h.html">NvBlastExtAuthoringFractureTool.h</a>) is used to fracture an input mesh. It supports Voronoi fracturing, slicing, and "cutout" fracture (slicing based upon an image). Internal surfaces of output chunks can be tesselated and noise can be applied to them. The slicing method supports slicing with a noisy slicing surface, which allows the creation of a jagged slicing line. Noisy slicing is switched on by setting a non-zero noise amplitude in slicing parameters (<a class="el" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">Nv::Blast::SlicingConfiguration</a>).<p>
 FractureTool supports two types of output:<p>
 1) Array of triangles - the tool fills provided array with triangles of chunk, ID of chunk should be provided.<p>
 2) Buffered output - the tool fills provided array with vertices, and another array of arrays with indices. Indices form triplets of vertices of triangle.<p>
+<br>
+ <h2><a class="anchor" name="fracturemeshrestrictions">
+Mesh Restrictions</a></h2>
+At the core of the fracturing tools is a geometric boolean algorithm based upon the paper, <b><em>A topologically robust algorithm for Boolean operations on polyhedral shapes using approximate arithmetic</em></b> by Smith and Dodgson, Computer-Aided Design 39 (2007) 149–163, Elsevier. The constraints for a valid input mesh are given in the paper. Practically, the restrictions may be summarized as follows.<p>
+Input meshes<ul>
+<li>must be closed with CCW-oriented surfaces,</li><li>must not have self-intersection,</li><li>must not have T-junctions,</li><li><em>may</em> have multiple disconnected components.</li></ul>
+<p>
+Failure to meet the constraints (first three items) above will lead to unpredictable fracturing results.<p>
 <br>
  <h2><a class="anchor" name="convexmeshbuilder">
 ConvexMeshBuilder</a></h2>

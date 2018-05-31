@@ -36,27 +36,37 @@ namespace Nv
 namespace Blast
 {
 
-
 struct CollisionHull;
 
 /**
-	Serializes collision geometry to JSON format. 
+	Interface to object which serializes collision geometry to JSON format. 
 */
-class JsonCollisionExporter
+class IJsonCollisionExporter
 {
 public: 
-	JsonCollisionExporter(){};
+	/**
+		Delete this object
+	*/
+	virtual void	release() = 0;
 
 	/**
 		Method creates file with given path and serializes given array of arrays of convex hulls to it in JSON format.
-		\param[in] path		Output file path 
-		\param[in] hulls	Array of arrays of convex hull descriptors. Each array contain array of convex hulls for chunk (hulls[0] - convexes for chunk 0, etc.)
+		\param[in] path			Output file path.
+		\param[in] chunkCount	The number of chunks, may be less than the number of collision hulls.
+		\param[in] hullOffsets	Collision hull offsets. Contains chunkCount + 1 element. First collision hull for i-th chunk: hull[hullOffsets[i]]. hullOffsets[chunkCount+1] is total number of hulls.
+		\param[in] hulls		Array of pointers to convex hull descriptors, contiguously grouped for chunk[0], chunk[1], etc.
 	*/
-	bool writeCollision(const char* path, uint32_t meshCount, const uint32_t* meshOffsets, const CollisionHull* hulls);
+	virtual bool	writeCollision(const char* path, uint32_t chunkCount, const uint32_t* hullOffsets, const CollisionHull* const * hulls) = 0;
 };
-
 
 } // namespace Blast
 } // namespace Nv
+
+
+/**
+Creates an instance of IMeshFileWriter for writing obj file.
+*/
+NVBLAST_API Nv::Blast::IJsonCollisionExporter* NvBlastExtExporterCreateJsonCollisionExporter();
+
 
 #endif //NVBLASTEXTEXPORTERJSONCOLLISION_H

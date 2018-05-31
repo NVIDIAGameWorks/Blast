@@ -19,12 +19,13 @@ pushd "%LINUX_MULTIARCH_ROOT%\x86_64-unknown-linux-gnu"
 SET LINUX_ROOT=%cd%
 popd
 
-REM Now set up the CMake command from PM_PACKAGES_ROOT
-::Ugly hack, this will be the linux one, due to packman downloading Linux binaries, so swap the path
-SET CMAKECMD=%PM_cmake_PATH_Win%\bin\cmake.exe
+REM Now set up the CMake command
+SET CMAKECMD=%PM_cmake_PATH%\bin\cmake.exe
 
 echo Cmake: %CMAKECMD%
 
+:: We need this for NMake
+@call "%VS140COMNTOOLS%VsdevCmd.bat"
 
 REM Generate projects here
 

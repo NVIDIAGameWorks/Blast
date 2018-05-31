@@ -52,7 +52,8 @@ struct ConvexLoop
 struct Cutout
 {
 	std::vector<physx::PxVec3> vertices;
-	std::vector<ConvexLoop> convexLoops;
+	//std::vector<ConvexLoop> convexLoops;
+	std::vector<physx::PxVec3> smoothingGroups;
 };
 
 struct POINT2D
@@ -74,8 +75,6 @@ struct POINT2D
 	}
 };
 
-void convertTracesToIncremental(std::vector< std::vector<POINT2D>* >& traces);
-
 struct CutoutSetImpl : public CutoutSet
 {
 	CutoutSetImpl() : periodic(false), dimensions(0.0f)
@@ -84,36 +83,36 @@ struct CutoutSetImpl : public CutoutSet
 
 	uint32_t			getCutoutCount() const
 	{
-		return (uint32_t)cutouts.size();
+		return (uint32_t)cutouts.size() - 1;
 	}
 
-	uint32_t			getCutoutVertexCount(uint32_t cutoutIndex) const
+	uint32_t			getCutoutVertexCount(uint32_t cutoutIndex, uint32_t loopIndex) const
 	{
-		return (uint32_t)cutouts[cutoutIndex].vertices.size();
+		return (uint32_t)cutoutLoops[cutouts[cutoutIndex] + loopIndex].vertices.size();
 	}
 	uint32_t			getCutoutLoopCount(uint32_t cutoutIndex) const
 	{
-		return (uint32_t)cutouts[cutoutIndex].convexLoops.size();
+		return (uint32_t)cutouts[cutoutIndex + 1] - cutouts[cutoutIndex];
 	}
 
-	const physx::PxVec3&	getCutoutVertex(uint32_t cutoutIndex, uint32_t vertexIndex) const
+	const physx::PxVec3&	getCutoutVertex(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const
 	{
-		return cutouts[cutoutIndex].vertices[vertexIndex];
+		return cutoutLoops[cutouts[cutoutIndex] + loopIndex].vertices[vertexIndex];
 	}
 
-	uint32_t			getCutoutLoopSize(uint32_t cutoutIndex, uint32_t loopIndex) const
+	bool				isCutoutVertexToggleSmoothingGroup(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const
 	{
-		return (uint32_t)cutouts[cutoutIndex].convexLoops[loopIndex].polyVerts.size();
+		auto& vRef = cutoutLoops[cutouts[cutoutIndex] + loopIndex].vertices[vertexIndex];
+		for (auto& v : cutoutLoops[cutouts[cutoutIndex] + loopIndex].smoothingGroups)
+		{
+			if ((vRef - v).magnitudeSquared() < 1e-5)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
-	uint32_t			getCutoutLoopVertexIndex(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexNum) const
-	{
-		return cutouts[cutoutIndex].convexLoops[loopIndex].polyVerts[vertexNum].index;
-	}
-	uint32_t			getCutoutLoopVertexFlags(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexNum) const
-	{
-		return cutouts[cutoutIndex].convexLoops[loopIndex].polyVerts[vertexNum].flags;
-	}
 	bool					isPeriodic() const
 	{
 		return periodic;
@@ -131,7 +130,8 @@ struct CutoutSetImpl : public CutoutSet
 		delete this;
 	}
 
-	std::vector<Cutout>		cutouts;
+	std::vector<Cutout>		cutoutLoops;
+	std::vector<uint32_t>	cutouts;
 	bool					periodic;
 	physx::PxVec2			dimensions;
 };

@@ -15,6 +15,8 @@ Additionally, the user can choose how Blast&tm; data should be saved (in .blast 
 
 .blast and .obj files may be consumed by the \ref pagesampleassetviewer.
 
+This tool uses the Authoring Tools Extension (\ref pageextauthoring).  Therefore the restrictions on the input mesh are those of the authoring tools, see \ref fracturemeshrestrictions.
+
 
 \verbatim
 

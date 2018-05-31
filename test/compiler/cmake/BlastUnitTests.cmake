@@ -25,7 +25,6 @@ SET(UNITTEST_SOURCE_FILES
 	${UNITTEST_SOURCE_DIR}/AssetTests.cpp
 	${UNITTEST_SOURCE_DIR}/ActorTests.cpp
 	${UNITTEST_SOURCE_DIR}/APITests.cpp
-	${UNITTEST_SOURCE_DIR}/AuthoringCutout.cpp
 	${UNITTEST_SOURCE_DIR}/CoreTests.cpp
 	${UNITTEST_SOURCE_DIR}/FamilyGraphTests.cpp
 	${UNITTEST_SOURCE_DIR}/MultithreadingTests.cpp
@@ -87,16 +86,10 @@ SET(UTILS_SOURCE_FILES
 	${UTILS_SOURCE_DIR}/TestProfiler.h
 )
 
-SET(AUTHORING_SOURCE_FILES
-	${BLAST_ROOT_DIR}/sdk/extensions/authoring/source/NvBlastExtAuthoringCutoutImpl.cpp
-)
-
-
 ADD_EXECUTABLE(BlastUnitTests 
 	${COMMON_SOURCE_FILES}
 	${UTILS_SOURCE_FILES}
 	${UNITTEST_SOURCE_FILES}
-	${AUTHORING_SOURCE_FILES}
 	
 	${SDK_COMMON_FILES}
 	${SDK_SOLVER_FILES}
@@ -131,8 +124,6 @@ TARGET_INCLUDE_DIRECTORIES(BlastUnitTests
 	PRIVATE ${BLAST_ROOT_DIR}/sdk/lowlevel/source
 	PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/assetutils/source
 	PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/assetutils/include
-	PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/authoring/source
-	PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/authoring/include
 	PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/serialization/include
 	PRIVATE ${BLAST_ROOT_DIR}/shared/utils
 

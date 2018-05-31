@@ -1,0 +1,48 @@
+<project toolsVersion="5.2">
+	<dependency name="DXUT">
+		<package name="DXUT" version="9.15.2016.1" platforms="win.*"/>
+	</dependency>
+	<dependency name="DirectXTex">
+		<package name="DirectXTex" version="10.5.2016.2" platforms="win.*"/>
+	</dependency>
+	<dependency name="imgui">
+		<package name="imgui" version="1.49" platforms="win.*"/>
+	</dependency>
+	<dependency name="nvToolsExt">
+		<package name="nvToolsExt" version="1.0" platforms="win.*"/>
+	</dependency>
+	<dependency name="FBXSDK">
+		<package name="FBXSDK" version="2017.0.1" platforms="win.*"/>
+	</dependency>
+	<dependency name="hbao_plus">
+		<package name="hbao_plus" version="3.0.20515708" platforms="win.*"/>
+	</dependency>
+	<dependency name="shadow_lib">
+		<package name="shadow_lib" version="2.1.20145239" platforms="win.*"/>
+	</dependency>
+	<dependency name="d3dcompiler">
+		<package name="d3dcompiler" version="47" platforms="win.*"/>
+	</dependency>
+	<dependency name="tclap">
+		<package name="tclap" version="1.2.1" platforms="win.*"/>
+	</dependency>
+	<dependency name="tinyObjLoader">
+		<package name="tinyObjLoader" version="1.0" platforms="win.*"/>
+	</dependency>
+	<dependency name="BoostMultiprecision">
+    	<package name="BoostMultiprecision" version="1.64.0.1" platforms="win.* linux"/>
+	</dependency>
+
+	<dependency name="PhysX">
+		<package name="PhysX-${platform}" version="3.4.23426887.1" platforms="win.*.vc140"/>
+		<package name="PhysX-${platform}" version="3.4.23572210" platforms="win.*.vc150"/>
+		<package name="PhysX-${platform}" version="3.4.23426887" platforms="xboxone"/>
+		<package name="PhysX-linux64" version="3.4.23426887" platforms="linux"/>
+	</dependency>
+
+	<dependency name="googletest">
+		<package name="googletest-win" version="1.4.0.2" platforms="win.*"/>
+		<package name="googletest-${platform}" version="1.4.0.2" platforms="xboxone"/>
+		<package name="googletest-linux-x86_64" version="1.8.0.1" platforms="linux"/>
+	</dependency>
+</project>

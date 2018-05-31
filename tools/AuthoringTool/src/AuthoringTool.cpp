@@ -46,6 +46,7 @@
 #include "BlastDataExporter.h"
 #include "SimpleRandomGenerator.h"
 #include "NvBlastExtAuthoringMeshCleaner.h"
+#include "NvBlastExtExporterJsonCollision.h"
 
 #include <string>
 #include <memory>
@@ -330,6 +331,9 @@ int main(int argc, const char* const* argv)
 
 	TCLAP::SwitchArg fbxCollision("", "fbxcollision", "Add collision geometry to FBX file", false);
 	cmd.add(fbxCollision);
+
+	TCLAP::SwitchArg jsonCollision("", "jsoncollision", "Save collision geometry to a json file", false);
+	cmd.add(jsonCollision);
 
 	TCLAP::SwitchArg nonSkinnedFBX("", "nonskinned", "Output a non-skinned FBX file", false);
 	cmd.add(nonSkinnedFBX);
@@ -647,13 +651,30 @@ int main(int argc, const char* const* argv)
 	result->materialNames = matNames.data();
 	result->materialCount = static_cast<uint32_t>(matNames.size());
 	
+	const std::string assetNameFull = outDir + "\\" + assetName;
+
+	if (jsonCollision.isSet())
+	{
+		const std::string fullJsonFilename = assetNameFull + ".json";
+		IJsonCollisionExporter* collisionExporter = NvBlastExtExporterCreateJsonCollisionExporter();
+		if (collisionExporter != nullptr)
+		{
+			if (collisionExporter->writeCollision(fullJsonFilename.c_str(), result->chunkCount, result->collisionHullOffset, result->collisionHull))
+			{
+				std::cout << "Exported collision geometry: " << fullJsonFilename << std::endl;
+			}
+			else
+			{
+				std::cerr << "Can't write collision geometry to json file." << std::endl;
+			}
+			collisionExporter->release();
+		}
+	}
 
 	if (!fbxCollision.isSet())
 	{
 		result->releaseCollisionHulls();
 	}
-
-	const std::string assetNameFull = outDir + "\\" + assetName;
 
 	if (bOutputObjFile)
 	{

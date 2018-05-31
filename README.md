@@ -54,9 +54,11 @@ Current blast extensions:
 Documentation
 -------------
 
-See the [Blast Online Documentation](http://gameworksdocs.nvidia.com/simulation.html#blast) for API and authoring documentation.
+See [docs/api_docs/index.html](docs/api_docs/index.html) for api documentation.
 
-In this repository, see [docs/source_docs/index.html](docs/source_docs/index.html) for full source doxygen pages, and [docs/release_notes.txt](docs/release_notes.txt) for changes.
+See [docs/source_docs/index.html](docs/source_docs/index.html) for full source doxygen pages.
+
+See [docs/release_notes.txt](docs/release_notes.txt) for changes.
 
 Compiling
 ---------

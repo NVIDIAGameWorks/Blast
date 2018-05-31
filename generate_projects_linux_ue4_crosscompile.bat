@@ -8,11 +8,13 @@
 @SET BLAST_ROOT_DIR=%~sdp0
 
 :: Run packman to ensure dependencies are present and run cmake generation script afterwards
-@echo Running packman in preparation for cross-compile toolchain ...
-@echo.
+@call "%~dp0buildtools\get_build_deps.cmd" win.linux-UE4-cross
+@if %ERRORLEVEL% neq 0 (
+    @exit /b %errorlevel%
+)
 
 ::Need linux libs, but windows tools, run us again to get the path
-@call "%~dp0buildtools\packman\packman.cmd" pull "%~dp0dependencies.xml" --platform win --postscript "%~dp0buildtools\generate_projects_linux_ue4_crosscompile_step2.bat"
+@call "%~dp0buildtools\packman5\packman.cmd" pull "%~dp0target_platform_deps.xml" --platform linux --postscript "%~dp0buildtools\cmake_projects_linux_ue4_crosscompile.bat"
 @if %ERRORLEVEL% neq 0 (
     @exit /b %errorlevel%
 ) else (

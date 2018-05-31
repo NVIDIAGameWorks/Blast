@@ -76,9 +76,9 @@ struct NoiseConfiguration
 	uint32_t octaveNumber = 1;
 
 	/**
-	Cutting surface resolution.
+	Sampling interval for surface grid.
 	*/
-	uint32_t surfaceResolution = 1;
+	physx::PxVec3 samplingInterval = physx::PxVec3(1.f);
 };
 
 /*
@@ -131,9 +131,19 @@ struct CutoutConfiguration
 	physx::PxVec2 scale = physx::PxVec2(-1, -1);
 
 	/**
+		Conic aperture in degree, for cylindric cutout set it to 0.
+	*/
+	float aperture = 0.f;
+
+	/**
 		If relative transform is set - position will be displacement vector from chunk's center. Otherwise from global origin.
 	*/
 	bool isRelativeTransform = true;
+
+	/**
+	Add generatad faces to the same smoothing group as original face without noise
+	*/
+	bool useSmoothing = false;
 
 	/**
 		Noise parameters for cutout surface, see NoiseConfiguration.

@@ -1,7 +1,7 @@
 #Platform specific compile flags and project includes
 
 #NOTE: Warnings lowered on the sample projects as it's got a lot of warnings. Defines below hide more.
-SET(CMAKE_CXX_FLAGS "/GR- /GF /MP /Gy /EHsc /d2Zi+ /errorReport:prompt /fp:fast /Gd /Gm- /GS- /nologo /W3 /WX /Zc:forScope /Zc:inline /Zc:wchar_t /Zi")
+SET(CMAKE_CXX_FLAGS "/GR- /GF /MP /Gy /EHsc /d2Zi+ /errorReport:prompt /fp:fast /Gd /Gm- /GS- /nologo /W3 /WX /Zc:forScope /Zc:inline /Zc:wchar_t /Zi /D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
 
 # Are we using the static or dynamic RT library? Whatever we use, it needs to be the same in any dependencies
 #  we pull in or we're potentially having mismatch issues.
@@ -12,7 +12,7 @@ ELSE()
 	SET(WINCRT_NDEBUG "/MD")
 	SET(WINCRT_DEBUG "/MDd")
 ENDIF()
-
+	
 SET(CMAKE_CXX_FLAGS_DEBUG "/Od /RTCsu ${WINCRT_DEBUG}")
 SET(CMAKE_CXX_FLAGS_CHECKED "/Ox ${WINCRT_NDEBUG}")
 SET(CMAKE_CXX_FLAGS_PROFILE "/Ox ${WINCRT_NDEBUG}")

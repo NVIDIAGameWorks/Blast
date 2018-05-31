@@ -57,22 +57,24 @@
 <a name="l00036"></a>00036 <span class="keyword">namespace </span>Blast
 <a name="l00037"></a>00037 {
 <a name="l00038"></a>00038 
-<a name="l00039"></a>00039 
-<a name="l00040"></a>00040 <span class="keyword">struct </span>CollisionHull;
-<a name="l00041"></a>00041 
-<a name="l00045"></a><a class="code" href="class_nv_1_1_blast_1_1_json_collision_exporter.html">00045</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_json_collision_exporter.html">JsonCollisionExporter</a>
-<a name="l00046"></a>00046 {
-<a name="l00047"></a>00047 <span class="keyword">public</span>: 
-<a name="l00048"></a><a class="code" href="class_nv_1_1_blast_1_1_json_collision_exporter.html#f7cc5e8e9dee4a50ad25d4af7fc13009">00048</a>     <a class="code" href="class_nv_1_1_blast_1_1_json_collision_exporter.html#f7cc5e8e9dee4a50ad25d4af7fc13009">JsonCollisionExporter</a>(){};
-<a name="l00049"></a>00049 
-<a name="l00055"></a>00055     <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_json_collision_exporter.html#bf6d0aa282263e67c381be1adb75d776">writeCollision</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* path, uint32_t meshCount, <span class="keyword">const</span> uint32_t* meshOffsets, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>* hulls);
-<a name="l00056"></a>00056 };
-<a name="l00057"></a>00057 
-<a name="l00058"></a>00058 
-<a name="l00059"></a>00059 } <span class="comment">// namespace Blast</span>
-<a name="l00060"></a>00060 } <span class="comment">// namespace Nv</span>
+<a name="l00039"></a>00039 <span class="keyword">struct </span>CollisionHull;
+<a name="l00040"></a>00040 
+<a name="l00044"></a><a class="code" href="class_nv_1_1_blast_1_1_i_json_collision_exporter.html">00044</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_i_json_collision_exporter.html">IJsonCollisionExporter</a>
+<a name="l00045"></a>00045 {
+<a name="l00046"></a>00046 <span class="keyword">public</span>: 
+<a name="l00050"></a>00050     <span class="keyword">virtual</span> <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_i_json_collision_exporter.html#f744ddab2561e7c141875ccd3b0b7e54">release</a>() = 0;
+<a name="l00051"></a>00051 
+<a name="l00059"></a>00059     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>    <a class="code" href="class_nv_1_1_blast_1_1_i_json_collision_exporter.html#036a4974af69302ea442baed800c3bbe">writeCollision</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* path, uint32_t chunkCount, <span class="keyword">const</span> uint32_t* hullOffsets, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>* <span class="keyword">const</span> * hulls) = 0;
+<a name="l00060"></a>00060 };
 <a name="l00061"></a>00061 
-<a name="l00062"></a>00062 <span class="preprocessor">#endif //NVBLASTEXTEXPORTERJSONCOLLISION_H</span>
+<a name="l00062"></a>00062 } <span class="comment">// namespace Blast</span>
+<a name="l00063"></a>00063 } <span class="comment">// namespace Nv</span>
+<a name="l00064"></a>00064 
+<a name="l00065"></a>00065 
+<a name="l00069"></a>00069 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_i_json_collision_exporter.html">Nv::Blast::IJsonCollisionExporter</a>* <a class="code" href="_nv_blast_ext_exporter_json_collision_8h.html#78a91f4ba679ece96110ef4dad60d949">NvBlastExtExporterCreateJsonCollisionExporter</a>();
+<a name="l00070"></a>00070 
+<a name="l00071"></a>00071 
+<a name="l00072"></a>00072 <span class="preprocessor">#endif //NVBLASTEXTEXPORTERJSONCOLLISION_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

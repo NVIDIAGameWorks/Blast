@@ -62,17 +62,13 @@ Inheritance diagram for Nv::Blast::CutoutSet:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html#8348b26fd9eda511ccb71b1e201d099b">getCutoutLoopCount</a> (uint32_t cutoutIndex) const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html#0a8fa78936f897e001a94f41d6e8e7bc">getCutoutLoopSize</a> (uint32_t coutoutIndex, uint32_t loopIndex) const =0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const physx::PxVec3 &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html#1f6702450bcf27fd07f95cd90b301b1a">getCutoutVertex</a> (uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html#650c63a9c2d659275821b4c92c90b81e">getCutoutLoopVertexFlags</a> (uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexNum) const =0</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html#b9f063e5e1a3b6e3950bb36cbd670264">getCutoutLoopVertexIndex</a> (uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexNum) const =0</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const physx::PxVec3 &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html#f85c965c98fe1d9182028185e7711930">getCutoutVertex</a> (uint32_t cutoutIndex, uint32_t vertexIndex) const =0</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html#20f3f220549c4588781af5999206d207">getCutoutVertexCount</a> (uint32_t cutoutIndex) const =0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html#409a1bb7a56c5224ddc469d555041e16">getCutoutVertexCount</a> (uint32_t cutoutIndex, uint32_t loopIndex) const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const physx::PxVec2 &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html#3e83164e0d8814fb9912f1c50c7e8218">getDimensions</a> () const =0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html#45d0b1d3f50647cd3b5517b70485f338">isCutoutVertexToggleSmoothingGroup</a> (uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html#6d3a1b817c323ca2385d1cacf52c98ce">isPeriodic</a> () const =0</td></tr>
 
@@ -148,112 +144,7 @@ Applies to the cutout indexed by cutoutIndex: Returns the number of loops in thi
 
 </div>
 </div><p>
-<a class="anchor" name="0a8fa78936f897e001a94f41d6e8e7bc"></a><!-- doxytag: member="Nv::Blast::CutoutSet::getCutoutLoopSize" ref="0a8fa78936f897e001a94f41d6e8e7bc" args="(uint32_t coutoutIndex, uint32_t loopIndex) const =0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual uint32_t Nv::Blast::CutoutSet::getCutoutLoopSize           </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>coutoutIndex</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>loopIndex</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td> const<code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Applies to the cutout indexed by cutoutIndex: Returns the number of vertices in the loop indexed by loopIndex. 
-<p>Implemented in <a class="el" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#04d6d1aa1051ac0f3ae9a9d0298958f0">Nv::Blast::CutoutSetImpl</a>.</p>
-
-</div>
-</div><p>
-<a class="anchor" name="650c63a9c2d659275821b4c92c90b81e"></a><!-- doxytag: member="Nv::Blast::CutoutSet::getCutoutLoopVertexFlags" ref="650c63a9c2d659275821b4c92c90b81e" args="(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexNum) const =0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual uint32_t Nv::Blast::CutoutSet::getCutoutLoopVertexFlags           </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>cutoutIndex</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>loopIndex</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>vertexNum</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td> const<code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Applies to the cutout indexed by cutoutIndex: Returns the flags of the vertex indexed by vertexNum, in the loop indexed by loopIndex. 
-<p>Implemented in <a class="el" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#e3e69277268f849b80856236ad376e45">Nv::Blast::CutoutSetImpl</a>.</p>
-
-</div>
-</div><p>
-<a class="anchor" name="b9f063e5e1a3b6e3950bb36cbd670264"></a><!-- doxytag: member="Nv::Blast::CutoutSet::getCutoutLoopVertexIndex" ref="b9f063e5e1a3b6e3950bb36cbd670264" args="(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexNum) const =0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual uint32_t Nv::Blast::CutoutSet::getCutoutLoopVertexIndex           </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>cutoutIndex</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>loopIndex</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>vertexNum</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td> const<code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Applies to the cutout indexed by cutoutIndex: Returns the vertex index of the vertex indexed by vertexNum, in the loop indexed by loopIndex. 
-<p>Implemented in <a class="el" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#8d64ed40e76b2d74debb230985b331ea">Nv::Blast::CutoutSetImpl</a>.</p>
-
-</div>
-</div><p>
-<a class="anchor" name="f85c965c98fe1d9182028185e7711930"></a><!-- doxytag: member="Nv::Blast::CutoutSet::getCutoutVertex" ref="f85c965c98fe1d9182028185e7711930" args="(uint32_t cutoutIndex, uint32_t vertexIndex) const =0" -->
+<a class="anchor" name="1f6702450bcf27fd07f95cd90b301b1a"></a><!-- doxytag: member="Nv::Blast::CutoutSet::getCutoutVertex" ref="1f6702450bcf27fd07f95cd90b301b1a" args="(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -262,6 +153,12 @@ Applies to the cutout indexed by cutoutIndex: Returns the vertex index of the ve
           <td>(</td>
           <td class="paramtype">uint32_t&nbsp;</td>
           <td class="paramname"> <em>cutoutIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>loopIndex</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -280,11 +177,11 @@ Applies to the cutout indexed by cutoutIndex: Returns the vertex index of the ve
 
 <p>
 Applies to the cutout indexed by cutoutIndex: Returns the vertex indexed by vertexIndex. (Only the X and Y coordinates are used.) 
-<p>Implemented in <a class="el" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#203e0824242d13beddc24ab7469a3cbc">Nv::Blast::CutoutSetImpl</a>.</p>
+<p>Implemented in <a class="el" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#a6a27a58fce57308aafaefd3768d0a08">Nv::Blast::CutoutSetImpl</a>.</p>
 
 </div>
 </div><p>
-<a class="anchor" name="20f3f220549c4588781af5999206d207"></a><!-- doxytag: member="Nv::Blast::CutoutSet::getCutoutVertexCount" ref="20f3f220549c4588781af5999206d207" args="(uint32_t cutoutIndex) const =0" -->
+<a class="anchor" name="409a1bb7a56c5224ddc469d555041e16"></a><!-- doxytag: member="Nv::Blast::CutoutSet::getCutoutVertexCount" ref="409a1bb7a56c5224ddc469d555041e16" args="(uint32_t cutoutIndex, uint32_t loopIndex) const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -292,9 +189,18 @@ Applies to the cutout indexed by cutoutIndex: Returns the vertex indexed by vert
           <td class="memname">virtual uint32_t Nv::Blast::CutoutSet::getCutoutVertexCount           </td>
           <td>(</td>
           <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>cutoutIndex</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td> const<code> [pure virtual]</code></td>
+          <td class="paramname"> <em>cutoutIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>loopIndex</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td> const<code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -302,7 +208,7 @@ Applies to the cutout indexed by cutoutIndex: Returns the vertex indexed by vert
 
 <p>
 Applies to the cutout indexed by cutoutIndex: Returns the number of vertices in the cutout. 
-<p>Implemented in <a class="el" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#5b05a151b8b3d93bb496d09fa6ef62a8">Nv::Blast::CutoutSetImpl</a>.</p>
+<p>Implemented in <a class="el" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#08cc67542f762a98bbd1c853f43dbba6">Nv::Blast::CutoutSetImpl</a>.</p>
 
 </div>
 </div><p>
@@ -324,6 +230,43 @@ Applies to the cutout indexed by cutoutIndex: Returns the number of vertices in 
 <p>
 The dimensions of the fracture map used to create the cutout set. 
 <p>Implemented in <a class="el" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#3fb7f765ce7855f9ae208fce39e5b3ce">Nv::Blast::CutoutSetImpl</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="45d0b1d3f50647cd3b5517b70485f338"></a><!-- doxytag: member="Nv::Blast::CutoutSet::isCutoutVertexToggleSmoothingGroup" ref="45d0b1d3f50647cd3b5517b70485f338" args="(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const =0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool Nv::Blast::CutoutSet::isCutoutVertexToggleSmoothingGroup           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>cutoutIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>loopIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>vertexIndex</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td> const<code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+If smoothing group should be changed for adjacent to this vertex faces return true 
+<p>Implemented in <a class="el" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#0b499b888a1d1afe508524c51936685a">Nv::Blast::CutoutSetImpl</a>.</p>
 
 </div>
 </div><p>

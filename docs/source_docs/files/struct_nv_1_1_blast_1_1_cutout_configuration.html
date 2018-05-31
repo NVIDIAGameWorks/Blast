@@ -49,6 +49,8 @@
 <a href="struct_nv_1_1_blast_1_1_cutout_configuration-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Attributes</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#397831eed1776f363b068ea8879f33fc">aperture</a> = 0.f</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html">CutoutSet</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#30e10f98ba8ab88afa9b7ee5855dbd14">cutoutSet</a> = nullptr</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#0614b4b06b7c4925c37c3d039887665e">isRelativeTransform</a> = true</td></tr>
@@ -59,9 +61,26 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxTransform&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#d7b10d6b4904147286497ec4a0c4860c">transform</a> = physx::PxTransform(physx::PxIdentity)</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#61deebb0401642549a0772f6dd971065">useSmoothing</a> = false</td></tr>
+
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 <a class="el" href="struct_nv_1_1_blast_1_1_cutout.html">Cutout</a> fracturing configuration <hr><h2>Member Data Documentation</h2>
+<a class="anchor" name="397831eed1776f363b068ea8879f33fc"></a><!-- doxytag: member="Nv::Blast::CutoutConfiguration::aperture" ref="397831eed1776f363b068ea8879f33fc" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#397831eed1776f363b068ea8879f33fc">Nv::Blast::CutoutConfiguration::aperture</a> = 0.f          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Conic aperture in degree, for cylindric cutout set it to 0. 
+</div>
+</div><p>
 <a class="anchor" name="30e10f98ba8ab88afa9b7ee5855dbd14"></a><!-- doxytag: member="Nv::Blast::CutoutConfiguration::cutoutSet" ref="30e10f98ba8ab88afa9b7ee5855dbd14" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -135,6 +154,21 @@ Scale for pattern. Unscaled pattern has size (1, 1). For negative scale pattern 
 
 <p>
 Transform for initial pattern position and orientation. By default 2d pattern lies in XY plane (Y is up) the center of pattern is (0, 0) 
+</div>
+</div><p>
+<a class="anchor" name="61deebb0401642549a0772f6dd971065"></a><!-- doxytag: member="Nv::Blast::CutoutConfiguration::useSmoothing" ref="61deebb0401642549a0772f6dd971065" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#61deebb0401642549a0772f6dd971065">Nv::Blast::CutoutConfiguration::useSmoothing</a> = false          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Add generatad faces to the same smoothing group as original face without noise 
 </div>
 </div><p>
 <hr>The documentation for this struct was generated from the following file:<ul>

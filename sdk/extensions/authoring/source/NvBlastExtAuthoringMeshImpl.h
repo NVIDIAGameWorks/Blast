@@ -29,7 +29,10 @@
 #define NVBLASTAUTHORINGMESHIMPL_H
 
 #include "NvBlastExtAuthoringMesh.h"
+#include "NvBlastExtAuthoringFractureTool.h"
 #include <vector>
+#include <map>
+#include <set>
 
 namespace Nv
 {
@@ -217,25 +220,67 @@ Mesh*	getBigBox(const physx::PxVec3& point, float size, int32_t interiorMaterial
 	\param[in] octaves			Noise octaves
 	\param[in] seed				Random generator seed, used for noise generation.	
 */
-Mesh* getNoisyCuttingBoxPair(const physx::PxVec3& point, const physx::PxVec3& normal, float size, float jaggedPlaneSize, uint32_t resolution, int32_t id, float amplitude, float frequency, int32_t octaves, int32_t seed, int32_t interiorMaterialId);
+Mesh* getNoisyCuttingBoxPair(const physx::PxVec3& point, const physx::PxVec3& normal, float size, float jaggedPlaneSize, physx::PxVec3 resolution, int64_t id, float amplitude, float frequency, int32_t octaves, int32_t seed, int32_t interiorMaterialId);
 
 
 /**
 	Inverses normals of cutting box and sets indices. 
 	\param[in] mesh		Cutting box mesh
-	\param[in] id		Cutting box ID
 */
-void inverseNormalAndSetIndices(Mesh* mesh, int64_t id);
+void inverseNormalAndIndices(Mesh* mesh);
+
+struct CmpVec
+{
+	bool operator()(const physx::PxVec3& v1, const physx::PxVec3& v2) const;
+};
+
+typedef std::map<physx::PxVec3, std::map<uint32_t, uint32_t>, CmpVec> PointMap;
+
+struct SharedFace
+{
+	SharedFace() {}
+	SharedFace(uint32_t inW, uint32_t inH, int64_t inUD, int32_t inMatId) 
+		: w(inW), h(inH), f(0, 3, inMatId, inUD)
+	{
+		vertices.reserve((w + 1) * (h + 1));
+	}
+	uint32_t w, h;
+	Facet f;
+	std::vector<Nv::Blast::Vertex> vertices;
+	std::vector<Nv::Blast::Edge> edges;
+	std::vector<Nv::Blast::Facet> facets;
+};
+
+struct CmpSharedFace
+{
+	bool operator()(const std::pair<physx::PxVec3, physx::PxVec3>& pv1, const std::pair<physx::PxVec3, physx::PxVec3>& pv2) const;
+};
+
+typedef std::map<std::pair<physx::PxVec3, physx::PxVec3>, SharedFace, CmpSharedFace> SharedFacesMap;
+
+void buildCuttingConeFaces(const CutoutConfiguration& conf, const std::vector<std::vector<physx::PxVec3>>& points,
+	float heightBot, float heightTop, float conicityBot, float conicityTop, 
+	int64_t& id, int32_t seed, int32_t interiorMaterialId, SharedFacesMap& sharedFacesMap);
 
 /**
-	Create cutting cylinder (extrusion of specified loop) at some particular position.
-	\param[in] pointCount	Number of points in loop
+	Create cutting cone at some particular position.
+	\param[in] conf			Cutout configuration parameters and data
+	\param[in] meshId		Cutout index
 	\param[in] points		Array of points for loop
-	\param[in] transform	Cutting cylinder transform
-	\param[in] height		Cutting cylinder height
+	\param[in] smoothingGroups	Array of point indices at which smoothing group should be toggled
+	\param[in] heightBot	Cutting cone bottom height (below z = 0)
+	\param[in] heightTop	Cutting cone top height (below z = 0)
+	\param[in] conicityBot	Cutting cone bottom points multiplier
+	\param[in] conicityTop	Cutting cone top points multiplier
 	\param[in] id			Cutting cylinder ID
+	\param[in] seed			Seed for RNG
+	\param[in] interiorMaterialId Interior material index
+	\param[in] sharedFacesMap Shared faces for noisy fracture
 */
-Mesh*	getCuttingCylinder(uint32_t pointCount, const physx::PxVec3* points, const physx::PxTransform& transform, float height, int64_t id, int32_t interiorMaterialId);
+Mesh*	getCuttingCone(const CutoutConfiguration& conf,
+	const std::vector<physx::PxVec3>& points, const std::set<int32_t>& smoothingGroups,
+	float heightBot, float heightTop, float conicityBot, float conicityTop, 
+	int64_t& id, int32_t seed, int32_t interiorMaterialId, const SharedFacesMap& sharedFacesMap, bool inverseNormals = false);
 
 } // namespace Blast
 } // namespace Nv

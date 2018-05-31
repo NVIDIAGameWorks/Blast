@@ -1152,23 +1152,10 @@ void SceneController::onSampleStart()
 		std::string path;
 		if (getRenderer().getResourceManager().findFile(RESOURCES_CONFIG_FILE, path))
 		{
-			physx::PsFileBuffer fileBuffer(path.c_str(), physx::general_PxIOStream2::PxFileBuf::OPEN_READ_ONLY);
-			if (fileBuffer.isOpen())
+			if (getRenderer().getResourceManager().addSearchDir("..\\..\\samples\\resources\\BlastSampleResources\\") ||
+				getRenderer().getResourceManager().addSearchDir("..\\..\\..\\samples\\resources\\BlastSampleResources\\"))
 			{
-				PxInputDataFromPxFileBuf inputData(fileBuffer);
-				PackmanConfigParser parser;
-				physx::shdfnd::FastXml* xml = physx::shdfnd::createFastXml(&parser);
-				xml->processXml(inputData, false);
-				xml->release();
-				for (auto& dep : parser.dependencies)
-				{
-					std::stringstream ss;
-					ss << packmanPath << "\\" << dep.first << "\\" << dep.second;
-					if (getRenderer().getResourceManager().addSearchDir(ss.str().c_str()))
-					{
-						packmanResourcesAdded = true;
-					}
-				}
+				packmanResourcesAdded = true;
 			}
 		}
 	}

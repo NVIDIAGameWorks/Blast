@@ -32,10 +32,8 @@
 #include <algorithm>
 #include <set>
 #include <map>
+#include <stack>
 #include "PxMath.h"
-
-#pragma warning(disable : 4267)
-#pragma warning(disable : 4244)
 
 #define CUTOUT_DISTANCE_THRESHOLD	(0.7f)
 
@@ -931,11 +929,11 @@ PX_INLINE bool directionsXYOrderedCCW(const physx::PxVec3& d0, const physx::PxVe
 	return ccw02 ? ccw01 && ccw21 : ccw01 || ccw21;
 }
 
-PX_INLINE float compareTraceSegmentToLineSegment(const std::vector<POINT2D>& trace, int _start, int delta, float distThreshold, uint32_t width, uint32_t height, bool hasBorder)
+PX_INLINE std::pair<float, float> compareTraceSegmentToLineSegment(const std::vector<POINT2D>& trace, int _start, int delta, float distThreshold, uint32_t width, uint32_t height, bool hasBorder)
 {
 	if (delta < 2)
 	{
-		return 0.0f;
+		return std::make_pair(0.0f, 0.0f);
 	}
 
 	const uint32_t size = trace.size();
@@ -952,9 +950,9 @@ PX_INLINE float compareTraceSegmentToLineSegment(const std::vector<POINT2D>& tra
 		        (trace[start].x == (int)width && trace[end].x == (int)width) ||
 		        (trace[start].y == (int)height && trace[end].y == (int)height))
 		{
-			return 0.0f;
+			return std::make_pair(0.0f, 0.0f);
 		}
-		return PX_MAX_F32;
+		return std::make_pair(PX_MAX_F32, PX_MAX_F32);
 	}
 
 	physx::PxVec3 orig((float)trace[start].x, (float)trace[start].y, 0);
@@ -964,6 +962,7 @@ PX_INLINE float compareTraceSegmentToLineSegment(const std::vector<POINT2D>& tra
 	dir.normalize();
 
 	float aveError = 0.0f;
+	float aveError2 = 0.0f;
 
 	for (;;)
 	{
@@ -978,11 +977,13 @@ PX_INLINE float compareTraceSegmentToLineSegment(const std::vector<POINT2D>& tra
 		physx::PxVec3 testDisp((float)trace[start].x, (float)trace[start].y, 0);
 		testDisp -= orig;
 		aveError += (float)(physx::PxAbs(testDisp.x * dir.y - testDisp.y * dir.x) >= distThreshold);
+		aveError2 += physx::PxAbs(testDisp.x * dir.y - testDisp.y * dir.x);
 	}
 
 	aveError /= delta - 1;
+	aveError2 /= delta - 1;
 
-	return aveError;
+	return std::make_pair(aveError, aveError2);
 }
 
 // Segment i starts at vi and ends at vi+ei
@@ -1085,6 +1086,9 @@ PX_INLINE bool isOnBorder(const physx::PxVec3& v, uint32_t width, uint32_t heigh
 static void createCutout(Nv::Blast::Cutout& cutout, const std::vector<POINT2D>& trace, float segmentationErrorThreshold, float snapThreshold, uint32_t width, uint32_t height, bool hasBorder)
 {
 	cutout.vertices.clear();
+	cutout.smoothingGroups.clear();
+
+	std::vector<int> smoothingGroups;
 
 	const uint32_t traceSize = trace.size();
 
@@ -1102,14 +1106,16 @@ static void createCutout(Nv::Blast::Cutout& cutout, const std::vector<POINT2D>& 
 	// Find best segment
 	uint32_t start = 0;
 	uint32_t delta = 0;
+	float err2 = 0.f;
 	for (uint32_t iStart = 0; iStart < size; ++iStart)
 	{
 		uint32_t iDelta = (size >> 1) + (size & 1);
 		for (; iDelta > 1; --iDelta)
 		{
-			float fit = compareTraceSegmentToLineSegment(trace, (int32_t)iStart, (int32_t)iDelta, CUTOUT_DISTANCE_THRESHOLD, width, height, hasBorder);
-			if (fit < segmentationErrorThreshold)
+			auto fit = compareTraceSegmentToLineSegment(trace, (int32_t)iStart, (int32_t)iDelta, CUTOUT_DISTANCE_THRESHOLD, width, height, hasBorder);
+			if (fit.first < segmentationErrorThreshold)
 			{
+				err2 = fit.second;
 				break;
 			}
 		}
@@ -1118,6 +1124,10 @@ static void createCutout(Nv::Blast::Cutout& cutout, const std::vector<POINT2D>& 
 			start = iStart;
 			delta = iDelta;
 		}
+	}
+	if (err2 < segmentationErrorThreshold)
+	{
+		smoothingGroups.push_back(cutout.vertices.size());
 	}
 	cutout.vertices.push_back(physx::PxVec3((float)trace[start].x + pixelCenterOffset, (float)trace[start].y + pixelCenterOffset, 0));
 
@@ -1131,13 +1141,22 @@ static void createCutout(Nv::Blast::Cutout& cutout, const std::vector<POINT2D>& 
 			delta = 1;
 			break;
 		}
+		bool sg = true;
 		for (delta = size - 1; delta > 1; --delta)
 		{
-			float fit = compareTraceSegmentToLineSegment(trace, (int32_t)start, (int32_t)delta, CUTOUT_DISTANCE_THRESHOLD, width, height, hasBorder);
-			if (fit < segmentationErrorThreshold)
+			auto fit = compareTraceSegmentToLineSegment(trace, (int32_t)start, (int32_t)delta, CUTOUT_DISTANCE_THRESHOLD, width, height, hasBorder);
+			if (fit.first < segmentationErrorThreshold)
 			{
+				if (fit.second > segmentationErrorThreshold)
+				{
+					sg = false;
+				}
 				break;
 			}
+		}
+		if (sg)
+		{
+			smoothingGroups.push_back(cutout.vertices.size());
 		}
 	}
 
@@ -1172,10 +1191,19 @@ static void createCutout(Nv::Blast::Cutout& cutout, const std::vector<POINT2D>& 
 						v1 += d0 * s0;
 
 						//uint32_t index = (uint32_t)(&v2 - cutout.vertices.begin());
-						cutout.vertices.erase(cutout.vertices.begin() + std::distance(cutout.vertices.data(), &v2));
+						int dist = std::distance(cutout.vertices.data(), &v2);
+						cutout.vertices.erase(cutout.vertices.begin() + dist);
 
+						for (auto& idx : smoothingGroups)
+						{
+							if (idx > dist)
+							{
+								idx--;
+							}
+						}
 						reduced = true;
 						break;
+
 					}
 				}
 			}
@@ -1183,6 +1211,18 @@ static void createCutout(Nv::Blast::Cutout& cutout, const std::vector<POINT2D>& 
 		if (!reduced)
 		{
 			break;
+		}
+	}
+
+	for (size_t i = 0; i < smoothingGroups.size(); i++)
+	{
+		if (i > 0 && smoothingGroups[i] == smoothingGroups[i - 1])
+		{
+			continue;
+		}
+		if (smoothingGroups[i] < static_cast<int>(cutout.vertices.size()))
+		{
+			cutout.smoothingGroups.push_back(cutout.vertices[smoothingGroups[i]]);
 		}
 	}
 }
@@ -1198,18 +1238,18 @@ static void splitTJunctions(Nv::Blast::CutoutSetImpl& cutoutSet, float threshold
 
 	// Split T-junctions
 	uint32_t edgeCount = 0;
-	for (uint32_t i = 0; i < cutoutSet.cutouts.size(); ++i)
+	for (uint32_t i = 0; i < cutoutSet.cutoutLoops.size(); ++i)
 	{
-		edgeCount += cutoutSet.cutouts[i].vertices.size();
+		edgeCount += cutoutSet.cutoutLoops[i].vertices.size();
 	}
 
 	bounds.resize(edgeCount);
 	cutoutMap.resize(edgeCount);
 
 	edgeCount = 0;
-	for (uint32_t i = 0; i < cutoutSet.cutouts.size(); ++i)
+	for (uint32_t i = 0; i < cutoutSet.cutoutLoops.size(); ++i)
 	{
-		Nv::Blast::Cutout& cutout = cutoutSet.cutouts[i];
+		Nv::Blast::Cutout& cutout = cutoutSet.cutoutLoops[i];
 		const uint32_t cutoutSize = cutout.vertices.size();
 		for (uint32_t j = 0; j < cutoutSize; ++j)
 		{
@@ -1244,9 +1284,9 @@ static void splitTJunctions(Nv::Blast::CutoutSetImpl& cutoutSet, float threshold
 		NewVertex newVertex;
 		float dist2 = 0;
 
-		const Nv::Blast::Cutout& cutout0 = cutoutSet.cutouts[(uint32_t)seg0Map.cutoutIndex];
+		const Nv::Blast::Cutout& cutout0 = cutoutSet.cutoutLoops[(uint32_t)seg0Map.cutoutIndex];
 		const uint32_t cutoutSize0 = cutout0.vertices.size();
-		const Nv::Blast::Cutout& cutout1 = cutoutSet.cutouts[(uint32_t)seg1Map.cutoutIndex];
+		const Nv::Blast::Cutout& cutout1 = cutoutSet.cutoutLoops[(uint32_t)seg1Map.cutoutIndex];
 		const uint32_t cutoutSize1 = cutout1.vertices.size();
 
 		if (projectOntoSegmentXY(newVertex.edgeProj, dist2, cutout0.vertices[(uint32_t)seg0Map.vertIndex], cutout1.vertices[(uint32_t)seg1Map.vertIndex], 
@@ -1292,7 +1332,7 @@ static void splitTJunctions(Nv::Blast::CutoutSetImpl& cutoutSet, float threshold
 				lastVertexIndex = (uint32_t)newVertex.vertex.vertIndex;
 				lastProj = 1.0f;
 			}
-			Nv::Blast::Cutout& cutout = cutoutSet.cutouts[(uint32_t)newVertex.vertex.cutoutIndex];
+			Nv::Blast::Cutout& cutout = cutoutSet.cutoutLoops[(uint32_t)newVertex.vertex.cutoutIndex];
 			const float proj = lastProj > 0.0f ? newVertex.edgeProj / lastProj : 0.0f;
 			const physx::PxVec3 pos = (1.0f - proj) * cutout.vertices[(uint32_t)newVertex.vertex.vertIndex] 
 				+ proj * cutout.vertices[(uint32_t)(newVertex.vertex.vertIndex + 1) % cutout.vertices.size()];
@@ -1312,9 +1352,9 @@ static void mergeVertices(Nv::Blast::CutoutSetImpl& cutoutSet, float threshold, 
 {
 	// Set bounds reps
 	uint32_t vertexCount = 0;
-	for (uint32_t i = 0; i < cutoutSet.cutouts.size(); ++i)
+	for (uint32_t i = 0; i < cutoutSet.cutoutLoops.size(); ++i)
 	{
-		vertexCount += cutoutSet.cutouts[i].vertices.size();
+		vertexCount += cutoutSet.cutoutLoops[i].vertices.size();
 	}
 
 	std::vector<BoundsRep> bounds;
@@ -1323,9 +1363,9 @@ static void mergeVertices(Nv::Blast::CutoutSetImpl& cutoutSet, float threshold, 
 	cutoutMap.resize(vertexCount);
 
 	vertexCount = 0;
-	for (uint32_t i = 0; i < cutoutSet.cutouts.size(); ++i)
+	for (uint32_t i = 0; i < cutoutSet.cutoutLoops.size(); ++i)
 	{
-		Nv::Blast::Cutout& cutout = cutoutSet.cutouts[i];
+		Nv::Blast::Cutout& cutout = cutoutSet.cutoutLoops[i];
 		for (uint32_t j = 0; j < cutout.vertices.size(); ++j)
 		{
 			physx::PxVec3& vertex = cutout.vertices[j];
@@ -1369,7 +1409,7 @@ static void mergeVertices(Nv::Blast::CutoutSetImpl& cutoutSet, float threshold, 
 			continue;
 		}
 		const CutoutVert& cutoutVert0 = cutoutMap[(uint32_t)overlaps[start].i0];
-		const physx::PxVec3& vert0 = cutoutSet.cutouts[(uint32_t)cutoutVert0.cutoutIndex].vertices[(uint32_t)cutoutVert0.vertIndex];
+		const physx::PxVec3& vert0 = cutoutSet.cutoutLoops[(uint32_t)cutoutVert0.cutoutIndex].vertices[(uint32_t)cutoutVert0.vertIndex];
 		const bool isOnBorder0 = !cutoutSet.periodic && isOnBorder(vert0, width, height);
 		for (uint32_t j = start; j < stop; ++j)
 		{
@@ -1379,7 +1419,7 @@ static void mergeVertices(Nv::Blast::CutoutSetImpl& cutoutSet, float threshold, 
 				// No pairs from the same cutout
 				continue;
 			}
-			const physx::PxVec3& vert1 = cutoutSet.cutouts[(uint32_t)cutoutVert1.cutoutIndex].vertices[(uint32_t)cutoutVert1.vertIndex];
+			const physx::PxVec3& vert1 = cutoutSet.cutoutLoops[(uint32_t)cutoutVert1.cutoutIndex].vertices[(uint32_t)cutoutVert1.vertIndex];
 			const bool isOnBorder1 = !cutoutSet.periodic && isOnBorder(vert1, width, height);
 			if (isOnBorder0 != isOnBorder1)
 			{
@@ -1400,6 +1440,11 @@ static void mergeVertices(Nv::Blast::CutoutSetImpl& cutoutSet, float threshold, 
 			pairs.push_back(overlap);
 		}
 	}
+	
+	if (pairs.size() == 0)
+	{
+		return;
+	}
 
 	// Sort by first index
 	qsort(pairs.data(), pairs.size(), sizeof(IntPair), IntPair::compare);
@@ -1415,14 +1460,14 @@ static void mergeVertices(Nv::Blast::CutoutSetImpl& cutoutSet, float threshold, 
 			continue;
 		}
 		const CutoutVert& cutoutVert0 = cutoutMap[(uint32_t)pairs[start].i0];
-		const physx::PxVec3& vert0 = cutoutSet.cutouts[(uint32_t)cutoutVert0.cutoutIndex].vertices[(uint32_t)cutoutVert0.vertIndex];
+		const physx::PxVec3& vert0 = cutoutSet.cutoutLoops[(uint32_t)cutoutVert0.cutoutIndex].vertices[(uint32_t)cutoutVert0.vertIndex];
 		uint32_t groupStart = start;
 		while (groupStart < stop)
 		{
 			uint32_t next = groupStart;
 			const CutoutVert& cutoutVert1 = cutoutMap[(uint32_t)pairs[next].i1];
 			int32_t currentOtherCutoutIndex = cutoutVert1.cutoutIndex;
-			const physx::PxVec3& vert1 = cutoutSet.cutouts[(uint32_t)currentOtherCutoutIndex].vertices[(uint32_t)cutoutVert1.vertIndex];
+			const physx::PxVec3& vert1 = cutoutSet.cutoutLoops[(uint32_t)currentOtherCutoutIndex].vertices[(uint32_t)cutoutVert1.vertIndex];
 			uint32_t keep = groupStart;
 			float minDist2 = (vert0 - vert1).magnitudeSquared();
 			while (++next < stop)
@@ -1432,7 +1477,7 @@ static void mergeVertices(Nv::Blast::CutoutSetImpl& cutoutSet, float threshold, 
 				{
 					break;
 				}
-				const physx::PxVec3& vertNext = cutoutSet.cutouts[(uint32_t)cutoutVertNext.cutoutIndex].vertices[(uint32_t)cutoutVertNext.vertIndex];
+				const physx::PxVec3& vertNext = cutoutSet.cutoutLoops[(uint32_t)cutoutVertNext.cutoutIndex].vertices[(uint32_t)cutoutVertNext.vertIndex];
 				const float dist2 = (vert0 - vertNext).magnitudeSquared();
 				if (dist2 < minDist2)
 				{
@@ -1471,10 +1516,10 @@ static void mergeVertices(Nv::Blast::CutoutSetImpl& cutoutSet, float threshold, 
 			continue;
 		}
 		const CutoutVert& cutoutVert0 = cutoutMap[i0];
-		physx::PxVec3& vert0 = cutoutSet.cutouts[(uint32_t)cutoutVert0.cutoutIndex].vertices[(uint32_t)cutoutVert0.vertIndex];
+		physx::PxVec3& vert0 = cutoutSet.cutoutLoops[(uint32_t)cutoutVert0.cutoutIndex].vertices[(uint32_t)cutoutVert0.vertIndex];
 		const uint32_t i1 = (uint32_t)pairs[i].i1;
 		const CutoutVert& cutoutVert1 = cutoutMap[i1];
-		physx::PxVec3& vert1 = cutoutSet.cutouts[(uint32_t)cutoutVert1.cutoutIndex].vertices[(uint32_t)cutoutVert1.vertIndex];
+		physx::PxVec3& vert1 = cutoutSet.cutoutLoops[(uint32_t)cutoutVert1.cutoutIndex].vertices[(uint32_t)cutoutVert1.vertIndex];
 		const physx::PxVec3 disp = vert1 - vert0;
 		// Move and pin
 		pinned[i0] = true;
@@ -1494,9 +1539,9 @@ static void mergeVertices(Nv::Blast::CutoutSetImpl& cutoutSet, float threshold, 
 static void eliminateStraightAngles(Nv::Blast::CutoutSetImpl& cutoutSet)
 {
 	// Eliminate straight angles
-	for (uint32_t i = 0; i < cutoutSet.cutouts.size(); ++i)
+	for (uint32_t i = 0; i < cutoutSet.cutoutLoops.size(); ++i)
 	{
-		Nv::Blast::Cutout& cutout = cutoutSet.cutouts[i];
+		Nv::Blast::Cutout& cutout = cutoutSet.cutoutLoops[i];
 		uint32_t oldSize;
 		do
 		{
@@ -1508,6 +1553,7 @@ static void eliminateStraightAngles(Nv::Blast::CutoutSetImpl& cutoutSet)
 //					++j;
 //					continue;
 //				}
+				
 				if (perpendicularDistanceSquared(cutout.vertices, j) < CUTOUT_DISTANCE_EPS * CUTOUT_DISTANCE_EPS)
 				{
 					cutout.vertices.erase(cutout.vertices.begin() + j);
@@ -1522,11 +1568,37 @@ static void eliminateStraightAngles(Nv::Blast::CutoutSetImpl& cutoutSet)
 	}
 }
 
+static void removeTheSamePoints(Nv::Blast::CutoutSetImpl& cutoutSet)
+{
+	for (uint32_t i = 0; i < cutoutSet.cutoutLoops.size(); ++i)
+	{
+		Nv::Blast::Cutout& cutout = cutoutSet.cutoutLoops[i];
+		uint32_t oldSize;
+		do
+		{
+			oldSize = cutout.vertices.size();
+			for (uint32_t j = 0; j < cutout.vertices.size();)
+			{
+				if ((cutout.vertices[(j + cutout.vertices.size() - 1) % cutout.vertices.size()] - cutout.vertices[j]).magnitudeSquared() < CUTOUT_DISTANCE_EPS * CUTOUT_DISTANCE_EPS)
+				{
+					cutout.vertices.erase(cutout.vertices.begin() + j);
+				}
+				else
+				{
+					++j;
+				}
+			}
+		} while (cutout.vertices.size() != oldSize);
+	}
+}
+
 static void simplifyCutoutSetImpl(Nv::Blast::CutoutSetImpl& cutoutSet, float threshold, uint32_t width, uint32_t height)
 {
 	splitTJunctions(cutoutSet, 1.0f);
 	mergeVertices(cutoutSet, threshold, width, height);
 	eliminateStraightAngles(cutoutSet);
+	splitTJunctions(cutoutSet, 1.0f);
+	removeTheSamePoints(cutoutSet);
 }
 
 //static void cleanCutout(Nv::Blast::Cutout& cutout, uint32_t loopIndex, float tolerance)
@@ -1753,13 +1825,16 @@ static void traceRegion(std::vector<POINT2D>& trace, Map2d<uint32_t>& regions, M
 	++pathCounts(t.x, t.y);	// Increment path count
 	// Find initial path direction
 	int32_t dirN;
-	for (dirN = 1; dirN < 8; ++dirN) //TODO Should we start from dirN = 0?
+
+	uint32_t previousRegion = 0xFFFFFFFF;
+	for (dirN = 0; dirN < 8; ++dirN) //TODO Should we start from dirN = 0?
 	{
 		const POINT2D t1 = POINT2D(t.x + taxicabSine(dirN + 2), t.y + taxicabSine(dirN));
-		if (regions(t1.x, t1.y) != regionIndex)
+		if (regions(t1.x, t1.y) != regionIndex && previousRegion == regionIndex)
 		{
 			break;
 		}
+		previousRegion = regions(t1.x, t1.y);
 	}
 	bool done = false;
 	do
@@ -1836,173 +1911,11 @@ static void traceRegion(std::vector<POINT2D>& trace, Map2d<uint32_t>& regions, M
 	}
 }
 
-void Nv::Blast::convertTracesToIncremental(std::vector< std::vector<POINT2D>* >& traces)
-{
-	uint32_t cutoutCount = traces.size();
-
-	std::map<POINT2D, std::map<uint32_t, uint32_t>> pointToTrace;
-	for (uint32_t i = 0; i < cutoutCount; i++)
-	{
-		auto& trace = *traces[i];
-		std::map<uint32_t, std::map<uint32_t, uint32_t>> segment;
-		std::map<int32_t, int32_t> newSegmentIndex;
-
-		for (uint32_t p = 0; p < trace.size(); p++)
-		{
-			if (pointToTrace.find(trace[p]) == pointToTrace.end())
-			{
-				pointToTrace[trace[p]] = std::map<uint32_t, uint32_t>();
-			}
-			pointToTrace[trace[p]][i] = p;
-			newSegmentIndex[p] = p;
-
-			for (auto it : pointToTrace[trace[p]])
-			{
-				if (it.first == i) continue;
-
-				if (segment.find(it.first) == segment.end())
-				{
-					segment[it.first] = std::map<uint32_t, uint32_t>();
-				}
-				segment[it.first][p] = it.second;
-			}
-		}
-		
-		for (auto& s : segment)
-		{
-			if (s.second.size() < 2)
-			{
-				continue;
-			}
-			int32_t oldTraceSize = trace.size();
-			std::map<int32_t, int32_t> newTraceIndex;
-			for (int32_t p = 0; p < oldTraceSize; p++)
-			{
-				newTraceIndex[p] = p;
-			}
-
-			int32_t start = newSegmentIndex[s.second.begin()->first];
-			int32_t end = -1, prev = -1;
-			int32_t deleted = 0;
-			int32_t insertPoint = start;
-			//int32_t attachPoint = end;
-			int32_t otherStart = s.second.begin()->second, otherEnd = s.second.rbegin()->second, otherIncr = 0, otherPrev = -1;
-			for (auto ss : s.second)
-			{
-				if (physx::PxAbs(newTraceIndex[newSegmentIndex[ss.first]] - prev) > 1)
-				{
-					if (end >= start)
-					{
-						deleted += end - start + 1;
-						for (int32_t tp = start; tp < end; tp++)
-						{
-							newTraceIndex[tp] = -1;
-						}
-						for (int32_t tp = end; tp < oldTraceSize; tp++)
-						{
-							newTraceIndex[tp] -= end + 1 - start;
-							//pointToTrace[trace[tp]][i] -= end + 1 - start;
-						}
-						trace.erase(trace.begin() + start, trace.begin() + end + 1);
-
-					}
-					start = newTraceIndex[newSegmentIndex[ss.first]];
-					insertPoint = start;
-					//attachPoint = end;
-					otherStart = ss.second;
-					if (otherPrev >= 0)
-					{
-						otherEnd = otherPrev;
-					}
-				}
-				else
-				{
-					end = newTraceIndex[newSegmentIndex[ss.first]];
-				}
-				if (otherIncr == 0 && otherPrev >= 0 && physx::PxAbs((int32_t)ss.second - otherPrev) == 1)
-				{
-					otherIncr = otherPrev - (int32_t)ss.second;
-				}
-				prev = newTraceIndex[newSegmentIndex[ss.first]];
-				otherPrev = ss.second;
-			}
-			if (otherIncr == 0 && physx::PxAbs(otherPrev - (int32_t)s.second.begin()->second) == 1)
-			{
-				otherIncr = otherPrev - (int32_t)s.second.begin()->second;
-			}
-			NVBLAST_ASSERT(otherIncr != 0);
-			if (otherIncr == 0)
-			{
-				continue;
-			}
-			end = (end < start ? trace.size() : end + 1);
-			trace.erase(trace.begin() + start, trace.begin() + end);
-			for (int32_t tp = start; tp < end; tp++)
-			{
-				newTraceIndex[tp + deleted] = -1;
-			}
-
-			auto& otherTrace = *traces[s.first];
-			std::vector<POINT2D> insertSegment; insertSegment.reserve(otherTrace.size());
-			int shouldFinish = 2, pIndex = oldTraceSize;
-			while (shouldFinish != 0)
-			{
-				if (shouldFinish == 1)
-				{
-					shouldFinish--;
-				}
-				insertSegment.push_back(otherTrace[otherStart]);
-				auto itToOldPoint = pointToTrace[insertSegment.back()].find(i);
-				if (itToOldPoint != pointToTrace[insertSegment.back()].end())
-				{
-					newTraceIndex[itToOldPoint->second] = insertPoint + insertSegment.size() - 1;
-				}
-				else
-				{
-					newTraceIndex[pIndex++] = insertPoint + insertSegment.size() - 1;				
-				}
-				pointToTrace[insertSegment.back()].erase(s.first);
-
-				otherStart = mod(otherStart + otherIncr, otherTrace.size());
-				if (otherStart == otherEnd)
-				{
-					shouldFinish--;
-				}
-			}
-
-			for (int32_t tp = end; tp < oldTraceSize; tp++)
-			{
-				if (newTraceIndex[tp] >= 0)
-				{
-					newTraceIndex[tp] = newTraceIndex[tp - 1] + 1;
-				}
-			}
-			
-			trace.insert(trace.begin() + insertPoint, insertSegment.begin(), insertSegment.end());
-
-			for (auto nti : newTraceIndex)
-			{
-				if (nti.second >= 0)
-				{
-					pointToTrace[trace[nti.second]][i] = nti.second;
-				}
-			}
-			for (auto& nsi : newSegmentIndex)
-			{
-				if (nsi.second >= 0)
-				{
-					nsi.second = newTraceIndex[nsi.second];
-				}
-			}
-		}
-	}
-	//TODO: Investigate possible problem - merged trace splits to 2 traces (int, ext)
-}
-
 void Nv::Blast::createCutoutSet(Nv::Blast::CutoutSetImpl& cutoutSet, const uint8_t* pixelBuffer, uint32_t bufferWidth, uint32_t bufferHeight, 
 	float segmentationErrorThreshold, float snapThreshold, bool periodic, bool expandGaps)
 {
 	cutoutSet.cutouts.clear();
+	cutoutSet.cutoutLoops.clear();
 	cutoutSet.periodic = periodic;
 	cutoutSet.dimensions = physx::PxVec2((float)bufferWidth, (float)bufferHeight);
 
@@ -2079,8 +1992,11 @@ void Nv::Blast::createCutoutSet(Nv::Blast::CutoutSetImpl& cutoutSet, const uint8
 	}
 
 	std::vector<POINT2D> stack;
+	std::vector<uint32_t> newCutout;
 	std::vector<POINT2D> traceStarts;
-	std::vector< std::vector<POINT2D>* > traces;
+	std::vector<std::vector<POINT2D>* > traces;
+
+	std::set<uint64_t> regionBoundary;
 
 	// Initial fill of region maps and path maps
 	for (int32_t y = 0; y < (int32_t)bufferHeight; ++y)
@@ -2092,6 +2008,7 @@ void Nv::Blast::createCutoutSet(Nv::Blast::CutoutSetImpl& cutoutSet, const uint8
 				// Found an empty spot next to a filled spot
 				POINT2D t(x - 1, y);
 				const uint32_t regionIndex = traceStarts.size();
+				newCutout.push_back(traces.size());
 				traceStarts.push_back(t);	// Save off initial point
 				traces.push_back(new std::vector<POINT2D>());
 				NVBLAST_ASSERT(traces.size() == traceStarts.size()); // This must be the same size as traceStarts
@@ -2115,18 +2032,54 @@ void Nv::Blast::createCutoutSet(Nv::Blast::CutoutSetImpl& cutoutSet, const uint8
 						const int32_t i1 = (i >> 1) & 1;
 						n.x = s.x + i0 - i1;
 						n.y = s.y + i0 + i1 - 1;
-						if (!map.read(n.x, n.y) && visited.find(COMPRESS(n.x, n.y)) == visited.end())
+						if (visited.find(COMPRESS(n.x, n.y)) == visited.end())
 						{
-							stack.push_back(n);
-							visited.insert(COMPRESS(n.x, n.y));
+							if (!map.read(n.x, n.y))
+							{
+								stack.push_back(n);
+								visited.insert(COMPRESS(n.x, n.y));
+							}
+							else
+							{
+								regionBoundary.insert(COMPRESS(n.x, n.y));
+							}
 						}
 					}
 				} while (stack.size());
-#undef COMPRESS
+
 				// Trace region
 				PX_ASSERT(map.read(t.x, t.y));
-				std::vector<POINT2D>& trace = *traces[regionIndex];
-				traceRegion(trace, regions, pathCounts, regionIndex, t);
+				std::vector<POINT2D>* trace = traces.back();
+				traceRegion(*trace, regions, pathCounts, regionIndex, t);
+
+				//Find innner traces
+				while(true)
+				{
+					for (auto& point : *trace)
+					{
+						regionBoundary.erase(COMPRESS(point.x, point.y));
+					}
+					if (trace->size() < 4)
+					{
+						trace->~vector<POINT2D>();
+						delete trace;
+						traces.pop_back();
+						traceStarts.pop_back();
+					}
+					if (!regionBoundary.empty())
+					{
+						auto it = regionBoundary.begin();
+						t.x = *it >> 32;
+						t.y = *it & 0xFFFFFFFF;
+						traces.push_back(new std::vector<POINT2D>());
+						traceStarts.push_back(t);
+						trace = traces.back();
+						traceRegion(*trace, regions, pathCounts, regionIndex, t);
+						continue;
+					}
+					break;
+				}
+#undef COMPRESS
 			}
 		}
 	}
@@ -2146,15 +2099,38 @@ void Nv::Blast::createCutoutSet(Nv::Blast::CutoutSetImpl& cutoutSet, const uint8
 			somePathChanged = false;
 			for (uint32_t i = 0; i < cutoutCount; ++i)
 			{
+				if (traces[i] == nullptr)
+				{
+					continue;
+				}
+				uint32_t regionIndex = 0;
+				for (uint32_t c : newCutout)
+				{
+					if (i >= c)
+					{
+						regionIndex = c;
+					}
+					else
+					{
+						break;
+					}
+				}
 				bool pathChanged = false;
 				std::vector<POINT2D>& trace = *traces[i];
-				for (uint32_t j = 0; j < trace.size(); ++j)
+				for (size_t j = 0; j < trace.size(); ++j)
 				{
 					const POINT2D& t = trace[j];
 					if (pathCounts(t.x, t.y) == 1)
 					{
-						regions(t.x, t.y) = i;
-						pathChanged = true;
+						if (regions(t.x, t.y) == 0xFFFFFFFF)
+						{
+							regions(t.x, t.y) = regionIndex;
+							pathChanged = true;
+						}
+						else
+						{
+							trace.erase(trace.begin() + j--);
+						}
 					}
 				}
 				if (pathChanged)
@@ -2169,24 +2145,23 @@ void Nv::Blast::createCutoutSet(Nv::Blast::CutoutSetImpl& cutoutSet, const uint8
 					// Erase trace
 					// Calculate new start point
 					POINT2D& t = traceStarts[i];
-					int stop = (int)cutoutSet.dimensions.x;
-					while (regions(t.x, t.y) == i)
+					POINT2D t1 = t;
+					abort = true;
+					for (int32_t dirN = 0; dirN < 8; ++dirN)
 					{
-						--t.x;
-						if (--stop < 0)
+						t1 = POINT2D(t.x + taxicabSine(dirN + 2), t.y + taxicabSine(dirN));
+						if (regions(t1.x, t1.y) != regionIndex)
 						{
-							// There is an error; abort
+							t = t1;
+							abort = false;
 							break;
 						}
 					}
-					if (stop < 0)
+					if (abort)
 					{
-						// Release traces and abort
-						abort = true;
-						somePathChanged = false;
 						break;
 					}
-					traceRegion(trace, regions, pathCounts, i, t);
+					traceRegion(trace, regions, pathCounts, regionIndex, t);
 					somePathChanged = true;
 				}
 			}
@@ -2206,47 +2181,52 @@ void Nv::Blast::createCutoutSet(Nv::Blast::CutoutSetImpl& cutoutSet, const uint8
 			}
 			cutoutCount = 0;
 		}
-
-		//disable conversion while it is not fixed
-		//convertTracesToIncremental(traces);
 	}
 
 	// Create cutouts
-	cutoutSet.cutouts.resize(cutoutCount);
+	cutoutSet.cutouts = newCutout;
+	cutoutSet.cutouts.push_back(cutoutCount);
+	cutoutSet.cutoutLoops.resize(cutoutCount);
 	for (uint32_t i = 0; i < cutoutCount; ++i)
 	{
-		createCutout(cutoutSet.cutouts[i], *traces[i], segmentationErrorThreshold, snapThreshold, bufferWidth, bufferHeight, !cutoutSet.periodic);
+		createCutout(cutoutSet.cutoutLoops[i], *traces[i], segmentationErrorThreshold, snapThreshold, bufferWidth, bufferHeight, !cutoutSet.periodic);
 	}
 
-	simplifyCutoutSetImpl(cutoutSet, snapThreshold, bufferWidth, bufferHeight);
+	if (expandGaps)
+	{
+		simplifyCutoutSetImpl(cutoutSet, snapThreshold, bufferWidth, bufferHeight);
+	}
 
 	// Release traces
 	for (uint32_t i = 0; i < cutoutCount; ++i)
 	{
-		traces[i]->~vector<POINT2D>();
-		delete traces[i];
+		if (traces[i] != nullptr)
+		{
+			traces[i]->~vector<POINT2D>();
+			delete traces[i];
+		}
 	}
 
 	// Decompose each cutout in the set into convex loops
 	//uint32_t cutoutSetSize = 0;
-	//for (uint32_t i = 0; i < cutoutSet.cutouts.size(); ++i)
+	//for (uint32_t i = 0; i < cutoutSet.cutoutLoops.size(); ++i)
 	//{
-	//	bool success = decomposeCutoutIntoConvexLoops(cutoutSet.cutouts[i]);
+	//	bool success = decomposeCutoutIntoConvexLoops(cutoutSet.cutoutLoops[i]);
 	//	if (success)
 	//	{
 	//		if (cutoutSetSize != i)
 	//		{
-	//			cutoutSet.cutouts[cutoutSetSize] = cutoutSet.cutouts[i];
+	//			cutoutSet.cutouts[cutoutSetSize] = cutoutSet.cutoutLoops[i];
 	//		}
 	//		++cutoutSetSize;
 	//	}
 	//}
-	//cutoutSet.cutouts.resize(cutoutSetSize);
+	//cutoutSet.cutoutLoops.resize(cutoutSetSize);
 
-	//Check if single cutout spread to the whole area (no need to cutout then)
-	if (cutoutSet.cutouts.size() == 1 && (expandGaps || !hasBorder))
+	//Check if single cutout spread to the whole area for non periodic (no need to cutout then)
+	if (!periodic && cutoutSet.cutoutLoops.size() == 1 && (expandGaps || !hasBorder))
 	{
-		cutoutSet.cutouts.clear();
+		cutoutSet.cutoutLoops.clear();
 	}
 }
 

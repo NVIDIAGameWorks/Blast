@@ -49,6 +49,7 @@
 #include "NvBlastExtLlSerialization.h"
 #include "NvBlastExtTkSerialization.h"
 #include "NvBlastExtPxSerialization.h"
+#include "NvBlastExtExporterJsonCollision.h"
 #include <nvparameterized\NvSerializer.h>
 #include <PsFileBuffer.h>
 #define DEFAULT_INPUT_FILE "../../../tools/ApexImporter/resources/assets/table.apb"
@@ -93,7 +94,8 @@ bool mkDirRecursively(std::string path)
 }
 
 // Create an Asset from the APEX destructible asset
-void run(const std::string& inFilepath, const std::string& outDir, const std::string& assetName, uint32_t mode, bool llFlag, bool tkFlag, bool extPxFlag, bool obj, bool fbx, bool fbxascii, bool fbxCollision, bool nonSkinned)
+void run(const std::string& inFilepath, const std::string& outDir, const std::string& assetName, uint32_t mode, bool llFlag, bool tkFlag, bool extPxFlag,
+		 bool obj, bool fbx, bool fbxascii, bool fbxCollision, bool jsonCollision, bool nonSkinned)
 {
 	std::string inputDir = inFilepath.substr(0, inFilepath.find_last_of("/\\"));
 
@@ -193,6 +195,36 @@ void run(const std::string& inFilepath, const std::string& outDir, const std::st
 	{
 		objSaver.exportToFile(llAsset, data[0], blast, assetName, chunkReorderInvMap, fbx, obj, fbxascii, nonSkinned);
 	}
+
+	if (jsonCollision)
+	{
+		std::vector<CollisionHull*> flattenedHulls;
+		std::vector<uint32_t> hullOffsets;
+		for (std::vector<CollisionHull*>& chunkHulls : hulls)
+		{
+			hullOffsets.push_back(static_cast<uint32_t>(flattenedHulls.size()));
+			for (CollisionHull* hull : chunkHulls)
+			{
+				flattenedHulls.push_back(hull);
+			}
+		}
+		hullOffsets.push_back(static_cast<uint32_t>(flattenedHulls.size()));
+		const std::string fullJsonFilename = outDir + ((outDir.back() == '/' || outDir.back() == '\\') ? "" : "/") + assetName + ".json";
+		IJsonCollisionExporter* collisionExporter = NvBlastExtExporterCreateJsonCollisionExporter();
+		if (collisionExporter != nullptr)
+		{
+			if (collisionExporter->writeCollision(fullJsonFilename.c_str(), static_cast<uint32_t>(hulls.size()), hullOffsets.data(), flattenedHulls.data()))
+			{
+				std::cout << "Exported collision geometry: " << fullJsonFilename << std::endl;
+			}
+			else
+			{
+				std::cerr << "Can't write collision geometry to json file." << std::endl;
+			}
+			collisionExporter->release();
+		}
+	}
+
 	NVBLAST_FREE(llAsset);
 }
 
@@ -237,6 +269,9 @@ int main(int argc, const char* const* argv)
 		TCLAP::SwitchArg fbxOutputArg("", "fbx", "Output a FBX mesh to the output directory", false);
 		cmd.add(fbxOutputArg);
 
+		TCLAP::SwitchArg jsonCollision("", "jsoncollision", "Save collision geometry to a json file", false);
+		cmd.add(jsonCollision);
+
 		TCLAP::SwitchArg fbxcollision("", "fbxcollision", "Append collision geometry to FBX file", false);
 		cmd.add(fbxcollision);
 
@@ -256,6 +291,8 @@ int main(int argc, const char* const* argv)
 		bool bOutputFbxFile = fbxOutputArg.isSet();
 
 		bool bFbxCollision = fbxcollision.isSet();
+		bool bJsonCollision = jsonCollision.isSet();
+
 		bool bNonSkinned = nonSkinnedFBX.isSet();
 
 		// Did we specify no output formats?
@@ -312,7 +349,7 @@ int main(int argc, const char* const* argv)
 		if (debug)
 			lout().setMinVerbosity(Log::MOST_VERBOSE);
 
-		run(infile, outDir, assetName, mode, bOutputLL, bOutputTK, bOutputPX, bOutputObjFile, bOutputFbxFile, bOutputFBXAscii, bFbxCollision, bNonSkinned);
+		run(infile, outDir, assetName, mode, bOutputLL, bOutputTK, bOutputPX, bOutputObjFile, bOutputFbxFile, bOutputFBXAscii, bFbxCollision, bJsonCollision, bNonSkinned);
 	}
 	catch (TCLAP::ArgException &e)  // catch any exceptions
 	{

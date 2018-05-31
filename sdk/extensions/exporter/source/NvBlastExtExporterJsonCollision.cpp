@@ -80,7 +80,31 @@ void serializeCollisionHull(std::ofstream& stream, const CollisionHull& hl, uint
 	stream << sindent << "}";
 }
 
-bool JsonCollisionExporter::writeCollision(const char* path, uint32_t meshCount, const uint32_t* meshOffsets, const CollisionHull* hulls)
+
+/**
+Implementation of object which serializes collision geometry to JSON format.
+*/
+class JsonCollisionExporter : public IJsonCollisionExporter
+{
+public:
+	JsonCollisionExporter() {}
+	~JsonCollisionExporter() = default;
+
+	virtual void	release() override;
+
+	virtual bool	writeCollision(const char* path, uint32_t chunkCount, const uint32_t* hullOffsets, const CollisionHull* const * hulls) override;
+};
+
+
+void
+JsonCollisionExporter::release()
+{
+	delete this;
+}
+
+
+bool
+JsonCollisionExporter::JsonCollisionExporter::writeCollision(const char* path, uint32_t chunkCount, const uint32_t* hullOffsets, const CollisionHull* const * hulls)
 {
 	std::ofstream stream(path, std::ios::out);
 	stream << std::fixed << std::setprecision(8);
@@ -91,17 +115,23 @@ bool JsonCollisionExporter::writeCollision(const char* path, uint32_t meshCount,
 	}
 
 	stream << "{\n" << "\t" << JS_NAME("CollisionData") << "[\n";
-	for (uint32_t i = 0; i < meshCount; ++i)
+	for (uint32_t i = 0; i < chunkCount; ++i)
 	{
 		stream << "\t\t" << "[\n";
-		for (uint32_t j = meshOffsets[i]; j < meshOffsets[i + 1]; ++j)
+		for (uint32_t j = hullOffsets[i]; j < hullOffsets[i + 1]; ++j)
 		{
-			serializeCollisionHull(stream, hulls[j], 3);
-			stream << ((j < meshOffsets[i + 1] - 1) ? ",\n" : "\n");
+			serializeCollisionHull(stream, *hulls[j], 3);
+			stream << ((j < hullOffsets[i + 1] - 1) ? ",\n" : "\n");
 		}
-		stream << "\t\t" << ((i < meshCount - 1) ? "], \n" : "]\n");
+		stream << "\t\t" << ((i < chunkCount - 1) ? "], \n" : "]\n");
 	}
 	stream << "\t]\n}";
 	stream.close();
 	return true;
 };
+
+
+IJsonCollisionExporter* NvBlastExtExporterCreateJsonCollisionExporter()
+{
+	return new JsonCollisionExporter;
+}

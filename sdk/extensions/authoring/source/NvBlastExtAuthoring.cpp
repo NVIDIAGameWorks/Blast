@@ -316,8 +316,6 @@ AuthoringResult* NvBlastExtAuthoringProcessFracture(FractureTool& fTool, BlastBo
 	BondGenerationConfig cnf;
 	cnf.bondMode = BondGenerationConfig::EXACT;
 
-	//NvBlastChunkDesc>& chunkDescs = aResult.chunkDescs;
-	//std::shared_ptr<NvBlastBondDesc>& bondDescs = aResult.bondDescs;
 	const uint32_t bondCount = bondGenerator.buildDescFromInternalFracture(&fTool, isSupport.get(), aResult.bondDescs, aResult.chunkDescs);
 	aResult.bondCount = bondCount;
 	if (bondCount == 0)
@@ -378,10 +376,6 @@ AuthoringResult* NvBlastExtAuthoringProcessFracture(FractureTool& fTool, BlastBo
 		minZ = std::min(minZ, bondDesc.bond.centroid[2]);
 		maxZ = std::max(maxZ, bondDesc.bond.centroid[2]);
 	}
-
-	//std::cout << "Bond bounds: " << std::endl;
-	//std::cout << "MIN: " << minX << ", " << minY << ", " << minZ << std::endl;
-	//std::cout << "MAX: " << maxX << ", " << maxY << ", " << maxZ << std::endl;
 
 	// prepare physics data (convexes)
 	buildPhysicsChunks(collisionBuilder, aResult, collisionParam);

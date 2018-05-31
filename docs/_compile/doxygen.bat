@@ -20,14 +20,14 @@ if exist ..\"%NAME%"_docs (
 :: Run packman to ensure doxygen is there:
 set DOXYGEN_VERSION=1.5.8-gameworks-win
 
-call "%BLAST_ROOT%\buildtools\packman\packman.cmd" install doxygen %DOXYGEN_VERSION%
+call "%BLAST_ROOT%\buildtools\packman5\packman.cmd" install doxygen %DOXYGEN_VERSION%
 if errorlevel 1 (
   echo ***SCRIPTERROR: packman failed to get dependencies
   goto doxygen_failed
 )
 
 :build_doxygen
-set DOXYGEN_EXE="%PM_PACKAGES_ROOT%\doxygen\%DOXYGEN_VERSION%\bin\doxygen.exe"
+set DOXYGEN_EXE="%PM_doxygen_PATH%\bin\doxygen.exe"
 if not exist %DOXYGEN_EXE% (
   echo ***SCRIPTERROR: %DOXYGEN_EXE% not found. Please fix.
   goto doxygen_failed

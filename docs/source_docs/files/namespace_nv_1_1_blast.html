@@ -81,6 +81,10 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_chunk_info.html">ChunkInfo</a></td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cmp_shared_face.html">CmpSharedFace</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cmp_vec.html">CmpVec</a></td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull_impl.html">CollisionHullImpl</a></td></tr>
@@ -249,6 +253,8 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_fbx_file_reader.html">IFbxFileReader</a></td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_json_collision_exporter.html">IJsonCollisionExporter</a></td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html">IMeshFileReader</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_writer.html">IMeshFileWriter</a></td></tr>
@@ -262,8 +268,6 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_intersection_testing_accelerator.html">IntersectionTestingAccelerator</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_iterator_base.html">IteratorBase</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_json_collision_exporter.html">JsonCollisionExporter</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_less.html">Less</a></td></tr>
 
@@ -314,6 +318,8 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_shared_block.html">SharedBlock</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_shared_buffer.html">SharedBuffer</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_shared_face.html">SharedFace</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_shared_memory.html">SharedMemory</a></td></tr>
 
@@ -430,6 +436,14 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">typedef uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">NodeIndex</a></td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">typedef std::map<br class="typebreak">
+&lt; physx::PxVec3, std::map<br class="typebreak">
+&lt; uint32_t, uint32_t &gt;, <a class="el" href="struct_nv_1_1_blast_1_1_cmp_vec.html">CmpVec</a> &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#2ae61a5475656a13f05a71e0b1359b8a">PointMap</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">typedef std::map&lt; std::pair<br class="typebreak">
+&lt; physx::PxVec3, physx::PxVec3 &gt;<br class="typebreak">
+, <a class="el" href="struct_nv_1_1_blast_1_1_shared_face.html">SharedFace</a>, <a class="el" href="struct_nv_1_1_blast_1_1_cmp_shared_face.html">CmpSharedFace</a> &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#fe329ff8e54fccde762d704ec05e8e4e">SharedFacesMap</a></td></tr>
+
 <tr><td colspan="2"><br><h2>Enumerations</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">enum &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> { <a class="el" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7d1627b65f07422426fe4a478c7836a66">YZ_PLANE</a> =  1 &lt;&lt; 1, 
 <a class="el" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f785a6dd87b4024df1cddcd744fa2c0020">XY_PLANE</a> =  1 &lt;&lt; 2, 
@@ -447,7 +461,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#02d7c995394a2e2c7f0b18ee051bec2f">atomicIncrement</a> (volatile int32_t *val)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#2e82a3e19f1559d80bcf39c3ab2c9996">convertTracesToIncremental</a> (std::vector&lt; std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html">POINT2D</a> &gt; * &gt; &amp;traces)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#e1f8e465d658b5eda1923088284273bd">buildCuttingConeFaces</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a> &amp;conf, const std::vector&lt; std::vector&lt; physx::PxVec3 &gt;&gt; &amp;points, float heightBot, float heightTop, float conicityBot, float conicityTop, int64_t &amp;id, int32_t seed, int32_t interiorMaterialId, <a class="el" href="namespace_nv_1_1_blast.html#fe329ff8e54fccde762d704ec05e8e4e">SharedFacesMap</a> &amp;sharedFacesMap)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#3c3bd8c624a44bbffc27f6ab8e8f2012">createCutoutSet</a> (<a class="el" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html">Nv::Blast::CutoutSetImpl</a> &amp;cutoutSet, const uint8_t *pixelBuffer, uint32_t bufferWidth, uint32_t bufferHeight, float segmentationErrorThreshold, float snapThreshold, bool periodic, bool expandGaps)</td></tr>
 
@@ -475,7 +489,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#1dd51a1368754e171b1cc545e2987fc6">getCuttingBox</a> (const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, int64_t id, int32_t interiorMaterialId)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#5e409b73e2c951c5c73dbc0d10190a8a">getCuttingCylinder</a> (uint32_t pointCount, const physx::PxVec3 *points, const physx::PxTransform &amp;transform, float height, int64_t id, int32_t interiorMaterialId)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#7f938d770548b9c3126c6831e845c868">getCuttingCone</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a> &amp;conf, const std::vector&lt; physx::PxVec3 &gt; &amp;points, const std::set&lt; int32_t &gt; &amp;smoothingGroups, float heightBot, float heightTop, float conicityBot, float conicityTop, int64_t &amp;id, int32_t seed, int32_t interiorMaterialId, const <a class="el" href="namespace_nv_1_1_blast.html#fe329ff8e54fccde762d704ec05e8e4e">SharedFacesMap</a> &amp;sharedFacesMap, bool inverseNormals=false)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NV_INLINE const <a class="el" href="struct_nv_blast_i_d.html">NvBlastID</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#6812eeabf30d92a2f9f68b02946d0f17">getFamilyID</a> (const TkFamilyImpl *family)</td></tr>
 
@@ -483,7 +497,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">size_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#865dd402e2f1af88e0d8df296d4f10d3">getFamilyMemorySize</a> (const <a class="el" href="class_nv_1_1_blast_1_1_asset.html">Asset</a> *asset)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#b1f78ff7033dda34706c1d8d0d976fc5">getNoisyCuttingBoxPair</a> (const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, float jaggedPlaneSize, uint32_t resolution, int32_t id, float amplitude, float frequency, int32_t octaves, int32_t seed, int32_t interiorMaterialId)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#1b729c22d7aa248e8ded6819006f91dc">getNoisyCuttingBoxPair</a> (const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, float jaggedPlaneSize, physx::PxVec3 resolution, int64_t id, float amplitude, float frequency, int32_t octaves, int32_t seed, int32_t interiorMaterialId)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NV_INLINE bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#a53d476b82810995adad43062322f649">getPlaneSegmentIntersection</a> (const PxPlane &amp;pl, const PxVec3 &amp;a, const PxVec3 &amp;b, PxVec3 &amp;result)</td></tr>
 
@@ -501,7 +515,7 @@
 <tr><td class="memTemplParams" nowrap colspan="2">template&lt;typename T &gt; </td></tr>
 <tr><td class="memTemplItemLeft" nowrap align="right" valign="top">NV_INLINE T&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#c1fa2bac8c635169faa133e5de246da9">invalidIndex</a> ()</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#83abdcd21821c89fd79e466306cb9b12">inverseNormalAndSetIndices</a> (<a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *mesh, int64_t id)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#0265283060faee576b2b897fbaf209de">inverseNormalAndIndices</a> (<a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *mesh)</td></tr>
 
 <tr><td class="memTemplParams" nowrap colspan="2">template&lt;typename T &gt; </td></tr>
 <tr><td class="memTemplItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#b0cb52654c117f03fb31826ce2747bfa">invertMap</a> (T *inverseMap, const T *map, const T size)</td></tr>
@@ -618,6 +632,36 @@ It will be called when new joints are being created. It should return valid PxJo
       <table class="memname">
         <tr>
           <td class="memname">typedef uint32_t <a class="el" href="namespace_nv_1_1_blast.html#32d5787be500421cf94051656ce83180">Nv::Blast::NodeIndex</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="2ae61a5475656a13f05a71e0b1359b8a"></a><!-- doxytag: member="Nv::Blast::PointMap" ref="2ae61a5475656a13f05a71e0b1359b8a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::map&lt;physx::PxVec3, std::map&lt;uint32_t, uint32_t&gt;, <a class="el" href="struct_nv_1_1_blast_1_1_cmp_vec.html">CmpVec</a>&gt; <a class="el" href="namespace_nv_1_1_blast.html#2ae61a5475656a13f05a71e0b1359b8a">Nv::Blast::PointMap</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="fe329ff8e54fccde762d704ec05e8e4e"></a><!-- doxytag: member="Nv::Blast::SharedFacesMap" ref="fe329ff8e54fccde762d704ec05e8e4e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::map&lt;std::pair&lt;physx::PxVec3, physx::PxVec3&gt;, <a class="el" href="struct_nv_1_1_blast_1_1_shared_face.html">SharedFace</a>, <a class="el" href="struct_nv_1_1_blast_1_1_cmp_shared_face.html">CmpSharedFace</a>&gt; <a class="el" href="namespace_nv_1_1_blast.html#fe329ff8e54fccde762d704ec05e8e4e">Nv::Blast::SharedFacesMap</a>          </td>
         </tr>
       </table>
 </div>
@@ -760,17 +804,74 @@ Returns the aligned value.
 
 </div>
 </div><p>
-<a class="anchor" name="2e82a3e19f1559d80bcf39c3ab2c9996"></a><!-- doxytag: member="Nv::Blast::convertTracesToIncremental" ref="2e82a3e19f1559d80bcf39c3ab2c9996" args="(std::vector&lt; std::vector&lt; POINT2D &gt; * &gt; &amp;traces)" -->
+<a class="anchor" name="e1f8e465d658b5eda1923088284273bd"></a><!-- doxytag: member="Nv::Blast::buildCuttingConeFaces" ref="e1f8e465d658b5eda1923088284273bd" args="(const CutoutConfiguration &amp;conf, const std::vector&lt; std::vector&lt; physx::PxVec3 &gt;&gt; &amp;points, float heightBot, float heightTop, float conicityBot, float conicityTop, int64_t &amp;id, int32_t seed, int32_t interiorMaterialId, SharedFacesMap &amp;sharedFacesMap)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::convertTracesToIncremental           </td>
+          <td class="memname">void Nv::Blast::buildCuttingConeFaces           </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; std::vector&lt; POINT2D &gt; * &gt; &amp;&nbsp;</td>
-          <td class="paramname"> <em>traces</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
+          <td class="paramtype">const CutoutConfiguration &amp;&nbsp;</td>
+          <td class="paramname"> <em>conf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::vector&lt; std::vector&lt; physx::PxVec3 &gt;&gt; &amp;&nbsp;</td>
+          <td class="paramname"> <em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>heightBot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>heightTop</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>conicityBot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>conicityTop</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t &amp;&nbsp;</td>
+          <td class="paramname"> <em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>seed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>interiorMaterialId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SharedFacesMap &amp;&nbsp;</td>
+          <td class="paramname"> <em>sharedFacesMap</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
         </tr>
       </table>
 </div>
@@ -1415,45 +1516,81 @@ Create cutting box at some particular position. <dl compact><dt><b>Parameters:</
 
 </div>
 </div><p>
-<a class="anchor" name="5e409b73e2c951c5c73dbc0d10190a8a"></a><!-- doxytag: member="Nv::Blast::getCuttingCylinder" ref="5e409b73e2c951c5c73dbc0d10190a8a" args="(uint32_t pointCount, const physx::PxVec3 *points, const physx::PxTransform &amp;transform, float height, int64_t id, int32_t interiorMaterialId)" -->
+<a class="anchor" name="7f938d770548b9c3126c6831e845c868"></a><!-- doxytag: member="Nv::Blast::getCuttingCone" ref="7f938d770548b9c3126c6831e845c868" args="(const CutoutConfiguration &amp;conf, const std::vector&lt; physx::PxVec3 &gt; &amp;points, const std::set&lt; int32_t &gt; &amp;smoothingGroups, float heightBot, float heightTop, float conicityBot, float conicityTop, int64_t &amp;id, int32_t seed, int32_t interiorMaterialId, const SharedFacesMap &amp;sharedFacesMap, bool inverseNormals=false)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* Nv::Blast::getCuttingCylinder           </td>
+          <td class="memname"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* Nv::Blast::getCuttingCone           </td>
           <td>(</td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>pointCount</em>, </td>
+          <td class="paramtype">const CutoutConfiguration &amp;&nbsp;</td>
+          <td class="paramname"> <em>conf</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramtype">const std::vector&lt; physx::PxVec3 &gt; &amp;&nbsp;</td>
           <td class="paramname"> <em>points</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxTransform &amp;&nbsp;</td>
-          <td class="paramname"> <em>transform</em>, </td>
+          <td class="paramtype">const std::set&lt; int32_t &gt; &amp;&nbsp;</td>
+          <td class="paramname"> <em>smoothingGroups</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">float&nbsp;</td>
-          <td class="paramname"> <em>height</em>, </td>
+          <td class="paramname"> <em>heightBot</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int64_t&nbsp;</td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>heightTop</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>conicityBot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>conicityTop</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t &amp;&nbsp;</td>
           <td class="paramname"> <em>id</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int32_t&nbsp;</td>
-          <td class="paramname"> <em>interiorMaterialId</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>seed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>interiorMaterialId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const SharedFacesMap &amp;&nbsp;</td>
+          <td class="paramname"> <em>sharedFacesMap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>inverseNormals</em> = <code>false</code></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -1465,13 +1602,20 @@ Create cutting box at some particular position. <dl compact><dt><b>Parameters:</
 <div class="memdoc">
 
 <p>
-Create cutting cylinder (extrusion of specified loop) at some particular position. <dl compact><dt><b>Parameters:</b></dt><dd>
+Create cutting cone at some particular position. <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>pointCount</em>&nbsp;</td><td>Number of points in loop </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>conf</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_cutout.html">Cutout</a> configuration parameters and data </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>meshId</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_cutout.html">Cutout</a> index </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>points</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of points for loop </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>transform</em>&nbsp;</td><td>Cutting cylinder transform </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>height</em>&nbsp;</td><td>Cutting cylinder height </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>smoothingGroups</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of point indices at which smoothing group should be toggled </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>heightBot</em>&nbsp;</td><td>Cutting cone bottom height (below z = 0) </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>heightTop</em>&nbsp;</td><td>Cutting cone top height (below z = 0) </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>conicityBot</em>&nbsp;</td><td>Cutting cone bottom points multiplier </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>conicityTop</em>&nbsp;</td><td>Cutting cone top points multiplier </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>id</em>&nbsp;</td><td>Cutting cylinder ID </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>seed</em>&nbsp;</td><td>Seed for RNG </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>interiorMaterialId</em>&nbsp;</td><td>Interior material index </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>sharedFacesMap</em>&nbsp;</td><td>Shared faces for noisy fracture </td></tr>
   </table>
 </dl>
 
@@ -1543,7 +1687,7 @@ Returns the number of bytes of memory that a family created using the given asse
 
 </div>
 </div><p>
-<a class="anchor" name="b1f78ff7033dda34706c1d8d0d976fc5"></a><!-- doxytag: member="Nv::Blast::getNoisyCuttingBoxPair" ref="b1f78ff7033dda34706c1d8d0d976fc5" args="(const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, float jaggedPlaneSize, uint32_t resolution, int32_t id, float amplitude, float frequency, int32_t octaves, int32_t seed, int32_t interiorMaterialId)" -->
+<a class="anchor" name="1b729c22d7aa248e8ded6819006f91dc"></a><!-- doxytag: member="Nv::Blast::getNoisyCuttingBoxPair" ref="1b729c22d7aa248e8ded6819006f91dc" args="(const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, float jaggedPlaneSize, physx::PxVec3 resolution, int64_t id, float amplitude, float frequency, int32_t octaves, int32_t seed, int32_t interiorMaterialId)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1574,13 +1718,13 @@ Returns the number of bytes of memory that a family created using the given asse
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramtype">physx::PxVec3&nbsp;</td>
           <td class="paramname"> <em>resolution</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramtype">int64_t&nbsp;</td>
           <td class="paramname"> <em>id</em>, </td>
         </tr>
         <tr>
@@ -1934,26 +2078,17 @@ template&lt;typename T &gt; </div>
 Set to invalid index. 
 </div>
 </div><p>
-<a class="anchor" name="83abdcd21821c89fd79e466306cb9b12"></a><!-- doxytag: member="Nv::Blast::inverseNormalAndSetIndices" ref="83abdcd21821c89fd79e466306cb9b12" args="(Mesh *mesh, int64_t id)" -->
+<a class="anchor" name="0265283060faee576b2b897fbaf209de"></a><!-- doxytag: member="Nv::Blast::inverseNormalAndIndices" ref="0265283060faee576b2b897fbaf209de" args="(Mesh *mesh)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Nv::Blast::inverseNormalAndSetIndices           </td>
+          <td class="memname">void Nv::Blast::inverseNormalAndIndices           </td>
           <td>(</td>
           <td class="paramtype">Mesh *&nbsp;</td>
-          <td class="paramname"> <em>mesh</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"> <em>mesh</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
           <td></td>
-          <td class="paramtype">int64_t&nbsp;</td>
-          <td class="paramname"> <em>id</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
         </tr>
       </table>
 </div>
@@ -1963,7 +2098,6 @@ Set to invalid index.
 Inverses normals of cutting box and sets indices. <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mesh</em>&nbsp;</td><td>Cutting box mesh </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>id</em>&nbsp;</td><td>Cutting box ID </td></tr>
   </table>
 </dl>
 

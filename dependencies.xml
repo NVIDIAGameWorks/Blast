@@ -2,7 +2,7 @@
 	<platform name="windows-common">
 		<dependency packageSource="s3" name="cmake-x64" version="3.7.0" exportAs="cmake"/>
 		<dependency packageSource="s3" name="CapnProto" version="0.6.1.4"/>
-  </platform>
+	</platform>
 	<platform name="win" inherit="windows-common">
 		<dependency name="DXUT" version="9.15.2016.1"/>
 		<dependency name="DirectXTex" version="10.5.2016.2"/>
@@ -16,13 +16,16 @@
 		<dependency name="tinyObjLoader" version="1.0"/>
 		<dependency name="CMakeModules" version="1.0.6"/>
 		<dependency name="googletest-win" version="1.4.0.2" exportAs="googletest"/>
-    <dependency name="BoostMultiprecision" version="1.64.0"/>
-  </platform>
+		<dependency name="BoostMultiprecision" version="1.64.0"/>
+	</platform>
 	<platform name="vc14win32" inherit="win">
-		<dependency name="PhysX-vc14win32" version="3.4.23426887" exportAs="PhysX"/>
+		<dependency name="PhysX-vc14win32" version="3.4.23426887.1" exportAs="PhysX"/>
 	</platform>
 	<platform name="vc14win64" inherit="win">
-		<dependency name="PhysX-vc14win64" version="3.4.23426887" exportAs="PhysX"/>
+		<dependency name="PhysX-vc14win64" version="3.4.23426887.1" exportAs="PhysX"/>
+	</platform>
+	<platform name="vc15win64" inherit="win">
+		<dependency name="PhysX-vc15win64" version="3.4.23572210" exportAs="PhysX"/>
 	</platform>
 	<platform name="ps4" inherit="windows-common">
 		<dependency name="PhysX-ps4" version="3.4.23426887" exportAs="PhysX"/>

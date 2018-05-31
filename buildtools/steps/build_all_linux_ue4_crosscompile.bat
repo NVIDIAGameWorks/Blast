@@ -32,20 +32,4 @@
 @echo.
 @if %ERRORLEVEL% neq 0 exit /B
 
-@echo | set /p dummyName=** Building profile ... **
-@pushd
-@cd "%ROOT_PATH%\linux64-profile-UE4"
-@nmake
-@popd
-@echo ** End of profile **
-@echo.
-@if %ERRORLEVEL% neq 0 exit /B
-
-@echo | set /p dummyName=** Building checked ... **
-@pushd
-@cd "%ROOT_PATH%\linux64-checked-UE4"
-@nmake
-@popd
-@echo ** End of checked **
-@echo.
 @exit /B

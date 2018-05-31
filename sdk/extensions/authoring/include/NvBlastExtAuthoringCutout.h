@@ -43,7 +43,7 @@ public:
 	Applies to the cutout indexed by cutoutIndex:
 	Returns the number of vertices in the cutout.
 	*/
-	virtual uint32_t				getCutoutVertexCount(uint32_t cutoutIndex) const = 0;
+	virtual uint32_t				getCutoutVertexCount(uint32_t cutoutIndex, uint32_t loopIndex) const = 0;
 
 	/**
 	Applies to the cutout indexed by cutoutIndex:
@@ -55,27 +55,12 @@ public:
 	Applies to the cutout indexed by cutoutIndex:
 	Returns the vertex indexed by vertexIndex.  (Only the X and Y coordinates are used.)
 	*/
-	virtual const physx::PxVec3&	getCutoutVertex(uint32_t cutoutIndex, uint32_t vertexIndex) const = 0;
+	virtual const physx::PxVec3&	getCutoutVertex(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const = 0;
 
 	/**
-	Applies to the cutout indexed by cutoutIndex:
-	Returns the number of vertices in the loop indexed by loopIndex.
+	If smoothing group should be changed for adjacent to this vertex faces return true
 	*/
-	virtual uint32_t				getCutoutLoopSize(uint32_t coutoutIndex, uint32_t loopIndex) const = 0;
-
-	/**
-	Applies to the cutout indexed by cutoutIndex:
-	Returns the vertex index of the vertex indexed by vertexNum, in the loop
-	indexed by loopIndex.
-	*/
-	virtual uint32_t				getCutoutLoopVertexIndex(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexNum) const = 0;
-
-	/**
-	Applies to the cutout indexed by cutoutIndex:
-	Returns the flags of the vertex indexed by vertexNum, in the loop
-	indexed by loopIndex.
-	*/
-	virtual uint32_t				getCutoutLoopVertexFlags(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexNum) const = 0;
+	virtual bool					isCutoutVertexToggleSmoothingGroup(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const = 0;
 
 	/**
 	Whether or not this cutout set is to be tiled.

@@ -1,4 +1,4 @@
-/*! \page pageextstress Stress Solver Extension (NvBlastExtStress)
+/*! \page pageextstress Stress Solver (NvBlastExtStress)
 
 
 The Blast&tm; stress solver extension provides an implementation of a quite fast and easy to use stress solver which works directly with the bond graph. It simulates more

@@ -35,6 +35,9 @@
 #endif
 #include <queue>
 #include <vector>
+#include <map>
+#include <stack>
+#include <functional>
 #include "NvBlastExtAuthoringVSA.h"
 #include <float.h>
 #include "NvBlastExtAuthoringTriangulator.h"
@@ -728,7 +731,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 		{
 			xSlicedChunks.push_back(ch);
 		}
-		inverseNormalAndSetIndices(slBox, -(mPlaneIndexerOffset + SLICING_INDEXER_OFFSET));
+		inverseNormalAndIndices(slBox);
 		++mPlaneIndexerOffset;
 		bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_DIFFERENCE());
 		Mesh* result = bTool.createNewMesh();
@@ -767,7 +770,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 			{
 				ySlicedChunks.push_back(ch);
 			}
-			inverseNormalAndSetIndices(slBox, -(mPlaneIndexerOffset + SLICING_INDEXER_OFFSET));
+			inverseNormalAndIndices(slBox);
 			++mPlaneIndexerOffset;
 			bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_DIFFERENCE());
 			Mesh* result = bTool.createNewMesh();
@@ -807,7 +810,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 				newlyCreatedChunksIds.push_back(ch.chunkId);
 				mChunkData.push_back(ch);
 			}
-			inverseNormalAndSetIndices(slBox, -(mPlaneIndexerOffset + SLICING_INDEXER_OFFSET));
+			inverseNormalAndIndices(slBox);
 			++mPlaneIndexerOffset;
 			bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_DIFFERENCE());
 			Mesh* result = bTool.createNewMesh();
@@ -884,6 +887,8 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 	float y_offset = (sourceBBox.maximum.y - sourceBBox.minimum.y) * (1.0f / (y_slices + 1));
 	float z_offset = (sourceBBox.maximum.z - sourceBBox.minimum.z) * (1.0f / (z_slices + 1));
 
+	physx::PxVec3 resolution(mScaleFactor / conf.noise.samplingInterval.x, mScaleFactor / conf.noise.samplingInterval.y, mScaleFactor / conf.noise.samplingInterval.z);
+
 	center.x += x_offset;
 
 	PxVec3 dir(1, 0, 0);
@@ -906,7 +911,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 	{
 		PxVec3 randVect = PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
 		PxVec3 lDir = dir + randVect * conf.angle_variations;
-		slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, conf.noise.surfaceResolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude, conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
+		slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, resolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude, conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
 	//	DummyAccelerator accel(mesh->getFacetCount());
 		SweepingAccelerator accel(mesh);
 		SweepingAccelerator dummy(slBox);
@@ -916,7 +921,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 		{
 			xSlicedChunks.push_back(ch);
 		}
-		inverseNormalAndSetIndices(slBox, -(mPlaneIndexerOffset + SLICING_INDEXER_OFFSET));
+		inverseNormalAndIndices(slBox);
 		++mPlaneIndexerOffset;
 		bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
 		Mesh* result = bTool.createNewMesh();
@@ -948,7 +953,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 			PxVec3 randVect = PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
 			PxVec3 lDir = dir + randVect * conf.angle_variations;
 
-			slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, conf.noise.surfaceResolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude, conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
+			slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, resolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude, conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
 		//	DummyAccelerator accel(mesh->getFacetCount());
 			SweepingAccelerator accel(mesh);
 			SweepingAccelerator dummy(slBox);
@@ -958,7 +963,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 			{
 				ySlicedChunks.push_back(ch);
 			}
-			inverseNormalAndSetIndices(slBox, -(mPlaneIndexerOffset + SLICING_INDEXER_OFFSET));
+			inverseNormalAndIndices(slBox);
 			++mPlaneIndexerOffset;
 			bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
 			Mesh* result = bTool.createNewMesh();
@@ -989,7 +994,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 		{
 			PxVec3 randVect = PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
 			PxVec3 lDir = dir + randVect * conf.angle_variations;
-			slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, conf.noise.surfaceResolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude, conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
+			slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, resolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude, conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
 	//		DummyAccelerator accel(mesh->getFacetCount());
 			SweepingAccelerator accel(mesh);
 			SweepingAccelerator dummy(slBox);
@@ -1001,7 +1006,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 				mChunkData.push_back(ch);
 				newlyCreatedChunksIds.push_back(ch.chunkId);
 			}
-			inverseNormalAndSetIndices(slBox, -(mPlaneIndexerOffset + SLICING_INDEXER_OFFSET));
+			inverseNormalAndIndices(slBox);
 			++mPlaneIndexerOffset;
 			bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
 			Mesh* result = bTool.createNewMesh();
@@ -1069,13 +1074,15 @@ int32_t	FractureToolImpl::cut(uint32_t chunkId, const physx::PxVec3& normal, con
 	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
 	float noisyPartSize = 1.2f;
 	
+	physx::PxVec3 resolution(mScaleFactor / noise.samplingInterval.x, mScaleFactor / noise.samplingInterval.y, mScaleFactor / noise.samplingInterval.z);
+
 	// Perform cut
-	Mesh* slBox = getNoisyCuttingBoxPair((point - mOffset) / mScaleFactor, normal, 40, noisyPartSize, noise.surfaceResolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, noise.amplitude, noise.frequency, noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
+	Mesh* slBox = getNoisyCuttingBoxPair((point - mOffset) / mScaleFactor, normal, 40, noisyPartSize, resolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, noise.amplitude, noise.frequency, noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
 	SweepingAccelerator accel(mesh);
 	SweepingAccelerator dummy(slBox);
 	bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_DIFFERENCE());
 	ch.meshData = bTool.createNewMesh();
-	inverseNormalAndSetIndices(slBox, -(mPlaneIndexerOffset + SLICING_INDEXER_OFFSET));
+	inverseNormalAndIndices(slBox);
 	++mPlaneIndexerOffset;
 	bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
 	Mesh* result = bTool.createNewMesh();
@@ -1126,9 +1133,25 @@ int32_t	FractureToolImpl::cut(uint32_t chunkId, const physx::PxVec3& normal, con
 	return 0;
 }
 
-int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, bool replaceChunk, RandomGeneratorBase* /*rnd*/)
+
+bool CmpVec::operator()(const physx::PxVec3& v1, const physx::PxVec3& v2) const
 {
-	if (replaceChunk && chunkId == 0)
+	auto v = (v2 - v1).abs();
+	if (v.x < 1e-5)
+	{
+		if (v.y < 1e-5)
+		{
+			return v1.z < v2.z;
+		}
+		return v1.y < v2.y;
+	}
+	return v1.x < v2.x;
+}
+
+
+int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd)
+{
+	if ((replaceChunk && chunkId == 0) || conf.cutoutSet == nullptr)
 	{
 		return 1;
 	}
@@ -1157,8 +1180,15 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 	{
 		conf.transform.p += mesh->getBoundingBox().getCenter() / mScaleFactor;
 	}
+	conf.noise.samplingInterval /= mScaleFactor;
 	float xDim = cutoutSet.getDimensions().x;
 	float yDim = cutoutSet.getDimensions().y;
+
+	if (conf.cutoutSet->isPeriodic()) //cutout with periodic boundary do not support noise and conicity
+	{
+		conf.aperture = 0.f;
+		conf.noise.amplitude = 0.f;
+	}
 
 	BooleanEvaluator bTool;
 	ChunkInfo ch;
@@ -1167,40 +1197,156 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
 	std::vector<uint32_t> newlyCreatedChunksIds;
 
+	SharedFacesMap sharedFacesMap;
+	std::vector<std::vector<physx::PxVec3>> verts;
+	std::vector<std::set<int32_t>> smoothingGroups;
+	std::vector<uint32_t> cutoutStarts;
+
 	for (uint32_t c = 0; c < cutoutSet.getCutoutCount(); c++)
 	{
-		uint32_t vertCount = cutoutSet.getCutoutVertexCount(c);
-		std::vector<physx::PxVec3> verts(vertCount);
-		for (uint32_t v = 0; v < vertCount; v++)
+		cutoutStarts.push_back(verts.size());
+		for (uint32_t l = 0; l < cutoutSet.getCutoutLoopCount(c); l++)
 		{
-			auto vert = cutoutSet.getCutoutVertex(c, v);
-			vert.x = (vert.x / xDim - 0.5f) * scale.x;
-			vert.y = (vert.y / yDim - 0.5f) * scale.y;
-			verts[v] = vert;
+			uint32_t vertCount = cutoutSet.getCutoutVertexCount(c, l);
+			verts.push_back(std::vector<physx::PxVec3>(vertCount));
+			smoothingGroups.push_back(std::set<int32_t>());
+			for (uint32_t v = 0; v < vertCount; v++)
+			{
+				auto vert = cutoutSet.getCutoutVertex(c, l, v);
+				vert.x = (vert.x / xDim - 0.5f) * scale.x;
+				vert.y = (vert.y / yDim - 0.5f) * scale.y;
+				verts.back()[v] = vert;
+
+				if (cutoutSet.isCutoutVertexToggleSmoothingGroup(c, l, v))
+				{
+					smoothingGroups.back().insert(v);
+				}
+			}
 		}
-		Mesh* cutoutMesh = getCuttingCylinder(verts.size(), verts.data(), conf.transform, 2.f * extrusionLength, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, mInteriorMaterialId);
-		SweepingAccelerator accel(mesh);
-		SweepingAccelerator dummy(cutoutMesh);
-		bTool.performBoolean(mesh, cutoutMesh, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
-		ch.meshData = bTool.createNewMesh();
-		if (ch.meshData != 0)
-		{
-			ch.chunkId = mChunkIdCounter++;
-			newlyCreatedChunksIds.push_back(ch.chunkId);
-			mChunkData.push_back(ch);
-		}
-		inverseNormalAndSetIndices(cutoutMesh, -(mPlaneIndexerOffset++ + SLICING_INDEXER_OFFSET));
-		bTool.performBoolean(mesh, cutoutMesh, &accel, &dummy, BooleanConfigurations::BOOLEAN_DIFFERENCE());
-		Mesh* result = bTool.createNewMesh();
-		delete mesh;
-		mesh = result;
-		if (mesh == nullptr)
-		{
-			break;
-		}
-		SAFE_DELETE(cutoutMesh)
 	}
 
+	float dimension = scale.magnitude();
+	float conicityMultiplierBot = 1.f + 2.f * extrusionLength / dimension * physx::PxTan(physx::PxClamp(conf.aperture, -179.f, 179.f) * physx::PxPi / 360.f);
+	float conicityMultiplierTop = 2.f - conicityMultiplierBot;
+	float heightBot = extrusionLength, heightTop = extrusionLength;
+	if (conicityMultiplierBot < 0.f)
+	{
+		conicityMultiplierBot = 0.f;
+		heightBot = 0.5f * dimension / std::abs(physx::PxTan(conf.aperture * physx::PxPi / 360.f));
+	}
+	if (conicityMultiplierTop < 0.f)
+	{
+		conicityMultiplierTop = 0.f;
+		heightTop = 0.5f * dimension / std::abs(physx::PxTan(conf.aperture * physx::PxPi / 360.f));
+	}
+
+	uint32_t seed = rnd->getRandomValue();
+	buildCuttingConeFaces(conf, verts, heightBot, heightTop, conicityMultiplierBot, conicityMultiplierTop, 
+		mPlaneIndexerOffset, seed, mInteriorMaterialId, sharedFacesMap);
+
+	std::vector<std::vector<Mesh*>> cutoutMeshes;
+	for (uint32_t c = 0; c < cutoutSet.getCutoutCount(); c++)
+	{
+		cutoutMeshes.push_back(std::vector<Mesh*>());
+		for (uint32_t l = 0; l < cutoutSet.getCutoutLoopCount(c); l++)
+		{
+			if (verts[cutoutStarts[c] + l].size() < 4)
+			{
+				continue;
+			}
+			cutoutMeshes.back().push_back(getCuttingCone(conf, verts[cutoutStarts[c] + l], smoothingGroups[cutoutStarts[c] + l], heightBot, heightTop, conicityMultiplierBot, conicityMultiplierTop,
+				mPlaneIndexerOffset, seed, mInteriorMaterialId, sharedFacesMap, l != 0));
+		}
+	}
+
+	std::stack<std::pair<int32_t, int32_t>> cellsStack;
+	std::set<std::pair<int32_t, int32_t>> visited;
+	cellsStack.push(std::make_pair(0, 0));
+
+	while (!cellsStack.empty())
+	{
+		auto cell = cellsStack.top();
+		auto transformedCell = conf.transform.rotate(physx::PxVec3(cell.first * scale.x, cell.second * scale.y, 0));
+		cellsStack.pop();
+		if (visited.find(cell) != visited.end())
+		{
+			continue;
+		}
+		visited.insert(cell);
+
+
+		bool hasCutout = false;
+		for (uint32_t c = 0; c < cutoutMeshes.size(); c++)
+		{
+			ch.meshData = 0;
+			for (uint32_t l = 0; l < cutoutMeshes[c].size(); l++)
+			{
+				Mesh* cutoutMesh = cutoutMeshes[c][l];
+				if (cutoutMesh == nullptr)
+				{
+					continue;
+				}
+				auto vertices = cutoutMesh->getVerticesWritable();
+				for (uint32_t v = 0; v < cutoutMesh->getVerticesCount(); v++)
+				{
+					vertices[v].p += transformedCell;
+				}
+				cutoutMesh->getBoundingBoxWritable().minimum += transformedCell;
+				cutoutMesh->getBoundingBoxWritable().maximum += transformedCell;
+				if (l == 0)
+				{
+					SweepingAccelerator accel(mesh);
+					SweepingAccelerator dummy(cutoutMesh);
+					bTool.performBoolean(mesh, cutoutMesh, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
+
+					ch.meshData = bTool.createNewMesh();
+				}
+				else
+				{
+					SweepingAccelerator accel(ch.meshData);
+					SweepingAccelerator dummy(cutoutMesh);
+					bTool.performBoolean(ch.meshData, cutoutMesh, &accel, &dummy, BooleanConfigurations::BOOLEAN_DIFFERENCE());
+
+					ch.meshData = bTool.createNewMesh();
+				}
+				for (uint32_t v = 0; v < cutoutMesh->getVerticesCount(); v++)
+				{
+					vertices[v].p -= transformedCell;
+				}
+				cutoutMesh->getBoundingBoxWritable().minimum -= transformedCell;
+				cutoutMesh->getBoundingBoxWritable().maximum -= transformedCell;
+			}
+			if (ch.meshData != 0)
+			{
+				ch.chunkId = mChunkIdCounter++;
+				newlyCreatedChunksIds.push_back(ch.chunkId);
+				mChunkData.push_back(ch);
+				hasCutout = true;
+			}
+		}
+
+		if (hasCutout && cutoutSet.isPeriodic())
+		{
+			for (int32_t i = 0; i < 4; ++i)
+			{
+				const int32_t i0 = i & 1;
+				const int32_t i1 = (i >> 1) & 1;
+				auto newCell = std::make_pair(cell.first + i0 - i1, cell.second + i0 + i1 - 1);
+				if (visited.find(newCell) == visited.end())
+				{
+					cellsStack.push(newCell);
+				}
+			}
+		}
+	}
+
+	for (uint32_t c = 0; c < cutoutMeshes.size(); c++)
+	{
+		for (uint32_t l = 0; l < cutoutMeshes[c].size(); l++)
+		{
+			SAFE_DELETE(cutoutMeshes[c][l]);
+		}
+	}
 	SAFE_DELETE(mesh);
 
 	mChunkData[chunkIndex].isLeaf = false;

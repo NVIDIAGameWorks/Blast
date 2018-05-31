@@ -23,7 +23,7 @@ echo.
 echo #############################################################################################
 ECHO "Creating VS2015 Win32"
 
-SET CMAKE_OUTPUT_DIR=compiler\vc14win32-cmake\
+SET CMAKE_OUTPUT_DIR="%~dp0..\compiler\vc14win32-cmake"
 IF EXIST %CMAKE_OUTPUT_DIR% rmdir /S /Q %CMAKE_OUTPUT_DIR%
 mkdir %CMAKE_OUTPUT_DIR%
 pushd %CMAKE_OUTPUT_DIR%

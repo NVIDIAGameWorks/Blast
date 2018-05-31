@@ -1,5 +1,5 @@
-<project toolsVersion="3.5">
-	<platform name="win">
-		<dependency name="BlastSampleResources" version="22532953"/>
-	</platform>
+<project toolsVersion="5.2">
+	<dependency name="BlastSampleResources" linkPath="../BlastSampleResources">
+		<package name="BlastSampleResources" version="22532953"/>
+	</dependency>
 </project>
