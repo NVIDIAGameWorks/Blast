@@ -1,4 +1,4 @@
-Blast 1.1.2
+Blast 1.1.3
 ===========
 
 ![Alt text](/images/blast.png?raw=true "Blast Intro")
@@ -63,8 +63,8 @@ See [docs/release_notes.txt](docs/release_notes.txt) for changes.
 Compiling
 ---------
 
-For windows (VS2015):
-* Run `generate_projects_vc14winBB.bat`, where BB = 32 or 64, depending on which OS style (32 or 64 bit) you're targeting.  
+For windows (VS2015 or VS2017):
+* Run `generate_projects_vc14win64.bat' or `generate_projects_vc15win64.bat'.
 This step will download all necessary dependencies that are not already downloaded into a folder `NVIDIA/packman-repo` at the root of your hard drive, so
 this might take some time the first time one of these scripts is run (or when a dependency version changes).
 * Open `compiler/vc14winBB-cmake/BlastAll.sln`.  This contains all Blast windows projects, including the
@@ -97,13 +97,13 @@ BlastTool is a standalone GUI application for authoring Blast assets.  It import
 and ExtPx formats, along with fractured meshes and (optionally) collision geometry in a separate file or embedded in an fbx along with the graphics meshes.
 To use it, unzip the [BlastTool-1.1_win64.zip](BlastTool-1.1_win64.zip) file.
 
-Documentation may be found here: http://gameworksdocs.nvidia.com/Blast/1.1/authoring_docs/index.html
+Documentation may be found here: https://docs.nvidia.com/gameworks/content/gameworkslibrary/blast/1.1/authoring_docs/index.html
 
 Unreal Engine 4 Plugin
 ----------------------
 
-UE4.17.2: https://github.com/NvPhysX/UnrealEngine/tree/Blast-4.17  
-UE4.18.0: https://github.com/NvPhysX/UnrealEngine/tree/Blast-4.18
+UE4.18.3: https://github.com/NvPhysX/UnrealEngine/tree/Blast-4.18  
+UE4.19.2: https://github.com/NvPhysX/UnrealEngine/tree/Blast-4.19
 
 UE4 github access is required to access this repo, more info: https://developer.nvidia.com/nvidia-gameworks-and-ue4
 
