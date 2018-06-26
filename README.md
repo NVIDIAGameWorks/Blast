@@ -95,7 +95,7 @@ BlastTool-1.1 (Windows 64-bit only)
 
 BlastTool is a standalone GUI application for authoring Blast assets.  It imports fbx graphics files and exports Blast assets in the low-level, high-level (Tk),
 and ExtPx formats, along with fractured meshes and (optionally) collision geometry in a separate file or embedded in an fbx along with the graphics meshes.
-To use it, unzip the [BlastTool-1.1_win64.zip](BlastTool-1.1_win64.zip) file.
+It is now included in [blast_tools_and_samples-windows.zip](blast_tools_and_samples-windows.zip) (see above).  Run BlastTool.Profile.win64.exe in the bin/vc14win64-cmake folder.
 
 Documentation may be found here: https://docs.nvidia.com/gameworks/content/gameworkslibrary/blast/1.1/authoring_docs/index.html
 
