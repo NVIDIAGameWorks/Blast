@@ -7,24 +7,21 @@ using UnityEngine;
 [StructLayout(LayoutKind.Sequential)]
 public class NvBlastExtRadialDamageDesc
 {
-    public float compressive;  //!<	compressive (radial) damage component
+	public float damage;       //!<	normalized damage amount, range: [0, 1] (maximum health value to be reduced)
     public float p0;
     public float p1;
     public float p2;
-    public float minRadius;        //!<	inner radius of damage action
+    public float minRadius;		//!<	inner radius of damage action
     public float maxRadius;		//!<	outer radius of damage action
 };
 
 [StructLayout(LayoutKind.Sequential)]
 public class NvBlastExtMaterial
 {
-    public float singleChunkThreshold;                     //!<	subsupport chunks only take damage surpassing this value
-    public float graphChunkThreshold;                      //!<	support chunks only take damage surpassing this value
-    public float bondTangentialThreshold;                  //!<	bond only take damage surpassing this value
-    public float bondNormalThreshold;                      //!<	currently unused - forward damage propagation
-    public float damageAttenuation;						   //!<	factor of damage attenuation while forwarding
+	public float health;                   //!<	health
+	public float minDamageThreshold;       //!<	min damage fraction threshold to be applied. Range [0, 1]. For example 0.1 filters all damage below 10% of health.
+	public float maxDamageThreshold;       //!<	max damage fraction threshold to be applied. Range [0, 1]. For example 0.8 won't allow more then 80% of health damage to be applied.
 };
-
 
 public static class NvBlastExtShadersWrapper
 {
@@ -32,11 +29,11 @@ public static class NvBlastExtShadersWrapper
 
     #region Dll
     [DllImport(DLL_NAME)]
-    private static extern bool NvBlastExtDamageActorRadialFalloff(IntPtr actor, NvBlastFractureBuffers buffers, NvBlastExtRadialDamageDesc damageDescBuffer, UInt32 damageDescCount, NvBlastExtMaterial material, NvBlastWrapper.NvBlastLog logFn, NvBlastTimers timers);
-    #endregion
+	public static extern void NvBlastExtFalloffGraphShader( NvBlastFractureBuffers buffers, NvBlastGraphShaderActor actor, NvBlastExtProgramParams p );    // System.IntPtr xparams
 
-    public static bool DamageRadialFalloff(this NvBlastActor actor, NvBlastFractureBuffers buffers, NvBlastExtRadialDamageDesc damageDescBuffer, UInt32 damageDescCount, NvBlastExtMaterial material)
-    {
-        return NvBlastExtDamageActorRadialFalloff(actor.ptr, buffers, damageDescBuffer, damageDescCount, material, NvBlastWrapper.Log, null);
-    }
+	[DllImport(DLL_NAME)]
+	public static extern void NvBlastExtFalloffSubgraphShader( NvBlastFractureBuffers buffers, NvBlastSubgraphShaderActor actor, NvBlastExtProgramParams p );    // NvBlastExtProgramParams
+	#endregion
+
 }
+
