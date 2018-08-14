@@ -7,15 +7,29 @@ using UnityEngine;
 
 public static class NvBlastExtUtilsWrapper
 {
-    public const string DLL_NAME = "NvBlastExtUtils" + NvBlastWrapper.DLL_POSTFIX + "_" + NvBlastWrapper.DLL_PLATFORM;
+	//!AJB 20180809	Function was moved to a different plug in
+	public const string DLL_NAME = "NvBlast" + NvBlastWrapper.DLL_POSTFIX + "_" + NvBlastWrapper.DLL_PLATFORM;      // NvBlastExtAssetUtils
 
-    #region Dll
-    [DllImport(DLL_NAME)]
-    private static extern void NvBlastReorderAssetDescChunks([In, Out] NvBlastChunkDesc[] chunkDescs, uint chunkCount, [In, Out] NvBlastBondDesc[] bondDescs, uint bondCount, [In, Out] uint[] chunkReorderMap);
-    #endregion
+	#region Dll
+	[DllImport(DLL_NAME)]
+	private static extern void NvBlastReorderAssetDescChunks
+	(
+		[In, Out] NvBlastChunkDesc[] chunkDescs,
+		UInt32 chunkCount,
+		[In, Out] NvBlastBondDesc[] bondDescs,
+		UInt32 bondCount,
+		UInt32[] chunkReorderMap,
+		bool keepBondNormalChunkOrder,
+		System.IntPtr scratch,
+		System.UIntPtr logFn        // NvBlastLog, may be null
+	);
+	#endregion
 
-    public static void ReorderAssetDescChunks(NvBlastAssetDesc assetDesc, uint[] chunkReorderMap)
+	public static void ReorderAssetDescChunks(NvBlastAssetDesc assetDesc, uint[] chunkReorderMap)
     {
-        NvBlastReorderAssetDescChunks(assetDesc.chunkDescs, assetDesc.chunkCount, assetDesc.bondDescs, assetDesc.bondCount, chunkReorderMap);
-    }
+		System.IntPtr scratchPtr = NvBlastWrapper.GetScratch( (int)( assetDesc.chunkCount * Marshal.SizeOf( typeof(NvBlastChunkDesc) ) ) );
+		NvBlastReorderAssetDescChunks(assetDesc.chunkDescs, assetDesc.chunkCount, assetDesc.bondDescs, assetDesc.bondCount, chunkReorderMap, true, scratchPtr, System.UIntPtr.Zero);
+	}
 }
+
+

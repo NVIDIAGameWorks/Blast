@@ -13,8 +13,8 @@ public struct NvBlastChunkDesc
         SupportFlag = (1 << 0)
     };
 
-    /** Central position in chunk. */
-    public Single c0;
+	/** Central position in chunk. */
+	public Single c0;
     public Single c1;
     public Single c2;
 
@@ -49,12 +49,12 @@ public struct NvBlastBond
 
 public struct NvBlastBondDesc
 {
-    /** The indices of the chunks linked by this bond.  They must be different support chunk indices. */
-    public UInt32 chunk0;
-    public UInt32 chunk1;
+	/** Bond data (see NvBlastBond). */
+	public NvBlastBond bond;
 
-    /** Bond data (see NvBlastBond). */
-    public NvBlastBond bond;
+	/** The indices of the chunks linked by this bond.  They must be different support chunk indices. */
+	public UInt32 chunk0;
+    public UInt32 chunk1;
 }
 
 [StructLayout(LayoutKind.Sequential)]
@@ -137,7 +137,8 @@ public struct NvBlastChunk
     public UInt32 userData;
 };
 
-public struct NvBlastChunkGraph
+
+public struct NvBlastSupportGraph
 {
     UInt32 nodeCount;
     public IntPtr chunkIndices;
@@ -189,28 +190,34 @@ public class NvBlastFractureBuffers
 public class NvBlastActorSplitEvent
 {
     public IntPtr deletedActor; //!<	deleted actor or nullptr if actor has not changed
-    public IntPtr newActors;		//!<	list of created actors
+    public IntPtr newActors;		//!<	list of created actors ( NvBlastActor** )
 };
 
 [StructLayout(LayoutKind.Sequential)]
 public class NvBlastGraphShaderActor
 {
-    UInt32 firstGraphNodeIndex;   //<!	Entry index for graphNodeIndexLinks
+	UInt32 actorIndex;						//!<	Actor's index.
+	UInt32 graphNodeCount;					//!<	Actor's graph node count.
+	UInt32 assetNodeCount;					//!<	Asset node count.
+	UInt32 firstGraphNodeIndex;				//<!	Entry index for graphNodeIndexLinks
     public UInt32[] graphNodeIndexLinks;    //<!	Linked index list of connected nodes.  Traversable with nextIndex = graphNodeIndexLinks[currentIndex], terminates with 0xFFFFFFFF.
     public UInt32[] chunkIndices;           //<!	Graph's map from node index to support chunk index.
     public UInt32[] adjacencyPartition;     //<!	See NvBlastChunkGraph::adjacencyPartition.
     public UInt32[] adjacentNodeIndices;    //<!	See NvBlastChunkGraph::adjacentNodeIndices.
     public UInt32[] adjacentBondIndices;    //<!	See NvBlastChunkGraph::adjacentBondIndices.
-    public NvBlastBond[] assetBonds;              //<!	NvBlastBonds geometry in the NvBlastAsset.
-    public Single[] familyBondHealths;	//<!	Actual bond health values for broken bond detection.
+    public NvBlastBond[] assetBonds;        //<!	NvBlastBonds geometry in the NvBlastAsset.
+	public NvBlastChunk[] assetChunks;      //!<	NvBlastChunks geometry in the NvBlastAsset.
+	public Single[] familyBondHealths;      //<!	Actual bond health values for broken bond detection.
+	public Single[] supportChunkHealths;    //!<	Actual chunk health values for dead chunk detection.
+	public UInt32[] nodeActorIndices;       //!<	Family's map from node index to actor index.
 };
 
 [StructLayout(LayoutKind.Sequential)]
-public class NvBlastProgramParams
+public struct NvBlastExtProgramParams
 {
-    public IntPtr damageDescBuffer;   //!<	array of damage descriptions
-    public UInt32 damageDescCount; //!<	number of damage descriptions in array
-    public IntPtr material;			//!<	pointer to material
+	public IntPtr damageDescBuffer;                     //!<	array of damage descriptions	// (NvBlastExtRadialDamageDesc)
+	public IntPtr material;                             //!<	pointer to material
+	public IntPtr accelerator;                          //!<	//NvBlastExtDamageAccelerator* accelerator;
 };
 
 [StructLayout(LayoutKind.Sequential)]
@@ -222,10 +229,10 @@ public class NvBlastSubgraphShaderActor
 
 public struct NvBlastDamageProgram
 {
-    public delegate void NvBlastGraphShaderFunction(System.IntPtr commandBuffers, System.IntPtr actor, System.IntPtr p);
-    public delegate void NvBlastSubgraphShaderFunction(NvBlastFractureBuffers commandBuffers, NvBlastSubgraphShaderActor actor, NvBlastProgramParams p);
+    public delegate void NvBlastGraphShaderFunction( NvBlastFractureBuffers commandBuffers, NvBlastGraphShaderActor actor, NvBlastExtProgramParams p );  // System.IntPtr p
+	public delegate void NvBlastSubgraphShaderFunction( NvBlastFractureBuffers commandBuffers, NvBlastSubgraphShaderActor actor, NvBlastExtProgramParams p);
 
-    public NvBlastGraphShaderFunction graphShaderFunction;
+	public NvBlastGraphShaderFunction graphShaderFunction;
     public NvBlastSubgraphShaderFunction subgraphShaderFunction;
 };
 
@@ -234,8 +241,9 @@ public class NvBlastWrapper
 {
     //////// DLL ////////
 
-    public const string DLL_POSTFIX = "DEBUG"; //DEBUG
-    public const string DLL_PLATFORM = "x64";
+//	public const string DLL_POSTFIX = "DEBUG";
+	public const string DLL_POSTFIX = "";
+	public const string DLL_PLATFORM = "x64";
     public const string DLL_NAME = "NvBlast" + DLL_POSTFIX + "_" + DLL_PLATFORM;
 
 
@@ -377,31 +385,37 @@ public class NvBlastAsset : DisposablePtr
 {
     #region Dll
     [DllImport(NvBlastWrapper.DLL_NAME)]
-    static extern UInt64 NvBlastAssetCreateRequiredScratch(NvBlastAssetDesc desc);
+	static extern UInt64 NvBlastGetRequiredScratchForCreateAsset(NvBlastAssetDesc desc, NvBlastWrapper.NvBlastLog logFn);
+
+	[DllImport(NvBlastWrapper.DLL_NAME)]
+	static extern UInt64 NvBlastGetAssetMemorySize( NvBlastAssetDesc desc, NvBlastWrapper.NvBlastLog logFn );
 
     [DllImport(NvBlastWrapper.DLL_NAME)]
-    static extern IntPtr NvBlastAssetCreate(NvBlastAssetDesc desc, NvBlastWrapper.NvBlastAlloc allocFn, IntPtr scratch, NvBlastWrapper.NvBlastLog logFn);
+	static extern IntPtr NvBlastCreateAsset( System.IntPtr mem, NvBlastAssetDesc desc, IntPtr scratch, NvBlastWrapper.NvBlastLog logFn);
 
-    [DllImport(NvBlastWrapper.DLL_NAME)]
-    static extern void NvBlastAssetRelease(IntPtr asset, NvBlastWrapper.NvBlastFree freeFn, NvBlastWrapper.NvBlastLog logFn);
+//	[DllImport(NvBlastWrapper.DLL_NAME)]
+//    static extern void NvBlastAssetRelease(IntPtr asset, NvBlastWrapper.NvBlastFree freeFn, NvBlastWrapper.NvBlastLog logFn);
 
     [DllImport(NvBlastWrapper.DLL_NAME)]
     static extern UInt32 NvBlastAssetGetLeafChunkCount(IntPtr asset, NvBlastWrapper.NvBlastLog logFn);
 
     [DllImport(NvBlastWrapper.DLL_NAME)]
-    static extern NvBlastChunkGraph NvBlastAssetGetSupportGraph(IntPtr asset, NvBlastWrapper.NvBlastLog logFn);
+    static extern NvBlastSupportGraph NvBlastAssetGetSupportGraph(IntPtr asset, NvBlastWrapper.NvBlastLog logFn);
     #endregion
 
-    public NvBlastAsset(NvBlastAssetDesc desc)
+    public NvBlastAsset( NvBlastAssetDesc desc )
     {
-        var scratchSize = NvBlastAssetCreateRequiredScratch(desc);
-        var asset = NvBlastAssetCreate(desc, NvBlastWrapper.Alloc, NvBlastWrapper.GetScratch((int)scratchSize), NvBlastWrapper.Log);
-        Initialize(asset);
+        var scratchSize = NvBlastGetRequiredScratchForCreateAsset( desc, NvBlastWrapper.Log );
+		var assetSize = NvBlastGetAssetMemorySize(desc, NvBlastWrapper.Log);
+		IntPtr mem = NvBlastWrapper.Alloc( (long)assetSize);
+		var asset = NvBlastCreateAsset( mem, desc, NvBlastWrapper.GetScratch( (int)scratchSize ), NvBlastWrapper.Log );
+        Initialize( asset );
     }
+	// asset = mem, or NULL on failure
 
-    protected override void Release()
+	protected override void Release()
     {
-        NvBlastAssetRelease(ptr, NvBlastWrapper.Free, NvBlastWrapper.Log);
+        //NvBlastAssetRelease( ptr, NvBlastWrapper.Free, NvBlastWrapper.Log );
     }
 
     public UInt32 leafChunkCount 
@@ -412,7 +426,7 @@ public class NvBlastAsset : DisposablePtr
         }
     }
 
-    public NvBlastChunkGraph chunkGraph
+    public NvBlastSupportGraph chunkGraph
     {
         get
         {
@@ -424,7 +438,7 @@ public class NvBlastAsset : DisposablePtr
         }
     }
 
-    private NvBlastChunkGraph? _graph = null;
+    private NvBlastSupportGraph? _graph = null;
 }
 
 
@@ -432,13 +446,16 @@ public class NvBlastFamily : DisposablePtr
 {
     #region Dll
     [DllImport(NvBlastWrapper.DLL_NAME)]
-    static extern IntPtr NvBlastFamilyCreate(IntPtr asset, NvBlastWrapper.NvBlastAlloc allocFn, NvBlastWrapper.NvBlastLog logFn);
+	static extern IntPtr NvBlastAssetCreateFamily( IntPtr mem, IntPtr asset, NvBlastWrapper.NvBlastLog logFn );
 
-    [DllImport(NvBlastWrapper.DLL_NAME)]
-    static extern void NvBlastFamilyRelease(IntPtr family, NvBlastWrapper.NvBlastFree freeFn, NvBlastWrapper.NvBlastLog logFn);
-    #endregion
+//    [DllImport(NvBlastWrapper.DLL_NAME)]
+//    static extern void NvBlastFamilyRelease(IntPtr family, NvBlastWrapper.NvBlastFree freeFn, NvBlastWrapper.NvBlastLog logFn);
 
-    public NvBlastAsset asset
+	[DllImport(NvBlastWrapper.DLL_NAME)]
+	static extern UInt64 NvBlastAssetGetFamilyMemorySize( IntPtr asset, NvBlastWrapper.NvBlastLog logFn );
+	#endregion
+
+	public NvBlastAsset asset
     {
         get;
         private set;
@@ -446,14 +463,16 @@ public class NvBlastFamily : DisposablePtr
 
     public NvBlastFamily(NvBlastAsset asset_)
     {
-        asset = asset_;
-        var family = NvBlastFamilyCreate(asset.ptr, NvBlastWrapper.Alloc, NvBlastWrapper.Log);
-        Initialize(family);
+		var memSize = NvBlastAssetGetFamilyMemorySize(asset_.ptr, NvBlastWrapper.Log);
+		IntPtr mem = NvBlastWrapper.Alloc((long)memSize );
+		asset = asset_;
+        var family = NvBlastAssetCreateFamily( mem, asset.ptr, NvBlastWrapper.Log );
+		Initialize( family );
     }
 
-    protected override void Release()
+	protected override void Release()
     {
-        NvBlastFamilyRelease(ptr, NvBlastWrapper.Free, NvBlastWrapper.Log);
+        //NvBlastFamilyRelease( ptr, NvBlastWrapper.Free, NvBlastWrapper.Log );
     }
 }
 
@@ -462,10 +481,10 @@ public class NvBlastActor : DisposablePtr
 {
     #region Dll
     [DllImport(NvBlastWrapper.DLL_NAME)]
-    static extern UInt64 NvBlastActorCreateRequiredScratch(IntPtr asset);
+    static extern UInt64 NvBlastFamilyGetRequiredScratchForCreateFirstActor(IntPtr asset, NvBlastWrapper.NvBlastLog logFn);
 
     [DllImport(NvBlastWrapper.DLL_NAME)]
-    static extern IntPtr NvBlastActorCreate(IntPtr family, NvBlastActorDesc desc, IntPtr scratch, NvBlastWrapper.NvBlastLog logFn);
+    static extern IntPtr NvBlastFamilyCreateFirstActor(IntPtr family, NvBlastActorDesc desc, IntPtr scratch, NvBlastWrapper.NvBlastLog logFn);
 
     [DllImport(NvBlastWrapper.DLL_NAME)]
     static extern void NvBlastActorRelease(IntPtr actor);
@@ -483,16 +502,16 @@ public class NvBlastActor : DisposablePtr
     static extern UInt32 NvBlastActorGetGraphNodeIndices([In, Out] UInt32[] graphNodeIndices, UInt32 graphNodeIndicesSize, IntPtr actor, NvBlastWrapper.NvBlastLog logFn);
 
     [DllImport(NvBlastWrapper.DLL_NAME)]
-    static extern void NvBlastActorGenerateFracture(NvBlastFractureBuffers commandBuffers, IntPtr actor, NvBlastDamageProgram program, NvBlastProgramParams programParams, NvBlastWrapper.NvBlastLog logFn, NvBlastTimers timers);
+    static extern void NvBlastActorGenerateFracture(NvBlastFractureBuffers commandBuffers, IntPtr actor, NvBlastDamageProgram program, NvBlastExtProgramParams programParams, NvBlastWrapper.NvBlastLog logFn, NvBlastTimers timers);
 
     [DllImport(NvBlastWrapper.DLL_NAME)]
     static extern void NvBlastActorApplyFracture(IntPtr eventBuffers, IntPtr actor, NvBlastFractureBuffers commands, NvBlastWrapper.NvBlastLog logFn, NvBlastTimers timers);
 
     [DllImport(NvBlastWrapper.DLL_NAME)]
-    static extern UInt64 NvBlastActorSplitRequiredScratch(IntPtr actor);
+    static extern UInt64 NvBlastActorGetRequiredScratchForSplit(IntPtr actor, NvBlastWrapper.NvBlastLog logFn);
 
     [DllImport(NvBlastWrapper.DLL_NAME)]
-    static extern UInt32 NvBlastActorSplit([In, Out] NvBlastActorSplitEvent result, UInt32 newActorsMaxCount, IntPtr actor, IntPtr scratch, NvBlastWrapper.NvBlastLog logFn, NvBlastTimers timers);
+    static extern UInt32 NvBlastActorSplit([In, Out] NvBlastActorSplitEvent result, IntPtr actor, UInt32 newActorsMaxCount, IntPtr scratch, NvBlastWrapper.NvBlastLog logFn, NvBlastTimers timers);
     #endregion
 
     public NvBlastFamily family
@@ -507,9 +526,9 @@ public class NvBlastActor : DisposablePtr
     {
         family = family_;
 
-        var scratchSize = NvBlastActorCreateRequiredScratch(family_.asset.ptr);
-        var actor = NvBlastActorCreate(family.ptr, desc, NvBlastWrapper.GetScratch((int)scratchSize), NvBlastWrapper.Log);
-        Initialize(actor);
+        var scratchSize = NvBlastFamilyGetRequiredScratchForCreateFirstActor( family.ptr, NvBlastWrapper.Log);
+        var actor = NvBlastFamilyCreateFirstActor( family.ptr, desc, NvBlastWrapper.GetScratch((int)scratchSize), NvBlastWrapper.Log );
+		Initialize(actor);
     }
 
     public NvBlastActor(NvBlastFamily family_, IntPtr ptr)
@@ -560,9 +579,9 @@ public class NvBlastActor : DisposablePtr
         }
     }
 
-    public void GenerateFracture(NvBlastFractureBuffers buffers, NvBlastDamageProgram program, NvBlastProgramParams programParams)
+    public void GenerateFracture( NvBlastFractureBuffers buffers, NvBlastDamageProgram program, NvBlastExtProgramParams programParams )
     {
-        NvBlastActorGenerateFracture(buffers, ptr, program, programParams, NvBlastWrapper.Log, null);
+        NvBlastActorGenerateFracture( buffers, ptr, program, programParams, NvBlastWrapper.Log, null );
     }
 
     public void ApplyFracture(NvBlastFractureBuffers commands)
@@ -570,11 +589,11 @@ public class NvBlastActor : DisposablePtr
         NvBlastActorApplyFracture(IntPtr.Zero, ptr, commands, NvBlastWrapper.Log, null);
     }
 
-    public UInt32 Split(NvBlastActorSplitEvent result, UInt32 newActorsMaxCount)
+    public UInt32 Split( NvBlastActorSplitEvent result, UInt32 newActorsMaxCount )
     {
-        var scratchSize = NvBlastActorSplitRequiredScratch(ptr);
-        UInt32 newActorsCount = NvBlastActorSplit(result, newActorsMaxCount, ptr, NvBlastWrapper.GetScratch((int)scratchSize), NvBlastWrapper.Log, null);
-        if(result.deletedActor != IntPtr.Zero)
+        var scratchSize = NvBlastActorGetRequiredScratchForSplit(ptr, NvBlastWrapper.Log);
+        UInt32 newActorsCount = NvBlastActorSplit( result, ptr, newActorsMaxCount, NvBlastWrapper.GetScratch((int)scratchSize), NvBlastWrapper.Log, null);
+        if( result.deletedActor != IntPtr.Zero )
         {
             ResetPtr();
         }

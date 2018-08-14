@@ -14,7 +14,7 @@ public class CubeFamily : MonoBehaviour
 
         NvBlastAssetDesc desc = _cubeAsset.solverAssetDesc;
         _blastAsset = new NvBlastAsset(desc);
-        Debug.Log(_blastAsset.leafChunkCount);
+//        Debug.Log(_blastAsset.leafChunkCount);
 
         // Actual Cubes
         var cubePrefab = Resources.Load<GameObject>("CubePrefab");
@@ -39,7 +39,7 @@ public class CubeFamily : MonoBehaviour
         actorDesc.uniformInitialBondHealth = 1.0f;
         actorDesc.uniformInitialLowerSupportChunkHealth = 1.0f;
         var actor = new NvBlastActor(_blastFamily, actorDesc);
-        Debug.Log(actor.visibleChunkCount);
+//        Debug.Log(actor.visibleChunkCount);
 
         OnActorCreated(actor, Vector3.zero, Quaternion.identity);
 
@@ -126,7 +126,7 @@ public class CubeFamily : MonoBehaviour
         return false;
     }
 
-    private void ApplyRadialDamage(NvBlastActor actor, Vector3 localPosition, float minRadius, float maxRadius, float compressive)
+    private void ApplyRadialDamage( NvBlastActor actor, Vector3 localPosition, float minRadius, float maxRadius, float compressive )
     {
         _fractureBuffers.chunkFractureCount = _cubeAsset.solverAssetDesc.chunkCount;
         _fractureBuffers.bondFractureCount = _cubeAsset.solverAssetDesc.bondCount;
@@ -134,18 +134,35 @@ public class CubeFamily : MonoBehaviour
         NvBlastExtRadialDamageDesc desc = new NvBlastExtRadialDamageDesc();
         desc.minRadius = minRadius;
         desc.maxRadius = maxRadius;
-        desc.compressive = compressive;
+        desc.damage = compressive;
         desc.p0 = localPosition.x;
         desc.p1 = localPosition.y;
         desc.p2 = localPosition.z;
 
-        if (actor.DamageRadialFalloff(_fractureBuffers, desc, 1, null))
-        {
-            Split(actor);
-        }
+		IntPtr dam = Marshal.AllocHGlobal( Marshal.SizeOf( typeof(NvBlastExtRadialDamageDesc) ) );
+		Marshal.StructureToPtr( desc, dam, false );
+
+		var damP = new NvBlastDamageProgram() {
+			graphShaderFunction = NvBlastExtShadersWrapper.NvBlastExtFalloffGraphShader,
+			subgraphShaderFunction = NvBlastExtShadersWrapper.NvBlastExtFalloffSubgraphShader
+			};
+		var programParams = new NvBlastExtProgramParams() {
+			damageDescBuffer = dam,
+			material = IntPtr.Zero,
+			accelerator = IntPtr.Zero
+		};
+
+		actor.GenerateFracture( _fractureBuffers, damP, programParams );
+		actor.ApplyFracture( _fractureBuffers );
+		if ( _fractureBuffers.bondFractureCount + _fractureBuffers.chunkFractureCount > 0 )
+		{
+			Split( actor );
+		}
+
+		Marshal.FreeHGlobal(dam);
     }
 
-    private void Split(NvBlastActor actor)
+    private void Split( NvBlastActor actor )
     {
         NvBlastActorSplitEvent split = new NvBlastActorSplitEvent();
         split.newActors = _newActorsBuffer;

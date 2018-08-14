@@ -8,7 +8,9 @@ public class Demo : MonoBehaviour
 
 	void Awake ()
     {
-        generateCity();
+		//NativeLoader.Load();
+
+		generateCity();
     }
 
     private void generateCity()
