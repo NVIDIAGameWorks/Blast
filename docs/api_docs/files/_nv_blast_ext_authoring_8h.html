@@ -45,11 +45,19 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">Nv::Blast::FractureTool</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#41aee44d57db3e410d5d9dd5b07632d5">NvBlastExtAuthoringCreateFractureTool</a> ()</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_grid.html">Nv::Blast::Grid</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#080affb840f2061b502bfb5db90efc8d">NvBlastExtAuthoringCreateGridAccelerator</a> (uint32_t resolution, const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a> *m)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html">Nv::Blast::GridWalker</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#179362f88f5da692b27ec497ad7d6ff4">NvBlastExtAuthoringCreateGridWalker</a> (<a class="el" href="class_nv_1_1_blast_1_1_grid.html">Nv::Blast::Grid</a> *parent)</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#a0d4d4a998dca04ba49d0ea7a7525cd5">NvBlastExtAuthoringCreateMesh</a> (const physx::PxVec3 *positions, const physx::PxVec3 *normals, const physx::PxVec2 *uv, uint32_t verticesCount, const uint32_t *indices, uint32_t indicesCount)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh_cleaner.html">Nv::Blast::MeshCleaner</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#a763b10260b7d2a495fb106601977422">NvBlastExtAuthoringCreateMeshCleaner</a> ()</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#0d65b4208e0e406c8c61330610845c18">NvBlastExtAuthoringCreateMeshFromFacets</a> (const void *vertices, const void *edges, const void *facets, uint32_t verticesCount, uint32_t edgesCount, uint32_t facetsCount)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#5faad1bdb348d4979b2bf17b33f9b12f">NvBlastExtAuthoringCreateMeshOnlyTriangles</a> (const void *vertices, uint32_t verticesCount, uint32_t *indices, uint32_t indexCount, void *materials=nullptr, uint32_t materialStride=4)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_pattern_generator.html">Nv::Blast::PatternGenerator</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#53c22dbb75e939a04e48aa0e9dfe2158">NvBlastExtAuthoringCreatePatternGenerator</a> ()</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html">Nv::Blast::VoronoiSitesGenerator</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#cd91ba6bf9cb55758bd477fe114e318b">NvBlastExtAuthoringCreateVoronoiSitesGenerator</a> (<a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a> *mesh, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">Nv::Blast::RandomGeneratorBase</a> *rng)</td></tr>
 
@@ -299,6 +307,55 @@ Create FractureTool object. <dl class="return" compact><dt><b>Returns:</b></dt><
 
 </div>
 </div><p>
+<a class="anchor" name="080affb840f2061b502bfb5db90efc8d"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringCreateGridAccelerator" ref="080affb840f2061b502bfb5db90efc8d" args="(uint32_t resolution, const Nv::Blast::Mesh *m)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_nv_1_1_blast_1_1_grid.html">Nv::Blast::Grid</a>* NvBlastExtAuthoringCreateGridAccelerator           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>resolution</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a> *&nbsp;</td>
+          <td class="paramname"> <em>m</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+TODO 
+</div>
+</div><p>
+<a class="anchor" name="179362f88f5da692b27ec497ad7d6ff4"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringCreateGridWalker" ref="179362f88f5da692b27ec497ad7d6ff4" args="(Nv::Blast::Grid *parent)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html">Nv::Blast::GridWalker</a>* NvBlastExtAuthoringCreateGridWalker           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_grid.html">Nv::Blast::Grid</a> *&nbsp;</td>
+          <td class="paramname"> <em>parent</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+TODO 
+</div>
+</div><p>
 <a class="anchor" name="a0d4d4a998dca04ba49d0ea7a7525cd5"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringCreateMesh" ref="a0d4d4a998dca04ba49d0ea7a7525cd5" args="(const physx::PxVec3 *positions, const physx::PxVec3 *normals, const physx::PxVec2 *uv, uint32_t verticesCount, const uint32_t *indices, uint32_t indicesCount)" -->
 <div class="memitem">
 <div class="memproto">
@@ -447,6 +504,90 @@ Constructs mesh object from array of vertices, edges and facets. User should cal
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>pointer to <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a> if it was created succefully otherwise return nullptr </dd></dl>
 
+</div>
+</div><p>
+<a class="anchor" name="5faad1bdb348d4979b2bf17b33f9b12f"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringCreateMeshOnlyTriangles" ref="5faad1bdb348d4979b2bf17b33f9b12f" args="(const void *vertices, uint32_t verticesCount, uint32_t *indices, uint32_t indexCount, void *materials=nullptr, uint32_t materialStride=4)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a>* NvBlastExtAuthoringCreateMeshOnlyTriangles           </td>
+          <td>(</td>
+          <td class="paramtype">const void *&nbsp;</td>
+          <td class="paramname"> <em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>verticesCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>indexCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&nbsp;</td>
+          <td class="paramname"> <em>materials</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>materialStride</em> = <code>4</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Constructs mesh object from triangles represented as arrays of vertices, indices and per facet material. User should call Mesh::release() after usage.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>vertices</em>&nbsp;</td><td>Array for vertex positions, 3 * verticesCount floats will be read </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>verticesCount</em>&nbsp;</td><td>Number of vertices in mesh </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>indices</em>&nbsp;</td><td>Array of vertex indices. Indices contain vertex index triplets which form a mesh triangle. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>indicesCount</em>&nbsp;</td><td>Indices count (should be equal to numberOfTriangles * 3) </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>materials</em>&nbsp;</td><td>Array of material indices per triangle. If not set default material (0) will be assigned. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>materialStride</em>&nbsp;</td><td>Stride for material indices</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>pointer to <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a> if it was created succefully otherwise return nullptr </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="53c22dbb75e939a04e48aa0e9dfe2158"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringCreatePatternGenerator" ref="53c22dbb75e939a04e48aa0e9dfe2158" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_nv_1_1_blast_1_1_pattern_generator.html">Nv::Blast::PatternGenerator</a>* NvBlastExtAuthoringCreatePatternGenerator           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Returns pattern generator used for generating fracture patterns for Real Time (RT) fracture 
 </div>
 </div><p>
 <a class="anchor" name="cd91ba6bf9cb55758bd477fe114e318b"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringCreateVoronoiSitesGenerator" ref="cd91ba6bf9cb55758bd477fe114e318b" args="(Nv::Blast::Mesh *mesh, Nv::Blast::RandomGeneratorBase *rng)" -->

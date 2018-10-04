@@ -71,10 +71,16 @@ BlastFamily::~BlastFamily()
 	{
 		m_stressSolver->release();
 	}
-
-	m_pxFamily->unsubscribe(m_listener);
-
-	m_pxFamily->release();
+	if (m_pxFamily)
+	{
+		m_pxFamily->unsubscribe(m_listener);
+		m_pxFamily->release();
+	}
+	//Self released
+	//if (m_tkFamily)
+	//{
+	//	m_tkFamily->release();
+	//}
 }
 
 void BlastFamily::initialize(const BlastAsset::ActorDesc& desc)

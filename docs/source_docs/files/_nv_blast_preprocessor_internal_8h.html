@@ -39,6 +39,7 @@
 </div>
 <div class="contents">
 <h1>sdk/common/NvBlastPreprocessorInternal.h File Reference</h1><code>#include &quot;<a class="el" href="_nv_preprocessor_8h-source.html">NvPreprocessor.h</a>&quot;</code><br>
+<code>#include &lt;limits&gt;</code><br>
 
 <p>
 <a href="_nv_blast_preprocessor_internal_8h-source.html">Go to the source code of this file.</a><table border="0" cellpadding="0" cellspacing="0">
@@ -55,6 +56,8 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_preprocessor_internal_8h.html#a024c8130947e5bcd0418f7564c312b2">NVBLASTLL_LOG_INFO</a>(_logFn, _msg)&nbsp;&nbsp;&nbsp;if (_logFn != nullptr) { _logFn(NvBlastMessage::Info, _msg, __FILE__, __LINE__); } ((void)0)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_preprocessor_internal_8h.html#028ad449128603044a76c8db870e52c6">NVBLASTLL_LOG_WARNING</a>(_logFn, _msg)&nbsp;&nbsp;&nbsp;if (_logFn != nullptr) { _logFn(NvBlastMessage::Warning, _msg, __FILE__, __LINE__); } ((void)0)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_preprocessor_internal_8h.html#b5eb23180f7cc12b7d6c04a8ec067fdd">UINT32_MAX</a>&nbsp;&nbsp;&nbsp;(std::numeric_limits&lt;uint32_t&gt;::max())</td></tr>
 
 </table>
 <hr><h2>Define Documentation</h2>
@@ -192,6 +195,21 @@ Macros for more convenient logging
 
 <p>
 
+</div>
+</div><p>
+<a class="anchor" name="b5eb23180f7cc12b7d6c04a8ec067fdd"></a><!-- doxytag: member="NvBlastPreprocessorInternal.h::UINT32_MAX" ref="b5eb23180f7cc12b7d6c04a8ec067fdd" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define UINT32_MAX&nbsp;&nbsp;&nbsp;(std::numeric_limits&lt;uint32_t&gt;::max())          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Convenience macro to replace deprecated UINT32_MAX 
 </div>
 </div><p>
 </div>

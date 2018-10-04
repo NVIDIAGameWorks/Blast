@@ -94,7 +94,7 @@
 <a name="l00062"></a>00062     <span class="keyword">friend</span> <span class="keywordtype">void</span> updateVisibleChunksFromSupportChunk&lt;&gt;(<a class="code" href="class_nv_1_1_blast_1_1_actor.html">Actor</a>*, <a class="code" href="struct_nv_1_1_blast_1_1_index_d_link.html">IndexDLink&lt;uint32_t&gt;</a>*, uint32_t*, uint32_t, uint32_t, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_chunk.html">NvBlastChunk</a>*, uint32_t);
 <a name="l00063"></a>00063 
 <a name="l00064"></a>00064 <span class="keyword">public</span>:
-<a name="l00065"></a><a class="code" href="class_nv_1_1_blast_1_1_actor.html#49fd726e45168bd756e564cfaac6e356">00065</a>     <a class="code" href="class_nv_1_1_blast_1_1_actor.html#49fd726e45168bd756e564cfaac6e356">Actor</a>() : m_familyOffset(0), m_firstVisibleChunkIndex(UINT32_MAX), m_visibleChunkCount(0), m_firstGraphNodeIndex(UINT32_MAX), m_graphNodeCount(0), m_leafChunkCount(0) {}
+<a name="l00065"></a><a class="code" href="class_nv_1_1_blast_1_1_actor.html#49fd726e45168bd756e564cfaac6e356">00065</a>     <a class="code" href="class_nv_1_1_blast_1_1_actor.html#49fd726e45168bd756e564cfaac6e356">Actor</a>() : m_familyOffset(0), m_firstVisibleChunkIndex(<a class="code" href="_nv_blast_preprocessor_internal_8h.html#b5eb23180f7cc12b7d6c04a8ec067fdd">UINT32_MAX</a>), m_visibleChunkCount(0), m_firstGraphNodeIndex(<a class="code" href="_nv_blast_preprocessor_internal_8h.html#b5eb23180f7cc12b7d6c04a8ec067fdd">UINT32_MAX</a>), m_graphNodeCount(0), m_leafChunkCount(0) {}
 <a name="l00066"></a>00066 
 <a name="l00068"></a>00068 
 <a name="l00074"></a>00074     <a class="code" href="struct_nv_1_1_blast_1_1_family_header.html">FamilyHeader</a>*       <a class="code" href="class_nv_1_1_blast_1_1_actor.html#ca8517524822b8a5033e95779260412b">getFamilyHeader</a>() <span class="keyword">const</span>;
@@ -261,7 +261,7 @@
 <a name="l00533"></a>00533     <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_family_header.html">FamilyHeader</a>* header = <a class="code" href="class_nv_1_1_blast_1_1_actor.html#ca8517524822b8a5033e95779260412b">getFamilyHeader</a>();
 <a name="l00534"></a>00534     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(header != <span class="keyword">nullptr</span>);
 <a name="l00535"></a>00535     <span class="keyword">const</span> <span class="keywordtype">size_t</span> index = <span class="keyword">this</span> - header-&gt;getActors();
-<a name="l00536"></a>00536     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(index &lt;= UINT32_MAX);
+<a name="l00536"></a>00536     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(index &lt;= <a class="code" href="_nv_blast_preprocessor_internal_8h.html#b5eb23180f7cc12b7d6c04a8ec067fdd">UINT32_MAX</a>);
 <a name="l00537"></a>00537     <span class="keywordflow">return</span> (uint32_t)index;
 <a name="l00538"></a>00538 }
 <a name="l00539"></a>00539 

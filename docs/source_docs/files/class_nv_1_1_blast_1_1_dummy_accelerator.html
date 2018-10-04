@@ -60,11 +60,15 @@ Inheritance diagram for Nv::Blast::DummyAccelerator:</div>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#5b164cf3944cfd733cf425cd340155a3">DummyAccelerator</a> (int32_t count)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#8922a9b3750aaa6a5f434d90cec48d00">getNextFacet</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#c9e9c9438caf033ceedf79c6f94ce8fb">getNextFacet</a> () override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#d2b99528d24f1d76f5c28cc94ce1a335">setState</a> (const physx::PxVec3 &amp;point)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#50b1fd58ed24a0f70cf4b6dfeefcaca1">setPointCmpDirection</a> (int32_t dir) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#86de630e31259aecd6f72604469ca5d6">setState</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *pos, const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *ed, const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> &amp;fc)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#bb97f06d4009fe724451469250655c6f">setState</a> (const physx::PxVec3 &amp;point) override</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#07d0e165095fb2561042e2b8054c5b0f">setState</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *pos, const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *ed, const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> &amp;fc) override</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#b4225922a3d40b80eb4be7d29162398a">setState</a> (const physx::PxBounds3 *bounds) override</td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
@@ -95,7 +99,7 @@ Dummy accelerator iterates through all facets of mesh. <hr><h2>Constructor &amp;
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="8922a9b3750aaa6a5f434d90cec48d00"></a><!-- doxytag: member="Nv::Blast::DummyAccelerator::getNextFacet" ref="8922a9b3750aaa6a5f434d90cec48d00" args="()" -->
+<a class="anchor" name="c9e9c9438caf033ceedf79c6f94ce8fb"></a><!-- doxytag: member="Nv::Blast::DummyAccelerator::getNextFacet" ref="c9e9c9438caf033ceedf79c6f94ce8fb" args="() override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -104,7 +108,7 @@ Dummy accelerator iterates through all facets of mesh. <hr><h2>Constructor &amp;
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td><code> [virtual]</code></td>
+          <td><code> [override, virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -117,7 +121,29 @@ Recieve next facet for setted state. <dl class="return" compact><dt><b>Returns:<
 
 </div>
 </div><p>
-<a class="anchor" name="d2b99528d24f1d76f5c28cc94ce1a335"></a><!-- doxytag: member="Nv::Blast::DummyAccelerator::setState" ref="d2b99528d24f1d76f5c28cc94ce1a335" args="(const physx::PxVec3 &amp;point)" -->
+<a class="anchor" name="50b1fd58ed24a0f70cf4b6dfeefcaca1"></a><!-- doxytag: member="Nv::Blast::DummyAccelerator::setPointCmpDirection" ref="50b1fd58ed24a0f70cf4b6dfeefcaca1" args="(int32_t dir) override" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::DummyAccelerator::setPointCmpDirection           </td>
+          <td>(</td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>dir</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [inline, override, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#99d3cf42fe6c71caa4c827d94ca3fd4d">Nv::Blast::SpatialAccelerator</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="bb97f06d4009fe724451469250655c6f"></a><!-- doxytag: member="Nv::Blast::DummyAccelerator::setState" ref="bb97f06d4009fe724451469250655c6f" args="(const physx::PxVec3 &amp;point) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -127,7 +153,7 @@ Recieve next facet for setted state. <dl class="return" compact><dt><b>Returns:<
           <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
           <td class="paramname"> <em>point</em>          </td>
           <td>&nbsp;)&nbsp;</td>
-          <td><code> [virtual]</code></td>
+          <td><code> [override, virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -144,7 +170,7 @@ Set state of accelerator to return all facets which possibly can cover given poi
 
 </div>
 </div><p>
-<a class="anchor" name="86de630e31259aecd6f72604469ca5d6"></a><!-- doxytag: member="Nv::Blast::DummyAccelerator::setState" ref="86de630e31259aecd6f72604469ca5d6" args="(const Vertex *pos, const Edge *ed, const Facet &amp;fc)" -->
+<a class="anchor" name="07d0e165095fb2561042e2b8054c5b0f"></a><!-- doxytag: member="Nv::Blast::DummyAccelerator::setState" ref="07d0e165095fb2561042e2b8054c5b0f" args="(const Vertex *pos, const Edge *ed, const Facet &amp;fc) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -169,7 +195,7 @@ Set state of accelerator to return all facets which possibly can cover given poi
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td><td><code> [virtual]</code></td>
+          <td></td><td></td><td><code> [override, virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -188,8 +214,37 @@ Set state of accelerator to return all facets which possibly can intersect given
 
 </div>
 </div><p>
+<a class="anchor" name="b4225922a3d40b80eb4be7d29162398a"></a><!-- doxytag: member="Nv::Blast::DummyAccelerator::setState" ref="b4225922a3d40b80eb4be7d29162398a" args="(const physx::PxBounds3 *bounds) override" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::DummyAccelerator::setState           </td>
+          <td>(</td>
+          <td class="paramtype">const physx::PxBounds3 *&nbsp;</td>
+          <td class="paramname"> <em>bounds</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [override, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set state of accelerator to return all facets which possibly can intersect given facet bound. <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>pos</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> buffer </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>ed</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> buffer </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>fc</em>&nbsp;</td><td><a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> which should be tested. </td></tr>
+  </table>
+</dl>
+
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#ed70b8dde16ce3c248597763f9531313">Nv::Blast::SpatialAccelerator</a>.</p>
+
+</div>
+</div><p>
 <hr>The documentation for this class was generated from the following file:<ul>
-<li>sdk/extensions/authoring/source/<a class="el" href="_nv_blast_ext_authoring_accelerator_8h-source.html">NvBlastExtAuthoringAccelerator.h</a></ul>
+<li>sdk/extensions/authoringCommon/include/<a class="el" href="_nv_blast_ext_authoring_accelerator_8h-source.html">NvBlastExtAuthoringAccelerator.h</a></ul>
 </div>
 <!-- start footer part -->
 <div class="footer">

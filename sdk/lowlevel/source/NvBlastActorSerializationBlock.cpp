@@ -133,6 +133,9 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 		actor->m_leafChunkCount = serHeader->m_leafChunkCount;
 	}
 
+	// Using this function after the family graph data has been set up, so that it will work correctly
+	const bool boundToWorld = actor->isBoundToWorld();
+
 	// Lower support chunk healths
 	{
 		const float* serLowerSupportChunkHealths = serHeader->getLowerSupportChunkHealths();
@@ -145,8 +148,12 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 			for (Actor::GraphNodeIt i = *actor; (bool)i; ++i)
 			{
 				const uint32_t graphNodeIndex = (uint32_t)i;
-				graphNodeHealths[graphNodeIndex] = serLowerSupportChunkHealths[serLowerSupportChunkCount++];
 				const uint32_t supportChunkIndex = graphChunkIndices[graphNodeIndex];
+				if (isInvalidIndex(supportChunkIndex))
+				{
+					continue;
+				}
+				graphNodeHealths[graphNodeIndex] = serLowerSupportChunkHealths[serLowerSupportChunkCount++];
 				Asset::DepthFirstIt j(*asset, supportChunkIndex);
 				NVBLAST_ASSERT((bool)j);
 				++j;	// Skip first (support) chunk, it's already been handled
@@ -179,7 +186,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 				{
 					// Only count if the adjacent node belongs to this actor
 					const uint32_t adjacentChunkIndex = graphChunkIndices[adjacentNodeIndex];
-					if (chunkActorIndices[adjacentChunkIndex] == actorIndex)
+					if ((boundToWorld && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == actorIndex))
 					{
 						const uint32_t adjacentBondIndex = graphAdjacentBondIndices[adjacentIndex];
 						bondHealths[adjacentBondIndex] = serBondHealths[serBondCount++];
@@ -225,7 +232,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 				{
 					// Only count if the adjacent node belongs to this actor
 					const uint32_t adjacentChunkIndex = graphChunkIndices[adjacentNodeIndex];
-					if (chunkActorIndices[adjacentChunkIndex] == actorIndex)
+					if ((boundToWorld && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == actorIndex))
 					{
 						if (!serEdgeRemovedArray->test(serBondIndex))
 						{
@@ -257,6 +264,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 	const FamilyHeader* header = getFamilyHeader();
 	const uint32_t* chunkActorIndices = header->getChunkActorIndices();
 	const uint32_t thisActorIndex = getIndex();
+	const bool boundToWorld = isBoundToWorld();
 
 	// Make sure there are no dirty nodes
 	if (m_graphNodeCount)
@@ -336,9 +344,13 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 			for (Actor::GraphNodeIt i = *this; (bool)i; ++i)
 			{
 				const uint32_t graphNodeIndex = (uint32_t)i;
+				const uint32_t supportChunkIndex = graphChunkIndices[graphNodeIndex];
+				if (isInvalidIndex(supportChunkIndex))
+				{
+					continue;
+				}
 				serLowerSupportChunkHealths[serLowerSupportChunkCount++] = graphNodeHealths[graphNodeIndex];
 				offset += sizeof(float);
-				const uint32_t supportChunkIndex = graphChunkIndices[graphNodeIndex];
 				Asset::DepthFirstIt j(*asset, supportChunkIndex);
 				NVBLAST_ASSERT((bool)j);
 				++j;	// Skip first (support) chunk, it's already been handled
@@ -385,7 +397,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 				{
 					// Only count if the adjacent node belongs to this actor
 					const uint32_t adjacentChunkIndex = graphChunkIndices[adjacentNodeIndex];
-					if (chunkActorIndices[adjacentChunkIndex] == thisActorIndex)
+					if ((boundToWorld && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == thisActorIndex))
 					{
 						if (offset >= bufferSize)
 						{
@@ -461,7 +473,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 				{
 					// Only count if the adjacent node belongs to this actor
 					const uint32_t adjacentChunkIndex = graphChunkIndices[adjacentNodeIndex];
-					if (chunkActorIndices[adjacentChunkIndex] == thisActorIndex)
+					if ((boundToWorld && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == thisActorIndex))
 					{
 						const uint32_t adjacentBondIndex = graphAdjacentBondIndices[adjacentIndex];
 						if (!edgeRemovedArray->test(adjacentBondIndex))
@@ -492,6 +504,7 @@ uint32_t Actor::serializationRequiredStorage(NvBlastLog logFn) const
 	const uint32_t* graphNodeIndexLinks = getFamilyHeader()->getGraphNodeIndexLinks();
 	const uint32_t* chunkActorIndices = getFamilyHeader()->getChunkActorIndices();
 	const uint32_t thisActorIndex = getIndex();
+	const bool boundToWorld = isBoundToWorld();
 
 	// Lower-support chunk count and bond counts for this actor need to be calculated.  Iterate over all support chunks to count these.
 	uint32_t lowerSupportChunkCount = 0;
@@ -501,15 +514,14 @@ uint32_t Actor::serializationRequiredStorage(NvBlastLog logFn) const
 		for (uint32_t graphNodeIndex = m_firstGraphNodeIndex; !isInvalidIndex(graphNodeIndex); graphNodeIndex = graphNodeIndexLinks[graphNodeIndex])
 		{
 			// Update bond count
-			const uint32_t supportChunkIndex = graphChunkIndices[graphNodeIndex];
 			for (uint32_t adjacentIndex = graphAdjacencyPartition[graphNodeIndex]; adjacentIndex < graphAdjacencyPartition[graphNodeIndex + 1]; ++adjacentIndex)
 			{
 				const uint32_t adjacentNodeIndex = graphAdjacentNodeIndices[adjacentIndex];
 				if (adjacentNodeIndex > graphNodeIndex)	// So as not to double-count
 				{
-					// Only count if the adjacent node belongs to this actor
+					// Only count if the adjacent node belongs to this actor or the world
 					const uint32_t adjacentChunkIndex = graphChunkIndices[adjacentNodeIndex];
-					if (chunkActorIndices[adjacentChunkIndex] == thisActorIndex)
+					if ((boundToWorld && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == thisActorIndex))
 					{
 						++bondCount;
 					}
@@ -517,6 +529,11 @@ uint32_t Actor::serializationRequiredStorage(NvBlastLog logFn) const
 			}
 
 			// Update lower-support chunk count
+			const uint32_t supportChunkIndex = graphChunkIndices[graphNodeIndex];
+			if (isInvalidIndex(supportChunkIndex))
+			{
+				continue;
+			}
 			for (Asset::DepthFirstIt i(*asset, supportChunkIndex); (bool)i; ++i)
 			{
 				++lowerSupportChunkCount;

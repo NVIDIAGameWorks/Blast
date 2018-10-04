@@ -68,6 +68,10 @@ void ObjFileReader::loadFromFile(const char* filename)
 		lastDelimeter--;
 	}
 	mtlPath = std::string(filename, filename + lastDelimeter);
+	if (mtlPath == "")
+	{
+		mtlPath = '.';
+	}
 	mtlPath += '/';
 	
 	bool ret = tinyobj::LoadObj(shapes, mats, err, filename, mtlPath.c_str());

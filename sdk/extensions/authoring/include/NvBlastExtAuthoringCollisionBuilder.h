@@ -47,6 +47,7 @@ namespace Blast
 
 struct CollisionHull;
 struct Triangle;
+struct Vertex;
 
 struct CollisionParams
 {
@@ -107,6 +108,8 @@ public:
 		\return pointer to the PxConvexMesh object if it was built successfully, 'nullptr' otherwise.
 	*/
 	virtual physx::PxConvexMesh*	buildConvexMesh(const CollisionHull& hull) = 0;
+
+	virtual physx::PxConvexMesh*	buildConvexMeshRT(const Nv::Blast::Vertex* vrs, uint32_t count) = 0;
 
 
 	/**

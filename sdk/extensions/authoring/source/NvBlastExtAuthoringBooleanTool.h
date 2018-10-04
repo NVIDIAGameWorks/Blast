@@ -32,7 +32,6 @@
 #include "NvBlastExtAuthoringTypes.h"
 #include "NvBlastExtAuthoringInternalCommon.h"
 #include <vector>
-#include <map>
 #include "NvBlastTypes.h"
 
 

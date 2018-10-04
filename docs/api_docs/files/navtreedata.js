@@ -13,7 +13,8 @@ var NAVTREE =
         [ "Functions", "functions_func.html", "functions_func" ],
         [ "Variables", "functions_vars.html", "functions_vars" ],
         [ "Enumerations", "functions_enum.html", null ],
-        [ "Enumerator", "functions_eval.html", null ]
+        [ "Enumerator", "functions_eval.html", null ],
+        [ "Related Functions", "functions_rela.html", null ]
       ] ]
     ] ],
     [ "Files", null, [
@@ -31,11 +32,12 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_nv_blast_8h.html",
-"class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#a3046063931a0cd885db6fb7ad7f39e49",
-"class_nv_1_1_blast_1_1_mesh.html#acfffa10ab877367067c0651320e39852",
-"pageextauthoring.html#meshcleaner",
-"struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#a49fa3a64fe091bca26729d8e903a8ba9",
-"struct_nv_blast_ext_material.html#aeeb4e2d2b81e234e12b9e627eb6cb1b4"
+"_nv_blast_tk_identifiable_8h_source.html",
+"class_nv_1_1_blast_1_1_fracture_tool.html#ac14c1ff1d50756694be24c34476af965",
+"functions_func.html",
+"struct_nv_1_1_blast_1_1_chunk_graph_link.html#ad3027428a05b7319f8b01c690df1918a",
+"struct_nv_1_1_blast_1_1_profiler_detail.html#a06be79d41391dfde43f6aa02866a3c1faa045a667a2428770e974158ff5c3f721",
+"struct_nv_blast_graph_shader_actor.html#ae890e417040d5998f4b6a0bc7a317aec"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

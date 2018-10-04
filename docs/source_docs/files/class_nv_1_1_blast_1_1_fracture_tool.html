@@ -94,7 +94,7 @@ Inheritance diagram for Nv::Blast::FractureTool:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#6bea973a4818678affb3ca13e6dc5328">getTransformation</a> (physx::PxVec3 &amp;offset, float &amp;scale)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#7ce2d9ab0cf8d3f03982b53bb4dc3d81">islandDetectionAndRemoving</a> (int32_t chunkId)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#44ad67ac96b11e7dad87b5ed7a788f21">islandDetectionAndRemoving</a> (int32_t chunkId, bool createAtNewDepth=false)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#5710c73457bcceba3f20d130e231a028">isMeshContainOpenEdges</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *input)=0</td></tr>
 
@@ -738,7 +738,7 @@ Input mesh is scaled and transformed internally to fit unit cube centered in ori
 
 </div>
 </div><p>
-<a class="anchor" name="7ce2d9ab0cf8d3f03982b53bb4dc3d81"></a><!-- doxytag: member="Nv::Blast::FractureTool::islandDetectionAndRemoving" ref="7ce2d9ab0cf8d3f03982b53bb4dc3d81" args="(int32_t chunkId)=0" -->
+<a class="anchor" name="44ad67ac96b11e7dad87b5ed7a788f21"></a><!-- doxytag: member="Nv::Blast::FractureTool::islandDetectionAndRemoving" ref="44ad67ac96b11e7dad87b5ed7a788f21" args="(int32_t chunkId, bool createAtNewDepth=false)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -746,9 +746,18 @@ Input mesh is scaled and transformed internally to fit unit cube centered in ori
           <td class="memname">virtual int32_t Nv::Blast::FractureTool::islandDetectionAndRemoving           </td>
           <td>(</td>
           <td class="paramtype">int32_t&nbsp;</td>
-          <td class="paramname"> <em>chunkId</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [pure virtual]</code></td>
+          <td class="paramname"> <em>chunkId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>createAtNewDepth</em> = <code>false</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -762,7 +771,7 @@ Try find islands and remove them on some specifical chunk. If chunk has childs, 
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>Number of found islands is returned </dd></dl>
 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#838245cfdcbf3897bd79b80ecd9e167b">Nv::Blast::FractureToolImpl</a>.</p>
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#5e5d88c4d3ec08ddd566a233f26100f2">Nv::Blast::FractureToolImpl</a>.</p>
 
 </div>
 </div><p>

@@ -365,7 +365,7 @@ public:
 		\param[in] chunkId Chunk ID which should be checked for islands
 		\return Number of found islands is returned
 	*/
-	int32_t									islandDetectionAndRemoving(int32_t chunkId) override;
+	int32_t									islandDetectionAndRemoving(int32_t chunkId, bool createAtNewDepth = false) override;
 
 	/**
 		Check if input mesh contains open edges. Open edges can lead to wrong fracturing results.
@@ -426,6 +426,9 @@ protected:
 	bool								mRemoveIslands;
 	int32_t								mInteriorMaterialId;
 };
+
+void findCellBasePlanes(const std::vector<physx::PxVec3>& sites, std::vector<std::vector<int32_t> >& neighboors);
+Mesh* getCellMesh(class BooleanEvaluator& eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector<physx::PxVec3>& sites, std::vector < std::vector<int32_t> >& neighboors, int32_t interiorMaterialId, physx::PxVec3 origin);
 
 } // namespace Blast
 } // namespace Nv

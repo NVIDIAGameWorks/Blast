@@ -38,6 +38,8 @@
 #include "NvBlastGlobals.h"
 #include "NvBlastExtPxAsset.h"
 #include "NvBlastExtAssetUtils.h"
+#include "NvBlastExtAuthoringPatternGeneratorImpl.h"
+#include "NvBlastExtAuthoringAccelerator.h"
 
 #include <algorithm>
 #include <memory>
@@ -51,6 +53,11 @@ using namespace physx;
 Mesh* NvBlastExtAuthoringCreateMesh(const PxVec3* position, const PxVec3* normals, const PxVec2* uv, uint32_t verticesCount, const uint32_t* indices, uint32_t indicesCount)
 {
 	return new MeshImpl(position, normals, uv, verticesCount, indices, indicesCount);
+}
+
+Mesh* NvBlastExtAuthoringCreateMeshOnlyTriangles(const void* Vertices, uint32_t vcount, uint32_t* indices, uint32_t indexCount, void* materials, uint32_t materialStride)
+{
+	return new MeshImpl((Vertex*)Vertices, vcount, indices, indexCount, materials, materialStride);
 }
 
 Mesh* NvBlastExtAuthoringCreateMeshFromFacets(const void* vertices, const void* edges, const void* facets, uint32_t verticesCount, uint32_t edgesCount, uint32_t facetsCount)
@@ -222,11 +229,6 @@ void buildPhysicsChunks(ConvexMeshBuilder& collisionBuilder, AuthoringResult& re
 			SAFE_ARRAY_DELETE(tempHull);
 		}
 
-		SAFE_ARRAY_DELETE(result.collisionHullOffset);
-		SAFE_ARRAY_DELETE(result.collisionHull);
-		SAFE_ARRAY_DELETE(result.physicsSubchunks);
-		SAFE_ARRAY_DELETE(result.physicsChunks);
-
 		result.collisionHullOffset = SAFE_ARRAY_NEW(uint32_t, chunkCount + 1);
 		result.collisionHullOffset[0] = 0;
 		result.collisionHull = SAFE_ARRAY_NEW(CollisionHull*, totalHulls);
@@ -255,6 +257,14 @@ void buildPhysicsChunks(ConvexMeshBuilder& collisionBuilder, AuthoringResult& re
 
 struct AuthoringResultImpl : public AuthoringResult
 {
+	AuthoringResultImpl()
+	{
+		collisionHullOffset = nullptr;
+		collisionHull = nullptr;
+		physicsChunks = nullptr;
+		physicsSubchunks = nullptr;
+	}
+
 	void releaseCollisionHulls() override
 	{
 		if (collisionHull != nullptr)
@@ -313,8 +323,7 @@ AuthoringResult* NvBlastExtAuthoringProcessFracture(FractureTool& fTool, BlastBo
 		}
 	}
 
-	BondGenerationConfig cnf;
-	cnf.bondMode = BondGenerationConfig::EXACT;
+
 
 	const uint32_t bondCount = bondGenerator.buildDescFromInternalFracture(&fTool, isSupport.get(), aResult.bondDescs, aResult.chunkDescs);
 	aResult.bondCount = bondCount;
@@ -535,3 +544,21 @@ void NvBlastExtAuthoringBuildCollisionMeshes(Nv::Blast::AuthoringResult& ares, N
 {
 	buildPhysicsChunks(collisionBuilder, ares, collisionParam, chunksToProcessCount, chunksToProcess);
 }
+
+PatternGenerator* NvBlastExtAuthoringCreatePatternGenerator()
+{
+	return NVBLAST_NEW(PatternGeneratorImpl);
+}
+
+Grid* NvBlastExtAuthoringCreateGridAccelerator(uint32_t resolution, const Mesh* m)
+{
+	Grid* g = NVBLAST_NEW(Grid)(resolution);
+	g->setMesh(m);
+	return g;
+}
+
+GridWalker* NvBlastExtAuthoringCreateGridWalker(Grid* parentGrid)
+{
+	return NVBLAST_NEW(GridWalker)(parentGrid);
+}
+

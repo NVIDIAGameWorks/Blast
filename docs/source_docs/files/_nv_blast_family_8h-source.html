@@ -180,7 +180,7 @@
 <a name="l00337"></a>00337     <span class="keywordflow">if</span> (actor.<a class="code" href="class_nv_1_1_blast_1_1_actor.html#b68478ad74f2c85aa970dac00789e60a">m_familyOffset</a> == 0)
 <a name="l00338"></a>00338     {
 <a name="l00339"></a>00339         <span class="keyword">const</span> uintptr_t offset = (uintptr_t)&amp;actor - (uintptr_t)<span class="keyword">this</span>;
-<a name="l00340"></a>00340         <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(offset &lt;= UINT32_MAX);
+<a name="l00340"></a>00340         <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(offset &lt;= <a class="code" href="_nv_blast_preprocessor_internal_8h.html#b5eb23180f7cc12b7d6c04a8ec067fdd">UINT32_MAX</a>);
 <a name="l00341"></a>00341         actor.<a class="code" href="class_nv_1_1_blast_1_1_actor.html#b68478ad74f2c85aa970dac00789e60a">m_familyOffset</a> = (uint32_t)offset;
 <a name="l00342"></a>00342         <a class="code" href="namespace_nv_1_1_blast.html#02d7c995394a2e2c7f0b18ee051bec2f">atomicIncrement</a>(reinterpret_cast&lt;volatile int32_t*&gt;(&amp;<a class="code" href="struct_nv_1_1_blast_1_1_family_header.html#6667d4314fbb8eacf132cc81e8920846">m_actorCount</a>));
 <a name="l00343"></a>00343     }

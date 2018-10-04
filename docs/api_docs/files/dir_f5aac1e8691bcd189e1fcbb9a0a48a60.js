@@ -21,11 +21,7 @@ var dir_f5aac1e8691bcd189e1fcbb9a0a48a60 =
       [ "SlicingConfiguration", "struct_nv_1_1_blast_1_1_slicing_configuration.html", "struct_nv_1_1_blast_1_1_slicing_configuration" ],
       [ "VoronoiSitesGenerator", "class_nv_1_1_blast_1_1_voronoi_sites_generator.html", "class_nv_1_1_blast_1_1_voronoi_sites_generator" ]
     ] ],
-    [ "NvBlastExtAuthoringMesh.h", "_nv_blast_ext_authoring_mesh_8h.html", [
-      [ "Mesh", "class_nv_1_1_blast_1_1_mesh.html", "class_nv_1_1_blast_1_1_mesh" ]
-    ] ],
     [ "NvBlastExtAuthoringMeshCleaner.h", "_nv_blast_ext_authoring_mesh_cleaner_8h.html", [
       [ "MeshCleaner", "class_nv_1_1_blast_1_1_mesh_cleaner.html", "class_nv_1_1_blast_1_1_mesh_cleaner" ]
-    ] ],
-    [ "NvBlastExtAuthoringTypes.h", "_nv_blast_ext_authoring_types_8h.html", "_nv_blast_ext_authoring_types_8h" ]
+    ] ]
 ];

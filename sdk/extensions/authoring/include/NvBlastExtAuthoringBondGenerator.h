@@ -113,7 +113,7 @@ public:
 		\return						0 if success
 	*/
 	virtual int32_t	createBondBetweenMeshes(uint32_t meshACount, const Triangle* meshA, uint32_t meshBCount, const Triangle* meshB, 
-		NvBlastBond& resultBond, BondGenerationConfig conf = BondGenerationConfig()) = 0;
+		NvBlastBond& resultBond, BondGenerationConfig conf) = 0;
 
 	/**
 		Creates bond description between number of meshes
@@ -149,7 +149,7 @@ public:
 	*/
 	virtual int32_t	bondsFromPrefractured(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
 		const bool* chunkIsSupport, NvBlastBondDesc*& resultBondDescs,
-		BondGenerationConfig conf = BondGenerationConfig()) = 0;
+		BondGenerationConfig conf) = 0;
 	
 	/**
 		Creates bond description for prefractured meshes, when there is no info about which chunks should be connected with bond.
@@ -167,6 +167,9 @@ public:
 	*/
 	virtual int32_t	bondsFromPrefractured(uint32_t meshCount, const uint32_t* convexHullOffset, const CollisionHull** chunkHulls,
 		const bool* chunkIsSupport, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, float maxSeparation) = 0;
+
+
+
 };
 
 }	// namespace Blast

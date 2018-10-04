@@ -37,7 +37,7 @@
 
 #include <NvBlastExtAuthoringBooleanTool.h>
 #include <NvBlastExtAuthoringMeshImpl.h>
-
+#include <NvBlastExtAuthoringMeshUtils.h>
 #include <VHACD.h>
 
 using namespace physx;
@@ -323,6 +323,21 @@ PxConvexMesh* ConvexMeshBuilderImpl::buildConvexMesh(const CollisionHull& hull)
 	convexMeshDescr.polygons.data = hull.polygonData;
 	convexMeshDescr.polygons.count = (uint32_t)hull.polygonDataCount;
 	convexMeshDescr.polygons.stride = sizeof(PxHullPolygon);
+
+	PxConvexMesh* convexMesh = mCooking->createConvexMesh(convexMeshDescr, *mInsertionCallback);
+	return convexMesh;
+}
+
+
+PxConvexMesh* ConvexMeshBuilderImpl::buildConvexMeshRT(const Nv::Blast::Vertex* vrs, uint32_t count)
+{	
+	PxConvexMeshDesc convexMeshDescr;
+
+	convexMeshDescr.points.data = vrs;
+	convexMeshDescr.points.count = (uint32_t)count;
+	convexMeshDescr.points.stride = sizeof(Nv::Blast::Vertex);
+	
+	convexMeshDescr.flags = PxConvexFlag::eCOMPUTE_CONVEX | PxConvexFlag::eGPU_COMPATIBLE;
 
 	PxConvexMesh* convexMesh = mCooking->createConvexMesh(convexMeshDescr, *mInsertionCallback);
 	return convexMesh;

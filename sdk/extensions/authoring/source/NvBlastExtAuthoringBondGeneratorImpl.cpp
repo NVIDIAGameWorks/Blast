@@ -97,6 +97,7 @@ std::vector<PxVec3> intersectionBuffer;
 std::vector<PxVec3> meshBuffer;
 #endif 
 
+
 namespace Nv
 {
 	namespace Blast
@@ -148,7 +149,52 @@ namespace Nv
 			int32_t m_chunkId;
 		};
 
-		float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcessor, const std::vector<PxVec3>& chunk1Points, const std::vector<PxVec3>& chunk2Points,
+		void AddTtAnchorPoints(const Triangle* a, const Triangle* b, std::vector<PxVec3>& points)
+		{
+			PxVec3 na = a->getNormal().getNormalized();
+			PxVec3 nb = b->getNormal().getNormalized();
+
+			PxPlane pla(a->a.p, na);
+			PxPlane plb(b->a.p, nb);
+
+			
+			ProjectionDirections da = getProjectionDirection(na);
+			ProjectionDirections db = getProjectionDirection(nb);
+			
+			TriangleProcessor prc;
+		
+			TrPrcTriangle2d ta(getProjectedPoint(a->a.p, da), getProjectedPoint(a->b.p, da), getProjectedPoint(a->c.p, da));
+			TrPrcTriangle2d tb(getProjectedPoint(b->a.p, db), getProjectedPoint(b->b.p, db), getProjectedPoint(b->c.p, db));
+			
+			/**
+				Compute 
+			*/
+			for (uint32_t i = 0; i < 3; ++i)
+			{
+				PxVec3 pt;
+				if (getPlaneSegmentIntersection(pla, b->getVertex(i).p, b->getVertex((i + 1) % 3).p, pt))
+				{
+
+					PxVec2 pt2 = getProjectedPoint(pt, da);
+					if (prc.isPointInside(pt2, ta))
+					{
+						points.push_back(pt);
+					}
+				}
+				if (getPlaneSegmentIntersection(plb, a->getVertex(i).p, a->getVertex((i + 1) % 3).p, pt))
+				{
+					PxVec2 pt2 = getProjectedPoint(pt, db);
+					if (prc.isPointInside(pt2, tb))
+					{
+						points.push_back(pt);
+					}
+				}
+			}
+
+		}
+
+
+		float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcessor, const Triangle* mA, uint32_t mavc, const Triangle* mB, uint32_t mbvc,
 			const std::vector<PxVec3>& hull1p, const std::vector<PxVec3>& hull2p, PxVec3& normal, PxVec3& centroid, float maxSeparation)
 		{
 			PxBounds3 bounds;
@@ -162,85 +208,146 @@ namespace Nv
 			PxVec3 chunk2Centroid(0, 0, 0);
 
 			///////////////////////////////////////////////////////////////////////////////////
-			if (chunk1Points.size() < 4 || chunk2Points.size() < 4)
+			if (hull1p.size() < 4 || hull2p.size() < 4)
 			{
 				return 0.0;
 			}
 
-			for (uint32_t i = 0; i < chunk1Points.size(); ++i)
+			for (uint32_t i = 0; i < hull1p.size(); ++i)
 			{
-				chunk1Centroid += chunk1Points[i];
-				bounds.include(chunk1Points[i]);
-				aBounds.include(chunk1Points[i]);
+				chunk1Centroid += hull1p[i];
+				bounds.include(hull1p[i]);
+				aBounds.include(hull1p[i]);
 			}
-			for (uint32_t i = 0; i < chunk2Points.size(); ++i)
+			for (uint32_t i = 0; i < hull2p.size(); ++i)
 			{
-				chunk2Centroid += chunk2Points[i];
-				bounds.include(chunk2Points[i]);
-				bBounds.include(chunk2Points[i]);
+				chunk2Centroid += hull2p[i];
+				bounds.include(hull2p[i]);
+				bBounds.include(hull2p[i]);
 			}
 
 
-			chunk1Centroid *= (1.0f / chunk1Points.size());
-			chunk2Centroid *= (1.0f / chunk2Points.size());
+			chunk1Centroid *= (1.0f / hull1p.size());
+			chunk2Centroid *= (1.0f / hull2p.size());
+
+			
 
 			Separation separation;
 			if (!importerHullsInProximityApexFree(hull1p.size(), hull1p.data(), aBounds, PxTransform(PxIdentity), PxVec3(1, 1, 1), hull2p.size(), hull2p.data(), bBounds, PxTransform(PxIdentity), PxVec3(1, 1, 1), 2.0f * maxSeparation, &separation))
 			{
 				return 0.0;
 			}
-
-			// Build first plane interface
-			PxPlane midplane = separation.plane;
-			if (!midplane.n.isFinite())
+			
+			if (separation.getDistance() > 0) // If chunks don't intersect then use midplane to produce bond, otherwise midplane can be wrong
 			{
-				return 0.0;
-			}
-			std::vector<PxVec3> interfacePoints;
-
-			float firstCentroidSide = (midplane.distance(chunk1Centroid) > 0) ? 1 : -1;
-			float secondCentroidSide = (midplane.distance(chunk2Centroid) > 0) ? 1 : -1;
-
-			for (uint32_t i = 0; i < chunk1Points.size(); ++i)
-			{
-				float dst = midplane.distance(chunk1Points[i]);
-				if (dst * firstCentroidSide < maxSeparation)
+				// Build first plane interface
+				PxPlane midplane = separation.plane;
+				if (!midplane.n.isFinite())
 				{
-					interfacePoints.push_back(chunk1Points[i]);
+					return 0.0;
 				}
-			}
 
-			for (uint32_t i = 0; i < chunk2Points.size(); ++i)
-			{
-				float dst = midplane.distance(chunk2Points[i]);
-				if (dst * secondCentroidSide < maxSeparation)
+				std::vector<PxVec3> interfacePoints;
+
+				float firstCentroidSide = (midplane.distance(chunk1Centroid) > 0) ? 1 : -1;
+				float secondCentroidSide = (midplane.distance(chunk2Centroid) > 0) ? 1 : -1;
+
+				for (uint32_t i = 0; i < hull1p.size(); ++i)
 				{
-					interfacePoints.push_back(chunk2Points[i]);
+					float dst = midplane.distance(hull1p[i]);
+					if (dst * firstCentroidSide < maxSeparation)
+					{
+						interfacePoints.push_back(hull1p[i]);
+					}
 				}
+
+				for (uint32_t i = 0; i < hull2p.size(); ++i)
+				{
+					float dst = midplane.distance(hull2p[i]);
+					if (dst * secondCentroidSide < maxSeparation)
+					{
+						interfacePoints.push_back(hull2p[i]);
+					}
+				}
+				std::vector<PxVec3> convexHull;
+				trProcessor->buildConvexHull(interfacePoints, convexHull, midplane.n);
+				float area = 0;
+				PxVec3 centroidLocal(0, 0, 0);
+				if (convexHull.size() < 3)
+				{
+					return 0.0;
+				}
+				for (uint32_t i = 0; i < convexHull.size() - 1; ++i)
+				{
+					centroidLocal += convexHull[i];
+					area += (convexHull[i] - convexHull[0]).cross((convexHull[i + 1] - convexHull[0])).magnitude();
+				}
+				centroidLocal += convexHull.back();
+				centroidLocal *= (1.0f / convexHull.size());
+				float direction = midplane.n.dot(chunk2Centroid - chunk1Centroid);
+				if (direction < 0)
+				{
+					normal = -1.0f * normal;
+				}
+				normal = midplane.n;
+				centroid = centroidLocal;
+				return area * 0.5f;
 			}
-			std::vector<PxVec3> convexHull;
-			trProcessor->buildConvexHull(interfacePoints, convexHull, midplane.n);
-			float area = 0;
-			PxVec3 centroidLocal(0, 0, 0);
-			if (convexHull.size() < 3)
+			else
 			{
-				return 0.0;
+				float area = 0.0f;
+
+				std::vector<PxVec3> intersectionAnchors;
+
+
+				for (uint32_t i = 0; i < mavc; ++i)
+				{
+					for (uint32_t j = 0; j < mbvc; ++j)
+					{
+						AddTtAnchorPoints(mA + i, mB + j, intersectionAnchors);
+					}
+				}
+
+				PxVec3 lcoid(0, 0, 0);
+				for (uint32_t i = 0; i < intersectionAnchors.size(); ++i)
+				{
+					lcoid += intersectionAnchors[i];
+				}
+				lcoid *= (1.0f / intersectionAnchors.size());
+				centroid = lcoid;
+			
+				if (intersectionAnchors.size() < 2)
+				{
+					return 0;
+				}
+
+
+				PxVec3 dir1 = intersectionAnchors[0] - lcoid;
+				PxVec3 dir2(0, 0, 0);
+				float maxMagn = 0.0f;
+				float maxDist = 0.0f;
+
+
+				for (uint32_t j = 0; j < intersectionAnchors.size(); ++j)
+				{
+					float d = (intersectionAnchors[j] - lcoid).magnitude();
+
+					PxVec3 tempNormal = (intersectionAnchors[j] - lcoid).cross(dir1);
+					maxDist = std::max(d, maxDist);
+						
+					if (tempNormal.magnitude() > maxMagn)
+					{
+						dir2 = tempNormal;
+					}				
+					
+				}
+
+				normal = dir2.getNormalized();
+				
+				area = (maxDist * maxDist) * 3.14f; // Compute area like circle area;
+								
+				return area;
 			}
-			for (uint32_t i = 0; i < convexHull.size() - 1; ++i)
-			{
-				centroidLocal += convexHull[i];
-				area += (convexHull[i] - convexHull[0]).cross((convexHull[i + 1] - convexHull[0])).magnitude();
-			}
-			centroidLocal += convexHull.back();
-			centroidLocal *= (1.0f / convexHull.size());
-			float direction = midplane.n.dot(chunk2Centroid - chunk1Centroid);
-			if (direction < 0)
-			{
-				normal = -1.0f * normal;
-			}
-			normal = midplane.n;
-			centroid = centroidLocal;
-			return area * 0.5f;
 		}
 
 
@@ -271,14 +378,16 @@ namespace Nv
 
 
 		int32_t BlastBondGeneratorImpl::createFullBondListAveraged(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry, const CollisionHull** chunkHulls,
-			const bool* supportFlags, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf)
+			const bool* supportFlags, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf, std::set<std::pair<uint32_t, uint32_t> >* pairNotToTest)
 		{	
 
 			std::vector<std::vector<PxVec3> > chunksPoints(meshCount);
+			std::vector<PxBounds3> bounds(meshCount);
 			if (!chunkHulls)
 			{
 				for (uint32_t i = 0; i < meshCount; ++i)
 				{
+					bounds[i].setEmpty();
 					if (!supportFlags[i])
 					{
 						continue;
@@ -289,6 +398,9 @@ namespace Nv
 						chunksPoints[i].push_back(geometry[geometryOffset[i] + j].a.p);
 						chunksPoints[i].push_back(geometry[geometryOffset[i] + j].b.p);
 						chunksPoints[i].push_back(geometry[geometryOffset[i] + j].c.p);
+						bounds[i].include(geometry[geometryOffset[i] + j].a.p);
+						bounds[i].include(geometry[geometryOffset[i] + j].b.p);
+						bounds[i].include(geometry[geometryOffset[i] + j].c.p);
 					}
 				}
 			}
@@ -383,6 +495,15 @@ namespace Nv
 				for (uint32_t tj = 0; tj < possibleBondGraph[i].size(); ++tj)
 				{
 					uint32_t j = possibleBondGraph[i][tj];
+									
+					auto pr = (i < j) ? std::make_pair(i, j) : std::make_pair(j, i);
+					
+					if (pairNotToTest != nullptr && pairNotToTest->find(pr) != pairNotToTest->end())
+					{
+						continue; // This chunks should not generate bonds. This is used for mixed generation with bondFrom
+					}
+
+
 					
 					const uint32_t jhullCount = hullPoints[j].size();
 					for (uint32_t ihull = 0; ihull < ihullCount; ++ihull)
@@ -392,7 +513,9 @@ namespace Nv
 							PxVec3 normal;
 							PxVec3 centroid;
 
-							float area = processWithMidplanes(&trProcessor, chunksPoints[i].empty() ? hullPoints[i][ihull] : chunksPoints[i], chunksPoints[j].empty() ? hullPoints[j][jhull] : chunksPoints[j], hullPoints[i][ihull], hullPoints[j][jhull], normal, centroid, conf.maxSeparation);
+							float area = processWithMidplanes(&trProcessor, geometry + geometryOffset[i], geometryOffset[i + 1] - geometryOffset[i],
+								geometry + geometryOffset[j], geometryOffset[j + 1] - geometryOffset[j], hullPoints[i][ihull], hullPoints[j][jhull], normal, centroid, conf.maxSeparation);
+
 							if (area > 0)
 							{
 								NvBlastBondDesc bDesc;
@@ -402,6 +525,12 @@ namespace Nv
 								bDesc.bond.centroid[0] = centroid.x;
 								bDesc.bond.centroid[1] = centroid.y;
 								bDesc.bond.centroid[2] = centroid.z;
+
+								uint32_t maxIndex = std::max(i, j);
+								if ((bounds[maxIndex].getCenter() - centroid).dot(normal) < 0)
+								{
+									normal = -normal;
+								}
 
 								bDesc.bond.normal[0] = normal.x;
 								bDesc.bond.normal[1] = normal.y;
@@ -797,22 +926,26 @@ namespace Nv
 
 			return 0;				
 		}
-
+		
 		int32_t	BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool, const bool* chunkIsSupport,
 			NvBlastBondDesc*& resultBondDescs, NvBlastChunkDesc*& resultChunkDescriptors)
 		{
 			uint32_t chunkCount = tool->getChunkCount();
 			std::vector<uint32_t> trianglesCount(chunkCount);
-			std::vector<Triangle*> trianglesBuffer(chunkCount);
+			std::vector<std::shared_ptr<Triangle>> trianglesBuffer;
 
-			for (uint32_t i = 0; i < trianglesBuffer.size(); ++i)
+			for (uint32_t i = 0; i < chunkCount; ++i)
 			{
-				trianglesCount[i] = tool->getBaseMesh(i, trianglesBuffer[i]);
+				Triangle* t;
+				trianglesCount[i] = tool->getBaseMesh(i, t);
+				trianglesBuffer.push_back(std::shared_ptr<Triangle>(t, [](Triangle* t) {
+					delete[] t; 
+				}));
 			}
 
 			if (chunkCount == 0)
 			{
-				return 0;
+				return  0;
 			}
 			resultChunkDescriptors = SAFE_ARRAY_NEW(NvBlastChunkDesc, trianglesBuffer.size());
 			std::vector<Bond>	bondDescriptors;
@@ -824,9 +957,9 @@ namespace Nv
 				PxVec3 chunkCentroid(0, 0, 0);
 				for (uint32_t tr = 0; tr < trianglesCount[0]; ++tr)
 				{
-					chunkCentroid += trianglesBuffer[0][tr].a.p;
-					chunkCentroid += trianglesBuffer[0][tr].b.p;
-					chunkCentroid += trianglesBuffer[0][tr].c.p;
+					chunkCentroid += trianglesBuffer[0].get()[tr].a.p;
+					chunkCentroid += trianglesBuffer[0].get()[tr].b.p;
+					chunkCentroid += trianglesBuffer[0].get()[tr].c.p;
 				}
 				chunkCentroid *= (1.0f / (3 * trianglesCount[0]));
 				resultChunkDescriptors[0].centroid[0] = chunkCentroid[0];
@@ -834,22 +967,28 @@ namespace Nv
 				resultChunkDescriptors[0].centroid[2] = chunkCentroid[2];
 			}
 
+			
+			bool hasCreatedByIslands = false;
+
 			for (uint32_t i = 1; i < chunkCount; ++i)
 			{
 				NvBlastChunkDesc& desc = resultChunkDescriptors[i];
 				desc.userData = i;
 				desc.parentChunkIndex = tool->getChunkIndex(tool->getChunkInfo(i).parent);
 				desc.flags = NvBlastChunkDesc::NoFlags;
+				hasCreatedByIslands |= (tool->getChunkInfo(i).flags & ChunkInfo::CREATED_BY_ISLAND_DETECTOR);
 				if (chunkIsSupport[i])
+				{
 					desc.flags = NvBlastChunkDesc::SupportFlag;
+				}
 				PxVec3 chunkCentroid(0, 0, 0);
 				for (uint32_t tr = 0; tr < trianglesCount[i]; ++tr)
 				{
-					chunkCentroid += trianglesBuffer[i][tr].a.p;
-					chunkCentroid += trianglesBuffer[i][tr].b.p;
-					chunkCentroid += trianglesBuffer[i][tr].c.p;
+					auto& trRef = trianglesBuffer[i].get()[tr];
+					chunkCentroid += trRef.a.p;
+					chunkCentroid += trRef.b.p;
+					chunkCentroid += trRef.c.p;
 
-					Triangle& trRef = trianglesBuffer[i][tr];
 					int32_t id = trRef.userData;
 					if (id == 0)
 						continue;
@@ -865,111 +1004,165 @@ namespace Nv
 				desc.centroid[2] = chunkCentroid[2];
 			}
 			std::sort(bondDescriptors.begin(), bondDescriptors.end());
-			if (bondDescriptors.empty())
-			{
-				return 0;
-			}
-			int32_t chunkId, planeId;
-			chunkId = bondDescriptors[0].m_chunkId;
-			planeId = bondDescriptors[0].m_planeIndex;
-			std::vector<BondInfo> forwardChunks;
-			std::vector<BondInfo> backwardChunks;
 
-			float area = 0;
-			PxVec3 normal(0, 0, 0);
-			PxVec3 centroid(0, 0, 0);
-			int32_t collected = 0;
-			PxBounds3 bb = PxBounds3::empty();
 
-			chunkId = -1;
-			planeId = bondDescriptors[0].m_planeIndex;
 			std::vector<NvBlastBondDesc> mResultBondDescs;
-			for (uint32_t i = 0; i <= bondDescriptors.size(); ++i)
-			{
-				if (i == bondDescriptors.size() || (chunkId != bondDescriptors[i].m_chunkId || abs(planeId) != abs(bondDescriptors[i].m_planeIndex)))
-				{
-					if (chunkId != -1)
-					{
-						if (bondDescriptors[i - 1].m_planeIndex > 0) {
-							forwardChunks.push_back(BondInfo());
-							forwardChunks.back().area = area;
-							forwardChunks.back().normal = normal;
-							forwardChunks.back().centroid = centroid * (1.0f / 3.0f / collected);
-							forwardChunks.back().m_chunkId = chunkId;
-							forwardChunks.back().m_bb = bb;
 
+			if (!bondDescriptors.empty())
+			{
+
+				int32_t chunkId, planeId;
+				chunkId = bondDescriptors[0].m_chunkId;
+				planeId = bondDescriptors[0].m_planeIndex;
+				std::vector<BondInfo> forwardChunks;
+				std::vector<BondInfo> backwardChunks;
+
+				float area = 0;
+				PxVec3 normal(0, 0, 0);
+				PxVec3 centroid(0, 0, 0);
+				int32_t collected = 0;
+				PxBounds3 bb = PxBounds3::empty();
+
+				chunkId = -1;
+				planeId = bondDescriptors[0].m_planeIndex;
+				for (uint32_t i = 0; i <= bondDescriptors.size(); ++i)
+				{
+					if (i == bondDescriptors.size() || (chunkId != bondDescriptors[i].m_chunkId || abs(planeId) != abs(bondDescriptors[i].m_planeIndex)))
+					{
+						if (chunkId != -1)
+						{
+							if (bondDescriptors[i - 1].m_planeIndex > 0) {
+								forwardChunks.push_back(BondInfo());
+								forwardChunks.back().area = area;
+								forwardChunks.back().normal = normal;
+								forwardChunks.back().centroid = centroid * (1.0f / 3.0f / collected);
+								forwardChunks.back().m_chunkId = chunkId;
+								forwardChunks.back().m_bb = bb;
+
+							}
+							else
+							{
+								backwardChunks.push_back(BondInfo());
+								backwardChunks.back().area = area;
+								backwardChunks.back().normal = normal;
+								backwardChunks.back().centroid = centroid * (1.0f / 3.0f / collected);
+								backwardChunks.back().m_chunkId = chunkId;
+								backwardChunks.back().m_bb = bb;
+							}
+						}
+						bb.setEmpty();
+						collected = 0;
+						area = 0;
+						normal = PxVec3(0, 0, 0);
+						centroid = PxVec3(0, 0, 0);
+						if (i != bondDescriptors.size())
+							chunkId = bondDescriptors[i].m_chunkId;
+					}
+					if (i == bondDescriptors.size() || abs(planeId) != abs(bondDescriptors[i].m_planeIndex))
+					{
+						for (uint32_t fchunk = 0; fchunk < forwardChunks.size(); ++fchunk)
+						{
+							if (chunkIsSupport[forwardChunks[fchunk].m_chunkId] == false)
+							{
+								continue;
+							}
+							for (uint32_t bchunk = 0; bchunk < backwardChunks.size(); ++bchunk)
+							{
+								if (weakBoundingBoxIntersection(forwardChunks[fchunk].m_bb, backwardChunks[bchunk].m_bb) == 0)
+								{
+									continue;
+								}
+								if (chunkIsSupport[backwardChunks[bchunk].m_chunkId] == false)
+								{
+									continue;
+								}
+								mResultBondDescs.push_back(NvBlastBondDesc());
+								mResultBondDescs.back().bond.area = std::min(forwardChunks[fchunk].area, backwardChunks[bchunk].area);
+								mResultBondDescs.back().bond.normal[0] = forwardChunks[fchunk].normal.x;
+								mResultBondDescs.back().bond.normal[1] = forwardChunks[fchunk].normal.y;
+								mResultBondDescs.back().bond.normal[2] = forwardChunks[fchunk].normal.z;
+
+								mResultBondDescs.back().bond.centroid[0] = (forwardChunks[fchunk].centroid.x + backwardChunks[bchunk].centroid.x) * 0.5;
+								mResultBondDescs.back().bond.centroid[1] = (forwardChunks[fchunk].centroid.y + backwardChunks[bchunk].centroid.y) * 0.5;
+								mResultBondDescs.back().bond.centroid[2] = (forwardChunks[fchunk].centroid.z + backwardChunks[bchunk].centroid.z) * 0.5;
+
+
+								mResultBondDescs.back().chunkIndices[0] = forwardChunks[fchunk].m_chunkId;
+								mResultBondDescs.back().chunkIndices[1] = backwardChunks[bchunk].m_chunkId;
+							}
+						}
+						forwardChunks.clear();
+						backwardChunks.clear();
+						if (i != bondDescriptors.size())
+						{
+							planeId = bondDescriptors[i].m_planeIndex;
 						}
 						else
 						{
-							backwardChunks.push_back(BondInfo());
-							backwardChunks.back().area = area;
-							backwardChunks.back().normal = normal;
-							backwardChunks.back().centroid = centroid * (1.0f / 3.0f / collected);
-							backwardChunks.back().m_chunkId = chunkId;
-							backwardChunks.back().m_bb = bb;
+							break;
 						}
 					}
-					bb.setEmpty();
-					collected = 0;
-					area = 0;
-					normal = PxVec3(0, 0, 0);
-					centroid = PxVec3(0, 0, 0);
-					if (i != bondDescriptors.size())
-						chunkId = bondDescriptors[i].m_chunkId;
+
+					collected++;
+					auto& trRef = trianglesBuffer[chunkId].get()[bondDescriptors[i].triangleIndex];
+					PxVec3 n = trRef.getNormal();
+					area += n.magnitude();
+					normal = n.getNormalized();
+					centroid += trRef.a.p;
+					centroid += trRef.b.p;
+					centroid += trRef.c.p;
+
+					bb.include(trRef.a.p);
+					bb.include(trRef.b.p);
+					bb.include(trRef.c.p);
 				}
-				if (i == bondDescriptors.size() || abs(planeId) != abs(bondDescriptors[i].m_planeIndex))
+			}
+
+			if (hasCreatedByIslands)
+			{
+				std::vector<Triangle> chunkTriangles;
+				std::vector<uint32_t> chunkTrianglesOffsets;
+				
+				std::set<std::pair<uint32_t, uint32_t> > pairsAlreadyCreated;
+
+				for (uint32_t i = 0; i < mResultBondDescs.size(); ++i)
 				{
-					for (uint32_t fchunk = 0; fchunk < forwardChunks.size(); ++fchunk)
-					{
-						for (uint32_t bchunk = 0; bchunk < backwardChunks.size(); ++bchunk)
-						{
-							if (weakBoundingBoxIntersection(forwardChunks[fchunk].m_bb, backwardChunks[bchunk].m_bb) == 0)
-							{
-								continue;
-							}
-							if (chunkIsSupport[forwardChunks[fchunk].m_chunkId] == false || chunkIsSupport[backwardChunks[bchunk].m_chunkId] == false)
-							{
-								continue;
-							}
-							mResultBondDescs.push_back(NvBlastBondDesc());
-							mResultBondDescs.back().bond.area = std::min(forwardChunks[fchunk].area, backwardChunks[bchunk].area);
-							mResultBondDescs.back().bond.normal[0] = forwardChunks[fchunk].normal.x;
-							mResultBondDescs.back().bond.normal[1] = forwardChunks[fchunk].normal.y;
-							mResultBondDescs.back().bond.normal[2] = forwardChunks[fchunk].normal.z;
+					auto pr = (mResultBondDescs[i].chunkIndices[0] < mResultBondDescs[i].chunkIndices[1]) ?
+						std::make_pair(mResultBondDescs[i].chunkIndices[0], mResultBondDescs[i].chunkIndices[1]) :
+						std::make_pair(mResultBondDescs[i].chunkIndices[1], mResultBondDescs[i].chunkIndices[0]);
 
-							mResultBondDescs.back().bond.centroid[0] = (forwardChunks[fchunk].centroid.x + backwardChunks[bchunk].centroid.x ) * 0.5;
-							mResultBondDescs.back().bond.centroid[1] = (forwardChunks[fchunk].centroid.y + backwardChunks[bchunk].centroid.y) * 0.5;
-							mResultBondDescs.back().bond.centroid[2] = (forwardChunks[fchunk].centroid.z + backwardChunks[bchunk].centroid.z) * 0.5;
-
-
-							mResultBondDescs.back().chunkIndices[0] = forwardChunks[fchunk].m_chunkId;
-							mResultBondDescs.back().chunkIndices[1] = backwardChunks[bchunk].m_chunkId;
-						}
-					}
-					forwardChunks.clear();
-					backwardChunks.clear();
-					if (i != bondDescriptors.size())
-					{
-						planeId = bondDescriptors[i].m_planeIndex;
-					}
-					else
-					{
-						break;
-					}
+					pairsAlreadyCreated.insert(pr);
 				}
 
-				collected++;
-				int32_t tr = bondDescriptors[i].triangleIndex;
-				PxVec3 n = trianglesBuffer[chunkId][tr].getNormal();
-				area += n.magnitude();
-				normal = n.getNormalized();
-				centroid += trianglesBuffer[chunkId][tr].a.p;
-				centroid += trianglesBuffer[chunkId][tr].b.p;
-				centroid += trianglesBuffer[chunkId][tr].c.p;
 
-				bb.include(trianglesBuffer[chunkId][tr].a.p);
-				bb.include(trianglesBuffer[chunkId][tr].b.p);
-				bb.include(trianglesBuffer[chunkId][tr].c.p);
+				chunkTrianglesOffsets.push_back(0);
+				for (uint32_t i = 0; i < chunkCount; ++i)
+				{
+					const float SCALE_FACTOR = 1.001f;
+					PxVec3 centroid(resultChunkDescriptors[i].centroid[0], resultChunkDescriptors[i].centroid[1], resultChunkDescriptors[i].centroid[2]);
+					for (uint32_t k = 0; k < trianglesCount[i]; ++k)
+					{
+						chunkTriangles.push_back(trianglesBuffer[i].get()[k]);
+
+						chunkTriangles.back().a.p = (chunkTriangles.back().a.p - centroid) * SCALE_FACTOR + centroid; // inflate mesh a bit to find 
+					}
+					chunkTrianglesOffsets.push_back(chunkTriangles.size());
+				}
+
+				NvBlastBondDesc* adsc;
+
+
+				BondGenerationConfig cfg;
+				cfg.bondMode = BondGenerationConfig::AVERAGE;
+				cfg.maxSeparation = 0.0f;
+
+				uint32_t nbListSize = createFullBondListAveraged(chunkCount, chunkTrianglesOffsets.data(), chunkTriangles.data(), nullptr, chunkIsSupport, nullptr, adsc, cfg, &pairsAlreadyCreated);
+
+				for (uint32_t i = 0; i < nbListSize; ++i)
+				{
+					mResultBondDescs.push_back(adsc[i]);
+				}
+				NVBLAST_FREE(adsc);
 			}
 
 			resultBondDescs = SAFE_ARRAY_NEW(NvBlastBondDesc, mResultBondDescs.size());

@@ -58,6 +58,14 @@
 #include <Windows.h>
 #include "tclap/CmdLine.h"
 
+
+//enable/disable memory leak detection
+//#define _CRTDBG_MAP_ALLOC 
+#ifdef _CRTDBG_MAP_ALLOC
+#include <stdlib.h> 
+#include <crtdbg.h> 
+#endif
+
 using physx::PxVec3;
 using physx::PxVec2;
 
@@ -249,6 +257,7 @@ bool initPhysX()
 		std::cerr << "Can't create Cooking" << std::endl;
 		return false;
 	}
+	
 	return true;
 }
 
@@ -342,7 +351,7 @@ int main(int argc, const char* const* argv)
 	cmd.add(interiorMatId);
 
 	TCLAP::ValueArg<unsigned char> fracturingMode("", "mode", "Fracturing mode", false, 'v',
-		"v - voronoi, c - clustered voronoi, s - slicing, p - plane cut, u - cutout.");
+		"v - voronoi, c - clustered voronoi, s - slicing, p - plane cut, u - cutout, i - chunks from islands.");
 	cmd.add(fracturingMode);
 	TCLAP::ValueArg<uint32_t> cellsCount("", "cells", "Voronoi cells count", false, 5, "by default 5");
 	cmd.add(cellsCount);
@@ -368,6 +377,9 @@ int main(int argc, const char* const* argv)
 
 	TCLAP::ValueArg<std::string> cutoutBitmapPath("", "cutoutBitmap", "Path to *.bmp file with cutout bitmap", false, ".", "by defualt empty");
 	cmd.add(cutoutBitmapPath);
+
+	TCLAP::ValueArg<uint32_t> aggregateMaxCount("", "agg", "Maximum number of collision hulls per chunk (aggregate)", false, 1, "by default 1");
+	cmd.add(aggregateMaxCount);
 
 	try
 	{
@@ -430,7 +442,7 @@ int main(int argc, const char* const* argv)
 	if (idx != std::string::npos)
 	{
 		extension = infile.substr(idx + 1);
-		std::transform(extension.begin(), extension.end(), extension.begin(), std::toupper);
+		std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c) -> unsigned char { return (unsigned char)std::toupper(c); });
 	}
 	else
 	{
@@ -487,6 +499,14 @@ int main(int argc, const char* const* argv)
 
 	uint32_t vcount = fileReader->getVerticesCount();
 
+#ifdef _CRTDBG_MAP_ALLOC
+	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
+
+	_CrtMemState _ms;
+	_CrtMemCheckpoint(&_ms);
+#endif
+	
 	if (!initPhysX())
 	{
 		std::cerr << "Failed to initialize PhysX" << std::endl;
@@ -513,9 +533,10 @@ int main(int argc, const char* const* argv)
 	mesh->setSmoothingGroup(fileReader->getSmoothingGroups());
 
 	fTool->setSourceMesh(mesh);
-	
+
 
 	SimpleRandomGenerator rng;
+	rng.seed(0);
 	Nv::Blast::VoronoiSitesGenerator* voronoiSitesGenerator = NvBlastExtAuthoringCreateVoronoiSitesGenerator(mesh, &rng);
 	if (voronoiSitesGenerator == nullptr)
 	{
@@ -527,6 +548,12 @@ int main(int argc, const char* const* argv)
 
 	switch (fracturingMode.getValue())
 	{
+		case 'i':
+		{
+			std::cout << "Generate chunks from islands..." << std::endl;
+			fTool->islandDetectionAndRemoving(0, true);
+			break;
+		}
 		case 'v':
 		{
 			std::cout << "Fracturing with Voronoi..." << std::endl;
@@ -631,10 +658,10 @@ int main(int argc, const char* const* argv)
 	Nv::Blast::BlastBondGenerator* bondGenerator = NvBlastExtAuthoringCreateBondGenerator(gCooking, &gPhysics->getPhysicsInsertionCallback());
 	Nv::Blast::ConvexMeshBuilder* collisionBuilder = NvBlastExtAuthoringCreateConvexMeshBuilder(gCooking, &gPhysics->getPhysicsInsertionCallback());
 	Nv::Blast::CollisionParams collisionParameter;
-	collisionParameter.maximumNumberOfHulls = 1;
+	collisionParameter.maximumNumberOfHulls = aggregateMaxCount.getValue() > 0 ? aggregateMaxCount.getValue() : 1;
 	collisionParameter.voxelGridResolution = 0;
 	Nv::Blast::AuthoringResult* result = NvBlastExtAuthoringProcessFracture(*fTool, *bondGenerator, *collisionBuilder, collisionParameter);
-	NvBlastTkFrameworkCreate();
+	auto tk = NvBlastTkFrameworkCreate();
 
 	collisionBuilder->release();
 	bondGenerator->release();
@@ -680,6 +707,7 @@ int main(int argc, const char* const* argv)
 	{
 		std::shared_ptr<IMeshFileWriter> fileWriter(NvBlastExtExporterCreateObjFileWriter(), [](IMeshFileWriter* p) {p->release(); });
 		if (interiorMatId.isSet() && interiorMatId.getValue() >= 0)
+		if (!fbxCollision.isSet())
 		{
 			fileWriter->setInteriorIndex(interiorMatId.getValue());
 		}
@@ -748,6 +776,23 @@ int main(int argc, const char* const* argv)
 	saveBlastData(blExpr);
 
 	result->release();
+
+	if (tk)
+	{
+		tk->release();
+	}
+	if (gCooking)
+	{
+		gCooking->release();
+	}
+	if (gPhysics)
+	{
+		gPhysics->release();
+	}
+	if (gFoundation)
+	{
+		gFoundation->release();
+	}	
 
 	std::cout << "Success!" << std::endl;
 

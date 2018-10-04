@@ -58,6 +58,9 @@ $(document).ready(function(){initNavTree('functions_s.html','');});
 <li>seed()
 : <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html#a4a29704f5d71fac5c6083be3ea883816">Nv::Blast::RandomGeneratorBase</a>
 </li>
+<li>SegmentToIndex()
+: <a class="el" href="struct_nv_1_1_blast_1_1_segment_to_index.html#ae648b740f1f16d190960cdd65613631a">Nv::Blast::SegmentToIndex</a>
+</li>
 <li>serializeIntoBuffer()
 : <a class="el" href="class_nv_1_1_blast_1_1_ext_serialization.html#adfb92a5ecbd708138d0b9f67a323be79">Nv::Blast::ExtSerialization</a>
 </li>
@@ -106,11 +109,21 @@ $(document).ready(function(){initNavTree('functions_s.html','');});
 <li>setMaterialId()
 : <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#af082c3fd4ea1badcb0263bad0682c20b">Nv::Blast::Mesh</a>
 </li>
+<li>setMesh()
+: <a class="el" href="class_nv_1_1_blast_1_1_grid.html#ac56393723ebd1d0c17ded1607af6fc58">Nv::Blast::Grid</a>
+</li>
 <li>setNodeInfo()
 : <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#a21b7a38036c0db1e7dfc9591e7d1efed">Nv::Blast::ExtStressSolver</a>
 </li>
 <li>setPlatformEnabled()
 : <a class="el" href="class_nv_1_1_blast_1_1_ext_custom_profiler.html#a326703192c1cef7196f271e6dd47bd94">Nv::Blast::ExtCustomProfiler</a>
+</li>
+<li>setPointCmpDirection()
+: <a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#ae843779ca0d8635836fbbc9a2060dfa3">Nv::Blast::BBoxBasedAccelerator</a>
+, <a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#a50b1fd58ed24a0f70cf4b6dfeefcaca1">Nv::Blast::DummyAccelerator</a>
+, <a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html#aaddc0455047474051b8cf67177594d9b">Nv::Blast::GridWalker</a>
+, <a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#a99d3cf42fe6c71caa4c827d94ca3fd4d">Nv::Blast::SpatialAccelerator</a>
+, <a class="el" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#a10d706850f97144678975742b586b500">Nv::Blast::SweepingAccelerator</a>
 </li>
 <li>setPxActorDesc()
 : <a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html#a3335adf4c2c6367d98ba41f7a5f5488b">Nv::Blast::ExtPxFamily</a>
@@ -133,6 +146,13 @@ $(document).ready(function(){initNavTree('functions_s.html','');});
 </li>
 <li>setSourceMesh()
 : <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#ac14c1ff1d50756694be24c34476af965">Nv::Blast::FractureTool</a>
+</li>
+<li>setState()
+: <a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#af0e4b076b592791356c693cc1f3e7188">Nv::Blast::BBoxBasedAccelerator</a>
+, <a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#ab4225922a3d40b80eb4be7d29162398a">Nv::Blast::DummyAccelerator</a>
+, <a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html#ab69077cc6d4d51b3d0a82d2583f7c1f5">Nv::Blast::GridWalker</a>
+, <a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#aed70b8dde16ce3c248597763f9531313">Nv::Blast::SpatialAccelerator</a>
+, <a class="el" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#a51aac4b03c7cf484967110f5f2069d47">Nv::Blast::SweepingAccelerator</a>
 </li>
 <li>setStencil()
 : <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#abf0eeed0dc2a632c85572b4026b195c2">Nv::Blast::VoronoiSitesGenerator</a>
@@ -160,6 +180,7 @@ $(document).ready(function(){initNavTree('functions_s.html','');});
 </li>
 <li>smoothingGroup
 : <a class="el" href="struct_nv_1_1_blast_1_1_facet.html#ab41a791ee0ddb9c5cb823d43c4baa19c">Nv::Blast::Facet</a>
+, <a class="el" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html#a42e142111ccadd99eccd755673e84ed8">Nv::Blast::PerTriangleAdditionalData</a>
 , <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html#ab832c1b248d12e5d6d292a10be2fe199">Nv::Blast::Triangle</a>
 , <a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#ad3aebc12ff4423d9c7dcaaadf77e7104">Nv::Blast::TriangleIndexed</a>
 </li>
@@ -169,8 +190,14 @@ $(document).ready(function(){initNavTree('functions_s.html','');});
 <li>Split
 : <a class="el" href="struct_nv_1_1_blast_1_1_tk_event.html#a13a95a0e6743fea0f0a374a3d943b07ba02c12594603837feafbdb7f02aa5f7d8">Nv::Blast::TkEvent</a>
 </li>
+<li>start
+: <a class="el" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#ac84910a5ff1379a4a1dd0082ecd8630a">Nv::Blast::BooleanResultEdge</a>
+</li>
 <li>startProcess()
 : <a class="el" href="class_nv_1_1_blast_1_1_tk_group.html#ae98b1523b3f1323c42129fe88842f306">Nv::Blast::TkGroup</a>
+</li>
+<li>status
+: <a class="el" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#ad31fb454d7eac900be5c2908c6d52f6f">Nv::Blast::FacetFacetResult</a>
 </li>
 <li>STRESS_GRAPH
 : <a class="el" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#ad0250c97326fe162fe78a2801f35ef4da1fd3b240bb76745efd8d5d3d2664cabc">Nv::Blast::ExtStressSolver</a>
@@ -221,6 +248,9 @@ $(document).ready(function(){initNavTree('functions_s.html','');});
 </li>
 <li>SupportFlag
 : <a class="el" href="struct_nv_blast_chunk_desc.html#ac5f6208f745fd4269c4a9b098297bf1ba912c6007e1f18bab5eca228701183b3c">NvBlastChunkDesc</a>
+</li>
+<li>SweepingAccelerator()
+: <a class="el" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#aedd11ecc891c00c187803dbb6edea59f">Nv::Blast::SweepingAccelerator</a>
 </li>
 <li>syncFamily()
 : <a class="el" href="class_nv_1_1_blast_1_1_ext_sync.html#a116f3536defc2e352849792b25abc91f">Nv::Blast::ExtSync</a>

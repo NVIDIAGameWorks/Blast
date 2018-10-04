@@ -70,116 +70,115 @@
 <a name="l00032"></a>00032 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_types_8h.html">NvBlastExtAuthoringTypes.h</a>"</span>
 <a name="l00033"></a>00033 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_internal_common_8h.html">NvBlastExtAuthoringInternalCommon.h</a>"</span>
 <a name="l00034"></a>00034 <span class="preprocessor">#include &lt;vector&gt;</span>
-<a name="l00035"></a>00035 <span class="preprocessor">#include &lt;map&gt;</span>
-<a name="l00036"></a>00036 <span class="preprocessor">#include "<a class="code" href="_nv_blast_types_8h.html">NvBlastTypes.h</a>"</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include "<a class="code" href="_nv_blast_types_8h.html">NvBlastTypes.h</a>"</span>
+<a name="l00036"></a>00036 
 <a name="l00037"></a>00037 
-<a name="l00038"></a>00038 
-<a name="l00039"></a>00039 <span class="keyword">namespace </span>Nv
-<a name="l00040"></a>00040 {
-<a name="l00041"></a>00041 <span class="keyword">namespace </span>Blast
-<a name="l00042"></a>00042 {
-<a name="l00043"></a>00043 
-<a name="l00044"></a>00044 <span class="keyword">class </span>Mesh;
-<a name="l00045"></a>00045 
-<a name="l00049"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">00049</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a>
-<a name="l00050"></a>00050 {
-<a name="l00051"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#42353b04c231113808fa2e78268dc50c">00051</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#13f44fd320cd2f9ed61c0209fb1d2e2d">ca</a>, <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#34718570798b8e1247f1a894e2c94ab6">cb</a>, <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#42353b04c231113808fa2e78268dc50c">ci</a>;
-<a name="l00052"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#48d2d83b59c82a9507f050286d023c25">00052</a>     <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#48d2d83b59c82a9507f050286d023c25">BooleanConf</a>(int32_t a, int32_t b, int32_t c) : <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#13f44fd320cd2f9ed61c0209fb1d2e2d">ca</a>(a), <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#34718570798b8e1247f1a894e2c94ab6">cb</a>(b), <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#42353b04c231113808fa2e78268dc50c">ci</a>(c)
-<a name="l00053"></a>00053     {
-<a name="l00054"></a>00054     }
-<a name="l00055"></a>00055 };
+<a name="l00038"></a>00038 <span class="keyword">namespace </span>Nv
+<a name="l00039"></a>00039 {
+<a name="l00040"></a>00040 <span class="keyword">namespace </span>Blast
+<a name="l00041"></a>00041 {
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043 <span class="keyword">class </span>Mesh;
+<a name="l00044"></a>00044 
+<a name="l00048"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">00048</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a>
+<a name="l00049"></a>00049 {
+<a name="l00050"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#42353b04c231113808fa2e78268dc50c">00050</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#13f44fd320cd2f9ed61c0209fb1d2e2d">ca</a>, <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#34718570798b8e1247f1a894e2c94ab6">cb</a>, <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#42353b04c231113808fa2e78268dc50c">ci</a>;
+<a name="l00051"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#48d2d83b59c82a9507f050286d023c25">00051</a>     <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#48d2d83b59c82a9507f050286d023c25">BooleanConf</a>(int32_t a, int32_t b, int32_t c) : <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#13f44fd320cd2f9ed61c0209fb1d2e2d">ca</a>(a), <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#34718570798b8e1247f1a894e2c94ab6">cb</a>(b), <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html#42353b04c231113808fa2e78268dc50c">ci</a>(c)
+<a name="l00052"></a>00052     {
+<a name="l00053"></a>00053     }
+<a name="l00054"></a>00054 };
+<a name="l00055"></a>00055 
 <a name="l00056"></a>00056 
-<a name="l00057"></a>00057 
-<a name="l00058"></a><a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html">00058</a> <span class="keyword">namespace </span>BooleanConfigurations
-<a name="l00059"></a>00059 {
-<a name="l00063"></a><a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html#737fc24c4425afc869a4862832e8e753">00063</a> <span class="keyword">inline</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> <a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html#737fc24c4425afc869a4862832e8e753">BOOLEAN_INTERSECION</a>()
-<a name="l00064"></a>00064 {
-<a name="l00065"></a>00065     <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a>(0, 0, 1);
-<a name="l00066"></a>00066 }
-<a name="l00067"></a>00067 
-<a name="l00071"></a><a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html#f60303b702a6320c067215303e1f7d4d">00071</a> <span class="keyword">inline</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> <a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html#f60303b702a6320c067215303e1f7d4d">BOOLEAN_UNION</a>()
-<a name="l00072"></a>00072 {
-<a name="l00073"></a>00073     <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a>(1, 1, -1);
-<a name="l00074"></a>00074 }
-<a name="l00078"></a><a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html#a31fac69fc5177160cc4ae79b18c44a2">00078</a> <span class="keyword">inline</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> <a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html#a31fac69fc5177160cc4ae79b18c44a2">BOOLEAN_DIFFERENCE</a>()
-<a name="l00079"></a>00079 {
-<a name="l00080"></a>00080     <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a>(1, 0, -1);
+<a name="l00057"></a><a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html">00057</a> <span class="keyword">namespace </span>BooleanConfigurations
+<a name="l00058"></a>00058 {
+<a name="l00062"></a><a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html#737fc24c4425afc869a4862832e8e753">00062</a> <span class="keyword">inline</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> <a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html#737fc24c4425afc869a4862832e8e753">BOOLEAN_INTERSECION</a>()
+<a name="l00063"></a>00063 {
+<a name="l00064"></a>00064     <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a>(0, 0, 1);
+<a name="l00065"></a>00065 }
+<a name="l00066"></a>00066 
+<a name="l00070"></a><a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html#f60303b702a6320c067215303e1f7d4d">00070</a> <span class="keyword">inline</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> <a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html#f60303b702a6320c067215303e1f7d4d">BOOLEAN_UNION</a>()
+<a name="l00071"></a>00071 {
+<a name="l00072"></a>00072     <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a>(1, 1, -1);
+<a name="l00073"></a>00073 }
+<a name="l00077"></a><a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html#a31fac69fc5177160cc4ae79b18c44a2">00077</a> <span class="keyword">inline</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> <a class="code" href="namespace_nv_1_1_blast_1_1_boolean_configurations.html#a31fac69fc5177160cc4ae79b18c44a2">BOOLEAN_DIFFERENCE</a>()
+<a name="l00078"></a>00078 {
+<a name="l00079"></a>00079     <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a>(1, 0, -1);
+<a name="l00080"></a>00080 }
 <a name="l00081"></a>00081 }
-<a name="l00082"></a>00082 }
-<a name="l00083"></a>00083 
-<a name="l00087"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html">00087</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html">EdgeFacetIntersectionData</a>
-<a name="l00088"></a>00088 {
-<a name="l00089"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#24e67b25ba307858ba36417c1a72e7a4">00089</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#24e67b25ba307858ba36417c1a72e7a4">edId</a>;
-<a name="l00090"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#9eaeac91e248bdd89a96303cdbed5640">00090</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#9eaeac91e248bdd89a96303cdbed5640">intersectionType</a>;
-<a name="l00091"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#20375aa2d317ee4763d32ecc039e0814">00091</a>     <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>  <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#20375aa2d317ee4763d32ecc039e0814">intersectionPoint</a>;
-<a name="l00092"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#04fd7acaf35a7f4647e12810efd2fc78">00092</a>     <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#04fd7acaf35a7f4647e12810efd2fc78">EdgeFacetIntersectionData</a>(int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#24e67b25ba307858ba36417c1a72e7a4">edId</a>, int32_t intersType, <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; inters) : edId(edId), <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#9eaeac91e248bdd89a96303cdbed5640">intersectionType</a>(intersType), <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#20375aa2d317ee4763d32ecc039e0814">intersectionPoint</a>(inters)
-<a name="l00093"></a>00093     {   }
-<a name="l00094"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#6dd22cefbaad1235b8835c9ac2a56676">00094</a>     <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#04fd7acaf35a7f4647e12810efd2fc78">EdgeFacetIntersectionData</a>(int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#24e67b25ba307858ba36417c1a72e7a4">edId</a>) : edId(edId)
-<a name="l00095"></a>00095     {   }
-<a name="l00096"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#f98a859db709892e788d70592ea1d43e">00096</a>     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#f98a859db709892e788d70592ea1d43e">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html">EdgeFacetIntersectionData</a>&amp; b)<span class="keyword"> const</span>
-<a name="l00097"></a>00097 <span class="keyword">    </span>{
-<a name="l00098"></a>00098         <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#24e67b25ba307858ba36417c1a72e7a4">edId</a> &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#24e67b25ba307858ba36417c1a72e7a4">edId</a>;
-<a name="l00099"></a>00099     }
-<a name="l00100"></a>00100 };
+<a name="l00082"></a>00082 
+<a name="l00086"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html">00086</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html">EdgeFacetIntersectionData</a>
+<a name="l00087"></a>00087 {
+<a name="l00088"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#24e67b25ba307858ba36417c1a72e7a4">00088</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#24e67b25ba307858ba36417c1a72e7a4">edId</a>;
+<a name="l00089"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#9eaeac91e248bdd89a96303cdbed5640">00089</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#9eaeac91e248bdd89a96303cdbed5640">intersectionType</a>;
+<a name="l00090"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#20375aa2d317ee4763d32ecc039e0814">00090</a>     <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>  <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#20375aa2d317ee4763d32ecc039e0814">intersectionPoint</a>;
+<a name="l00091"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#04fd7acaf35a7f4647e12810efd2fc78">00091</a>     <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#04fd7acaf35a7f4647e12810efd2fc78">EdgeFacetIntersectionData</a>(int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#24e67b25ba307858ba36417c1a72e7a4">edId</a>, int32_t intersType, <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; inters) : edId(edId), <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#9eaeac91e248bdd89a96303cdbed5640">intersectionType</a>(intersType), <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#20375aa2d317ee4763d32ecc039e0814">intersectionPoint</a>(inters)
+<a name="l00092"></a>00092     {   }
+<a name="l00093"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#6dd22cefbaad1235b8835c9ac2a56676">00093</a>     <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#04fd7acaf35a7f4647e12810efd2fc78">EdgeFacetIntersectionData</a>(int32_t <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#24e67b25ba307858ba36417c1a72e7a4">edId</a>) : edId(edId)
+<a name="l00094"></a>00094     {   }
+<a name="l00095"></a><a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#f98a859db709892e788d70592ea1d43e">00095</a>     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#f98a859db709892e788d70592ea1d43e">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html">EdgeFacetIntersectionData</a>&amp; b)<span class="keyword"> const</span>
+<a name="l00096"></a>00096 <span class="keyword">    </span>{
+<a name="l00097"></a>00097         <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#24e67b25ba307858ba36417c1a72e7a4">edId</a> &lt; b.<a class="code" href="struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#24e67b25ba307858ba36417c1a72e7a4">edId</a>;
+<a name="l00098"></a>00098     }
+<a name="l00099"></a>00099 };
+<a name="l00100"></a>00100 
 <a name="l00101"></a>00101 
-<a name="l00102"></a>00102 
-<a name="l00103"></a>00103 <span class="keyword">class </span>SpatialAccelerator;
-<a name="l00104"></a>00104 
-<a name="l00109"></a><a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html">00109</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html">BooleanEvaluator</a>
-<a name="l00110"></a>00110 {
-<a name="l00111"></a>00111 
-<a name="l00112"></a>00112 <span class="keyword">public</span>:
-<a name="l00113"></a>00113     <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#da4ddcd1ff90216d20d2a3fdce52f71c">BooleanEvaluator</a>();
-<a name="l00114"></a>00114     <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#c7442d45ddc3926e98f405265a1843b9">~BooleanEvaluator</a>();
-<a name="l00115"></a>00115 
-<a name="l00124"></a>00124     <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#b3cc50f37a0b4caa3cfcc112c39129ec">performBoolean</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshA, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshB, <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* spAccelA, <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* spAccelB, <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> mode);
-<a name="l00125"></a>00125 
-<a name="l00132"></a>00132     <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#b3cc50f37a0b4caa3cfcc112c39129ec">performBoolean</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshA, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshB, <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> mode);
-<a name="l00133"></a>00133 
-<a name="l00143"></a>00143     <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#156934dc1a7094dd9f835a3f64e5ad39">performFastCutting</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshA, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshB, <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* spAccelA, <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* spAccelB, <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> mode);
-<a name="l00144"></a>00144 
-<a name="l00152"></a>00152     <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#156934dc1a7094dd9f835a3f64e5ad39">performFastCutting</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshA, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshB, <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> mode);
-<a name="l00153"></a>00153 
-<a name="l00160"></a>00160     int32_t <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#009de2bf236544f4a26a5092ecc1a9cf">isPointContainedInMesh</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, <span class="keyword">const</span> physx::PxVec3&amp; point);
-<a name="l00168"></a>00168     int32_t <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#009de2bf236544f4a26a5092ecc1a9cf">isPointContainedInMesh</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* spAccel, <span class="keyword">const</span> physx::PxVec3&amp; point);
+<a name="l00102"></a>00102 <span class="keyword">class </span>SpatialAccelerator;
+<a name="l00103"></a>00103 
+<a name="l00108"></a><a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html">00108</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html">BooleanEvaluator</a>
+<a name="l00109"></a>00109 {
+<a name="l00110"></a>00110 
+<a name="l00111"></a>00111 <span class="keyword">public</span>:
+<a name="l00112"></a>00112     <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#da4ddcd1ff90216d20d2a3fdce52f71c">BooleanEvaluator</a>();
+<a name="l00113"></a>00113     <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#c7442d45ddc3926e98f405265a1843b9">~BooleanEvaluator</a>();
+<a name="l00114"></a>00114 
+<a name="l00123"></a>00123     <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#b3cc50f37a0b4caa3cfcc112c39129ec">performBoolean</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshA, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshB, <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* spAccelA, <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* spAccelB, <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> mode);
+<a name="l00124"></a>00124 
+<a name="l00131"></a>00131     <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#b3cc50f37a0b4caa3cfcc112c39129ec">performBoolean</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshA, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshB, <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> mode);
+<a name="l00132"></a>00132 
+<a name="l00142"></a>00142     <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#156934dc1a7094dd9f835a3f64e5ad39">performFastCutting</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshA, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshB, <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* spAccelA, <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* spAccelB, <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> mode);
+<a name="l00143"></a>00143 
+<a name="l00151"></a>00151     <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#156934dc1a7094dd9f835a3f64e5ad39">performFastCutting</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshA, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshB, <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> mode);
+<a name="l00152"></a>00152 
+<a name="l00159"></a>00159     int32_t <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#009de2bf236544f4a26a5092ecc1a9cf">isPointContainedInMesh</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, <span class="keyword">const</span> physx::PxVec3&amp; point);
+<a name="l00167"></a>00167     int32_t <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#009de2bf236544f4a26a5092ecc1a9cf">isPointContainedInMesh</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* spAccel, <span class="keyword">const</span> physx::PxVec3&amp; point);
+<a name="l00168"></a>00168 
 <a name="l00169"></a>00169 
-<a name="l00170"></a>00170 
-<a name="l00175"></a>00175     <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>*   <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#dcfc051a4533b68196b5a897c5f1befb">createNewMesh</a>();
-<a name="l00176"></a>00176 
-<a name="l00180"></a>00180     <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#d9ebc109718ef5a6a53098c6841c337b">reset</a>();
-<a name="l00181"></a>00181 
-<a name="l00182"></a>00182 <span class="keyword">private</span>:
-<a name="l00183"></a>00183 
-<a name="l00184"></a>00184     <span class="keywordtype">void</span>    buildFaceFaceIntersections(<a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a>);
-<a name="l00185"></a>00185     <span class="keywordtype">void</span>    buildFastFaceFaceIntersection(<a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a>);
-<a name="l00186"></a>00186     <span class="keywordtype">void</span>    collectRetainedPartsFromA(<a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> mode);
-<a name="l00187"></a>00187     <span class="keywordtype">void</span>    collectRetainedPartsFromB(<a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> mode);
-<a name="l00188"></a>00188 
-<a name="l00189"></a>00189     int32_t addIfNotExist(<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; p);
-<a name="l00190"></a>00190     <span class="keywordtype">void</span>    addEdgeIfValid(<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">EdgeWithParent</a>&amp; ed);
-<a name="l00191"></a>00191 <span class="keyword">private</span>:
-<a name="l00192"></a>00192 
-<a name="l00193"></a>00193     int32_t vertexMeshStatus03(<span class="keyword">const</span> physx::PxVec3&amp; p, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
-<a name="l00194"></a>00194     int32_t vertexMeshStatus30(<span class="keyword">const</span> physx::PxVec3&amp; p, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
-<a name="l00195"></a>00195 
-<a name="l00196"></a>00196     <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>*                                             mMeshA;
-<a name="l00197"></a>00197     <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>*                                             mMeshB;
-<a name="l00198"></a>00198 
-<a name="l00199"></a>00199     <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>*                                     mAcceleratorA;
-<a name="l00200"></a>00200     <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>*                                     mAcceleratorB;
-<a name="l00201"></a>00201 
-<a name="l00202"></a>00202     std::vector&lt;EdgeWithParent&gt;                             mEdgeAggregate;
-<a name="l00203"></a>00203     std::vector&lt;Vertex&gt;                                     mVerticesAggregate;
-<a name="l00204"></a>00204 
-<a name="l00205"></a>00205     std::vector&lt;std::vector&lt;EdgeFacetIntersectionData&gt; &gt;    mEdgeFacetIntersectionData12;
-<a name="l00206"></a>00206     std::vector&lt;std::vector&lt;EdgeFacetIntersectionData&gt; &gt;    mEdgeFacetIntersectionData21;
-<a name="l00207"></a>00207 };
-<a name="l00208"></a>00208 
-<a name="l00209"></a>00209 } <span class="comment">// namespace Blast</span>
-<a name="l00210"></a>00210 } <span class="comment">// namespace Nv</span>
+<a name="l00174"></a>00174     <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>*   <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#dcfc051a4533b68196b5a897c5f1befb">createNewMesh</a>();
+<a name="l00175"></a>00175 
+<a name="l00179"></a>00179     <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#d9ebc109718ef5a6a53098c6841c337b">reset</a>();
+<a name="l00180"></a>00180 
+<a name="l00181"></a>00181 <span class="keyword">private</span>:
+<a name="l00182"></a>00182 
+<a name="l00183"></a>00183     <span class="keywordtype">void</span>    buildFaceFaceIntersections(<a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a>);
+<a name="l00184"></a>00184     <span class="keywordtype">void</span>    buildFastFaceFaceIntersection(<a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a>);
+<a name="l00185"></a>00185     <span class="keywordtype">void</span>    collectRetainedPartsFromA(<a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> mode);
+<a name="l00186"></a>00186     <span class="keywordtype">void</span>    collectRetainedPartsFromB(<a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> mode);
+<a name="l00187"></a>00187 
+<a name="l00188"></a>00188     int32_t addIfNotExist(<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; p);
+<a name="l00189"></a>00189     <span class="keywordtype">void</span>    addEdgeIfValid(<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">EdgeWithParent</a>&amp; ed);
+<a name="l00190"></a>00190 <span class="keyword">private</span>:
+<a name="l00191"></a>00191 
+<a name="l00192"></a>00192     int32_t vertexMeshStatus03(<span class="keyword">const</span> physx::PxVec3&amp; p, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
+<a name="l00193"></a>00193     int32_t vertexMeshStatus30(<span class="keyword">const</span> physx::PxVec3&amp; p, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
+<a name="l00194"></a>00194 
+<a name="l00195"></a>00195     <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>*                                             mMeshA;
+<a name="l00196"></a>00196     <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>*                                             mMeshB;
+<a name="l00197"></a>00197 
+<a name="l00198"></a>00198     <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>*                                     mAcceleratorA;
+<a name="l00199"></a>00199     <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>*                                     mAcceleratorB;
+<a name="l00200"></a>00200 
+<a name="l00201"></a>00201     std::vector&lt;EdgeWithParent&gt;                             mEdgeAggregate;
+<a name="l00202"></a>00202     std::vector&lt;Vertex&gt;                                     mVerticesAggregate;
+<a name="l00203"></a>00203 
+<a name="l00204"></a>00204     std::vector&lt;std::vector&lt;EdgeFacetIntersectionData&gt; &gt;    mEdgeFacetIntersectionData12;
+<a name="l00205"></a>00205     std::vector&lt;std::vector&lt;EdgeFacetIntersectionData&gt; &gt;    mEdgeFacetIntersectionData21;
+<a name="l00206"></a>00206 };
+<a name="l00207"></a>00207 
+<a name="l00208"></a>00208 } <span class="comment">// namespace Blast</span>
+<a name="l00209"></a>00209 } <span class="comment">// namespace Nv</span>
+<a name="l00210"></a>00210 
 <a name="l00211"></a>00211 
-<a name="l00212"></a>00212 
-<a name="l00213"></a>00213 <span class="preprocessor">#endif // ifndef NVBLASTEXTAUTHORINGBOOLEANTOOL_H</span>
+<a name="l00212"></a>00212 <span class="preprocessor">#endif // ifndef NVBLASTEXTAUTHORINGBOOLEANTOOL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

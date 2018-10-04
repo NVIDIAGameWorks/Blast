@@ -3,6 +3,38 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Blast(tm) SDK 1.1.4 (03-Oct-2018)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Changes
+-------
+* Unity plugin example updated to work with latest Blast SDK.
+
+New Features
+------------
+* Authoring tools:
+** Island detection function islandDetectionAndRemoving has a new parameter, createAtNewDepth.
+** Bonds created between island-based chunks.
+** Added "agg" (aggregate) commandline switch to AuthoringTool.  This allows multiple convex hulls per chunk to be generated.
+** Damage pattern authoring interface.
+
+Bug fixes
+---------
+* Build working on later C++ versions (e.g. deprecated UINT32_MAX removed).
+* Authoring tools:
+** Fixed .obj material loading when obj folder is same as working directory.
+** Degenerate face generation fix. 
+* Proper memory releasing in samples.
+* Single-actor serialization bugfix when actor has world bonds.
+* Updated PhysX package for Win64 (vc14 and vc15) and Linux64 to 3.4.24990349, improving GRB behavior and fixing GRB crash/failure on Volta and Turing.
+
+Known Issues
+------------
+* Damage shaders in extensions can miss bonds if the damage volume is too small.
+* Authoring code does not use the user-defined allocator (NvBlastGlobals) exclusively.
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Blast(tm) SDK 1.1.3 (30-May-2018)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

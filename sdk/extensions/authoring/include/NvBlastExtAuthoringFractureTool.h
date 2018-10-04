@@ -46,9 +46,16 @@ class CutoutSet;
 */
 struct ChunkInfo
 {
+	enum ChunkFlags
+	{
+		NO_FLAGS = 0,
+		CREATED_BY_ISLAND_DETECTOR = 1
+	};
+
 	Mesh*	meshData;
 	int32_t	parent;
 	int32_t	chunkId;
+	uint32_t flags;
 	bool	isLeaf;
 	bool	isChanged;
 };
@@ -447,7 +454,7 @@ public:
 		\param[in] chunkId Chunk ID which should be checked for islands
 		\return Number of found islands is returned
 	*/
-	virtual int32_t									islandDetectionAndRemoving(int32_t chunkId) = 0;
+	virtual int32_t									islandDetectionAndRemoving(int32_t chunkId, bool createAtNewDepth = false) = 0;
 
 	/**
 		Check if input mesh contains open edges. Open edges can lead to wrong fracturing results.

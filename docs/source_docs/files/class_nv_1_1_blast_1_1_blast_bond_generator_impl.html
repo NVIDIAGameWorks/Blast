@@ -62,13 +62,13 @@ Inheritance diagram for Nv::Blast::BlastBondGeneratorImpl:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#70e5db62029ab29fb0dd2fbc12f13b3a">bondsFromPrefractured</a> (uint32_t meshCount, const uint32_t *convexHullOffset, const <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> **chunkHulls, const bool *chunkIsSupport, const uint32_t *meshGroups, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;resultBondDescs, float maxSeparation) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#0f0a6a64b21ae39e8c26e9745bb67051">bondsFromPrefractured</a> (uint32_t meshCount, const uint32_t *geometryOffset, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *geometry, const bool *chunkIsSupport, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;resultBondDescs, <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf=<a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>()) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#97fd9b746597ec923e2376387188a06e">bondsFromPrefractured</a> (uint32_t meshCount, const uint32_t *geometryOffset, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *geometry, const bool *chunkIsSupport, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;resultBondDescs, <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#288e9d9a7c1bcb10e15f6f3ec90ef53a">buildDescFromInternalFracture</a> (<a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> *tool, const bool *chunkIsSupport, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;resultBondDescs, <a class="el" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a> *&amp;resultChunkDescriptors) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#f3001b8eef097d8d250c844d23870f92">createBondBetweenMeshes</a> (uint32_t meshCount, const uint32_t *geometryOffset, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *geometry, uint32_t overlapsCount, const uint32_t *overlapsA, const uint32_t *overlapsB, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;resultBond, <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> cfg) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#f59b9b5522cd675bd3b5fe18cd924e05">createBondBetweenMeshes</a> (uint32_t meshACount, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *meshA, uint32_t meshBCount, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *meshB, <a class="el" href="struct_nv_blast_bond.html">NvBlastBond</a> &amp;resultBond, <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf=<a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>()) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#0d06aa62402161f1197fe1dad4801cb1">createBondBetweenMeshes</a> (uint32_t meshACount, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *meshA, uint32_t meshBCount, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *meshB, <a class="el" href="struct_nv_blast_bond.html">NvBlastBond</a> &amp;resultBond, <a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#c0deb96a81bd1db34ad1ef2f8623d64e">release</a> () override</td></tr>
 
@@ -178,7 +178,7 @@ Creates bond description for prefractured meshes, when there is no info about wh
 
 </div>
 </div><p>
-<a class="anchor" name="0f0a6a64b21ae39e8c26e9745bb67051"></a><!-- doxytag: member="Nv::Blast::BlastBondGeneratorImpl::bondsFromPrefractured" ref="0f0a6a64b21ae39e8c26e9745bb67051" args="(uint32_t meshCount, const uint32_t *geometryOffset, const Triangle *geometry, const bool *chunkIsSupport, NvBlastBondDesc *&amp;resultBondDescs, BondGenerationConfig conf=BondGenerationConfig()) override" -->
+<a class="anchor" name="97fd9b746597ec923e2376387188a06e"></a><!-- doxytag: member="Nv::Blast::BlastBondGeneratorImpl::bondsFromPrefractured" ref="97fd9b746597ec923e2376387188a06e" args="(uint32_t meshCount, const uint32_t *geometryOffset, const Triangle *geometry, const bool *chunkIsSupport, NvBlastBondDesc *&amp;resultBondDescs, BondGenerationConfig conf) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -216,7 +216,7 @@ Creates bond description for prefractured meshes, when there is no info about wh
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>&nbsp;</td>
-          <td class="paramname"> <em>conf</em> = <code><a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>()</code></td><td>&nbsp;</td>
+          <td class="paramname"> <em>conf</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -241,7 +241,7 @@ Creates bond description for prefractured meshes, when there is no info about wh
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>Number of created bonds </dd></dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#b46d8ec3bbe7968279efe6258550acd1">Nv::Blast::BlastBondGenerator</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#52733b31fdd4f8c4f10de5993d8f75d2">Nv::Blast::BlastBondGenerator</a>.</p>
 
 </div>
 </div><p>
@@ -378,7 +378,7 @@ Creates bond description between number of meshes <dl class="note" compact><dt><
 
 </div>
 </div><p>
-<a class="anchor" name="f59b9b5522cd675bd3b5fe18cd924e05"></a><!-- doxytag: member="Nv::Blast::BlastBondGeneratorImpl::createBondBetweenMeshes" ref="f59b9b5522cd675bd3b5fe18cd924e05" args="(uint32_t meshACount, const Triangle *meshA, uint32_t meshBCount, const Triangle *meshB, NvBlastBond &amp;resultBond, BondGenerationConfig conf=BondGenerationConfig()) override" -->
+<a class="anchor" name="0d06aa62402161f1197fe1dad4801cb1"></a><!-- doxytag: member="Nv::Blast::BlastBondGeneratorImpl::createBondBetweenMeshes" ref="0d06aa62402161f1197fe1dad4801cb1" args="(uint32_t meshACount, const Triangle *meshA, uint32_t meshBCount, const Triangle *meshB, NvBlastBond &amp;resultBond, BondGenerationConfig conf) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -416,7 +416,7 @@ Creates bond description between number of meshes <dl class="note" compact><dt><
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>&nbsp;</td>
-          <td class="paramname"> <em>conf</em> = <code><a class="el" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>()</code></td><td>&nbsp;</td>
+          <td class="paramname"> <em>conf</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -440,7 +440,7 @@ Creates bond description between two meshes <dl compact><dt><b>Parameters:</b></
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>0 if success </dd></dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#0a562f5a63aba0efbc7df017e77d5c8e">Nv::Blast::BlastBondGenerator</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#210b3c6cd2d759cb4f724c120beaf4ff">Nv::Blast::BlastBondGenerator</a>.</p>
 
 </div>
 </div><p>

@@ -58,6 +58,8 @@ Inheritance diagram for Nv::Blast::MeshImpl:</div>
 <a href="class_nv_1_1_blast_1_1_mesh_impl-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#805da38fdd8b669bb1a5cdc86379b20e">calcPerFacetBounds</a> () override</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">const physx::PxBounds3 &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#c2248c2993c67362e7e1723fbf7dbb1c">getBoundingBox</a> () const override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxBounds3 &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#8113b725623bcc84d6346c02b2ea1253">getBoundingBoxWritable</a> () override</td></tr>
@@ -69,6 +71,8 @@ Inheritance diagram for Nv::Blast::MeshImpl:</div>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#1590a830a4d5ec1ac62300b2cc9d6214">getEdgesWritable</a> () override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#4679ecf7db414191d152e2b79af2c2cc">getFacet</a> (int32_t facet) const override</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const physx::PxBounds3 *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#03a638a3062c430771c927af891118c1">getFacetBound</a> (uint32_t index) const override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#b930517d05cb83a73aed79788a909979">getFacetCount</a> () const override</td></tr>
 
@@ -87,6 +91,10 @@ Inheritance diagram for Nv::Blast::MeshImpl:</div>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#582a256cb35c5921d3c132d93289b16c">getVerticesWritable</a> () override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#611420e197bd938cda4c737f7543e6e0">isValid</a> () const override</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#db7618b41989c540a6bb531a5c109931">MeshImpl</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *vertices, uint32_t count, uint32_t *indices, uint32_t indexCount, void *materials, uint32_t materialStride)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#95cca1ca8188e545360b644387bed42d">MeshImpl</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *vertices, uint32_t count)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#bb43d4d66eaa32dee98acd9e1ff90fea">MeshImpl</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *vertices, const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *edges, const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> *facets, uint32_t posCount, uint32_t edgesCount, uint32_t facetsCount)</td></tr>
 
@@ -233,6 +241,88 @@ Constructs mesh object from array of facets. <dl compact><dt><b>Parameters:</b><
 
 </div>
 </div><p>
+<a class="anchor" name="95cca1ca8188e545360b644387bed42d"></a><!-- doxytag: member="Nv::Blast::MeshImpl::MeshImpl" ref="95cca1ca8188e545360b644387bed42d" args="(const Vertex *vertices, uint32_t count)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Nv::Blast::MeshImpl::MeshImpl           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *&nbsp;</td>
+          <td class="paramname"> <em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>count</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="db7618b41989c540a6bb531a5c109931"></a><!-- doxytag: member="Nv::Blast::MeshImpl::MeshImpl" ref="db7618b41989c540a6bb531a5c109931" args="(const Vertex *vertices, uint32_t count, uint32_t *indices, uint32_t indexCount, void *materials, uint32_t materialStride)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Nv::Blast::MeshImpl::MeshImpl           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *&nbsp;</td>
+          <td class="paramname"> <em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>indexCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&nbsp;</td>
+          <td class="paramname"> <em>materials</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>materialStride</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="81e38e84fbe8d618580ae5f21f174cf6"></a><!-- doxytag: member="Nv::Blast::MeshImpl::~MeshImpl" ref="81e38e84fbe8d618580ae5f21f174cf6" args="()" -->
 <div class="memitem">
 <div class="memproto">
@@ -253,6 +343,27 @@ Constructs mesh object from array of facets. <dl compact><dt><b>Parameters:</b><
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
+<a class="anchor" name="805da38fdd8b669bb1a5cdc86379b20e"></a><!-- doxytag: member="Nv::Blast::MeshImpl::calcPerFacetBounds" ref="805da38fdd8b669bb1a5cdc86379b20e" args="() override" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Nv::Blast::MeshImpl::calcPerFacetBounds           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [override, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Calculate per-facet bounding boxes. 
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#3cb47793b60f763b5bac58c17a3c5bb8">Nv::Blast::Mesh</a>.</p>
+
+</div>
+</div><p>
 <a class="anchor" name="c2248c2993c67362e7e1723fbf7dbb1c"></a><!-- doxytag: member="Nv::Blast::MeshImpl::getBoundingBox" ref="c2248c2993c67362e7e1723fbf7dbb1c" args="() const override" -->
 <div class="memitem">
 <div class="memproto">
@@ -377,6 +488,28 @@ Return pointer on edges array
 <p>
 Return writable pointer on specified facet 
 <p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#1737163f2dc8fe4456f5df27ab5740b8">Nv::Blast::Mesh</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="03a638a3062c430771c927af891118c1"></a><!-- doxytag: member="Nv::Blast::MeshImpl::getFacetBound" ref="03a638a3062c430771c927af891118c1" args="(uint32_t index) const override" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const physx::PxBounds3* Nv::Blast::MeshImpl::getFacetBound           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>index</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [override, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Get pointer on facet bounding box, if not calculated return nullptr. 
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#8129eb703f7cbd34e3937fe4938ca4bd">Nv::Blast::Mesh</a>.</p>
 
 </div>
 </div><p>
@@ -688,7 +821,7 @@ Set per-facet smoothing group.
 </div>
 </div><p>
 <hr>The documentation for this class was generated from the following file:<ul>
-<li>sdk/extensions/authoring/source/<a class="el" href="_nv_blast_ext_authoring_mesh_impl_8h-source.html">NvBlastExtAuthoringMeshImpl.h</a></ul>
+<li>sdk/extensions/authoringCommon/source/<a class="el" href="_nv_blast_ext_authoring_mesh_impl_8h-source.html">NvBlastExtAuthoringMeshImpl.h</a></ul>
 </div>
 <!-- start footer part -->
 <div class="footer">

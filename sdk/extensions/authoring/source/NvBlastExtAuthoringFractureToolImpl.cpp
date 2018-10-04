@@ -27,6 +27,7 @@
 
 #include "NvBlastExtAuthoringFractureToolImpl.h"
 #include "NvBlastExtAuthoringMeshImpl.h"
+#include "NvBlastExtAuthoringMeshUtils.h"
 
 // This warning arises when using some stl containers with older versions of VC
 // c:\program files (x86)\microsoft visual studio 12.0\vc\include\xtree(1826): warning C4702: unreachable code
@@ -133,9 +134,9 @@ void findCellBasePlanes(const std::vector<PxVec3>& sites, std::vector<std::vecto
 #define SITE_BOX_SIZE 4
 #define CUTTING_BOX_SIZE 40
 
-Mesh* getCellMesh(BooleanEvaluator& eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector<PxVec3>& sites, std::vector < std::vector<int32_t> >& neighboors, int32_t interiorMaterialId)
+Mesh* getCellMesh(BooleanEvaluator& eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector<PxVec3>& sites, std::vector < std::vector<int32_t> >& neighboors, int32_t interiorMaterialId, physx::PxVec3 origin)
 {
-	Mesh* cell = getBigBox(sites[cellId], SITE_BOX_SIZE, interiorMaterialId);
+	Mesh* cell = getBigBox(origin, SITE_BOX_SIZE, interiorMaterialId);
 	Mesh* cuttingMesh = getCuttingBox(PxVec3(0, 0, 0), PxVec3(1, 1, 1), CUTTING_BOX_SIZE, 0, interiorMaterialId);
 
 	for (uint32_t i = 0; i < neighboors[cellId].size(); ++i)
@@ -154,6 +155,7 @@ Mesh* getCellMesh(BooleanEvaluator& eval, int32_t planeIndexerOffset, int32_t ce
 		if (cell == nullptr)
 			break;
 	}
+	delete cuttingMesh;
 	return cell;
 }
 
@@ -441,7 +443,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 	std::vector<uint32_t> newlyCreatedChunksIds;
 	for (uint32_t i = 0; i < cellPoints.size(); ++i)
 	{
-		Mesh* cell = getCellMesh(eval, mPlaneIndexerOffset, i, cellPoints, neighboors, mInteriorMaterialId);
+		Mesh* cell = getCellMesh(eval, mPlaneIndexerOffset, i, cellPoints, neighboors, mInteriorMaterialId, cellPoints[i]);
 
 		if (cell == nullptr)
 		{
@@ -452,13 +454,10 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 		Mesh* resultMesh = voronoiMeshEval.createNewMesh();
 		if (resultMesh)
 		{
-			mChunkData.push_back(ChunkInfo());
-			mChunkData.back().isChanged = true;
-			mChunkData.back().isLeaf = true;
-			mChunkData.back().meshData = resultMesh;
-			mChunkData.back().parent = parentChunk;
-			mChunkData.back().chunkId = mChunkIdCounter++;
-			newlyCreatedChunksIds.push_back(mChunkData.back().chunkId);
+			uint32_t ncidx = createNewChunk(parentChunk);
+			mChunkData[ncidx].isLeaf = true;
+			mChunkData[ncidx].meshData = resultMesh;
+			newlyCreatedChunksIds.push_back(mChunkData[ncidx].chunkId);
 		}
 		eval.reset();
 		delete cell;
@@ -612,7 +611,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 
 	for (uint32_t i = 0; i < cellPoints.size(); ++i)
 	{
-		Mesh* cell = getCellMesh(eval, mPlaneIndexerOffset, i, cellPoints, neighboors, mInteriorMaterialId);
+		Mesh* cell = getCellMesh(eval, mPlaneIndexerOffset, i, cellPoints, neighboors, mInteriorMaterialId, cellPoints[i]);
 				
 		if (cell == nullptr)
 		{
@@ -632,13 +631,10 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 		Mesh* resultMesh = voronoiMeshEval.createNewMesh();
 		if (resultMesh)
 		{
-			mChunkData.push_back(ChunkInfo());
-			mChunkData.back().isLeaf = true;
-			mChunkData.back().isChanged = true;
-			mChunkData.back().meshData = resultMesh;
-			mChunkData.back().parent = parentChunk;
-			mChunkData.back().chunkId = mChunkIdCounter++;
-			newlyCreatedChunksIds.push_back(mChunkData.back().chunkId);
+			uint32_t ncidx = createNewChunk(parentChunk);
+			mChunkData[ncidx].isLeaf = true;
+			mChunkData[ncidx].meshData = resultMesh;
+			newlyCreatedChunksIds.push_back(mChunkData[ncidx].chunkId);
 		}
 		eval.reset();
 		delete cell;
@@ -711,6 +707,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 	ChunkInfo ch;
 	ch.isLeaf = true;
 	ch.isChanged = true;
+	ch.flags = ChunkInfo::NO_FLAGS;
 	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
 	std::vector<ChunkInfo> xSlicedChunks;
 	std::vector<ChunkInfo> ySlicedChunks;
@@ -898,6 +895,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 	ChunkInfo ch;
 	ch.isLeaf = true;
 	ch.isChanged = true;
+	ch.flags = ChunkInfo::NO_FLAGS;
 	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
 	std::vector<ChunkInfo> xSlicedChunks;
 	std::vector<ChunkInfo> ySlicedChunks;
@@ -1071,6 +1069,7 @@ int32_t	FractureToolImpl::cut(uint32_t chunkId, const physx::PxVec3& normal, con
 	ch.chunkId = -1;
 	ch.isLeaf = true;
 	ch.isChanged = true;
+	ch.flags = ChunkInfo::NO_FLAGS;
 	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
 	float noisyPartSize = 1.2f;
 	
@@ -1194,6 +1193,7 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 	ChunkInfo ch;
 	ch.isLeaf = true;
 	ch.isChanged = true;
+	ch.flags = ChunkInfo::NO_FLAGS;
 	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
 	std::vector<uint32_t> newlyCreatedChunksIds;
 
@@ -1489,6 +1489,7 @@ int32_t	FractureToolImpl::setChunkMesh(const Mesh* meshInput, int32_t parentId)
 	chunk.parent = parentId;
 	chunk.isLeaf = true;
 	chunk.isChanged = true;
+	chunk.flags = ChunkInfo::NO_FLAGS;
 	if ((size_t)parentId < mChunkData.size())
 	{
 		mChunkData[parentId].isLeaf = false;
@@ -1802,9 +1803,9 @@ void FractureToolImpl::setRemoveIslands(bool isRemoveIslands)
 	mRemoveIslands = isRemoveIslands;
 }
 
-int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId)
+int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool createAtNewDepth)
 {
-	if (chunkId == 0)
+	if (chunkId == 0 && createAtNewDepth == false)
 	{
 		return 0;
 	}
@@ -1935,17 +1936,32 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId)
 			}
 		}
 
-		delete mChunkData[chunkIndex].meshData;
-		mChunkData[chunkIndex].meshData = new MeshImpl(compVertices[0].data(), compEdges[0].data(), compFacets[0].data(), static_cast<uint32_t>(compVertices[0].size()),
-													static_cast<uint32_t>(compEdges[0].size()), static_cast<uint32_t>(compFacets[0].size()));;
-		for (int32_t i = 1; i < cComp; ++i)
+		if (createAtNewDepth == false || chunkId != 0)
 		{
-			mChunkData.push_back(ChunkInfo(mChunkData[chunkIndex]));
-			mChunkData.back().chunkId = mChunkIdCounter++;
-			mChunkData.back().meshData = new MeshImpl(compVertices[i].data(), compEdges[i].data(), compFacets[i].data(), static_cast<uint32_t>(compVertices[i].size()),
-													static_cast<uint32_t>(compEdges[i].size()), static_cast<uint32_t>(compFacets[i].size()));
+			delete mChunkData[chunkIndex].meshData;
+			mChunkData[chunkIndex].meshData = new MeshImpl(compVertices[0].data(), compEdges[0].data(), compFacets[0].data(), static_cast<uint32_t>(compVertices[0].size()),
+				static_cast<uint32_t>(compEdges[0].size()), static_cast<uint32_t>(compFacets[0].size()));;
+			for (int32_t i = 1; i < cComp; ++i)
+			{
+				mChunkData.push_back(ChunkInfo(mChunkData[chunkIndex]));
+				mChunkData.back().chunkId = mChunkIdCounter++;
+				mChunkData.back().meshData = new MeshImpl(compVertices[i].data(), compEdges[i].data(), compFacets[i].data(), static_cast<uint32_t>(compVertices[i].size()),
+					static_cast<uint32_t>(compEdges[i].size()), static_cast<uint32_t>(compFacets[i].size()));
+			}
 		}
-		
+		else
+		{			
+			mChunkData[chunkIndex].isLeaf = false;
+			deleteAllChildrenOfChunk(chunkId);
+			for (int32_t i = 0; i < cComp; ++i)
+			{
+				uint32_t nc = createNewChunk(chunkId);
+				mChunkData[nc].isLeaf = true;
+				mChunkData[nc].flags = ChunkInfo::CREATED_BY_ISLAND_DETECTOR;
+				mChunkData[nc].meshData = new MeshImpl(compVertices[i].data(), compEdges[i].data(), compFacets[i].data(), static_cast<uint32_t>(compVertices[i].size()),
+					static_cast<uint32_t>(compEdges[i].size()), static_cast<uint32_t>(compFacets[i].size()));
+			}
+		}		
 		return cComp;
 	}
 	return 0;
@@ -2083,6 +2099,8 @@ uint32_t FractureToolImpl::createNewChunk(uint32_t parent)
 	mChunkData.back().meshData = nullptr;
 	mChunkData.back().isLeaf = false;
 	mChunkData.back().isChanged = true;
+	mChunkData.back().flags = ChunkInfo::NO_FLAGS;
+
 	return mChunkData.size() - 1;
 }
 

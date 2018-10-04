@@ -71,6 +71,8 @@ public:
 	virtual physx::PxConvexMesh*	buildConvexMesh(uint32_t verticesCount, const physx::PxVec3* vertexData) override;
 
 	virtual physx::PxConvexMesh*	buildConvexMesh(const CollisionHull& hull) override;
+
+	virtual physx::PxConvexMesh*	buildConvexMeshRT(const Vertex* vrs, uint32_t count) override;
 	
 	virtual void					trimCollisionGeometry(uint32_t chunksCount, CollisionHull** in, const uint32_t* chunkDepth) override;
 

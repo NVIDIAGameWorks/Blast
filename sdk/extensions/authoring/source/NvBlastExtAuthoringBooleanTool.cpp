@@ -40,6 +40,7 @@ using physx::PxVec2;
 using physx::PxBounds3;
 
 
+
 namespace Nv
 {
 namespace Blast
@@ -383,7 +384,7 @@ int32_t edgesIntersection(const Vertex& eAs, const Vertex& eAe, const Vertex& eB
 	bool bShadowing = false;	
 
 	/**
-		Search for two pairs where parts of A shadows B, and where B shadows are.
+		Search for two pairs where parts of A shadows B, and where B shadows A.
 		Needed for search intersection point.
 	*/
 
@@ -785,7 +786,6 @@ void BooleanEvaluator::buildFaceFaceIntersections(BooleanConf mode)
 				{
 					statusValue = edgeFacetIntersection12(meshAPoints[fae->s], meshAPoints[fae->e], mMeshB->getVertices(), facetBEdges, facetBEdgeCount, newPointA, newPointB);
 				}
-				
 				inclusionValue = -inclusionValueEdgeFace(mode, statusValue);
 				if (inclusionValue > 0)
 				{
@@ -817,6 +817,8 @@ void BooleanEvaluator::buildFaceFaceIntersections(BooleanConf mode)
 				{
 					statusValue = edgeFacetIntersection21(meshBPoints[(fbe)->s], meshBPoints[(fbe)->e], mMeshA->getVertices(), facetAEdges, facetAEdgeCount, newPointA, newPointB);
 				}
+					
+				
 				inclusionValue = inclusionValueEdgeFace(mode, statusValue);
 				if (inclusionValue > 0)
 				{
@@ -843,14 +845,8 @@ void BooleanEvaluator::buildFaceFaceIntersections(BooleanConf mode)
 				NVBLAST_LOG_ERROR("Not equal number of starting and ending vertices! Probably input mesh has open edges.");
 				return;
 			}
-			if (retainedStarts.size() > 1)
-			{
-				comp.basePoint = compositeEndPoint - compositeStartPoint;
-				std::sort(retainedStarts.begin(), retainedStarts.end(), comp);
-				std::sort(retainedEnds.begin(), retainedEnds.end(), comp);
-			}
 			for (uint32_t rv = 0; rv < retainedStarts.size(); ++rv)
-			{
+			{				
 				newEdge.s = addIfNotExist(retainedStarts[rv].first);
 				newEdge.e = addIfNotExist(retainedEnds[rv].first);
 				newEdge.parent = facetA;
@@ -997,6 +993,7 @@ void BooleanEvaluator::collectRetainedPartsFromA(BooleanConf mode)
 			{
 				statusValue = 0;
 			}
+			
 			inclusionValue = -inclusionValue03(mode, statusValue);
 
 			if (inclusionValue > 0)
@@ -1135,6 +1132,7 @@ void BooleanEvaluator::collectRetainedPartsFromB(BooleanConf mode)
 			{
 				statusValue = 0;
 			}
+			
 			inclusionValue = -inclusionValue30(mode, statusValue);
 
 			if (inclusionValue > 0)
@@ -1232,7 +1230,7 @@ void BooleanEvaluator::collectRetainedPartsFromB(BooleanConf mode)
 		}
 		EdgeWithParent newEdge;
 		for (uint32_t rv = 0; rv < retainedStartVertices.size(); ++rv)
-		{
+		{			
 			newEdge.s = addIfNotExist(retainedStartVertices[rv]);
 			newEdge.e = addIfNotExist(retainedEndVertices[rv]);
 			newEdge.parent = facetId + mMeshA->getFacetCount();
@@ -1322,8 +1320,8 @@ Mesh* BooleanEvaluator::createNewMesh()
 	std::sort(mEdgeAggregate.begin(), mEdgeAggregate.end(), EdgeWithParentSortComp);
 	std::vector<Facet> newFacets;
 	std::vector<Edge>  newEdges(mEdgeAggregate.size());
-	int32_t lastPos = 0;
-	int32_t lastParent = mEdgeAggregate[0].parent;
+	uint32_t lastPos = 0;
+	uint32_t lastParent = mEdgeAggregate[0].parent;
 	uint32_t collected = 0;
 	int64_t userData = 0;
 	int32_t materialId = 0;
@@ -1333,7 +1331,7 @@ Mesh* BooleanEvaluator::createNewMesh()
 	{
 		if (mEdgeAggregate[i].parent != lastParent)
 		{			
-			if (lastParent < (int32_t)mMeshA->getFacetCount())
+			if (lastParent < mMeshA->getFacetCount())
 			{
 				userData = mMeshA->getFacet(lastParent)->userData;
 				materialId = mMeshA->getFacet(lastParent)->materialId;
@@ -1355,8 +1353,7 @@ Mesh* BooleanEvaluator::createNewMesh()
 		newEdges[i].s = mEdgeAggregate[i].s;
 		newEdges[i].e = mEdgeAggregate[i].e;
 	}
-	int32_t pr = lastParent - mMeshA->getFacetCount();
-	if (lastParent < (int32_t)mMeshA->getFacetCount())
+	if (lastParent < mMeshA->getFacetCount())
 	{
 		userData = mMeshA->getFacet(lastParent)->userData;
 		materialId = mMeshA->getFacet(lastParent)->materialId;
@@ -1364,6 +1361,7 @@ Mesh* BooleanEvaluator::createNewMesh()
 	}
 	else
 	{
+		uint32_t pr = lastParent - mMeshA->getFacetCount();
 		userData = mMeshB->getFacet(pr)->userData;
 		materialId = mMeshB->getFacet(pr)->materialId;
 		smoothingGroup = mMeshB->getFacet(pr)->smoothingGroup;

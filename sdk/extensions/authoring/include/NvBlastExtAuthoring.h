@@ -48,6 +48,9 @@ namespace Nv
 		class ConvexMeshBuilder;
 		class BlastBondGenerator;
 		class MeshCleaner;
+		class PatternGenerator;
+		class Grid;
+		class GridWalker;
 		struct CollisionParams;
 		struct CollisionHull;
 	}
@@ -70,6 +73,22 @@ User should call release() after usage.
 */
 NVBLAST_API Nv::Blast::Mesh* NvBlastExtAuthoringCreateMesh(const physx::PxVec3* positions, const physx::PxVec3* normals,
 	const physx::PxVec2* uv, uint32_t verticesCount, const uint32_t* indices, uint32_t indicesCount);
+
+/**
+Constructs mesh object from triangles represented as arrays of vertices, indices and per facet material.
+User should call Mesh::release() after usage.
+
+\param[in] vertices			Array for vertex positions, 3 * verticesCount floats will be read
+\param[in] verticesCount	Number of vertices in mesh
+\param[in] indices			Array of vertex indices. Indices contain vertex index triplets which form a mesh triangle.
+\param[in] indicesCount		Indices count (should be equal to numberOfTriangles * 3)
+\param[in] materials		Array of material indices per triangle. If not set default material (0) will be assigned.
+\param[in] materialStride	Stride for material indices
+
+\return pointer to Nv::Blast::Mesh if it was created succefully otherwise return nullptr
+*/
+NVBLAST_API Nv::Blast::Mesh* NvBlastExtAuthoringCreateMeshOnlyTriangles(const void* vertices, uint32_t verticesCount, 
+	uint32_t* indices, uint32_t indexCount, void* materials = nullptr, uint32_t materialStride = 4);
 
 /**
 Constructs mesh object from array of vertices, edges and facets.
@@ -249,5 +268,20 @@ NVBLAST_API uint32_t NvBlastExtAuthoringFindAssetConnectingBonds
 	NvBlastExtAssetUtilsBondDesc*& newBondDescs,
 	float maxSeparation = 0.0f
 );
+
+/**
+Returns pattern generator used for generating fracture patterns for Real Time (RT) fracture
+*/
+NVBLAST_API Nv::Blast::PatternGenerator* NvBlastExtAuthoringCreatePatternGenerator();
+
+/**
+TODO
+*/
+NVBLAST_API Nv::Blast::Grid* NvBlastExtAuthoringCreateGridAccelerator(uint32_t resolution, const Nv::Blast::Mesh* m);
+
+/**
+TODO
+*/
+NVBLAST_API Nv::Blast::GridWalker* NvBlastExtAuthoringCreateGridWalker(Nv::Blast::Grid* parent);
 
 #endif // ifndef NVBLASTAUTHORING_H

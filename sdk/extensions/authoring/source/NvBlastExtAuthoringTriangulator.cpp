@@ -534,7 +534,7 @@ void Triangulator::triangulate(const Mesh* mesh)
 		return;
 	}
 	std::vector<Edge> temp;
-	int32_t fP = mBaseMeshEdges[0].parent;
+	uint32_t fP = mBaseMeshEdges[0].parent;
 	for (uint32_t i = 0; i < mBaseMeshEdges.size(); ++i)
 	{
 		if (fP != mBaseMeshEdges[i].parent)

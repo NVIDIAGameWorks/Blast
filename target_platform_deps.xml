@@ -34,10 +34,10 @@
 	</dependency>
 
 	<dependency name="PhysX">
-		<package name="PhysX-${platform}" version="3.4.23426887.1" platforms="win.*.vc140"/>
-		<package name="PhysX-${platform}" version="3.4.23572210" platforms="win.*.vc150"/>
+		<package name="PhysX-${platform}" version="3.4.24990349" platforms="win.*.vc140"/>
+		<package name="PhysX-${platform}" version="3.4.24990349" platforms="win.*.vc150"/>
 		<package name="PhysX-${platform}" version="3.4.23426887" platforms="xboxone"/>
-		<package name="PhysX-linux64" version="3.4.23426887" platforms="linux"/>
+		<package name="PhysX-linux64" version="3.4.24990349" platforms="linux"/>
 	</dependency>
 
 	<dependency name="googletest">

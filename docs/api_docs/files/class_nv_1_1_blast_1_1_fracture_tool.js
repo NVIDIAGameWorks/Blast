@@ -19,7 +19,7 @@ var class_nv_1_1_blast_1_1_fracture_tool =
     [ "getInteriorMaterialId", "class_nv_1_1_blast_1_1_fracture_tool.html#a820000e618005f6de1cbcb56d3e54de5", null ],
     [ "getMeshOverlap", "class_nv_1_1_blast_1_1_fracture_tool.html#adc4037818bdb9424fe0543b59c1e2eac", null ],
     [ "getTransformation", "class_nv_1_1_blast_1_1_fracture_tool.html#a6bea973a4818678affb3ca13e6dc5328", null ],
-    [ "islandDetectionAndRemoving", "class_nv_1_1_blast_1_1_fracture_tool.html#a7ce2d9ab0cf8d3f03982b53bb4dc3d81", null ],
+    [ "islandDetectionAndRemoving", "class_nv_1_1_blast_1_1_fracture_tool.html#a44ad67ac96b11e7dad87b5ed7a788f21", null ],
     [ "isMeshContainOpenEdges", "class_nv_1_1_blast_1_1_fracture_tool.html#a5710c73457bcceba3f20d130e231a028", null ],
     [ "release", "class_nv_1_1_blast_1_1_fracture_tool.html#a78da4a0d726ec1b541166cd3c46df67e", null ],
     [ "replaceMaterialId", "class_nv_1_1_blast_1_1_fracture_tool.html#a78194aeece0c12c2035c79458ff49c9f", null ],

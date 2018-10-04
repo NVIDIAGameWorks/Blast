@@ -1,8 +1,8 @@
 var struct_nv_1_1_blast_1_1_edge_with_parent =
 [
     [ "EdgeWithParent", "struct_nv_1_1_blast_1_1_edge_with_parent.html#aa37d68282f0ac6ec2f5f1e277a10d04f", null ],
-    [ "EdgeWithParent", "struct_nv_1_1_blast_1_1_edge_with_parent.html#a4cc936f9767b4a0080329dea859f70c0", null ],
-    [ "e", "struct_nv_1_1_blast_1_1_edge_with_parent.html#a2861443c10d54373941fb00045ec3128", null ],
-    [ "parent", "struct_nv_1_1_blast_1_1_edge_with_parent.html#a9a4dd2c9d923708c85118f237343025d", null ],
-    [ "s", "struct_nv_1_1_blast_1_1_edge_with_parent.html#ac5f04b73b22214c41a4fde43b434888d", null ]
+    [ "EdgeWithParent", "struct_nv_1_1_blast_1_1_edge_with_parent.html#a69cbe936ff0e6145fc3f5ca804a35025", null ],
+    [ "e", "struct_nv_1_1_blast_1_1_edge_with_parent.html#ac18f86b13ce9fff59e084707e199646a", null ],
+    [ "parent", "struct_nv_1_1_blast_1_1_edge_with_parent.html#ac2356627cc0f43aaa5f417a36e1c5690", null ],
+    [ "s", "struct_nv_1_1_blast_1_1_edge_with_parent.html#a7157f6d3f264ba6158f4614285725bcf", null ]
 ];

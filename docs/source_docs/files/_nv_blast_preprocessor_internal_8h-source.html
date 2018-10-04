@@ -94,7 +94,13 @@
 <a name="l00060"></a>00060 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
 <a name="l00061"></a>00061 <span class="preprocessor"></span>
 <a name="l00062"></a>00062 
-<a name="l00063"></a>00063 <span class="preprocessor">#endif // ifndef NVBLASTPREPROCESSORINTERNAL_H</span>
+<a name="l00066"></a>00066 <span class="preprocessor">#ifndef UINT32_MAX</span>
+<a name="l00067"></a>00067 <span class="preprocessor"></span><span class="preprocessor">#include &lt;limits&gt;</span>
+<a name="l00068"></a><a class="code" href="_nv_blast_preprocessor_internal_8h.html#b5eb23180f7cc12b7d6c04a8ec067fdd">00068</a> <span class="preprocessor">#define UINT32_MAX  (std::numeric_limits&lt;uint32_t&gt;::max())</span>
+<a name="l00069"></a>00069 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00070"></a>00070 <span class="preprocessor"></span>
+<a name="l00071"></a>00071 
+<a name="l00072"></a>00072 <span class="preprocessor">#endif // ifndef NVBLASTPREPROCESSORINTERNAL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

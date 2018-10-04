@@ -5,6 +5,9 @@
 
 SET(COMMON_SOURCE_DIR ${PROJECT_SOURCE_DIR}/common)
 
+SET(AUTHORING_COMMON_EXT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/extensions/authoringCommon/source)
+SET(AUTHORING_COMMON_EXT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/extensions/authoringCommon/include)
+
 SET(AUTHORING_EXT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/extensions/authoring/source)
 SET(COMMON_EXT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/extensions/common/source)
 SET(AUTHORING_EXT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/extensions/authoring/include)
@@ -27,24 +30,23 @@ SET(PUBLIC_FILES
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringBondGenerator.h
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringCollisionBuilder.h
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringFractureTool.h
-	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringMesh.h
-	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringTypes.h
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoring.h
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringMeshCleaner.h
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringCutout.h
+	
+	${AUTHORING_COMMON_EXT_INCLUDE_DIR}/NvBlastExtAuthoringPatternGenerator.h
+	${AUTHORING_COMMON_EXT_INCLUDE_DIR}/NvBlastExtAuthoringMesh.h
+	${AUTHORING_COMMON_EXT_INCLUDE_DIR}/NvBlastExtAuthoringTypes.h
+	${AUTHORING_COMMON_EXT_INCLUDE_DIR}/NvBlastExtAuthoringAccelerator.h
 )
 
 SET(EXT_AUTHORING_FILES
-	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringAccelerator.cpp
-	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringAccelerator.h
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringBondGeneratorImpl.cpp
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringBondGeneratorImpl.h
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringBooleanTool.cpp
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringBooleanTool.h
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringCollisionBuilderImpl.cpp
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringCollisionBuilderImpl.h
-	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringMeshImpl.cpp
-	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringMeshImpl.h
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringPerlinNoise.h
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringTriangulator.cpp
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringTriangulator.h
@@ -57,12 +59,20 @@ SET(EXT_AUTHORING_FILES
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtTriangleProcessor.h
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtApexSharedParts.cpp
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtApexSharedParts.h
-	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringInternalCommon.h	
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoring.cpp
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringMeshCleanerImpl.h
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringMeshCleanerImpl.cpp
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringCutoutImpl.h
 	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringCutoutImpl.cpp
+	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringPatternGeneratorImpl.cpp
+	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringPatternGeneratorImpl.h
+	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringMeshUtils.h
+	${AUTHORING_EXT_SOURCE_DIR}/NvBlastExtAuthoringMeshUtils.cpp
+	
+	${AUTHORING_COMMON_EXT_SOURCE_DIR}/NvBlastExtAuthoringAccelerator.cpp
+	${AUTHORING_COMMON_EXT_SOURCE_DIR}/NvBlastExtAuthoringMeshImpl.cpp
+	${AUTHORING_COMMON_EXT_SOURCE_DIR}/NvBlastExtAuthoringMeshImpl.h
+	${AUTHORING_COMMON_EXT_SOURCE_DIR}/NvBlastExtAuthoringInternalCommon.h	
 )
 
 SET(VHACD_SOURCE_FILES
@@ -103,6 +113,10 @@ TARGET_INCLUDE_DIRECTORIES(NvBlastExtAuthoring
 
 	PUBLIC ${PROJECT_SOURCE_DIR}/lowlevel/include
 	PUBLIC ${AUTHORING_EXT_INCLUDE_DIR}
+	PUBLIC ${AUTHORING_COMMON_EXT_INCLUDE_DIR}
+	PRIVATE ${AUTHORING_COMMON_EXT_SOURCE_DIR}
+	
+	
 
 	PRIVATE ${PROJECT_SOURCE_DIR}/toolkit/include
 	PRIVATE ${PHYSX_EXT_INCLUDE_DIR}
@@ -113,6 +127,7 @@ TARGET_INCLUDE_DIRECTORIES(NvBlastExtAuthoring
 	PRIVATE ${AUTHORING_EXT_SOURCE_DIR}
 
 	PRIVATE ${PROJECT_SOURCE_DIR}/extensions/assetutils/include
+	PRIVATE ${PROJECT_SOURCE_DIR}/extensions/RT/source
 
 	PRIVATE ${PHYSXSDK_INCLUDE_DIRS}
 	PRIVATE ${PXSHAREDSDK_INCLUDE_DIRS}

@@ -64,6 +64,17 @@
 
 #include "imgui.h"
 
+#include <PxFoundation.h>
+
+#define SAFE_RELEASE_(p)                                                                                                \
+	{                                                                                                                  \
+		if(p)                                                                                                          \
+		{                                                                                                              \
+			(p)->release();                                                                                            \
+			(p) = NULL;                                                                                                \
+		}                                                                                                              \
+	}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //												Joint creation
@@ -138,42 +149,22 @@ void BlastController::onSampleStop()
 
 	removeAllFamilies();
 
-	m_extImpactDamageManager->release();
-	m_extPxManager->release();
+	SAFE_RELEASE_(m_extImpactDamageManager);
+	SAFE_RELEASE_(m_extPxManager);
 	SAFE_DELETE(m_eventCallback);
-
-	m_tkGroup->release();
-
-	delete m_replay;
-
-	m_tkFramework->release();
-
-	if (m_extGroupTaskManager != nullptr)
-	{
-		m_extGroupTaskManager->release();
-		m_extGroupTaskManager = nullptr;
-	}
-
-	if (m_taskManager != nullptr)
-	{
-		m_taskManager->release();
-	}
+	SAFE_RELEASE_(m_tkGroup);
+	SAFE_DELETE(m_replay);
+	SAFE_RELEASE_(m_tkFramework);
+	SAFE_RELEASE_(m_extGroupTaskManager);
+	SAFE_RELEASE_(m_taskManager);
+	SAFE_RELEASE_(m_extSerialization);
 }
 
 
 void BlastController::notifyPhysXControllerRelease()
 {
-	if (m_extGroupTaskManager != nullptr)
-	{
-		m_extGroupTaskManager->release();
-		m_extGroupTaskManager = nullptr;
-	}
-
-	if (m_taskManager != nullptr)
-	{
-		m_taskManager->release();
-		m_taskManager = nullptr;
-	}
+	SAFE_RELEASE_(m_extGroupTaskManager);
+	SAFE_RELEASE_(m_taskManager);
 }
 
 

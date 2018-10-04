@@ -60,4 +60,13 @@ Macros for more convenient logging
 #endif
 
 
+/**
+Convenience macro to replace deprecated UINT32_MAX
+*/
+#ifndef UINT32_MAX
+#include <limits>
+#define UINT32_MAX	(std::numeric_limits<uint32_t>::max())
+#endif
+
+
 #endif // ifndef NVBLASTPREPROCESSORINTERNAL_H

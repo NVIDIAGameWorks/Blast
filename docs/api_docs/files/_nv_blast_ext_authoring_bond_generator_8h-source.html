@@ -101,26 +101,29 @@
 <a name="l00102"></a>00102         <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs, <a class="code" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a>*&amp; resultChunkDescriptors) = 0;
 <a name="l00103"></a>00103 
 <a name="l00104"></a>00104 
-<a name="l00115"></a>00115     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#0a562f5a63aba0efbc7df017e77d5c8e">createBondBetweenMeshes</a>(uint32_t meshACount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* meshA, uint32_t meshBCount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* meshB, 
-<a name="l00116"></a>00116         <a class="code" href="struct_nv_blast_bond.html">NvBlastBond</a>&amp; resultBond, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf = <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>()) = 0;
+<a name="l00115"></a>00115     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#210b3c6cd2d759cb4f724c120beaf4ff">createBondBetweenMeshes</a>(uint32_t meshACount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* meshA, uint32_t meshBCount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* meshB, 
+<a name="l00116"></a>00116         <a class="code" href="struct_nv_blast_bond.html">NvBlastBond</a>&amp; resultBond, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf) = 0;
 <a name="l00117"></a>00117 
-<a name="l00132"></a>00132     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#0a562f5a63aba0efbc7df017e77d5c8e">createBondBetweenMeshes</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
+<a name="l00132"></a>00132     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#210b3c6cd2d759cb4f724c120beaf4ff">createBondBetweenMeshes</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
 <a name="l00133"></a>00133         uint32_t overlapsCount, <span class="keyword">const</span> uint32_t* overlapsA, <span class="keyword">const</span> uint32_t* overlapsB, 
 <a name="l00134"></a>00134         <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBond, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> cfg) = 0;
 <a name="l00135"></a>00135 
 <a name="l00136"></a>00136 
-<a name="l00150"></a>00150     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#b46d8ec3bbe7968279efe6258550acd1">bondsFromPrefractured</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
+<a name="l00150"></a>00150     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#52733b31fdd4f8c4f10de5993d8f75d2">bondsFromPrefractured</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
 <a name="l00151"></a>00151         <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs,
-<a name="l00152"></a>00152         <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf = <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a>()) = 0;
+<a name="l00152"></a>00152         <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf) = 0;
 <a name="l00153"></a>00153     
-<a name="l00168"></a>00168     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#b46d8ec3bbe7968279efe6258550acd1">bondsFromPrefractured</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* convexHullOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** chunkHulls,
+<a name="l00168"></a>00168     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html#52733b31fdd4f8c4f10de5993d8f75d2">bondsFromPrefractured</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* convexHullOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** chunkHulls,
 <a name="l00169"></a>00169         <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport, <span class="keyword">const</span> uint32_t* meshGroups, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs, <span class="keywordtype">float</span> maxSeparation) = 0;
-<a name="l00170"></a>00170 };
+<a name="l00170"></a>00170 
 <a name="l00171"></a>00171 
-<a name="l00172"></a>00172 }   <span class="comment">// namespace Blast</span>
-<a name="l00173"></a>00173 }   <span class="comment">// namespace Nv</span>
+<a name="l00172"></a>00172 
+<a name="l00173"></a>00173 };
 <a name="l00174"></a>00174 
-<a name="l00175"></a>00175 <span class="preprocessor">#endif // NVBLASTEXTAUTHORINGBONDGENERATOR_H</span>
+<a name="l00175"></a>00175 }   <span class="comment">// namespace Blast</span>
+<a name="l00176"></a>00176 }   <span class="comment">// namespace Nv</span>
+<a name="l00177"></a>00177 
+<a name="l00178"></a>00178 <span class="preprocessor">#endif // NVBLASTEXTAUTHORINGBONDGENERATOR_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">
