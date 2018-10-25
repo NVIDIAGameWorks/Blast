@@ -1529,6 +1529,10 @@ void FractureToolImpl::release()
 
 void FractureToolImpl::reset()
 {
+	for (uint32_t i = 0; i < mChunkPostprocessors.size(); ++i)
+	{
+		delete mChunkPostprocessors[i];
+	}
 	mChunkPostprocessors.clear();
 	for (uint32_t i = 0; i < mChunkData.size(); ++i)
 	{
