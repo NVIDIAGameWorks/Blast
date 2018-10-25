@@ -34,12 +34,11 @@ ExtPxAsset assets or *.fbx files that contain collision geometry and can be used
 <div class="fragment"><pre class="fragment">
 USAGE:
 
-   ApexImporter  [--nonskinned] [--fbxcollision] [--fbx] [--obj]
-                 [--fbxascii] [--ll] [--tk] [--px] [-d] [-m &lt;0 -
-                 EXACT, 1 - FORCED, for detailed description see
-                 docs.&gt;] -n &lt;output asset name&gt; [-o &lt;output
-                 directory&gt;] -f &lt;infile&gt; [--] [--version] [-h]
-
+   ApexImporter [--nonskinned] [--fbxcollision] [--jsoncollision]
+                [--fbx] [--obj] [--fbxascii] [--ll] [--tk] [--px] [-d]
+                [-m &lt;0 - EXACT, 1 - FORCED, for detailed description see docs.&gt;]
+                -n &lt;output asset name&gt; [-o &lt;output directory&gt;]
+                -f &lt;infile&gt; [--] [--version] [-h]
 
 Where:
 
@@ -48,6 +47,9 @@ Where:
 
    --fbxcollision
      Append collision geometry to FBX file
+
+   --jsoncollision
+     Save collision geometry to a json file
 
    --fbx
      Output a FBX mesh to the output directory

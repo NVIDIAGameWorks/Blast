@@ -3,7 +3,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Blast(tm) SDK 1.1.4 (03-Oct-2018)
+Blast(tm) SDK 1.1.4 (24-Oct-2018)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Changes
@@ -24,9 +24,11 @@ Bug fixes
 * Authoring tools:
 ** Fixed .obj material loading when obj folder is same as working directory.
 ** Degenerate face generation fix. 
+** Fixed memory leak in FractureTool.
 * Proper memory releasing in samples.
 * Single-actor serialization bugfix when actor has world bonds.
 * Updated PhysX package for Win64 (vc14 and vc15) and Linux64 to 3.4.24990349, improving GRB behavior and fixing GRB crash/failure on Volta and Turing.
+* Documented JSON collision export option introduced in previous version.
 
 Known Issues
 ------------

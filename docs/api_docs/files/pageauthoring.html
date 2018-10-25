@@ -33,23 +33,30 @@ This tool uses the Authoring Tools Extension (<a class="el" href="pageextauthori
 
 USAGE: 
 
-   AuthoringTool_x64.exe  [--ovar &lt;by default
-                            0.0&gt;] [--avar &lt;by default 0.0&gt;]
-                            [--slices &lt;by default 1 1 1&gt;]
-                            [--radius &lt;by default 1.0&gt;]
-                            [--clusters &lt;by default 5&gt;]
-                            [--cells &lt;by default 5&gt;] [--mode &lt;v
-                            - voronoi, c - clustered voronoi, s
-                            - slicing.&gt;] [--nonskinned]
-                            [--fbxcollision] [--fbx] [--obj]
-                            [--fbxascii] [--tk] [--px]
-                            [--clean] [--outputDir &lt;by default
-                            directory of the input file&gt;] [--]
-                            [--version] [-h] &lt;infile&gt; &lt;output
-                            asset name&gt;
-
+   AuthoringTool_x64 [--agg &lt;by default 1&gt;] [--cutoutBitmap &lt;by defualt empty&gt;]
+                     [--normal &lt;by default 1 0 0&gt;] [--point &lt;by default 0 0 0&gt;]
+                     [--ovar &lt;by default 0.0&gt;] [--avar &lt;by default 0.0&gt;]
+                     [--slices &lt;by default 1 1 1&gt;] [--radius &lt;by default 1.0&gt;]
+                     [--clusters &lt;by default 5&gt;] [--cells &lt;by default 5&gt;]
+                     [--mode &lt;v - voronoi, c - clustered voronoi, s - slicing,
+                       p - plane cut, u - cutout, i - chunks from islands.&gt;]
+                     [--interiorMat &lt;by default -1&gt;] [--nonskinned] [--jsoncollision]
+                     [--fbxcollision] [--fbx] [--obj] [--fbxascii] [--ll] [--tk] [--px]
+                     [--clean] [--outputDir &lt;by default directory of the input file&gt;]
+                     [--] [--version] [-h] &lt;infile&gt; &lt;output asset name&gt;
 
 Where: 
+   --agg &lt;by default 1&gt;
+     Maximum number of collision hulls per chunk (aggregate)
+
+   --cutoutBitmap &lt;by defualt empty&gt;
+     Path to *.bmp file with cutout bitmap
+
+   --normal &lt;by default 1 0 0&gt;
+     Plane surface normal
+
+   --point &lt;by default 0 0 0&gt;
+     Plane surface point
 
    --ovar &lt;by default 0.0&gt;
      Slicing offset variation
@@ -69,11 +76,19 @@ Where:
    --cells &lt;by default 5&gt;
      Voronoi cells count
 
-   --mode &lt;v - voronoi, c - clustered voronoi, s - slicing.&gt;
+   --mode &lt;v - voronoi, c - clustered voronoi, s - slicing, p - plane cut,
+      u - cutout, i - chunks from islands.&gt;
      Fracturing mode
+
+   --interiorMat &lt;by default -1&gt;
+     Use to setup interior material id, by default new material for
+     internal surface will be created.
 
    --nonskinned
      Output a non-skinned FBX file
+
+   --jsoncollision
+     Save collision geometry to a json file
 
    --fbxcollision
      Add collision geometry to FBX file
@@ -87,13 +102,15 @@ Where:
    --fbxascii
      Output FBX as an ascii file (defaults to binary output)
 
+   --ll
+     Output LL Blast (NvBlastAsset) to the .blast file in the output
+     directory.
+
    --tk
-     Output TkAsset to the .blast file in the output directory instead of
-     LL Blast asset (NvBlastAsset).
+     Output TkAsset to the .blast file in the output directory.
 
    --px
-     Output ExtPxAsset to the .blast file in the output directory instead
-     of LL Blast asset (NvBlastAsset).
+     Output ExtPxAsset to the .blast file in the output directory.
 
    --clean
      Try cleaning mesh before fracturing
@@ -115,12 +132,6 @@ Where:
 
    &lt;output asset name&gt;
      (required)  Output asset name
-
-
-   Blast SDK: Authoring Tool
-
-
-
 
 </pre></div><p>
 <br>
