@@ -15,23 +15,22 @@ Along with creating a Blast&tm; asset (*.blast), ApexImporter creates an *.obj o
 
 Blast&tm; asset data can be saved in different ways:
 
-1) LL-asset which is Low Level asset data (NvBlastAsset with --ll). 
+  1) LL-asset which is Low Level asset data (NvBlastAsset with --ll). 
 
-2) Tk-asset which is Toolkit asset data (Nv::Blast::TkAsset with --tk).
+  2) Tk-asset which is Toolkit asset data (Nv::Blast::TkAsset with --tk).
 
-3) ExtPx-asset which incorporates Blast&tm; data and collision geometry for physics engine (Nv::Blast::ExtPxAsset with --px). Default mode.
+  3) ExtPx-asset which incorporates Blast&tm; data and collision geometry for physics engine (Nv::Blast::ExtPxAsset with --px). Default mode.
 
 ExtPxAsset assets or *.fbx files that contain collision geometry and can be used in \ref pagesampleassetviewer.
 
 \verbatim
 USAGE:
 
-   ApexImporter  [--nonskinned] [--fbxcollision] [--fbx] [--obj]
-                 [--fbxascii] [--ll] [--tk] [--px] [-d] [-m <0 -
-                 EXACT, 1 - FORCED, for detailed description see
-                 docs.>] -n <output asset name> [-o <output
-                 directory>] -f <infile> [--] [--version] [-h]
-
+   ApexImporter [--nonskinned] [--fbxcollision] [--jsoncollision]
+                [--fbx] [--obj] [--fbxascii] [--ll] [--tk] [--px] [-d]
+                [-m <0 - EXACT, 1 - FORCED, for detailed description see docs.>]
+                -n <output asset name> [-o <output directory>]
+                -f <infile> [--] [--version] [-h]
 
 Where:
 
@@ -40,6 +39,9 @@ Where:
 
    --fbxcollision
      Append collision geometry to FBX file
+
+   --jsoncollision
+     Save collision geometry to a json file
 
    --fbx
      Output a FBX mesh to the output directory

@@ -194,8 +194,63 @@ namespace Nv
 		}
 
 
+		inline bool pointInsidePoly(const PxVec3& pt, const uint8_t *indices, uint16_t indexCount, const PxVec3 *verts, const PxVec3& n)
+        {
+	        int s = 0;
+	        for (uint16_t i = 0; i < indexCount; ++i)
+	        {
+		        const PxVec3 r0 = verts[indices[i]] - pt;
+		        const PxVec3 r1 = verts[indices[(i + 1) % indexCount]] - pt;
+		        const float cn = r0.cross(r1).dot(n);
+		        const int cns = cn >= 0 ? 1 : -1;
+		        if (!s)
+		        {
+			        s = cns;
+				}
+		        if (cns*s < 0)
+		        {
+			        return false;
+				}
+			}
+	        return true;
+		}
+
+		void AddPpAnchorPoints(
+			const uint8_t* indicesA, uint16_t indexCountA, const PxVec3* vertsA, const float planeA[4],
+			const uint8_t* indicesB, uint16_t indexCountB, const PxVec3* vertsB, const float planeB[4],
+			std::vector<PxVec3>& points)
+        {
+	        PxPlane pla(planeA[0], planeA[1], planeA[2], planeA[3]);
+	        PxPlane plb(planeB[0], planeB[1], planeB[2], planeB[3]);
+
+	        for (uint16_t iA = 0; iA < indexCountA; ++iA)
+	        {
+		        PxVec3 pt;
+		        if (getPlaneSegmentIntersection(plb, vertsA[indicesA[iA]], vertsA[indicesA[(iA + 1) % indexCountA]], pt))
+		        {
+			        if (pointInsidePoly(pt, indicesB, indexCountB, vertsB, plb.n))
+			        {
+				        points.push_back(pt);
+			        }
+				}
+	        }
+
+			for (uint16_t iB = 0; iB < indexCountA; ++iB)
+	        {
+		        PxVec3 pt;
+		        if (getPlaneSegmentIntersection(pla, vertsB[indicesB[iB]], vertsB[indicesA[(iB + 1) % indexCountB]], pt))
+		        {
+			        if (pointInsidePoly(pt, indicesA, indexCountA, vertsA, pla.n))
+			        {
+				        points.push_back(pt);
+			        }
+		        }
+	        }
+        }
+
+
 		float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcessor, const Triangle* mA, uint32_t mavc, const Triangle* mB, uint32_t mbvc,
-			const std::vector<PxVec3>& hull1p, const std::vector<PxVec3>& hull2p, PxVec3& normal, PxVec3& centroid, float maxSeparation)
+			const CollisionHull* hull1, const CollisionHull* hull2, const std::vector<PxVec3>& hull1p, const std::vector<PxVec3>& hull2p, PxVec3& normal, PxVec3& centroid, float maxSeparation)
 		{
 			PxBounds3 bounds;
 			PxBounds3 aBounds;
@@ -238,7 +293,9 @@ namespace Nv
 				return 0.0;
 			}
 			
-			if (separation.getDistance() > 0) // If chunks don't intersect then use midplane to produce bond, otherwise midplane can be wrong
+			const bool have_geometry = (mA != nullptr && mB != nullptr) || (hull1 != nullptr && hull2 != nullptr);
+
+			if (separation.getDistance() > 0 || !have_geometry)  // If chunks don't intersect then use midplane to produce bond, otherwise midplane can be wrong (only if we have geometry)
 			{
 				// Build first plane interface
 				PxPlane midplane = separation.plane;
@@ -299,14 +356,31 @@ namespace Nv
 
 				std::vector<PxVec3> intersectionAnchors;
 
-
-				for (uint32_t i = 0; i < mavc; ++i)
-				{
-					for (uint32_t j = 0; j < mbvc; ++j)
+				if (mA != nullptr && mB != nullptr)	// Use triangles
+		        {
+					for (uint32_t i = 0; i < mavc; ++i)
 					{
-						AddTtAnchorPoints(mA + i, mB + j, intersectionAnchors);
+						for (uint32_t j = 0; j < mbvc; ++j)
+						{
+							AddTtAnchorPoints(mA + i, mB + j, intersectionAnchors);
+						}
 					}
 				}
+		        else  // Use hulls
+		        {
+			        for (uint32_t i1 = 0; i1 < hull1->polygonDataCount; ++i1)
+			        {
+				        CollisionHull::HullPolygon& poly1 = hull1->polygonData[i1];
+				        for (uint32_t i2 = 0; i2 < hull2->polygonDataCount; ++i2)
+				        {
+					        CollisionHull::HullPolygon& poly2 = hull2->polygonData[i2];
+					        AddPpAnchorPoints(
+								reinterpret_cast<uint8_t*>(hull1->indices) + poly1.mIndexBase, poly1.mNbVerts, hull1->points, poly1.mPlane,
+								reinterpret_cast<uint8_t*>(hull2->indices) + poly2.mIndexBase, poly2.mNbVerts, hull2->points, poly2.mPlane,
+								intersectionAnchors);
+				        }
+			        }
+		        }
 
 				PxVec3 lcoid(0, 0, 0);
 				for (uint32_t i = 0; i < intersectionAnchors.size(); ++i)
@@ -513,8 +587,12 @@ namespace Nv
 							PxVec3 normal;
 							PxVec3 centroid;
 
-							float area = processWithMidplanes(&trProcessor, geometry + geometryOffset[i], geometryOffset[i + 1] - geometryOffset[i],
-								geometry + geometryOffset[j], geometryOffset[j + 1] - geometryOffset[j], hullPoints[i][ihull], hullPoints[j][jhull], normal, centroid, conf.maxSeparation);
+							float area = processWithMidplanes(&trProcessor,
+								geometry ? geometry + geometryOffset[i] : nullptr, geometryOffset[i + 1] - geometryOffset[i],
+								geometry ? geometry + geometryOffset[j] : nullptr, geometryOffset[j + 1] - geometryOffset[j],
+					            geometry ? nullptr : chunkHulls[geometryOffset[i] + ihull],
+					            geometry ? nullptr : chunkHulls[geometryOffset[j] + jhull],
+								hullPoints[i][ihull], hullPoints[j][jhull], normal, centroid, conf.maxSeparation);
 
 							if (area > 0)
 							{

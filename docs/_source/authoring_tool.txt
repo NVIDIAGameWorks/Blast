@@ -11,7 +11,7 @@ Additionally, the user can choose how Blast&tm; data should be saved (in .blast 
 
   2) Tk-asset which is Toolkit asset data (Nv::Blast::TkAsset).
 
-	3) ExtPx-asset which incorporates Blast&tm; data and collision geometry for physics engine (Nv::Blast::ExtPxAsset). 
+  3) ExtPx-asset which incorporates Blast&tm; data and collision geometry for physics engine (Nv::Blast::ExtPxAsset). 
 
 .blast and .obj files may be consumed by the \ref pagesampleassetviewer.
 
@@ -24,23 +24,30 @@ This tool uses the Authoring Tools Extension (\ref pageextauthoring).  Therefore
 
 USAGE: 
 
-   AuthoringTool_x64.exe  [--ovar <by default
-                            0.0>] [--avar <by default 0.0>]
-                            [--slices <by default 1 1 1>]
-                            [--radius <by default 1.0>]
-                            [--clusters <by default 5>]
-                            [--cells <by default 5>] [--mode <v
-                            - voronoi, c - clustered voronoi, s
-                            - slicing.>] [--nonskinned]
-                            [--fbxcollision] [--fbx] [--obj]
-                            [--fbxascii] [--tk] [--px]
-                            [--clean] [--outputDir <by default
-                            directory of the input file>] [--]
-                            [--version] [-h] <infile> <output
-                            asset name>
-
+   AuthoringTool_x64 [--agg <by default 1>] [--cutoutBitmap <by defualt empty>]
+                     [--normal <by default 1 0 0>] [--point <by default 0 0 0>]
+                     [--ovar <by default 0.0>] [--avar <by default 0.0>]
+                     [--slices <by default 1 1 1>] [--radius <by default 1.0>]
+                     [--clusters <by default 5>] [--cells <by default 5>]
+                     [--mode <v - voronoi, c - clustered voronoi, s - slicing,
+                       p - plane cut, u - cutout, i - chunks from islands.>]
+                     [--interiorMat <by default -1>] [--nonskinned] [--jsoncollision]
+                     [--fbxcollision] [--fbx] [--obj] [--fbxascii] [--ll] [--tk] [--px]
+                     [--clean] [--outputDir <by default directory of the input file>]
+                     [--] [--version] [-h] <infile> <output asset name>
 
 Where: 
+   --agg <by default 1>
+     Maximum number of collision hulls per chunk (aggregate)
+
+   --cutoutBitmap <by defualt empty>
+     Path to *.bmp file with cutout bitmap
+
+   --normal <by default 1 0 0>
+     Plane surface normal
+
+   --point <by default 0 0 0>
+     Plane surface point
 
    --ovar <by default 0.0>
      Slicing offset variation
@@ -60,11 +67,19 @@ Where:
    --cells <by default 5>
      Voronoi cells count
 
-   --mode <v - voronoi, c - clustered voronoi, s - slicing.>
+   --mode <v - voronoi, c - clustered voronoi, s - slicing, p - plane cut,
+      u - cutout, i - chunks from islands.>
      Fracturing mode
+
+   --interiorMat <by default -1>
+     Use to setup interior material id, by default new material for
+     internal surface will be created.
 
    --nonskinned
      Output a non-skinned FBX file
+
+   --jsoncollision
+     Save collision geometry to a json file
 
    --fbxcollision
      Add collision geometry to FBX file
@@ -78,13 +93,15 @@ Where:
    --fbxascii
      Output FBX as an ascii file (defaults to binary output)
 
+   --ll
+     Output LL Blast (NvBlastAsset) to the .blast file in the output
+     directory.
+
    --tk
-     Output TkAsset to the .blast file in the output directory instead of
-     LL Blast asset (NvBlastAsset).
+     Output TkAsset to the .blast file in the output directory.
 
    --px
-     Output ExtPxAsset to the .blast file in the output directory instead
-     of LL Blast asset (NvBlastAsset).
+     Output ExtPxAsset to the .blast file in the output directory.
 
    --clean
      Try cleaning mesh before fracturing
@@ -106,12 +123,6 @@ Where:
 
    <output asset name>
      (required)  Output asset name
-
-
-   Blast SDK: Authoring Tool
-
-
-
 
 \endverbatim
 
