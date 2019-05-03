@@ -70,6 +70,8 @@
 <tr><td colspan="2"><br><h2>Static Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_ext_px_manager.html">ExtPxManager</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_manager.html#887cfcc5831c53fe1e1f81e84be41a55">create</a> (physx::PxPhysics &amp;physics, <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> &amp;framework, <a class="el" href="namespace_nv_1_1_blast.html#6a12664dba0567a600473d48d62a7e86">ExtPxCreateJointFunction</a> createFn=nullptr, bool useUserData=true)</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_nv_1_1_blast_1_1_ext_px_collision_builder.html">ExtPxCollisionBuilder</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_manager.html#12296d50356db4664959dc3ea414dd9c">createCollisionBuilder</a> (physx::PxPhysics &amp;physics, physx::PxCooking &amp;cooking)</td></tr>
+
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Physics Manager.<p>
@@ -139,12 +141,42 @@ Create a new <a class="el" href="class_nv_1_1_blast_1_1_ext_px_manager.html">Ext
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>physics</em>&nbsp;</td><td>The PxPhysics instance to be used by <a class="el" href="class_nv_1_1_blast_1_1_ext_px_manager.html">ExtPxManager</a>. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>framework</em>&nbsp;</td><td>The <a class="el" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a> instance to be used by <a class="el" href="class_nv_1_1_blast_1_1_ext_px_manager.html">ExtPxManager</a>. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>cooking</em>&nbsp;</td><td>The optional PxCooking. Required for collision builder. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>createFn</em>&nbsp;</td><td>The function to be used when creating joints, can be nullptr. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>useUserData</em>&nbsp;</td><td>Flag if <a class="el" href="class_nv_1_1_blast_1_1_ext_px_manager.html">ExtPxManager</a> is allowed to override PxActor's userData, it will store pointer to PxActor there. It is recommended as fastest way. If set to 'false' HashMap will be used.</td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>the new <a class="el" href="class_nv_1_1_blast_1_1_ext_px_manager.html">ExtPxManager</a> if successful, NULL otherwise. </dd></dl>
 
+</div>
+</div><p>
+<a class="anchor" name="12296d50356db4664959dc3ea414dd9c"></a><!-- doxytag: member="Nv::Blast::ExtPxManager::createCollisionBuilder" ref="12296d50356db4664959dc3ea414dd9c" args="(physx::PxPhysics &amp;physics, physx::PxCooking &amp;cooking)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="class_nv_1_1_blast_1_1_ext_px_collision_builder.html">ExtPxCollisionBuilder</a>* Nv::Blast::ExtPxManager::createCollisionBuilder           </td>
+          <td>(</td>
+          <td class="paramtype">physx::PxPhysics &amp;&nbsp;</td>
+          <td class="paramname"> <em>physics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">physx::PxCooking &amp;&nbsp;</td>
+          <td class="paramname"> <em>cooking</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [static]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Create PhysX based convex mesh builder. 
 </div>
 </div><p>
 <a class="anchor" name="4f76548a36265c068f6080cde0ef674a"></a><!-- doxytag: member="Nv::Blast::ExtPxManager::createFamily" ref="4f76548a36265c068f6080cde0ef674a" args="(const ExtPxFamilyDesc &amp;desc)=0" -->

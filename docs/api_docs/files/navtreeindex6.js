@@ -1,10 +1,5 @@
 var NAVTREEINDEX6 =
 {
-"struct_nv_blast_graph_shader_actor.html#ae890e417040d5998f4b6a0bc7a317aec":[3,0,27,12],
-"struct_nv_blast_graph_shader_actor.html#aeb7929bcf27fd95c49fdd5bd8909a9b9":[3,0,27,6],
-"struct_nv_blast_graph_shader_actor.html#aebb7e8d55ddf8cb2ef71326632952cfe":[3,0,27,4],
-"struct_nv_blast_i_d.html":[3,0,28],
-"struct_nv_blast_i_d.html#ae7f7abc9562d83d9537f6c876f4c04e8":[3,0,28,0],
 "struct_nv_blast_message.html":[3,0,29],
 "struct_nv_blast_message.html#aa131d1cdff39661ffe961fa4c24742ce":[3,0,29,0],
 "struct_nv_blast_message.html#aa131d1cdff39661ffe961fa4c24742cea1ea5042557bdaca500e32f93c538695a":[3,0,29,0,3],

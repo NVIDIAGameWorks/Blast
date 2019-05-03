@@ -46,11 +46,6 @@ class FbxFileReader : public IFbxFileReader
 {
 	struct CollisionHullImpl : public Nv::Blast::CollisionHull
 	{
-		void release() override
-		{
-			delete this;
-		}
-
 		//copy from existing
 		CollisionHullImpl(const CollisionHullImpl& other) : CollisionHullImpl()
 		{
@@ -76,7 +71,9 @@ class FbxFileReader : public IFbxFileReader
 		{
 			if (&other != this)
 			{
-				release();
+				delete[] points;
+				delete[] indices;
+				delete[] polygonData;
 				copyFrom(other);
 			}
 			return *this;
@@ -116,9 +113,9 @@ class FbxFileReader : public IFbxFileReader
 			pointsCount = other.pointsCount;
 			indicesCount = other.indicesCount;
 			polygonDataCount = other.polygonDataCount;
-			points = new physx::PxVec3[pointsCount];
+			points = new NvcVec3[pointsCount];
 			indices = new uint32_t[indicesCount];
-			polygonData = new Nv::Blast::CollisionHull::HullPolygon[polygonDataCount];
+			polygonData = new Nv::Blast::HullPolygon[polygonDataCount];
 			memcpy(points, other.points, sizeof(points[0]) * pointsCount);
 			memcpy(indices, other.indices, sizeof(indices[0]) * indicesCount);
 			memcpy(polygonData, other.polygonData, sizeof(polygonData[0]) * polygonDataCount);
@@ -163,15 +160,15 @@ public:
 	/**
 	Get loaded vertex positions
 	*/
-	virtual physx::PxVec3* getPositionArray() override;
+	virtual NvcVec3* getPositionArray() override;
 	/**
 	Get loaded vertex normals
 	*/
-	virtual physx::PxVec3* getNormalsArray() override;
+	virtual NvcVec3* getNormalsArray() override;
 	/**
 	Get loaded vertex uv-coordinates
 	*/
-	virtual physx::PxVec2* getUvArray() override;
+	virtual NvcVec2* getUvArray() override;
 	/**
 	Get loaded triangle indices
 	*/
@@ -203,9 +200,9 @@ private:
 	std::vector<CollisionHullImpl> mHulls;
 	std::vector<uint32_t> mVertexToContainingChunkMap;
 	std::multimap<uint32_t, FbxNode*> mCollisionNodes;
-	std::vector<physx::PxVec3> mVertexPositions;
-	std::vector<physx::PxVec3> mVertexNormals;
-	std::vector<physx::PxVec2> mVertexUv;
+	std::vector<NvcVec3> mVertexPositions;
+	std::vector<NvcVec3> mVertexNormals;
+	std::vector<NvcVec2> mVertexUv;
 	std::vector<uint32_t> mIndices;
 	std::vector<int32_t> mSmoothingGroups;
 	std::vector<int32_t> mMaterialIds;

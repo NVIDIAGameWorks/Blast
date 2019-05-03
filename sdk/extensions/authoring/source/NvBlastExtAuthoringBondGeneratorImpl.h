@@ -31,9 +31,8 @@
 
 #include "NvBlastExtAuthoringBondGenerator.h"
 #include "NvBlastExtAuthoringFractureTool.h"
-#include "../cooking/PxCooking.h"
 #include <PxPlane.h>
-#include <NvBlastExtAuthoringCollisionBuilder.h>
+#include <NvBlastExtAuthoringConvexMeshBuilder.h>
 #include <vector>
 #include <set>
 
@@ -50,8 +49,8 @@ class BlastBondGeneratorImpl : public BlastBondGenerator
 {
 public:	
 				
-	BlastBondGeneratorImpl(physx::PxCooking* cooking, physx::PxPhysicsInsertionCallback* insertionCallback) 
-		: mPxCooking(cooking), mPxInsertionCallback(insertionCallback) {};
+	BlastBondGeneratorImpl(ConvexMeshBuilder* builder) 
+		: mConvexMeshBuilder(builder) {};
 
 	virtual void release() override;
 
@@ -91,9 +90,7 @@ private:
 	void	buildGeometryCache(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry);
 	void	resetGeometryCache();
 
-	physx::PxCooking*							mPxCooking;
-	physx::PxPhysicsInsertionCallback*			mPxInsertionCallback;
-
+	ConvexMeshBuilder*							mConvexMeshBuilder;
 
 	std::vector<std::vector<Triangle> >			mGeometryCache;
 

@@ -14,6 +14,9 @@ var dir_673153f269f589af3aeefcbbd4a0ee52 =
       [ "ExtPxSubchunk", "struct_nv_1_1_blast_1_1_ext_px_subchunk.html", "struct_nv_1_1_blast_1_1_ext_px_subchunk" ],
       [ "SubchunkDesc", "struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html", "struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc" ]
     ] ],
+    [ "NvBlastExtPxCollisionBuilder.h", "_nv_blast_ext_px_collision_builder_8h.html", [
+      [ "ExtPxCollisionBuilder", "class_nv_1_1_blast_1_1_ext_px_collision_builder.html", "class_nv_1_1_blast_1_1_ext_px_collision_builder" ]
+    ] ],
     [ "NvBlastExtPxFamily.h", "_nv_blast_ext_px_family_8h.html", [
       [ "ExtPxActorDescTemplate", "struct_nv_1_1_blast_1_1_ext_px_actor_desc_template.html", "struct_nv_1_1_blast_1_1_ext_px_actor_desc_template" ],
       [ "ExtPxFamily", "class_nv_1_1_blast_1_1_ext_px_family.html", "class_nv_1_1_blast_1_1_ext_px_family" ],

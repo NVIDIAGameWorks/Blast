@@ -42,26 +42,39 @@ class Mesh;
 class CutoutSet;
 
 /*
-	Chunk data, chunk with chunkId == 0 is always source mesh.
+    Chunk data, chunk with chunkId == 0 is always source mesh.
 */
 struct ChunkInfo
 {
 	enum ChunkFlags
 	{
-		NO_FLAGS = 0,
+		NO_FLAGS                   = 0,
 		CREATED_BY_ISLAND_DETECTOR = 1
 	};
 
-	Mesh*	meshData;
-	int32_t	parent;
-	int32_t	chunkId;
+	Mesh* meshData;
+	int32_t parent;
+	int32_t chunkId;
 	uint32_t flags;
-	bool	isLeaf;
-	bool	isChanged;
+	bool isLeaf;
+	bool isChanged;
+};
+
+/**
+    Abstract base class for user-defined random value generator.
+*/
+class RandomGeneratorBase
+{
+  public:
+	// Generates uniformly distributed value in [0, 1] range.
+	virtual float getRandomValue() = 0;
+	// Seeds random value generator
+	virtual void seed(int32_t seed) = 0;
+	virtual ~RandomGeneratorBase(){};
 };
 
 /*
-	Noise fracturing configuration for chunks's faces
+    Noise fracturing configuration for chunks's faces
 */
 struct NoiseConfiguration
 {
@@ -70,12 +83,12 @@ struct NoiseConfiguration
 
 	Amplitude of cutting surface noise. If it is 0 - noise is disabled.
 	*/
-	float	amplitude = 0.f;
+	float amplitude = 0.f;
 
 	/**
 	Frequencey of cutting surface noise.
 	*/
-	float	frequency = 1.f;
+	float frequency = 1.f;
 
 	/**
 	Octave number in slicing surface noise.
@@ -85,65 +98,67 @@ struct NoiseConfiguration
 	/**
 	Sampling interval for surface grid.
 	*/
-	physx::PxVec3 samplingInterval = physx::PxVec3(1.f);
+	NvcVec3 samplingInterval = { 1, 1, 1 };
 };
 
 /*
-	Slicing fracturing configuration
+    Slicing fracturing configuration
 */
 struct SlicingConfiguration
 {
 	/**
-		Number of slices in each direction
+	    Number of slices in each direction
 	*/
-	int32_t	x_slices = 1, y_slices = 1, z_slices = 1;
+	int32_t x_slices = 1, y_slices = 1, z_slices = 1;
 
 	/**
-		Offset variation, value in [0, 1]
+	    Offset variation, value in [0, 1]
 	*/
-	float	offset_variations = 0.f;
+	float offset_variations = 0.f;
 
 	/**
-		Angle variation, value in [0, 1]
+	    Angle variation, value in [0, 1]
 	*/
-	float	angle_variations = 0.f;
+	float angle_variations = 0.f;
 
 	/*
-		Noise parameters for faces between sliced chunks
+	    Noise parameters for faces between sliced chunks
 	*/
 	NoiseConfiguration noise;
 };
 
 /**
-	Cutout fracturing configuration
+    Cutout fracturing configuration
 */
 struct CutoutConfiguration
 {
 	/**
-		Set of grouped convex loop patterns for cutout in normal direction.
-		Not required for PLANE_ONLY mode
+	    Set of grouped convex loop patterns for cutout in normal direction.
+	    Not required for PLANE_ONLY mode
 	*/
 	CutoutSet* cutoutSet = nullptr;
 
 	/**
-		Transform for initial pattern position and orientation.
-		By default 2d pattern lies in XY plane (Y is up) the center of pattern is (0, 0)
+	    Transform for initial pattern position and orientation.
+	    By default 2d pattern lies in XY plane (Y is up) the center of pattern is (0, 0)
 	*/
-	physx::PxTransform transform = physx::PxTransform(physx::PxIdentity);
+	NvcTransform transform = {{0, 0, 0, 1}, {0, 0, 0}};
 
 	/**
-		Scale for pattern. Unscaled pattern has size (1, 1).
-		For negative scale pattern will be placed at the center of chunk and scaled with max distance between points of its AABB
+	    Scale for pattern. Unscaled pattern has size (1, 1).
+	    For negative scale pattern will be placed at the center of chunk and scaled with max distance between points of
+	   its AABB
 	*/
-	physx::PxVec2 scale = physx::PxVec2(-1, -1);
+	NvcVec2 scale = { -1, -1 };
 
 	/**
-		Conic aperture in degree, for cylindric cutout set it to 0.
+	    Conic aperture in degree, for cylindric cutout set it to 0.
 	*/
 	float aperture = 0.f;
 
 	/**
-		If relative transform is set - position will be displacement vector from chunk's center. Otherwise from global origin.
+	    If relative transform is set - position will be displacement vector from chunk's center. Otherwise from global
+	   origin.
 	*/
 	bool isRelativeTransform = true;
 
@@ -153,347 +168,361 @@ struct CutoutConfiguration
 	bool useSmoothing = false;
 
 	/**
-		Noise parameters for cutout surface, see NoiseConfiguration.
+	    Noise parameters for cutout surface, see NoiseConfiguration.
 	*/
 	NoiseConfiguration noise;
 };
 
 /**
-	Class for voronoi sites generation inside supplied mesh.
+    Class for voronoi sites generation inside supplied mesh.
 */
 class VoronoiSitesGenerator
 {
-public:
+  public:
 	virtual ~VoronoiSitesGenerator() {}
 
 	/**
-		Release VoronoiSitesGenerator memory
+	    Release VoronoiSitesGenerator memory
 	*/
-	virtual void						release() = 0;
+	virtual void release() = 0;
 
 	/**
-		Set base fracture mesh
+	    Set base fracture mesh
 	*/
-	virtual void						setBaseMesh(const Mesh* mesh) = 0;
+	virtual void setBaseMesh(const Mesh* mesh) = 0;
 
 	/**
-		Access to generated voronoi sites.
-		\param[out]				Pointer to generated voronoi sites
-		\return					Count of generated voronoi sites.
+	    Access to generated voronoi sites.
+	    \param[out]				Pointer to generated voronoi sites
+	    \return					Count of generated voronoi sites.
 	*/
-	virtual uint32_t					getVoronoiSites(const physx::PxVec3*& sites) = 0;
-	
-	/**
-		Add site in particular point
-		\param[in] site		Site coordinates
-	*/
-	virtual void						addSite(const physx::PxVec3& site) = 0;
-	/**
-		Uniformly generate sites inside the mesh
-		\param[in] numberOfSites	Number of generated sites
-	*/
-	virtual void						uniformlyGenerateSitesInMesh(uint32_t numberOfSites) = 0;
+	virtual uint32_t getVoronoiSites(const NvcVec3*& sites) = 0;
 
 	/**
-		Generate sites in clustered fashion
-		\param[in] numberOfClusters	Number of generated clusters
-		\param[in] sitesPerCluster	Number of sites in each cluster
-		\param[in] clusterRadius	Voronoi cells cluster radius
+	    Add site in particular point
+	    \param[in] site		Site coordinates
 	*/
-	virtual void						clusteredSitesGeneration(uint32_t numberOfClusters, uint32_t sitesPerCluster, float clusterRadius) = 0;
+	virtual void addSite(const NvcVec3& site) = 0;
+	/**
+	    Uniformly generate sites inside the mesh
+	    \param[in] numberOfSites	Number of generated sites
+	*/
+	virtual void uniformlyGenerateSitesInMesh(uint32_t numberOfSites) = 0;
 
 	/**
-		Radial pattern of sites generation
-		\param[in] center		Center of generated pattern
-		\param[in] normal		Normal to plane in which sites are generated
-		\param[in] radius		Pattern radius
-		\param[in] angularSteps	Number of angular steps
-		\param[in] radialSteps	Number of radial steps
-		\param[in] angleOffset	Angle offset at each radial step
-		\param[in] variability	Randomness of sites distribution 
+	    Generate sites in clustered fashion
+	    \param[in] numberOfClusters	Number of generated clusters
+	    \param[in] sitesPerCluster	Number of sites in each cluster
+	    \param[in] clusterRadius	Voronoi cells cluster radius
 	*/
-	virtual void						radialPattern(const physx::PxVec3& center, const physx::PxVec3& normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset = 0.0f, float variability = 0.0f) = 0;
+	virtual void clusteredSitesGeneration(uint32_t numberOfClusters, uint32_t sitesPerCluster, float clusterRadius) = 0;
 
 	/**
-		Generate sites inside sphere
-		\param[in] count		Count of generated sites
-		\param[in] radius		Radius of sphere
-		\param[in] center		Center of sphere
+	    Radial pattern of sites generation
+	    \param[in] center		Center of generated pattern
+	    \param[in] normal		Normal to plane in which sites are generated
+	    \param[in] radius		Pattern radius
+	    \param[in] angularSteps	Number of angular steps
+	    \param[in] radialSteps	Number of radial steps
+	    \param[in] angleOffset	Angle offset at each radial step
+	    \param[in] variability	Randomness of sites distribution
 	*/
-	virtual void						generateInSphere(const uint32_t count, const float radius, const physx::PxVec3& center) = 0;
+	virtual void radialPattern(const NvcVec3& center, const NvcVec3& normal, float radius, int32_t angularSteps,
+	                           int32_t radialSteps, float angleOffset = 0.0f, float variability = 0.0f) = 0;
 
 	/**
-		Set stencil mesh. With stencil mesh sites are generated only inside both of fracture and stencil meshes. 
-		\param[in] stencil		Stencil mesh.
+	    Generate sites inside sphere
+	    \param[in] count		Count of generated sites
+	    \param[in] radius		Radius of sphere
+	    \param[in] center		Center of sphere
 	*/
-	virtual void						setStencil(const Mesh* stencil) = 0;
+	virtual void generateInSphere(const uint32_t count, const float radius, const NvcVec3& center) = 0;
 
 	/**
-		Removes stencil mesh
+	    Set stencil mesh. With stencil mesh sites are generated only inside both of fracture and stencil meshes.
+	    \param[in] stencil		Stencil mesh.
 	*/
-	virtual void						clearStencil() = 0;
+	virtual void setStencil(const Mesh* stencil) = 0;
 
-	/** 
-		Deletes sites inside supplied sphere
-		\param[in] radius				Radius of sphere
-		\param[in] center				Center of sphere
-		\param[in] eraserProbability	Probability of removing some particular site
+	/**
+	    Removes stencil mesh
 	*/
-	virtual void						deleteInSphere(const float radius, const physx::PxVec3& center, const float eraserProbability = 1) = 0;
+	virtual void clearStencil() = 0;
+
+	/**
+	    Deletes sites inside supplied sphere
+	    \param[in] radius				Radius of sphere
+	    \param[in] center				Center of sphere
+	    \param[in] eraserProbability	Probability of removing some particular site
+	*/
+	virtual void deleteInSphere(const float radius, const NvcVec3& center, const float eraserProbability = 1) = 0;
 };
 
 /**
-	FractureTool class provides methods to fracture provided mesh and generate Blast asset data
+    FractureTool class provides methods to fracture provided mesh and generate Blast asset data
 */
 class FractureTool
 {
 
-public:
+  public:
 	virtual ~FractureTool() {}
 
 	/**
-		Release FractureTool memory
+	    Release FractureTool memory
 	*/
-	virtual void									release() = 0;
+	virtual void release() = 0;
 
 	/**
-		Reset FractureTool state.
+	    Reset FractureTool state.
 	*/
-	virtual void									reset() = 0;
-	
-	
-	/**
-		Set input mesh which will be fractured, FractureTool will be reseted.
-	*/
-	virtual void									setSourceMesh(const Mesh* mesh) = 0;
+	virtual void reset() = 0;
+
 
 	/**
-		Set chunk mesh, parentId should be valid, return id of new chunk.
+	    Set input mesh which will be fractured, FractureTool will be reseted.
 	*/
-	virtual int32_t									setChunkMesh(const Mesh* mesh, int32_t parentId) = 0;
+	virtual void setSourceMesh(const Mesh* mesh) = 0;
 
 	/**
-	Set the material id to use for new interior faces. Defaults to MATERIAL_INTERIOR
+	    Set chunk mesh, parentId should be valid, return id of new chunk.
 	*/
-	virtual void									setInteriorMaterialId(int32_t materialId) = 0;
+	virtual int32_t setChunkMesh(const Mesh* mesh, int32_t parentId) = 0;
+
+	/**
+	Set the material id to use for new interior faces. Defaults to kMaterialInteriorId
+	*/
+	virtual void setInteriorMaterialId(int32_t materialId) = 0;
 
 	/**
 	Gets the material id to use for new interior faces
 	*/
-	virtual int32_t									getInteriorMaterialId() const = 0;
+	virtual int32_t getInteriorMaterialId() const = 0;
 
 	/**
 	Replaces an material id on faces with a new one
 	*/
-	virtual void									replaceMaterialId(int32_t oldMaterialId, int32_t newMaterialId) = 0;
+	virtual void replaceMaterialId(int32_t oldMaterialId, int32_t newMaterialId) = 0;
 
 	/**
-		Get chunk mesh in polygonal representation. User's code should release it after usage.
+	    Get chunk mesh in polygonal representation. User's code should release it after usage.
 	*/
-	virtual Mesh*									createChunkMesh(int32_t chunkId) = 0;
+	virtual Mesh* createChunkMesh(int32_t chunkId) = 0;
 
 	/**
-		Input mesh is scaled and transformed internally to fit unit cube centered in origin.
-		Method provides offset vector and scale parameter;
+	    Input mesh is scaled and transformed internally to fit unit cube centered in origin.
+	    Method provides offset vector and scale parameter;
 	*/
-	virtual void									getTransformation(physx::PxVec3& offset, float& scale) = 0;
-
-
-	/**
-		Fractures specified chunk with voronoi method.
-		\param[in] chunkId				Chunk to fracture
-		\param[in] cellPoints			Array of voronoi sites
-		\param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them.
-										Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
-		\return   If 0, fracturing is successful.
-	*/
-	virtual int32_t									voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3* cellPoints, bool replaceChunk) = 0;
-
-	/**
-		Fractures specified chunk with voronoi method. Cells can be scaled along x,y,z axes.
-		\param[in] chunkId				Chunk to fracture
-		\param[in] cellPoints			Array of voronoi sites
-		\param[in] cellPoints			Array of voronoi sites
-		\param[in] scale				Voronoi cells scaling factor
-		\param[in] rotation				Voronoi cells rotation. Has no effect without cells scale factor
-		\param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them.
-									    Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
-		\return   If 0, fracturing is successful.
-	*/
-	virtual int32_t									voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3* cellPoints, const physx::PxVec3& scale, const physx::PxQuat& rotation, bool replaceChunk) = 0;
+	virtual void getTransformation(NvcVec3& offset, float& scale) = 0;
 
 
 	/**
-		Fractures specified chunk with slicing method.
-		\param[in] chunkId				Chunk to fracture
-		\param[in] conf					Slicing parameters, see SlicingConfiguration.
-		\param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them.
-										Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
-		\param[in] rnd					User supplied random number generator
-
-		\return   If 0, fracturing is successful.
+	    Fractures specified chunk with voronoi method.
+	    \param[in] chunkId				Chunk to fracture
+	    \param[in] cellPoints			Array of voronoi sites
+	    \param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly
+	   generated chunks will be at next depth level, source chunk will be parent for them. Case replaceChunk == true &&
+	   chunkId == 0 considered as wrong input parameters \return   If 0, fracturing is successful.
 	*/
-	virtual int32_t									slicing(uint32_t chunkId, const SlicingConfiguration& conf, bool replaceChunk, RandomGeneratorBase* rnd) = 0;
+	virtual int32_t
+	voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const NvcVec3* cellPoints, bool replaceChunk) = 0;
 
 	/**
-		Cut chunk with plane.
-		\param[in] chunkId				Chunk to fracture
-		\param[in] normal				Plane normal
-		\param[in] position				Point on plane
-		\param[in] noise				Noise configuration for plane-chunk intersection, see NoiseConfiguration.
-		\param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them.
-		Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
-		\param[in] rnd					User supplied random number generator
-
-		\return   If 0, fracturing is successful.
+	    Fractures specified chunk with voronoi method. Cells can be scaled along x,y,z axes.
+	    \param[in] chunkId				Chunk to fracture
+	    \param[in] cellPoints			Array of voronoi sites
+	    \param[in] cellPoints			Array of voronoi sites
+	    \param[in] scale				Voronoi cells scaling factor
+	    \param[in] rotation				Voronoi cells rotation. Has no effect without cells scale factor
+	    \param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly
+	   generated chunks will be at next depth level, source chunk will be parent for them. Case replaceChunk == true &&
+	   chunkId == 0 considered as wrong input parameters \return   If 0, fracturing is successful.
 	*/
-	virtual int32_t									cut(uint32_t chunkId, const physx::PxVec3& normal, const physx::PxVec3& position, const NoiseConfiguration& noise, bool replaceChunk, RandomGeneratorBase* rnd) = 0;
-
-	/**
-		Cutout fracture for specified chunk.
-		\param[in] chunkId				Chunk to fracture
-		\param[in] conf					Cutout parameters, see CutoutConfiguration.
-		\param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly generated chunks will be at next depth level, source chunk will be parent for them.
-										Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
-		\param[in] rnd					User supplied random number generator
-
-		\return   If 0, fracturing is successful.
-	*/
-	virtual int32_t									cutout(uint32_t chunkId, CutoutConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd) = 0;
+	virtual int32_t voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const NvcVec3* cellPoints,
+	                                  const NvcVec3& scale, const NvcQuat& rotation, bool replaceChunk) = 0;
 
 
 	/**
-		Creates resulting fractured mesh geometry from intermediate format
+	    Fractures specified chunk with slicing method.
+	    \param[in] chunkId				Chunk to fracture
+	    \param[in] conf					Slicing parameters, see SlicingConfiguration.
+	    \param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly
+	   generated chunks will be at next depth level, source chunk will be parent for them. Case replaceChunk == true &&
+	   chunkId == 0 considered as wrong input parameters \param[in] rnd					User supplied random number
+	   generator
+
+	    \return   If 0, fracturing is successful.
 	*/
-	virtual void									finalizeFracturing() = 0;
-	
-	/**
-		Returns overall number of chunks in fracture.
-	*/
-	virtual uint32_t								getChunkCount() const = 0;
+	virtual int32_t
+	slicing(uint32_t chunkId, const SlicingConfiguration& conf, bool replaceChunk, RandomGeneratorBase* rnd) = 0;
 
 	/**
-		Get chunk information
+	    Cut chunk with plane.
+	    \param[in] chunkId				Chunk to fracture
+	    \param[in] normal				Plane normal
+	    \param[in] position				Point on plane
+	    \param[in] noise				Noise configuration for plane-chunk intersection, see NoiseConfiguration.
+	    \param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly
+	   generated chunks will be at next depth level, source chunk will be parent for them. Case replaceChunk == true &&
+	   chunkId == 0 considered as wrong input parameters \param[in] rnd					User supplied random number
+	   generator
+
+	    \return   If 0, fracturing is successful.
 	*/
-	virtual const ChunkInfo&    					getChunkInfo(int32_t chunkIndex) = 0;
+	virtual int32_t cut(uint32_t chunkId, const NvcVec3& normal, const NvcVec3& position,
+	                    const NoiseConfiguration& noise, bool replaceChunk, RandomGeneratorBase* rnd) = 0;
 
 	/**
-		Get percentage of mesh overlap.
-		percentage computed as volume(intersection(meshA , meshB)) / volume (meshA) 
-		\param[in] meshA Mesh A
-		\param[in] meshB Mesh B
-		\return mesh overlap percentage
+	    Cutout fracture for specified chunk.
+	    \param[in] chunkId				Chunk to fracture
+	    \param[in] conf					Cutout parameters, see CutoutConfiguration.
+	    \param[in] replaceChunk			if 'true', newly generated chunks will replace source chunk, if 'false', newly
+	   generated chunks will be at next depth level, source chunk will be parent for them. Case replaceChunk == true &&
+	   chunkId == 0 considered as wrong input parameters \param[in] rnd					User supplied random number
+	   generator
+
+	    \return   If 0, fracturing is successful.
 	*/
-	virtual float									getMeshOverlap(const Mesh& meshA, const Mesh& meshB) = 0;
+	virtual int32_t cutout(uint32_t chunkId, CutoutConfiguration conf, bool replaceChunk, RandomGeneratorBase* rnd) = 0;
+
 
 	/**
-		Get chunk base mesh
-		\param[in] chunkIndex Chunk index
-		\param[out] output Array of triangles to be filled
-		\return number of triangles in base mesh
+	    Creates resulting fractured mesh geometry from intermediate format
 	*/
-	virtual uint32_t								getBaseMesh(int32_t chunkIndex, Triangle*& output) = 0;
+	virtual void finalizeFracturing() = 0;
 
 	/**
-		Update chunk base mesh
-		\note Doesn't allocates output array, Triangle* output should be preallocated by user
-		\param[in] chunkIndex Chunk index
-		\param[out] output Array of triangles to be filled
-		\return number of triangles in base mesh
+	    Returns overall number of chunks in fracture.
 	*/
-	virtual uint32_t								updateBaseMesh(int32_t chunkIndex, Triangle* output) = 0;
+	virtual uint32_t getChunkCount() const = 0;
 
 	/**
-		Return index of chunk with specified chunkId
-		\param[in] chunkId Chunk ID
-		\return Chunk index in internal buffer, if not exist -1 is returned.
+	    Get chunk information
 	*/
-	virtual int32_t									getChunkIndex(int32_t chunkId) = 0;
+	virtual const ChunkInfo& getChunkInfo(int32_t chunkIndex) = 0;
 
 	/**
-		Return id of chunk with specified index.
-		\param[in] chunkIndex Chunk index
-		\return Chunk id or -1 if there is no such chunk.
+	    Get percentage of mesh overlap.
+	    percentage computed as volume(intersection(meshA , meshB)) / volume (meshA)
+	    \param[in] meshA Mesh A
+	    \param[in] meshB Mesh B
+	    \return mesh overlap percentage
 	*/
-	virtual int32_t									getChunkId(int32_t chunkIndex) = 0;
+	virtual float getMeshOverlap(const Mesh& meshA, const Mesh& meshB) = 0;
 
 	/**
-		Return depth level of the given chunk
-		\param[in] chunkId Chunk ID
-		\return Chunk depth or -1 if there is no such chunk.
+	    Get chunk base mesh
+	    \param[in] chunkIndex Chunk index
+	    \param[out] output Array of triangles to be filled
+	    \return number of triangles in base mesh
 	*/
-	virtual int32_t									getChunkDepth(int32_t chunkId) = 0;
+	virtual uint32_t getBaseMesh(int32_t chunkIndex, Triangle*& output) = 0;
 
 	/**
-		Return array of chunks IDs with given depth.
-		\param[in]  depth Chunk depth
-		\param[out] Pointer to array of chunk IDs
-		\return Number of chunks in array
+	    Update chunk base mesh
+	    \note Doesn't allocates output array, Triangle* output should be preallocated by user
+	    \param[in] chunkIndex Chunk index
+	    \param[out] output Array of triangles to be filled
+	    \return number of triangles in base mesh
 	*/
-	virtual uint32_t								getChunksIdAtDepth(uint32_t depth, int32_t*& chunkIds) = 0;
+	virtual uint32_t updateBaseMesh(int32_t chunkIndex, Triangle* output) = 0;
 
 	/**
-		Get result geometry without noise as vertex and index buffers, where index buffers contain series of triplets
-		which represent triangles.
-		\param[out] vertexBuffer Array of vertices to be filled
-		\param[out] indexBuffer Array of indices to be filled
-		\param[out] indexBufferOffsets Array of offsets in indexBuffer for each base mesh. 
-					Contains getChunkCount() + 1 elements. Last one is indexBuffer size
-		\return Number of vertices in vertexBuffer
+	    Return index of chunk with specified chunkId
+	    \param[in] chunkId Chunk ID
+	    \return Chunk index in internal buffer, if not exist -1 is returned.
 	*/
-	virtual uint32_t								getBufferedBaseMeshes(Vertex*& vertexBuffer, uint32_t*& indexBuffer, uint32_t*& indexBufferOffsets) = 0;
+	virtual int32_t getChunkIndex(int32_t chunkId) = 0;
 
 	/**
-		Set automatic islands removing. May cause instabilities.
-		\param[in] isRemoveIslands Flag whether remove or not islands.
+	    Return id of chunk with specified index.
+	    \param[in] chunkIndex Chunk index
+	    \return Chunk id or -1 if there is no such chunk.
 	*/
-	virtual void									setRemoveIslands(bool isRemoveIslands) = 0;
+	virtual int32_t getChunkId(int32_t chunkIndex) = 0;
 
 	/**
-		Try find islands and remove them on some specifical chunk. If chunk has childs, island removing can lead to wrong results! Apply it before further chunk splitting.
-		\param[in] chunkId Chunk ID which should be checked for islands
-		\return Number of found islands is returned
+	    Return depth level of the given chunk
+	    \param[in] chunkId Chunk ID
+	    \return Chunk depth or -1 if there is no such chunk.
 	*/
-	virtual int32_t									islandDetectionAndRemoving(int32_t chunkId, bool createAtNewDepth = false) = 0;
+	virtual int32_t getChunkDepth(int32_t chunkId) = 0;
 
 	/**
-		Check if input mesh contains open edges. Open edges can lead to wrong fracturing results.
-		\return true if mesh contains open edges
+	    Return array of chunks IDs with given depth.
+	    \param[in]  depth Chunk depth
+	    \param[out] Pointer to array of chunk IDs
+	    \return Number of chunks in array
 	*/
-	virtual bool									isMeshContainOpenEdges(const Mesh* input) = 0;
+	virtual uint32_t getChunksIdAtDepth(uint32_t depth, int32_t*& chunkIds) = 0;
 
 	/**
-		Delete all children for specified chunk (also recursively delete chidren of children).
-		\param[in] chunkId Chunk ID which children should be deleted
-		\return true if one or more chunks were removed
+	    Get result geometry without noise as vertex and index buffers, where index buffers contain series of triplets
+	    which represent triangles.
+	    \param[out] vertexBuffer Array of vertices to be filled
+	    \param[out] indexBuffer Array of indices to be filled
+	    \param[out] indexBufferOffsets Array of offsets in indexBuffer for each base mesh.
+	                Contains getChunkCount() + 1 elements. Last one is indexBuffer size
+	    \return Number of vertices in vertexBuffer
 	*/
-	virtual bool									deleteAllChildrenOfChunk(int32_t chunkId) = 0;
+	virtual uint32_t
+	getBufferedBaseMeshes(Vertex*& vertexBuffer, uint32_t*& indexBuffer, uint32_t*& indexBufferOffsets) = 0;
 
 	/**
-		Optimize chunk hierarhy for better runtime performance. 
-		It tries to unite chunks to groups of some size in order to transform flat hierarchy (all chunks are children of single root) 
-		to tree like hieracrhy with limited number of children for each chunk.
-		\param[in] maxAtLevel	If number of children of some chunk less then maxAtLevel then it would be considered as already optimized and skipped.
-		\param[in] maxGroupSize	Max number of children for processed chunks.
+	    Set automatic islands removing. May cause instabilities.
+	    \param[in] isRemoveIslands Flag whether remove or not islands.
 	*/
-	virtual void									uniteChunks(uint32_t maxAtLevel, uint32_t maxGroupSize) = 0;
+	virtual void setRemoveIslands(bool isRemoveIslands) = 0;
 
 	/**
-		Rescale interior uv coordinates of given chunk to fit square of given size.
-		\param[in] side Size of square side
-		\param[in] chunkId Chunk ID for which UVs should be scaled.
+	    Try find islands and remove them on some specifical chunk. If chunk has childs, island removing can lead to
+	   wrong results! Apply it before further chunk splitting. \param[in] chunkId Chunk ID which should be checked for
+	   islands \return Number of found islands is returned
 	*/
-	virtual void									fitUvToRect(float side, uint32_t chunkId) = 0;
+	virtual int32_t islandDetectionAndRemoving(int32_t chunkId, bool createAtNewDepth = false) = 0;
 
 	/**
-		Rescale interior uv coordinates of all existing chunks to fit square of given size, relative sizes will be preserved.
-		\param[in] side Size of square side
+	    Check if input mesh contains open edges. Open edges can lead to wrong fracturing results.
+	    \return true if mesh contains open edges
 	*/
-	virtual void									fitAllUvToRect(float side) = 0;
+	virtual bool isMeshContainOpenEdges(const Mesh* input) = 0;
 
+	/**
+	    Delete all children for specified chunk (also recursively delete chidren of children).
+	    \param[in] chunkId Chunk ID which children should be deleted
+	    \return true if one or more chunks were removed
+	*/
+	virtual bool deleteAllChildrenOfChunk(int32_t chunkId) = 0;
+
+	/**
+	    Optimize chunk hierarhy for better runtime performance.
+	    It tries to unite chunks to groups of some size in order to transform flat hierarchy (all chunks are children of
+	    single root) to tree like hieracrhy with limited number of children for each chunk.
+        \param[in] maxAtLevel	If number of children of some chunk less then maxAtLevel then it would be considered as already
+            optimized and skipped.
+        \param[in] maxGroupSize Max number of children for processed chunks. \param[in] removeOriginalChunks.
+        \param[in] adjChunks    Optional index pairs to describe chunk adjacency.  May be NULL.
+        \param[in] adjChunksSize If 'adjChunks' is not NULL, the number of index pairs in the adjChunks array.
+        \param[in] removeOriginalChunks If true, original chunks that are merged are removed.
+	*/
+	virtual void uniteChunks(uint32_t maxAtLevel, uint32_t maxGroupSize,
+                             const NvcVec2i* adjChunks, uint32_t adjChunksSize,
+	                         bool removeOriginalChunks = false) = 0;
+
+	/**
+	    Rescale interior uv coordinates of given chunk to fit square of given size.
+	    \param[in] side Size of square side
+	    \param[in] chunkId Chunk ID for which UVs should be scaled.
+	*/
+	virtual void fitUvToRect(float side, uint32_t chunkId) = 0;
+
+	/**
+	    Rescale interior uv coordinates of all existing chunks to fit square of given size, relative sizes will be
+	   preserved. \param[in] side Size of square side
+	*/
+	virtual void fitAllUvToRect(float side) = 0;
 };
 
-} // namespace Blast
-} // namespace Nv
+}  // namespace Blast
+}  // namespace Nv
 
-#endif // ifndef NVBLASTAUTHORINGFRACTURETOOL_H
+#endif  // ifndef NVBLASTAUTHORINGFRACTURETOOL_H

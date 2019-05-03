@@ -69,80 +69,77 @@
 <a name="l00031"></a>00031 <span class="preprocessor"></span>
 <a name="l00032"></a>00032 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_bond_generator_8h.html">NvBlastExtAuthoringBondGenerator.h</a>"</span>
 <a name="l00033"></a>00033 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_fracture_tool_8h.html">NvBlastExtAuthoringFractureTool.h</a>"</span>
-<a name="l00034"></a>00034 <span class="preprocessor">#include "../cooking/PxCooking.h"</span>
-<a name="l00035"></a>00035 <span class="preprocessor">#include &lt;PxPlane.h&gt;</span>
-<a name="l00036"></a>00036 <span class="preprocessor">#include &lt;<a class="code" href="_nv_blast_ext_authoring_collision_builder_8h.html">NvBlastExtAuthoringCollisionBuilder.h</a>&gt;</span>
-<a name="l00037"></a>00037 <span class="preprocessor">#include &lt;vector&gt;</span>
-<a name="l00038"></a>00038 <span class="preprocessor">#include &lt;set&gt;</span>
-<a name="l00039"></a>00039 
-<a name="l00040"></a>00040 <span class="keyword">namespace </span>Nv
-<a name="l00041"></a>00041 {
-<a name="l00042"></a>00042 <span class="keyword">namespace </span>Blast
-<a name="l00043"></a>00043 {
-<a name="l00044"></a>00044 
-<a name="l00049"></a><a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html">00049</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html">BlastBondGeneratorImpl</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">BlastBondGenerator</a>
-<a name="l00050"></a>00050 {
-<a name="l00051"></a>00051 <span class="keyword">public</span>: 
-<a name="l00052"></a>00052                 
-<a name="l00053"></a><a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#1af682e9c503ff6f1a9dd25621c94163">00053</a>     <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#1af682e9c503ff6f1a9dd25621c94163">BlastBondGeneratorImpl</a>(physx::PxCooking* cooking, physx::PxPhysicsInsertionCallback* insertionCallback) 
-<a name="l00054"></a>00054         : mPxCooking(cooking), mPxInsertionCallback(insertionCallback) {};
-<a name="l00055"></a>00055 
-<a name="l00056"></a>00056     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#c0deb96a81bd1db34ad1ef2f8623d64e">release</a>() <span class="keyword">override</span>;
-<a name="l00057"></a>00057 
-<a name="l00058"></a>00058     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#288e9d9a7c1bcb10e15f6f3ec90ef53a">buildDescFromInternalFracture</a>(<a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a>* tool, <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport,
-<a name="l00059"></a>00059         <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs, <a class="code" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a>*&amp; resultChunkDescriptors)  <span class="keyword">override</span>;
-<a name="l00060"></a>00060 
-<a name="l00061"></a>00061     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#0d06aa62402161f1197fe1dad4801cb1">createBondBetweenMeshes</a>(uint32_t meshACount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* meshA, uint32_t meshBCount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* meshB,
-<a name="l00062"></a>00062         <a class="code" href="struct_nv_blast_bond.html">NvBlastBond</a>&amp; resultBond, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf) <span class="keyword">override</span>;
-<a name="l00063"></a>00063 
-<a name="l00064"></a>00064     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#0d06aa62402161f1197fe1dad4801cb1">createBondBetweenMeshes</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
-<a name="l00065"></a>00065         uint32_t overlapsCount, <span class="keyword">const</span> uint32_t* overlapsA, <span class="keyword">const</span> uint32_t* overlapsB,
-<a name="l00066"></a>00066         <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBond, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> cfg) <span class="keyword">override</span>;
-<a name="l00067"></a>00067 
-<a name="l00068"></a>00068     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#97fd9b746597ec923e2376387188a06e">bondsFromPrefractured</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
-<a name="l00069"></a>00069         <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs,
-<a name="l00070"></a>00070         <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf) <span class="keyword">override</span>;
-<a name="l00071"></a>00071 
-<a name="l00072"></a>00072     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#97fd9b746597ec923e2376387188a06e">bondsFromPrefractured</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* convexHullOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** chunkHulls,
-<a name="l00073"></a>00073         <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport, <span class="keyword">const</span> uint32_t* meshGroups, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs, <span class="keywordtype">float</span> maxSeparation) <span class="keyword">override</span>;
+<a name="l00034"></a>00034 <span class="preprocessor">#include &lt;PxPlane.h&gt;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &lt;<a class="code" href="_nv_blast_ext_authoring_convex_mesh_builder_8h.html">NvBlastExtAuthoringConvexMeshBuilder.h</a>&gt;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &lt;vector&gt;</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include &lt;set&gt;</span>
+<a name="l00038"></a>00038 
+<a name="l00039"></a>00039 <span class="keyword">namespace </span>Nv
+<a name="l00040"></a>00040 {
+<a name="l00041"></a>00041 <span class="keyword">namespace </span>Blast
+<a name="l00042"></a>00042 {
+<a name="l00043"></a>00043 
+<a name="l00048"></a><a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html">00048</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html">BlastBondGeneratorImpl</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">BlastBondGenerator</a>
+<a name="l00049"></a>00049 {
+<a name="l00050"></a>00050 <span class="keyword">public</span>: 
+<a name="l00051"></a>00051                 
+<a name="l00052"></a><a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#2a98b914a7559d4e07ea9d324cdbf1a3">00052</a>     <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#2a98b914a7559d4e07ea9d324cdbf1a3">BlastBondGeneratorImpl</a>(<a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">ConvexMeshBuilder</a>* builder) 
+<a name="l00053"></a>00053         : mConvexMeshBuilder(builder) {};
+<a name="l00054"></a>00054 
+<a name="l00055"></a>00055     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#c0deb96a81bd1db34ad1ef2f8623d64e">release</a>() <span class="keyword">override</span>;
+<a name="l00056"></a>00056 
+<a name="l00057"></a>00057     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#288e9d9a7c1bcb10e15f6f3ec90ef53a">buildDescFromInternalFracture</a>(<a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a>* tool, <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport,
+<a name="l00058"></a>00058         <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs, <a class="code" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a>*&amp; resultChunkDescriptors)  <span class="keyword">override</span>;
+<a name="l00059"></a>00059 
+<a name="l00060"></a>00060     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#0d06aa62402161f1197fe1dad4801cb1">createBondBetweenMeshes</a>(uint32_t meshACount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* meshA, uint32_t meshBCount, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* meshB,
+<a name="l00061"></a>00061         <a class="code" href="struct_nv_blast_bond.html">NvBlastBond</a>&amp; resultBond, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf) <span class="keyword">override</span>;
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#0d06aa62402161f1197fe1dad4801cb1">createBondBetweenMeshes</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
+<a name="l00064"></a>00064         uint32_t overlapsCount, <span class="keyword">const</span> uint32_t* overlapsA, <span class="keyword">const</span> uint32_t* overlapsB,
+<a name="l00065"></a>00065         <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBond, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> cfg) <span class="keyword">override</span>;
+<a name="l00066"></a>00066 
+<a name="l00067"></a>00067     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#97fd9b746597ec923e2376387188a06e">bondsFromPrefractured</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
+<a name="l00068"></a>00068         <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs,
+<a name="l00069"></a>00069         <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf) <span class="keyword">override</span>;
+<a name="l00070"></a>00070 
+<a name="l00071"></a>00071     <span class="keyword">virtual</span> int32_t <a class="code" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#97fd9b746597ec923e2376387188a06e">bondsFromPrefractured</a>(uint32_t meshCount, <span class="keyword">const</span> uint32_t* convexHullOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** chunkHulls,
+<a name="l00072"></a>00072         <span class="keyword">const</span> <span class="keywordtype">bool</span>* chunkIsSupport, <span class="keyword">const</span> uint32_t* meshGroups, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs, <span class="keywordtype">float</span> maxSeparation) <span class="keyword">override</span>;
+<a name="l00073"></a>00073 
 <a name="l00074"></a>00074 
-<a name="l00075"></a>00075 
-<a name="l00076"></a>00076                 
-<a name="l00077"></a>00077 <span class="keyword">private</span>:
-<a name="l00078"></a>00078     <span class="keywordtype">float</span>   processWithMidplanes(<a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html">TriangleProcessor</a>* trProcessor, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* mA, uint32_t mavc, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* mB, uint32_t mbvc, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>* hull1, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>* hull2,
-<a name="l00079"></a>00079                              <span class="keyword">const</span> std::vector&lt;physx::PxVec3&gt;&amp; hull1p, <span class="keyword">const</span> std::vector&lt;physx::PxVec3&gt;&amp; hull2p,
-<a name="l00080"></a>00080                              physx::PxVec3&amp; <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#1c8d1bbcf531b04e6ff52f5357987794">normal</a>, physx::PxVec3&amp; centroid, <span class="keywordtype">float</span> maxSeparation);
-<a name="l00081"></a>00081 
-<a name="l00082"></a>00082     int32_t createFullBondListAveraged( uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** chunkHulls,
-<a name="l00083"></a>00083                                         <span class="keyword">const</span> <span class="keywordtype">bool</span>* supportFlags, <span class="keyword">const</span> uint32_t* meshGroups, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf, std::set&lt;std::pair&lt;uint32_t, uint32_t&gt; &gt;* pairNotToTest = <span class="keyword">nullptr</span>);
-<a name="l00084"></a>00084     int32_t createFullBondListExact(    uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
-<a name="l00085"></a>00085                                         <span class="keyword">const</span> <span class="keywordtype">bool</span>* supportFlags, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf);
-<a name="l00086"></a>00086     int32_t createFullBondListExactInternal(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
-<a name="l00087"></a>00087                                             std::vector&lt;PlaneChunkIndexer&gt;&amp; planeTriangleMapping , <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs);
-<a name="l00088"></a>00088     int32_t createBondForcedInternal(   <span class="keyword">const</span> std::vector&lt;physx::PxVec3&gt;&amp; hull0, <span class="keyword">const</span> std::vector&lt;physx::PxVec3&gt;&amp; hull1,<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>&amp; cHull0, 
-<a name="l00089"></a>00089                                         <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>&amp; cHull1, physx::PxBounds3 bound0, physx::PxBounds3 bound1, <a class="code" href="struct_nv_blast_bond.html">NvBlastBond</a>&amp; resultBond, <span class="keywordtype">float</span> overlapping);
-<a name="l00090"></a>00090 
-<a name="l00091"></a>00091     <span class="keywordtype">void</span>    buildGeometryCache(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry);
-<a name="l00092"></a>00092     <span class="keywordtype">void</span>    resetGeometryCache();
-<a name="l00093"></a>00093 
-<a name="l00094"></a>00094     physx::PxCooking*                           mPxCooking;
-<a name="l00095"></a>00095     physx::PxPhysicsInsertionCallback*          mPxInsertionCallback;
+<a name="l00075"></a>00075                 
+<a name="l00076"></a>00076 <span class="keyword">private</span>:
+<a name="l00077"></a>00077     <span class="keywordtype">float</span>   processWithMidplanes(<a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html">TriangleProcessor</a>* trProcessor, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* mA, uint32_t mavc, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* mB, uint32_t mbvc, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>* hull1, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>* hull2,
+<a name="l00078"></a>00078                              <span class="keyword">const</span> std::vector&lt;physx::PxVec3&gt;&amp; hull1p, <span class="keyword">const</span> std::vector&lt;physx::PxVec3&gt;&amp; hull2p,
+<a name="l00079"></a>00079                              physx::PxVec3&amp; <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#1c8d1bbcf531b04e6ff52f5357987794">normal</a>, physx::PxVec3&amp; centroid, <span class="keywordtype">float</span> maxSeparation);
+<a name="l00080"></a>00080 
+<a name="l00081"></a>00081     int32_t createFullBondListAveraged( uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>** chunkHulls,
+<a name="l00082"></a>00082                                         <span class="keyword">const</span> <span class="keywordtype">bool</span>* supportFlags, <span class="keyword">const</span> uint32_t* meshGroups, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf, std::set&lt;std::pair&lt;uint32_t, uint32_t&gt; &gt;* pairNotToTest = <span class="keyword">nullptr</span>);
+<a name="l00083"></a>00083     int32_t createFullBondListExact(    uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
+<a name="l00084"></a>00084                                         <span class="keyword">const</span> <span class="keywordtype">bool</span>* supportFlags, <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs, <a class="code" href="struct_nv_1_1_blast_1_1_bond_generation_config.html">BondGenerationConfig</a> conf);
+<a name="l00085"></a>00085     int32_t createFullBondListExactInternal(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry,
+<a name="l00086"></a>00086                                             std::vector&lt;PlaneChunkIndexer&gt;&amp; planeTriangleMapping , <a class="code" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a>*&amp; resultBondDescs);
+<a name="l00087"></a>00087     int32_t createBondForcedInternal(   <span class="keyword">const</span> std::vector&lt;physx::PxVec3&gt;&amp; hull0, <span class="keyword">const</span> std::vector&lt;physx::PxVec3&gt;&amp; hull1,<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>&amp; cHull0, 
+<a name="l00088"></a>00088                                         <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a>&amp; cHull1, physx::PxBounds3 bound0, physx::PxBounds3 bound1, <a class="code" href="struct_nv_blast_bond.html">NvBlastBond</a>&amp; resultBond, <span class="keywordtype">float</span> overlapping);
+<a name="l00089"></a>00089 
+<a name="l00090"></a>00090     <span class="keywordtype">void</span>    buildGeometryCache(uint32_t meshCount, <span class="keyword">const</span> uint32_t* geometryOffset, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>* geometry);
+<a name="l00091"></a>00091     <span class="keywordtype">void</span>    resetGeometryCache();
+<a name="l00092"></a>00092 
+<a name="l00093"></a>00093     <a class="code" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">ConvexMeshBuilder</a>*                          mConvexMeshBuilder;
+<a name="l00094"></a>00094 
+<a name="l00095"></a>00095     std::vector&lt;std::vector&lt;Triangle&gt; &gt;         mGeometryCache;
 <a name="l00096"></a>00096 
-<a name="l00097"></a>00097 
-<a name="l00098"></a>00098     std::vector&lt;std::vector&lt;Triangle&gt; &gt;         mGeometryCache;
-<a name="l00099"></a>00099 
-<a name="l00100"></a>00100     std::vector&lt;PlaneChunkIndexer&gt;              mPlaneCache;
-<a name="l00101"></a>00101     std::vector&lt;CollisionHull*&gt;                 mCHullCache;
-<a name="l00102"></a>00102     std::vector&lt;std::vector&lt;physx::PxVec3&gt; &gt;    mHullsPointsCache;
-<a name="l00103"></a>00103     std::vector&lt;physx::PxBounds3 &gt;              mBoundsCache;
+<a name="l00097"></a>00097     std::vector&lt;PlaneChunkIndexer&gt;              mPlaneCache;
+<a name="l00098"></a>00098     std::vector&lt;CollisionHull*&gt;                 mCHullCache;
+<a name="l00099"></a>00099     std::vector&lt;std::vector&lt;physx::PxVec3&gt; &gt;    mHullsPointsCache;
+<a name="l00100"></a>00100     std::vector&lt;physx::PxBounds3 &gt;              mBoundsCache;
+<a name="l00101"></a>00101 
+<a name="l00102"></a>00102 
+<a name="l00103"></a>00103 };
 <a name="l00104"></a>00104 
-<a name="l00105"></a>00105 
-<a name="l00106"></a>00106 };
+<a name="l00105"></a>00105 }   <span class="comment">// namespace Blast</span>
+<a name="l00106"></a>00106 }   <span class="comment">// namespace Nv</span>
 <a name="l00107"></a>00107 
-<a name="l00108"></a>00108 }   <span class="comment">// namespace Blast</span>
-<a name="l00109"></a>00109 }   <span class="comment">// namespace Nv</span>
-<a name="l00110"></a>00110 
-<a name="l00111"></a>00111 <span class="preprocessor">#endif // NVBLASTEXTAUTHORINGBONDGENERATORIMPL_H</span>
+<a name="l00108"></a>00108 <span class="preprocessor">#endif // NVBLASTEXTAUTHORINGBONDGENERATORIMPL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

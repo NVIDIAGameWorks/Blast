@@ -29,7 +29,7 @@
 #ifndef NVBLASTEXTAUTHORINGCOLLISIONBUILDERIIMPL_H
 #define NVBLASTEXTAUTHORINGCOLLISIONBUILDERIIMPL_H
 
-#include "NvBlastExtAuthoringCollisionBuilder.h"
+#include "NvBlastExtAuthoringConvexMeshBuilder.h"
 #include "NvBlastExtAuthoringTypes.h"
 
 namespace Nv
@@ -37,54 +37,14 @@ namespace Nv
 namespace Blast
 {
 
-struct CollisionHullImpl : public CollisionHull
-{
-	~CollisionHullImpl();
-	CollisionHullImpl()
-	{
-		pointsCount = 0;
-		indicesCount = 0;
-		polygonDataCount = 0;
-		points = nullptr;
-		indices = nullptr;
-		polygonData = nullptr;
-	}
 
-	CollisionHullImpl(const CollisionHull& hullToCopy);
+void trimCollisionGeometry(ConvexMeshBuilder& cmb, uint32_t chunksCount, CollisionHull** in, const uint32_t* chunkDepth);
 
-	void release() override;
-};
-	
-class ConvexMeshBuilderImpl : public ConvexMeshBuilder
-{
-public:
+int32_t buildMeshConvexDecomposition(ConvexMeshBuilder& cmb, const Triangle* mesh, uint32_t triangleCount,
+                                     const ConvexDecompositionParams& params, CollisionHull**& convexes);
 
-	/**
-		Constructor should be provided with PxCoocking and PxPhysicsInsertionCallback objects.
-	*/
-	ConvexMeshBuilderImpl(physx::PxCooking* cooking, physx::PxPhysicsInsertionCallback* insertionCallback) : mInsertionCallback(insertionCallback), mCooking(cooking) {}
-
-	virtual void					release() override;
-
-	virtual CollisionHull*			buildCollisionGeometry(uint32_t verticesCount, const physx::PxVec3* vertexData) override;
-
-	virtual physx::PxConvexMesh*	buildConvexMesh(uint32_t verticesCount, const physx::PxVec3* vertexData) override;
-
-	virtual physx::PxConvexMesh*	buildConvexMesh(const CollisionHull& hull) override;
-
-	virtual physx::PxConvexMesh*	buildConvexMeshRT(const Vertex* vrs, uint32_t count) override;
-	
-	virtual void					trimCollisionGeometry(uint32_t chunksCount, CollisionHull** in, const uint32_t* chunkDepth) override;
-
-	virtual int32_t					buildMeshConvexDecomposition(const Triangle* mesh, uint32_t triangleCount, const CollisionParams& params, CollisionHull**& convexes) override;
-
-private:
-	physx::PxPhysicsInsertionCallback*	mInsertionCallback;
-	physx::PxCooking*					mCooking;
-};
-
-} // namespace Blast
-} // namespace Nv
+}  // namespace Blast
+}  // namespace Nv
 
 
-#endif // ifndef NVBLASTEXTAUTHORINGCOLLISIONBUILDERIIMPL_H
+#endif  // ifndef NVBLASTEXTAUTHORINGCOLLISIONBUILDERIIMPL_H

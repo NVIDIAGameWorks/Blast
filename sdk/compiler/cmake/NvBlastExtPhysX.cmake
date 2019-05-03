@@ -32,6 +32,7 @@ SET(PUBLIC_FILES
 	${PHYSX_EXT_INCLUDE_DIR}/NvBlastExtPx.h
 	${PHYSX_EXT_INCLUDE_DIR}/NvBlastExtPxActor.h
 	${PHYSX_EXT_INCLUDE_DIR}/NvBlastExtPxAsset.h
+	${PHYSX_EXT_INCLUDE_DIR}/NvBlastExtPxCollisionBuilder.h
 	${PHYSX_EXT_INCLUDE_DIR}/NvBlastExtPxFamily.h
 	${PHYSX_EXT_INCLUDE_DIR}/NvBlastExtPxListener.h
 	${PHYSX_EXT_INCLUDE_DIR}/NvBlastExtPxManager.h
@@ -48,6 +49,8 @@ SET(EXT_PHYSICS_FILES
 	${PHYSX_EXT_SOURCE_DIR}/physics/NvBlastExtPxActorImpl.cpp
 	${PHYSX_EXT_SOURCE_DIR}/physics/NvBlastExtPxAssetImpl.h
 	${PHYSX_EXT_SOURCE_DIR}/physics/NvBlastExtPxAssetImpl.cpp
+	${PHYSX_EXT_SOURCE_DIR}/physics/NvBlastExtPxCollisionBuilderImpl.cpp
+	${PHYSX_EXT_SOURCE_DIR}/physics/NvBlastExtPxCollisionBuilderImpl.h
 	${PHYSX_EXT_SOURCE_DIR}/physics/NvBlastExtPxFamilyImpl.h
 	${PHYSX_EXT_SOURCE_DIR}/physics/NvBlastExtPxFamilyImpl.cpp
 	${PHYSX_EXT_SOURCE_DIR}/physics/NvBlastExtPxManagerImpl.h
@@ -96,6 +99,7 @@ TARGET_INCLUDE_DIRECTORIES(NvBlastExtPhysX
 	PRIVATE ${PHYSX_EXT_SOURCE_DIR}/sync
 	
    	PUBLIC ${PROJECT_SOURCE_DIR}/extensions/profiler/include
+	PUBLIC ${PROJECT_SOURCE_DIR}/extensions/authoringCommon/include
 
 	PUBLIC ${PHYSXSDK_INCLUDE_DIRS}
 	PRIVATE ${PXSHAREDSDK_INCLUDE_DIRS}

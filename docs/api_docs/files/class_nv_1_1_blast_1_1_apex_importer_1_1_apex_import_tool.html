@@ -31,6 +31,8 @@
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#9d630b32d1a0ae5fe3a044417cc64736">ApexImportTool</a> ()</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">const <a class="el" href="class_nv_1_1_blast_1_1_ext_px_collision_builder.html">ExtPxCollisionBuilder</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#7540e1492f144d335a8dc5cfe02d5605">getCollisionBuilder</a> () const </td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#b5fa57e2d728ad0d68edf309eecb9612">getCollisionGeometry</a> (const NvParameterized::Interface *assetPrm, uint32_t chunkCount, std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, const std::vector&lt; uint32_t &gt; &amp;apexChunkFlags, std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html">ExtPxAssetDesc::ChunkDesc</a> &gt; &amp;physicsChunks, std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_subchunk_desc.html">ExtPxAssetDesc::SubchunkDesc</a> &gt; &amp;physicsSubchunks, std::vector&lt; std::vector&lt; <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> * &gt; &gt; &amp;hullsDesc)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxCooking *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#1c3e20969c95c5c39e77543e49a2dbb8">getCooking</a> ()</td></tr>
@@ -57,6 +59,8 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html">ApexImportTool</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#cb4b98384b693351b6968f3ab5862c6f">operator=</a> (const <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html">ApexImportTool</a> &amp;)</td></tr>
 
 <tr><td colspan="2"><br><h2>Protected Attributes</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_collision_builder.html">ExtPxCollisionBuilder</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#a8725c6a88d96142713e570bc936a61f">m_collisionBuilder</a></td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxCooking *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#d5c4c3553756255ef278dddce2fe1ccd">m_Cooking</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxFoundation *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#aad46c0766884673960f8f2205b926af">m_Foundation</a></td></tr>
@@ -125,6 +129,25 @@
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
+<a class="anchor" name="7540e1492f144d335a8dc5cfe02d5605"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::getCollisionBuilder" ref="7540e1492f144d335a8dc5cfe02d5605" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="class_nv_1_1_blast_1_1_ext_px_collision_builder.html">ExtPxCollisionBuilder</a>* Nv::Blast::ApexImporter::ApexImportTool::getCollisionBuilder           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="b5fa57e2d728ad0d68edf309eecb9612"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::getCollisionGeometry" ref="b5fa57e2d728ad0d68edf309eecb9612" args="(const NvParameterized::Interface *assetPrm, uint32_t chunkCount, std::vector&lt; uint32_t &gt; &amp;chunkReorderInvMap, const std::vector&lt; uint32_t &gt; &amp;apexChunkFlags, std::vector&lt; ExtPxAssetDesc::ChunkDesc &gt; &amp;physicsChunks, std::vector&lt; ExtPxAssetDesc::SubchunkDesc &gt; &amp;physicsSubchunks, std::vector&lt; std::vector&lt; CollisionHull * &gt; &gt; &amp;hullsDesc)" -->
 <div class="memitem">
 <div class="memproto">
@@ -507,6 +530,21 @@ Method serializes user-supplied <a class="el" href="struct_nv_blast_asset.html">
 </div>
 </div><p>
 <hr><h2>Member Data Documentation</h2>
+<a class="anchor" name="a8725c6a88d96142713e570bc936a61f"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::m_collisionBuilder" ref="a8725c6a88d96142713e570bc936a61f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_collision_builder.html">ExtPxCollisionBuilder</a>* <a class="el" href="class_nv_1_1_blast_1_1_apex_importer_1_1_apex_import_tool.html#a8725c6a88d96142713e570bc936a61f">Nv::Blast::ApexImporter::ApexImportTool::m_collisionBuilder</a><code> [protected]</code>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="d5c4c3553756255ef278dddce2fe1ccd"></a><!-- doxytag: member="Nv::Blast::ApexImporter::ApexImportTool::m_Cooking" ref="d5c4c3553756255ef278dddce2fe1ccd" args="" -->
 <div class="memitem">
 <div class="memproto">

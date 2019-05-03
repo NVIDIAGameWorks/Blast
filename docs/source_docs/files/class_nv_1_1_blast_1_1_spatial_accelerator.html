@@ -65,11 +65,11 @@ Inheritance diagram for Nv::Blast::SpatialAccelerator:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#99d3cf42fe6c71caa4c827d94ca3fd4d">setPointCmpDirection</a> (int32_t dir)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#3cb229ff33aba656813bf88ec740e29e">setState</a> (const physx::PxVec3 &amp;point)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#fb11c09557dfc60e0e5dcf0bce33dec5">setState</a> (const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;point)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#406b30c6eecd98771493fb182275d831">setState</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *pos, const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *ed, const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> &amp;fc)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#ed70b8dde16ce3c248597763f9531313">setState</a> (const physx::PxBounds3 *bounds)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#3b2d7511d86e393aa09335123bd52afe">setState</a> (const <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a> *bounds)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#499c8dc6cb684d8830662451f2f1dd5a">~SpatialAccelerator</a> ()</td></tr>
 
@@ -140,14 +140,14 @@ Recieve next facet for setted state. <dl class="return" compact><dt><b>Returns:<
 
 </div>
 </div><p>
-<a class="anchor" name="3cb229ff33aba656813bf88ec740e29e"></a><!-- doxytag: member="Nv::Blast::SpatialAccelerator::setState" ref="3cb229ff33aba656813bf88ec740e29e" args="(const physx::PxVec3 &amp;point)=0" -->
+<a class="anchor" name="fb11c09557dfc60e0e5dcf0bce33dec5"></a><!-- doxytag: member="Nv::Blast::SpatialAccelerator::setState" ref="fb11c09557dfc60e0e5dcf0bce33dec5" args="(const NvcVec3 &amp;point)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">virtual void Nv::Blast::SpatialAccelerator::setState           </td>
           <td>(</td>
-          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>point</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td><code> [pure virtual]</code></td>
@@ -163,7 +163,7 @@ Set state of accelerator to return all facets which possibly can cover given poi
   </table>
 </dl>
 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#bb97f06d4009fe724451469250655c6f">Nv::Blast::DummyAccelerator</a>, <a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html#b014929b706f1e485b107b058ba287c1">Nv::Blast::GridWalker</a>, <a class="el" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#374d72c65187d7f42f5f2a23d730cee6">Nv::Blast::SweepingAccelerator</a>, and <a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#dd0cefb42fd99ddba3f1d93fa3f573be">Nv::Blast::BBoxBasedAccelerator</a>.</p>
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#bd89089c018fb1303951f75814fa3c80">Nv::Blast::DummyAccelerator</a>, <a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html#7859e830c542a4c1686de3d55634dbc9">Nv::Blast::GridWalker</a>, <a class="el" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#57e114094e51546afd728a82c8181935">Nv::Blast::SweepingAccelerator</a>, and <a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#f9d479e51cdeef5e9b53489ba81f335c">Nv::Blast::BBoxBasedAccelerator</a>.</p>
 
 </div>
 </div><p>
@@ -211,14 +211,14 @@ Set state of accelerator to return all facets which possibly can intersect given
 
 </div>
 </div><p>
-<a class="anchor" name="ed70b8dde16ce3c248597763f9531313"></a><!-- doxytag: member="Nv::Blast::SpatialAccelerator::setState" ref="ed70b8dde16ce3c248597763f9531313" args="(const physx::PxBounds3 *bounds)=0" -->
+<a class="anchor" name="3b2d7511d86e393aa09335123bd52afe"></a><!-- doxytag: member="Nv::Blast::SpatialAccelerator::setState" ref="3b2d7511d86e393aa09335123bd52afe" args="(const NvcBounds3 *bounds)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">virtual void Nv::Blast::SpatialAccelerator::setState           </td>
           <td>(</td>
-          <td class="paramtype">const physx::PxBounds3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a> *&nbsp;</td>
           <td class="paramname"> <em>bounds</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td><code> [pure virtual]</code></td>
@@ -236,7 +236,7 @@ Set state of accelerator to return all facets which possibly can intersect given
   </table>
 </dl>
 
-<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#b4225922a3d40b80eb4be7d29162398a">Nv::Blast::DummyAccelerator</a>, <a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html#b69077cc6d4d51b3d0a82d2583f7c1f5">Nv::Blast::GridWalker</a>, <a class="el" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#50df9d76270cd7e881ea59b1aa68e8b8">Nv::Blast::SweepingAccelerator</a>, and <a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#a25806403fd664fdcd44137e536b849a">Nv::Blast::BBoxBasedAccelerator</a>.</p>
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_dummy_accelerator.html#696d02451cdb1e4c3e596fe4254c55d7">Nv::Blast::DummyAccelerator</a>, <a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html#4215912435a6b50f7300c9f0a1f49e16">Nv::Blast::GridWalker</a>, <a class="el" href="class_nv_1_1_blast_1_1_sweeping_accelerator.html#1f189f9e73e1342ec42f19e3fce5c944">Nv::Blast::SweepingAccelerator</a>, and <a class="el" href="class_nv_1_1_blast_1_1_b_box_based_accelerator.html#aeb4d54e24fdbfb0a9fd2083414d645b">Nv::Blast::BBoxBasedAccelerator</a>.</p>
 
 </div>
 </div><p>

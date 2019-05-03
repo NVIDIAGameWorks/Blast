@@ -106,7 +106,7 @@ private:
 	//TODO we should track for every memory allocation and deallocate it not only for sdkManager
 	std::shared_ptr<fbxsdk::FbxManager> sdkManager;
 	std::map<uint32_t, fbxsdk::FbxNode*> chunkNodes;
-	std::map<uint32_t, physx::PxVec3> worldChunkPivots;
+	std::map<uint32_t, NvcVec3> worldChunkPivots;
 
 	bool appendNonSkinnedMesh(const AuthoringResult& aResult, const char* assetName);
 	bool appendNonSkinnedMesh(const ExporterMeshData& meshData, const char* assetName);

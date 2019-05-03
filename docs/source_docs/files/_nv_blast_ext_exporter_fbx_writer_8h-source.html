@@ -122,7 +122,7 @@
 <a name="l00106"></a>00106     <span class="comment">//TODO we should track for every memory allocation and deallocate it not only for sdkManager</span>
 <a name="l00107"></a>00107     std::shared_ptr&lt;fbxsdk::FbxManager&gt; sdkManager;
 <a name="l00108"></a>00108     std::map&lt;uint32_t, fbxsdk::FbxNode*&gt; chunkNodes;
-<a name="l00109"></a>00109     std::map&lt;uint32_t, physx::PxVec3&gt; worldChunkPivots;
+<a name="l00109"></a>00109     std::map&lt;uint32_t, NvcVec3&gt; worldChunkPivots;
 <a name="l00110"></a>00110 
 <a name="l00111"></a>00111     <span class="keywordtype">bool</span> appendNonSkinnedMesh(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_authoring_result.html">AuthoringResult</a>&amp; aResult, <span class="keyword">const</span> <span class="keywordtype">char</span>* assetName);
 <a name="l00112"></a>00112     <span class="keywordtype">bool</span> appendNonSkinnedMesh(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_exporter_mesh_data.html">ExporterMeshData</a>&amp; meshData, <span class="keyword">const</span> <span class="keywordtype">char</span>* assetName);

@@ -30,6 +30,7 @@
 #define BLAST_FAMILY_BOXES
 
 #include "BlastFamily.h"
+#include <vector>
 
 class BlastAssetBoxes;
 class Renderable;
@@ -37,19 +38,20 @@ class Renderable;
 
 class BlastFamilyBoxes : public BlastFamily
 {
-public:
-	BlastFamilyBoxes(PhysXController& physXController, ExtPxManager& pxManager, Renderer& renderer, const BlastAssetBoxes& blastAsset, const BlastAsset::ActorDesc& desc);
+  public:
+	BlastFamilyBoxes(PhysXController& physXController, ExtPxManager& pxManager, Renderer& renderer,
+	                 const BlastAssetBoxes& blastAsset, const BlastAsset::ActorDesc& desc);
 	virtual ~BlastFamilyBoxes();
 
-protected:
+  protected:
 	virtual void onActorCreated(const ExtPxActor& actor);
 	virtual void onActorUpdate(const ExtPxActor& actor);
 	virtual void onActorDestroyed(const ExtPxActor& actor);
 
-private:
-	Renderer&				 m_renderer;
+  private:
+	Renderer& m_renderer;
 	std::vector<Renderable*> m_chunkRenderables;
 };
 
 
-#endif //BLAST_FAMILY_BOXES
+#endif  // BLAST_FAMILY_BOXES

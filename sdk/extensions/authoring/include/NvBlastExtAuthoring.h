@@ -31,30 +31,23 @@
 
 #include "NvBlastExtAuthoringTypes.h"
 
-namespace physx
-{
-	class PxCooking;
-	class PxPhysicsInsertionCallback;
-}
-
 namespace Nv
 {
-	namespace Blast
-	{
-		class Mesh;
-		class VoronoiSitesGenerator;
-		class CutoutSet;
-		class FractureTool;
-		class ConvexMeshBuilder;
-		class BlastBondGenerator;
-		class MeshCleaner;
-		class PatternGenerator;
-		class Grid;
-		class GridWalker;
-		struct CollisionParams;
-		struct CollisionHull;
-	}
-}
+namespace Blast
+{
+class Mesh;
+class VoronoiSitesGenerator;
+class CutoutSet;
+class RandomGeneratorBase;
+class FractureTool;
+class ConvexMeshBuilder;
+class BlastBondGenerator;
+class MeshCleaner;
+class PatternGenerator;
+class Grid;
+class GridWalker;
+}  // namespace Blast
+}  // namespace Nv
 
 struct NvBlastExtAssetUtilsBondDesc;
 
@@ -71,8 +64,9 @@ User should call release() after usage.
 
 \return pointer to Nv::Blast::Mesh if it was created succefully otherwise return nullptr
 */
-NVBLAST_API Nv::Blast::Mesh* NvBlastExtAuthoringCreateMesh(const physx::PxVec3* positions, const physx::PxVec3* normals,
-	const physx::PxVec2* uv, uint32_t verticesCount, const uint32_t* indices, uint32_t indicesCount);
+NVBLAST_API Nv::Blast::Mesh*
+NvBlastExtAuthoringCreateMesh(const NvcVec3* positions, const NvcVec3* normals, const NvcVec2* uv,
+                              uint32_t verticesCount, const uint32_t* indices, uint32_t indicesCount);
 
 /**
 Constructs mesh object from triangles represented as arrays of vertices, indices and per facet material.
@@ -87,8 +81,9 @@ User should call Mesh::release() after usage.
 
 \return pointer to Nv::Blast::Mesh if it was created succefully otherwise return nullptr
 */
-NVBLAST_API Nv::Blast::Mesh* NvBlastExtAuthoringCreateMeshOnlyTriangles(const void* vertices, uint32_t verticesCount, 
-	uint32_t* indices, uint32_t indexCount, void* materials = nullptr, uint32_t materialStride = 4);
+NVBLAST_API Nv::Blast::Mesh*
+NvBlastExtAuthoringCreateMeshOnlyTriangles(const void* vertices, uint32_t verticesCount, uint32_t* indices,
+                                           uint32_t indexCount, void* materials = nullptr, uint32_t materialStride = 4);
 
 /**
 Constructs mesh object from array of vertices, edges and facets.
@@ -103,8 +98,9 @@ User should call release() after usage.
 
 \return pointer to Nv::Blast::Mesh if it was created succefully otherwise return nullptr
 */
-NVBLAST_API Nv::Blast::Mesh* NvBlastExtAuthoringCreateMeshFromFacets(const void* vertices, const void* edges, const void* facets,
-	uint32_t verticesCount, uint32_t edgesCount, uint32_t facetsCount);
+NVBLAST_API Nv::Blast::Mesh*
+NvBlastExtAuthoringCreateMeshFromFacets(const void* vertices, const void* edges, const void* facets,
+                                        uint32_t verticesCount, uint32_t edgesCount, uint32_t facetsCount);
 
 /**
 Voronoi sites should not be generated outside of the fractured mesh, so VoronoiSitesGenerator
@@ -113,8 +109,8 @@ should be supplied with fracture mesh.
 \param[in] rnd			User supplied random value generator.
 \return					Pointer to VoronoiSitesGenerator. User's code should release it after usage.
 */
-NVBLAST_API Nv::Blast::VoronoiSitesGenerator* NvBlastExtAuthoringCreateVoronoiSitesGenerator(Nv::Blast::Mesh* mesh,
-	Nv::Blast::RandomGeneratorBase* rng);
+NVBLAST_API Nv::Blast::VoronoiSitesGenerator*
+NvBlastExtAuthoringCreateVoronoiSitesGenerator(Nv::Blast::Mesh* mesh, Nv::Blast::RandomGeneratorBase* rng);
 
 /** Instantiates a blank CutoutSet */
 NVBLAST_API Nv::Blast::CutoutSet* NvBlastExtAuthoringCreateCutoutSet();
@@ -128,14 +124,17 @@ by one byte in the buffer.
 \param pixelBuffer		pointer to be beginning of the pixel buffer
 \param bufferWidth		the width of the buffer in pixels
 \param bufferHeight		the height of the buffer in pixels
-\param segmentationErrorThreshold	Reduce the number of vertices on curve untill segmentation error is smaller then specified. By default set it to 0.001.
-\param snapThreshold	the pixel distance at which neighboring cutout vertices and segments may be fudged into alignment. By default set it to 1.
+\param segmentationErrorThreshold	Reduce the number of vertices on curve untill segmentation error is smaller then
+specified. By default set it to 0.001. \param snapThreshold	the pixel distance at which neighboring cutout vertices and
+segments may be fudged into alignment. By default set it to 1.
 \param periodic			whether or not to use periodic boundary conditions when creating cutouts from the map
 \param expandGaps		expand cutout regions to gaps or keep it as is
 
 */
-NVBLAST_API void NvBlastExtAuthoringBuildCutoutSet(Nv::Blast::CutoutSet& cutoutSet, const uint8_t* pixelBuffer, 
-	uint32_t bufferWidth, uint32_t bufferHeight, float segmentationErrorThreshold, float snapThreshold, bool periodic, bool expandGaps);
+NVBLAST_API void
+NvBlastExtAuthoringBuildCutoutSet(Nv::Blast::CutoutSet& cutoutSet, const uint8_t* pixelBuffer, uint32_t bufferWidth,
+                                  uint32_t bufferHeight, float segmentationErrorThreshold, float snapThreshold,
+                                  bool periodic, bool expandGaps);
 
 /**
 Create FractureTool object.
@@ -147,15 +146,38 @@ NVBLAST_API Nv::Blast::FractureTool* NvBlastExtAuthoringCreateFractureTool();
 Create BlastBondGenerator
 \return Pointer to created BlastBondGenerator. User's code should release it after usage.
 */
-NVBLAST_API Nv::Blast::BlastBondGenerator* NvBlastExtAuthoringCreateBondGenerator(physx::PxCooking* cooking, 
-	physx::PxPhysicsInsertionCallback* insertionCallback);
+NVBLAST_API Nv::Blast::BlastBondGenerator* NvBlastExtAuthoringCreateBondGenerator(Nv::Blast::ConvexMeshBuilder* builder);
 
 /**
-Create ConvexMeshBuilder
-\return Pointer to created ConvexMeshBuilder. User's code should release it after usage.
+Build convex mesh decomposition.
+\param[in] mesh				Triangle mesh to decompose.
+\param[in] triangleCount	Number of triangles in mesh.
+\param[in] params			Parameters for convex mesh decomposition builder.
+\param[out] convexes		The resulting convex hulls.
+
+\return Number of created convex hulls.
 */
-NVBLAST_API Nv::Blast::ConvexMeshBuilder* NvBlastExtAuthoringCreateConvexMeshBuilder(physx::PxCooking* cooking,
-	physx::PxPhysicsInsertionCallback* insertionCallback);
+NVBLAST_API int32_t NvBlastExtAuthoringBuildMeshConvexDecomposition(Nv::Blast::ConvexMeshBuilder* cmb,
+                                                                    const Nv::Blast::Triangle* mesh,
+                                                                    uint32_t triangleCount,
+                                                                    const Nv::Blast::ConvexDecompositionParams& params,
+                                                                    Nv::Blast::CollisionHull**& convexes);
+
+
+/**
+    Convex geometry trimming.
+    Using slicing with noised slicing surface can result in intersecting collision geometry.
+    It leads to unstable behaviour of rigid body simulation.
+    This method trims all intersecting parts of collision geometry.
+    As a drawback, trimming collision geometry can lead to penetrating render meshes during simulation.
+
+    \param[in]		chunksCount	Number of chunks
+    \param[in,out]	in			ConvexHull geometry which should be clipped.
+    \param[in]		chunkDepth	Array of depth levels of convex hulls corresponding chunks.
+
+*/
+NVBLAST_API void NvBlastExtAuthoringTrimCollisionGeometry(Nv::Blast::ConvexMeshBuilder* cmb, uint32_t chunksCount,
+                                                          Nv::Blast::CollisionHull** in, const uint32_t* chunkDepth);
 
 
 /**
@@ -165,13 +187,8 @@ Transforms collision hull in place using scale, rotation, transform.
 \param[in]		rotation	Pointer to rotation to be applied. Can be nullptr.
 \param[in]		translation	Pointer to translation to be applied. Can be nullptr.
 */
-NVBLAST_API void NvBlastExtAuthoringTransformCollisionHullInPlace
-(
-	Nv::Blast::CollisionHull* hull,
-	const physx::PxVec3* scaling,
-	const physx::PxQuat* rotation,
-	const physx::PxVec3* translation
-);
+NVBLAST_API void NvBlastExtAuthoringTransformCollisionHullInPlace(Nv::Blast::CollisionHull* hull, const NvcVec3* scaling,
+                                                                  const NvcQuat* rotation, const NvcVec3* translation);
 
 /**
 Transforms collision hull in place using scale, rotation, transform.
@@ -180,13 +197,9 @@ Transforms collision hull in place using scale, rotation, transform.
 \param[in]		rotation	Pointer to rotation to be applied. Can be nullptr.
 \param[in]		translation	Pointer to translation to be applied. Can be nullptr.
 */
-NVBLAST_API Nv::Blast::CollisionHull* NvBlastExtAuthoringTransformCollisionHull
-(
-	const Nv::Blast::CollisionHull* hull,
-	const physx::PxVec3* scaling,
-	const physx::PxQuat* rotation,
-	const physx::PxVec3* translation
-);
+NVBLAST_API Nv::Blast::CollisionHull*
+NvBlastExtAuthoringTransformCollisionHull(const Nv::Blast::CollisionHull* hull, const NvcVec3* scaling,
+                                          const NvcQuat* rotation, const NvcVec3* translation);
 
 /**
 Performs pending fractures and generates fractured asset, render and collision geometry
@@ -194,43 +207,55 @@ Performs pending fractures and generates fractured asset, render and collision g
 \param[in]  fTool				Fracture tool created by NvBlastExtAuthoringCreateFractureTool
 \param[in]  bondGenerator		Bond generator created by NvBlastExtAuthoringCreateBondGenerator
 \param[in]  collisionBuilder	Collision builder created by NvBlastExtAuthoringCreateConvexMeshBuilder
-\param[in]  defaultSupportDepth All new chunks will be marked as support if its depth equal to defaultSupportDepth. 
-								By default leaves (chunks without children) marked as support.
-\param[in]  collisionParam		Parameters of collision hulls generation. 
+\param[in]  defaultSupportDepth All new chunks will be marked as support if its depth equal to defaultSupportDepth.
+                                By default leaves (chunks without children) marked as support.
+\param[in]  collisionParam		Parameters of collision hulls generation.
 \return		Authoring result
 */
-NVBLAST_API Nv::Blast::AuthoringResult* NvBlastExtAuthoringProcessFracture(Nv::Blast::FractureTool& fTool,
-	Nv::Blast::BlastBondGenerator& bondGenerator, Nv::Blast::ConvexMeshBuilder& collisionBuilder, const Nv::Blast::CollisionParams& collisionParam, int32_t defaultSupportDepth = -1);
+NVBLAST_API Nv::Blast::AuthoringResult*
+NvBlastExtAuthoringProcessFracture(Nv::Blast::FractureTool& fTool, Nv::Blast::BlastBondGenerator& bondGenerator,
+                                   Nv::Blast::ConvexMeshBuilder& collisionBuilder,
+                                   const Nv::Blast::ConvexDecompositionParams& collisionParam,
+                                   int32_t defaultSupportDepth = -1);
+
+
+/**
+Releases collision data for AuthoringResult. AuthoringResult should be created by NvBlast.
+*/
+NVBLAST_API void NvBlastExtAuthoringReleaseAuthoringResultCollision(Nv::Blast::ConvexMeshBuilder& collisionBuilder, Nv::Blast::AuthoringResult* ar);
+
+/**
+Releases AuthoringResult data. AuthoringResult should be created by NvBlast.
+*/
+NVBLAST_API void NvBlastExtAuthoringReleaseAuthoringResult(Nv::Blast::ConvexMeshBuilder& collisionBuilder, Nv::Blast::AuthoringResult* ar);
+
 
 /**
 Updates graphics mesh only
 
 \param[in]  fTool				Fracture tool created by NvBlastExtAuthoringCreateFractureTool
-\param[out] ares				AuthoringResult object which contains chunks, for which rendermeshes will be updated (e.g. to tweak UVs). Initially should be created by NvBlastExtAuthoringProcessFracture.
+\param[out] ares				AuthoringResult object which contains chunks, for which rendermeshes will be updated
+(e.g. to tweak UVs). Initially should be created by NvBlastExtAuthoringProcessFracture.
 */
 NVBLAST_API void NvBlastExtAuthoringUpdateGraphicsMesh(Nv::Blast::FractureTool& fTool, Nv::Blast::AuthoringResult& ares);
 
 /**
 Build collision meshes
 
-\param[in,out]	ares				AuthoringResult object which contains chunks, for which collision meshes will be built.
-\param[in]		collisionBuilder	Reference to ConvexMeshBuilder instance.
-\param[in]		collisionParam		Parameters of collision hulls generation.
+\param[in,out]	ares				AuthoringResult object which contains chunks, for which collision meshes will be
+built. \param[in]		collisionBuilder	Reference to ConvexMeshBuilder instance. \param[in]		collisionParam
+Parameters of collision hulls generation.
 \param[in]		chunksToProcessCount Number of chunk indices in chunksToProcess memory buffer.
 \param[in]		chunksToProcess		Chunk indices for which collision mesh should be built.
 */
-NVBLAST_API void NvBlastExtAuthoringBuildCollisionMeshes
-(
-	Nv::Blast::AuthoringResult& ares, 
-	Nv::Blast::ConvexMeshBuilder& collisionBuilder, 
-	const Nv::Blast::CollisionParams& collisionParam, 
-	uint32_t chunksToProcessCount,
-	uint32_t* chunksToProcess
-);
+NVBLAST_API void NvBlastExtAuthoringBuildCollisionMeshes(Nv::Blast::AuthoringResult& ares,
+                                                         Nv::Blast::ConvexMeshBuilder& collisionBuilder,
+                                                         const Nv::Blast::ConvexDecompositionParams& collisionParam,
+                                                         uint32_t chunksToProcessCount, uint32_t* chunksToProcess);
 
 /**
-	Creates MeshCleaner object
-	\return pointer to Nv::Blast::Mesh if it was created succefully otherwise return nullptr
+    Creates MeshCleaner object
+    \return pointer to Nv::Blast::Mesh if it was created succefully otherwise return nullptr
 */
 NVBLAST_API Nv::Blast::MeshCleaner* NvBlastExtAuthoringCreateMeshCleaner();
 
@@ -245,43 +270,38 @@ NOTE: This function allocates memory using the allocator in NvBlastGlobals, to c
 descriptor arrays returned. The user must free this memory after use with NVBLAST_FREE
 
 \param[in]	components			An array of assets to merge, of size componentCount.
-\param[in]	scales				If not NULL, an array of size componentCount of scales to apply to the geometric data in the chunks and bonds. If NULL, no scaling is applied.
-\param[in]	rotations			If not NULL, an array of size componentCount of rotations to apply to the geometric data in the chunks and bonds.  The quaternions MUST be normalized.
-								If NULL, no rotations are applied.
-\param[in]	translations		If not NULL, an array of of size componentCount of translations to apply to the geometric data in the chunks and bonds.  If NULL, no translations are applied.
-\param[in]	convexHullOffsets	For each component, an array of chunkSize+1 specifying the start of the convex hulls for that chunk inside the chunkHulls array for that component.
-\param[in]	chunkHulls			For each component, an array of CollisionHull* specifying the collision geometry for the chunks in that component.
-\param[in]	componentCount		The size of the components and relativeTransforms arrays.
+\param[in]	scales				If not NULL, an array of size componentCount of scales to apply to the geometric data in
+the chunks and bonds. If NULL, no scaling is applied. \param[in]	rotations			If not NULL, an array of size
+componentCount of rotations to apply to the geometric data in the chunks and bonds.  The quaternions MUST be normalized.
+                                If NULL, no rotations are applied.
+\param[in]	translations		If not NULL, an array of of size componentCount of translations to apply to the
+geometric data in the chunks and bonds.  If NULL, no translations are applied. \param[in]	convexHullOffsets	For each
+component, an array of chunkSize+1 specifying the start of the convex hulls for that chunk inside the chunkHulls array
+for that component. \param[in]	chunkHulls			For each component, an array of CollisionHull* specifying the
+collision geometry for the chunks in that component. \param[in]	componentCount		The size of the components and
+relativeTransforms arrays.
 \param[out]	newBondDescs		Descriptors of type NvBlastExtAssetUtilsBondDesc for new bonds between components.
 \param[in]	maxSeparation		Maximal distance between chunks which can be connected by bond.
 \return the number of bonds in newBondDescs
 */
-NVBLAST_API uint32_t NvBlastExtAuthoringFindAssetConnectingBonds
-(
-	const NvBlastAsset** components,
-	const physx::PxVec3* scales,
-	const physx::PxQuat* rotations,
-	const physx::PxVec3* translations,
-	const uint32_t** convexHullOffsets,
-	const Nv::Blast::CollisionHull*** chunkHulls,
-	uint32_t componentCount,
-	NvBlastExtAssetUtilsBondDesc*& newBondDescs,
-	float maxSeparation = 0.0f
-);
+NVBLAST_API uint32_t NvBlastExtAuthoringFindAssetConnectingBonds(
+    const NvBlastAsset** components, const NvcVec3* scales, const NvcQuat* rotations, const NvcVec3* translations,
+    const uint32_t** convexHullOffsets, const Nv::Blast::CollisionHull*** chunkHulls, uint32_t componentCount,
+    NvBlastExtAssetUtilsBondDesc*& newBondDescs, float maxSeparation = 0.0f);
 
 /**
-Returns pattern generator used for generating fracture patterns for Real Time (RT) fracture
+Returns pattern generator used for generating fracture patterns.
 */
 NVBLAST_API Nv::Blast::PatternGenerator* NvBlastExtAuthoringCreatePatternGenerator();
 
 /**
-TODO
+Create spatial grid for mesh.
 */
 NVBLAST_API Nv::Blast::Grid* NvBlastExtAuthoringCreateGridAccelerator(uint32_t resolution, const Nv::Blast::Mesh* m);
 
 /**
-TODO
+Create GridWalker - SpatialAccelerator which use Grid for faster mesh sampling.
 */
 NVBLAST_API Nv::Blast::GridWalker* NvBlastExtAuthoringCreateGridWalker(Nv::Blast::Grid* parent);
 
-#endif // ifndef NVBLASTAUTHORING_H
+#endif  // ifndef NVBLASTAUTHORING_H

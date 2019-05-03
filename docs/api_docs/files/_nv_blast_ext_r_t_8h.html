@@ -22,6 +22,7 @@
 <div class="contents">
 <h1>sdk/extensions/RT/include/NvBlastExtRT.h File Reference</h1><code>#include &lt;cinttypes&gt;</code><br>
 <code>#include &lt;<a class="el" href="_nv_blast_types_8h-source.html">NvBlastTypes.h</a>&gt;</code><br>
+<code>#include &lt;<a class="el" href="_nv_c_types_8h-source.html">NvCTypes.h</a>&gt;</code><br>
 
 <p>
 <a href="_nv_blast_ext_r_t_8h-source.html">Go to the source code of this file.</a><table border="0" cellpadding="0" cellspacing="0">
@@ -56,8 +57,6 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html">Nv::Blast</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacephysx.html">physx</a></td></tr>
-
 <tr><td colspan="2"><br><h2>Defines</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_r_t_8h.html#9cce5b0c1e6c644cdf4d10ca630fb07d">BLASTRT_MAX_CHUNKS</a>&nbsp;&nbsp;&nbsp;256</td></tr>
 
@@ -83,7 +82,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh_generator.html">Nv::Blast::MeshGenerator</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_r_t_8h.html#16e51ac155ee15cbbd65170336f21093">NvBlastExtRTCreateMeshGenerator</a> ()</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_r_t_8h.html#a8c693cbaed457e594fedc7e0ba5491a">NvBlastExtRTDetectIslands</a> (<a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Nv::Blast::Vertex</a> *vertices, uint32_t *offsets, physx::PxBounds3 *bounds, uint32_t chunkCount, <a class="el" href="struct_nv_1_1_blast_1_1_chunk_graph.html">Nv::Blast::ChunkGraph</a> *graph, uint32_t *islandChunks, uint32_t *islandOffsets)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_r_t_8h.html#558f3b79e0e220a495ab10744a1930af">NvBlastExtRTDetectIslands</a> (<a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Nv::Blast::Vertex</a> *vertices, uint32_t *offsets, <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a> *bounds, uint32_t chunkCount, <a class="el" href="struct_nv_1_1_blast_1_1_chunk_graph.html">Nv::Blast::ChunkGraph</a> *graph, uint32_t *islandChunks, uint32_t *islandOffsets)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_r_t_8h.html#f9fbda9fc805b0c120ad067172f89bdd">NvBlastExtRTDoFracture</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_fracture_desc.html">Nv::Blast::FractureDesc</a> &amp;desc, int32_t stage=Nv::Blast::FractureRT::Stage::ALL, int32_t threadId=0, int32_t threadCount=1)</td></tr>
 
@@ -294,7 +293,7 @@ Create real time (RT) fracture. By default creates single thread. For threads &g
 Create mesh generator 
 </div>
 </div><p>
-<a class="anchor" name="a8c693cbaed457e594fedc7e0ba5491a"></a><!-- doxytag: member="NvBlastExtRT.h::NvBlastExtRTDetectIslands" ref="a8c693cbaed457e594fedc7e0ba5491a" args="(Nv::Blast::Vertex *vertices, uint32_t *offsets, physx::PxBounds3 *bounds, uint32_t chunkCount, Nv::Blast::ChunkGraph *graph, uint32_t *islandChunks, uint32_t *islandOffsets)" -->
+<a class="anchor" name="558f3b79e0e220a495ab10744a1930af"></a><!-- doxytag: member="NvBlastExtRT.h::NvBlastExtRTDetectIslands" ref="558f3b79e0e220a495ab10744a1930af" args="(Nv::Blast::Vertex *vertices, uint32_t *offsets, NvcBounds3 *bounds, uint32_t chunkCount, Nv::Blast::ChunkGraph *graph, uint32_t *islandChunks, uint32_t *islandOffsets)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -313,7 +312,7 @@ Create mesh generator
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">physx::PxBounds3 *&nbsp;</td>
+          <td class="paramtype"><a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a> *&nbsp;</td>
           <td class="paramname"> <em>bounds</em>, </td>
         </tr>
         <tr>

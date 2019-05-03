@@ -75,15 +75,15 @@ public:
 	/**
 		Get loaded vertex positions
 	*/
-	virtual physx::PxVec3* getPositionArray() override;
+	virtual NvcVec3* getPositionArray() override;
 	/**
 		Get loaded vertex normals
 	*/
-	virtual physx::PxVec3* getNormalsArray() override;
+	virtual NvcVec3* getNormalsArray() override;
 	/**
 		Get loaded vertex uv-coordinates
 	*/
-	virtual physx::PxVec2* getUvArray() override;
+	virtual NvcVec2* getUvArray() override;
 	/**
 		Get loaded triangle indices
 	*/
@@ -110,9 +110,9 @@ public:
 	int32_t		getMaterialCount() { return mMaterialNames.size(); };
 
 private:
-	std::vector<physx::PxVec3>	mVertexPositions;
-	std::vector<physx::PxVec3>	mVertexNormals;
-	std::vector<physx::PxVec2>	mVertexUv;
+	std::vector<NvcVec3>	mVertexPositions;
+	std::vector<NvcVec3>	mVertexNormals;
+	std::vector<NvcVec2>	mVertexUv;
 	std::vector<uint32_t>		mIndices;
 
 	std::vector<std::string>	mMaterialNames;

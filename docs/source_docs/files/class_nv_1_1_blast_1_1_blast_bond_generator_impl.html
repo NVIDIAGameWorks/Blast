@@ -58,7 +58,7 @@ Inheritance diagram for Nv::Blast::BlastBondGeneratorImpl:</div>
 <a href="class_nv_1_1_blast_1_1_blast_bond_generator_impl-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#1af682e9c503ff6f1a9dd25621c94163">BlastBondGeneratorImpl</a> (physx::PxCooking *cooking, physx::PxPhysicsInsertionCallback *insertionCallback)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#2a98b914a7559d4e07ea9d324cdbf1a3">BlastBondGeneratorImpl</a> (<a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">ConvexMeshBuilder</a> *builder)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator_impl.html#70e5db62029ab29fb0dd2fbc12f13b3a">bondsFromPrefractured</a> (uint32_t meshCount, const uint32_t *convexHullOffset, const <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> **chunkHulls, const bool *chunkIsSupport, const uint32_t *meshGroups, <a class="el" href="struct_nv_blast_bond_desc.html">NvBlastBondDesc</a> *&amp;resultBondDescs, float maxSeparation) override</td></tr>
 
@@ -75,26 +75,17 @@ Inheritance diagram for Nv::Blast::BlastBondGeneratorImpl:</div>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Tool for gathering bond information from provided mesh geometry <hr><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" name="1af682e9c503ff6f1a9dd25621c94163"></a><!-- doxytag: member="Nv::Blast::BlastBondGeneratorImpl::BlastBondGeneratorImpl" ref="1af682e9c503ff6f1a9dd25621c94163" args="(physx::PxCooking *cooking, physx::PxPhysicsInsertionCallback *insertionCallback)" -->
+<a class="anchor" name="2a98b914a7559d4e07ea9d324cdbf1a3"></a><!-- doxytag: member="Nv::Blast::BlastBondGeneratorImpl::BlastBondGeneratorImpl" ref="2a98b914a7559d4e07ea9d324cdbf1a3" args="(ConvexMeshBuilder *builder)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">Nv::Blast::BlastBondGeneratorImpl::BlastBondGeneratorImpl           </td>
           <td>(</td>
-          <td class="paramtype">physx::PxCooking *&nbsp;</td>
-          <td class="paramname"> <em>cooking</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">physx::PxPhysicsInsertionCallback *&nbsp;</td>
-          <td class="paramname"> <em>insertionCallback</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [inline]</code></td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">ConvexMeshBuilder</a> *&nbsp;</td>
+          <td class="paramname"> <em>builder</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [inline]</code></td>
         </tr>
       </table>
 </div>

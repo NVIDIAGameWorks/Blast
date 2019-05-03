@@ -118,7 +118,7 @@ physx::PxConvexMeshGeometry* PxConvexMeshGeometryDTO::deserialize(Nv::Blast::Ser
 {
 	NVBLAST_ASSERT(sExtPxSerializerCooking != nullptr);
 
-	reader = reader;
+	NV_UNUSED(reader);
 
 	return nullptr;
 }

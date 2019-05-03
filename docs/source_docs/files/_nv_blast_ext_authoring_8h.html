@@ -48,18 +48,15 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html">Nv::Blast</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">namespace &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacephysx.html">physx</a></td></tr>
-
 <tr><td colspan="2"><br><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#cbe20a13f4898cfec0b83fabbb5b8364">NvBlastExtAuthoringBuildCollisionMeshes</a> (<a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a> &amp;ares, <a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> &amp;collisionBuilder, const <a class="el" href="struct_nv_1_1_blast_1_1_collision_params.html">Nv::Blast::CollisionParams</a> &amp;collisionParam, uint32_t chunksToProcessCount, uint32_t *chunksToProcess)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#27195d91a3840bc8507e1b4cf53dcbd8">NvBlastExtAuthoringBuildCollisionMeshes</a> (<a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a> &amp;ares, <a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> &amp;collisionBuilder, const <a class="el" href="struct_nv_1_1_blast_1_1_convex_decomposition_params.html">Nv::Blast::ConvexDecompositionParams</a> &amp;collisionParam, uint32_t chunksToProcessCount, uint32_t *chunksToProcess)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#0c09c0fc47ac3e47511e96375e212eca">NvBlastExtAuthoringBuildCutoutSet</a> (<a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html">Nv::Blast::CutoutSet</a> &amp;cutoutSet, const uint8_t *pixelBuffer, uint32_t bufferWidth, uint32_t bufferHeight, float segmentationErrorThreshold, float snapThreshold, bool periodic, bool expandGaps)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API <br class="typebreak">
-<a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">Nv::Blast::BlastBondGenerator</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#46c38eb07e899ff5e8be404ad121ea8d">NvBlastExtAuthoringCreateBondGenerator</a> (physx::PxCooking *cooking, physx::PxPhysicsInsertionCallback *insertionCallback)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#c68e1a659a35921a6bf9dc5b9b8c8cc2">NvBlastExtAuthoringBuildMeshConvexDecomposition</a> (<a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> *cmb, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Nv::Blast::Triangle</a> *mesh, uint32_t triangleCount, const <a class="el" href="struct_nv_1_1_blast_1_1_convex_decomposition_params.html">Nv::Blast::ConvexDecompositionParams</a> &amp;params, <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> **&amp;convexes)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API <br class="typebreak">
-<a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#57729a170bc6412fe3a0cb616c2f97ed">NvBlastExtAuthoringCreateConvexMeshBuilder</a> (physx::PxCooking *cooking, physx::PxPhysicsInsertionCallback *insertionCallback)</td></tr>
+<a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">Nv::Blast::BlastBondGenerator</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#3ad55b9b2045e5650c7ff789fc6689ee">NvBlastExtAuthoringCreateBondGenerator</a> (<a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> *builder)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API <a class="el" href="class_nv_1_1_blast_1_1_cutout_set.html">Nv::Blast::CutoutSet</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#5f493f939d13616983cd56942757c77c">NvBlastExtAuthoringCreateCutoutSet</a> ()</td></tr>
 
@@ -70,7 +67,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API <a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html">Nv::Blast::GridWalker</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#94df8330156975a933639cfaf2774a72">NvBlastExtAuthoringCreateGridWalker</a> (<a class="el" href="class_nv_1_1_blast_1_1_grid.html">Nv::Blast::Grid</a> *parent)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#2c7975d1a51bd0d4069bd81b10dfa5fe">NvBlastExtAuthoringCreateMesh</a> (const physx::PxVec3 *positions, const physx::PxVec3 *normals, const physx::PxVec2 *uv, uint32_t verticesCount, const uint32_t *indices, uint32_t indicesCount)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#ed8387fc7672e9935031f8cc66caf799">NvBlastExtAuthoringCreateMesh</a> (const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *positions, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *normals, const <a class="el" href="struct_nvc_vec2.html">NvcVec2</a> *uv, uint32_t verticesCount, const uint32_t *indices, uint32_t indicesCount)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API <br class="typebreak">
 <a class="el" href="class_nv_1_1_blast_1_1_mesh_cleaner.html">Nv::Blast::MeshCleaner</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#d8620704c7b10e310df502a8c8998a17">NvBlastExtAuthoringCreateMeshCleaner</a> ()</td></tr>
@@ -85,21 +82,27 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API <br class="typebreak">
 <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html">Nv::Blast::VoronoiSitesGenerator</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#c65c865d65168418a3f4cc7b563096ed">NvBlastExtAuthoringCreateVoronoiSitesGenerator</a> (<a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a> *mesh, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">Nv::Blast::RandomGeneratorBase</a> *rng)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#913c91f5df4128e885a8103e7b82f2c3">NvBlastExtAuthoringFindAssetConnectingBonds</a> (const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> **components, const physx::PxVec3 *scales, const physx::PxQuat *rotations, const physx::PxVec3 *translations, const uint32_t **convexHullOffsets, const <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> ***chunkHulls, uint32_t componentCount, <a class="el" href="struct_nv_blast_ext_asset_utils_bond_desc.html">NvBlastExtAssetUtilsBondDesc</a> *&amp;newBondDescs, float maxSeparation=0.0f)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#d0dfcb6b6b06fd0560aa55e4dcddfeb9">NvBlastExtAuthoringFindAssetConnectingBonds</a> (const <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> **components, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *scales, const <a class="el" href="struct_nvc_quat.html">NvcQuat</a> *rotations, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *translations, const uint32_t **convexHullOffsets, const <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> ***chunkHulls, uint32_t componentCount, <a class="el" href="struct_nv_blast_ext_asset_utils_bond_desc.html">NvBlastExtAssetUtilsBondDesc</a> *&amp;newBondDescs, float maxSeparation=0.0f)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API <br class="typebreak">
-<a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#a6ed285a916f8dd64001820d1633bb4e">NvBlastExtAuthoringProcessFracture</a> (<a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">Nv::Blast::FractureTool</a> &amp;fTool, <a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">Nv::Blast::BlastBondGenerator</a> &amp;bondGenerator, <a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> &amp;collisionBuilder, const <a class="el" href="struct_nv_1_1_blast_1_1_collision_params.html">Nv::Blast::CollisionParams</a> &amp;collisionParam, int32_t defaultSupportDepth=-1)</td></tr>
+<a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#163b66fbf427950ae760cada3d61598e">NvBlastExtAuthoringProcessFracture</a> (<a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">Nv::Blast::FractureTool</a> &amp;fTool, <a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">Nv::Blast::BlastBondGenerator</a> &amp;bondGenerator, <a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> &amp;collisionBuilder, const <a class="el" href="struct_nv_1_1_blast_1_1_convex_decomposition_params.html">Nv::Blast::ConvexDecompositionParams</a> &amp;collisionParam, int32_t defaultSupportDepth=-1)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#222cfae693431f826d20471e4f6848e1">NvBlastExtAuthoringReleaseAuthoringResult</a> (<a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> &amp;collisionBuilder, <a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a> *ar)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#ce4b175a19c5a5b9f5cadb8b6c7c59e3">NvBlastExtAuthoringReleaseAuthoringResultCollision</a> (<a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> &amp;collisionBuilder, <a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a> *ar)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API <br class="typebreak">
-<a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#e2fd14c835d63b3cb910e7e5e50d6bb5">NvBlastExtAuthoringTransformCollisionHull</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> *hull, const physx::PxVec3 *scaling, const physx::PxQuat *rotation, const physx::PxVec3 *translation)</td></tr>
+<a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#8cc4536f6c0d481e7dfcf3c366ca5e33">NvBlastExtAuthoringTransformCollisionHull</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> *hull, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *scaling, const <a class="el" href="struct_nvc_quat.html">NvcQuat</a> *rotation, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *translation)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#b18076da1fdaba742be2f64f1c47ebb6">NvBlastExtAuthoringTransformCollisionHullInPlace</a> (<a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> *hull, const physx::PxVec3 *scaling, const physx::PxQuat *rotation, const physx::PxVec3 *translation)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#ea852705e03c2fcecfc3a73fbcbf2b36">NvBlastExtAuthoringTransformCollisionHullInPlace</a> (<a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> *hull, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *scaling, const <a class="el" href="struct_nvc_quat.html">NvcQuat</a> *rotation, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *translation)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#ab1596d7b0c4cef85b0e4680d69429e4">NvBlastExtAuthoringTrimCollisionGeometry</a> (<a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> *cmb, uint32_t chunksCount, <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> **in, const uint32_t *chunkDepth)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NVBLAST_API void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_blast_ext_authoring_8h.html#f7f3ac8b4a132b584eff789062a59dfd">NvBlastExtAuthoringUpdateGraphicsMesh</a> (<a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">Nv::Blast::FractureTool</a> &amp;fTool, <a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a> &amp;ares)</td></tr>
 
 </table>
 <hr><h2>Function Documentation</h2>
-<a class="anchor" name="cbe20a13f4898cfec0b83fabbb5b8364"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringBuildCollisionMeshes" ref="cbe20a13f4898cfec0b83fabbb5b8364" args="(Nv::Blast::AuthoringResult &amp;ares, Nv::Blast::ConvexMeshBuilder &amp;collisionBuilder, const Nv::Blast::CollisionParams &amp;collisionParam, uint32_t chunksToProcessCount, uint32_t *chunksToProcess)" -->
+<a class="anchor" name="27195d91a3840bc8507e1b4cf53dcbd8"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringBuildCollisionMeshes" ref="27195d91a3840bc8507e1b4cf53dcbd8" args="(Nv::Blast::AuthoringResult &amp;ares, Nv::Blast::ConvexMeshBuilder &amp;collisionBuilder, const Nv::Blast::ConvexDecompositionParams &amp;collisionParam, uint32_t chunksToProcessCount, uint32_t *chunksToProcess)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -118,7 +121,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_collision_params.html">Nv::Blast::CollisionParams</a> &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_convex_decomposition_params.html">Nv::Blast::ConvexDecompositionParams</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>collisionParam</em>, </td>
         </tr>
         <tr>
@@ -234,26 +237,73 @@ Builds a cutout set (which must have been initially created by <a class="el" hre
 
 </div>
 </div><p>
-<a class="anchor" name="46c38eb07e899ff5e8be404ad121ea8d"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringCreateBondGenerator" ref="46c38eb07e899ff5e8be404ad121ea8d" args="(physx::PxCooking *cooking, physx::PxPhysicsInsertionCallback *insertionCallback)" -->
+<a class="anchor" name="c68e1a659a35921a6bf9dc5b9b8c8cc2"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringBuildMeshConvexDecomposition" ref="c68e1a659a35921a6bf9dc5b9b8c8cc2" args="(Nv::Blast::ConvexMeshBuilder *cmb, const Nv::Blast::Triangle *mesh, uint32_t triangleCount, const Nv::Blast::ConvexDecompositionParams &amp;params, Nv::Blast::CollisionHull **&amp;convexes)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NVBLAST_API int32_t NvBlastExtAuthoringBuildMeshConvexDecomposition           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> *&nbsp;</td>
+          <td class="paramname"> <em>cmb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Nv::Blast::Triangle</a> *&nbsp;</td>
+          <td class="paramname"> <em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>triangleCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_convex_decomposition_params.html">Nv::Blast::ConvexDecompositionParams</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> **&amp;&nbsp;</td>
+          <td class="paramname"> <em>convexes</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Build convex mesh decomposition. <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mesh</em>&nbsp;</td><td>Triangle mesh to decompose. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>triangleCount</em>&nbsp;</td><td>Number of triangles in mesh. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>params</em>&nbsp;</td><td>Parameters for convex mesh decomposition builder. </td></tr>
+    <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>convexes</em>&nbsp;</td><td>The resulting convex hulls.</td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>Number of created convex hulls. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="3ad55b9b2045e5650c7ff789fc6689ee"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringCreateBondGenerator" ref="3ad55b9b2045e5650c7ff789fc6689ee" args="(Nv::Blast::ConvexMeshBuilder *builder)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">NVBLAST_API <a class="el" href="class_nv_1_1_blast_1_1_blast_bond_generator.html">Nv::Blast::BlastBondGenerator</a>* NvBlastExtAuthoringCreateBondGenerator           </td>
           <td>(</td>
-          <td class="paramtype">physx::PxCooking *&nbsp;</td>
-          <td class="paramname"> <em>cooking</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> *&nbsp;</td>
+          <td class="paramname"> <em>builder</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
           <td></td>
-          <td class="paramtype">physx::PxPhysicsInsertionCallback *&nbsp;</td>
-          <td class="paramname"> <em>insertionCallback</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
         </tr>
       </table>
 </div>
@@ -261,36 +311,6 @@ Builds a cutout set (which must have been initially created by <a class="el" hre
 
 <p>
 Create BlastBondGenerator <dl class="return" compact><dt><b>Returns:</b></dt><dd>Pointer to created BlastBondGenerator. User's code should release it after usage. </dd></dl>
-
-</div>
-</div><p>
-<a class="anchor" name="57729a170bc6412fe3a0cb616c2f97ed"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringCreateConvexMeshBuilder" ref="57729a170bc6412fe3a0cb616c2f97ed" args="(physx::PxCooking *cooking, physx::PxPhysicsInsertionCallback *insertionCallback)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">NVBLAST_API <a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a>* NvBlastExtAuthoringCreateConvexMeshBuilder           </td>
-          <td>(</td>
-          <td class="paramtype">physx::PxCooking *&nbsp;</td>
-          <td class="paramname"> <em>cooking</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">physx::PxPhysicsInsertionCallback *&nbsp;</td>
-          <td class="paramname"> <em>insertionCallback</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Create ConvexMeshBuilder <dl class="return" compact><dt><b>Returns:</b></dt><dd>Pointer to created ConvexMeshBuilder. User's code should release it after usage. </dd></dl>
 
 </div>
 </div><p>
@@ -359,7 +379,7 @@ Create FractureTool object. <dl class="return" compact><dt><b>Returns:</b></dt><
 <div class="memdoc">
 
 <p>
-TODO 
+Create spatial grid for mesh. 
 </div>
 </div><p>
 <a class="anchor" name="94df8330156975a933639cfaf2774a72"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringCreateGridWalker" ref="94df8330156975a933639cfaf2774a72" args="(Nv::Blast::Grid *parent)" -->
@@ -379,29 +399,29 @@ TODO
 <div class="memdoc">
 
 <p>
-TODO 
+Create GridWalker - SpatialAccelerator which use Grid for faster mesh sampling. 
 </div>
 </div><p>
-<a class="anchor" name="2c7975d1a51bd0d4069bd81b10dfa5fe"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringCreateMesh" ref="2c7975d1a51bd0d4069bd81b10dfa5fe" args="(const physx::PxVec3 *positions, const physx::PxVec3 *normals, const physx::PxVec2 *uv, uint32_t verticesCount, const uint32_t *indices, uint32_t indicesCount)" -->
+<a class="anchor" name="ed8387fc7672e9935031f8cc66caf799"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringCreateMesh" ref="ed8387fc7672e9935031f8cc66caf799" args="(const NvcVec3 *positions, const NvcVec3 *normals, const NvcVec2 *uv, uint32_t verticesCount, const uint32_t *indices, uint32_t indicesCount)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">NVBLAST_API <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Nv::Blast::Mesh</a>* NvBlastExtAuthoringCreateMesh           </td>
           <td>(</td>
-          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td>
           <td class="paramname"> <em>positions</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td>
           <td class="paramname"> <em>normals</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec2 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec2.html">NvcVec2</a> *&nbsp;</td>
           <td class="paramname"> <em>uv</em>, </td>
         </tr>
         <tr>
@@ -613,7 +633,7 @@ Constructs mesh object from triangles represented as arrays of vertices, indices
 <div class="memdoc">
 
 <p>
-Returns pattern generator used for generating fracture patterns for Real Time (RT) fracture 
+Returns pattern generator used for generating fracture patterns. 
 </div>
 </div><p>
 <a class="anchor" name="c65c865d65168418a3f4cc7b563096ed"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringCreateVoronoiSitesGenerator" ref="c65c865d65168418a3f4cc7b563096ed" args="(Nv::Blast::Mesh *mesh, Nv::Blast::RandomGeneratorBase *rng)" -->
@@ -652,7 +672,7 @@ Voronoi sites should not be generated outside of the fractured mesh, so VoronoiS
 
 </div>
 </div><p>
-<a class="anchor" name="913c91f5df4128e885a8103e7b82f2c3"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringFindAssetConnectingBonds" ref="913c91f5df4128e885a8103e7b82f2c3" args="(const NvBlastAsset **components, const physx::PxVec3 *scales, const physx::PxQuat *rotations, const physx::PxVec3 *translations, const uint32_t **convexHullOffsets, const Nv::Blast::CollisionHull ***chunkHulls, uint32_t componentCount, NvBlastExtAssetUtilsBondDesc *&amp;newBondDescs, float maxSeparation=0.0f)" -->
+<a class="anchor" name="d0dfcb6b6b06fd0560aa55e4dcddfeb9"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringFindAssetConnectingBonds" ref="d0dfcb6b6b06fd0560aa55e4dcddfeb9" args="(const NvBlastAsset **components, const NvcVec3 *scales, const NvcQuat *rotations, const NvcVec3 *translations, const uint32_t **convexHullOffsets, const Nv::Blast::CollisionHull ***chunkHulls, uint32_t componentCount, NvBlastExtAssetUtilsBondDesc *&amp;newBondDescs, float maxSeparation=0.0f)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -665,19 +685,19 @@ Voronoi sites should not be generated outside of the fractured mesh, so VoronoiS
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td>
           <td class="paramname"> <em>scales</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxQuat *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_quat.html">NvcQuat</a> *&nbsp;</td>
           <td class="paramname"> <em>rotations</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td>
           <td class="paramname"> <em>translations</em>, </td>
         </tr>
         <tr>
@@ -741,7 +761,7 @@ NOTE: This function allocates memory using the allocator in NvBlastGlobals, to c
 
 </div>
 </div><p>
-<a class="anchor" name="a6ed285a916f8dd64001820d1633bb4e"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringProcessFracture" ref="a6ed285a916f8dd64001820d1633bb4e" args="(Nv::Blast::FractureTool &amp;fTool, Nv::Blast::BlastBondGenerator &amp;bondGenerator, Nv::Blast::ConvexMeshBuilder &amp;collisionBuilder, const Nv::Blast::CollisionParams &amp;collisionParam, int32_t defaultSupportDepth=&#45;1)" -->
+<a class="anchor" name="163b66fbf427950ae760cada3d61598e"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringProcessFracture" ref="163b66fbf427950ae760cada3d61598e" args="(Nv::Blast::FractureTool &amp;fTool, Nv::Blast::BlastBondGenerator &amp;bondGenerator, Nv::Blast::ConvexMeshBuilder &amp;collisionBuilder, const Nv::Blast::ConvexDecompositionParams &amp;collisionParam, int32_t defaultSupportDepth=&#45;1)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -766,7 +786,7 @@ NOTE: This function allocates memory using the allocator in NvBlastGlobals, to c
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_collision_params.html">Nv::Blast::CollisionParams</a> &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nv_1_1_blast_1_1_convex_decomposition_params.html">Nv::Blast::ConvexDecompositionParams</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>collisionParam</em>, </td>
         </tr>
         <tr>
@@ -799,7 +819,65 @@ Performs pending fractures and generates fractured asset, render and collision g
 
 </div>
 </div><p>
-<a class="anchor" name="e2fd14c835d63b3cb910e7e5e50d6bb5"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringTransformCollisionHull" ref="e2fd14c835d63b3cb910e7e5e50d6bb5" args="(const Nv::Blast::CollisionHull *hull, const physx::PxVec3 *scaling, const physx::PxQuat *rotation, const physx::PxVec3 *translation)" -->
+<a class="anchor" name="222cfae693431f826d20471e4f6848e1"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringReleaseAuthoringResult" ref="222cfae693431f826d20471e4f6848e1" args="(Nv::Blast::ConvexMeshBuilder &amp;collisionBuilder, Nv::Blast::AuthoringResult *ar)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NVBLAST_API void NvBlastExtAuthoringReleaseAuthoringResult           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>collisionBuilder</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a> *&nbsp;</td>
+          <td class="paramname"> <em>ar</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Releases AuthoringResult data. AuthoringResult should be created by NvBlast. 
+</div>
+</div><p>
+<a class="anchor" name="ce4b175a19c5a5b9f5cadb8b6c7c59e3"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringReleaseAuthoringResultCollision" ref="ce4b175a19c5a5b9f5cadb8b6c7c59e3" args="(Nv::Blast::ConvexMeshBuilder &amp;collisionBuilder, Nv::Blast::AuthoringResult *ar)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NVBLAST_API void NvBlastExtAuthoringReleaseAuthoringResultCollision           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>collisionBuilder</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html">Nv::Blast::AuthoringResult</a> *&nbsp;</td>
+          <td class="paramname"> <em>ar</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Releases collision data for AuthoringResult. AuthoringResult should be created by NvBlast. 
+</div>
+</div><p>
+<a class="anchor" name="8cc4536f6c0d481e7dfcf3c366ca5e33"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringTransformCollisionHull" ref="8cc4536f6c0d481e7dfcf3c366ca5e33" args="(const Nv::Blast::CollisionHull *hull, const NvcVec3 *scaling, const NvcQuat *rotation, const NvcVec3 *translation)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -812,19 +890,19 @@ Performs pending fractures and generates fractured asset, render and collision g
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td>
           <td class="paramname"> <em>scaling</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxQuat *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_quat.html">NvcQuat</a> *&nbsp;</td>
           <td class="paramname"> <em>rotation</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td>
           <td class="paramname"> <em>translation</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -848,7 +926,7 @@ Transforms collision hull in place using scale, rotation, transform. <dl compact
 
 </div>
 </div><p>
-<a class="anchor" name="b18076da1fdaba742be2f64f1c47ebb6"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringTransformCollisionHullInPlace" ref="b18076da1fdaba742be2f64f1c47ebb6" args="(Nv::Blast::CollisionHull *hull, const physx::PxVec3 *scaling, const physx::PxQuat *rotation, const physx::PxVec3 *translation)" -->
+<a class="anchor" name="ea852705e03c2fcecfc3a73fbcbf2b36"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringTransformCollisionHullInPlace" ref="ea852705e03c2fcecfc3a73fbcbf2b36" args="(Nv::Blast::CollisionHull *hull, const NvcVec3 *scaling, const NvcQuat *rotation, const NvcVec3 *translation)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -861,19 +939,19 @@ Transforms collision hull in place using scale, rotation, transform. <dl compact
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td>
           <td class="paramname"> <em>scaling</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxQuat *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_quat.html">NvcQuat</a> *&nbsp;</td>
           <td class="paramname"> <em>rotation</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td>
           <td class="paramname"> <em>translation</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -892,6 +970,55 @@ Transforms collision hull in place using scale, rotation, transform. <dl compact
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>scale</em>&nbsp;</td><td>Pointer to scale to be applied. Can be nullptr. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>rotation</em>&nbsp;</td><td>Pointer to rotation to be applied. Can be nullptr. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>translation</em>&nbsp;</td><td>Pointer to translation to be applied. Can be nullptr. </td></tr>
+  </table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="ab1596d7b0c4cef85b0e4680d69429e4"></a><!-- doxytag: member="NvBlastExtAuthoring.h::NvBlastExtAuthoringTrimCollisionGeometry" ref="ab1596d7b0c4cef85b0e4680d69429e4" args="(Nv::Blast::ConvexMeshBuilder *cmb, uint32_t chunksCount, Nv::Blast::CollisionHull **in, const uint32_t *chunkDepth)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NVBLAST_API void NvBlastExtAuthoringTrimCollisionGeometry           </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">Nv::Blast::ConvexMeshBuilder</a> *&nbsp;</td>
+          <td class="paramname"> <em>cmb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunksCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a> **&nbsp;</td>
+          <td class="paramname"> <em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>chunkDepth</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Convex geometry trimming. Using slicing with noised slicing surface can result in intersecting collision geometry. It leads to unstable behaviour of rigid body simulation. This method trims all intersecting parts of collision geometry. As a drawback, trimming collision geometry can lead to penetrating render meshes during simulation.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunksCount</em>&nbsp;</td><td>Number of chunks </td></tr>
+    <tr><td valign="top"><tt>[in,out]</tt>&nbsp;</td><td valign="top"><em>in</em>&nbsp;</td><td>ConvexHull geometry which should be clipped. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkDepth</em>&nbsp;</td><td>Array of depth levels of convex hulls corresponding chunks. </td></tr>
   </table>
 </dl>
 

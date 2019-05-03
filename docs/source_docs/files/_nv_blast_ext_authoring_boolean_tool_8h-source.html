@@ -139,8 +139,8 @@
 <a name="l00143"></a>00143 
 <a name="l00151"></a>00151     <span class="keywordtype">void</span>    <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#156934dc1a7094dd9f835a3f64e5ad39">performFastCutting</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshA, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* meshB, <a class="code" href="struct_nv_1_1_blast_1_1_boolean_conf.html">BooleanConf</a> mode);
 <a name="l00152"></a>00152 
-<a name="l00159"></a>00159     int32_t <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#009de2bf236544f4a26a5092ecc1a9cf">isPointContainedInMesh</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, <span class="keyword">const</span> physx::PxVec3&amp; point);
-<a name="l00167"></a>00167     int32_t <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#009de2bf236544f4a26a5092ecc1a9cf">isPointContainedInMesh</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* spAccel, <span class="keyword">const</span> physx::PxVec3&amp; point);
+<a name="l00159"></a>00159     int32_t <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#bdbbc50c6bd59fb14c7b4e1bde7741e8">isPointContainedInMesh</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, <span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>&amp; point);
+<a name="l00167"></a>00167     int32_t <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#bdbbc50c6bd59fb14c7b4e1bde7741e8">isPointContainedInMesh</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh, <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* spAccel, <span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>&amp; point);
 <a name="l00168"></a>00168 
 <a name="l00169"></a>00169 
 <a name="l00174"></a>00174     <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>*   <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html#dcfc051a4533b68196b5a897c5f1befb">createNewMesh</a>();
@@ -158,8 +158,8 @@
 <a name="l00189"></a>00189     <span class="keywordtype">void</span>    addEdgeIfValid(<a class="code" href="struct_nv_1_1_blast_1_1_edge_with_parent.html">EdgeWithParent</a>&amp; ed);
 <a name="l00190"></a>00190 <span class="keyword">private</span>:
 <a name="l00191"></a>00191 
-<a name="l00192"></a>00192     int32_t vertexMeshStatus03(<span class="keyword">const</span> physx::PxVec3&amp; p, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
-<a name="l00193"></a>00193     int32_t vertexMeshStatus30(<span class="keyword">const</span> physx::PxVec3&amp; p, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
+<a name="l00192"></a>00192     int32_t vertexMeshStatus03(<span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>&amp; p, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
+<a name="l00193"></a>00193     int32_t vertexMeshStatus30(<span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>&amp; p, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* mesh);
 <a name="l00194"></a>00194 
 <a name="l00195"></a>00195     <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>*                                             mMeshA;
 <a name="l00196"></a>00196     <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>*                                             mMeshB;

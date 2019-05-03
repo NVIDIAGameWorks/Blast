@@ -43,8 +43,8 @@ echo %CMAKE_CMD_LINE_PARAMS%
 if not exist %BLAST_ROOT_DIR%/bin/linux64-UE4 mkdir %BLAST_ROOT_DIR%/bin/linux64-UE4
 
 ::Seems like there are no checked or profile Linux PhysX Libs
-FOR %%Z IN (debug, release, checked, profile) DO (
-::FOR %%Z IN (debug, release) DO (
+::FOR %%Z IN (debug, release, checked, profile) DO (
+FOR %%Z IN (debug, release) DO (
     SET CMAKE_OUTPUT_DIR=%BLAST_ROOT_DIR%\compiler\linux64-%%Z-UE4\
     IF EXIST !CMAKE_OUTPUT_DIR! rmdir /S /Q !CMAKE_OUTPUT_DIR!
     mkdir !CMAKE_OUTPUT_DIR!

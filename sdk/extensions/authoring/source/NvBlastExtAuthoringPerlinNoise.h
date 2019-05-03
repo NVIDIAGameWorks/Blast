@@ -29,8 +29,7 @@
 #ifndef NVBLASTEXTAUTHORINGPERLINNOISE_H
 #define NVBLASTEXTAUTHORINGPERLINNOISE_H
 
-
-#include <NvBlastExtAuthoringTypes.h>
+#include <NvBlastExtAuthoringFractureTool.h>
 
 #include <PxVec4.h>
 #include <PxVec3.h>

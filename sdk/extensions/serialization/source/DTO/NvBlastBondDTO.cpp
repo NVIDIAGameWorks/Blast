@@ -57,7 +57,7 @@ bool NvBlastBondDTO::serialize(Nv::Blast::Serialization::NvBlastBond::Builder bu
 NvBlastBond* NvBlastBondDTO::deserialize(Nv::Blast::Serialization::NvBlastBond::Reader reader)
 {
 	//FIXME
-	reader = reader;
+	NV_UNUSED(reader);
 	//TODO: Allocate with ExtContext and return
 	return nullptr;
 }

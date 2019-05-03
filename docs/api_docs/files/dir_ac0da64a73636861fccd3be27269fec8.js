@@ -9,6 +9,9 @@ var dir_ac0da64a73636861fccd3be27269fec8 =
       [ "SpatialAccelerator", "class_nv_1_1_blast_1_1_spatial_accelerator.html", "class_nv_1_1_blast_1_1_spatial_accelerator" ],
       [ "SweepingAccelerator", "class_nv_1_1_blast_1_1_sweeping_accelerator.html", "class_nv_1_1_blast_1_1_sweeping_accelerator" ]
     ] ],
+    [ "NvBlastExtAuthoringConvexMeshBuilder.h", "_nv_blast_ext_authoring_convex_mesh_builder_8h.html", [
+      [ "ConvexMeshBuilder", "class_nv_1_1_blast_1_1_convex_mesh_builder.html", "class_nv_1_1_blast_1_1_convex_mesh_builder" ]
+    ] ],
     [ "NvBlastExtAuthoringMesh.h", "_nv_blast_ext_authoring_mesh_8h.html", [
       [ "Mesh", "class_nv_1_1_blast_1_1_mesh.html", "class_nv_1_1_blast_1_1_mesh" ]
     ] ],

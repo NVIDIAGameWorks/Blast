@@ -16,8 +16,10 @@ var hierarchy =
     [ "Nv::Blast::ChunkGraphLink", "struct_nv_1_1_blast_1_1_chunk_graph_link.html", null ],
     [ "Nv::Blast::ChunkInfo", "struct_nv_1_1_blast_1_1_chunk_info.html", null ],
     [ "Nv::Blast::CollisionHull", "struct_nv_1_1_blast_1_1_collision_hull.html", null ],
-    [ "Nv::Blast::CollisionParams", "struct_nv_1_1_blast_1_1_collision_params.html", null ],
-    [ "Nv::Blast::ConvexMeshBuilder", "class_nv_1_1_blast_1_1_convex_mesh_builder.html", null ],
+    [ "Nv::Blast::ConvexDecompositionParams", "struct_nv_1_1_blast_1_1_convex_decomposition_params.html", null ],
+    [ "Nv::Blast::ConvexMeshBuilder", "class_nv_1_1_blast_1_1_convex_mesh_builder.html", [
+      [ "Nv::Blast::ExtPxCollisionBuilder", "class_nv_1_1_blast_1_1_ext_px_collision_builder.html", null ]
+    ] ],
     [ "Nv::Blast::CutoutConfiguration", "struct_nv_1_1_blast_1_1_cutout_configuration.html", null ],
     [ "Nv::Blast::CutoutSet", "class_nv_1_1_blast_1_1_cutout_set.html", null ],
     [ "Nv::Blast::DamagePattern", "struct_nv_1_1_blast_1_1_damage_pattern.html", null ],
@@ -71,7 +73,7 @@ var hierarchy =
     [ "Nv::Blast::FractureRT", "class_nv_1_1_blast_1_1_fracture_r_t.html", null ],
     [ "Nv::Blast::FractureTool", "class_nv_1_1_blast_1_1_fracture_tool.html", null ],
     [ "Nv::Blast::Grid", "class_nv_1_1_blast_1_1_grid.html", null ],
-    [ "Nv::Blast::CollisionHull::HullPolygon", "struct_nv_1_1_blast_1_1_collision_hull_1_1_hull_polygon.html", null ],
+    [ "Nv::Blast::HullPolygon", "struct_nv_1_1_blast_1_1_hull_polygon.html", null ],
     [ "Nv::Blast::IJsonCollisionExporter", "class_nv_1_1_blast_1_1_i_json_collision_exporter.html", null ],
     [ "Nv::Blast::IMeshFileReader", "class_nv_1_1_blast_1_1_i_mesh_file_reader.html", [
       [ "Nv::Blast::IFbxFileReader", "class_nv_1_1_blast_1_1_i_fbx_file_reader.html", null ]

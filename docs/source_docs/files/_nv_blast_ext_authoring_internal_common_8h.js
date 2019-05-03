@@ -14,9 +14,11 @@ var _nv_blast_ext_authoring_internal_common_8h =
       [ "ZX_PLANE", "_nv_blast_ext_authoring_internal_common_8h.html#a2dbf0cc037620db35223513e817444f7a34e384d7641d38d0e6f9e601f5d868ac", null ],
       [ "OPPOSITE_WINDING", "_nv_blast_ext_authoring_internal_common_8h.html#a2dbf0cc037620db35223513e817444f7af9063b45980bcdd587cd7b7be4444152", null ]
     ] ],
-    [ "getPlaneSegmentIntersection", "_nv_blast_ext_authoring_internal_common_8h.html#aa53d476b82810995adad43062322f649", null ],
+    [ "getPlaneSegmentIntersection", "_nv_blast_ext_authoring_internal_common_8h.html#a7bba8d1f555e341010029032391276a6", null ],
     [ "getProjectedPoint", "_nv_blast_ext_authoring_internal_common_8h.html#a44d0b01b83d001724a34646ec96d17f0", null ],
+    [ "getProjectedPoint", "_nv_blast_ext_authoring_internal_common_8h.html#a07798b57f728802d367a7efbea3ce3a7", null ],
     [ "getProjectedPointWithWinding", "_nv_blast_ext_authoring_internal_common_8h.html#a5f4aa5b6b2451711fccf09757bdd2e1e", null ],
     [ "getProjectionDirection", "_nv_blast_ext_authoring_internal_common_8h.html#ab77f76686c61a4a62d1aabb5e7b9c20a", null ],
+    [ "operator<", "_nv_blast_ext_authoring_internal_common_8h.html#acf1aa675b24e661db37949852a97b58f", null ],
     [ "weakBoundingBoxIntersection", "_nv_blast_ext_authoring_internal_common_8h.html#ab18c3161481f8a05cd11866ef1afbd9e", null ]
 ];

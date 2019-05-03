@@ -22,7 +22,6 @@ INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtShaders.cmake)
 INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtStress.cmake)
 INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtPhysX.cmake)
 INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtAuthoring.cmake)
-# INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtRT.cmake)
 
 IF(${UE4_LINUX_CROSSCOMPILE})
 	#This uses the Windows CapnProto exe so it works

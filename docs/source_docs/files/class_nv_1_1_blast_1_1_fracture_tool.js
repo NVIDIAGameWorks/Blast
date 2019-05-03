@@ -2,7 +2,7 @@ var class_nv_1_1_blast_1_1_fracture_tool =
 [
     [ "~FractureTool", "class_nv_1_1_blast_1_1_fracture_tool.html#a4d00c3d53ba51d966de58ff533435cc2", null ],
     [ "createChunkMesh", "class_nv_1_1_blast_1_1_fracture_tool.html#a04bb5dd940274a9c8b097cc9f06d0708", null ],
-    [ "cut", "class_nv_1_1_blast_1_1_fracture_tool.html#a36b1f5a608fb87c0da383e32e7f09bf1", null ],
+    [ "cut", "class_nv_1_1_blast_1_1_fracture_tool.html#a559c822041e74f034613b3afa4ad8a17", null ],
     [ "cutout", "class_nv_1_1_blast_1_1_fracture_tool.html#a247f0e36c015237002dc87675562289b", null ],
     [ "deleteAllChildrenOfChunk", "class_nv_1_1_blast_1_1_fracture_tool.html#aeaa46bf5fe4fe7035ac624f49ade64a8", null ],
     [ "finalizeFracturing", "class_nv_1_1_blast_1_1_fracture_tool.html#a8830959a8f7e4babc1983ea31c61ef5d", null ],
@@ -18,7 +18,7 @@ var class_nv_1_1_blast_1_1_fracture_tool =
     [ "getChunksIdAtDepth", "class_nv_1_1_blast_1_1_fracture_tool.html#a7bcaeda929fdcc29a7db12676cf0984a", null ],
     [ "getInteriorMaterialId", "class_nv_1_1_blast_1_1_fracture_tool.html#a820000e618005f6de1cbcb56d3e54de5", null ],
     [ "getMeshOverlap", "class_nv_1_1_blast_1_1_fracture_tool.html#adc4037818bdb9424fe0543b59c1e2eac", null ],
-    [ "getTransformation", "class_nv_1_1_blast_1_1_fracture_tool.html#a6bea973a4818678affb3ca13e6dc5328", null ],
+    [ "getTransformation", "class_nv_1_1_blast_1_1_fracture_tool.html#a7f12ca1a0b1aa04875e46402a2a840f9", null ],
     [ "islandDetectionAndRemoving", "class_nv_1_1_blast_1_1_fracture_tool.html#a44ad67ac96b11e7dad87b5ed7a788f21", null ],
     [ "isMeshContainOpenEdges", "class_nv_1_1_blast_1_1_fracture_tool.html#a5710c73457bcceba3f20d130e231a028", null ],
     [ "release", "class_nv_1_1_blast_1_1_fracture_tool.html#a78da4a0d726ec1b541166cd3c46df67e", null ],
@@ -29,8 +29,8 @@ var class_nv_1_1_blast_1_1_fracture_tool =
     [ "setRemoveIslands", "class_nv_1_1_blast_1_1_fracture_tool.html#a251738022e498b819e88536577470735", null ],
     [ "setSourceMesh", "class_nv_1_1_blast_1_1_fracture_tool.html#ac14c1ff1d50756694be24c34476af965", null ],
     [ "slicing", "class_nv_1_1_blast_1_1_fracture_tool.html#a45e8a5d3b6d98da1b44b6888a5054cce", null ],
-    [ "uniteChunks", "class_nv_1_1_blast_1_1_fracture_tool.html#abc9766f9ef9efc4fd5f36813f28cc705", null ],
+    [ "uniteChunks", "class_nv_1_1_blast_1_1_fracture_tool.html#ac0c886a68b51652184c126e965dc6209", null ],
     [ "updateBaseMesh", "class_nv_1_1_blast_1_1_fracture_tool.html#a384be45a1310ee0652d315127e62da22", null ],
-    [ "voronoiFracturing", "class_nv_1_1_blast_1_1_fracture_tool.html#ac4fc3be233311be7daf7471fcea21285", null ],
-    [ "voronoiFracturing", "class_nv_1_1_blast_1_1_fracture_tool.html#a4f3ef816a0f201da675be379691193d1", null ]
+    [ "voronoiFracturing", "class_nv_1_1_blast_1_1_fracture_tool.html#a4c3308b909153982aded9366f9d3ee7c", null ],
+    [ "voronoiFracturing", "class_nv_1_1_blast_1_1_fracture_tool.html#a2d38fb6aac3c36d51d60dad428a43074", null ]
 ];

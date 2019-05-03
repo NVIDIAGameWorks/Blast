@@ -31,7 +31,7 @@
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#04bb5dd940274a9c8b097cc9f06d0708">createChunkMesh</a> (int32_t chunkId)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#36b1f5a608fb87c0da383e32e7f09bf1">cut</a> (uint32_t chunkId, const physx::PxVec3 &amp;normal, const physx::PxVec3 &amp;position, const <a class="el" href="struct_nv_1_1_blast_1_1_noise_configuration.html">NoiseConfiguration</a> &amp;noise, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#559c822041e74f034613b3afa4ad8a17">cut</a> (uint32_t chunkId, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;normal, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;position, const <a class="el" href="struct_nv_1_1_blast_1_1_noise_configuration.html">NoiseConfiguration</a> &amp;noise, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#247f0e36c015237002dc87675562289b">cutout</a> (uint32_t chunkId, <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a> conf, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd)=0</td></tr>
 
@@ -63,7 +63,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#dc4037818bdb9424fe0543b59c1e2eac">getMeshOverlap</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> &amp;meshA, const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> &amp;meshB)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#6bea973a4818678affb3ca13e6dc5328">getTransformation</a> (physx::PxVec3 &amp;offset, float &amp;scale)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#7f12ca1a0b1aa04875e46402a2a840f9">getTransformation</a> (<a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;offset, float &amp;scale)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#44ad67ac96b11e7dad87b5ed7a788f21">islandDetectionAndRemoving</a> (int32_t chunkId, bool createAtNewDepth=false)=0</td></tr>
 
@@ -85,13 +85,13 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#45e8a5d3b6d98da1b44b6888a5054cce">slicing</a> (uint32_t chunkId, const <a class="el" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a> &amp;conf, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#bc9766f9ef9efc4fd5f36813f28cc705">uniteChunks</a> (uint32_t maxAtLevel, uint32_t maxGroupSize)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c0c886a68b51652184c126e965dc6209">uniteChunks</a> (uint32_t maxAtLevel, uint32_t maxGroupSize, const <a class="el" href="struct_nvc_vec2i.html">NvcVec2i</a> *adjChunks, uint32_t adjChunksSize, bool removeOriginalChunks=false)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#384be45a1310ee0652d315127e62da22">updateBaseMesh</a> (int32_t chunkIndex, <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *output)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#4f3ef816a0f201da675be379691193d1">voronoiFracturing</a> (uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, const physx::PxVec3 &amp;scale, const physx::PxQuat &amp;rotation, bool replaceChunk)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#2d38fb6aac3c36d51d60dad428a43074">voronoiFracturing</a> (uint32_t chunkId, uint32_t cellCount, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *cellPoints, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;scale, const <a class="el" href="struct_nvc_quat.html">NvcQuat</a> &amp;rotation, bool replaceChunk)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c4fc3be233311be7daf7471fcea21285">voronoiFracturing</a> (uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, bool replaceChunk)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#4c3308b909153982aded9366f9d3ee7c">voronoiFracturing</a> (uint32_t chunkId, uint32_t cellCount, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *cellPoints, bool replaceChunk)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#4d00c3d53ba51d966de58ff533435cc2">~FractureTool</a> ()</td></tr>
 
@@ -138,7 +138,7 @@
 Get chunk mesh in polygonal representation. User's code should release it after usage. 
 </div>
 </div><p>
-<a class="anchor" name="36b1f5a608fb87c0da383e32e7f09bf1"></a><!-- doxytag: member="Nv::Blast::FractureTool::cut" ref="36b1f5a608fb87c0da383e32e7f09bf1" args="(uint32_t chunkId, const physx::PxVec3 &amp;normal, const physx::PxVec3 &amp;position, const NoiseConfiguration &amp;noise, bool replaceChunk, RandomGeneratorBase *rnd)=0" -->
+<a class="anchor" name="559c822041e74f034613b3afa4ad8a17"></a><!-- doxytag: member="Nv::Blast::FractureTool::cut" ref="559c822041e74f034613b3afa4ad8a17" args="(uint32_t chunkId, const NvcVec3 &amp;normal, const NvcVec3 &amp;position, const NoiseConfiguration &amp;noise, bool replaceChunk, RandomGeneratorBase *rnd)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -151,13 +151,13 @@ Get chunk mesh in polygonal representation. User's code should release it after 
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>normal</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>position</em>, </td>
         </tr>
         <tr>
@@ -644,14 +644,14 @@ Get percentage of mesh overlap. percentage computed as volume(intersection(meshA
 
 </div>
 </div><p>
-<a class="anchor" name="6bea973a4818678affb3ca13e6dc5328"></a><!-- doxytag: member="Nv::Blast::FractureTool::getTransformation" ref="6bea973a4818678affb3ca13e6dc5328" args="(physx::PxVec3 &amp;offset, float &amp;scale)=0" -->
+<a class="anchor" name="7f12ca1a0b1aa04875e46402a2a840f9"></a><!-- doxytag: member="Nv::Blast::FractureTool::getTransformation" ref="7f12ca1a0b1aa04875e46402a2a840f9" args="(NvcVec3 &amp;offset, float &amp;scale)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">virtual void Nv::Blast::FractureTool::getTransformation           </td>
           <td>(</td>
-          <td class="paramtype">physx::PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype"><a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>offset</em>, </td>
         </tr>
         <tr>
@@ -842,7 +842,7 @@ Set chunk mesh, parentId should be valid, return id of new chunk.
 <div class="memdoc">
 
 <p>
-Set the material id to use for new interior faces. Defaults to MATERIAL_INTERIOR 
+Set the material id to use for new interior faces. Defaults to kMaterialInteriorId 
 </div>
 </div><p>
 <a class="anchor" name="251738022e498b819e88536577470735"></a><!-- doxytag: member="Nv::Blast::FractureTool::setRemoveIslands" ref="251738022e498b819e88536577470735" args="(bool isRemoveIslands)=0" -->
@@ -940,7 +940,7 @@ Fractures specified chunk with slicing method. <dl compact><dt><b>Parameters:</b
 
 </div>
 </div><p>
-<a class="anchor" name="bc9766f9ef9efc4fd5f36813f28cc705"></a><!-- doxytag: member="Nv::Blast::FractureTool::uniteChunks" ref="bc9766f9ef9efc4fd5f36813f28cc705" args="(uint32_t maxAtLevel, uint32_t maxGroupSize)=0" -->
+<a class="anchor" name="c0c886a68b51652184c126e965dc6209"></a><!-- doxytag: member="Nv::Blast::FractureTool::uniteChunks" ref="c0c886a68b51652184c126e965dc6209" args="(uint32_t maxAtLevel, uint32_t maxGroupSize, const NvcVec2i *adjChunks, uint32_t adjChunksSize, bool removeOriginalChunks=false)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -954,7 +954,25 @@ Fractures specified chunk with slicing method. <dl compact><dt><b>Parameters:</b
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>maxGroupSize</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>maxGroupSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec2i.html">NvcVec2i</a> *&nbsp;</td>
+          <td class="paramname"> <em>adjChunks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>adjChunksSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>removeOriginalChunks</em> = <code>false</code></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -970,6 +988,10 @@ Optimize chunk hierarhy for better runtime performance. It tries to unite chunks
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>maxAtLevel</em>&nbsp;</td><td>If number of children of some chunk less then maxAtLevel then it would be considered as already optimized and skipped. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>maxGroupSize</em>&nbsp;</td><td>Max number of children for processed chunks. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>removeOriginalChunks.</em>&nbsp;</td><td></td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adjChunks</em>&nbsp;</td><td>Optional index pairs to describe chunk adjacency. May be NULL. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adjChunksSize</em>&nbsp;</td><td>If 'adjChunks' is not NULL, the number of index pairs in the adjChunks array. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>removeOriginalChunks</em>&nbsp;</td><td>If true, original chunks that are merged are removed. </td></tr>
   </table>
 </dl>
 
@@ -1012,7 +1034,7 @@ Update chunk base mesh <dl class="note" compact><dt><b>Note:</b></dt><dd>Doesn't
 
 </div>
 </div><p>
-<a class="anchor" name="4f3ef816a0f201da675be379691193d1"></a><!-- doxytag: member="Nv::Blast::FractureTool::voronoiFracturing" ref="4f3ef816a0f201da675be379691193d1" args="(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, const physx::PxVec3 &amp;scale, const physx::PxQuat &amp;rotation, bool replaceChunk)=0" -->
+<a class="anchor" name="2d38fb6aac3c36d51d60dad428a43074"></a><!-- doxytag: member="Nv::Blast::FractureTool::voronoiFracturing" ref="2d38fb6aac3c36d51d60dad428a43074" args="(uint32_t chunkId, uint32_t cellCount, const NvcVec3 *cellPoints, const NvcVec3 &amp;scale, const NvcQuat &amp;rotation, bool replaceChunk)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1031,19 +1053,19 @@ Update chunk base mesh <dl class="note" compact><dt><b>Note:</b></dt><dd>Doesn't
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td>
           <td class="paramname"> <em>cellPoints</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>scale</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxQuat &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_quat.html">NvcQuat</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>rotation</em>, </td>
         </tr>
         <tr>
@@ -1076,7 +1098,7 @@ Fractures specified chunk with voronoi method. Cells can be scaled along x,y,z a
 
 </div>
 </div><p>
-<a class="anchor" name="c4fc3be233311be7daf7471fcea21285"></a><!-- doxytag: member="Nv::Blast::FractureTool::voronoiFracturing" ref="c4fc3be233311be7daf7471fcea21285" args="(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3 *cellPoints, bool replaceChunk)=0" -->
+<a class="anchor" name="4c3308b909153982aded9366f9d3ee7c"></a><!-- doxytag: member="Nv::Blast::FractureTool::voronoiFracturing" ref="4c3308b909153982aded9366f9d3ee7c" args="(uint32_t chunkId, uint32_t cellCount, const NvcVec3 *cellPoints, bool replaceChunk)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1095,7 +1117,7 @@ Fractures specified chunk with voronoi method. Cells can be scaled along x,y,z a
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td>
           <td class="paramname"> <em>cellPoints</em>, </td>
         </tr>
         <tr>

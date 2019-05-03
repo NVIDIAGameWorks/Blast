@@ -31,7 +31,6 @@
 
 #include <string>
 #include <vector>
-#include <NvBlastExtAuthoringCollisionBuilder.h>
 #include <NvBlastExtApexImportTool.h>
 
 

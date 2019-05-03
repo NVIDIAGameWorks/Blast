@@ -54,7 +54,7 @@ namespace Nv
 				\param[in] ed Edge buffer
 				\param[in] fc Facet which should be tested.
 			*/
-			virtual void	setState(const physx::PxBounds3* bounds) = 0;
+			virtual void	setState(const NvcBounds3* bounds) = 0;
 
 			/**
 				Set state of accelerator to return all facets which possibly can intersect given facet.
@@ -67,7 +67,7 @@ namespace Nv
 				Set state of accelerator to return all facets which possibly can cover given point. Needed for testing whether point is inside mesh.
 				\param[in] point Point which should be tested.
 			*/
-			virtual void	setState(const physx::PxVec3& point) = 0;
+			virtual void	setState(const NvcVec3& point) = 0;
 			/**
 				Recieve next facet for setted state.
 				\return Next facet index, or -1 if no facets left.
@@ -92,15 +92,15 @@ namespace Nv
 				\param[in] count Mesh facets count for which accelerator should be built.
 			*/
 			DummyAccelerator(int32_t count);
-			virtual void	setState(const physx::PxBounds3* bounds) override;
+			virtual void	setState(const NvcBounds3* bounds) override;
 			virtual void setState(const Vertex* pos, const Edge* ed, const Facet& fc) override;
-			virtual void setState(const physx::PxVec3& point) override;
+			virtual void setState(const NvcVec3& point) override;
 			virtual int32_t getNextFacet() override;
 
 			virtual void setPointCmpDirection(int32_t dir) override {};
 		private:
-			int32_t count;
-			int32_t current;
+			int32_t m_count;
+			int32_t m_current;
 		};
 
 		struct SegmentToIndex
@@ -132,12 +132,12 @@ namespace Nv
 			void setMesh(const Nv::Blast::Mesh* m);
 
 		private:
-			int32_t mResolution;
-			int32_t r3;
-			int32_t mappedFacetCount;
-			physx::PxVec3 spos;
-			physx::PxVec3 deltas;
-			std::vector< std::vector<int32_t> > mSpatialMap;
+			int32_t m_resolution;
+			int32_t m_r3;
+			int32_t m_mappedFacetCount;
+			NvcVec3 m_spos;
+			NvcVec3 m_deltas;
+			std::vector< std::vector<int32_t> > m_spatialMap;
 		};
 
 		class GridWalker : public SpatialAccelerator // Iterator to traverse the grid
@@ -145,22 +145,22 @@ namespace Nv
 		public:
 			GridWalker(Grid* grd);
 
-			virtual void	setState(const physx::PxBounds3* bounds) override;
+			virtual void	setState(const NvcBounds3* bounds) override;
 			virtual void	setState(const Vertex* pos, const Edge* ed, const Facet& fc) override;
-			virtual void	setState(const physx::PxVec3& point) override;
+			virtual void	setState(const NvcVec3& point) override;
 			virtual int32_t	getNextFacet() override;
 			virtual void	setPointCmpDirection(int32_t dir) override;
 		private:
-			Grid* mGrid;
+			Grid* m_grid;
 
 			// Iterator data
-			std::vector<uint32_t> alreadyGotFlag;
-			uint32_t alreadyGotValue;
-			std::vector<int32_t> cellList;
-			int32_t gotCells;
-			int32_t mIteratorCell;
-			int32_t mIteratorFacet;
-			int32_t pointCmdDir;
+			std::vector<uint32_t> m_alreadyGotFlag;
+			uint32_t m_alreadyGotValue;
+			std::vector<int32_t> m_cellList;
+			int32_t m_gotCells;
+			int32_t m_iteratorCell;
+			int32_t m_iteratorFacet;
+			int32_t m_pointCmdDir;
 		};
 
 
@@ -172,8 +172,8 @@ namespace Nv
 			*/
 			SweepingAccelerator(Nv::Blast::Mesh* in);
 			virtual void setState(const Vertex* pos, const Edge* ed, const Facet& fc) override;
-			virtual void	setState(const physx::PxBounds3* bounds) override;
-			virtual void setState(const physx::PxVec3& point) override;
+			virtual void	setState(const NvcBounds3* bounds) override;
+			virtual void setState(const NvcVec3& point) override;
 			virtual int32_t getNextFacet() override;
 			virtual void setPointCmpDirection(int32_t dir) override {};
 		private:
@@ -182,21 +182,21 @@ namespace Nv
 			/*
 				For fast point test.
 			*/
-			std::vector<std::vector<uint32_t> > xSegm;
-			std::vector<std::vector<uint32_t> > ySegm;
-			std::vector<std::vector<uint32_t> > zSegm;
-			std::vector<uint32_t> indices;
-			std::vector<uint32_t> foundx;
-			std::vector<uint32_t> foundy;
+			std::vector<std::vector<uint32_t> > m_xSegm;
+			std::vector<std::vector<uint32_t> > m_ySegm;
+			std::vector<std::vector<uint32_t> > m_zSegm;
+	        std::vector<uint32_t> m_indices;
+	        std::vector<uint32_t> m_foundx;
+	        std::vector<uint32_t> m_foundy;
 
-			uint32_t iterId;
-			int32_t current;
-			uint32_t facetCount;
+			uint32_t m_iterId;
+	        int32_t m_current;
+	        uint32_t m_facetCount;
 
-			physx::PxVec3 minimal;
-			physx::PxVec3 maximal;
+			NvcVec3 m_minimal;
+	        NvcVec3 m_maximal;
 
-			physx::PxVec3 rescale;
+			NvcVec3 m_rescale;
 	
 
 		};
@@ -218,27 +218,26 @@ namespace Nv
 			virtual ~BBoxBasedAccelerator();
 			int32_t getNextFacet() override;
 			void setState(const Vertex* pos, const Edge* ed, const Facet& fc) override;
-			void setState(const physx::PxBounds3* bounds) override;
-			void setState(const physx::PxVec3& p) override;
+			void setState(const NvcBounds3* bounds) override;
+			void setState(const NvcVec3& p) override;
 			void setPointCmpDirection(int32_t dir) override {};
 		private:
 
 			void buildAccelStructure(const Vertex* pos, const Edge* edges, const Facet* fc, int32_t facetCount);
 
-			int32_t mResolution;
-			physx::PxBounds3 mBounds;
-			std::vector< std::vector<int32_t> > mSpatialMap;
-			std::vector<physx::PxBounds3> mCells;
+			int32_t m_resolution;
+			NvcBounds3 m_bounds;
+			std::vector< std::vector<int32_t> > m_spatialMap;
+			std::vector<NvcBounds3> m_cells;
 
 	
 			// Iterator data
-			std::vector<uint32_t> alreadyGotFlag;
-			uint32_t alreadyGotValue;
-			std::vector<int32_t> cellList;
-			int32_t gotCells;
-			//std::vector<int32_t> cellList;
-			int32_t mIteratorCell;
-			int32_t mIteratorFacet;
+			std::vector<uint32_t> m_alreadyGotFlag;
+			uint32_t m_alreadyGotValue;
+			std::vector<int32_t> m_cellList;
+			int32_t m_gotCells;
+			int32_t m_iteratorCell;
+			int32_t m_iteratorFacet;
 		};
 
 	} // namespace Blast

@@ -35,9 +35,9 @@
 #include "NvBlastExtAuthoringBooleanTool.h"
 #include "NvBlastExtAuthoringTriangulator.h"
 #include "NvBlastExtAuthoringPerlinNoise.h"
+#include <NvBlastPxSharedHelpers.h>
 
 #include <vector>
-#include "PxVec3.h"
 
 using namespace Nv::Blast;
 using namespace physx;
@@ -49,7 +49,7 @@ struct DamagePatternImpl : public DamagePattern
 
 DamagePattern* PatternGeneratorImpl::generateUniformPattern(const UniformPatternDesc* desc)
 {
-	std::vector<PxVec3> points;
+	std::vector<NvcVec3> points;
 	float radiusDelta = desc->radiusMax - desc->radiusMin;
 	for (uint32_t i = 0; i < desc->cellsCount; ++i)
 	{
@@ -67,7 +67,7 @@ DamagePattern* PatternGeneratorImpl::generateUniformPattern(const UniformPattern
 		float y = rd * sin(phi) * sin(theta);
 		float z = rd * cos(theta);
 
-		points.push_back(PxVec3(x, y, z));
+		points.push_back({x, y, z});
 	}
 
 
@@ -76,23 +76,23 @@ DamagePattern* PatternGeneratorImpl::generateUniformPattern(const UniformPattern
 	return pattern;
 }
 
-DamagePattern* PatternGeneratorImpl::generateVoronoiPattern(uint32_t cellCount, const physx::PxVec3* inPoints, int32_t interiorMaterialId)
+DamagePattern* PatternGeneratorImpl::generateVoronoiPattern(uint32_t cellCount, const NvcVec3* inPoints, int32_t interiorMaterialId)
 {
 	return generateVoronoiPatternInternal(cellCount, inPoints, interiorMaterialId);
 }
 
-DamagePattern* PatternGeneratorImpl::generateVoronoiPatternInternal(uint32_t cellCount, const physx::PxVec3* inPoints, int32_t interiorMaterialId, float angle)
+DamagePattern* PatternGeneratorImpl::generateVoronoiPatternInternal(uint32_t cellCount, const NvcVec3* inPoints, int32_t interiorMaterialId, float angle)
 {
 	DamagePatternImpl* pattern = NVBLAST_NEW(DamagePatternImpl);
 
-	std::vector<PxVec3> points(cellCount);
-	physx::PxVec3 orig(0.f);
+	std::vector<NvcVec3> points(cellCount);
+	NvcVec3 orig = {0, 0, 0};
 	for (uint32_t i = 0; i < cellCount; ++i)
 	{
 		points[i] = inPoints[i];
-		orig += points[i];
+		orig = orig + points[i];
 	}
-	orig /= cellCount;
+	orig = orig / cellCount;
 
 	std::vector<std::vector<int32_t> > neighboors;
 	findCellBasePlanes(points, neighboors);
@@ -153,7 +153,7 @@ DamagePattern* PatternGeneratorImpl::generateVoronoiPatternInternal(uint32_t cel
 
 DamagePattern* PatternGeneratorImpl::generateBeamPattern(const BeamPatternDesc* desc)
 {
-	std::vector<PxVec3> points;
+	std::vector<NvcVec3> points;
 
 	float radiusDelta = desc->radiusMax - desc->radiusMin;
 
@@ -165,7 +165,7 @@ DamagePattern* PatternGeneratorImpl::generateBeamPattern(const BeamPatternDesc* 
 		float x = rd * cos(phi);
 		float y = rd * sin(phi);
 		float z = desc->RNG() - 1;
-		points.push_back(PxVec3(x, y, z));
+		points.push_back({x, y, z});
 	}
 	auto pattern = generateVoronoiPattern((uint32_t)points.size(), points.data(), desc->interiorMaterialId);
 	pattern->activationType = DamagePattern::Line;
@@ -205,7 +205,7 @@ DamagePattern* PatternGeneratorImpl::generateRegularRadialPattern(const RegularR
 	
 	float ap = std::max(0.0f, desc->aperture);
 
-	auto pattern = generateVoronoiPatternInternal((uint32_t)points.size(), points.data(), desc->interiorMaterialId, ap);
+	auto pattern = generateVoronoiPatternInternal((uint32_t)points.size(), fromPxShared(points.data()), desc->interiorMaterialId, ap);
 
 	pattern->activationRadius = desc->radiusMax * desc->debrisRadiusMult;
 	pattern->activationType = (ap == 0) ? DamagePattern::Line : DamagePattern::Cone;

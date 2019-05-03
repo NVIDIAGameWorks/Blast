@@ -33,6 +33,7 @@
 #include <vector>
 #include <string>
 #include "NvBlastExtPxAsset.h"
+#include "NvBlastExtPxCollisionBuilder.h"
 #include <nvparameterized\NvSerializer.h>
 #include <NvBlastExtExporter.h>
 
@@ -179,6 +180,11 @@ public:
 												const std::vector<uint32_t>& apexChunkFlags, std::vector<ExtPxAssetDesc::ChunkDesc>& physicsChunks,
 												std::vector<ExtPxAssetDesc::SubchunkDesc>& physicsSubchunks, std::vector<std::vector<CollisionHull*> >& hullsDesc);
 
+	const ExtPxCollisionBuilder* getCollisionBuilder() const
+	{
+		return m_collisionBuilder;
+	}
+
 	//////////////////////////////////////////////////////////////////////////////
 
 	bool isValid();
@@ -199,6 +205,7 @@ protected:
 	physx::PxPhysics*		m_PhysxSDK;
 	physx::PxCooking*		m_Cooking;
 
+	ExtPxCollisionBuilder*	m_collisionBuilder;
 };
 
 } // namespace ApexImporter

@@ -29,9 +29,12 @@
 #ifndef NVBLASTINTERNALCOMMON_H
 #define NVBLASTINTERNALCOMMON_H
 #include "NvBlastExtAuthoringTypes.h"
+#include <PxVec2.h>
+#include <PxVec3.h>
+#include <PxPlane.h>
+#include <PxBounds3.h>
+#include <PxMath.h>
 #include <algorithm>
-
-using namespace physx;
 
 namespace Nv
 {
@@ -75,6 +78,13 @@ struct EdgeComparator
 	}
 };
 
+inline bool operator<(const Edge& a, const Edge& b)
+{
+	if (a.s == b.s)
+		return a.e < b.e;
+	else
+		return a.s < b.s;
+}
 
 /**
 Vertex projection direction flag.
@@ -127,6 +137,11 @@ NV_FORCE_INLINE physx::PxVec2 getProjectedPoint(const physx::PxVec3& point, Proj
 		return physx::PxVec2(point.x, point.z);
 	}
 	return physx::PxVec2(point.x, point.y);
+}
+
+NV_FORCE_INLINE physx::PxVec2 getProjectedPoint(const NvcVec3& point, ProjectionDirections dir)
+{
+	return getProjectedPoint((const physx::PxVec3&)point, dir);
 }
 
 /**
@@ -182,10 +197,11 @@ NV_INLINE bool  weakBoundingBoxIntersection(const physx::PxBounds3& aBox, const 
 /**
 Test segment vs plane intersection. If segment intersects the plane true is returned. Point of intersection is written into 'result'.
 */
-NV_INLINE bool getPlaneSegmentIntersection(const PxPlane& pl, const PxVec3& a, const PxVec3& b, PxVec3& result)
+NV_INLINE bool getPlaneSegmentIntersection(const physx::PxPlane& pl, const physx::PxVec3& a, const physx::PxVec3& b,
+                                           physx::PxVec3& result)
 {
 	float div = (b - a).dot(pl.n);
-	if (PxAbs(div) < 0.0001f)
+	if (physx::PxAbs(div) < 0.0001f)
 	{
 		if (pl.contains(a))
 		{
@@ -243,7 +259,7 @@ Vertex comparator for vertex welding (not accounts normal and uv parameters of v
 */
 struct VrtPositionComparator
 {
-	bool operator()(const physx::PxVec3& a, const physx::PxVec3& b) const
+	bool operator()(const NvcVec3& a, const NvcVec3& b) const
 	{
 		if (a.x + POS_COMPARISON_OFFSET < b.x) return true;
 		if (a.x - POS_COMPARISON_OFFSET > b.x) return false;

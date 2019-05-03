@@ -225,6 +225,14 @@ void run(const std::string& inFilepath, const std::string& outDir, const std::st
 		}
 	}
 
+	for (auto& hv : hulls)
+	{
+		for (auto h : hv)
+		{
+			blast.getCollisionBuilder()->releaseCollisionHull(h);
+		}
+	}
+
 	NVBLAST_FREE(llAsset);
 }
 

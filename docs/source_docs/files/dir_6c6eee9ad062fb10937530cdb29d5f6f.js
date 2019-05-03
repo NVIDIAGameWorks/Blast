@@ -6,10 +6,7 @@ var dir_6c6eee9ad062fb10937530cdb29d5f6f =
       [ "BlastBondGeneratorImpl", "class_nv_1_1_blast_1_1_blast_bond_generator_impl.html", "class_nv_1_1_blast_1_1_blast_bond_generator_impl" ]
     ] ],
     [ "NvBlastExtAuthoringBooleanTool.h", "_nv_blast_ext_authoring_boolean_tool_8h.html", "_nv_blast_ext_authoring_boolean_tool_8h" ],
-    [ "NvBlastExtAuthoringCollisionBuilderImpl.h", "_nv_blast_ext_authoring_collision_builder_impl_8h.html", [
-      [ "CollisionHullImpl", "struct_nv_1_1_blast_1_1_collision_hull_impl.html", "struct_nv_1_1_blast_1_1_collision_hull_impl" ],
-      [ "ConvexMeshBuilderImpl", "class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html", "class_nv_1_1_blast_1_1_convex_mesh_builder_impl" ]
-    ] ],
+    [ "NvBlastExtAuthoringCollisionBuilderImpl.h", "_nv_blast_ext_authoring_collision_builder_impl_8h.html", "_nv_blast_ext_authoring_collision_builder_impl_8h" ],
     [ "NvBlastExtAuthoringCutoutImpl.h", "_nv_blast_ext_authoring_cutout_impl_8h.html", "_nv_blast_ext_authoring_cutout_impl_8h" ],
     [ "NvBlastExtAuthoringFractureToolImpl.h", "_nv_blast_ext_authoring_fracture_tool_impl_8h.html", "_nv_blast_ext_authoring_fracture_tool_impl_8h" ],
     [ "NvBlastExtAuthoringMeshCleanerImpl.h", "_nv_blast_ext_authoring_mesh_cleaner_impl_8h.html", [

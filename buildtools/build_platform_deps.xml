@@ -8,7 +8,6 @@
 	</dependency>
 	<dependency name="CMakeModules">
 		<package name="CMakeModules" version="1.1.0"/>
-		<package name="CMakeModules-xboxone" version="1.0.6.1" platforms="win.durango"/>
 	</dependency>
 	<dependency name="UE4LinuxToolChainV8">
 		<package name="UE4LinuxToolchainV8" version="1.0.0.0" platforms="win.linux-UE4-cross"/>

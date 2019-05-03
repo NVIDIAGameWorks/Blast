@@ -46,9 +46,9 @@ namespace Blast
 		virtual DamagePattern* generateRegularRadialPattern(const RegularRadialPatternDesc* desc) override;
 		virtual void release() override;
 
-		virtual DamagePattern* generateVoronoiPattern(uint32_t pointCount, const physx::PxVec3* points, int32_t interiorMaterialId) override;
+		virtual DamagePattern* generateVoronoiPattern(uint32_t pointCount, const NvcVec3* points, int32_t interiorMaterialId) override;
 	private:
-		DamagePattern* generateVoronoiPatternInternal(uint32_t pointCount, const physx::PxVec3* points, int32_t interiorMaterialId, float angle = 0.0f);
+		DamagePattern* generateVoronoiPatternInternal(uint32_t pointCount, const NvcVec3* points, int32_t interiorMaterialId, float angle = 0.0f);
 	};
 
 

@@ -31,7 +31,9 @@
 
 #include "NvBlastExtAuthoringCutout.h"
 #include <vector>
-#include "PxMat44.h" // TODO Should replace?
+#include <PxVec2.h>
+#include <PxVec3.h>
+#include <PxMat44.h>
 
 namespace Nv
 {
@@ -95,10 +97,7 @@ struct CutoutSetImpl : public CutoutSet
 		return (uint32_t)cutouts[cutoutIndex + 1] - cutouts[cutoutIndex];
 	}
 
-	const physx::PxVec3&	getCutoutVertex(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const
-	{
-		return cutoutLoops[cutouts[cutoutIndex] + loopIndex].vertices[vertexIndex];
-	}
+	const NvcVec3& getCutoutVertex(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const;
 
 	bool				isCutoutVertexToggleSmoothingGroup(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const
 	{
@@ -117,10 +116,7 @@ struct CutoutSetImpl : public CutoutSet
 	{
 		return periodic;
 	}
-	const physx::PxVec2&	getDimensions() const
-	{
-		return dimensions;
-	}
+	const NvcVec2& getDimensions() const;
 
 	//void					serialize(physx::PxFileBuf& stream) const;
 	//void					deserialize(physx::PxFileBuf& stream);

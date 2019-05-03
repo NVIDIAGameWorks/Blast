@@ -69,119 +69,115 @@
 <a name="l00031"></a>00031 <span class="preprocessor"></span>
 <a name="l00032"></a>00032 <span class="preprocessor">#include "<a class="code" href="_nv_blast_ext_authoring_cutout_8h.html">NvBlastExtAuthoringCutout.h</a>"</span>
 <a name="l00033"></a>00033 <span class="preprocessor">#include &lt;vector&gt;</span>
-<a name="l00034"></a>00034 <span class="preprocessor">#include "PxMat44.h"</span> <span class="comment">// TODO Should replace?</span>
-<a name="l00035"></a>00035 
-<a name="l00036"></a>00036 <span class="keyword">namespace </span>Nv
-<a name="l00037"></a>00037 {
-<a name="l00038"></a>00038 <span class="keyword">namespace </span>Blast
+<a name="l00034"></a>00034 <span class="preprocessor">#include &lt;PxVec2.h&gt;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &lt;PxVec3.h&gt;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &lt;PxMat44.h&gt;</span>
+<a name="l00037"></a>00037 
+<a name="l00038"></a>00038 <span class="keyword">namespace </span>Nv
 <a name="l00039"></a>00039 {
-<a name="l00040"></a>00040 
-<a name="l00041"></a><a class="code" href="struct_nv_1_1_blast_1_1_poly_vert.html">00041</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_poly_vert.html">PolyVert</a>
-<a name="l00042"></a>00042 {
-<a name="l00043"></a><a class="code" href="struct_nv_1_1_blast_1_1_poly_vert.html#8ea78901480aee9ff5b42cbfa4f53efa">00043</a>     uint16_t <a class="code" href="struct_nv_1_1_blast_1_1_poly_vert.html#8ea78901480aee9ff5b42cbfa4f53efa">index</a>;
-<a name="l00044"></a><a class="code" href="struct_nv_1_1_blast_1_1_poly_vert.html#eedaedbf387cbd04889f4dd54152e252">00044</a>     uint16_t <a class="code" href="struct_nv_1_1_blast_1_1_poly_vert.html#eedaedbf387cbd04889f4dd54152e252">flags</a>;
-<a name="l00045"></a>00045 };
-<a name="l00046"></a>00046 
-<a name="l00047"></a><a class="code" href="struct_nv_1_1_blast_1_1_convex_loop.html">00047</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_convex_loop.html">ConvexLoop</a>
-<a name="l00048"></a>00048 {
-<a name="l00049"></a><a class="code" href="struct_nv_1_1_blast_1_1_convex_loop.html#60048ae3684e9b06498f7b1268b5cf65">00049</a>     std::vector&lt;PolyVert&gt; <a class="code" href="struct_nv_1_1_blast_1_1_convex_loop.html#60048ae3684e9b06498f7b1268b5cf65">polyVerts</a>;
-<a name="l00050"></a>00050 };
-<a name="l00051"></a>00051 
-<a name="l00052"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout.html">00052</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_cutout.html">Cutout</a>
-<a name="l00053"></a>00053 {
-<a name="l00054"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout.html#c29380ef69c677be86745a7ff8b2805d">00054</a>     std::vector&lt;physx::PxVec3&gt; <a class="code" href="struct_nv_1_1_blast_1_1_cutout.html#c29380ef69c677be86745a7ff8b2805d">vertices</a>;
-<a name="l00055"></a>00055     <span class="comment">//std::vector&lt;ConvexLoop&gt; convexLoops;</span>
-<a name="l00056"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout.html#a6f468c14b3ddd7d1cfefab166e88e21">00056</a>     std::vector&lt;physx::PxVec3&gt; <a class="code" href="struct_nv_1_1_blast_1_1_cutout.html#a6f468c14b3ddd7d1cfefab166e88e21">smoothingGroups</a>;
-<a name="l00057"></a>00057 };
-<a name="l00058"></a>00058 
-<a name="l00059"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html">00059</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html">POINT2D</a>
-<a name="l00060"></a>00060 {
-<a name="l00061"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#004cc3d32633bf671fa7fc09e7445d01">00061</a>     <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#004cc3d32633bf671fa7fc09e7445d01">POINT2D</a>() {}
-<a name="l00062"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#08ceb7892b3841490c2356b9c6aa8594">00062</a>     <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#08ceb7892b3841490c2356b9c6aa8594">POINT2D</a>(int32_t _x, int32_t _y) : <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a>(_x), <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">y</a>(_y) {}
-<a name="l00063"></a>00063 
-<a name="l00064"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">00064</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a>;
-<a name="l00065"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">00065</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">y</a>;
-<a name="l00066"></a>00066 
-<a name="l00067"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2b79d10fa3f6b6b7b91c5e6cd971043b">00067</a>     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2b79d10fa3f6b6b7b91c5e6cd971043b">operator==</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html">POINT2D</a>&amp; other)<span class="keyword"> const</span>
-<a name="l00068"></a>00068 <span class="keyword">    </span>{
-<a name="l00069"></a>00069         <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a> == other.<a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a> &amp;&amp; <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">y</a> == other.<a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">y</a>;
-<a name="l00070"></a>00070     }
-<a name="l00071"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#c4cea89f0a86abe29fe34377a8215925">00071</a>     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#c4cea89f0a86abe29fe34377a8215925">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html">POINT2D</a>&amp; other)<span class="keyword"> const</span>
-<a name="l00072"></a>00072 <span class="keyword">    </span>{
-<a name="l00073"></a>00073         <span class="keywordflow">if</span> (<a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a> == other.<a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a>) <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">y</a> &lt; other.<a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">y</a>;
-<a name="l00074"></a>00074         <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a> &lt; other.<a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a>;
-<a name="l00075"></a>00075     }
-<a name="l00076"></a>00076 };
-<a name="l00077"></a>00077 
-<a name="l00078"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html">00078</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html">CutoutSetImpl</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html">CutoutSet</a>
-<a name="l00079"></a>00079 {
-<a name="l00080"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#77388b87dcf872052a907c193c0a8a64">00080</a>     <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#77388b87dcf872052a907c193c0a8a64">CutoutSetImpl</a>() : <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dccc4de2f5719c5a6b2b2cd0af5646cb">periodic</a>(false), <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#9d397b7f5b1244b5d89db398211a5580">dimensions</a>(0.0f)
-<a name="l00081"></a>00081     {
-<a name="l00082"></a>00082     }
-<a name="l00083"></a>00083 
-<a name="l00084"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#5dbca09e2e5dcf620a0bc461739bb987">00084</a>     uint32_t            <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#5dbca09e2e5dcf620a0bc461739bb987">getCutoutCount</a>()<span class="keyword"> const</span>
-<a name="l00085"></a>00085 <span class="keyword">    </span>{
-<a name="l00086"></a>00086         <span class="keywordflow">return</span> (uint32_t)<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>.size() - 1;
-<a name="l00087"></a>00087     }
-<a name="l00088"></a>00088 
-<a name="l00089"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#08cc67542f762a98bbd1c853f43dbba6">00089</a>     uint32_t            <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#08cc67542f762a98bbd1c853f43dbba6">getCutoutVertexCount</a>(uint32_t cutoutIndex, uint32_t loopIndex)<span class="keyword"> const</span>
-<a name="l00090"></a>00090 <span class="keyword">    </span>{
-<a name="l00091"></a>00091         <span class="keywordflow">return</span> (uint32_t)<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dfeea6d89a6e39188fc96eb8d6d202ea">cutoutLoops</a>[<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>[cutoutIndex] + loopIndex].vertices.size();
-<a name="l00092"></a>00092     }
-<a name="l00093"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#c7f3528bb5907927762200dc07d22297">00093</a>     uint32_t            <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#c7f3528bb5907927762200dc07d22297">getCutoutLoopCount</a>(uint32_t cutoutIndex)<span class="keyword"> const</span>
-<a name="l00094"></a>00094 <span class="keyword">    </span>{
-<a name="l00095"></a>00095         <span class="keywordflow">return</span> (uint32_t)<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>[cutoutIndex + 1] - <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>[cutoutIndex];
-<a name="l00096"></a>00096     }
-<a name="l00097"></a>00097 
-<a name="l00098"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#a6a27a58fce57308aafaefd3768d0a08">00098</a>     <span class="keyword">const</span> physx::PxVec3&amp;    <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#a6a27a58fce57308aafaefd3768d0a08">getCutoutVertex</a>(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex)<span class="keyword"> const</span>
-<a name="l00099"></a>00099 <span class="keyword">    </span>{
-<a name="l00100"></a>00100         <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dfeea6d89a6e39188fc96eb8d6d202ea">cutoutLoops</a>[<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>[cutoutIndex] + loopIndex].vertices[vertexIndex];
-<a name="l00101"></a>00101     }
-<a name="l00102"></a>00102 
-<a name="l00103"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#0b499b888a1d1afe508524c51936685a">00103</a>     <span class="keywordtype">bool</span>                <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#0b499b888a1d1afe508524c51936685a">isCutoutVertexToggleSmoothingGroup</a>(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex)<span class="keyword"> const</span>
-<a name="l00104"></a>00104 <span class="keyword">    </span>{
-<a name="l00105"></a>00105         <span class="keyword">auto</span>&amp; vRef = <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dfeea6d89a6e39188fc96eb8d6d202ea">cutoutLoops</a>[<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>[cutoutIndex] + loopIndex].vertices[vertexIndex];
-<a name="l00106"></a>00106         <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; v : <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dfeea6d89a6e39188fc96eb8d6d202ea">cutoutLoops</a>[<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>[cutoutIndex] + loopIndex].smoothingGroups)
-<a name="l00107"></a>00107         {
-<a name="l00108"></a>00108             <span class="keywordflow">if</span> ((vRef - v).magnitudeSquared() &lt; 1e-5)
-<a name="l00109"></a>00109             {
-<a name="l00110"></a>00110                 <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00111"></a>00111             }
-<a name="l00112"></a>00112         }
-<a name="l00113"></a>00113         <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00114"></a>00114     }
-<a name="l00115"></a>00115 
-<a name="l00116"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#5732e95214600b48a96b1fcd2257c4c0">00116</a>     <span class="keywordtype">bool</span>                    <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#5732e95214600b48a96b1fcd2257c4c0">isPeriodic</a>()<span class="keyword"> const</span>
-<a name="l00117"></a>00117 <span class="keyword">    </span>{
-<a name="l00118"></a>00118         <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dccc4de2f5719c5a6b2b2cd0af5646cb">periodic</a>;
-<a name="l00119"></a>00119     }
-<a name="l00120"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#3fb7f765ce7855f9ae208fce39e5b3ce">00120</a>     <span class="keyword">const</span> physx::PxVec2&amp;    <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#3fb7f765ce7855f9ae208fce39e5b3ce">getDimensions</a>()<span class="keyword"> const</span>
-<a name="l00121"></a>00121 <span class="keyword">    </span>{
-<a name="l00122"></a>00122         <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#9d397b7f5b1244b5d89db398211a5580">dimensions</a>;
-<a name="l00123"></a>00123     }
-<a name="l00124"></a>00124 
-<a name="l00125"></a>00125     <span class="comment">//void                  serialize(physx::PxFileBuf&amp; stream) const;</span>
-<a name="l00126"></a>00126     <span class="comment">//void                  deserialize(physx::PxFileBuf&amp; stream);</span>
-<a name="l00127"></a>00127 
-<a name="l00128"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#c4b7d67ade7f30f5e6e218064ded083d">00128</a>     <span class="keywordtype">void</span>                    <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#c4b7d67ade7f30f5e6e218064ded083d">release</a>()
-<a name="l00129"></a>00129     {
-<a name="l00130"></a>00130         <span class="keyword">delete</span> <span class="keyword">this</span>;
-<a name="l00131"></a>00131     }
-<a name="l00132"></a>00132 
-<a name="l00133"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dfeea6d89a6e39188fc96eb8d6d202ea">00133</a>     std::vector&lt;Cutout&gt;     <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dfeea6d89a6e39188fc96eb8d6d202ea">cutoutLoops</a>;
-<a name="l00134"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">00134</a>     std::vector&lt;uint32_t&gt;   <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>;
-<a name="l00135"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dccc4de2f5719c5a6b2b2cd0af5646cb">00135</a>     <span class="keywordtype">bool</span>                    <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dccc4de2f5719c5a6b2b2cd0af5646cb">periodic</a>;
-<a name="l00136"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#9d397b7f5b1244b5d89db398211a5580">00136</a>     physx::PxVec2           <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#9d397b7f5b1244b5d89db398211a5580">dimensions</a>;
-<a name="l00137"></a>00137 };
+<a name="l00040"></a>00040 <span class="keyword">namespace </span>Blast
+<a name="l00041"></a>00041 {
+<a name="l00042"></a>00042 
+<a name="l00043"></a><a class="code" href="struct_nv_1_1_blast_1_1_poly_vert.html">00043</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_poly_vert.html">PolyVert</a>
+<a name="l00044"></a>00044 {
+<a name="l00045"></a><a class="code" href="struct_nv_1_1_blast_1_1_poly_vert.html#8ea78901480aee9ff5b42cbfa4f53efa">00045</a>     uint16_t <a class="code" href="struct_nv_1_1_blast_1_1_poly_vert.html#8ea78901480aee9ff5b42cbfa4f53efa">index</a>;
+<a name="l00046"></a><a class="code" href="struct_nv_1_1_blast_1_1_poly_vert.html#eedaedbf387cbd04889f4dd54152e252">00046</a>     uint16_t <a class="code" href="struct_nv_1_1_blast_1_1_poly_vert.html#eedaedbf387cbd04889f4dd54152e252">flags</a>;
+<a name="l00047"></a>00047 };
+<a name="l00048"></a>00048 
+<a name="l00049"></a><a class="code" href="struct_nv_1_1_blast_1_1_convex_loop.html">00049</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_convex_loop.html">ConvexLoop</a>
+<a name="l00050"></a>00050 {
+<a name="l00051"></a><a class="code" href="struct_nv_1_1_blast_1_1_convex_loop.html#60048ae3684e9b06498f7b1268b5cf65">00051</a>     std::vector&lt;PolyVert&gt; <a class="code" href="struct_nv_1_1_blast_1_1_convex_loop.html#60048ae3684e9b06498f7b1268b5cf65">polyVerts</a>;
+<a name="l00052"></a>00052 };
+<a name="l00053"></a>00053 
+<a name="l00054"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout.html">00054</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_cutout.html">Cutout</a>
+<a name="l00055"></a>00055 {
+<a name="l00056"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout.html#c29380ef69c677be86745a7ff8b2805d">00056</a>     std::vector&lt;physx::PxVec3&gt; <a class="code" href="struct_nv_1_1_blast_1_1_cutout.html#c29380ef69c677be86745a7ff8b2805d">vertices</a>;
+<a name="l00057"></a>00057     <span class="comment">//std::vector&lt;ConvexLoop&gt; convexLoops;</span>
+<a name="l00058"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout.html#a6f468c14b3ddd7d1cfefab166e88e21">00058</a>     std::vector&lt;physx::PxVec3&gt; <a class="code" href="struct_nv_1_1_blast_1_1_cutout.html#a6f468c14b3ddd7d1cfefab166e88e21">smoothingGroups</a>;
+<a name="l00059"></a>00059 };
+<a name="l00060"></a>00060 
+<a name="l00061"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html">00061</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html">POINT2D</a>
+<a name="l00062"></a>00062 {
+<a name="l00063"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#004cc3d32633bf671fa7fc09e7445d01">00063</a>     <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#004cc3d32633bf671fa7fc09e7445d01">POINT2D</a>() {}
+<a name="l00064"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#08ceb7892b3841490c2356b9c6aa8594">00064</a>     <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#08ceb7892b3841490c2356b9c6aa8594">POINT2D</a>(int32_t _x, int32_t _y) : <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a>(_x), <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">y</a>(_y) {}
+<a name="l00065"></a>00065 
+<a name="l00066"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">00066</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a>;
+<a name="l00067"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">00067</a>     int32_t <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">y</a>;
+<a name="l00068"></a>00068 
+<a name="l00069"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2b79d10fa3f6b6b7b91c5e6cd971043b">00069</a>     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2b79d10fa3f6b6b7b91c5e6cd971043b">operator==</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html">POINT2D</a>&amp; other)<span class="keyword"> const</span>
+<a name="l00070"></a>00070 <span class="keyword">    </span>{
+<a name="l00071"></a>00071         <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a> == other.<a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a> &amp;&amp; <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">y</a> == other.<a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">y</a>;
+<a name="l00072"></a>00072     }
+<a name="l00073"></a><a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#c4cea89f0a86abe29fe34377a8215925">00073</a>     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#c4cea89f0a86abe29fe34377a8215925">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html">POINT2D</a>&amp; other)<span class="keyword"> const</span>
+<a name="l00074"></a>00074 <span class="keyword">    </span>{
+<a name="l00075"></a>00075         <span class="keywordflow">if</span> (<a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a> == other.<a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a>) <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">y</a> &lt; other.<a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#2e1dfe475a2a14dea61686b82a168fd1">y</a>;
+<a name="l00076"></a>00076         <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a> &lt; other.<a class="code" href="struct_nv_1_1_blast_1_1_p_o_i_n_t2_d.html#67cacfccae3f246e4d340046854e72bf">x</a>;
+<a name="l00077"></a>00077     }
+<a name="l00078"></a>00078 };
+<a name="l00079"></a>00079 
+<a name="l00080"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html">00080</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html">CutoutSetImpl</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html">CutoutSet</a>
+<a name="l00081"></a>00081 {
+<a name="l00082"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#77388b87dcf872052a907c193c0a8a64">00082</a>     <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#77388b87dcf872052a907c193c0a8a64">CutoutSetImpl</a>() : <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dccc4de2f5719c5a6b2b2cd0af5646cb">periodic</a>(false), <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#9d397b7f5b1244b5d89db398211a5580">dimensions</a>(0.0f)
+<a name="l00083"></a>00083     {
+<a name="l00084"></a>00084     }
+<a name="l00085"></a>00085 
+<a name="l00086"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#5dbca09e2e5dcf620a0bc461739bb987">00086</a>     uint32_t            <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#5dbca09e2e5dcf620a0bc461739bb987">getCutoutCount</a>()<span class="keyword"> const</span>
+<a name="l00087"></a>00087 <span class="keyword">    </span>{
+<a name="l00088"></a>00088         <span class="keywordflow">return</span> (uint32_t)<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>.size() - 1;
+<a name="l00089"></a>00089     }
+<a name="l00090"></a>00090 
+<a name="l00091"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#08cc67542f762a98bbd1c853f43dbba6">00091</a>     uint32_t            <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#08cc67542f762a98bbd1c853f43dbba6">getCutoutVertexCount</a>(uint32_t cutoutIndex, uint32_t loopIndex)<span class="keyword"> const</span>
+<a name="l00092"></a>00092 <span class="keyword">    </span>{
+<a name="l00093"></a>00093         <span class="keywordflow">return</span> (uint32_t)<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dfeea6d89a6e39188fc96eb8d6d202ea">cutoutLoops</a>[<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>[cutoutIndex] + loopIndex].vertices.size();
+<a name="l00094"></a>00094     }
+<a name="l00095"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#c7f3528bb5907927762200dc07d22297">00095</a>     uint32_t            <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#c7f3528bb5907927762200dc07d22297">getCutoutLoopCount</a>(uint32_t cutoutIndex)<span class="keyword"> const</span>
+<a name="l00096"></a>00096 <span class="keyword">    </span>{
+<a name="l00097"></a>00097         <span class="keywordflow">return</span> (uint32_t)<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>[cutoutIndex + 1] - <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>[cutoutIndex];
+<a name="l00098"></a>00098     }
+<a name="l00099"></a>00099 
+<a name="l00100"></a>00100     <span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>&amp; <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#af556382a08c327e0d01666059a999f2">getCutoutVertex</a>(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) <span class="keyword">const</span>;
+<a name="l00101"></a>00101 
+<a name="l00102"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#0b499b888a1d1afe508524c51936685a">00102</a>     <span class="keywordtype">bool</span>                <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#0b499b888a1d1afe508524c51936685a">isCutoutVertexToggleSmoothingGroup</a>(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex)<span class="keyword"> const</span>
+<a name="l00103"></a>00103 <span class="keyword">    </span>{
+<a name="l00104"></a>00104         <span class="keyword">auto</span>&amp; vRef = <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dfeea6d89a6e39188fc96eb8d6d202ea">cutoutLoops</a>[<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>[cutoutIndex] + loopIndex].vertices[vertexIndex];
+<a name="l00105"></a>00105         <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; v : <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dfeea6d89a6e39188fc96eb8d6d202ea">cutoutLoops</a>[<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>[cutoutIndex] + loopIndex].smoothingGroups)
+<a name="l00106"></a>00106         {
+<a name="l00107"></a>00107             <span class="keywordflow">if</span> ((vRef - v).magnitudeSquared() &lt; 1e-5)
+<a name="l00108"></a>00108             {
+<a name="l00109"></a>00109                 <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00110"></a>00110             }
+<a name="l00111"></a>00111         }
+<a name="l00112"></a>00112         <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00113"></a>00113     }
+<a name="l00114"></a>00114 
+<a name="l00115"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#5732e95214600b48a96b1fcd2257c4c0">00115</a>     <span class="keywordtype">bool</span>                    <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#5732e95214600b48a96b1fcd2257c4c0">isPeriodic</a>()<span class="keyword"> const</span>
+<a name="l00116"></a>00116 <span class="keyword">    </span>{
+<a name="l00117"></a>00117         <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dccc4de2f5719c5a6b2b2cd0af5646cb">periodic</a>;
+<a name="l00118"></a>00118     }
+<a name="l00119"></a>00119     <span class="keyword">const</span> <a class="code" href="struct_nvc_vec2.html">NvcVec2</a>&amp; <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#63669bddc9425d1d2a652d1871b6f7f1">getDimensions</a>() <span class="keyword">const</span>;
+<a name="l00120"></a>00120 
+<a name="l00121"></a>00121     <span class="comment">//void                  serialize(physx::PxFileBuf&amp; stream) const;</span>
+<a name="l00122"></a>00122     <span class="comment">//void                  deserialize(physx::PxFileBuf&amp; stream);</span>
+<a name="l00123"></a>00123 
+<a name="l00124"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#c4b7d67ade7f30f5e6e218064ded083d">00124</a>     <span class="keywordtype">void</span>                    <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#c4b7d67ade7f30f5e6e218064ded083d">release</a>()
+<a name="l00125"></a>00125     {
+<a name="l00126"></a>00126         <span class="keyword">delete</span> <span class="keyword">this</span>;
+<a name="l00127"></a>00127     }
+<a name="l00128"></a>00128 
+<a name="l00129"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dfeea6d89a6e39188fc96eb8d6d202ea">00129</a>     std::vector&lt;Cutout&gt;     <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dfeea6d89a6e39188fc96eb8d6d202ea">cutoutLoops</a>;
+<a name="l00130"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">00130</a>     std::vector&lt;uint32_t&gt;   <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#1699ed4e7e50096e42aa2da1d0c3a7f7">cutouts</a>;
+<a name="l00131"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dccc4de2f5719c5a6b2b2cd0af5646cb">00131</a>     <span class="keywordtype">bool</span>                    <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#dccc4de2f5719c5a6b2b2cd0af5646cb">periodic</a>;
+<a name="l00132"></a><a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#9d397b7f5b1244b5d89db398211a5580">00132</a>     physx::PxVec2           <a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html#9d397b7f5b1244b5d89db398211a5580">dimensions</a>;
+<a name="l00133"></a>00133 };
+<a name="l00134"></a>00134 
+<a name="l00135"></a>00135 <span class="keywordtype">void</span> <a class="code" href="namespace_nv_1_1_blast.html#3c3bd8c624a44bbffc27f6ab8e8f2012">createCutoutSet</a>(<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html">Nv::Blast::CutoutSetImpl</a>&amp; cutoutSet, <span class="keyword">const</span> uint8_t* pixelBuffer, uint32_t bufferWidth, uint32_t bufferHeight,
+<a name="l00136"></a>00136     <span class="keywordtype">float</span> segmentationErrorThreshold, <span class="keywordtype">float</span> snapThreshold, <span class="keywordtype">bool</span> periodic, <span class="keywordtype">bool</span> expandGaps);
+<a name="l00137"></a>00137 
 <a name="l00138"></a>00138 
-<a name="l00139"></a>00139 <span class="keywordtype">void</span> <a class="code" href="namespace_nv_1_1_blast.html#3c3bd8c624a44bbffc27f6ab8e8f2012">createCutoutSet</a>(<a class="code" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html">Nv::Blast::CutoutSetImpl</a>&amp; cutoutSet, <span class="keyword">const</span> uint8_t* pixelBuffer, uint32_t bufferWidth, uint32_t bufferHeight,
-<a name="l00140"></a>00140     <span class="keywordtype">float</span> segmentationErrorThreshold, <span class="keywordtype">float</span> snapThreshold, <span class="keywordtype">bool</span> periodic, <span class="keywordtype">bool</span> expandGaps);
+<a name="l00139"></a>00139 } <span class="comment">// namespace Blast</span>
+<a name="l00140"></a>00140 } <span class="comment">// namespace Nv</span>
 <a name="l00141"></a>00141 
-<a name="l00142"></a>00142 
-<a name="l00143"></a>00143 } <span class="comment">// namespace Blast</span>
-<a name="l00144"></a>00144 } <span class="comment">// namespace Nv</span>
-<a name="l00145"></a>00145 
-<a name="l00146"></a>00146 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORINGFCUTOUTIMPL_H</span>
+<a name="l00142"></a>00142 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORINGFCUTOUTIMPL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

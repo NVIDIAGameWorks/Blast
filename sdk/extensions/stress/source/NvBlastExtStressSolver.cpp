@@ -37,6 +37,7 @@
 
 #include <PsVecMath.h>
 #include "PsFPU.h"
+#include "NvBlastPxSharedHelpers.h"
 
 #include <algorithm>
 
@@ -950,7 +951,7 @@ public:
 
 	virtual void							setAllNodesInfoFromLL(float density = 1.0f) override;
 
-	virtual void							setNodeInfo(uint32_t graphNode, float mass, float volume, PxVec3 localPos, bool isStatic) override;
+	virtual void							setNodeInfo(uint32_t graphNode, float mass, float volume, NvcVec3 localPos, bool isStatic) override;
 
 	virtual void							setSettings(const ExtStressSolverSettings& settings) override
 	{
@@ -962,12 +963,14 @@ public:
 		return m_settings;
 	}
 
-	virtual bool							addForce(const NvBlastActor& actor, physx::PxVec3 localPosition, physx::PxVec3 localForce, ExtForceMode::Enum mode) override;
+	virtual bool
+	addForce(const NvBlastActor& actor, NvcVec3 localPosition, NvcVec3 localForce,
+	                      ExtForceMode::Enum mode) override;
 
-	virtual void							addForce(uint32_t graphNode, physx::PxVec3 localForce, ExtForceMode::Enum mode) override;
+	virtual void addForce(uint32_t graphNode, NvcVec3 localForce, ExtForceMode::Enum mode) override;
 
-	virtual bool							addGravityForce(const NvBlastActor& actor, physx::PxVec3 localGravity) override;
-	virtual bool							addAngularVelocity(const NvBlastActor& actor, PxVec3 localCenterMass, physx::PxVec3 localAngularVelocity) override;
+	virtual bool							addGravityForce(const NvBlastActor& actor, NvcVec3 localGravity) override;
+	virtual bool							addAngularVelocity(const NvBlastActor& actor, NvcVec3 localCenterMass, NvcVec3 localAngularVelocity) override;
 
 	virtual void							update() override;
 
@@ -1178,9 +1181,9 @@ void ExtStressSolverImpl::setAllNodesInfoFromLL(float density)
 	}
 }
 
-void ExtStressSolverImpl::setNodeInfo(uint32_t graphNode, float mass, float volume, PxVec3 localPos, bool isStatic)
+void ExtStressSolverImpl::setNodeInfo(uint32_t graphNode, float mass, float volume, NvcVec3 localPos, bool isStatic)
 {
-	m_graphProcessor->setNodeInfo(graphNode, mass, volume, localPos, isStatic);
+	m_graphProcessor->setNodeInfo(graphNode, mass, volume, toPxShared(localPos), isStatic);
 }
 
 bool ExtStressSolverImpl::notifyActorCreated(const NvBlastActor& actor)
@@ -1254,7 +1257,7 @@ void ExtStressSolverImpl::initialize()
 	}
 }
 
-bool ExtStressSolverImpl::addForce(const NvBlastActor& actor, physx::PxVec3 localPosition, physx::PxVec3 localForce, ExtForceMode::Enum mode)
+bool ExtStressSolverImpl::addForce(const NvBlastActor& actor, NvcVec3 localPosition, NvcVec3 localForce, ExtForceMode::Enum mode)
 {
 	float bestDist = FLT_MAX;
 	uint32_t bestNode = invalidIndex<uint32_t>();
@@ -1268,7 +1271,7 @@ bool ExtStressSolverImpl::addForce(const NvBlastActor& actor, physx::PxVec3 loca
 		for (uint32_t i = 0; i < nodeCount; ++i)
 		{
 			const uint32_t node = graphNodeIndices[i];
-			const float sqrDist = (localPosition - m_graphProcessor->getNodeData(node).localPos).magnitudeSquared();
+			const float sqrDist = (toPxShared(localPosition) - m_graphProcessor->getNodeData(node).localPos).magnitudeSquared();
 			if (sqrDist < bestDist)
 			{
 				bestDist = sqrDist;
@@ -1278,19 +1281,19 @@ bool ExtStressSolverImpl::addForce(const NvBlastActor& actor, physx::PxVec3 loca
 
 		if (!isInvalidIndex(bestNode))
 		{
-			m_graphProcessor->addNodeForce(bestNode, localForce, mode);
+			m_graphProcessor->addNodeForce(bestNode, toPxShared(localForce), mode);
 			return true;
 		}
 	}
 	return false;
 }
 
-void ExtStressSolverImpl::addForce(uint32_t graphNode, physx::PxVec3 localForce, ExtForceMode::Enum mode)
+void ExtStressSolverImpl::addForce(uint32_t graphNode, NvcVec3 localForce, ExtForceMode::Enum mode)
 {
-	m_graphProcessor->addNodeForce(graphNode, localForce, mode);
+	m_graphProcessor->addNodeForce(graphNode, toPxShared(localForce), mode);
 }
 
-bool ExtStressSolverImpl::addGravityForce(const NvBlastActor& actor, physx::PxVec3 localGravity)
+bool ExtStressSolverImpl::addGravityForce(const NvBlastActor& actor, NvcVec3 localGravity)
 {
 	const uint32_t graphNodeCount = NvBlastActorGetGraphNodeCount(&actor, logLL);
 	if (graphNodeCount > 1)
@@ -1301,14 +1304,14 @@ bool ExtStressSolverImpl::addGravityForce(const NvBlastActor& actor, physx::PxVe
 		for (uint32_t i = 0; i < nodeCount; ++i)
 		{
 			const uint32_t node = graphNodeIndices[i];
-			m_graphProcessor->addNodeVelocity(node, localGravity);
+			m_graphProcessor->addNodeVelocity(node, toPxShared(localGravity));
 		}
 		return true;
 	}
 	return false;
 }
 
-bool ExtStressSolverImpl::addAngularVelocity(const NvBlastActor& actor, PxVec3 localCenterMass, physx::PxVec3 localAngularVelocity)
+bool ExtStressSolverImpl::addAngularVelocity(const NvBlastActor& actor, NvcVec3 localCenterMass, NvcVec3 localAngularVelocity)
 {
 	const uint32_t graphNodeCount = NvBlastActorGetGraphNodeCount(&actor, logLL);
 	if (graphNodeCount > 1)
@@ -1322,7 +1325,9 @@ bool ExtStressSolverImpl::addAngularVelocity(const NvBlastActor& actor, PxVec3 l
 			const uint32_t node = graphNodeIndices[i];
 			const auto& localPos = m_graphProcessor->getNodeData(node).localPos;
 			// a = w x (w x r)
-			const PxVec3 centrifugalAcceleration = localAngularVelocity.cross(localAngularVelocity.cross(localPos - localCenterMass));
+			const PxVec3 centrifugalAcceleration =
+			    toPxShared(localAngularVelocity)
+			        .cross(toPxShared(localAngularVelocity).cross(localPos - toPxShared(localCenterMass)));
 			m_graphProcessor->addNodeVelocity(node, centrifugalAcceleration);
 		}
 		return true;
@@ -1534,9 +1539,9 @@ const ExtStressSolver::DebugBuffer ExtStressSolverImpl::fillDebugRender(const ui
 			const auto& solverNode0 = m_graphProcessor->getSolverNodeData(solverInternalBondData.node0);
 			const auto& solverNode1 = m_graphProcessor->getSolverNodeData(solverInternalBondData.node1);
 
-			PxVec3 p0 = solverNode0.localPos;
-			PxVec3 p1 = solverNode1.localPos;
-			PxVec3 center = (p0 + p1) * 0.5f;
+			NvcVec3 p0 = fromPxShared(solverNode0.localPos);
+			NvcVec3 p1 = fromPxShared(solverNode1.localPos);
+			NvcVec3 center = (p0 + p1) * 0.5f;
 
 			const float stress = std::min<float>(m_graphProcessor->getSolverBondStressHealth(i, m_settings), 1.0f);
 			PxVec4 color = bondHealthColor(1.0f - stress);
@@ -1547,15 +1552,15 @@ const ExtStressSolver::DebugBuffer ExtStressSolverImpl::fillDebugRender(const ui
 
 			if (mode == DebugRenderMode::STRESS_GRAPH_NODES_IMPULSES)
 			{
-				m_debugLineBuffer.pushBack(DebugLine(p0, p0 + solverInternalNode0.velocityLinear * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_LINEAR_COLOR)));
-				m_debugLineBuffer.pushBack(DebugLine(p0, p0 + solverInternalNode0.velocityAngular * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_ANGULAR_COLOR)));
-				m_debugLineBuffer.pushBack(DebugLine(p1, p1 + solverInternalNode1.velocityLinear * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_LINEAR_COLOR)));
-				m_debugLineBuffer.pushBack(DebugLine(p1, p1 + solverInternalNode1.velocityAngular * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_ANGULAR_COLOR)));
+				m_debugLineBuffer.pushBack(DebugLine(p0, p0 + fromPxShared(solverInternalNode0.velocityLinear) * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_LINEAR_COLOR)));
+				m_debugLineBuffer.pushBack(DebugLine(p0, p0 + fromPxShared(solverInternalNode0.velocityAngular) * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_ANGULAR_COLOR)));
+				m_debugLineBuffer.pushBack(DebugLine(p1, p1 + fromPxShared(solverInternalNode1.velocityLinear) * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_LINEAR_COLOR)));
+				m_debugLineBuffer.pushBack(DebugLine(p1, p1 + fromPxShared(solverInternalNode1.velocityAngular) * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_ANGULAR_COLOR)));
 			}
 			else if (mode == DebugRenderMode::STRESS_GRAPH_BONDS_IMPULSES)
 			{
-				m_debugLineBuffer.pushBack(DebugLine(center, center + solverInternalBondData.impulseLinear * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_LINEAR_COLOR)));
-				m_debugLineBuffer.pushBack(DebugLine(center, center + solverInternalBondData.impulseAngular * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_ANGULAR_COLOR)));
+				m_debugLineBuffer.pushBack(DebugLine(center, center + fromPxShared(solverInternalBondData.impulseLinear) * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_LINEAR_COLOR)));
+				m_debugLineBuffer.pushBack(DebugLine(center, center + fromPxShared(solverInternalBondData.impulseAngular) * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_ANGULAR_COLOR)));
 			}
 		}
 	}

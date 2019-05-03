@@ -25,7 +25,7 @@ var _nv_blast_ext_r_t_8h =
     [ "NvBlastExtRTCreateFracturer", "_nv_blast_ext_r_t_8h.html#a8dd527c217f5b6577b09e81cf8f881a1", null ],
     [ "NvBlastExtRTCreateFractureRT", "_nv_blast_ext_r_t_8h.html#a4b33d66b71faced9cea15821ab6d2679", null ],
     [ "NvBlastExtRTCreateMeshGenerator", "_nv_blast_ext_r_t_8h.html#a384cc36b855ef7a84ae47bd17f1e45bb", null ],
-    [ "NvBlastExtRTDetectIslands", "_nv_blast_ext_r_t_8h.html#ad888718212b0afe1d5384abde8937682", null ],
+    [ "NvBlastExtRTDetectIslands", "_nv_blast_ext_r_t_8h.html#a1abc5fbcc99dd9c1b84f9fa6bb51609a", null ],
     [ "NvBlastExtRTDoFracture", "_nv_blast_ext_r_t_8h.html#a63cb5e25050cb57dd112232792d51165", null ],
     [ "NvBlastExtRTGetChunksToUnite", "_nv_blast_ext_r_t_8h.html#ad5ec62cdb5d0f84e129fab31cc62f7d8", null ]
 ];

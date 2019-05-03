@@ -48,7 +48,7 @@ bool PxVec3DTO::serialize(Nv::Blast::Serialization::PxVec3::Builder builder, con
 physx::PxVec3* PxVec3DTO::deserialize(Nv::Blast::Serialization::PxVec3::Reader reader)
 {
 	//TODO: Allocate using ExtContext and return
-	reader = reader;
+	NV_UNUSED(reader);
 	return nullptr;
 }
 

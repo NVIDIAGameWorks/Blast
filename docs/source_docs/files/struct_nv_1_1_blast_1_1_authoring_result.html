@@ -48,13 +48,6 @@
 <p>
 <a href="struct_nv_1_1_blast_1_1_authoring_result-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
-<tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#eb05f90a8b5231d3d85420b030692270">release</a> ()=0</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#5ba9157e6853ef539d67d3d9b0c45f8a">releaseCollisionHulls</a> ()=0</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#00fb69f2ed4fc4e8e747dd3a4f27a1f6">~AuthoringResult</a> ()</td></tr>
-
 <tr><td colspan="2"><br><h2>Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#82eea5edda9545d420939ef6a79aea7b">asset</a></td></tr>
 
@@ -80,72 +73,9 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">const char **&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#79fb8d5fc554926ab27ccf16b4f3baaa">materialNames</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">struct <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#ee7559881bf2ea3bdef1ebaeb1edd2b6">physicsChunks</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">struct <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#b685690ea4bdfcf0d73519a03b92b982">physicsSubchunks</a></td></tr>
-
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
-Authoring results. Which contains <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a>, render and collision meshes <hr><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" name="00fb69f2ed4fc4e8e747dd3a4f27a1f6"></a><!-- doxytag: member="Nv::Blast::AuthoringResult::~AuthoringResult" ref="00fb69f2ed4fc4e8e747dd3a4f27a1f6" args="()" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual Nv::Blast::AuthoringResult::~AuthoringResult           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [inline, virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="eb05f90a8b5231d3d85420b030692270"></a><!-- doxytag: member="Nv::Blast::AuthoringResult::release" ref="eb05f90a8b5231d3d85420b030692270" args="()=0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void Nv::Blast::AuthoringResult::release           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Free all data and <a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html">AuthoringResult</a> 
-</div>
-</div><p>
-<a class="anchor" name="5ba9157e6853ef539d67d3d9b0c45f8a"></a><!-- doxytag: member="Nv::Blast::AuthoringResult::releaseCollisionHulls" ref="5ba9157e6853ef539d67d3d9b0c45f8a" args="()=0" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void Nv::Blast::AuthoringResult::releaseCollisionHulls           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [pure virtual]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Free collision hulls data 
-</div>
-</div><p>
-<hr><h2>Member Data Documentation</h2>
+Authoring results. Which contains <a class="el" href="struct_nv_blast_asset.html">NvBlastAsset</a>, render and collision meshes. If it was created by NvBlast it should be released with NvBlastExtAuthoringReleaseAuthoringResult For releasing just collsion geometry call NvBlastExtAuthoringReleaseAuthoringResultCollision <hr><h2>Member Data Documentation</h2>
 <a class="anchor" name="82eea5edda9545d420939ef6a79aea7b"></a><!-- doxytag: member="Nv::Blast::AuthoringResult::asset" ref="82eea5edda9545d420939ef6a79aea7b" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -324,36 +254,6 @@ Size of array of material names.
 
 <p>
 <a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of material names. 
-</div>
-</div><p>
-<a class="anchor" name="ee7559881bf2ea3bdef1ebaeb1edd2b6"></a><!-- doxytag: member="Nv::Blast::AuthoringResult::physicsChunks" ref="ee7559881bf2ea3bdef1ebaeb1edd2b6" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a>* <a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#ee7559881bf2ea3bdef1ebaeb1edd2b6">Nv::Blast::AuthoringResult::physicsChunks</a><code> [read]</code>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-<a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of chunk physics parameters. Contains chunkCount elements 
-</div>
-</div><p>
-<a class="anchor" name="b685690ea4bdfcf0d73519a03b92b982"></a><!-- doxytag: member="Nv::Blast::AuthoringResult::physicsSubchunks" ref="b685690ea4bdfcf0d73519a03b92b982" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct <a class="el" href="struct_nv_1_1_blast_1_1_ext_px_subchunk.html">ExtPxSubchunk</a>* <a class="el" href="struct_nv_1_1_blast_1_1_authoring_result.html#b685690ea4bdfcf0d73519a03b92b982">Nv::Blast::AuthoringResult::physicsSubchunks</a><code> [read]</code>          </td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-<a class="el" href="struct_nv_1_1_blast_1_1_array.html">Array</a> of phisics subchunks (convex mesh) descriptors. Use collisionHullOffset for accessing elements. 
 </div>
 </div><p>
 <hr>The documentation for this struct was generated from the following file:<ul>

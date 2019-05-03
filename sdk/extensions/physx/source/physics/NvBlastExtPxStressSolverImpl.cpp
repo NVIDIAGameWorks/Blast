@@ -37,6 +37,8 @@
 #include "NvBlastTkActor.h"
 #include "NvBlastTkFamily.h"
 
+#include "NvBlastPxSharedHelpers.h"
+
 #include "PxScene.h"
 #include "PxRigidDynamic.h"
 
@@ -130,7 +132,7 @@ ExtPxStressSolverImpl::ExtPxStressSolverImpl(ExtPxFamily& family, ExtStressSolve
 			localPos = PxVec3(PxZero);
 			isChunkStatic = true;
 		}
-		m_solver->setNodeInfo(node0, mass, volume, localPos, isChunkStatic);
+		m_solver->setNodeInfo(node0, mass, volume, fromPxShared(localPos), isChunkStatic);
 	}
 #else
 	m_solver->setAllNodesInfoFromLL();
@@ -182,13 +184,13 @@ void ExtPxStressSolverImpl::update(bool doDamage)
 			PxVec3 gravity = rigidDynamic.getScene()->getGravity();
 			PxVec3 localGravity = rigidDynamic.getGlobalPose().rotateInv(gravity);
 
-			m_solver->addGravityForce(*actor->getTkActor().getActorLL(), localGravity);
+			m_solver->addGravityForce(*actor->getTkActor().getActorLL(), fromPxShared(localGravity));
 		}
 		else
 		{
 			PxVec3 localCenterMass = rigidDynamic.getCMassLocalPose().p;
 			PxVec3 localAngularVelocity = rigidDynamic.getGlobalPose().rotateInv(rigidDynamic.getAngularVelocity());
-			m_solver->addAngularVelocity(*actor->getTkActor().getActorLL(), localCenterMass, localAngularVelocity);
+			m_solver->addAngularVelocity(*actor->getTkActor().getActorLL(), fromPxShared(localCenterMass), fromPxShared(localAngularVelocity));
 		}
 	}
 

@@ -74,38 +74,37 @@
 <a name="l00077"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html">00077</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html">SharedFace</a>
 <a name="l00078"></a>00078 {
 <a name="l00079"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#4f4a5a9045d3e06d9a29b956d6192c0f">00079</a>     <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#4f4a5a9045d3e06d9a29b956d6192c0f">SharedFace</a>() {}
-<a name="l00080"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#f6b9ee40d745ea78244a355c0d65f5cb">00080</a>     <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#4f4a5a9045d3e06d9a29b956d6192c0f">SharedFace</a>(uint32_t inW, uint32_t inH, int64_t inUD, int32_t inMatId)
-<a name="l00081"></a>00081         : <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#018d533cdd3f33f91ef6fa8083a1bf43">w</a>(inW), <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#c8ab3ad7169b6a404eceef389a6e6bca">h</a>(inH), <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#39746301120ce22fd190189300cc2dcc">f</a>(0, 3, inMatId, inUD)
-<a name="l00082"></a>00082     {
-<a name="l00083"></a>00083         <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#d07df8d2530bfbe5d4cc71fda2f8845e">vertices</a>.reserve((<a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#018d533cdd3f33f91ef6fa8083a1bf43">w</a> + 1) * (<a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#c8ab3ad7169b6a404eceef389a6e6bca">h</a> + 1));
-<a name="l00084"></a>00084     }
-<a name="l00085"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#018d533cdd3f33f91ef6fa8083a1bf43">00085</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#018d533cdd3f33f91ef6fa8083a1bf43">w</a>, <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#c8ab3ad7169b6a404eceef389a6e6bca">h</a>;
-<a name="l00086"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#39746301120ce22fd190189300cc2dcc">00086</a>     <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#39746301120ce22fd190189300cc2dcc">f</a>;
-<a name="l00087"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#d07df8d2530bfbe5d4cc71fda2f8845e">00087</a>     std::vector&lt;Nv::Blast::Vertex&gt; <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#d07df8d2530bfbe5d4cc71fda2f8845e">vertices</a>;
-<a name="l00088"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#53f6135cbc9e023485b903f42778f2b9">00088</a>     std::vector&lt;Nv::Blast::Edge&gt; <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#53f6135cbc9e023485b903f42778f2b9">edges</a>;
-<a name="l00089"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#bf295a5e931ffdc0ecf69ef2dc621c95">00089</a>     std::vector&lt;Nv::Blast::Facet&gt; <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#bf295a5e931ffdc0ecf69ef2dc621c95">facets</a>;
-<a name="l00090"></a>00090 };
-<a name="l00091"></a>00091 
-<a name="l00092"></a><a class="code" href="struct_nv_1_1_blast_1_1_cmp_shared_face.html">00092</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_cmp_shared_face.html">CmpSharedFace</a>
-<a name="l00093"></a>00093 {
-<a name="l00094"></a>00094     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_cmp_shared_face.html#e9538161f3889b30611d4781d50d0fa6">operator()</a>(<span class="keyword">const</span> std::pair&lt;physx::PxVec3, physx::PxVec3&gt;&amp; pv1, <span class="keyword">const</span> std::pair&lt;physx::PxVec3, physx::PxVec3&gt;&amp; pv2) <span class="keyword">const</span>;
-<a name="l00095"></a>00095 };
-<a name="l00096"></a>00096 
-<a name="l00097"></a><a class="code" href="namespace_nv_1_1_blast.html#fe329ff8e54fccde762d704ec05e8e4e">00097</a> <span class="keyword">typedef</span> std::map&lt;std::pair&lt;physx::PxVec3, physx::PxVec3&gt;, <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html">SharedFace</a>, <a class="code" href="struct_nv_1_1_blast_1_1_cmp_shared_face.html">CmpSharedFace</a>&gt; <a class="code" href="namespace_nv_1_1_blast.html#fe329ff8e54fccde762d704ec05e8e4e">SharedFacesMap</a>;
-<a name="l00098"></a>00098 
-<a name="l00099"></a>00099 <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a>;
-<a name="l00100"></a>00100 
-<a name="l00101"></a>00101 <span class="keywordtype">void</span> <a class="code" href="namespace_nv_1_1_blast.html#e1f8e465d658b5eda1923088284273bd">buildCuttingConeFaces</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a>&amp; conf, <span class="keyword">const</span> std::vector&lt;std::vector&lt;physx::PxVec3&gt;&gt;&amp; points,
-<a name="l00102"></a>00102     <span class="keywordtype">float</span> heightBot, <span class="keywordtype">float</span> heightTop, <span class="keywordtype">float</span> conicityBot, <span class="keywordtype">float</span> conicityTop,
-<a name="l00103"></a>00103     int64_t&amp; <span class="keywordtype">id</span>, int32_t seed, int32_t interiorMaterialId, <a class="code" href="namespace_nv_1_1_blast.html#fe329ff8e54fccde762d704ec05e8e4e">SharedFacesMap</a>&amp; sharedFacesMap);
-<a name="l00104"></a>00104 
-<a name="l00120"></a>00120 <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>*   <a class="code" href="namespace_nv_1_1_blast.html#7f938d770548b9c3126c6831e845c868">getCuttingCone</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a>&amp; conf,
-<a name="l00121"></a>00121     <span class="keyword">const</span> std::vector&lt;physx::PxVec3&gt;&amp; points, <span class="keyword">const</span> std::set&lt;int32_t&gt;&amp; smoothingGroups,
-<a name="l00122"></a>00122     <span class="keywordtype">float</span> heightBot, <span class="keywordtype">float</span> heightTop, <span class="keywordtype">float</span> conicityBot, <span class="keywordtype">float</span> conicityTop,
-<a name="l00123"></a>00123     int64_t&amp; <span class="keywordtype">id</span>, int32_t seed, int32_t interiorMaterialId, <span class="keyword">const</span> <a class="code" href="namespace_nv_1_1_blast.html#fe329ff8e54fccde762d704ec05e8e4e">SharedFacesMap</a>&amp; sharedFacesMap, <span class="keywordtype">bool</span> inverseNormals = <span class="keyword">false</span>);
-<a name="l00124"></a>00124 
+<a name="l00080"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#f6b9ee40d745ea78244a355c0d65f5cb">00080</a>     <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#4f4a5a9045d3e06d9a29b956d6192c0f">SharedFace</a>(uint32_t inW, uint32_t inH, int64_t inUD, int32_t inMatId) : <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#018d533cdd3f33f91ef6fa8083a1bf43">w</a>(inW), <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#c8ab3ad7169b6a404eceef389a6e6bca">h</a>(inH), <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#39746301120ce22fd190189300cc2dcc">f</a>(<a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a>( 0, 3, inUD, inMatId ))
+<a name="l00081"></a>00081     {
+<a name="l00082"></a>00082         <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#d07df8d2530bfbe5d4cc71fda2f8845e">vertices</a>.reserve((<a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#018d533cdd3f33f91ef6fa8083a1bf43">w</a> + 1) * (<a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#c8ab3ad7169b6a404eceef389a6e6bca">h</a> + 1));
+<a name="l00083"></a>00083     }
+<a name="l00084"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#018d533cdd3f33f91ef6fa8083a1bf43">00084</a>     uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#018d533cdd3f33f91ef6fa8083a1bf43">w</a>, <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#c8ab3ad7169b6a404eceef389a6e6bca">h</a>;
+<a name="l00085"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#39746301120ce22fd190189300cc2dcc">00085</a>     <a class="code" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#39746301120ce22fd190189300cc2dcc">f</a>;
+<a name="l00086"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#d07df8d2530bfbe5d4cc71fda2f8845e">00086</a>     std::vector&lt;Nv::Blast::Vertex&gt; <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#d07df8d2530bfbe5d4cc71fda2f8845e">vertices</a>;
+<a name="l00087"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#53f6135cbc9e023485b903f42778f2b9">00087</a>     std::vector&lt;Nv::Blast::Edge&gt; <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#53f6135cbc9e023485b903f42778f2b9">edges</a>;
+<a name="l00088"></a><a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#bf295a5e931ffdc0ecf69ef2dc621c95">00088</a>     std::vector&lt;Nv::Blast::Facet&gt; <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html#bf295a5e931ffdc0ecf69ef2dc621c95">facets</a>;
+<a name="l00089"></a>00089 };
+<a name="l00090"></a>00090 
+<a name="l00091"></a><a class="code" href="struct_nv_1_1_blast_1_1_cmp_shared_face.html">00091</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_cmp_shared_face.html">CmpSharedFace</a>
+<a name="l00092"></a>00092 {
+<a name="l00093"></a>00093     <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_cmp_shared_face.html#e9538161f3889b30611d4781d50d0fa6">operator()</a>(<span class="keyword">const</span> std::pair&lt;physx::PxVec3, physx::PxVec3&gt;&amp; pv1, <span class="keyword">const</span> std::pair&lt;physx::PxVec3, physx::PxVec3&gt;&amp; pv2) <span class="keyword">const</span>;
+<a name="l00094"></a>00094 };
+<a name="l00095"></a>00095 
+<a name="l00096"></a><a class="code" href="namespace_nv_1_1_blast.html#fe329ff8e54fccde762d704ec05e8e4e">00096</a> <span class="keyword">typedef</span> std::map&lt;std::pair&lt;physx::PxVec3, physx::PxVec3&gt;, <a class="code" href="struct_nv_1_1_blast_1_1_shared_face.html">SharedFace</a>, <a class="code" href="struct_nv_1_1_blast_1_1_cmp_shared_face.html">CmpSharedFace</a>&gt; <a class="code" href="namespace_nv_1_1_blast.html#fe329ff8e54fccde762d704ec05e8e4e">SharedFacesMap</a>;
+<a name="l00097"></a>00097 
+<a name="l00098"></a>00098 <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a>;
+<a name="l00099"></a>00099 
+<a name="l00100"></a>00100 <span class="keywordtype">void</span> <a class="code" href="namespace_nv_1_1_blast.html#e1f8e465d658b5eda1923088284273bd">buildCuttingConeFaces</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a>&amp; conf, <span class="keyword">const</span> std::vector&lt;std::vector&lt;physx::PxVec3&gt;&gt;&amp; points,
+<a name="l00101"></a>00101     <span class="keywordtype">float</span> heightBot, <span class="keywordtype">float</span> heightTop, <span class="keywordtype">float</span> conicityBot, <span class="keywordtype">float</span> conicityTop,
+<a name="l00102"></a>00102     int64_t&amp; <span class="keywordtype">id</span>, int32_t seed, int32_t interiorMaterialId, <a class="code" href="namespace_nv_1_1_blast.html#fe329ff8e54fccde762d704ec05e8e4e">SharedFacesMap</a>&amp; sharedFacesMap);
+<a name="l00103"></a>00103 
+<a name="l00119"></a>00119 <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>*   <a class="code" href="namespace_nv_1_1_blast.html#7f938d770548b9c3126c6831e845c868">getCuttingCone</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a>&amp; conf,
+<a name="l00120"></a>00120     <span class="keyword">const</span> std::vector&lt;physx::PxVec3&gt;&amp; points, <span class="keyword">const</span> std::set&lt;int32_t&gt;&amp; smoothingGroups,
+<a name="l00121"></a>00121     <span class="keywordtype">float</span> heightBot, <span class="keywordtype">float</span> heightTop, <span class="keywordtype">float</span> conicityBot, <span class="keywordtype">float</span> conicityTop,
+<a name="l00122"></a>00122     int64_t&amp; <span class="keywordtype">id</span>, int32_t seed, int32_t interiorMaterialId, <span class="keyword">const</span> <a class="code" href="namespace_nv_1_1_blast.html#fe329ff8e54fccde762d704ec05e8e4e">SharedFacesMap</a>&amp; sharedFacesMap, <span class="keywordtype">bool</span> inverseNormals = <span class="keyword">false</span>);
+<a name="l00123"></a>00123 
+<a name="l00124"></a>00124 };
 <a name="l00125"></a>00125 };
-<a name="l00126"></a>00126 };
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">
