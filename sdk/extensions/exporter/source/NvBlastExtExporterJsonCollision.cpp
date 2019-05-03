@@ -39,14 +39,14 @@
 using namespace Nv::Blast;
 
 
-void serializaHullPolygon(std::ofstream& stream, const CollisionHull::HullPolygon& p, uint32_t indent)
+void serializaHullPolygon(std::ofstream& stream, const HullPolygon& p, uint32_t indent)
 {
 	std::string sindent(indent, '\t');
 	std::string bindent(indent + 1, '\t');
 	stream << sindent << "{\n" <<
-		bindent << JS_NAME("mIndexBase") << p.mIndexBase << ",\n" <<
-		bindent << JS_NAME("mPlane") << "[" << p.mPlane[0] << ", " << p.mPlane[1] << ", " << p.mPlane[2] << ", " << p.mPlane[3] << "],\n" <<
-		bindent << JS_NAME("mNbVerts") << p.mNbVerts << "\n" <<
+		bindent << JS_NAME("mIndexBase") << p.indexBase << ",\n" <<
+		bindent << JS_NAME("mPlane") << "[" << p.plane[0] << ", " << p.plane[1] << ", " << p.plane[2] << ", " << p.plane[3] << "],\n" <<
+		bindent << JS_NAME("mNbVerts") << p.vertexCount << "\n" <<
 		sindent << "}";
 }
 void serializeCollisionHull(std::ofstream& stream, const CollisionHull& hl, uint32_t indent)

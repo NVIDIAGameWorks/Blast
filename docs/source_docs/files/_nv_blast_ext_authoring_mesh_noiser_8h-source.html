@@ -140,7 +140,7 @@
 <a name="l00135"></a>00135             std::vector&lt;Triangle&gt;           <a class="code" href="class_nv_1_1_blast_1_1_mesh_noiser.html#e751e30be10b6bcfa1cf79d6464c9662">getMesh</a>();
 <a name="l00136"></a>00136 
 <a name="l00137"></a>00137         <span class="keyword">private</span>:
-<a name="l00138"></a>00138             PxVec3                              mOffset;
+<a name="l00138"></a>00138             physx::PxVec3                       mOffset;
 <a name="l00139"></a>00139             <span class="keywordtype">float</span>                               mScale;
 <a name="l00140"></a>00140             <span class="keywordtype">bool</span>                                isTesselated;
 <a name="l00144"></a>00144             std::vector&lt;Vertex&gt;                 mVertices;
@@ -177,7 +177,7 @@
 <a name="l00178"></a>00178 
 <a name="l00179"></a>00179             std::vector&lt;float&gt;                          mVerticesDistances;
 <a name="l00180"></a>00180             std::vector&lt;physx::PxVec3&gt;                  mVerticesNormalsSmoothed;
-<a name="l00181"></a>00181             std::vector&lt;int32_t&gt;                        mPositionMappedVrt;
+<a name="l00181"></a>00181             std::vector&lt;uint32_t&gt;                       mPositionMappedVrt;
 <a name="l00182"></a>00182             std::vector&lt;std::vector&lt;int32_t&gt; &gt;          mGeometryGraph;
 <a name="l00183"></a>00183 
 <a name="l00184"></a>00184             <span class="keywordtype">void</span>                                        prebuildEdgeFlagArray();

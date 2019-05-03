@@ -52,211 +52,207 @@
 <a name="l00031"></a>00031 <span class="preprocessor"></span>
 <a name="l00032"></a>00032 <span class="preprocessor">#include &lt;cinttypes&gt;</span>
 <a name="l00033"></a>00033 <span class="preprocessor">#include &lt;<a class="code" href="_nv_blast_types_8h.html">NvBlastTypes.h</a>&gt;</span>
-<a name="l00034"></a>00034 
+<a name="l00034"></a>00034 <span class="preprocessor">#include &lt;<a class="code" href="_nv_c_types_8h.html">NvCTypes.h</a>&gt;</span>
 <a name="l00035"></a>00035 
-<a name="l00036"></a>00036 <span class="comment">//#define USE_MERGED_MESH</span>
-<a name="l00037"></a>00037 
+<a name="l00036"></a>00036 
+<a name="l00037"></a>00037 <span class="comment">//#define USE_MERGED_MESH</span>
 <a name="l00038"></a>00038 
-<a name="l00039"></a><a class="code" href="_nv_blast_ext_r_t_8h.html#b61e2620c8f2917beffb61e2d42cbc88">00039</a> <span class="preprocessor">#define BLASTRT_MAX_VERTICES 262144</span>
-<a name="l00040"></a><a class="code" href="_nv_blast_ext_r_t_8h.html#a56085b830bbfc750734bc2fec8c0070">00040</a> <span class="preprocessor"></span><span class="preprocessor">#define BLASTRT_MAX_EDGES_PER_CHUNK 16384</span>
-<a name="l00041"></a><a class="code" href="_nv_blast_ext_r_t_8h.html#9cce5b0c1e6c644cdf4d10ca630fb07d">00041</a> <span class="preprocessor"></span><span class="preprocessor">#define BLASTRT_MAX_CHUNKS 256</span>
-<a name="l00042"></a>00042 <span class="preprocessor"></span>
-<a name="l00043"></a>00043 <span class="keyword">namespace </span>physx
-<a name="l00044"></a>00044 {
-<a name="l00045"></a>00045     <span class="keyword">class </span>PxBounds3;
-<a name="l00046"></a>00046 };
-<a name="l00047"></a>00047 
-<a name="l00048"></a>00048 <span class="keyword">namespace </span>Nv
-<a name="l00049"></a>00049 {
-<a name="l00050"></a>00050     <span class="keyword">namespace </span>Blast
-<a name="l00051"></a>00051     {
-<a name="l00052"></a>00052         <span class="keyword">struct </span>Vertex;
-<a name="l00053"></a>00053         <span class="keyword">class  </span>Mesh;
-<a name="l00054"></a>00054         <span class="keyword">class  </span>SpatialAccelerator;
-<a name="l00055"></a>00055         <span class="keyword">class  </span>VertexWelding;
-<a name="l00056"></a>00056         <span class="keyword">struct </span>DamagePattern;
-<a name="l00057"></a>00057 
-<a name="l00058"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html">00058</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html">FacetFacetResult</a>
-<a name="l00059"></a>00059         {
-<a name="l00060"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#5550650f92a810a13f1876bb99d2d822">00060</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#5550650f92a810a13f1876bb99d2d822">parentFacet</a>;
-<a name="l00061"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#4a580c671ad020850269aa6ff3cfb2f0">00061</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#4a580c671ad020850269aa6ff3cfb2f0">adjacentFacet</a>;
-<a name="l00062"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#7a1ce965b8674db6e9e890163edca94f">00062</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#7a1ce965b8674db6e9e890163edca94f">parentEdge</a>;
-<a name="l00063"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#d31fb454d7eac900be5c2908c6d52f6f">00063</a>             int32_t <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#d31fb454d7eac900be5c2908c6d52f6f">status</a>;
-<a name="l00064"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#77eb266e49dea84dba47bf0e448ae6a1">00064</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#77eb266e49dea84dba47bf0e448ae6a1">pIdx</a>;
-<a name="l00065"></a>00065 
-<a name="l00066"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#ac930d20178c7a9ccc5e57979ae70c17">00066</a>             <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#ac930d20178c7a9ccc5e57979ae70c17">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html">FacetFacetResult</a>&amp; in)<span class="keyword"> const</span>
-<a name="l00067"></a>00067 <span class="keyword">            </span>{
-<a name="l00068"></a>00068                 <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#5550650f92a810a13f1876bb99d2d822">parentFacet</a> &lt; in.<a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#5550650f92a810a13f1876bb99d2d822">parentFacet</a>;
-<a name="l00069"></a>00069             }
-<a name="l00070"></a>00070         };
-<a name="l00071"></a>00071 
-<a name="l00072"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">00072</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a>
-<a name="l00073"></a>00073         {
-<a name="l00074"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#c84910a5ff1379a4a1dd0082ecd8630a">00074</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#c84910a5ff1379a4a1dd0082ecd8630a">start</a>;
-<a name="l00075"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#d4ff096fd1a88c4113264933cee243f5">00075</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#d4ff096fd1a88c4113264933cee243f5">end</a>;
-<a name="l00076"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#6f00a0c95f816285961c8c1ada80ca8d">00076</a>             int32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#6f00a0c95f816285961c8c1ada80ca8d">parentFacet</a>;
-<a name="l00077"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#64a87fc1e8dcd705126bf290080df25f">00077</a>             int32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#64a87fc1e8dcd705126bf290080df25f">adjacentFacet</a> = -1;
-<a name="l00078"></a>00078 
-<a name="l00079"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#d82dcc8e5aa25750fc43fa8b1846b134">00079</a>             <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#d82dcc8e5aa25750fc43fa8b1846b134">getInversed</a>()
-<a name="l00080"></a>00080             {
-<a name="l00081"></a>00081                 <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a> ret;
-<a name="l00082"></a>00082                 ret.<a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#c84910a5ff1379a4a1dd0082ecd8630a">start</a> = <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#d4ff096fd1a88c4113264933cee243f5">end</a>;
-<a name="l00083"></a>00083                 ret.<a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#d4ff096fd1a88c4113264933cee243f5">end</a> = <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#c84910a5ff1379a4a1dd0082ecd8630a">start</a>;
-<a name="l00084"></a>00084                 ret.<a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#6f00a0c95f816285961c8c1ada80ca8d">parentFacet</a> = <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#6f00a0c95f816285961c8c1ada80ca8d">parentFacet</a>;
-<a name="l00085"></a>00085                 ret.<a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#64a87fc1e8dcd705126bf290080df25f">adjacentFacet</a> = <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#64a87fc1e8dcd705126bf290080df25f">adjacentFacet</a>;
-<a name="l00086"></a>00086                 <span class="keywordflow">return</span> ret;
-<a name="l00087"></a>00087             }
-<a name="l00088"></a>00088         };
+<a name="l00039"></a>00039 
+<a name="l00040"></a><a class="code" href="_nv_blast_ext_r_t_8h.html#b61e2620c8f2917beffb61e2d42cbc88">00040</a> <span class="preprocessor">#define BLASTRT_MAX_VERTICES 262144</span>
+<a name="l00041"></a><a class="code" href="_nv_blast_ext_r_t_8h.html#a56085b830bbfc750734bc2fec8c0070">00041</a> <span class="preprocessor"></span><span class="preprocessor">#define BLASTRT_MAX_EDGES_PER_CHUNK 16384</span>
+<a name="l00042"></a><a class="code" href="_nv_blast_ext_r_t_8h.html#9cce5b0c1e6c644cdf4d10ca630fb07d">00042</a> <span class="preprocessor"></span><span class="preprocessor">#define BLASTRT_MAX_CHUNKS 256</span>
+<a name="l00043"></a>00043 <span class="preprocessor"></span>
+<a name="l00044"></a>00044 <span class="keyword">namespace </span>Nv
+<a name="l00045"></a>00045 {
+<a name="l00046"></a>00046     <span class="keyword">namespace </span>Blast
+<a name="l00047"></a>00047     {
+<a name="l00048"></a>00048         <span class="keyword">struct </span>Vertex;
+<a name="l00049"></a>00049         <span class="keyword">class  </span>Mesh;
+<a name="l00050"></a>00050         <span class="keyword">class  </span>SpatialAccelerator;
+<a name="l00051"></a>00051         <span class="keyword">class  </span>VertexWelding;
+<a name="l00052"></a>00052         <span class="keyword">struct </span>DamagePattern;
+<a name="l00053"></a>00053 
+<a name="l00054"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html">00054</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html">FacetFacetResult</a>
+<a name="l00055"></a>00055         {
+<a name="l00056"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#5550650f92a810a13f1876bb99d2d822">00056</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#5550650f92a810a13f1876bb99d2d822">parentFacet</a>;
+<a name="l00057"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#4a580c671ad020850269aa6ff3cfb2f0">00057</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#4a580c671ad020850269aa6ff3cfb2f0">adjacentFacet</a>;
+<a name="l00058"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#7a1ce965b8674db6e9e890163edca94f">00058</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#7a1ce965b8674db6e9e890163edca94f">parentEdge</a>;
+<a name="l00059"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#d31fb454d7eac900be5c2908c6d52f6f">00059</a>             int32_t <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#d31fb454d7eac900be5c2908c6d52f6f">status</a>;
+<a name="l00060"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#77eb266e49dea84dba47bf0e448ae6a1">00060</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#77eb266e49dea84dba47bf0e448ae6a1">pIdx</a>;
+<a name="l00061"></a>00061 
+<a name="l00062"></a><a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#ac930d20178c7a9ccc5e57979ae70c17">00062</a>             <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#ac930d20178c7a9ccc5e57979ae70c17">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html">FacetFacetResult</a>&amp; in)<span class="keyword"> const</span>
+<a name="l00063"></a>00063 <span class="keyword">            </span>{
+<a name="l00064"></a>00064                 <span class="keywordflow">return</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#5550650f92a810a13f1876bb99d2d822">parentFacet</a> &lt; in.<a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html#5550650f92a810a13f1876bb99d2d822">parentFacet</a>;
+<a name="l00065"></a>00065             }
+<a name="l00066"></a>00066         };
+<a name="l00067"></a>00067 
+<a name="l00068"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">00068</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a>
+<a name="l00069"></a>00069         {
+<a name="l00070"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#c84910a5ff1379a4a1dd0082ecd8630a">00070</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#c84910a5ff1379a4a1dd0082ecd8630a">start</a>;
+<a name="l00071"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#d4ff096fd1a88c4113264933cee243f5">00071</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#d4ff096fd1a88c4113264933cee243f5">end</a>;
+<a name="l00072"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#6f00a0c95f816285961c8c1ada80ca8d">00072</a>             int32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#6f00a0c95f816285961c8c1ada80ca8d">parentFacet</a>;
+<a name="l00073"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#64a87fc1e8dcd705126bf290080df25f">00073</a>             int32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#64a87fc1e8dcd705126bf290080df25f">adjacentFacet</a> = -1;
+<a name="l00074"></a>00074 
+<a name="l00075"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#d82dcc8e5aa25750fc43fa8b1846b134">00075</a>             <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#d82dcc8e5aa25750fc43fa8b1846b134">getInversed</a>()
+<a name="l00076"></a>00076             {
+<a name="l00077"></a>00077                 <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a> ret;
+<a name="l00078"></a>00078                 ret.<a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#c84910a5ff1379a4a1dd0082ecd8630a">start</a> = <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#d4ff096fd1a88c4113264933cee243f5">end</a>;
+<a name="l00079"></a>00079                 ret.<a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#d4ff096fd1a88c4113264933cee243f5">end</a> = <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#c84910a5ff1379a4a1dd0082ecd8630a">start</a>;
+<a name="l00080"></a>00080                 ret.<a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#6f00a0c95f816285961c8c1ada80ca8d">parentFacet</a> = <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#6f00a0c95f816285961c8c1ada80ca8d">parentFacet</a>;
+<a name="l00081"></a>00081                 ret.<a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#64a87fc1e8dcd705126bf290080df25f">adjacentFacet</a> = <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html#64a87fc1e8dcd705126bf290080df25f">adjacentFacet</a>;
+<a name="l00082"></a>00082                 <span class="keywordflow">return</span> ret;
+<a name="l00083"></a>00083             }
+<a name="l00084"></a>00084         };
+<a name="l00085"></a>00085 
+<a name="l00086"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html">00086</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html">BooleanToolOutputData</a>
+<a name="l00087"></a>00087         {
+<a name="l00088"></a>00088             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#245cb7098202f04dfafd3fcfb71a78bc">release</a>() = 0;
 <a name="l00089"></a>00089 
-<a name="l00090"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html">00090</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html">BooleanToolOutputData</a>
-<a name="l00091"></a>00091         {
-<a name="l00092"></a>00092             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#245cb7098202f04dfafd3fcfb71a78bc">release</a>() = 0;
+<a name="l00090"></a>00090             <span class="comment">//set edges, vertices and ffResult counters to 0</span>
+<a name="l00091"></a>00091             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#c333a5ebd6a6685acc80b3c5094ea381">reset</a>() = 0;
+<a name="l00092"></a>00092             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#4d8004d7db89ec915ceefa7625988313">resetEdges</a>() = 0;
 <a name="l00093"></a>00093 
-<a name="l00094"></a>00094             <span class="comment">//set edges, vertices and ffResult counters to 0</span>
-<a name="l00095"></a>00095             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#c333a5ebd6a6685acc80b3c5094ea381">reset</a>() = 0;
-<a name="l00096"></a>00096             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#4d8004d7db89ec915ceefa7625988313">resetEdges</a>() = 0;
-<a name="l00097"></a>00097 
-<a name="l00098"></a>00098             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#b4fc7e89eb78a2aa443456694ffaf40f">copyVerticesAndResults</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html">BooleanToolOutputData</a>* other) = 0;
+<a name="l00094"></a>00094             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#b4fc7e89eb78a2aa443456694ffaf40f">copyVerticesAndResults</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html">BooleanToolOutputData</a>* other) = 0;
+<a name="l00095"></a>00095 
+<a name="l00096"></a>00096             <span class="keyword">virtual</span> uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#5eb543cc33f2c0b2c4772c163415ab27">edgesCount</a>() <span class="keyword">const</span> = 0;
+<a name="l00097"></a>00097             <span class="keyword">virtual</span> uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#1f83f23c15adc51594fe39f0ee832f21">verticesCount</a>() <span class="keyword">const</span> = 0;
+<a name="l00098"></a>00098             <span class="keyword">virtual</span> uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#111c43691a1e82cf9e16d2cc0f6bfb1b">ffResultCount</a>() <span class="keyword">const</span> = 0;
 <a name="l00099"></a>00099 
-<a name="l00100"></a>00100             <span class="keyword">virtual</span> uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#5eb543cc33f2c0b2c4772c163415ab27">edgesCount</a>() <span class="keyword">const</span> = 0;
-<a name="l00101"></a>00101             <span class="keyword">virtual</span> uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#1f83f23c15adc51594fe39f0ee832f21">verticesCount</a>() <span class="keyword">const</span> = 0;
-<a name="l00102"></a>00102             <span class="keyword">virtual</span> uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#111c43691a1e82cf9e16d2cc0f6bfb1b">ffResultCount</a>() <span class="keyword">const</span> = 0;
-<a name="l00103"></a>00103 
-<a name="l00104"></a>00104             <span class="comment">//Thread safe add, return index in buffer</span>
-<a name="l00105"></a>00105             <span class="keyword">virtual</span> uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#3225a8ffb6d6163885f7f530bf69dede">addEdge</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a>&amp;) = 0;
-<a name="l00106"></a>00106             <span class="keyword">virtual</span> uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#b655e1666708af60db2b3640bfb9a928">addVertex</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp;) = 0;
-<a name="l00107"></a>00107             <span class="keyword">virtual</span> uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#9cd29403e5193ca3485ab6fc956137e7">addFfResult</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html">FacetFacetResult</a>&amp;) = 0;
-<a name="l00108"></a>00108 
-<a name="l00109"></a>00109             <span class="comment">//Thread safe, increment counter and return reference to last element</span>
-<a name="l00110"></a>00110             <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a>&amp; <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#9b441cb3d27bbabcfeb1ce2c2e2175db">getNewEdge</a>() = 0;
-<a name="l00111"></a>00111             <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#7ab85f01f57b6e6c2c565af65467e0a3">getNewVertex</a>() = 0;
-<a name="l00112"></a>00112             <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html">FacetFacetResult</a>&amp; <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#c70191bd6916787bd4ccc2b7fb3d4b71">getNewFfResult</a>() = 0;
-<a name="l00113"></a>00113 
-<a name="l00114"></a>00114             <span class="comment">//User allocated buffers should have size more than return values of above function </span>
-<a name="l00115"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#f16c26c7418b7887e042f4cdb0d3e408">00115</a>             <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a>* <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#f16c26c7418b7887e042f4cdb0d3e408">edges</a> = <span class="keyword">nullptr</span>;
-<a name="l00116"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#9b53f2d6ac89e52b307c4cc7ed891690">00116</a>             <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#9b53f2d6ac89e52b307c4cc7ed891690">vertices</a> = <span class="keyword">nullptr</span>;
-<a name="l00117"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#74ca8e839974a75618e2e23e63922f84">00117</a>             <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html">FacetFacetResult</a>* <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#74ca8e839974a75618e2e23e63922f84">ffResult</a> = <span class="keyword">nullptr</span>;
-<a name="l00118"></a>00118         };
-<a name="l00119"></a>00119         
-<a name="l00124"></a><a class="code" href="class_nv_1_1_blast_1_1_fracturer.html">00124</a>         <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_fracturer.html">Fracturer</a>
-<a name="l00125"></a>00125         {
-<a name="l00126"></a>00126         <span class="keyword">public</span>:
-<a name="l00127"></a>00127             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracturer.html#42fb6822d70b337eaef4470165db1ddb">release</a>() = 0;
-<a name="l00128"></a>00128         };
-<a name="l00129"></a>00129 
-<a name="l00130"></a><a class="code" href="class_nv_1_1_blast_1_1_mesh_generator.html">00130</a>         <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_mesh_generator.html">MeshGenerator</a>
-<a name="l00131"></a>00131         {
-<a name="l00132"></a>00132         <span class="keyword">public</span>:
-<a name="l00133"></a>00133             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh_generator.html#1d8c87e469e26f9ed9d3035b13feee0b">release</a>() = 0;
-<a name="l00134"></a>00134         };
-<a name="l00135"></a>00135 
-<a name="l00136"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html">00136</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html">FractureDesc</a>
-<a name="l00137"></a>00137         {
-<a name="l00138"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#17f1aec6d7cae1b05535897faedd0239">00138</a>             <a class="code" href="class_nv_1_1_blast_1_1_fracturer.html">Fracturer</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#17f1aec6d7cae1b05535897faedd0239">fr</a> = <span class="keyword">nullptr</span>;
-<a name="l00139"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#8afba8dc673e5104eb22daae072edc52">00139</a>             <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#8afba8dc673e5104eb22daae072edc52">model</a> = <span class="keyword">nullptr</span>;
-<a name="l00140"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#af073bd947a0518fe6743b32552d913d">00140</a>             <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#af073bd947a0518fe6743b32552d913d">cell</a> = <span class="keyword">nullptr</span>;
-<a name="l00141"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#fc2f45708d3f78e519e108f197823001">00141</a>             <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#fc2f45708d3f78e519e108f197823001">modelAccel</a> = <span class="keyword">nullptr</span>;
-<a name="l00142"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#0727c80c4fc8719fe848aaaccb20f278">00142</a>             <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#0727c80c4fc8719fe848aaaccb20f278">cellAccel</a> = <span class="keyword">nullptr</span>;
-<a name="l00143"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#3b6c165b5a5656f451c3e1495415911b">00143</a>             <a class="code" href="struct_nv_1_1_blast_1_1_damage_pattern.html">DamagePattern</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#3b6c165b5a5656f451c3e1495415911b">pattern</a> = <span class="keyword">nullptr</span>;
-<a name="l00144"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#6fddc4ebaebd6157eb9a7c869a2ac815">00144</a>             <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html">BooleanToolOutputData</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#6fddc4ebaebd6157eb9a7c869a2ac815">outputData</a> = <span class="keyword">nullptr</span>;
-<a name="l00145"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#248e9557e530788ef6efbb161ca34f0a">00145</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#248e9557e530788ef6efbb161ca34f0a">chunkId</a>;
-<a name="l00146"></a>00146         };
-<a name="l00147"></a>00147 
-<a name="l00148"></a><a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html">00148</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html">PerTriangleAdditionalData</a>
-<a name="l00149"></a>00149         {
-<a name="l00150"></a><a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html#eb0bb7f2575a26dda3c81de46b2486d8">00150</a>             int32_t <a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html#eb0bb7f2575a26dda3c81de46b2486d8">materialIndex</a>;
-<a name="l00151"></a><a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html#42e142111ccadd99eccd755673e84ed8">00151</a>             int32_t <a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html#42e142111ccadd99eccd755673e84ed8">smoothingGroup</a>;
-<a name="l00152"></a>00152         };
-<a name="l00153"></a>00153 
-<a name="l00154"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html">00154</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html">MeshDesc</a>
-<a name="l00155"></a>00155         {
-<a name="l00156"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#13aab51982ee023ece211a00492d3317">00156</a>             <a class="code" href="class_nv_1_1_blast_1_1_mesh_generator.html">MeshGenerator</a>* <a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#13aab51982ee023ece211a00492d3317">tr</a> = <span class="keyword">nullptr</span>;
-<a name="l00157"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#62b3efe6edcc0e9709bf87630b327fc2">00157</a>             <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a>* <a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#62b3efe6edcc0e9709bf87630b327fc2">bEdges</a> = <span class="keyword">nullptr</span>;
-<a name="l00158"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#e0d86d4604dafe840dff592dc64df24c">00158</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#e0d86d4604dafe840dff592dc64df24c">edesCount</a> = 0;
-<a name="l00159"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#b5495afac84f3f3ab81fc67915e6bde8">00159</a>             <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* <a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#b5495afac84f3f3ab81fc67915e6bde8">inVertices</a> = <span class="keyword">nullptr</span>;
-<a name="l00160"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#f324b167e69af8df2eaeb40362e2a361">00160</a>             <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* <a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#f324b167e69af8df2eaeb40362e2a361">meshA</a> = <span class="keyword">nullptr</span>; <span class="comment">// used to gather additional data from source mesh, for example material ID </span>
-<a name="l00161"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#9447e8d8b3c43992fe40dee1cbd9be81">00161</a>             <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* <a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#9447e8d8b3c43992fe40dee1cbd9be81">meshB</a> = <span class="keyword">nullptr</span>;
-<a name="l00162"></a>00162         };
+<a name="l00100"></a>00100             <span class="comment">//Thread safe add, return index in buffer</span>
+<a name="l00101"></a>00101             <span class="keyword">virtual</span> uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#3225a8ffb6d6163885f7f530bf69dede">addEdge</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a>&amp;) = 0;
+<a name="l00102"></a>00102             <span class="keyword">virtual</span> uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#b655e1666708af60db2b3640bfb9a928">addVertex</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp;) = 0;
+<a name="l00103"></a>00103             <span class="keyword">virtual</span> uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#9cd29403e5193ca3485ab6fc956137e7">addFfResult</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html">FacetFacetResult</a>&amp;) = 0;
+<a name="l00104"></a>00104 
+<a name="l00105"></a>00105             <span class="comment">//Thread safe, increment counter and return reference to last element</span>
+<a name="l00106"></a>00106             <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a>&amp; <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#9b441cb3d27bbabcfeb1ce2c2e2175db">getNewEdge</a>() = 0;
+<a name="l00107"></a>00107             <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>&amp; <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#7ab85f01f57b6e6c2c565af65467e0a3">getNewVertex</a>() = 0;
+<a name="l00108"></a>00108             <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html">FacetFacetResult</a>&amp; <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#c70191bd6916787bd4ccc2b7fb3d4b71">getNewFfResult</a>() = 0;
+<a name="l00109"></a>00109 
+<a name="l00110"></a>00110             <span class="comment">//User allocated buffers should have size more than return values of above function </span>
+<a name="l00111"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#f16c26c7418b7887e042f4cdb0d3e408">00111</a>             <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a>* <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#f16c26c7418b7887e042f4cdb0d3e408">edges</a> = <span class="keyword">nullptr</span>;
+<a name="l00112"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#9b53f2d6ac89e52b307c4cc7ed891690">00112</a>             <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#9b53f2d6ac89e52b307c4cc7ed891690">vertices</a> = <span class="keyword">nullptr</span>;
+<a name="l00113"></a><a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#74ca8e839974a75618e2e23e63922f84">00113</a>             <a class="code" href="struct_nv_1_1_blast_1_1_facet_facet_result.html">FacetFacetResult</a>* <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html#74ca8e839974a75618e2e23e63922f84">ffResult</a> = <span class="keyword">nullptr</span>;
+<a name="l00114"></a>00114         };
+<a name="l00115"></a>00115         
+<a name="l00120"></a><a class="code" href="class_nv_1_1_blast_1_1_fracturer.html">00120</a>         <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_fracturer.html">Fracturer</a>
+<a name="l00121"></a>00121         {
+<a name="l00122"></a>00122         <span class="keyword">public</span>:
+<a name="l00123"></a>00123             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracturer.html#42fb6822d70b337eaef4470165db1ddb">release</a>() = 0;
+<a name="l00124"></a>00124         };
+<a name="l00125"></a>00125 
+<a name="l00126"></a><a class="code" href="class_nv_1_1_blast_1_1_mesh_generator.html">00126</a>         <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_mesh_generator.html">MeshGenerator</a>
+<a name="l00127"></a>00127         {
+<a name="l00128"></a>00128         <span class="keyword">public</span>:
+<a name="l00129"></a>00129             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh_generator.html#1d8c87e469e26f9ed9d3035b13feee0b">release</a>() = 0;
+<a name="l00130"></a>00130         };
+<a name="l00131"></a>00131 
+<a name="l00132"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html">00132</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html">FractureDesc</a>
+<a name="l00133"></a>00133         {
+<a name="l00134"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#17f1aec6d7cae1b05535897faedd0239">00134</a>             <a class="code" href="class_nv_1_1_blast_1_1_fracturer.html">Fracturer</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#17f1aec6d7cae1b05535897faedd0239">fr</a> = <span class="keyword">nullptr</span>;
+<a name="l00135"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#8afba8dc673e5104eb22daae072edc52">00135</a>             <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#8afba8dc673e5104eb22daae072edc52">model</a> = <span class="keyword">nullptr</span>;
+<a name="l00136"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#af073bd947a0518fe6743b32552d913d">00136</a>             <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#af073bd947a0518fe6743b32552d913d">cell</a> = <span class="keyword">nullptr</span>;
+<a name="l00137"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#fc2f45708d3f78e519e108f197823001">00137</a>             <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#fc2f45708d3f78e519e108f197823001">modelAccel</a> = <span class="keyword">nullptr</span>;
+<a name="l00138"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#0727c80c4fc8719fe848aaaccb20f278">00138</a>             <a class="code" href="class_nv_1_1_blast_1_1_spatial_accelerator.html">SpatialAccelerator</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#0727c80c4fc8719fe848aaaccb20f278">cellAccel</a> = <span class="keyword">nullptr</span>;
+<a name="l00139"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#3b6c165b5a5656f451c3e1495415911b">00139</a>             <a class="code" href="struct_nv_1_1_blast_1_1_damage_pattern.html">DamagePattern</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#3b6c165b5a5656f451c3e1495415911b">pattern</a> = <span class="keyword">nullptr</span>;
+<a name="l00140"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#6fddc4ebaebd6157eb9a7c869a2ac815">00140</a>             <a class="code" href="struct_nv_1_1_blast_1_1_boolean_tool_output_data.html">BooleanToolOutputData</a>* <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#6fddc4ebaebd6157eb9a7c869a2ac815">outputData</a> = <span class="keyword">nullptr</span>;
+<a name="l00141"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#248e9557e530788ef6efbb161ca34f0a">00141</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html#248e9557e530788ef6efbb161ca34f0a">chunkId</a>;
+<a name="l00142"></a>00142         };
+<a name="l00143"></a>00143 
+<a name="l00144"></a><a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html">00144</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html">PerTriangleAdditionalData</a>
+<a name="l00145"></a>00145         {
+<a name="l00146"></a><a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html#eb0bb7f2575a26dda3c81de46b2486d8">00146</a>             int32_t <a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html#eb0bb7f2575a26dda3c81de46b2486d8">materialIndex</a>;
+<a name="l00147"></a><a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html#42e142111ccadd99eccd755673e84ed8">00147</a>             int32_t <a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html#42e142111ccadd99eccd755673e84ed8">smoothingGroup</a>;
+<a name="l00148"></a>00148         };
+<a name="l00149"></a>00149 
+<a name="l00150"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html">00150</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html">MeshDesc</a>
+<a name="l00151"></a>00151         {
+<a name="l00152"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#13aab51982ee023ece211a00492d3317">00152</a>             <a class="code" href="class_nv_1_1_blast_1_1_mesh_generator.html">MeshGenerator</a>* <a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#13aab51982ee023ece211a00492d3317">tr</a> = <span class="keyword">nullptr</span>;
+<a name="l00153"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#62b3efe6edcc0e9709bf87630b327fc2">00153</a>             <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_boolean_result_edge.html">BooleanResultEdge</a>* <a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#62b3efe6edcc0e9709bf87630b327fc2">bEdges</a> = <span class="keyword">nullptr</span>;
+<a name="l00154"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#e0d86d4604dafe840dff592dc64df24c">00154</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#e0d86d4604dafe840dff592dc64df24c">edesCount</a> = 0;
+<a name="l00155"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#b5495afac84f3f3ab81fc67915e6bde8">00155</a>             <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* <a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#b5495afac84f3f3ab81fc67915e6bde8">inVertices</a> = <span class="keyword">nullptr</span>;
+<a name="l00156"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#f324b167e69af8df2eaeb40362e2a361">00156</a>             <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* <a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#f324b167e69af8df2eaeb40362e2a361">meshA</a> = <span class="keyword">nullptr</span>; <span class="comment">// used to gather additional data from source mesh, for example material ID </span>
+<a name="l00157"></a><a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#9447e8d8b3c43992fe40dee1cbd9be81">00157</a>             <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* <a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html#9447e8d8b3c43992fe40dee1cbd9be81">meshB</a> = <span class="keyword">nullptr</span>;
+<a name="l00158"></a>00158         };
+<a name="l00159"></a>00159 
+<a name="l00160"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html">00160</a>         <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html">FractureRT</a>
+<a name="l00161"></a>00161         {
+<a name="l00162"></a>00162         <span class="keyword">public</span>:
 <a name="l00163"></a>00163 
-<a name="l00164"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html">00164</a>         <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html">FractureRT</a>
-<a name="l00165"></a>00165         {
-<a name="l00166"></a>00166         <span class="keyword">public</span>:
-<a name="l00167"></a>00167 
-<a name="l00168"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html">00168</a>             <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html">Stage</a>
-<a name="l00169"></a>00169             {
-<a name="l00170"></a>00170                 <span class="keyword">enum</span>
-<a name="l00171"></a>00171                 {
-<a name="l00172"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed46eedf2e0d18066600cf4819e1c470022">00172</a>                     <a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed46eedf2e0d18066600cf4819e1c470022">FACET_FACET_TEST</a> = 1,
-<a name="l00173"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed4310196bc4b9e24e33d67eb3e3b19078c">00173</a>                     <a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed4310196bc4b9e24e33d67eb3e3b19078c">RETAIN_FROM_FRACTURED_MESH</a> = 2,
-<a name="l00174"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed42ce8503b01422d6311c2976e4bea0d93">00174</a>                     <a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed42ce8503b01422d6311c2976e4bea0d93">RETAIN_FROM_PATTERN</a> = 4,
+<a name="l00164"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html">00164</a>             <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html">Stage</a>
+<a name="l00165"></a>00165             {
+<a name="l00166"></a>00166                 <span class="keyword">enum</span>
+<a name="l00167"></a>00167                 {
+<a name="l00168"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed46eedf2e0d18066600cf4819e1c470022">00168</a>                     <a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed46eedf2e0d18066600cf4819e1c470022">FACET_FACET_TEST</a> = 1,
+<a name="l00169"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed4310196bc4b9e24e33d67eb3e3b19078c">00169</a>                     <a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed4310196bc4b9e24e33d67eb3e3b19078c">RETAIN_FROM_FRACTURED_MESH</a> = 2,
+<a name="l00170"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed42ce8503b01422d6311c2976e4bea0d93">00170</a>                     <a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed42ce8503b01422d6311c2976e4bea0d93">RETAIN_FROM_PATTERN</a> = 4,
+<a name="l00171"></a>00171 
+<a name="l00172"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed497fe612f8c684f3c191da1285b616457">00172</a>                     <a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed497fe612f8c684f3c191da1285b616457">ALL</a> = 0xFFFFFFFF
+<a name="l00173"></a>00173                 };
+<a name="l00174"></a>00174             };
 <a name="l00175"></a>00175 
-<a name="l00176"></a><a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed497fe612f8c684f3c191da1285b616457">00176</a>                     <a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed497fe612f8c684f3c191da1285b616457">ALL</a> = 0xFFFFFFFF
-<a name="l00177"></a>00177                 };
-<a name="l00178"></a>00178             };
-<a name="l00179"></a>00179 
-<a name="l00180"></a>00180             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#2e9cd6314df260dea0102fb75596ade3">release</a>() = 0;
-<a name="l00181"></a>00181             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#3aba950cf966c55c7194368b85ce0254">processMesh</a>(<a class="code" href="struct_nv_1_1_blast_1_1_damage_pattern.html">DamagePattern</a>* pattern, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* msh) = 0;
-<a name="l00182"></a>00182             <span class="keyword">virtual</span> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#5aaf7b0bade66b6ef22f07ce742843f8">getResultChunkCount</a>() = 0;
-<a name="l00183"></a>00183             <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#a04ff761b212a00e3f52c2031e550d54">getVertexBuffer</a>() = 0;
-<a name="l00184"></a>00184             <span class="keyword">virtual</span> uint32_t* <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#736f27d57573d9097f172d66aea04cbb">getIndexBuffer</a>() = 0;
-<a name="l00185"></a>00185             <span class="keyword">virtual</span> uint32_t* <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#167b18475172293192e7f6842e65b9d9">getVertexOffset</a>() = 0;
-<a name="l00186"></a>00186             <span class="keyword">virtual</span> uint32_t* <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#bee11924f0b34412b2d0d373bb954bae">getIndexOffset</a>() = 0;
-<a name="l00187"></a>00187             <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html">PerTriangleAdditionalData</a>* <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#53729e5b132eb6eaa44c44df6ef796db">getPerTriangleData</a>() = 0;
-<a name="l00188"></a>00188             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#4b4c0e789ecd59385be53d5a322350d8">dumpChunksToObj</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* path) = 0;
-<a name="l00189"></a>00189         };
-<a name="l00190"></a>00190 
-<a name="l00191"></a><a class="code" href="namespace_nv_1_1_blast.html#13e09335669128f9ea506224bfd3d9be">00191</a>         <span class="keyword">enum</span> <a class="code" href="namespace_nv_1_1_blast.html#13e09335669128f9ea506224bfd3d9be">PatternFacetType</a> { <a class="code" href="namespace_nv_1_1_blast.html#13e09335669128f9ea506224bfd3d9be0d1d9155e8519d41f5bf8e02e94d3d1c">GOOD_FACET</a> = 0, <a class="code" href="namespace_nv_1_1_blast.html#13e09335669128f9ea506224bfd3d9be7a5a857c21346bed3fbf7d94a0c3d4e7">INFINITE_FACET</a> = 0xffffff };
-<a name="l00192"></a>00192 
-<a name="l00193"></a>00193 
-<a name="l00197"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html">00197</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html">ChunkGraphLink</a>
-<a name="l00198"></a>00198         {
-<a name="l00199"></a>00199             <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#9aa6336122f0cc260ca575825abfa14d">ChunkGraphLink</a>() = <span class="keywordflow">default</span>;
-<a name="l00200"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#c06fdaba0bc2097db58c1ec408d0776d">00200</a>             <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#9aa6336122f0cc260ca575825abfa14d">ChunkGraphLink</a>(uint32_t i, uint32_t j) : <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#c06fdaba0bc2097db58c1ec408d0776d">l1</a>(i), <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#559b28f8649cc1b6bfabbc36836d313b">l2</a>(j) {};
-<a name="l00201"></a>00201             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#c06fdaba0bc2097db58c1ec408d0776d">l1</a>;
-<a name="l00202"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#559b28f8649cc1b6bfabbc36836d313b">00202</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#559b28f8649cc1b6bfabbc36836d313b">l2</a>;
+<a name="l00176"></a>00176             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#2e9cd6314df260dea0102fb75596ade3">release</a>() = 0;
+<a name="l00177"></a>00177             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#3aba950cf966c55c7194368b85ce0254">processMesh</a>(<a class="code" href="struct_nv_1_1_blast_1_1_damage_pattern.html">DamagePattern</a>* pattern, <span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* msh) = 0;
+<a name="l00178"></a>00178             <span class="keyword">virtual</span> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#5aaf7b0bade66b6ef22f07ce742843f8">getResultChunkCount</a>() = 0;
+<a name="l00179"></a>00179             <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a>* <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#a04ff761b212a00e3f52c2031e550d54">getVertexBuffer</a>() = 0;
+<a name="l00180"></a>00180             <span class="keyword">virtual</span> uint32_t* <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#736f27d57573d9097f172d66aea04cbb">getIndexBuffer</a>() = 0;
+<a name="l00181"></a>00181             <span class="keyword">virtual</span> uint32_t* <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#167b18475172293192e7f6842e65b9d9">getVertexOffset</a>() = 0;
+<a name="l00182"></a>00182             <span class="keyword">virtual</span> uint32_t* <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#bee11924f0b34412b2d0d373bb954bae">getIndexOffset</a>() = 0;
+<a name="l00183"></a>00183             <span class="keyword">virtual</span> <a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html">PerTriangleAdditionalData</a>* <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#53729e5b132eb6eaa44c44df6ef796db">getPerTriangleData</a>() = 0;
+<a name="l00184"></a>00184             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html#4b4c0e789ecd59385be53d5a322350d8">dumpChunksToObj</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* path) = 0;
+<a name="l00185"></a>00185         };
+<a name="l00186"></a>00186 
+<a name="l00187"></a><a class="code" href="namespace_nv_1_1_blast.html#13e09335669128f9ea506224bfd3d9be">00187</a>         <span class="keyword">enum</span> <a class="code" href="namespace_nv_1_1_blast.html#13e09335669128f9ea506224bfd3d9be">PatternFacetType</a> { <a class="code" href="namespace_nv_1_1_blast.html#13e09335669128f9ea506224bfd3d9be0d1d9155e8519d41f5bf8e02e94d3d1c">GOOD_FACET</a> = 0, <a class="code" href="namespace_nv_1_1_blast.html#13e09335669128f9ea506224bfd3d9be7a5a857c21346bed3fbf7d94a0c3d4e7">INFINITE_FACET</a> = 0xffffff };
+<a name="l00188"></a>00188 
+<a name="l00189"></a>00189 
+<a name="l00193"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html">00193</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html">ChunkGraphLink</a>
+<a name="l00194"></a>00194         {
+<a name="l00195"></a>00195             <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#9aa6336122f0cc260ca575825abfa14d">ChunkGraphLink</a>() = <span class="keywordflow">default</span>;
+<a name="l00196"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#c06fdaba0bc2097db58c1ec408d0776d">00196</a>             <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#9aa6336122f0cc260ca575825abfa14d">ChunkGraphLink</a>(uint32_t i, uint32_t j) : <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#c06fdaba0bc2097db58c1ec408d0776d">l1</a>(i), <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#559b28f8649cc1b6bfabbc36836d313b">l2</a>(j) {};
+<a name="l00197"></a>00197             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#c06fdaba0bc2097db58c1ec408d0776d">l1</a>;
+<a name="l00198"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#559b28f8649cc1b6bfabbc36836d313b">00198</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#559b28f8649cc1b6bfabbc36836d313b">l2</a>;
+<a name="l00199"></a>00199 
+<a name="l00200"></a>00200             <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#61389a923ede10de72b86d39099a0caf">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html">ChunkGraphLink</a>&amp; lk) <span class="keyword">const</span>;
+<a name="l00201"></a>00201             <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#61389a923ede10de72b86d39099a0caf">operator&lt;</a>(<span class="keyword">const</span> uint32_t in) <span class="keyword">const</span>;
+<a name="l00202"></a>00202         };
 <a name="l00203"></a>00203 
-<a name="l00204"></a>00204             <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#61389a923ede10de72b86d39099a0caf">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html">ChunkGraphLink</a>&amp; lk) <span class="keyword">const</span>;
-<a name="l00205"></a>00205             <span class="keywordtype">bool</span> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html#61389a923ede10de72b86d39099a0caf">operator&lt;</a>(<span class="keyword">const</span> uint32_t in) <span class="keyword">const</span>;
-<a name="l00206"></a>00206         };
-<a name="l00207"></a>00207 
-<a name="l00208"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html">00208</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html">ChunkGraph</a>
-<a name="l00209"></a>00209         {
-<a name="l00210"></a>00210             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#b5b3966a0248e5859b9ad20c14aaaf8e">eraseNode</a>(uint32_t index) = 0;
-<a name="l00211"></a>00211             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#857b7c4b566f05750af72c2dc1288399">release</a>() = 0;
-<a name="l00212"></a>00212 
-<a name="l00213"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#3712fffabb62d07f594c88e7016d44c1">00213</a>             <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html">ChunkGraphLink</a>* <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#3712fffabb62d07f594c88e7016d44c1">links</a> = <span class="keyword">nullptr</span>;
-<a name="l00214"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#89e568da158d43176fd56a41175ec998">00214</a>             uint32_t* <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#89e568da158d43176fd56a41175ec998">dirtyChunks</a> = <span class="keyword">nullptr</span>;
-<a name="l00215"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#6e7bce099f58dc2e6c85133cc03dea86">00215</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#6e7bce099f58dc2e6c85133cc03dea86">linksCount</a> = 0;
-<a name="l00216"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#4a9474b4a38212d5987afa23db264649">00216</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#4a9474b4a38212d5987afa23db264649">dirtyChunksCount</a> = 0;
-<a name="l00217"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#36754ed70616d387264cb9bd25331fa7">00217</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#36754ed70616d387264cb9bd25331fa7">newlyAddedCount</a> = 0;
-<a name="l00218"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#4966d0c64bd9e8c2a5cde61916fc9947">00218</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#4966d0c64bd9e8c2a5cde61916fc9947">maxLinksCount</a> = 0;
-<a name="l00219"></a>00219         };
+<a name="l00204"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html">00204</a>         <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html">ChunkGraph</a>
+<a name="l00205"></a>00205         {
+<a name="l00206"></a>00206             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#b5b3966a0248e5859b9ad20c14aaaf8e">eraseNode</a>(uint32_t index) = 0;
+<a name="l00207"></a>00207             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#857b7c4b566f05750af72c2dc1288399">release</a>() = 0;
+<a name="l00208"></a>00208 
+<a name="l00209"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#3712fffabb62d07f594c88e7016d44c1">00209</a>             <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph_link.html">ChunkGraphLink</a>* <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#3712fffabb62d07f594c88e7016d44c1">links</a> = <span class="keyword">nullptr</span>;
+<a name="l00210"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#89e568da158d43176fd56a41175ec998">00210</a>             uint32_t* <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#89e568da158d43176fd56a41175ec998">dirtyChunks</a> = <span class="keyword">nullptr</span>;
+<a name="l00211"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#6e7bce099f58dc2e6c85133cc03dea86">00211</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#6e7bce099f58dc2e6c85133cc03dea86">linksCount</a> = 0;
+<a name="l00212"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#4a9474b4a38212d5987afa23db264649">00212</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#4a9474b4a38212d5987afa23db264649">dirtyChunksCount</a> = 0;
+<a name="l00213"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#36754ed70616d387264cb9bd25331fa7">00213</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#36754ed70616d387264cb9bd25331fa7">newlyAddedCount</a> = 0;
+<a name="l00214"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#4966d0c64bd9e8c2a5cde61916fc9947">00214</a>             uint32_t <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html#4966d0c64bd9e8c2a5cde61916fc9947">maxLinksCount</a> = 0;
+<a name="l00215"></a>00215         };
+<a name="l00216"></a>00216 
+<a name="l00217"></a>00217     }
+<a name="l00218"></a>00218 }
+<a name="l00219"></a>00219 
 <a name="l00220"></a>00220 
-<a name="l00221"></a>00221     }
-<a name="l00222"></a>00222 }
-<a name="l00223"></a>00223 
-<a name="l00224"></a>00224 
-<a name="l00228"></a>00228 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html">Nv::Blast::FractureRT</a>* <a class="code" href="_nv_blast_ext_r_t_8h.html#d219f8566d1ed54a3b61fbfb03946963">NvBlastExtRTCreateFractureRT</a>(uint32_t threads = 1);
-<a name="l00229"></a>00229 
-<a name="l00233"></a>00233 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_fracturer.html">Nv::Blast::Fracturer</a>* <a class="code" href="_nv_blast_ext_r_t_8h.html#0b98ae50eb40146567af30772be8f6c2">NvBlastExtRTCreateFracturer</a>();
-<a name="l00234"></a>00234 
-<a name="l00238"></a>00238 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> uint32_t <a class="code" href="_nv_blast_ext_r_t_8h.html#f9fbda9fc805b0c120ad067172f89bdd">NvBlastExtRTDoFracture</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html">Nv::Blast::FractureDesc</a>&amp; desc, int32_t stage = <a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed497fe612f8c684f3c191da1285b616457">Nv::Blast::FractureRT::Stage::ALL</a>, int32_t threadId = 0, int32_t threadCount = 1);
-<a name="l00239"></a>00239 
-<a name="l00243"></a>00243 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_mesh_generator.html">Nv::Blast::MeshGenerator</a>* <a class="code" href="_nv_blast_ext_r_t_8h.html#16e51ac155ee15cbbd65170336f21093">NvBlastExtRTCreateMeshGenerator</a>();
-<a name="l00244"></a>00244 
-<a name="l00248"></a>00248 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> uint32_t <a class="code" href="_nv_blast_ext_r_t_8h.html#8d24c375f0f2c447a2e62926ac3d818e">NvBlastExtRTBuildMesh</a>(<a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html">Nv::Blast::MeshDesc</a> dsc, <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Nv::Blast::Vertex</a>* outVertices, uint32_t&amp; vCount, uint32_t* indices, <a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html">Nv::Blast::PerTriangleAdditionalData</a>* adata, uint32_t maxICount, uint32_t maxVCount);
-<a name="l00249"></a>00249 
-<a name="l00253"></a>00253 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> uint32_t <a class="code" href="_nv_blast_ext_r_t_8h.html#7ee9429d732ad12d38dfc2f2e04ac0a0">NvBlastExtRTGetChunksToUnite</a>(<a class="code" href="struct_nv_1_1_blast_1_1_damage_pattern.html">Nv::Blast::DamagePattern</a>* pattern, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Nv::Blast::Vertex</a>* vertices, <span class="keyword">const</span> uint32_t* voffsets, uint32_t chunksCount, uint32_t* chunksToUnite);
-<a name="l00254"></a>00254 
-<a name="l00258"></a>00258 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> uint32_t <a class="code" href="_nv_blast_ext_r_t_8h.html#a8c693cbaed457e594fedc7e0ba5491a">NvBlastExtRTDetectIslands</a>(<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Nv::Blast::Vertex</a>* vertices, uint32_t* offsets, physx::PxBounds3* bounds, uint32_t chunkCount, <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html">Nv::Blast::ChunkGraph</a>* graph, uint32_t* islandChunks, uint32_t* islandOffsets);
-<a name="l00259"></a>00259 
-<a name="l00263"></a>00263 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html">Nv::Blast::ChunkGraph</a>* <a class="code" href="_nv_blast_ext_r_t_8h.html#d246180b68843d3a460a12e3c7976f50">NvBlastExtRTCreateChunkGraph</a>(uint32_t maxLinksCount = 4096);
-<a name="l00264"></a>00264 
-<a name="l00268"></a>00268 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_r_t_8h.html#6703b07ee846923fe4c02629e18f783c">NvBlastExtRTCookMergedMesh</a>(<a class="code" href="struct_nv_1_1_blast_1_1_damage_pattern.html">Nv::Blast::DamagePattern</a>* pattern);
-<a name="l00269"></a>00269 
-<a name="l00270"></a>00270 
-<a name="l00271"></a>00271 
-<a name="l00272"></a>00272 <span class="preprocessor">#endif // ifndef NVBLASTEXTRT_H</span>
+<a name="l00224"></a>00224 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_fracture_r_t.html">Nv::Blast::FractureRT</a>* <a class="code" href="_nv_blast_ext_r_t_8h.html#d219f8566d1ed54a3b61fbfb03946963">NvBlastExtRTCreateFractureRT</a>(uint32_t threads = 1);
+<a name="l00225"></a>00225 
+<a name="l00229"></a>00229 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_fracturer.html">Nv::Blast::Fracturer</a>* <a class="code" href="_nv_blast_ext_r_t_8h.html#0b98ae50eb40146567af30772be8f6c2">NvBlastExtRTCreateFracturer</a>();
+<a name="l00230"></a>00230 
+<a name="l00234"></a>00234 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> uint32_t <a class="code" href="_nv_blast_ext_r_t_8h.html#f9fbda9fc805b0c120ad067172f89bdd">NvBlastExtRTDoFracture</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_fracture_desc.html">Nv::Blast::FractureDesc</a>&amp; desc, int32_t stage = <a class="code" href="struct_nv_1_1_blast_1_1_fracture_r_t_1_1_stage.html#d0734403d39e52d55ed4492d63090ed497fe612f8c684f3c191da1285b616457">Nv::Blast::FractureRT::Stage::ALL</a>, int32_t threadId = 0, int32_t threadCount = 1);
+<a name="l00235"></a>00235 
+<a name="l00239"></a>00239 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_mesh_generator.html">Nv::Blast::MeshGenerator</a>* <a class="code" href="_nv_blast_ext_r_t_8h.html#16e51ac155ee15cbbd65170336f21093">NvBlastExtRTCreateMeshGenerator</a>();
+<a name="l00240"></a>00240 
+<a name="l00244"></a>00244 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> uint32_t <a class="code" href="_nv_blast_ext_r_t_8h.html#8d24c375f0f2c447a2e62926ac3d818e">NvBlastExtRTBuildMesh</a>(<a class="code" href="struct_nv_1_1_blast_1_1_mesh_desc.html">Nv::Blast::MeshDesc</a> dsc, <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Nv::Blast::Vertex</a>* outVertices, uint32_t&amp; vCount, uint32_t* indices, <a class="code" href="struct_nv_1_1_blast_1_1_per_triangle_additional_data.html">Nv::Blast::PerTriangleAdditionalData</a>* adata, uint32_t maxICount, uint32_t maxVCount);
+<a name="l00245"></a>00245 
+<a name="l00249"></a>00249 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> uint32_t <a class="code" href="_nv_blast_ext_r_t_8h.html#7ee9429d732ad12d38dfc2f2e04ac0a0">NvBlastExtRTGetChunksToUnite</a>(<a class="code" href="struct_nv_1_1_blast_1_1_damage_pattern.html">Nv::Blast::DamagePattern</a>* pattern, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Nv::Blast::Vertex</a>* vertices, <span class="keyword">const</span> uint32_t* voffsets, uint32_t chunksCount, uint32_t* chunksToUnite);
+<a name="l00250"></a>00250 
+<a name="l00254"></a>00254 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> uint32_t <a class="code" href="_nv_blast_ext_r_t_8h.html#558f3b79e0e220a495ab10744a1930af">NvBlastExtRTDetectIslands</a>(<a class="code" href="struct_nv_1_1_blast_1_1_vertex.html">Nv::Blast::Vertex</a>* vertices, uint32_t* offsets, <a class="code" href="struct_nvc_bounds3.html">NvcBounds3</a>* bounds, uint32_t chunkCount, <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html">Nv::Blast::ChunkGraph</a>* graph, uint32_t* islandChunks, uint32_t* islandOffsets);
+<a name="l00255"></a>00255 
+<a name="l00259"></a>00259 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_graph.html">Nv::Blast::ChunkGraph</a>* <a class="code" href="_nv_blast_ext_r_t_8h.html#d246180b68843d3a460a12e3c7976f50">NvBlastExtRTCreateChunkGraph</a>(uint32_t maxLinksCount = 4096);
+<a name="l00260"></a>00260 
+<a name="l00264"></a>00264 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <span class="keywordtype">void</span> <a class="code" href="_nv_blast_ext_r_t_8h.html#6703b07ee846923fe4c02629e18f783c">NvBlastExtRTCookMergedMesh</a>(<a class="code" href="struct_nv_1_1_blast_1_1_damage_pattern.html">Nv::Blast::DamagePattern</a>* pattern);
+<a name="l00265"></a>00265 
+<a name="l00266"></a>00266 
+<a name="l00267"></a>00267 
+<a name="l00268"></a>00268 <span class="preprocessor">#endif // ifndef NVBLASTEXTRT_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

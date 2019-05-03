@@ -55,7 +55,7 @@ public:
 	Applies to the cutout indexed by cutoutIndex:
 	Returns the vertex indexed by vertexIndex.  (Only the X and Y coordinates are used.)
 	*/
-	virtual const physx::PxVec3&	getCutoutVertex(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const = 0;
+	virtual const NvcVec3&			getCutoutVertex(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const = 0;
 
 	/**
 	If smoothing group should be changed for adjacent to this vertex faces return true
@@ -70,11 +70,7 @@ public:
 	/**
 	The dimensions of the fracture map used to create the cutout set.
 	*/
-	virtual const physx::PxVec2&	getDimensions() const = 0;
-
-	/** Serialization */
-	//virtual void			serialize(physx::PxFileBuf& stream) const = 0;
-	//virtual void			deserialize(physx::PxFileBuf& stream) = 0;
+	virtual const NvcVec2&			getDimensions() const = 0;
 
 	/** Releases all memory and deletes itself. */
 	virtual void					release() = 0;

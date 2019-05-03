@@ -156,7 +156,7 @@ public:
 		\param[in] point	Point which should be tested
 		\return not 0 if point is inside of mesh
 	*/
-	int32_t	isPointContainedInMesh(const Mesh* mesh, const physx::PxVec3& point);
+	int32_t	isPointContainedInMesh(const Mesh* mesh, const NvcVec3& point);
 	/**
 		Test whether point contained in mesh.
 		\param[in] mesh		Mesh geometry
@@ -164,7 +164,7 @@ public:
 		\param[in] point	Point which should be tested
 		\return not 0 if point is inside of mesh
 	*/
-	int32_t	isPointContainedInMesh(const Mesh* mesh, SpatialAccelerator* spAccel, const physx::PxVec3& point);
+	int32_t	isPointContainedInMesh(const Mesh* mesh, SpatialAccelerator* spAccel, const NvcVec3& point);
 
 
 	/**
@@ -189,8 +189,8 @@ private:
 	void	addEdgeIfValid(EdgeWithParent& ed);
 private:
 
-	int32_t	vertexMeshStatus03(const physx::PxVec3& p, const Mesh* mesh);
-	int32_t	vertexMeshStatus30(const physx::PxVec3& p, const Mesh* mesh);
+	int32_t	vertexMeshStatus03(const NvcVec3& p, const Mesh* mesh);
+	int32_t	vertexMeshStatus30(const NvcVec3& p, const Mesh* mesh);
 
 	const Mesh*												mMeshA;
 	const Mesh*												mMeshB;

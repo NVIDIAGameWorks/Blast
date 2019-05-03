@@ -106,17 +106,17 @@ void ObjFileReader::loadFromFile(const char* filename)
 	auto& psVec = shapes[0].mesh.positions;
 	for (uint32_t i = 0; i < psVec.size() / 3; ++i)
 	{
-		mVertexPositions.push_back(PxVec3(psVec[i * 3], psVec[i * 3 + 1], psVec[i * 3 + 2]));
+		mVertexPositions.push_back({psVec[i * 3], psVec[i * 3 + 1], psVec[i * 3 + 2]});
 	}
 	auto& nmVec = shapes[0].mesh.normals;
 	for (uint32_t i = 0; i < nmVec.size() / 3; ++i)
 	{
-		mVertexNormals.push_back(PxVec3(nmVec[i * 3], nmVec[i * 3 + 1], nmVec[i * 3 + 2]));
+		mVertexNormals.push_back({nmVec[i * 3], nmVec[i * 3 + 1], nmVec[i * 3 + 2]});
 	}
 	auto& txVec = shapes[0].mesh.texcoords;
 	for (uint32_t i = 0; i < txVec.size() / 2; ++i)
 	{
-		mVertexUv.push_back(PxVec2(txVec[i * 2], txVec[i * 2 + 1]));
+		mVertexUv.push_back({txVec[i * 2], txVec[i * 2 + 1]});
 	}
 
 	mIndices = shapes[0].mesh.indices;
@@ -145,17 +145,17 @@ uint32_t ObjFileReader::getCollision(uint32_t*& hullsOffset, Nv::Blast::Collisio
 	return 0;
 };
 
-physx::PxVec3* ObjFileReader::getPositionArray()
+NvcVec3* ObjFileReader::getPositionArray()
 {
 	return mVertexPositions.data();
 };
 
-physx::PxVec3* ObjFileReader::getNormalsArray()
+NvcVec3* ObjFileReader::getNormalsArray()
 {
 	return mVertexNormals.data();
 };
 
-physx::PxVec2* ObjFileReader::getUvArray()
+NvcVec2* ObjFileReader::getUvArray()
 {
 	return mVertexUv.data();
 };

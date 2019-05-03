@@ -67,105 +67,102 @@
 <a name="l00029"></a>00029 <span class="preprocessor">#ifndef NVBLASTEXTTRIANGLEPROCESSOR_H</span>
 <a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTEXTTRIANGLEPROCESSOR_H</span>
 <a name="l00031"></a>00031 <span class="preprocessor"></span>
-<a name="l00032"></a>00032 <span class="preprocessor">#include &lt;PxPhysicsAPI.h&gt;</span>
-<a name="l00033"></a>00033 <span class="preprocessor">#include &lt;vector&gt;</span>
-<a name="l00034"></a>00034 <span class="preprocessor">#include &lt;algorithm&gt;</span>
-<a name="l00035"></a>00035 
-<a name="l00036"></a>00036 <span class="keyword">using namespace </span>physx;
-<a name="l00037"></a>00037 
+<a name="l00032"></a>00032 <span class="preprocessor">#include &lt;PxVec2.h&gt;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &lt;PxVec3.h&gt;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &lt;vector&gt;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &lt;algorithm&gt;</span>
+<a name="l00036"></a>00036 
+<a name="l00037"></a>00037 <span class="keyword">using namespace </span>physx;
 <a name="l00038"></a>00038 
-<a name="l00039"></a>00039 <span class="keyword">namespace </span>Nv
-<a name="l00040"></a>00040 {
-<a name="l00041"></a>00041 <span class="keyword">namespace </span>Blast
-<a name="l00042"></a>00042 {
-<a name="l00043"></a>00043     
-<a name="l00047"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">00047</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">TrPrcTriangle</a>
-<a name="l00048"></a>00048 {
-<a name="l00049"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">00049</a>     PxVec3 <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[3];
-<a name="l00050"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#13eaba7506fd27fbddb3233677cd5699">00050</a>     <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#13eaba7506fd27fbddb3233677cd5699">TrPrcTriangle</a>(PxVec3 a = PxVec3(0.0f), PxVec3 b = PxVec3(0.0f), PxVec3 c = PxVec3(0.0f))
-<a name="l00051"></a>00051     {
-<a name="l00052"></a>00052         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0] = a;
-<a name="l00053"></a>00053         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[1] = b;
-<a name="l00054"></a>00054         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[2] = c;
-<a name="l00055"></a>00055     }
-<a name="l00056"></a>00056 
-<a name="l00057"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#ee769e8e688e1687c5ba6c6be22f502a">00057</a>     <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">TrPrcTriangle</a>&amp; <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#ee769e8e688e1687c5ba6c6be22f502a">operator=</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">TrPrcTriangle</a>&amp; b)
-<a name="l00058"></a>00058     {
-<a name="l00059"></a>00059         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0];
-<a name="l00060"></a>00060         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[1] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[1];
-<a name="l00061"></a>00061         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[2] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[2];
-<a name="l00062"></a>00062         <span class="keywordflow">return</span> *<span class="keyword">this</span>;
-<a name="l00063"></a>00063     }
-<a name="l00064"></a>00064 
-<a name="l00065"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#e9cef0c8a067f17912c1ef2b95081d40">00065</a>     <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#13eaba7506fd27fbddb3233677cd5699">TrPrcTriangle</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">TrPrcTriangle</a>&amp; b)
-<a name="l00066"></a>00066     {
-<a name="l00067"></a>00067         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0];
-<a name="l00068"></a>00068         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[1] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[1];
-<a name="l00069"></a>00069         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[2] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[2];
-<a name="l00070"></a>00070     }
-<a name="l00071"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#44a2d328c04bf682d631c74c117e966a">00071</a>     PxVec3 <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#44a2d328c04bf682d631c74c117e966a">getNormal</a>()<span class="keyword"> const</span>
-<a name="l00072"></a>00072 <span class="keyword">    </span>{
-<a name="l00073"></a>00073         <span class="keywordflow">return</span> (<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[1] - <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0]).cross(<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[2] - <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0]);
-<a name="l00074"></a>00074     }
-<a name="l00075"></a>00075 };
-<a name="l00076"></a>00076 
-<a name="l00080"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">00080</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>
-<a name="l00081"></a>00081 {
-<a name="l00082"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">00082</a>     PxVec2 <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[3];
-<a name="l00083"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#2f61c65d8cddf3c8054ab849bd43a495">00083</a>     <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#2f61c65d8cddf3c8054ab849bd43a495">TrPrcTriangle2d</a>(PxVec2 a = PxVec2(0.0f), PxVec2 b = PxVec2(0.0f), PxVec2 c = PxVec2(0.0f))
-<a name="l00084"></a>00084     {
-<a name="l00085"></a>00085         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[0] = a;
-<a name="l00086"></a>00086         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[1] = b;
-<a name="l00087"></a>00087         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[2] = c;
-<a name="l00088"></a>00088     }
-<a name="l00089"></a>00089 
-<a name="l00090"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#850b2c0552513fb056876d438cd74ff6">00090</a>     <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a> <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#850b2c0552513fb056876d438cd74ff6">operator=</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>&amp; b)
-<a name="l00091"></a>00091     {
-<a name="l00092"></a>00092         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[0] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[0];
-<a name="l00093"></a>00093         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[1] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[1];
-<a name="l00094"></a>00094         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[2] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[2];
-<a name="l00095"></a>00095         <span class="keywordflow">return</span> *<span class="keyword">this</span>;
-<a name="l00096"></a>00096     }
-<a name="l00097"></a>00097 
-<a name="l00098"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#275aa4112f44a3c6c6a6400768b612ef">00098</a>     <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#2f61c65d8cddf3c8054ab849bd43a495">TrPrcTriangle2d</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>&amp; b)
-<a name="l00099"></a>00099     {
-<a name="l00100"></a>00100         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[0] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[0];
-<a name="l00101"></a>00101         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[1] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[1];
-<a name="l00102"></a>00102         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[2] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[2];
-<a name="l00103"></a>00103     }
-<a name="l00104"></a>00104 };
-<a name="l00105"></a>00105 
-<a name="l00106"></a><a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html">00106</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html">TriangleProcessor</a>
-<a name="l00107"></a>00107 {
-<a name="l00108"></a>00108 <span class="keyword">public</span>:
-<a name="l00109"></a>00109 
-<a name="l00110"></a>00110 
-<a name="l00111"></a><a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#56ece4bad23e797196a0594bba04a99c">00111</a>     <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#56ece4bad23e797196a0594bba04a99c">TriangleProcessor</a>()
-<a name="l00112"></a>00112     {};
-<a name="l00113"></a><a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#9c5a344650f847c35f70a84a4dfab554">00113</a>     <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#9c5a344650f847c35f70a84a4dfab554">~TriangleProcessor</a>()
-<a name="l00114"></a>00114     {
-<a name="l00115"></a>00115     }
-<a name="l00116"></a>00116         
-<a name="l00117"></a>00117 
-<a name="l00128"></a>00128     uint32_t    <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#ea569ddf0b92492bffb2408f1d3cb7ad">getTriangleIntersection</a>(<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">TrPrcTriangle</a>&amp; a, <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>&amp; aProjected, <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">TrPrcTriangle</a> &amp;b, PxVec3&amp; centroid, std::vector&lt;PxVec3&gt;&amp; intersectionBuffer, PxVec3 <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#1c8d1bbcf531b04e6ff52f5357987794">normal</a>);
-<a name="l00129"></a>00129 
-<a name="l00136"></a>00136     <span class="keywordtype">bool</span>        <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#6136bb55c6b036333854c725419e7015">triangleBoundingBoxIntersection</a>(<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>&amp; a, <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>&amp; b);
-<a name="l00137"></a>00137         
-<a name="l00138"></a>00138 
-<a name="l00145"></a>00145     uint32_t    <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#43fb96c64809f42d7bdd816081878aa3">isPointInside</a>(<span class="keyword">const</span> PxVec2&amp; point, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>&amp; triangle);
-<a name="l00146"></a>00146 
-<a name="l00156"></a>00156     uint32_t    <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#5cb85a4800d4b0007862610d90f764b7">getSegmentIntersection</a>(<span class="keyword">const</span> PxVec2&amp; s1, <span class="keyword">const</span> PxVec2&amp; e1, <span class="keyword">const</span> PxVec2&amp; s2, <span class="keyword">const</span> PxVec2&amp; e2, PxF32&amp; t1);
-<a name="l00157"></a>00157 
-<a name="l00161"></a>00161     <span class="keywordtype">void</span>        <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#c7bddb75fcd0b0f312a7a1065e571825">sortToCCW</a>(std::vector&lt;PxVec3&gt;&amp; points, PxVec3&amp; <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#1c8d1bbcf531b04e6ff52f5357987794">normal</a>);
-<a name="l00162"></a>00162     
-<a name="l00169"></a>00169     <span class="keywordtype">void</span>        <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#a55b2b5cff9e855a9d372827eeae9b50">buildConvexHull</a>(std::vector&lt;PxVec3&gt;&amp; points, std::vector&lt;PxVec3&gt;&amp; convexHull, <span class="keyword">const</span> PxVec3&amp; <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#1c8d1bbcf531b04e6ff52f5357987794">normal</a>);
-<a name="l00170"></a>00170 };
+<a name="l00039"></a>00039 
+<a name="l00040"></a>00040 <span class="keyword">namespace </span>Nv
+<a name="l00041"></a>00041 {
+<a name="l00042"></a>00042 <span class="keyword">namespace </span>Blast
+<a name="l00043"></a>00043 {
+<a name="l00044"></a>00044 
+<a name="l00048"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">00048</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">TrPrcTriangle</a>
+<a name="l00049"></a>00049 {
+<a name="l00050"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">00050</a>     PxVec3 <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[3];
+<a name="l00051"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#13eaba7506fd27fbddb3233677cd5699">00051</a>     <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#13eaba7506fd27fbddb3233677cd5699">TrPrcTriangle</a>(PxVec3 a = PxVec3(0.0f), PxVec3 b = PxVec3(0.0f), PxVec3 c = PxVec3(0.0f))
+<a name="l00052"></a>00052     {
+<a name="l00053"></a>00053         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0] = a;
+<a name="l00054"></a>00054         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[1] = b;
+<a name="l00055"></a>00055         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[2] = c;
+<a name="l00056"></a>00056     }
+<a name="l00057"></a>00057 
+<a name="l00058"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#ee769e8e688e1687c5ba6c6be22f502a">00058</a>     <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">TrPrcTriangle</a>&amp; <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#ee769e8e688e1687c5ba6c6be22f502a">operator=</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">TrPrcTriangle</a>&amp; b)
+<a name="l00059"></a>00059     {
+<a name="l00060"></a>00060         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0];
+<a name="l00061"></a>00061         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[1] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[1];
+<a name="l00062"></a>00062         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[2] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[2];
+<a name="l00063"></a>00063         <span class="keywordflow">return</span> *<span class="keyword">this</span>;
+<a name="l00064"></a>00064     }
+<a name="l00065"></a>00065 
+<a name="l00066"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#e9cef0c8a067f17912c1ef2b95081d40">00066</a>     <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#13eaba7506fd27fbddb3233677cd5699">TrPrcTriangle</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">TrPrcTriangle</a>&amp; b)
+<a name="l00067"></a>00067     {
+<a name="l00068"></a>00068         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0];
+<a name="l00069"></a>00069         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[1] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[1];
+<a name="l00070"></a>00070         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[2] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[2];
+<a name="l00071"></a>00071     }
+<a name="l00072"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#44a2d328c04bf682d631c74c117e966a">00072</a>     PxVec3 <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#44a2d328c04bf682d631c74c117e966a">getNormal</a>()<span class="keyword"> const</span>
+<a name="l00073"></a>00073 <span class="keyword">    </span>{
+<a name="l00074"></a>00074         <span class="keywordflow">return</span> (<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[1] - <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0]).cross(<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[2] - <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html#51e2edc3fd1595606bf16fe29c34f0f9">points</a>[0]);
+<a name="l00075"></a>00075     }
+<a name="l00076"></a>00076 };
+<a name="l00077"></a>00077 
+<a name="l00081"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">00081</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>
+<a name="l00082"></a>00082 {
+<a name="l00083"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">00083</a>     PxVec2 <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[3];
+<a name="l00084"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#2f61c65d8cddf3c8054ab849bd43a495">00084</a>     <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#2f61c65d8cddf3c8054ab849bd43a495">TrPrcTriangle2d</a>(PxVec2 a = PxVec2(0.0f), PxVec2 b = PxVec2(0.0f), PxVec2 c = PxVec2(0.0f))
+<a name="l00085"></a>00085     {
+<a name="l00086"></a>00086         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[0] = a;
+<a name="l00087"></a>00087         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[1] = b;
+<a name="l00088"></a>00088         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[2] = c;
+<a name="l00089"></a>00089     }
+<a name="l00090"></a>00090 
+<a name="l00091"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#850b2c0552513fb056876d438cd74ff6">00091</a>     <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a> <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#850b2c0552513fb056876d438cd74ff6">operator=</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>&amp; b)
+<a name="l00092"></a>00092     {
+<a name="l00093"></a>00093         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[0] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[0];
+<a name="l00094"></a>00094         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[1] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[1];
+<a name="l00095"></a>00095         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[2] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[2];
+<a name="l00096"></a>00096         <span class="keywordflow">return</span> *<span class="keyword">this</span>;
+<a name="l00097"></a>00097     }
+<a name="l00098"></a>00098 
+<a name="l00099"></a><a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#275aa4112f44a3c6c6a6400768b612ef">00099</a>     <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#2f61c65d8cddf3c8054ab849bd43a495">TrPrcTriangle2d</a>(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>&amp; b)
+<a name="l00100"></a>00100     {
+<a name="l00101"></a>00101         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[0] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[0];
+<a name="l00102"></a>00102         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[1] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[1];
+<a name="l00103"></a>00103         <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[2] = b.<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html#877675cc4f9d9dbcb3f9a70c84bd0c19">points</a>[2];
+<a name="l00104"></a>00104     }
+<a name="l00105"></a>00105 };
+<a name="l00106"></a>00106 
+<a name="l00107"></a><a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html">00107</a> <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html">TriangleProcessor</a>
+<a name="l00108"></a>00108 {
+<a name="l00109"></a>00109   <span class="keyword">public</span>:
+<a name="l00110"></a><a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#56ece4bad23e797196a0594bba04a99c">00110</a>     <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#56ece4bad23e797196a0594bba04a99c">TriangleProcessor</a>(){};
+<a name="l00111"></a><a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#9c5a344650f847c35f70a84a4dfab554">00111</a>     <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#9c5a344650f847c35f70a84a4dfab554">~TriangleProcessor</a>() {}
+<a name="l00112"></a>00112 
+<a name="l00113"></a>00113 
+<a name="l00124"></a>00124     uint32_t <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#ea569ddf0b92492bffb2408f1d3cb7ad">getTriangleIntersection</a>(<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">TrPrcTriangle</a>&amp; a, <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>&amp; aProjected, <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle.html">TrPrcTriangle</a>&amp; b, PxVec3&amp; centroid,
+<a name="l00125"></a>00125                                      std::vector&lt;PxVec3&gt;&amp; intersectionBuffer, PxVec3 <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#1c8d1bbcf531b04e6ff52f5357987794">normal</a>);
+<a name="l00126"></a>00126 
+<a name="l00133"></a>00133     <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#6136bb55c6b036333854c725419e7015">triangleBoundingBoxIntersection</a>(<a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>&amp; a, <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>&amp; b);
+<a name="l00134"></a>00134 
+<a name="l00135"></a>00135 
+<a name="l00142"></a>00142     uint32_t <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#43fb96c64809f42d7bdd816081878aa3">isPointInside</a>(<span class="keyword">const</span> PxVec2&amp; point, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html">TrPrcTriangle2d</a>&amp; triangle);
+<a name="l00143"></a>00143 
+<a name="l00153"></a>00153     uint32_t <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#5cb85a4800d4b0007862610d90f764b7">getSegmentIntersection</a>(<span class="keyword">const</span> PxVec2&amp; s1, <span class="keyword">const</span> PxVec2&amp; e1, <span class="keyword">const</span> PxVec2&amp; s2, <span class="keyword">const</span> PxVec2&amp; e2, PxF32&amp; t1);
+<a name="l00154"></a>00154 
+<a name="l00158"></a>00158     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#c7bddb75fcd0b0f312a7a1065e571825">sortToCCW</a>(std::vector&lt;PxVec3&gt;&amp; points, PxVec3&amp; <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#1c8d1bbcf531b04e6ff52f5357987794">normal</a>);
+<a name="l00159"></a>00159 
+<a name="l00166"></a>00166     <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_triangle_processor.html#a55b2b5cff9e855a9d372827eeae9b50">buildConvexHull</a>(std::vector&lt;PxVec3&gt;&amp; points, std::vector&lt;PxVec3&gt;&amp; convexHull, <span class="keyword">const</span> PxVec3&amp; <a class="code" href="namespace_nv_1_1_blast_1_1_vec_math.html#1c8d1bbcf531b04e6ff52f5357987794">normal</a>);
+<a name="l00167"></a>00167 };
+<a name="l00168"></a>00168 
+<a name="l00169"></a>00169 }  <span class="comment">// namespace Blast</span>
+<a name="l00170"></a>00170 }  <span class="comment">// namespace Nv</span>
 <a name="l00171"></a>00171 
-<a name="l00172"></a>00172 } <span class="comment">// namespace Blast</span>
-<a name="l00173"></a>00173 } <span class="comment">// namespace Nv</span>
-<a name="l00174"></a>00174 
-<a name="l00175"></a>00175 
-<a name="l00176"></a>00176 <span class="preprocessor">#endif // NVBLASTEXTTRIANGLEPROCESSOR_H</span>
+<a name="l00172"></a>00172 
+<a name="l00173"></a>00173 <span class="preprocessor">#endif  // NVBLASTEXTTRIANGLEPROCESSOR_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

@@ -57,9 +57,9 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_noise_configuration.html">NoiseConfiguration</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#64b0d84c82de63873bc0414d95ed036b">noise</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxVec2&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#8bd738f329ad60f6d920d3fa57dea128">scale</a> = physx::PxVec2(-1, -1)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nvc_vec2.html">NvcVec2</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#4474a4284f58e9e1b97956bbcc4f48d1">scale</a> = { -1, -1 }</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxTransform&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#d7b10d6b4904147286497ec4a0c4860c">transform</a> = physx::PxTransform(physx::PxIdentity)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nvc_transform.html">NvcTransform</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#a0c088a7b81ace3910d7dd53f2eab935">transform</a> = {{0, 0, 0, 1}, {0, 0, 0}}</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#61deebb0401642549a0772f6dd971065">useSmoothing</a> = false</td></tr>
 
@@ -126,12 +126,12 @@ If relative transform is set - position will be displacement vector from chunk's
 Noise parameters for cutout surface, see <a class="el" href="struct_nv_1_1_blast_1_1_noise_configuration.html">NoiseConfiguration</a>. 
 </div>
 </div><p>
-<a class="anchor" name="8bd738f329ad60f6d920d3fa57dea128"></a><!-- doxytag: member="Nv::Blast::CutoutConfiguration::scale" ref="8bd738f329ad60f6d920d3fa57dea128" args="" -->
+<a class="anchor" name="4474a4284f58e9e1b97956bbcc4f48d1"></a><!-- doxytag: member="Nv::Blast::CutoutConfiguration::scale" ref="4474a4284f58e9e1b97956bbcc4f48d1" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">physx::PxVec2 <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#8bd738f329ad60f6d920d3fa57dea128">Nv::Blast::CutoutConfiguration::scale</a> = physx::PxVec2(-1, -1)          </td>
+          <td class="memname"><a class="el" href="struct_nvc_vec2.html">NvcVec2</a> <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#4474a4284f58e9e1b97956bbcc4f48d1">Nv::Blast::CutoutConfiguration::scale</a> = { -1, -1 }          </td>
         </tr>
       </table>
 </div>
@@ -141,12 +141,12 @@ Noise parameters for cutout surface, see <a class="el" href="struct_nv_1_1_blast
 Scale for pattern. Unscaled pattern has size (1, 1). For negative scale pattern will be placed at the center of chunk and scaled with max distance between points of its AABB 
 </div>
 </div><p>
-<a class="anchor" name="d7b10d6b4904147286497ec4a0c4860c"></a><!-- doxytag: member="Nv::Blast::CutoutConfiguration::transform" ref="d7b10d6b4904147286497ec4a0c4860c" args="" -->
+<a class="anchor" name="a0c088a7b81ace3910d7dd53f2eab935"></a><!-- doxytag: member="Nv::Blast::CutoutConfiguration::transform" ref="a0c088a7b81ace3910d7dd53f2eab935" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">physx::PxTransform <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#d7b10d6b4904147286497ec4a0c4860c">Nv::Blast::CutoutConfiguration::transform</a> = physx::PxTransform(physx::PxIdentity)          </td>
+          <td class="memname"><a class="el" href="struct_nvc_transform.html">NvcTransform</a> <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html#a0c088a7b81ace3910d7dd53f2eab935">Nv::Blast::CutoutConfiguration::transform</a> = {{0, 0, 0, 1}, {0, 0, 0}}          </td>
         </tr>
       </table>
 </div>

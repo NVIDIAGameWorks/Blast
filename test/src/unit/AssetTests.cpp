@@ -33,6 +33,7 @@
 
 #include "NvBlastTkFramework.h"
 
+#include <random>
 #include <algorithm>
 
 
@@ -301,13 +302,16 @@ public:
 		// An array into which to copy the reordered descs
 		std::vector<NvBlastChunkDesc> shuffledChunkDescs(chunkDescCount);
 
+        std::random_device rd;
+		std::mt19937 g(rd());
+
 		std::vector<char> scratch;
 		const uint32_t trials = 30;
 		uint32_t attempt = 0;
 		while(1)
 		{
 			// Shuffle the reorder array
-			std::random_shuffle(shuffledOrder.begin(), shuffledOrder.end());
+			std::shuffle(shuffledOrder.begin(), shuffledOrder.end(), g);
 
 			// Save initial bonds
 			std::vector<NvBlastBondDesc> savedBondDescs(bondDescs, bondDescs + bondDescCount);

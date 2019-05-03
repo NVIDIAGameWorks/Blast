@@ -60,99 +60,107 @@
 <a name="l00039"></a>00039 <span class="keyword">namespace </span>physx
 <a name="l00040"></a>00040 {
 <a name="l00041"></a>00041 <span class="keyword">class </span>PxPhysics;
-<a name="l00042"></a>00042 <span class="keyword">class </span>PxRigidDynamic;
-<a name="l00043"></a>00043 <span class="keyword">class </span>PxJoint;
-<a name="l00044"></a>00044 
-<a name="l00045"></a>00045 <span class="keyword">namespace </span>general_PxIOStream2
-<a name="l00046"></a>00046 {
-<a name="l00047"></a>00047 <span class="keyword">class </span>PxFileBuf;
-<a name="l00048"></a>00048 }
+<a name="l00042"></a>00042 <span class="keyword">class </span>PxCooking;
+<a name="l00043"></a>00043 <span class="keyword">class </span>PxRigidDynamic;
+<a name="l00044"></a>00044 <span class="keyword">class </span>PxJoint;
+<a name="l00045"></a>00045 
+<a name="l00046"></a>00046 <span class="keyword">namespace </span>general_PxIOStream2
+<a name="l00047"></a>00047 {
+<a name="l00048"></a>00048 <span class="keyword">class </span>PxFileBuf;
 <a name="l00049"></a>00049 }
-<a name="l00050"></a>00050 
+<a name="l00050"></a>00050 }  <span class="comment">// namespace physx</span>
 <a name="l00051"></a>00051 
-<a name="l00052"></a>00052 <span class="keyword">namespace </span>Nv
-<a name="l00053"></a>00053 {
-<a name="l00054"></a>00054 <span class="keyword">namespace </span>Blast
-<a name="l00055"></a>00055 {
-<a name="l00056"></a>00056 
-<a name="l00057"></a>00057 <span class="comment">// Forward declarations</span>
-<a name="l00058"></a>00058 <span class="keyword">class </span>ExtPxActor;
-<a name="l00059"></a>00059 <span class="keyword">class </span>ExtPxAsset;
-<a name="l00060"></a>00060 <span class="keyword">class </span>ExtPxFamily;
-<a name="l00061"></a>00061 <span class="keyword">class </span>ExtPxListener;
-<a name="l00062"></a>00062 <span class="keyword">class </span>TkFamily;
-<a name="l00063"></a>00063 <span class="keyword">class </span>TkFramework;
-<a name="l00064"></a>00064 <span class="keyword">class </span>TkGroup;
-<a name="l00065"></a>00065 <span class="keyword">class </span>TkJoint;
-<a name="l00066"></a>00066 
-<a name="l00067"></a>00067 
-<a name="l00073"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html">00073</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html">ExtPxFamilyDesc</a>
-<a name="l00074"></a>00074 {
-<a name="l00075"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html#a91df24e1d2e95e1cc46b44b73003205">00075</a>     <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>*             <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html#a91df24e1d2e95e1cc46b44b73003205" title="px asset to create from, pointer will be stored in family.">pxAsset</a>;        
-<a name="l00076"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html#7cb289487618ef298735063553d2e1b4">00076</a>     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>* <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html#7cb289487618ef298735063553d2e1b4" title="actor descriptor to be used when creating TkActor. If nullptr, default NvBlastActorDesc...">actorDesc</a>;      
-<a name="l00077"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html#26f0bd89ac30cb8cb2925eef79f2fe6f">00077</a>     <a class="code" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>*                <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html#26f0bd89ac30cb8cb2925eef79f2fe6f" title="if not nullptr, created TkActor will be placed in group">group</a>;          
-<a name="l00078"></a>00078 };
+<a name="l00052"></a>00052 
+<a name="l00053"></a>00053 <span class="keyword">namespace </span>Nv
+<a name="l00054"></a>00054 {
+<a name="l00055"></a>00055 <span class="keyword">namespace </span>Blast
+<a name="l00056"></a>00056 {
+<a name="l00057"></a>00057 
+<a name="l00058"></a>00058 <span class="comment">// Forward declarations</span>
+<a name="l00059"></a>00059 <span class="keyword">class </span>ExtPxActor;
+<a name="l00060"></a>00060 <span class="keyword">class </span>ExtPxAsset;
+<a name="l00061"></a>00061 <span class="keyword">class </span>ExtPxFamily;
+<a name="l00062"></a>00062 <span class="keyword">class </span>ExtPxListener;
+<a name="l00063"></a>00063 <span class="keyword">class </span>TkFamily;
+<a name="l00064"></a>00064 <span class="keyword">class </span>TkFramework;
+<a name="l00065"></a>00065 <span class="keyword">class </span>TkGroup;
+<a name="l00066"></a>00066 <span class="keyword">class </span>TkJoint;
+<a name="l00067"></a>00067 <span class="keyword">class </span>ExtPxCollisionBuilder;
+<a name="l00068"></a>00068 
+<a name="l00069"></a>00069 
+<a name="l00075"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html">00075</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html">ExtPxFamilyDesc</a>
+<a name="l00076"></a>00076 {
+<a name="l00077"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html#a91df24e1d2e95e1cc46b44b73003205">00077</a>     <a class="code" href="class_nv_1_1_blast_1_1_ext_px_asset.html">ExtPxAsset</a>* <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html#a91df24e1d2e95e1cc46b44b73003205" title="px asset to create from, pointer will be stored in family.">pxAsset</a>;                
+<a name="l00078"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html#7cb289487618ef298735063553d2e1b4">00078</a>     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor_desc.html">NvBlastActorDesc</a>* <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html#7cb289487618ef298735063553d2e1b4">actorDesc</a>;  
 <a name="l00079"></a>00079 
-<a name="l00080"></a>00080 
-<a name="l00086"></a><a class="code" href="namespace_nv_1_1_blast.html#6a12664dba0567a600473d48d62a7e86">00086</a> <span class="keyword">typedef</span> physx::PxJoint*(*ExtPxCreateJointFunction)(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>* actor0, <span class="keyword">const</span> physx::PxTransform&amp; localFrame0, <a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>* actor1, <span class="keyword">const</span> physx::PxTransform&amp; localFrame1, physx::PxPhysics&amp; physics, <a class="code" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a>&amp; joint);
-<a name="l00087"></a>00087 
-<a name="l00088"></a>00088 
-<a name="l00094"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_px_manager.html">00094</a> <span class="keyword">class </span>NV_DLL_EXPORT <a class="code" href="class_nv_1_1_blast_1_1_ext_px_manager.html">ExtPxManager</a>
-<a name="l00095"></a>00095 {
-<a name="l00096"></a>00096 <span class="keyword">public</span>:
-<a name="l00098"></a>00098 
-<a name="l00110"></a>00110     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_manager.html">ExtPxManager</a>*        create(physx::PxPhysics&amp; physics, <a class="code" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a>&amp; framework, <a class="code" href="namespace_nv_1_1_blast.html#6a12664dba0567a600473d48d62a7e86">ExtPxCreateJointFunction</a> createFn = <span class="keyword">nullptr</span>, <span class="keywordtype">bool</span> useUserData = <span class="keyword">true</span>);
-<a name="l00111"></a>00111 
-<a name="l00115"></a>00115     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                release() = 0;
-<a name="l00116"></a>00116 
-<a name="l00117"></a>00117 
-<a name="l00119"></a>00119 
-<a name="l00123"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_px_manager.html#cdb64014cad3dc9b0f40450ea394951d">00123</a>     <span class="keyword">enum</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_manager.html#cdb64014cad3dc9b0f40450ea394951d">FilterDataAttributes</a>
-<a name="l00124"></a>00124     {
-<a name="l00125"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_px_manager.html#cdb64014cad3dc9b0f40450ea394951d6e3c7382337952ba42cee04a0a36a21d">00125</a>         LEAF_CHUNK = 1,
-<a name="l00126"></a>00126     };
-<a name="l00127"></a>00127 
+<a name="l00080"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html#26f0bd89ac30cb8cb2925eef79f2fe6f">00080</a>     <a class="code" href="class_nv_1_1_blast_1_1_tk_group.html">TkGroup</a>* <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html#26f0bd89ac30cb8cb2925eef79f2fe6f" title="if not nullptr, created TkActor will be placed in group">group</a>;                     
+<a name="l00081"></a>00081 };
+<a name="l00082"></a>00082 
+<a name="l00083"></a>00083 
+<a name="l00089"></a><a class="code" href="namespace_nv_1_1_blast.html#6a12664dba0567a600473d48d62a7e86">00089</a> <span class="keyword">typedef</span> physx::PxJoint* (*ExtPxCreateJointFunction)(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>* actor0, <span class="keyword">const</span> physx::PxTransform&amp; localFrame0,
+<a name="l00090"></a>00090                                                     <a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>* actor1, <span class="keyword">const</span> physx::PxTransform&amp; localFrame1,
+<a name="l00091"></a>00091                                                     physx::PxPhysics&amp; physics, <a class="code" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a>&amp; joint);
+<a name="l00092"></a>00092 
+<a name="l00093"></a>00093 
+<a name="l00099"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_px_manager.html">00099</a> <span class="keyword">class </span>NV_DLL_EXPORT <a class="code" href="class_nv_1_1_blast_1_1_ext_px_manager.html">ExtPxManager</a>
+<a name="l00100"></a>00100 {
+<a name="l00101"></a>00101   <span class="keyword">public</span>:
+<a name="l00103"></a>00103 
+<a name="l00116"></a>00116     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_manager.html">ExtPxManager</a>* create(physx::PxPhysics&amp; physics, <a class="code" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a>&amp; framework,
+<a name="l00117"></a>00117                                 <a class="code" href="namespace_nv_1_1_blast.html#6a12664dba0567a600473d48d62a7e86">ExtPxCreateJointFunction</a> createFn = <span class="keyword">nullptr</span>, <span class="keywordtype">bool</span> useUserData = <span class="keyword">true</span>);
+<a name="l00118"></a>00118 
+<a name="l00122"></a>00122     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_collision_builder.html">ExtPxCollisionBuilder</a>* createCollisionBuilder(physx::PxPhysics&amp; physics, physx::PxCooking&amp; cooking);
+<a name="l00123"></a>00123 
+<a name="l00127"></a>00127     <span class="keyword">virtual</span> <span class="keywordtype">void</span> release() = 0;
 <a name="l00128"></a>00128 
-<a name="l00130"></a>00130 
-<a name="l00138"></a>00138     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a>*        createFamily(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html">ExtPxFamilyDesc</a>&amp; desc) = 0;
+<a name="l00129"></a>00129 
+<a name="l00131"></a>00131 
+<a name="l00135"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_px_manager.html#cdb64014cad3dc9b0f40450ea394951d">00135</a>     <span class="keyword">enum</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_manager.html#cdb64014cad3dc9b0f40450ea394951d">FilterDataAttributes</a>
+<a name="l00136"></a>00136     {
+<a name="l00137"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_px_manager.html#cdb64014cad3dc9b0f40450ea394951d6e3c7382337952ba42cee04a0a36a21d">00137</a>         LEAF_CHUNK = 1,
+<a name="l00138"></a>00138     };
 <a name="l00139"></a>00139 
-<a name="l00150"></a>00150     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                createJoint(<a class="code" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a>&amp; joint) = 0;
-<a name="l00151"></a>00151 
-<a name="l00157"></a>00157     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                destroyJoint(<a class="code" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a>&amp; joint) = 0;
-<a name="l00158"></a>00158 
-<a name="l00164"></a>00164     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                setCreateJointFunction(<a class="code" href="namespace_nv_1_1_blast.html#6a12664dba0567a600473d48d62a7e86">ExtPxCreateJointFunction</a> createFn) = 0;
-<a name="l00165"></a>00165 
-<a name="l00171"></a>00171     <span class="keyword">virtual</span> uint32_t            getFamilyCount() <span class="keyword">const</span> = 0;
-<a name="l00172"></a>00172 
-<a name="l00181"></a>00181     <span class="keyword">virtual</span> uint32_t            getFamilies(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a>** buffer, uint32_t bufferSize) <span class="keyword">const</span> = 0;
-<a name="l00182"></a>00182 
-<a name="l00190"></a>00190     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a>*        getFamilyFromTkFamily(<a class="code" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a>&amp; family) <span class="keyword">const</span> = 0;
-<a name="l00191"></a>00191 
-<a name="l00199"></a>00199     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>*         getActorFromPhysXActor(<span class="keyword">const</span> physx::PxRigidDynamic&amp; pxActor) <span class="keyword">const</span> = 0;
-<a name="l00200"></a>00200 
-<a name="l00206"></a>00206     <span class="keyword">virtual</span> physx::PxPhysics&amp;   getPhysics() <span class="keyword">const</span> = 0;
-<a name="l00207"></a>00207 
-<a name="l00213"></a>00213     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a>&amp;        getFramework() <span class="keyword">const</span> = 0;
-<a name="l00214"></a>00214 
-<a name="l00220"></a>00220     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                isPxUserDataUsed() <span class="keyword">const</span> = 0;
-<a name="l00221"></a>00221 
-<a name="l00227"></a>00227     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                setActorCountLimit(uint32_t limit) = 0;
-<a name="l00228"></a>00228 
-<a name="l00234"></a>00234     <span class="keyword">virtual</span> uint32_t            getActorCountLimit() = 0;
-<a name="l00235"></a>00235 
-<a name="l00241"></a>00241     <span class="keyword">virtual</span> uint32_t            getPxActorCount() <span class="keyword">const</span> = 0;
-<a name="l00242"></a>00242 
-<a name="l00248"></a>00248     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                subscribe(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_listener.html">ExtPxListener</a>&amp; listener) = 0;
+<a name="l00140"></a>00140 
+<a name="l00142"></a>00142 
+<a name="l00151"></a>00151     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a>* createFamily(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_px_family_desc.html">ExtPxFamilyDesc</a>&amp; desc) = 0;
+<a name="l00152"></a>00152 
+<a name="l00163"></a>00163     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> createJoint(<a class="code" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a>&amp; joint) = 0;
+<a name="l00164"></a>00164 
+<a name="l00170"></a>00170     <span class="keyword">virtual</span> <span class="keywordtype">void</span> destroyJoint(<a class="code" href="class_nv_1_1_blast_1_1_tk_joint.html">TkJoint</a>&amp; joint) = 0;
+<a name="l00171"></a>00171 
+<a name="l00177"></a>00177     <span class="keyword">virtual</span> <span class="keywordtype">void</span> setCreateJointFunction(<a class="code" href="namespace_nv_1_1_blast.html#6a12664dba0567a600473d48d62a7e86">ExtPxCreateJointFunction</a> createFn) = 0;
+<a name="l00178"></a>00178 
+<a name="l00184"></a>00184     <span class="keyword">virtual</span> uint32_t getFamilyCount() <span class="keyword">const</span> = 0;
+<a name="l00185"></a>00185 
+<a name="l00194"></a>00194     <span class="keyword">virtual</span> uint32_t getFamilies(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a>** buffer, uint32_t bufferSize) <span class="keyword">const</span> = 0;
+<a name="l00195"></a>00195 
+<a name="l00203"></a>00203     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a>* getFamilyFromTkFamily(<a class="code" href="class_nv_1_1_blast_1_1_tk_family.html">TkFamily</a>&amp; family) <span class="keyword">const</span> = 0;
+<a name="l00204"></a>00204 
+<a name="l00212"></a>00212     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_px_actor.html">ExtPxActor</a>* getActorFromPhysXActor(<span class="keyword">const</span> physx::PxRigidDynamic&amp; pxActor) <span class="keyword">const</span> = 0;
+<a name="l00213"></a>00213 
+<a name="l00219"></a>00219     <span class="keyword">virtual</span> physx::PxPhysics&amp; getPhysics() <span class="keyword">const</span> = 0;
+<a name="l00220"></a>00220 
+<a name="l00226"></a>00226     <span class="keyword">virtual</span> <a class="code" href="class_nv_1_1_blast_1_1_tk_framework.html">TkFramework</a>&amp; getFramework() <span class="keyword">const</span> = 0;
+<a name="l00227"></a>00227 
+<a name="l00233"></a>00233     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> isPxUserDataUsed() <span class="keyword">const</span> = 0;
+<a name="l00234"></a>00234 
+<a name="l00240"></a>00240     <span class="keyword">virtual</span> <span class="keywordtype">void</span> setActorCountLimit(uint32_t limit) = 0;
+<a name="l00241"></a>00241 
+<a name="l00248"></a>00248     <span class="keyword">virtual</span> uint32_t getActorCountLimit() = 0;
 <a name="l00249"></a>00249 
-<a name="l00255"></a>00255     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                unsubscribe(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_listener.html">ExtPxListener</a>&amp; listener) = 0;
-<a name="l00256"></a>00256 };
-<a name="l00257"></a>00257 
-<a name="l00258"></a>00258 
-<a name="l00259"></a>00259 } <span class="comment">// namespace Blast</span>
-<a name="l00260"></a>00260 } <span class="comment">// namespace Nv</span>
-<a name="l00261"></a>00261 
-<a name="l00262"></a>00262 
-<a name="l00263"></a>00263 <span class="preprocessor">#endif // ifndef NVBLASTEXTPXMANAGER_H</span>
+<a name="l00255"></a>00255     <span class="keyword">virtual</span> uint32_t getPxActorCount() <span class="keyword">const</span> = 0;
+<a name="l00256"></a>00256 
+<a name="l00262"></a>00262     <span class="keyword">virtual</span> <span class="keywordtype">void</span> subscribe(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_listener.html">ExtPxListener</a>&amp; listener) = 0;
+<a name="l00263"></a>00263 
+<a name="l00269"></a>00269     <span class="keyword">virtual</span> <span class="keywordtype">void</span> unsubscribe(<a class="code" href="class_nv_1_1_blast_1_1_ext_px_listener.html">ExtPxListener</a>&amp; listener) = 0;
+<a name="l00270"></a>00270 };
+<a name="l00271"></a>00271 
+<a name="l00272"></a>00272 
+<a name="l00273"></a>00273 }  <span class="comment">// namespace Blast</span>
+<a name="l00274"></a>00274 }  <span class="comment">// namespace Nv</span>
+<a name="l00275"></a>00275 
+<a name="l00276"></a>00276 
+<a name="l00277"></a>00277 <span class="preprocessor">#endif  // ifndef NVBLASTEXTPXMANAGER_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

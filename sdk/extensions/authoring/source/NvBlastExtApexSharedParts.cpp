@@ -31,7 +31,6 @@
 #include "PxMat44.h"
 #include "PxBounds3.h"
 #include "PxFoundation.h"
-#include "PxPhysics.h"
 #include "PsVecMath.h"
 #include <vector>
 

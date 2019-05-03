@@ -27,6 +27,7 @@
 
 #include <PxVec3.h>
 #include <PxVec2.h>
+#include <PxBounds3.h>
 #include <vector>
 #include <queue>
 #include <map>
@@ -34,27 +35,21 @@
 #include <NvBlastExtAuthoringMeshCleanerImpl.h>
 #include <NvBlastExtAuthoringMeshImpl.h>
 #include <NvBlastExtAuthoringInternalCommon.h>
+#include <NvBlastPxSharedHelpers.h>
 #include <boost/multiprecision/cpp_int.hpp>
 
-
-
-
-using physx::PxVec3;
-using physx::PxVec2;
+using namespace physx;
 
 using namespace Nv::Blast;
 using namespace boost::multiprecision;
 
 /**
-	Exact rational vector types.
+    Exact rational vector types.
 */
 struct RVec3
 {
 	cpp_rational x, y, z;
-	RVec3()
-	{
-
-	}
+	RVec3() {}
 
 	bool isZero()
 	{
@@ -68,7 +63,7 @@ struct RVec3
 		z = _z;
 	}
 
-	RVec3(const PxVec3& p)
+	RVec3(const NvcVec3& p)
 	{
 		x = cpp_rational(p.x);
 		y = cpp_rational(p.y);
@@ -76,7 +71,7 @@ struct RVec3
 	}
 	PxVec3 toVec3()
 	{
-		return PxVec3(x.convert_to<float>(), y.convert_to<float>(), z.convert_to<float>());
+		return { x.convert_to<float>(), y.convert_to<float>(), z.convert_to<float>() };
 	}
 
 	RVec3 operator-(const RVec3& b) const
@@ -99,17 +94,12 @@ struct RVec3
 	{
 		return RVec3(x * in, y * in, z * in);
 	}
-
-
 };
 
 struct RVec2
 {
 	cpp_rational x, y;
-	RVec2()
-	{
-
-	}
+	RVec2() {}
 
 	RVec2(cpp_rational _x, cpp_rational _y)
 	{
@@ -117,14 +107,14 @@ struct RVec2
 		y = _y;
 	}
 
-	RVec2(const PxVec2& p)
+	RVec2(const NvcVec2& p)
 	{
 		x = cpp_rational(p.x);
 		y = cpp_rational(p.y);
 	}
 	PxVec2 toVec2()
 	{
-		return PxVec2(x.convert_to<float>(), y.convert_to<float>());
+		return { x.convert_to<float>(), y.convert_to<float>() };
 	}
 
 	RVec2 operator-(const RVec2& b) const
@@ -166,15 +156,17 @@ struct RatPlane
 
 bool isSame(const RatPlane& a, const RatPlane& b)
 {
-	if (a.d != b.d) return false;
-	if (a.n.x != b.n.x || a.n.y != b.n.y || a.n.z != b.n.z) return false;
+	if (a.d != b.d)
+		return false;
+	if (a.n.x != b.n.x || a.n.y != b.n.y || a.n.z != b.n.z)
+		return false;
 	return true;
 }
 
 RVec3 planeSegmInters(RVec3& a, RVec3& b, RatPlane& pl)
 {
 	cpp_rational t = -(a.dot(pl.n) + pl.d) / pl.n.dot(b - a);
-	RVec3 on = a + (b - a) * t;
+	RVec3 on       = a + (b - a) * t;
 	return on;
 }
 
@@ -196,20 +188,26 @@ int32_t isPointInside(const RVec2& a, const RVec2& b, const RVec2& c, const RVec
 	cpp_rational v3 = (a - c).cross(p - c);
 
 
-
 	int32_t v1s = v1.sign();
 	int32_t v2s = v2.sign();
 	int32_t v3s = v3.sign();
 
-	if (v1s * v2s < 0 || v1s * v3s < 0 || v2s * v3s < 0) return OUTSIDE_TR;
+	if (v1s * v2s < 0 || v1s * v3s < 0 || v2s * v3s < 0)
+		return OUTSIDE_TR;
 
-	if (v1s == 0 && v2s == 0) return OUTSIDE_TR;
-	if (v1s == 0 && v3s == 0) return OUTSIDE_TR;
-	if (v2s == 0 && v3s == 0) return OUTSIDE_TR;
+	if (v1s == 0 && v2s == 0)
+		return OUTSIDE_TR;
+	if (v1s == 0 && v3s == 0)
+		return OUTSIDE_TR;
+	if (v2s == 0 && v3s == 0)
+		return OUTSIDE_TR;
 
-	if (v1s == 0) return ON_AB;
-	if (v2s == 0) return ON_BC;
-	if (v3s == 0) return ON_AC;
+	if (v1s == 0)
+		return ON_AB;
+	if (v2s == 0)
+		return ON_BC;
+	if (v3s == 0)
+		return ON_AC;
 
 	return INSIDE_TR;
 }
@@ -247,41 +245,55 @@ struct DelTriangle
 	int32_t parentTriangle;
 	int32_t getEdWP(int32_t vrt)
 	{
-		if (p[0] == vrt) return 1;
-		if (p[1] == vrt) return 2;
-		if (p[2] == vrt) return 0;
+		if (p[0] == vrt)
+			return 1;
+		if (p[1] == vrt)
+			return 2;
+		if (p[2] == vrt)
+			return 0;
 		return -1;
 	}
 	int32_t getEdId(int32_t v1, int32_t v2)
 	{
-		if (p[0] == v1 && p[1] == v2) return 0;
-		if (p[1] == v1 && p[2] == v2) return 1;
-		if (p[2] == v1 && p[0] == v2) return 2;
+		if (p[0] == v1 && p[1] == v2)
+			return 0;
+		if (p[1] == v1 && p[2] == v2)
+			return 1;
+		if (p[2] == v1 && p[0] == v2)
+			return 2;
 		return -1;
 	}
 	int32_t getOppP(int32_t v1, int32_t v2)
 	{
-		if (p[0] == v1 && p[1] == v2) return 2;
-		if (p[1] == v1 && p[2] == v2) return 0;
-		if (p[2] == v1 && p[0] == v2) return 1;
+		if (p[0] == v1 && p[1] == v2)
+			return 2;
+		if (p[1] == v1 && p[2] == v2)
+			return 0;
+		if (p[2] == v1 && p[0] == v2)
+			return 1;
 		return -1;
 	}
 
 	int32_t getOppPoint(int32_t v1, int32_t v2)
 	{
-		if (p[0] != v1 && p[0] != v2) return p[0];
-		if (p[1] != v1 && p[1] != v2) return p[1];
-		if (p[2] != v1 && p[2] != v2) return p[2];
+		if (p[0] != v1 && p[0] != v2)
+			return p[0];
+		if (p[1] != v1 && p[1] != v2)
+			return p[1];
+		if (p[2] != v1 && p[2] != v2)
+			return p[2];
 		return -1;
 	}
 	bool compare(const DelTriangle& t) const
 	{
-		if (p[0] == t.p[0] && p[1] == t.p[1] && p[2] == t.p[2]) return true;
-		if (p[1] == t.p[0] && p[2] == t.p[1] && p[0] == t.p[2]) return true;
-		if (p[2] == t.p[0] && p[0] == t.p[1] && p[1] == t.p[2]) return true;
+		if (p[0] == t.p[0] && p[1] == t.p[1] && p[2] == t.p[2])
+			return true;
+		if (p[1] == t.p[0] && p[2] == t.p[1] && p[0] == t.p[2])
+			return true;
+		if (p[2] == t.p[0] && p[0] == t.p[1] && p[1] == t.p[2])
+			return true;
 		return false;
 	}
-
 };
 
 struct DelEdge
@@ -298,19 +310,22 @@ bool isIntersectsTriangle(RVec2& a, RVec2& b, RVec2& c, RVec2& s, RVec2& e)
 	if ((a - s).cross(vec) * (b - s).cross(vec) < 0)
 	{
 		RVec2 vec2 = b - a;
-		if ((s - a).cross(vec2) * (e - a).cross(vec) < 0) return true;
+		if ((s - a).cross(vec2) * (e - a).cross(vec) < 0)
+			return true;
 	}
 
 	if ((b - s).cross(vec) * (c - s).cross(vec) < 0)
 	{
 		RVec2 vec2 = c - b;
-		if ((s - b).cross(vec2) * (e - b).cross(vec) < 0) return true;
+		if ((s - b).cross(vec2) * (e - b).cross(vec) < 0)
+			return true;
 	}
 
 	if ((a - s).cross(vec) * (c - s).cross(vec) < 0)
 	{
 		RVec2 vec2 = a - c;
-		if ((s - c).cross(vec2) * (e - c).cross(vec) < 0) return true;
+		if ((s - c).cross(vec2) * (e - c).cross(vec) < 0)
+			return true;
 	}
 
 	return false;
@@ -319,18 +334,21 @@ bool isIntersectsTriangle(RVec2& a, RVec2& b, RVec2& c, RVec2& s, RVec2& e)
 
 inline int32_t inCircumcircle(RVec2& a, RVec2& b, RVec2& c, RVec2& p)
 {
-	RVec2 ta = a - p;
-	RVec2 tb = b - p;
-	RVec2 tc = c - p;
+	RVec2 ta        = a - p;
+	RVec2 tb        = b - p;
+	RVec2 tc        = c - p;
 	cpp_rational ad = ta.dot(ta);
 	cpp_rational bd = tb.dot(tb);
 	cpp_rational cd = tc.dot(tc);
 
-	cpp_rational pred = ta.x * (tb.y * cd - tc.y * bd) - ta.y * (tb.x * cd - tc.x * bd) + ad * (tb.x * tc.y - tc.x * tb.y);
+	cpp_rational pred =
+	    ta.x * (tb.y * cd - tc.y * bd) - ta.y * (tb.x * cd - tc.x * bd) + ad * (tb.x * tc.y - tc.x * tb.y);
 
 
-	if (pred > 0) return 1;
-	if (pred < 0) return -1;
+	if (pred > 0)
+		return 1;
+	if (pred < 0)
+		return -1;
 	return 0;
 }
 
@@ -338,7 +356,8 @@ int32_t getEdge(std::vector<DelEdge>& edges, int32_t s, int32_t e)
 {
 	for (uint32_t i = 0; i < edges.size(); ++i)
 	{
-		if (edges[i].s == s && edges[i].e == e) return i;
+		if (edges[i].s == s && edges[i].e == e)
+			return i;
 	}
 
 	edges.push_back(DelEdge());
@@ -355,15 +374,21 @@ void reubildAdjacency(std::vector<DelTriangle>& state)
 	}
 	for (uint32_t i = 0; i < state.size(); ++i)
 	{
-		if (state[i].p[0] == -1) continue;
+		if (state[i].p[0] == -1)
+			continue;
 		for (uint32_t j = i + 1; j < state.size(); ++j)
 		{
-			if (state[j].p[0] == -1) continue;
+			if (state[j].p[0] == -1)
+				continue;
 			for (uint32_t k = 0; k < 3; ++k)
 			{
 				for (uint32_t c = 0; c < 3; ++c)
 				{
-					if (state[i].p[k] == state[j].p[(c + 1) % 3] && state[i].p[(k + 1) % 3] == state[j].p[c]) { state[i].n[k] = j; state[j].n[c] = i; }
+					if (state[i].p[k] == state[j].p[(c + 1) % 3] && state[i].p[(k + 1) % 3] == state[j].p[c])
+					{
+						state[i].n[k] = j;
+						state[j].n[c] = i;
+					}
 				}
 			}
 		}
@@ -376,11 +401,13 @@ void insertPoint(std::vector<RVec2>& vertices, std::vector<DelTriangle>& state, 
 
 	for (uint32_t i = 0; i < state.size(); ++i)
 	{
-		if (state[i].p[0] == -1) continue;
+		if (state[i].p[0] == -1)
+			continue;
 		DelTriangle ctr = state[i];
-		int32_t cv = isPointInside(vertices[ctr.p[0]], vertices[ctr.p[1]], vertices[ctr.p[2]], vertices[p]);
+		int32_t cv      = isPointInside(vertices[ctr.p[0]], vertices[ctr.p[1]], vertices[ctr.p[2]], vertices[p]);
 
-		if (cv == OUTSIDE_TR) continue;
+		if (cv == OUTSIDE_TR)
+			continue;
 		if (cv == INSIDE_TR)
 		{
 			uint32_t taInd = state.size();
@@ -460,19 +487,23 @@ void insertPoint(std::vector<RVec2>& vertices, std::vector<DelTriangle>& state, 
 
 			if (state[i].n[(cv + 1) % 3] != -1)
 				for (int32_t k = 0; k < 3; ++k)
-					if (state[state[i].n[(cv + 1) % 3]].n[k] == (int32_t)i) {
-						state[state[i].n[(cv + 1) % 3]].n[k] = tbInd; break;
+					if (state[state[i].n[(cv + 1) % 3]].n[k] == (int32_t)i)
+					{
+						state[state[i].n[(cv + 1) % 3]].n[k] = tbInd;
+						break;
 					}
 			if (state[i].n[(cv + 2) % 3] != -1)
 				for (int32_t k = 0; k < 3; ++k)
-					if (state[state[i].n[(cv + 2) % 3]].n[k] == (int32_t)i) {
-						state[state[i].n[(cv + 2) % 3]].n[k] = taInd; break;
+					if (state[state[i].n[(cv + 2) % 3]].n[k] == (int32_t)i)
+					{
+						state[state[i].n[(cv + 2) % 3]].n[k] = taInd;
+						break;
 					}
 
 			triangleToCheck.push(taInd);
 			triangleToCheck.push(tbInd);
 
-			int32_t total = 2;
+			int32_t total      = 2;
 			int32_t oppositeTr = 0;
 			if (state[i].n[cv] != -1)
 			{
@@ -496,16 +527,20 @@ void insertPoint(std::vector<RVec2>& vertices, std::vector<DelTriangle>& state, 
 				state[tdInd].n[2] = state[oppositeTr].n[(oped + 1) % 3];
 				if (state[oppositeTr].n[(oped + 2) % 3] != -1)
 					for (int32_t k = 0; k < 3; ++k)
-						if (state[state[oppositeTr].n[(oped + 2) % 3]].n[k] == oppositeTr) {
-							state[state[oppositeTr].n[(oped + 2) % 3]].n[k] = tcInd; break;
+						if (state[state[oppositeTr].n[(oped + 2) % 3]].n[k] == oppositeTr)
+						{
+							state[state[oppositeTr].n[(oped + 2) % 3]].n[k] = tcInd;
+							break;
 						}
 				if (state[oppositeTr].n[(oped + 1) % 3] != -1)
 					for (int32_t k = 0; k < 3; ++k)
-						if (state[state[oppositeTr].n[(oped + 1) % 3]].n[k] == oppositeTr) {
-							state[state[oppositeTr].n[(oped + 1) % 3]].n[k] = tdInd; break;
+						if (state[state[oppositeTr].n[(oped + 1) % 3]].n[k] == oppositeTr)
+						{
+							state[state[oppositeTr].n[(oped + 1) % 3]].n[k] = tdInd;
+							break;
 						}
 
-				int32_t pop = state[oppositeTr].p[(oped + 2) % 3];
+				int32_t pop       = state[oppositeTr].p[(oped + 2) % 3];
 				state[tcInd].p[0] = pop;
 				state[tcInd].p[1] = state[i].p[(cv + 1) % 3];
 				state[tcInd].p[2] = p;
@@ -529,30 +564,41 @@ void insertPoint(std::vector<RVec2>& vertices, std::vector<DelTriangle>& state, 
 		int32_t ctrid = triangleToCheck.front();
 		triangleToCheck.pop();
 		DelTriangle& ctr = state[ctrid];
-		int32_t oppTr = -5;
-		int32_t ced = 0;
+		int32_t oppTr    = -5;
+		int32_t ced      = 0;
 		for (uint32_t i = 0; i < 3; ++i)
 		{
 			if (ctr.p[i] != p && ctr.p[(i + 1) % 3] != p)
 			{
-				ced = i;
+				ced   = i;
 				oppTr = ctr.n[i];
 				break;
 			}
 		}
-		if (oppTr == -1) continue;
+		if (oppTr == -1)
+			continue;
 		bool toCont = false;
 		for (size_t i = 0; i < edges.size(); ++i)
 		{
-			if ((int32_t)edges[i].s == ctr.p[ced] && ctr.p[(ced + 1) % 3] == (int32_t)edges[i].e) { toCont = true; break; }
-			if ((int32_t)edges[i].e == ctr.p[ced] && ctr.p[(ced + 1) % 3] == (int32_t)edges[i].s) { toCont = true; break; }
+			if ((int32_t)edges[i].s == ctr.p[ced] && ctr.p[(ced + 1) % 3] == (int32_t)edges[i].e)
+			{
+				toCont = true;
+				break;
+			}
+			if ((int32_t)edges[i].e == ctr.p[ced] && ctr.p[(ced + 1) % 3] == (int32_t)edges[i].s)
+			{
+				toCont = true;
+				break;
+			}
 		}
-		if (toCont) continue;
+		if (toCont)
+			continue;
 
 
 		DelTriangle& otr = state[oppTr];
 
-		if (inCircumcircle(vertices[state[oppTr].p[0]], vertices[state[oppTr].p[1]], vertices[state[oppTr].p[2]], vertices[p]) > 0)
+		if (inCircumcircle(vertices[state[oppTr].p[0]], vertices[state[oppTr].p[1]], vertices[state[oppTr].p[2]],
+		                   vertices[p]) > 0)
 		{
 			int32_t notPIndx = 0;
 			for (; notPIndx < 3; ++notPIndx)
@@ -575,7 +621,8 @@ void insertPoint(std::vector<RVec2>& vertices, std::vector<DelTriangle>& state, 
 
 			if (nt1.n[2] != -1)
 				for (uint32_t k = 0; k < 3; ++k)
-					if (state[nt1.n[2]].n[k] == oppTr) state[nt1.n[2]].n[k] = ntr1;
+					if (state[nt1.n[2]].n[k] == oppTr)
+						state[nt1.n[2]].n[k] = ntr1;
 
 			nt2.p[0] = p;
 			nt2.p[1] = state[oppTr].p[notPIndx];
@@ -585,32 +632,35 @@ void insertPoint(std::vector<RVec2>& vertices, std::vector<DelTriangle>& state, 
 			nt2.n[2] = ctr.n[(ced + 1) % 3];
 			if (nt2.n[2] != -1)
 				for (uint32_t k = 0; k < 3; ++k)
-					if (state[nt2.n[2]].n[k] == ctrid) state[nt2.n[2]].n[k] = ntr2;
+					if (state[nt2.n[2]].n[k] == ctrid)
+						state[nt2.n[2]].n[k] = ntr2;
 			state[ntr1] = nt1;
 			state[ntr2] = nt2;
 			triangleToCheck.push(ntr1);
 			triangleToCheck.push(ntr2);
 		}
 	}
-
 }
 
 bool edgeIsIntersected(const RVec2& a, const RVec2& b, const RVec2& es, const RVec2& ee)
 {
-	RVec2 t = b - a;
+	RVec2 t           = b - a;
 	cpp_rational temp = (es - a).cross(t) * (ee - a).cross(t);
 
 	if (temp < 0)
 	{
 		t = es - ee;
-		if ((a - ee).cross(t) * (b - ee).cross(t) <= 0) return true;
+		if ((a - ee).cross(t) * (b - ee).cross(t) <= 0)
+			return true;
 	}
 	return false;
 }
 
-void triangulatePseudoPolygon(std::vector<RVec2>& vertices, int32_t ba, int32_t bb, std::vector<int32_t>& pseudo, std::vector<DelTriangle>& output)
+void triangulatePseudoPolygon(std::vector<RVec2>& vertices, int32_t ba, int32_t bb, std::vector<int32_t>& pseudo,
+                              std::vector<DelTriangle>& output)
 {
-	if (pseudo.empty()) return;
+	if (pseudo.empty())
+		return;
 
 	int32_t c = 0;
 	if (pseudo.size() > 1)
@@ -645,7 +695,6 @@ void triangulatePseudoPolygon(std::vector<RVec2>& vertices, int32_t ba, int32_t 
 }
 
 
-
 void insertEdge(std::vector<RVec2>& vertices, std::vector<DelTriangle>& output, int32_t edBeg, int32_t edEnd)
 {
 	bool hasEdge = false;
@@ -657,18 +706,21 @@ void insertEdge(std::vector<RVec2>& vertices, std::vector<DelTriangle>& output, 
 				hasEdge = true;
 			}
 	}
-	if (hasEdge) return;
+	if (hasEdge)
+		return;
 
 	int32_t startTriangle = -1;
-	int32_t edg = -1;
+	int32_t edg           = -1;
 	for (uint32_t i = 0; i < output.size(); ++i)
 	{
-		if (output[i].p[0] == -1) continue;
+		if (output[i].p[0] == -1)
+			continue;
 
 		if (output[i].p[0] == edBeg || output[i].p[1] == edBeg || output[i].p[2] == edBeg)
 		{
 			edg = output[i].getEdWP(edBeg);
-			if (edgeIsIntersected(vertices[edBeg], vertices[edEnd], vertices[output[i].p[edg]], vertices[output[i].p[(edg + 1) % 3]]))
+			if (edgeIsIntersected(vertices[edBeg], vertices[edEnd], vertices[output[i].p[edg]],
+			                      vertices[output[i].p[(edg + 1) % 3]]))
 			{
 				startTriangle = i;
 				break;
@@ -699,19 +751,19 @@ void insertEdge(std::vector<RVec2>& vertices, std::vector<DelTriangle>& output, 
 
 	while (1)
 	{
-		DelTriangle& ctr = output[startTriangle];
-		int32_t oed = ctr.getEdWP(cvertex);
+		DelTriangle& ctr     = output[startTriangle];
+		int32_t oed          = ctr.getEdWP(cvertex);
 		int32_t nextTriangle = ctr.n[oed];
 
 		if (output[nextTriangle].p[0] == edEnd || output[nextTriangle].p[1] == edEnd || output[nextTriangle].p[2] == edEnd)
 		{
-			ctr.p[0] = -1;
+			ctr.p[0]                  = -1;
 			output[nextTriangle].p[0] = -1;
 			break;
 		}
 
 		DelTriangle& otr = output[nextTriangle];
-		int32_t opp = otr.p[otr.getOppP(ctr.p[(oed + 1) % 3], ctr.p[oed % 3])];
+		int32_t opp      = otr.p[otr.getOppP(ctr.p[(oed + 1) % 3], ctr.p[oed % 3])];
 
 		int32_t nextPoint = 0;
 		if (vec.cross((vertices[opp] - vertices[edBeg])) > 0)
@@ -740,8 +792,8 @@ void insertEdge(std::vector<RVec2>& vertices, std::vector<DelTriangle>& output, 
 			}
 		}
 		startTriangle = nextTriangle;
-		cvertex = nextPoint;
-		ctr.p[0] = -1;
+		cvertex       = nextPoint;
+		ctr.p[0]      = -1;
 	}
 	triangulatePseudoPolygon(vertices, edBeg, edEnd, pointsAboveEdge, output);
 	std::reverse(pointsBelowEdge.begin(), pointsBelowEdge.end());
@@ -750,11 +802,8 @@ void insertEdge(std::vector<RVec2>& vertices, std::vector<DelTriangle>& output, 
 }
 
 
-
-
-
-
-void buildCDT(std::vector<RVec3>& vertices, std::vector<Edge>& edges, std::vector<DelTriangle>& output, ProjectionDirections dr)
+void buildCDT(std::vector<RVec3>& vertices, std::vector<Edge>& edges, std::vector<DelTriangle>& output,
+              ProjectionDirections dr)
 {
 	std::vector<DelTriangle> state;
 
@@ -763,9 +812,9 @@ void buildCDT(std::vector<RVec3>& vertices, std::vector<Edge>& edges, std::vecto
 
 	for (uint32_t i = 0; i < 3; ++i)
 	{
-		crt.p[i] = edges[i].s;
+		crt.p[i]          = edges[i].s;
 		added[edges[i].s] = true;
-		crt.n[i] = -1; // dont have neighboors;
+		crt.n[i]          = -1;  // dont have neighboors;
 	}
 	state.push_back(crt);
 
@@ -803,9 +852,11 @@ void buildCDT(std::vector<RVec3>& vertices, std::vector<Edge>& edges, std::vecto
 	}
 }
 
-int32_t intersectSegments(RVec3& s1, RVec3& e1, RVec3& s2, RVec3& e2, ProjectionDirections dir, std::vector<cpp_rational>& t1v, std::vector<cpp_rational>& t2v);
+int32_t intersectSegments(RVec3& s1, RVec3& e1, RVec3& s2, RVec3& e2, ProjectionDirections dir,
+                          std::vector<cpp_rational>& t1v, std::vector<cpp_rational>& t2v);
 
-void getTriangleIntersectionCoplanar(uint32_t tr1, uint32_t tr2, std::vector<std::vector<RVec3>>& stencil, ProjectionDirections dr)
+void getTriangleIntersectionCoplanar(uint32_t tr1, uint32_t tr2, std::vector<std::vector<RVec3> >& stencil,
+                                     ProjectionDirections dr)
 {
 	std::vector<cpp_rational> intr1[3];
 	std::vector<cpp_rational> intr2[3];
@@ -831,13 +882,15 @@ void getTriangleIntersectionCoplanar(uint32_t tr1, uint32_t tr2, std::vector<std
 	int32_t inRel1[3];
 	for (uint32_t i = 0; i < 3; ++i)
 	{
-		inRel1[i] = isPointInside(getProjectedPointWithWinding(p2[0], dr), getProjectedPointWithWinding(p2[1], dr), getProjectedPointWithWinding(p2[2], dr), getProjectedPointWithWinding(p1[i], dr));
+		inRel1[i] = isPointInside(getProjectedPointWithWinding(p2[0], dr), getProjectedPointWithWinding(p2[1], dr),
+		                          getProjectedPointWithWinding(p2[2], dr), getProjectedPointWithWinding(p1[i], dr));
 	}
 
 	int32_t inRel2[3];
 	for (uint32_t i = 0; i < 3; ++i)
 	{
-		inRel2[i] = isPointInside(getProjectedPointWithWinding(p1[0], dr), getProjectedPointWithWinding(p1[1], dr), getProjectedPointWithWinding(p1[2], dr), getProjectedPointWithWinding(p2[i], dr));
+		inRel2[i] = isPointInside(getProjectedPointWithWinding(p1[0], dr), getProjectedPointWithWinding(p1[1], dr),
+		                          getProjectedPointWithWinding(p1[2], dr), getProjectedPointWithWinding(p2[i], dr));
 	}
 
 	for (uint32_t i = 0; i < 3; ++i)
@@ -896,14 +949,16 @@ void getTriangleIntersectionCoplanar(uint32_t tr1, uint32_t tr2, std::vector<std
 }
 
 
-int32_t getTriangleIntersection3d(uint32_t tr1, uint32_t tr2, std::vector<std::vector<RVec3>>& stencil, ProjectionDirections dr)
+int32_t
+getTriangleIntersection3d(uint32_t tr1, uint32_t tr2, std::vector<std::vector<RVec3> >& stencil, ProjectionDirections dr)
 {
 	RatPlane pl1(stencil[tr1][0], stencil[tr1][1], stencil[tr1][3]);
 	if (pl1.n.isZero())
 	{
 		std::swap(tr1, tr2);
 		pl1 = RatPlane(stencil[tr1][0], stencil[tr1][1], stencil[tr1][3]);
-		if (pl1.n.isZero()) return 0;
+		if (pl1.n.isZero())
+			return 0;
 	}
 
 
@@ -1013,26 +1068,27 @@ int32_t getTriangleIntersection3d(uint32_t tr1, uint32_t tr2, std::vector<std::v
 		pointOnIntersectionLine = ta0;
 	}
 	RVec3 interLineDir = pl1.n.cross(pl2.n);
-	cpp_rational sqd = interLineDir.dot(interLineDir);
-	if (sqd.is_zero()) return 0;
+	cpp_rational sqd   = interLineDir.dot(interLineDir);
+	if (sqd.is_zero())
+		return 0;
 
-	cpp_rational t1p2 = (ta1 - pointOnIntersectionLine).dot(interLineDir) / sqd;
-	cpp_rational t1p3 = (ta2 - pointOnIntersectionLine).dot(interLineDir) / sqd;
+	cpp_rational t1p2      = (ta1 - pointOnIntersectionLine).dot(interLineDir) / sqd;
+	cpp_rational t1p3      = (ta2 - pointOnIntersectionLine).dot(interLineDir) / sqd;
 	cpp_rational t1p2param = t1p2;
 	if (d22 != d23)
 	{
 		t1p2param = t1p2 + (t1p3 - t1p2) * (d22 / (d22 - d23));
 	}
 
-	t1p2 = (tb0 - pointOnIntersectionLine).dot(interLineDir) / sqd;
-	t1p3 = (tb2 - pointOnIntersectionLine).dot(interLineDir) / sqd;
+	t1p2                   = (tb0 - pointOnIntersectionLine).dot(interLineDir) / sqd;
+	t1p3                   = (tb2 - pointOnIntersectionLine).dot(interLineDir) / sqd;
 	cpp_rational t2p1param = t1p2;
 	if (d1 != d3)
 	{
 		t2p1param = t1p2 + (t1p3 - t1p2) * d1 / (d1 - d3);
 	}
 
-	t1p2 = (tb1 - pointOnIntersectionLine).dot(interLineDir) / sqd;
+	t1p2                   = (tb1 - pointOnIntersectionLine).dot(interLineDir) / sqd;
 	cpp_rational t2p2param = t1p2;
 	if (d2 != d3)
 	{
@@ -1066,7 +1122,8 @@ int32_t getTriangleIntersection3d(uint32_t tr1, uint32_t tr2, std::vector<std::v
 	return 0;
 }
 
-int32_t intersectSegments(RVec3& s1, RVec3& e1, RVec3& s2, RVec3& e2, ProjectionDirections dir, std::vector<cpp_rational>& t1v, std::vector<cpp_rational>& t2v)
+int32_t intersectSegments(RVec3& s1, RVec3& e1, RVec3& s2, RVec3& e2, ProjectionDirections dir,
+                          std::vector<cpp_rational>& t1v, std::vector<cpp_rational>& t2v)
 {
 	RVec2 s1p = getProjectedPointWithWinding(s1, dir);
 	RVec2 e1p = getProjectedPointWithWinding(e1, dir);
@@ -1097,7 +1154,6 @@ int32_t intersectSegments(RVec3& s1, RVec3& e1, RVec3& s2, RVec3& e2, Projection
 		{
 			t2v.push_back(t2);
 		}
-
 	}
 	else
 	{
@@ -1107,8 +1163,10 @@ int32_t intersectSegments(RVec3& s1, RVec3& e1, RVec3& s2, RVec3& e2, Projection
 			{
 				cpp_rational t1 = (s2p.x - s1p.x) / dir1.x;
 				cpp_rational t2 = (e2p.x - s1p.x) / dir1.x;
-				if (t1 > 0 && t1 < 1) t1v.push_back(t1);
-				if (t2 > 0 && t2 < 1) t1v.push_back(t2);
+				if (t1 > 0 && t1 < 1)
+					t1v.push_back(t1);
+				if (t2 > 0 && t2 < 1)
+					t1v.push_back(t2);
 			}
 			else
 			{
@@ -1116,8 +1174,10 @@ int32_t intersectSegments(RVec3& s1, RVec3& e1, RVec3& s2, RVec3& e2, Projection
 				{
 					cpp_rational t1 = (s2p.y - s1p.y) / dir1.y;
 					cpp_rational t2 = (e2p.y - s1p.y) / dir1.y;
-					if (t1 > 0 && t1 < 1) t1v.push_back(t1);
-					if (t2 > 0 && t2 < 1) t1v.push_back(t2);
+					if (t1 > 0 && t1 < 1)
+						t1v.push_back(t1);
+					if (t2 > 0 && t2 < 1)
+						t1v.push_back(t2);
 				}
 			}
 		}
@@ -1128,8 +1188,10 @@ int32_t intersectSegments(RVec3& s1, RVec3& e1, RVec3& s2, RVec3& e2, Projection
 			{
 				cpp_rational t1 = (s1p.x - s2p.x) / dir2.x;
 				cpp_rational t2 = (e1p.x - s2p.x) / dir2.x;
-				if (t1 > 0 && t1 < 1) t2v.push_back(t1);
-				if (t2 > 0 && t2 < 1) t2v.push_back(t2);
+				if (t1 > 0 && t1 < 1)
+					t2v.push_back(t1);
+				if (t2 > 0 && t2 < 1)
+					t2v.push_back(t2);
 			}
 			else
 			{
@@ -1137,8 +1199,10 @@ int32_t intersectSegments(RVec3& s1, RVec3& e1, RVec3& s2, RVec3& e2, Projection
 				{
 					cpp_rational t1 = (s1p.y - s2p.y) / dir2.y;
 					cpp_rational t2 = (e1p.y - s2p.y) / dir2.y;
-					if (t1 > 0 && t1 < 1) t2v.push_back(t1);
-					if (t2 > 0 && t2 < 1) t2v.push_back(t2);
+					if (t1 > 0 && t1 < 1)
+						t2v.push_back(t1);
+					if (t2 > 0 && t2 < 1)
+						t2v.push_back(t2);
 				}
 			}
 		}
@@ -1150,11 +1214,16 @@ struct RVec3Comparer
 {
 	bool operator()(const RVec3& a, const RVec3& b) const
 	{
-		if (a.x < b.x) return true;
-		if (a.x > b.x) return false;
-		if (a.y < b.y) return true;
-		if (a.y > b.y) return false;
-		if (a.z < b.z) return true;
+		if (a.x < b.x)
+			return true;
+		if (a.x > b.x)
+			return false;
+		if (a.y < b.y)
+			return true;
+		if (a.y > b.y)
+			return false;
+		if (a.z < b.z)
+			return true;
 		return false;
 	}
 };
@@ -1163,10 +1232,10 @@ void getBarycentricCoords(PxVec2& a, PxVec2& b, PxVec2& c, PxVec2& p, float& u, 
 {
 	PxVec3 v1(b.x - a.x, c.x - a.x, a.x - p.x);
 	PxVec3 v2(b.y - a.y, c.y - a.y, a.y - p.y);
-	
+
 	PxVec3 resl = v1.cross(v2);
-	u = resl.x / resl.z;
-	v = resl.y / resl.z;	
+	u           = resl.x / resl.z;
+	v           = resl.y / resl.z;
 }
 
 
@@ -1176,20 +1245,20 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 	======= Get mesh data ===========
 	*/
 	std::vector<Vertex> vertices;
-	std::vector<Edge>  edges;
+	std::vector<Edge> edges;
 	std::vector<Facet> facets;
 
 	vertices.resize(mesh->getVerticesCount());
 	edges.resize(mesh->getEdgesCount());
 	facets.resize(mesh->getFacetCount());
 
-	PxBounds3 bnd;
+	physx::PxBounds3 bnd;
 	bnd.setEmpty();
 
 	for (uint32_t i = 0; i < mesh->getVerticesCount(); ++i)
 	{
 		vertices[i] = mesh->getVertices()[i];
-		bnd.include(vertices[i].p);
+		bnd.include(toPxShared(vertices[i].p));
 	}
 	for (uint32_t i = 0; i < mesh->getEdgesCount(); ++i)
 	{
@@ -1202,21 +1271,21 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 	//======================================
 
 	/**
-		Transform vertices to fit unit cube and snap them to grid.
+	    Transform vertices to fit unit cube and snap them to grid.
 	**/
 	float scale = 1.0f / bnd.getExtents().abs().maxElement();
 
-	int32_t gridSize = 10000; // Grid resolution to which vertices position will be snapped.
+	int32_t gridSize = 10000;  // Grid resolution to which vertices position will be snapped.
 
 	for (uint32_t i = 0; i < mesh->getVerticesCount(); ++i)
 	{
-		vertices[i].p = (vertices[i].p - bnd.minimum) * scale;
+		vertices[i].p   = (vertices[i].p - fromPxShared(bnd.minimum)) * scale;
 		vertices[i].p.x = std::floor(vertices[i].p.x * gridSize) / gridSize;
 		vertices[i].p.y = std::floor(vertices[i].p.y * gridSize) / gridSize;
 		vertices[i].p.z = std::floor(vertices[i].p.z * gridSize) / gridSize;
 	}
 
-	std::vector<std::vector<RVec3>> triangleStencil(facets.size());
+	std::vector<std::vector<RVec3> > triangleStencil(facets.size());
 
 	std::vector<PxVec3> facetsNormals(facets.size());
 	std::vector<PxBounds3> facetBound(facets.size());
@@ -1237,24 +1306,28 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 		triangleStencil[tr1].push_back(vertices[edges[fed + 2].e].p);
 
 		facetBound[tr1].setEmpty();
-		facetBound[tr1].include(vertices[edges[fed].s].p);
-		facetBound[tr1].include(vertices[edges[fed].e].p);
-		facetBound[tr1].include(vertices[edges[fed + 2].s].p);
+		facetBound[tr1].include(toPxShared(vertices[edges[fed].s].p));
+		facetBound[tr1].include(toPxShared(vertices[edges[fed].e].p));
+		facetBound[tr1].include(toPxShared(vertices[edges[fed + 2].s].p));
 		facetBound[tr1].fattenFast(0.001f);
 
-		facetsNormals[tr1] = (vertices[edges[fed + 1].s].p - vertices[edges[fed].s].p).cross(vertices[edges[fed + 2].s].p - vertices[edges[fed].s].p);
+		facetsNormals[tr1] = toPxShared(vertices[edges[fed + 1].s].p - vertices[edges[fed].s].p)
+		                         .cross(toPxShared(vertices[edges[fed + 2].s].p - vertices[edges[fed].s].p));
 	}
 
 	/**
-		Build intersections between all pairs of triangles. 
+	    Build intersections between all pairs of triangles.
 	*/
 	for (uint32_t tr1 = 0; tr1 < facets.size(); ++tr1)
 	{
-		if (triangleStencil[tr1].empty()) continue;
+		if (triangleStencil[tr1].empty())
+			continue;
 		for (uint32_t tr2 = tr1 + 1; tr2 < facets.size(); ++tr2)
 		{
-			if (triangleStencil[tr2].empty()) continue;
-			if (facetBound[tr1].intersects(facetBound[tr2]) == false) continue;
+			if (triangleStencil[tr2].empty())
+				continue;
+			if (facetBound[tr1].intersects(facetBound[tr2]) == false)
+				continue;
 
 			getTriangleIntersection3d(tr1, tr2, triangleStencil, getProjectionDirection(facetsNormals[tr1]));
 		}
@@ -1271,7 +1344,9 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 		{
 			for (uint32_t sg2 = sg1 + 2; sg2 < ctr.size(); sg2 += 2)
 			{
-				intersectSegments(ctr[sg1], ctr[sg1 + 1], ctr[sg2], ctr[sg2 + 1], getProjectionDirection(facetsNormals[tr]), perSegmentInters[sg1 / 2], perSegmentInters[sg2 / 2]);
+				intersectSegments(ctr[sg1], ctr[sg1 + 1], ctr[sg2], ctr[sg2 + 1],
+				                  getProjectionDirection(facetsNormals[tr]), perSegmentInters[sg1 / 2],
+				                  perSegmentInters[sg2 / 2]);
 			}
 		}
 
@@ -1295,7 +1370,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 				{
 					if (perSegmentInters[csm][j] > current)
 					{
-						current = perSegmentInters[csm][j];
+						current   = perSegmentInters[csm][j];
 						RVec3 pnt = (ctr[i + 1] - ctr[i]) * current + ctr[i];
 						newStencil.push_back(pnt);
 						newStencil.push_back(pnt);
@@ -1309,7 +1384,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 
 	std::vector<RVec3> finalPoints;
 
-	std::vector<std::vector<Edge>> tsten(facets.size());
+	std::vector<std::vector<Edge> > tsten(facets.size());
 
 	{
 		std::map<RVec3, uint32_t, RVec3Comparer> mapping;
@@ -1318,12 +1393,12 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 			for (uint32_t j = 0; j < triangleStencil[tr1].size(); j += 2)
 			{
 
-				auto it = mapping.find(triangleStencil[tr1][j]);
+				auto it    = mapping.find(triangleStencil[tr1][j]);
 				int32_t pt = 0;
 				if (it == mapping.end())
 				{
 					mapping[triangleStencil[tr1][j]] = finalPoints.size();
-					pt = finalPoints.size();
+					pt                               = finalPoints.size();
 					finalPoints.push_back(triangleStencil[tr1][j]);
 				}
 				else
@@ -1339,14 +1414,14 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 				if (it == mapping.end())
 				{
 					mapping[triangleStencil[tr1][j + 1]] = finalPoints.size();
-					pt = finalPoints.size();
+					pt                                   = finalPoints.size();
 					finalPoints.push_back(triangleStencil[tr1][j + 1]);
 				}
 				else
 				{
 					pt = it->second;
 				}
-				newed.e = pt;
+				newed.e         = pt;
 				bool hasNewEdge = false;
 				for (uint32_t e = 0; e < tsten[tr1].size(); ++e)
 				{
@@ -1361,19 +1436,21 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 						break;
 					}
 				}
-				if (!hasNewEdge) tsten[tr1].push_back(newed);
+				if (!hasNewEdge)
+					tsten[tr1].push_back(newed);
 			}
 		}
 	}
-	
+
 	/**
-		Build constrained DT
+	    Build constrained DT
 	*/
 	std::vector<DelTriangle> trs;
 	for (uint32_t i = 0; i < tsten.size(); ++i)
 	{
 
-		if (tsten[i].size() < 3) continue;
+		if (tsten[i].size() < 3)
+			continue;
 		if (tsten[i].size() > 3)
 		{
 			int32_t oldSize = trs.size();
@@ -1384,18 +1461,17 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 		else
 		{
 			trs.push_back(DelTriangle());
-			trs.back().parentTriangle = i;		
+			trs.back().parentTriangle = i;
 			for (uint32_t v = 0; v < 3; ++v)
 				trs.back().p[v] = tsten[i][v].s;
 		}
-
 	}
-	
+
 	/**
-		Remove 'deleted' triangles from array.
+	    Remove 'deleted' triangles from array.
 	*/
 	{
-		std::vector < DelTriangle > trstemp;
+		std::vector<DelTriangle> trstemp;
 		trstemp.reserve(trs.size());
 		for (uint32_t i = 0; i < trs.size(); ++i)
 		{
@@ -1406,7 +1482,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 	}
 
 	/**
-		Filter exterior surface
+	    Filter exterior surface
 	*/
 	std::vector<bool> fillingMask(trs.size(), false);
 
@@ -1415,19 +1491,20 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 
 	for (uint32_t i = 0; i < trs.size(); ++i)
 	{
-		if (trs[i].p[0] == -1) continue;
+		if (trs[i].p[0] == -1)
+			continue;
 		if (trs[i].p[0] == trs[i].p[1] || trs[i].p[2] == trs[i].p[1] || trs[i].p[2] == trs[i].p[0])
 		{
 			trs[i].p[0] = -1;
 			continue;
 		}
-		#if 0 // Filter null-area triangles.
+#if 0  // Filter null-area triangles.
 		if ((finalPoints[trs[i].p[1]] - finalPoints[trs[i].p[0]]).cross(finalPoints[trs[i].p[2]] - finalPoints[trs[i].p[0]]).isZero())
 		{
 		trs[i].p[0] = -1;
 		continue;
 		}
-		#endif
+#endif
 		for (uint32_t k = 0; k < 3; ++k)
 		{
 			int32_t es = trs[i].p[k];
@@ -1436,7 +1513,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 			{
 				std::swap(es, ee);
 			}
-			auto pr = std::make_pair(es, ee);
+			auto pr   = std::make_pair(es, ee);
 			auto iter = edgeMap.find(pr);
 			if (iter == edgeMap.end())
 			{
@@ -1465,12 +1542,15 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 	}
 
 	std::queue<int32_t> trque;
-	float maxx = -1000;
+	float maxx   = -1000;
 	int32_t best = 0;
 	for (uint32_t i = 0; i < trs.size(); ++i)
 	{
-		if (trs[i].p[0] == -1) continue;
-		float m = std::max(finalPoints[trs[i].p[0]].x.convert_to<float>(), std::max(finalPoints[trs[i].p[1]].x.convert_to<float>(), finalPoints[trs[i].p[2]].x.convert_to<float>()));
+		if (trs[i].p[0] == -1)
+			continue;
+		float m = std::max(
+		    finalPoints[trs[i].p[0]].x.convert_to<float>(),
+		    std::max(finalPoints[trs[i].p[1]].x.convert_to<float>(), finalPoints[trs[i].p[2]].x.convert_to<float>()));
 		if (m > maxx && facetsNormals[trs[i].parentTriangle].x > 0)
 		{
 			maxx = m;
@@ -1481,11 +1561,11 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 	trque.push(best);
 	while (!trque.empty())
 	{
-		int32_t trid = trque.front();
+		int32_t trid      = trque.front();
 		fillingMask[trid] = true;
-		DelTriangle& tr = trs[trque.front()];
+		DelTriangle& tr   = trs[trque.front()];
 		trque.pop();
-		
+
 		for (uint32_t ed = 0; ed < 3; ++ed)
 		{
 			auto& tlist = edgeToTriangleMapping[tr.n[ed]];
@@ -1494,7 +1574,8 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 				for (uint32_t k = 0; k < tlist.size(); ++k)
 				{
 					int32_t to = tlist[k];
-					if (to != trid && !fillingMask[to] && edgeToTriangleMapping[trs[to].n[0]].size() > 0 && edgeToTriangleMapping[trs[to].n[1]].size() > 0 && edgeToTriangleMapping[trs[to].n[2]].size() > 0)
+					if (to != trid && !fillingMask[to] && edgeToTriangleMapping[trs[to].n[0]].size() > 0 &&
+					    edgeToTriangleMapping[trs[to].n[1]].size() > 0 && edgeToTriangleMapping[trs[to].n[2]].size() > 0)
 					{
 						trque.push(tlist[k]);
 						fillingMask[tlist[k]] = true;
@@ -1504,34 +1585,37 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 			if (tlist.size() > 2)
 			{
 				int32_t bestPath = (tlist[0] == trid) ? tlist[1] : tlist[0];
-				RVec3 start = finalPoints[trs[trid].p[ed]];
-				RVec3 axis = finalPoints[trs[trid].p[(ed + 1) % 3]] - start;
-				RVec3 nAxis = finalPoints[trs[trid].p[(ed + 2) % 3]] - start;
-				RVec3 normal = axis.cross(nAxis);
+				RVec3 start      = finalPoints[trs[trid].p[ed]];
+				RVec3 axis       = finalPoints[trs[trid].p[(ed + 1) % 3]] - start;
+				RVec3 nAxis      = finalPoints[trs[trid].p[(ed + 2) % 3]] - start;
+				RVec3 normal     = axis.cross(nAxis);
 
 
 				uint32_t op = trs[bestPath].getOppPoint(trs[trid].p[ed], trs[trid].p[(ed + 1) % 3]);
 
-				RVec3 dir2 = (finalPoints[op] - start);
-				RVec3 normal2 = dir2.cross(axis);
+				RVec3 dir2           = (finalPoints[op] - start);
+				RVec3 normal2        = dir2.cross(axis);
 				cpp_rational bestDir = normal.cross(normal2).dot(axis);
 				cpp_rational oldDist = normal2.dot(normal2);
 				for (uint32_t k = 0; k < tlist.size(); ++k)
 				{
-					if (tlist[k] == trid) continue;
-					op = trs[tlist[k]].getOppPoint(trs[trid].p[ed], trs[trid].p[(ed + 1) % 3]);
-					dir2 = (finalPoints[op] - start);
-					normal2 = dir2.cross(axis);
+					if (tlist[k] == trid)
+						continue;
+					op                  = trs[tlist[k]].getOppPoint(trs[trid].p[ed], trs[trid].p[(ed + 1) % 3]);
+					dir2                = (finalPoints[op] - start);
+					normal2             = dir2.cross(axis);
 					cpp_rational newOne = normal.cross(normal2).dot(axis);
 
 					if (newOne * oldDist < bestDir * normal2.dot(normal2))
 					{
-						oldDist = normal2.dot(normal2);
+						oldDist  = normal2.dot(normal2);
 						bestPath = tlist[k];
-						bestDir = newOne;
+						bestDir  = newOne;
 					}
 				}
-				if (!fillingMask[bestPath] && edgeToTriangleMapping[trs[bestPath].n[0]].size() > 0 && edgeToTriangleMapping[trs[bestPath].n[1]].size() > 0 && edgeToTriangleMapping[trs[bestPath].n[2]].size() > 0)
+				if (!fillingMask[bestPath] && edgeToTriangleMapping[trs[bestPath].n[0]].size() > 0 &&
+				    edgeToTriangleMapping[trs[bestPath].n[1]].size() > 0 &&
+				    edgeToTriangleMapping[trs[bestPath].n[2]].size() > 0)
 				{
 					trque.push(bestPath);
 					fillingMask[bestPath] = true;
@@ -1539,17 +1623,16 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 			}
 			edgeToTriangleMapping[tr.n[ed]].clear();
 		}
-
 	}
 	for (uint32_t id = 0; id < trs.size(); ++id)
 	{
 		if (!fillingMask[id])
 		{
-			trs[id].p[0] = -1; // Remove triangle
+			trs[id].p[0] = -1;  // Remove triangle
 		}
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	std::vector<PxVec3> newVertices;
 	newVertices.resize(finalPoints.size());
 	for (uint32_t i = 0; i < finalPoints.size(); ++i)
@@ -1559,7 +1642,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 		newVertices[i].z = finalPoints[i].z.convert_to<float>();
 	}
 	/**
-		Rescale mesh to initial coordinates.
+	    Rescale mesh to initial coordinates.
 	*/
 	for (uint32_t i = 0; i < finalPoints.size(); ++i)
 	{
@@ -1567,7 +1650,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 	}
 	for (uint32_t i = 0; i < vertices.size(); ++i)
 	{
-		vertices[i].p = vertices[i].p * (1.0f / scale) + bnd.minimum;
+		vertices[i].p = vertices[i].p * (1.0f / scale) + fromPxShared(bnd.minimum);
 	}
 
 	std::vector<Triangle> result;
@@ -1580,38 +1663,44 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 		{
 			for (uint32_t k = 0; k < 3; ++k)
 			{
-				normalTriangles[i * 3 + k] = vertices[edges[facets[i].firstEdgeNumber + k].s];
-				projectedTriangles[i * 3 + k] = getProjectedPointWithWinding(vertices[edges[facets[i].firstEdgeNumber + k].s].p, getProjectionDirection(facetsNormals[i]));
+				normalTriangles[i * 3 + k]    = vertices[edges[facets[i].firstEdgeNumber + k].s];
+				projectedTriangles[i * 3 + k] = getProjectedPointWithWinding(
+				    vertices[edges[facets[i].firstEdgeNumber + k].s].p, getProjectionDirection(facetsNormals[i])).toVec2();
 			}
 		}
 
 		for (uint32_t i = 0; i < trs.size(); ++i)
 		{
-			if (trs[i].p[0] == -1) continue;
-			int32_t id = 0;
+			if (trs[i].p[0] == -1)
+				continue;
+			int32_t id             = 0;
 			int32_t parentTriangle = trs[i].parentTriangle;
 			float u = 0, v = 0;
 			result.resize(result.size() + 1);
-			result.back().materialId = facets[parentTriangle].materialId;
+			result.back().materialId     = facets[parentTriangle].materialId;
 			result.back().smoothingGroup = facets[parentTriangle].smoothingGroup;
-			for (auto vert : { &result.back().a, &result.back().b , &result.back().c })
+			for (auto vert : { &result.back().a, &result.back().b, &result.back().c })
 			{
-				vert->p = newVertices[trs[i].p[id]];
-				PxVec2 p = getProjectedPointWithWinding(vert->p, getProjectionDirection(facetsNormals[parentTriangle]));
-				getBarycentricCoords(projectedTriangles[parentTriangle * 3], projectedTriangles[parentTriangle * 3 + 1], projectedTriangles[parentTriangle * 3 + 2], p, u, v);
-				vert->uv[0] = (1 - u - v) * normalTriangles[parentTriangle * 3].uv[0] + u * normalTriangles[parentTriangle * 3 + 1].uv[0] + v * normalTriangles[parentTriangle * 3 + 2].uv[0];
-				vert->n = (1 - u - v) * normalTriangles[parentTriangle * 3].n + u * normalTriangles[parentTriangle * 3 + 1].n + v * normalTriangles[parentTriangle * 3 + 2].n;
+				toPxShared(vert->p)  = newVertices[trs[i].p[id]];
+				PxVec2 p = getProjectedPointWithWinding(vert->p, getProjectionDirection(facetsNormals[parentTriangle])).toVec2();
+				getBarycentricCoords(projectedTriangles[parentTriangle * 3], projectedTriangles[parentTriangle * 3 + 1],
+				                     projectedTriangles[parentTriangle * 3 + 2], p, u, v);
+				vert->uv[0] = (1 - u - v) * normalTriangles[parentTriangle * 3].uv[0] +
+				              u * normalTriangles[parentTriangle * 3 + 1].uv[0] +
+				              v * normalTriangles[parentTriangle * 3 + 2].uv[0];
+				vert->n = (1 - u - v) * normalTriangles[parentTriangle * 3].n +
+				          u * normalTriangles[parentTriangle * 3 + 1].n + v * normalTriangles[parentTriangle * 3 + 2].n;
 				++id;
 			}
 		}
 	}
 
 	/**
-		Reuse old buffers to create Mesh
+	    Reuse old buffers to create Mesh
 	*/
-	std::vector<PxVec3> newMeshVertices(result.size() * 3);
-	std::vector<PxVec3> newMeshNormals(result.size() * 3);
-	std::vector<PxVec2> newMeshUvs(result.size() * 3);
+	std::vector<NvcVec3> newMeshVertices(result.size() * 3);
+	std::vector<NvcVec3> newMeshNormals(result.size() * 3);
+	std::vector<NvcVec2> newMeshUvs(result.size() * 3);
 
 	std::vector<int32_t> newMaterialIds(result.size());
 	std::vector<int32_t> newSmoothingGroups(result.size());
@@ -1619,12 +1708,12 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 
 	for (uint32_t i = 0; i < result.size(); ++i)
 	{
-		Vertex* arr[3] = { &result[i].a, &result[i].b , &result[i].c };
+		Vertex* arr[3] = { &result[i].a, &result[i].b, &result[i].c };
 		for (uint32_t k = 0; k < 3; ++k)
 		{
 			newMeshVertices[i * 3 + k] = arr[k]->p;
-			newMeshNormals[i * 3 + k] = arr[k]->n;
-			newMeshUvs[i * 3 + k] = arr[k]->uv[0];
+			newMeshNormals[i * 3 + k]  = arr[k]->n;
+			newMeshUvs[i * 3 + k]      = arr[k]->uv[0];
 		}
 	}
 	std::vector<uint32_t> serializedIndices;
@@ -1632,14 +1721,16 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 	int32_t cindex = 0;
 	for (uint32_t i = 0; i < result.size(); ++i)
 	{
-		newMaterialIds[i] = result[i].materialId;
+		newMaterialIds[i]     = result[i].materialId;
 		newSmoothingGroups[i] = result[i].smoothingGroup;
 
 		for (uint32_t pi = 0; pi < 3; ++pi)
 			serializedIndices.push_back(cindex++);
 	}
 
-	MeshImpl* rMesh = new MeshImpl(newMeshVertices.data(), newMeshNormals.data(), newMeshUvs.data(), static_cast<uint32_t>(newMeshVertices.size()), serializedIndices.data(), static_cast<uint32_t>(serializedIndices.size()));
+	MeshImpl* rMesh = new MeshImpl(newMeshVertices.data(), newMeshNormals.data(), newMeshUvs.data(),
+	                               static_cast<uint32_t>(newMeshVertices.size()), serializedIndices.data(),
+	                               static_cast<uint32_t>(serializedIndices.size()));
 	rMesh->setMaterialId(newMaterialIds.data());
 	rMesh->setSmoothingGroup(newSmoothingGroups.data());
 	return rMesh;
@@ -1649,4 +1740,3 @@ void MeshCleanerImpl::release()
 {
 	delete this;
 }
-

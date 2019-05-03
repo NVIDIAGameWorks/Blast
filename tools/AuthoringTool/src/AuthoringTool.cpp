@@ -37,10 +37,11 @@
 #include "NvBlastExtLlSerialization.h"
 #include "NvBlastExtTkSerialization.h"
 #include "NvBlastExtPxSerialization.h"
+#include "NvBlastExtPxManager.h"
+#include "NvBlastExtPxCollisionBuilder.h"
 #include "NvBlastExtAuthoring.h"
 #include "NvBlastExtAuthoringMesh.h"
 #include "NvBlastExtAuthoringBondGenerator.h"
-#include "NvBlastExtAuthoringCollisionBuilder.h"
 #include "NvBlastExtAuthoringCutout.h"
 #include "NvBlastExtAuthoringFractureTool.h"
 #include "BlastDataExporter.h"
@@ -104,9 +105,13 @@ struct TCLAPfloat3
 		return *this;
 	}
 
+	operator NvcVec3()
+	{
+		return {x, y, z};
+	}
 	operator physx::PxVec3()
 	{
-		return physx::PxVec3(x, y, z);
+		return { x, y, z };
 	}
 };
 
@@ -514,9 +519,9 @@ int main(int argc, const char* const* argv)
 	}
 	Nv::Blast::FractureTool* fTool = NvBlastExtAuthoringCreateFractureTool();
 
-	PxVec3* pos = fileReader->getPositionArray();
-	PxVec3* norm = fileReader->getNormalsArray();
-	PxVec2* uv = fileReader->getUvArray();
+	NvcVec3* pos = fileReader->getPositionArray();
+	NvcVec3* norm = fileReader->getNormalsArray();
+	NvcVec2* uv = fileReader->getUvArray();
 
 	Nv::Blast::Mesh* mesh = NvBlastExtAuthoringCreateMesh(pos, norm, uv, vcount, fileReader->getIndexArray(), fileReader->getIndicesCount());
 
@@ -558,7 +563,7 @@ int main(int argc, const char* const* argv)
 		{
 			std::cout << "Fracturing with Voronoi..." << std::endl;
 			voronoiSitesGenerator->uniformlyGenerateSitesInMesh(cellsCount.getValue());
-			const physx::PxVec3* sites = nullptr;
+			const NvcVec3* sites = nullptr;
 			uint32_t sitesCount = voronoiSitesGenerator->getVoronoiSites(sites);
 			if (fTool->voronoiFracturing(0, sitesCount, sites, false) != 0)
 			{
@@ -571,7 +576,7 @@ int main(int argc, const char* const* argv)
 		{
 			std::cout << "Fracturing with Clustered Voronoi..." << std::endl;
 			voronoiSitesGenerator->clusteredSitesGeneration(cellsCount.getValue(), clusterCount.getValue(), clusterRad.getValue());
-			const physx::PxVec3* sites = nullptr;
+			const NvcVec3* sites = nullptr;
 			uint32_t sitesCount = voronoiSitesGenerator->getVoronoiSites(sites);
 			if (fTool->voronoiFracturing(0, sitesCount, sites, false) != 0)
 			{
@@ -618,18 +623,20 @@ int main(int argc, const char* const* argv)
 			}
 			axis.normalize();
 			float d = axis.dot(physx::PxVec3(0.f, 0.f, 1.f));
+		    physx::PxQuat q;
 			if (d < (1e-6f - 1.0f))
 			{
-				cutoutConfig.transform.q = physx::PxQuat(physx::PxPi, PxVec3(1.f, 0.f, 0.f));
+				q = physx::PxQuat(physx::PxPi, PxVec3(1.f, 0.f, 0.f));
 			}
 			else if (d < 1.f)
 			{
 				float s = physx::PxSqrt((1 + d) * 2);
 				float invs = 1 / s;
 				auto c = axis.cross(PxVec3(0.f, 0.f, 1.f));
-				cutoutConfig.transform.q = physx::PxQuat(c.x * invs, c.y * invs, c.z * invs, s * 0.5f);
-				cutoutConfig.transform.q.normalize();
+				q = {c.x * invs, c.y * invs, c.z * invs, s * 0.5f};
+				q.normalize();
 			}
+		    cutoutConfig.transform.q = reinterpret_cast<NvcQuat&>(q);
 			cutoutConfig.transform.p = point.getValue();
 			if (cutoutBitmapPath.isSet())
 			{
@@ -654,16 +661,16 @@ int main(int argc, const char* const* argv)
 	}
 	voronoiSitesGenerator->release();
 	mesh->release();
-
-	Nv::Blast::BlastBondGenerator* bondGenerator = NvBlastExtAuthoringCreateBondGenerator(gCooking, &gPhysics->getPhysicsInsertionCallback());
-	Nv::Blast::ConvexMeshBuilder* collisionBuilder = NvBlastExtAuthoringCreateConvexMeshBuilder(gCooking, &gPhysics->getPhysicsInsertionCallback());
-	Nv::Blast::CollisionParams collisionParameter;
+	
+	Nv::Blast::ExtPxCollisionBuilder* collisionBuilder = ExtPxManager::createCollisionBuilder(*gPhysics, *gCooking);
+	Nv::Blast::BlastBondGenerator* bondGenerator   = NvBlastExtAuthoringCreateBondGenerator(collisionBuilder);
+	
+	Nv::Blast::ConvexDecompositionParams collisionParameter;
 	collisionParameter.maximumNumberOfHulls = aggregateMaxCount.getValue() > 0 ? aggregateMaxCount.getValue() : 1;
 	collisionParameter.voxelGridResolution = 0;
 	Nv::Blast::AuthoringResult* result = NvBlastExtAuthoringProcessFracture(*fTool, *bondGenerator, *collisionBuilder, collisionParameter);
 	auto tk = NvBlastTkFrameworkCreate();
 
-	collisionBuilder->release();
 	bondGenerator->release();
 	fTool->release();
 
@@ -700,7 +707,7 @@ int main(int argc, const char* const* argv)
 
 	if (!fbxCollision.isSet())
 	{
-		result->releaseCollisionHulls();
+		NvBlastExtAuthoringReleaseAuthoringResultCollision(*collisionBuilder, result);
 	}
 
 	if (bOutputObjFile)
@@ -757,7 +764,11 @@ int main(int argc, const char* const* argv)
 			descriptor.bondFlags = nullptr;
 			descriptor.chunkCount = result->chunkCount;
 			descriptor.chunkDescs = result->chunkDescs;
-			Nv::Blast::ExtPxAsset* physicsAsset = Nv::Blast::ExtPxAsset::create(descriptor, result->physicsChunks, result->physicsSubchunks, *NvBlastTkFrameworkGet());
+
+			std::vector<ExtPxChunk> physicsChunks(result->chunkCount);
+			std::vector<ExtPxSubchunk> physicsSubchunks(result->chunkCount);
+			collisionBuilder->buildPhysicsChunks(result->chunkCount, result->collisionHullOffset, result->collisionHull, physicsChunks.data(), physicsSubchunks.data());
+			Nv::Blast::ExtPxAsset* physicsAsset = Nv::Blast::ExtPxAsset::create(descriptor, physicsChunks.data(), physicsSubchunks.data(), *NvBlastTkFrameworkGet());
 			if (bOutputTK)
 			{
 				blExpr.saveBlastObject(outDir, assetName, &physicsAsset->getTkAsset(), TkObjectTypeID::Asset);
@@ -775,7 +786,8 @@ int main(int argc, const char* const* argv)
 	BlastDataExporter blExpr(NvBlastTkFrameworkGet(), gPhysics, gCooking);
 	saveBlastData(blExpr);
 
-	result->release();
+	NvBlastExtAuthoringReleaseAuthoringResult(*collisionBuilder, result);
+	collisionBuilder->release();
 
 	if (tk)
 	{

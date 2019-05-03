@@ -30,8 +30,7 @@
 #define NVBLASTEXTEXPORTERFBXUTILS_H
 
 #include "fbxsdk.h"
-#include "PxVec3.h"
-#include "PxVec2.h"
+#include <NvCTypes.h>
 #include <string>
 
 namespace Nv
@@ -47,8 +46,8 @@ class FbxUtils
 public:
 	static void VertexToFbx(const Nv::Blast::Vertex& vert, FbxVector4& outVertex, FbxVector4& outNormal, FbxVector2& outUV);
 
-	static void PxVec3ToFbx(const physx::PxVec3& inVector, FbxVector4& outVector);
-	static void PxVec2ToFbx(const physx::PxVec2& inVector, FbxVector2& outVector);
+	static void NvcVec3ToFbx(const NvcVec3& inVector, FbxVector4& outVector);
+	static void NvcVec2ToFbx(const NvcVec2& inVector, FbxVector2& outVector);
 
 	static FbxAxisSystem getBlastFBXAxisSystem();
 	static FbxSystemUnit getBlastFBXUnit();

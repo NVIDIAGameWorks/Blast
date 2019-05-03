@@ -103,13 +103,11 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull_impl.html">CollisionHullImpl</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_collision_params.html">CollisionParams</a></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_convex_decomposition_params.html">ConvexDecompositionParams</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_convex_loop.html">ConvexLoop</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">ConvexMeshBuilder</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html">ConvexMeshBuilderImpl</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_cutout.html">Cutout</a></td></tr>
 
@@ -190,6 +188,10 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html">ExtPxAssetDesc</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_collision_builder.html">ExtPxCollisionBuilder</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_collision_builder_impl.html">ExtPxCollisionBuilderImpl</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a></td></tr>
 
@@ -282,6 +284,8 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_hash_map.html">HashMap</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_hash_set.html">HashSet</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_hull_polygon.html">HullPolygon</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_fbx_file_reader.html">IFbxFileReader</a></td></tr>
 
@@ -519,6 +523,8 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#e1f8e465d658b5eda1923088284273bd">buildCuttingConeFaces</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a> &amp;conf, const std::vector&lt; std::vector&lt; physx::PxVec3 &gt;&gt; &amp;points, float heightBot, float heightTop, float conicityBot, float conicityTop, int64_t &amp;id, int32_t seed, int32_t interiorMaterialId, <a class="el" href="namespace_nv_1_1_blast.html#fe329ff8e54fccde762d704ec05e8e4e">SharedFacesMap</a> &amp;sharedFacesMap)</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#8ebc2507c0fdfa452f1000b86b590af5">buildMeshConvexDecomposition</a> (<a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">ConvexMeshBuilder</a> &amp;cmb, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *mesh, uint32_t triangleCount, const <a class="el" href="struct_nv_1_1_blast_1_1_convex_decomposition_params.html">ConvexDecompositionParams</a> &amp;params, <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> **&amp;convexes)</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#3c3bd8c624a44bbffc27f6ab8e8f2012">createCutoutSet</a> (<a class="el" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html">Nv::Blast::CutoutSetImpl</a> &amp;cutoutSet, const uint8_t *pixelBuffer, uint32_t bufferWidth, uint32_t bufferHeight, float segmentationErrorThreshold, float snapThreshold, bool periodic, bool expandGaps)</td></tr>
 
 <tr><td class="memTemplParams" nowrap colspan="2">template&lt;typename T &gt; </td></tr>
@@ -535,7 +541,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NV_INLINE float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#d4dfea75a2d880846c407692135b6dab">fade</a> (float t)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#6f9b18b3e2d534d41b847f7b476c7db1">findCellBasePlanes</a> (const std::vector&lt; physx::PxVec3 &gt; &amp;sites, std::vector&lt; std::vector&lt; int32_t &gt; &gt; &amp;neighboors)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#83271d24d04e44d4b938de44bce332e8">findCellBasePlanes</a> (const std::vector&lt; <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &gt; &amp;sites, std::vector&lt; std::vector&lt; int32_t &gt; &gt; &amp;neighboors)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NV_FORCE_INLINE uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#0ce4dc5d3f1f248d05a6b699ccaa68b9">findClosestNode</a> (const float point[4], const uint32_t firstGraphNodeIndex, const uint32_t *familyGraphNodeIndexLinks, const uint32_t *adjacencyPartition, const uint32_t *adjacentNodeIndices, const uint32_t *adjacentBondIndices, const <a class="el" href="struct_nv_blast_bond.html">NvBlastBond</a> *bonds, const float *bondHealths, const uint32_t *chunkIndices)</td></tr>
 
@@ -545,7 +551,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#ef59d71df12b51af958587475b90495f">getBigBox</a> (const physx::PxVec3 &amp;point, float size, int32_t interiorMaterialId)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#095cb2f203b5b4b6e0996d14908834b9">getCellMesh</a> (class <a class="el" href="class_nv_1_1_blast_1_1_boolean_evaluator.html">BooleanEvaluator</a> &amp;eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector&lt; physx::PxVec3 &gt; &amp;sites, std::vector&lt; std::vector&lt; int32_t &gt; &gt; &amp;neighboors, int32_t interiorMaterialId, physx::PxVec3 origin)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#4371fd33bb235ab1c79ddce6caf51ee5">getCellMesh</a> (class <a class="el" href="class_nv_1_1_blast_1_1_boolean_evaluator.html">BooleanEvaluator</a> &amp;eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector&lt; <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &gt; &amp;sites, std::vector&lt; std::vector&lt; int32_t &gt; &gt; &amp;neighboors, int32_t interiorMaterialId, <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> origin)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#1dd51a1368754e171b1cc545e2987fc6">getCuttingBox</a> (const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, int64_t id, int32_t interiorMaterialId)</td></tr>
 
@@ -559,7 +565,9 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#1b729c22d7aa248e8ded6819006f91dc">getNoisyCuttingBoxPair</a> (const physx::PxVec3 &amp;point, const physx::PxVec3 &amp;normal, float size, float jaggedPlaneSize, physx::PxVec3 resolution, int64_t id, float amplitude, float frequency, int32_t octaves, int32_t seed, int32_t interiorMaterialId)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">NV_INLINE bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#a53d476b82810995adad43062322f649">getPlaneSegmentIntersection</a> (const PxPlane &amp;pl, const PxVec3 &amp;a, const PxVec3 &amp;b, PxVec3 &amp;result)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NV_INLINE bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#7bba8d1f555e341010029032391276a6">getPlaneSegmentIntersection</a> (const physx::PxPlane &amp;pl, const physx::PxVec3 &amp;a, const physx::PxVec3 &amp;b, physx::PxVec3 &amp;result)</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NV_FORCE_INLINE physx::PxVec2&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#07798b57f728802d367a7efbea3ce3a7">getProjectedPoint</a> (const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;point, <a class="el" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> dir)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NV_FORCE_INLINE physx::PxVec2&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#44d0b01b83d001724a34646ec96d17f0">getProjectedPoint</a> (const physx::PxVec3 &amp;point, <a class="el" href="namespace_nv_1_1_blast.html#2dbf0cc037620db35223513e817444f7">ProjectionDirections</a> dir)</td></tr>
 
@@ -597,6 +605,8 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NV_FORCE_INLINE void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#c98948d4d2e512d9b7717d290e3cc683">operator+=</a> (<a class="el" href="struct_nv_blast_timers.html">NvBlastTimers</a> &amp;lhs, const <a class="el" href="struct_nv_blast_timers.html">NvBlastTimers</a> &amp;rhs)</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#cf1aa675b24e661db37949852a97b58f">operator&lt;</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> &amp;a, const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> &amp;b)</td></tr>
+
 <tr><td class="memTemplParams" nowrap colspan="2">template&lt;typename T &gt; </td></tr>
 <tr><td class="memTemplItemLeft" nowrap align="right" valign="top">NV_INLINE <a class="el" href="class_nv_1_1_blast_1_1_ext_i_stream.html">ExtIStream</a> &amp;&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#0b6eef048652bbd2ede8acb4bd7de14e">operator&gt;&gt;</a> (<a class="el" href="class_nv_1_1_blast_1_1_ext_i_stream.html">ExtIStream</a> &amp;s, T &amp;x)</td></tr>
 
@@ -620,10 +630,19 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NV_INLINE bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#6bbc50004fa477cdc0bc27dc53dae357">TkGUIDsEqual</a> (const <a class="el" href="struct_nv_blast_i_d.html">NvBlastID</a> *id1, const <a class="el" href="struct_nv_blast_i_d.html">NvBlastID</a> *id2)</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#36da4b89aa7e5aa006b2d8e647aa3f05">trimCollisionGeometry</a> (<a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">ConvexMeshBuilder</a> &amp;cmb, uint32_t chunksCount, <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> **in, const uint32_t *chunkDepth)</td></tr>
+
 <tr><td class="memTemplParams" nowrap colspan="2">template&lt;class VisibilityRep &gt; </td></tr>
 <tr><td class="memTemplItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#c5cb103e6be0eafbc210cacb569a7939">updateVisibleChunksFromSupportChunk</a> (VisibilityRep *actors, <a class="el" href="struct_nv_1_1_blast_1_1_index_d_link.html">IndexDLink</a>&lt; uint32_t &gt; *visibleChunkIndexLinks, uint32_t *chunkActorIndices, uint32_t actorIndex, uint32_t supportChunkIndex, const <a class="el" href="struct_nv_blast_chunk.html">NvBlastChunk</a> *chunks, uint32_t upperSupportChunkCount)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NV_INLINE bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#b18c3161481f8a05cd11866ef1afbd9e">weakBoundingBoxIntersection</a> (const physx::PxBounds3 &amp;aBox, const physx::PxBounds3 &amp;bBox)</td></tr>
+
+<tr><td colspan="2"><br><h2>Variables</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">const uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#d2d1cde5813011ad60c5a70903063138">kMaterialInteriorId</a> = 1000</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">const uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#ef4edf41a556a4a3a47621a9335b10ea">kNotValidVertexIndex</a> = UINT32_MAX</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">const uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#dbf9e9203bf8bee845964d16b181bec4">kSmoothingGroupInteriorId</a> = 1000</td></tr>
 
 </table>
 <hr><h2>Typedef Documentation</h2>
@@ -981,6 +1000,53 @@ Returns the aligned value.
 
 </div>
 </div><p>
+<a class="anchor" name="8ebc2507c0fdfa452f1000b86b590af5"></a><!-- doxytag: member="Nv::Blast::buildMeshConvexDecomposition" ref="8ebc2507c0fdfa452f1000b86b590af5" args="(ConvexMeshBuilder &amp;cmb, const Triangle *mesh, uint32_t triangleCount, const ConvexDecompositionParams &amp;params, CollisionHull **&amp;convexes)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t Nv::Blast::buildMeshConvexDecomposition           </td>
+          <td>(</td>
+          <td class="paramtype">ConvexMeshBuilder &amp;&nbsp;</td>
+          <td class="paramname"> <em>cmb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Triangle *&nbsp;</td>
+          <td class="paramname"> <em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>triangleCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ConvexDecompositionParams &amp;&nbsp;</td>
+          <td class="paramname"> <em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">CollisionHull **&amp;&nbsp;</td>
+          <td class="paramname"> <em>convexes</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="3c3bd8c624a44bbffc27f6ab8e8f2012"></a><!-- doxytag: member="Nv::Blast::createCutoutSet" ref="3c3bd8c624a44bbffc27f6ab8e8f2012" args="(Nv::Blast::CutoutSetImpl &amp;cutoutSet, const uint8_t *pixelBuffer, uint32_t bufferWidth, uint32_t bufferHeight, float segmentationErrorThreshold, float snapThreshold, bool periodic, bool expandGaps)" -->
 <div class="memitem">
 <div class="memproto">
@@ -1283,14 +1349,14 @@ template&lt;typename Factory , size_t N&gt; </div>
 
 </div>
 </div><p>
-<a class="anchor" name="6f9b18b3e2d534d41b847f7b476c7db1"></a><!-- doxytag: member="Nv::Blast::findCellBasePlanes" ref="6f9b18b3e2d534d41b847f7b476c7db1" args="(const std::vector&lt; physx::PxVec3 &gt; &amp;sites, std::vector&lt; std::vector&lt; int32_t &gt; &gt; &amp;neighboors)" -->
+<a class="anchor" name="83271d24d04e44d4b938de44bce332e8"></a><!-- doxytag: member="Nv::Blast::findCellBasePlanes" ref="83271d24d04e44d4b938de44bce332e8" args="(const std::vector&lt; NvcVec3 &gt; &amp;sites, std::vector&lt; std::vector&lt; int32_t &gt; &gt; &amp;neighboors)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void Nv::Blast::findCellBasePlanes           </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; physx::PxVec3 &gt; &amp;&nbsp;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &gt; &amp;&nbsp;</td>
           <td class="paramname"> <em>sites</em>, </td>
         </tr>
         <tr>
@@ -1590,7 +1656,7 @@ Create box at some particular position. <dl compact><dt><b>Parameters:</b></dt><
 
 </div>
 </div><p>
-<a class="anchor" name="095cb2f203b5b4b6e0996d14908834b9"></a><!-- doxytag: member="Nv::Blast::getCellMesh" ref="095cb2f203b5b4b6e0996d14908834b9" args="(class BooleanEvaluator &amp;eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector&lt; physx::PxVec3 &gt; &amp;sites, std::vector&lt; std::vector&lt; int32_t &gt; &gt; &amp;neighboors, int32_t interiorMaterialId, physx::PxVec3 origin)" -->
+<a class="anchor" name="4371fd33bb235ab1c79ddce6caf51ee5"></a><!-- doxytag: member="Nv::Blast::getCellMesh" ref="4371fd33bb235ab1c79ddce6caf51ee5" args="(class BooleanEvaluator &amp;eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector&lt; NvcVec3 &gt; &amp;sites, std::vector&lt; std::vector&lt; int32_t &gt; &gt; &amp;neighboors, int32_t interiorMaterialId, NvcVec3 origin)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1615,7 +1681,7 @@ Create box at some particular position. <dl compact><dt><b>Parameters:</b></dt><
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; physx::PxVec3 &gt; &amp;&nbsp;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &gt; &amp;&nbsp;</td>
           <td class="paramname"> <em>sites</em>, </td>
         </tr>
         <tr>
@@ -1633,7 +1699,7 @@ Create box at some particular position. <dl compact><dt><b>Parameters:</b></dt><
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">physx::PxVec3&nbsp;</td>
+          <td class="paramtype"><a class="el" href="struct_nvc_vec3.html">NvcVec3</a>&nbsp;</td>
           <td class="paramname"> <em>origin</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -1972,32 +2038,32 @@ Create slicing box with noisy cutting surface. <dl compact><dt><b>Parameters:</b
 
 </div>
 </div><p>
-<a class="anchor" name="a53d476b82810995adad43062322f649"></a><!-- doxytag: member="Nv::Blast::getPlaneSegmentIntersection" ref="a53d476b82810995adad43062322f649" args="(const PxPlane &amp;pl, const PxVec3 &amp;a, const PxVec3 &amp;b, PxVec3 &amp;result)" -->
+<a class="anchor" name="7bba8d1f555e341010029032391276a6"></a><!-- doxytag: member="Nv::Blast::getPlaneSegmentIntersection" ref="7bba8d1f555e341010029032391276a6" args="(const physx::PxPlane &amp;pl, const physx::PxVec3 &amp;a, const physx::PxVec3 &amp;b, physx::PxVec3 &amp;result)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">NV_INLINE bool Nv::Blast::getPlaneSegmentIntersection           </td>
           <td>(</td>
-          <td class="paramtype">const PxPlane &amp;&nbsp;</td>
+          <td class="paramtype">const physx::PxPlane &amp;&nbsp;</td>
           <td class="paramname"> <em>pl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
           <td class="paramname"> <em>a</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
           <td class="paramname"> <em>b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype">physx::PxVec3 &amp;&nbsp;</td>
           <td class="paramname"> <em>result</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -2011,6 +2077,35 @@ Create slicing box with noisy cutting surface. <dl compact><dt><b>Parameters:</b
 
 <p>
 Test segment vs plane intersection. If segment intersects the plane true is returned. Point of intersection is written into 'result'. 
+</div>
+</div><p>
+<a class="anchor" name="07798b57f728802d367a7efbea3ce3a7"></a><!-- doxytag: member="Nv::Blast::getProjectedPoint" ref="07798b57f728802d367a7efbea3ce3a7" args="(const NvcVec3 &amp;point, ProjectionDirections dir)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_FORCE_INLINE physx::PxVec2 Nv::Blast::getProjectedPoint           </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;&nbsp;</td>
+          <td class="paramname"> <em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ProjectionDirections&nbsp;</td>
+          <td class="paramname"> <em>dir</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
 </div>
 </div><p>
 <a class="anchor" name="44d0b01b83d001724a34646ec96d17f0"></a><!-- doxytag: member="Nv::Blast::getProjectedPoint" ref="44d0b01b83d001724a34646ec96d17f0" args="(const physx::PxVec3 &amp;point, ProjectionDirections dir)" -->
@@ -2623,6 +2718,35 @@ Utility to add a joint descriptor between the indexed chunks. The two chunks mus
 
 </div>
 </div><p>
+<a class="anchor" name="cf1aa675b24e661db37949852a97b58f"></a><!-- doxytag: member="Nv::Blast::operator&lt;" ref="cf1aa675b24e661db37949852a97b58f" args="(const Edge &amp;a, const Edge &amp;b)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Nv::Blast::operator&lt;           </td>
+          <td>(</td>
+          <td class="paramtype">const Edge &amp;&nbsp;</td>
+          <td class="paramname"> <em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Edge &amp;&nbsp;</td>
+          <td class="paramname"> <em>b</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="0b6eef048652bbd2ede8acb4bd7de14e"></a><!-- doxytag: member="Nv::Blast::operator&gt;&gt;" ref="0b6eef048652bbd2ede8acb4bd7de14e" args="(ExtIStream &amp;s, T &amp;x)" -->
 <div class="memitem">
 <div class="memproto">
@@ -2960,6 +3084,47 @@ Compares two NvBlastIDs.<p>
 
 </div>
 </div><p>
+<a class="anchor" name="36da4b89aa7e5aa006b2d8e647aa3f05"></a><!-- doxytag: member="Nv::Blast::trimCollisionGeometry" ref="36da4b89aa7e5aa006b2d8e647aa3f05" args="(ConvexMeshBuilder &amp;cmb, uint32_t chunksCount, CollisionHull **in, const uint32_t *chunkDepth)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Nv::Blast::trimCollisionGeometry           </td>
+          <td>(</td>
+          <td class="paramtype">ConvexMeshBuilder &amp;&nbsp;</td>
+          <td class="paramname"> <em>cmb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunksCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">CollisionHull **&nbsp;</td>
+          <td class="paramname"> <em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>chunkDepth</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
 <a class="anchor" name="c5cb103e6be0eafbc210cacb569a7939"></a><!-- doxytag: member="Nv::Blast::updateVisibleChunksFromSupportChunk" ref="c5cb103e6be0eafbc210cacb569a7939" args="(VisibilityRep *actors, IndexDLink&lt; uint32_t &gt; *visibleChunkIndexLinks, uint32_t *chunkActorIndices, uint32_t actorIndex, uint32_t supportChunkIndex, const NvBlastChunk *chunks, uint32_t upperSupportChunkCount)" -->
 <div class="memitem">
 <div class="memproto">
@@ -3048,6 +3213,52 @@ VisibilityRep must have m_firstVisibleChunkIndex and m_visibleChunkCount fields
 
 <p>
 Test fattened bounding box intersetion. 
+</div>
+</div><p>
+<hr><h2>Variable Documentation</h2>
+<a class="anchor" name="d2d1cde5813011ad60c5a70903063138"></a><!-- doxytag: member="Nv::Blast::kMaterialInteriorId" ref="d2d1cde5813011ad60c5a70903063138" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint32_t <a class="el" href="namespace_nv_1_1_blast.html#d2d1cde5813011ad60c5a70903063138">Nv::Blast::kMaterialInteriorId</a> = 1000          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Default material id assigned to interior faces (faces which created between 2 fractured chunks) 
+</div>
+</div><p>
+<a class="anchor" name="ef4edf41a556a4a3a47621a9335b10ea"></a><!-- doxytag: member="Nv::Blast::kNotValidVertexIndex" ref="ef4edf41a556a4a3a47621a9335b10ea" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint32_t <a class="el" href="namespace_nv_1_1_blast.html#ef4edf41a556a4a3a47621a9335b10ea">Nv::Blast::kNotValidVertexIndex</a> = UINT32_MAX          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+<a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> index which considired by NvBlast as not valid. 
+</div>
+</div><p>
+<a class="anchor" name="dbf9e9203bf8bee845964d16b181bec4"></a><!-- doxytag: member="Nv::Blast::kSmoothingGroupInteriorId" ref="dbf9e9203bf8bee845964d16b181bec4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint32_t <a class="el" href="namespace_nv_1_1_blast.html#dbf9e9203bf8bee845964d16b181bec4">Nv::Blast::kSmoothingGroupInteriorId</a> = 1000          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Default smoothing group id assigned to interior faces 
 </div>
 </div><p>
 </div>

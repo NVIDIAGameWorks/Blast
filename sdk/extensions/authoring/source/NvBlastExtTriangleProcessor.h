@@ -29,7 +29,8 @@
 #ifndef NVBLASTEXTTRIANGLEPROCESSOR_H
 #define NVBLASTEXTTRIANGLEPROCESSOR_H
 
-#include <PxPhysicsAPI.h>
+#include <PxVec2.h>
+#include <PxVec3.h>
 #include <vector>
 #include <algorithm>
 
@@ -40,9 +41,9 @@ namespace Nv
 {
 namespace Blast
 {
-	
+
 /**
-	Triangle processor internal triangle representation. Contains only vertex positions.
+    Triangle processor internal triangle representation. Contains only vertex positions.
 */
 struct TrPrcTriangle
 {
@@ -75,7 +76,7 @@ struct TrPrcTriangle
 };
 
 /**
-	Triangle processor internal 2D triangle representation. Contains only vertex positions.
+    Triangle processor internal 2D triangle representation. Contains only vertex positions.
 */
 struct TrPrcTriangle2d
 {
@@ -105,72 +106,68 @@ struct TrPrcTriangle2d
 
 class TriangleProcessor
 {
-public:
+  public:
+	TriangleProcessor(){};
+	~TriangleProcessor() {}
 
-
-	TriangleProcessor()
-	{};
-	~TriangleProcessor()
-	{
-	}
-		
 
 	/**
-		Build intersection between two triangles
-		\param[in] a			First triangle (A)
-		\param[in] aProjected	Projected triangle A
-		\param[in] b			Second triangle (B)
-		\param[in] centroid		Centroid of first triangle (A)
-		\param[out] intersectionBuffer Result intersection polygon
-		\param[in] normal		Normal vector to triangle (Common for both A and B).
-		\return 1 - if if intersection is found.
-	*/	
-	uint32_t	getTriangleIntersection(TrPrcTriangle& a, TrPrcTriangle2d& aProjected, TrPrcTriangle &b, PxVec3& centroid, std::vector<PxVec3>& intersectionBuffer, PxVec3 normal);
-
-	/**
-		Test whether BB of triangles intersect.
-		\param[in] a			First triangle (A)
-		\param[in] b			Second triangle (B)
-		\return true - if intersect
+	    Build intersection between two triangles
+	    \param[in] a			First triangle (A)
+	    \param[in] aProjected	Projected triangle A
+	    \param[in] b			Second triangle (B)
+	    \param[in] centroid		Centroid of first triangle (A)
+	    \param[out] intersectionBuffer Result intersection polygon
+	    \param[in] normal		Normal vector to triangle (Common for both A and B).
+	    \return 1 - if if intersection is found.
 	*/
-	bool		triangleBoundingBoxIntersection(TrPrcTriangle2d& a, TrPrcTriangle2d& b);
-		
+	uint32_t getTriangleIntersection(TrPrcTriangle& a, TrPrcTriangle2d& aProjected, TrPrcTriangle& b, PxVec3& centroid,
+	                                 std::vector<PxVec3>& intersectionBuffer, PxVec3 normal);
 
 	/**
-		Test whether point is inside of triangle.
-		\param[in] point		Point coordinates in 2d space.
-		\param[in] triangle		Triangle in 2d space.
-		\return 1 - if inside, 2 if on edge, 0 if neither inside nor edge.
+	    Test whether BB of triangles intersect.
+	    \param[in] a			First triangle (A)
+	    \param[in] b			Second triangle (B)
+	    \return true - if intersect
 	*/
-	uint32_t	isPointInside(const PxVec2& point, const TrPrcTriangle2d& triangle);
+	bool triangleBoundingBoxIntersection(TrPrcTriangle2d& a, TrPrcTriangle2d& b);
+
 
 	/**
-		Segment intersection point
-		\param[in] s1 Segment-1 start point
-		\param[in] e1 Segment-1 end point
-		\param[in] s2 Segment-2 start point
-		\param[in] e2 Segment-2 end point
-		\param[out] t1 Intersection point parameter relatively to Segment-1, lies in [0.0, 1.0] range.
-		\return 0 if there is no intersections, 1 - if intersection is found.
+	    Test whether point is inside of triangle.
+	    \param[in] point		Point coordinates in 2d space.
+	    \param[in] triangle		Triangle in 2d space.
+	    \return 1 - if inside, 2 if on edge, 0 if neither inside nor edge.
 	*/
-	uint32_t	getSegmentIntersection(const PxVec2& s1, const PxVec2& e1, const PxVec2& s2, const PxVec2& e2, PxF32& t1);
+	uint32_t isPointInside(const PxVec2& point, const TrPrcTriangle2d& triangle);
 
 	/**
-		Sort vertices of polygon in CCW-order
+	    Segment intersection point
+	    \param[in] s1 Segment-1 start point
+	    \param[in] e1 Segment-1 end point
+	    \param[in] s2 Segment-2 start point
+	    \param[in] e2 Segment-2 end point
+	    \param[out] t1 Intersection point parameter relatively to Segment-1, lies in [0.0, 1.0] range.
+	    \return 0 if there is no intersections, 1 - if intersection is found.
 	*/
-	void		sortToCCW(std::vector<PxVec3>& points, PxVec3& normal);
-	
+	uint32_t getSegmentIntersection(const PxVec2& s1, const PxVec2& e1, const PxVec2& s2, const PxVec2& e2, PxF32& t1);
+
 	/**
-		Builds convex polygon for given set of points. Points should be coplanar.
-		\param[in] points Input array of points
-		\param[out] convexHull Output polygon
-		\param[in] normal Normal vector to polygon.	
+	    Sort vertices of polygon in CCW-order
 	*/
-	void		buildConvexHull(std::vector<PxVec3>& points, std::vector<PxVec3>& convexHull, const PxVec3& normal);
+	void sortToCCW(std::vector<PxVec3>& points, PxVec3& normal);
+
+	/**
+	    Builds convex polygon for given set of points. Points should be coplanar.
+	    \param[in] points Input array of points
+	    \param[out] convexHull Output polygon
+	    \param[in] normal Normal vector to polygon.
+	*/
+	void buildConvexHull(std::vector<PxVec3>& points, std::vector<PxVec3>& convexHull, const PxVec3& normal);
 };
 
-} // namespace Blast
-} // namespace Nv
+}  // namespace Blast
+}  // namespace Nv
 
 
-#endif // NVBLASTEXTTRIANGLEPROCESSOR_H
+#endif  // NVBLASTEXTTRIANGLEPROCESSOR_H

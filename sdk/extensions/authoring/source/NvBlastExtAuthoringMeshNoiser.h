@@ -135,7 +135,7 @@ namespace Nv
 			std::vector<Triangle>			getMesh();
 
 		private:
-			PxVec3								mOffset;
+			physx::PxVec3						mOffset;
 			float								mScale;
 			bool								isTesselated;
 			/**
@@ -178,7 +178,7 @@ namespace Nv
 
 			std::vector<float>							mVerticesDistances;
 			std::vector<physx::PxVec3>					mVerticesNormalsSmoothed;
-			std::vector<int32_t>						mPositionMappedVrt;
+			std::vector<uint32_t>						mPositionMappedVrt;
 			std::vector<std::vector<int32_t> >			mGeometryGraph;
 
 			void										prebuildEdgeFlagArray();

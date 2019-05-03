@@ -30,6 +30,7 @@
 #include "AssetGenerator.h"
 
 #include <map>
+#include <random>
 #include <algorithm>
 
 #include "NvBlastActor.h"
@@ -650,7 +651,10 @@ public:
 		{
 			order[i] = i;
 		}
-		std::random_shuffle(order.begin(), order.end());
+
+        std::random_device rd;
+		std::mt19937 g(rd());
+		std::shuffle(order.begin(), order.end(), g);
 
 		for (size_t i = 0; i < actors.size(); ++i)
 		{

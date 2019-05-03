@@ -43,9 +43,10 @@
 #include "NvBlastExtAuthoringBooleanTool.h"
 #include <queue>
 #include <NvBlastAssert.h>
+#include <NvBlastPxSharedHelpers.h>
 
-using physx::PxVec3;
 using physx::PxVec2;
+using physx::PxVec3;
 
 namespace Nv
 {
@@ -79,18 +80,18 @@ NV_FORCE_INLINE bool pointInside(PxVec2 a, PxVec2 b, PxVec2 c, PxVec2 pnt)
 	float v2 = (getRotation((c - b), (pnt - b)));
 	float v3 = (getRotation((a - c), (pnt - c)));
 
-	return (v1 >= 0.0f && v2 >= 0.0f && v3 >= 0.0f) ||
-		(v1 <= 0.0f && v2 <= 0.0f && v3 <= 0.0f);
-
+	return (v1 >= 0.0f && v2 >= 0.0f && v3 >= 0.0f) || (v1 <= 0.0f && v2 <= 0.0f && v3 <= 0.0f);
 }
-void Triangulator::triangulatePolygonWithEarClipping(std::vector<uint32_t>& inputPolygon, Vertex* vert, ProjectionDirections dir)
+void Triangulator::triangulatePolygonWithEarClipping(std::vector<uint32_t>& inputPolygon, Vertex* vert,
+                                                     ProjectionDirections dir)
 {
 	//	return;
-	//for (uint32_t i = 0; i < inputPolygon.size(); ++i)
+	// for (uint32_t i = 0; i < inputPolygon.size(); ++i)
 	//{
-	//	mBaseMeshTriangles.push_back(TriangleIndexed(inputPolygon[i], inputPolygon[i], inputPolygon[(i + 1) % inputPolygon.size()]));
+	//	mBaseMeshTriangles.push_back(TriangleIndexed(inputPolygon[i], inputPolygon[i], inputPolygon[(i + 1) %
+	//inputPolygon.size()]));
 	//}
-	//return;
+	// return;
 	int32_t vCount = static_cast<int32_t>(inputPolygon.size());
 
 	if (vCount < 3)
@@ -112,13 +113,15 @@ void Triangulator::triangulatePolygonWithEarClipping(std::vector<uint32_t>& inpu
 
 		// Check wheather curr is ear-tip
 		float rot = getRotation((pVp - nVp).getNormalized(), (cVp - nVp).getNormalized());
-		if (!(dir & OPPOSITE_WINDING)) rot = -rot;
+		if (!(dir & OPPOSITE_WINDING))
+			rot = -rot;
 		if (rot > 0.0001)
 		{
 			bool good = true;
 			for (int vrt = 0; vrt < vCount; ++vrt)
 			{
-				if (vrt == curr || vrt == prev || vrt == next) continue;
+				if (vrt == curr || vrt == prev || vrt == next)
+					continue;
 				if (pointInside(cVp, nVp, pVp, getProjectedPoint(vert[inputPolygon[vrt]].p, dir)))
 				{
 					good = false;
@@ -137,7 +140,6 @@ void Triangulator::triangulatePolygonWithEarClipping(std::vector<uint32_t>& inpu
 }
 
 
-
 struct LoopInfo
 {
 	LoopInfo()
@@ -154,14 +156,15 @@ struct LoopInfo
 	}
 };
 
-int32_t unitePolygons(std::vector<uint32_t>& externalLoop, std::vector<uint32_t>& internalLoop, Vertex* vrx, ProjectionDirections dir)
+int32_t unitePolygons(std::vector<uint32_t>& externalLoop, std::vector<uint32_t>& internalLoop, Vertex* vrx,
+                      ProjectionDirections dir)
 {
 	if (externalLoop.size() < 3 || internalLoop.size() < 3)
 		return 1;
 	/**
-		Find point with maximum x-coordinate
+	    Find point with maximum x-coordinate
 	*/
-	float x_max = -MAXIMUM_EXTENT;
+	float x_max    = -MAXIMUM_EXTENT;
 	int32_t mIndex = -1;
 	for (uint32_t i = 0; i < internalLoop.size(); ++i)
 	{
@@ -169,7 +172,7 @@ int32_t unitePolygons(std::vector<uint32_t>& externalLoop, std::vector<uint32_t>
 		if (nx > x_max)
 		{
 			mIndex = i;
-			x_max = nx;
+			x_max  = nx;
 		}
 	}
 	if (mIndex == -1)
@@ -178,16 +181,16 @@ int32_t unitePolygons(std::vector<uint32_t>& externalLoop, std::vector<uint32_t>
 	}
 
 	/**
-		Search for base point on external loop
+	    Search for base point on external loop
 	*/
-	float minX = MAXIMUM_EXTENT;
-	int32_t vrtIndex = -1;
+	float minX        = MAXIMUM_EXTENT;
+	int32_t vrtIndex  = -1;
 	bool isFromBuffer = 0;
-	PxVec2 holePoint = getProjectedPoint(vrx[internalLoop[mIndex]].p, dir);
+	PxVec2 holePoint  = getProjectedPoint(vrx[internalLoop[mIndex]].p, dir);
 	PxVec2 computedPoint;
 	for (uint32_t i = 0; i < externalLoop.size(); ++i)
 	{
-		int32_t nx = (i + 1) % externalLoop.size();
+		int32_t nx  = (i + 1) % externalLoop.size();
 		PxVec2 pnt1 = getProjectedPoint(vrx[externalLoop[i]].p, dir);
 		PxVec2 pnt2 = getProjectedPoint(vrx[externalLoop[nx]].p, dir);
 		if (pnt1.x < x_max && pnt2.x < x_max)
@@ -199,14 +202,14 @@ int32_t unitePolygons(std::vector<uint32_t>& externalLoop, std::vector<uint32_t>
 		{
 			if (pnt1.x < minX && pnt1.x < pnt2.x && pnt1.x > x_max)
 			{
-				minX = pnt1.x;
-				vrtIndex = i;
+				minX         = pnt1.x;
+				vrtIndex     = i;
 				isFromBuffer = true;
 			}
 			if (pnt2.x < minX && pnt2.x < pnt1.x && pnt2.x > x_max)
 			{
-				minX = pnt2.x;
-				vrtIndex = nx;
+				minX         = pnt2.x;
+				vrtIndex     = nx;
 				isFromBuffer = true;
 			}
 		}
@@ -218,9 +221,9 @@ int32_t unitePolygons(std::vector<uint32_t>& externalLoop, std::vector<uint32_t>
 				PxVec2 tempPoint = vc * t + pnt1;
 				if (tempPoint.x < minX && tempPoint.x > x_max)
 				{
-					minX = tempPoint.x;
-					vrtIndex = i;
-					isFromBuffer = false;
+					minX          = tempPoint.x;
+					vrtIndex      = i;
+					isFromBuffer  = false;
 					computedPoint = tempPoint;
 				}
 			}
@@ -232,7 +235,7 @@ int32_t unitePolygons(std::vector<uint32_t>& externalLoop, std::vector<uint32_t>
 		return 1;
 	}
 	int32_t bridgePoint = -1;
-	float bestAngle = 100;
+	float bestAngle     = 100;
 	if (!isFromBuffer)
 	{
 		PxVec2 ex1 = getProjectedPoint(vrx[externalLoop[vrtIndex]].p, dir);
@@ -241,7 +244,7 @@ int32_t unitePolygons(std::vector<uint32_t>& externalLoop, std::vector<uint32_t>
 		if (ex1.x > ex2.x)
 		{
 			vrtIndex = (vrtIndex + 1) % externalLoop.size();
-			ex1 = ex2;
+			ex1      = ex2;
 		}
 		/* Check if some point is inside triangle */
 		bool notFound = true;
@@ -250,18 +253,20 @@ int32_t unitePolygons(std::vector<uint32_t>& externalLoop, std::vector<uint32_t>
 			PxVec2 tempPoint = getProjectedPoint(vrx[externalLoop[i]].p, dir);
 			if (pointInside(holePoint, ex1, computedPoint, tempPoint))
 			{
-				notFound = false;
+				notFound   = false;
 				PxVec2 cVp = getProjectedPoint(vrx[externalLoop[i]].p, dir);
-				PxVec2 pVp = getProjectedPoint(vrx[externalLoop[(i - 1 + externalLoop.size()) % externalLoop.size()]].p, dir);
+				PxVec2 pVp =
+				    getProjectedPoint(vrx[externalLoop[(i - 1 + externalLoop.size()) % externalLoop.size()]].p, dir);
 				PxVec2 nVp = getProjectedPoint(vrx[externalLoop[(i + 1) % externalLoop.size()]].p, dir);
-				float rt = getRotation((cVp - pVp).getNormalized(), (nVp - pVp).getNormalized());
-				if ((dir & OPPOSITE_WINDING)) rt = -rt;
+				float rt   = getRotation((cVp - pVp).getNormalized(), (nVp - pVp).getNormalized());
+				if ((dir & OPPOSITE_WINDING))
+					rt = -rt;
 				if (rt < 0.000001)
 					continue;
 				float tempAngle = PxVec2(1, 0).dot((tempPoint - holePoint).getNormalized());
 				if (bestAngle < tempAngle)
 				{
-					bestAngle = tempAngle;
+					bestAngle   = tempAngle;
 					bridgePoint = i;
 				}
 			}
@@ -300,7 +305,8 @@ int32_t unitePolygons(std::vector<uint32_t>& externalLoop, std::vector<uint32_t>
 	return 0;
 }
 
-void Triangulator::buildPolygonAndTriangulate(std::vector<Edge>& edges, Vertex* vertices, int32_t userData, int32_t materialId, int32_t smoothingGroup)
+void Triangulator::buildPolygonAndTriangulate(std::vector<Edge>& edges, Vertex* vertices, int32_t userData,
+                                              int32_t materialId, int32_t smoothingGroup)
 {
 	std::vector<std::vector<uint32_t> > serializedLoops;
 
@@ -315,9 +321,9 @@ void Triangulator::buildPolygonAndTriangulate(std::vector<Edge>& edges, Vertex* 
 	edgesIds.push_back(0);
 	visitedVertices.insert(edges[0].s);
 	visitedVertices.insert(edges[0].e);
-	used[0] = true;
-	collected = 1;
-	uint32_t lastEdge = 0;
+	used[0]              = true;
+	collected            = 1;
+	uint32_t lastEdge    = 0;
 	bool successfullPass = false;
 	for (; collected < edges.size();)
 	{
@@ -331,7 +337,8 @@ void Triangulator::buildPolygonAndTriangulate(std::vector<Edge>& edges, Vertex* 
 				used[p] = true;
 				edgesIds.push_back(p);
 				lastEdge = p;
-				if (visitedVertices.find(edges[p].e) != visitedVertices.end()) // if we formed loop, detach it and triangulate
+				if (visitedVertices.find(edges[p].e) != visitedVertices.end())  // if we formed loop, detach it and
+				                                                                // triangulate
 				{
 					serializedLoops.push_back(std::vector<uint32_t>());
 					std::vector<uint32_t>& serializedPositions = serializedLoops.back();
@@ -388,11 +395,12 @@ void Triangulator::buildPolygonAndTriangulate(std::vector<Edge>& edges, Vertex* 
 		std::vector<uint32_t>& pos = serializedLoops[loop];
 		for (uint32_t vrt = 1; vrt + 1 < serializedLoops[loop].size(); ++vrt)
 		{
-			loopNormal += (vertices[pos[vrt]].p - vertices[pos[0]].p).cross(vertices[pos[vrt + 1]].p - vertices[pos[0]].p);
+			loopNormal += toPxShared(vertices[pos[vrt]].p - vertices[pos[0]].p)
+			                  .cross(toPxShared(vertices[pos[vrt + 1]].p - vertices[pos[0]].p));
 		}
-		loopsInfo[loop].area = loopNormal.magnitude();
+		loopsInfo[loop].area   = loopNormal.magnitude();
 		loopsInfo[loop].normal = loopNormal;
-		loopsInfo[loop].index = loop;
+		loopsInfo[loop].index  = loop;
 		wholeFacetNormal += loopNormal;
 	}
 
@@ -413,12 +421,13 @@ void Triangulator::buildPolygonAndTriangulate(std::vector<Edge>& edges, Vertex* 
 	{
 		if (loopsInfo[extPoly].area < 0)
 		{
-			continue; // Polygon with negative area is hole
+			continue;  // Polygon with negative area is hole
 		}
 		int32_t baseLoop = loopsInfo[extPoly].index;
 		for (uint32_t intPoly = 0; intPoly < loopsInfo.size(); ++intPoly)
 		{
-			if (loopsInfo[intPoly].area > 0 || loopsInfo[intPoly].used || std::abs(loopsInfo[intPoly].area) > loopsInfo[extPoly].area)
+			if (loopsInfo[intPoly].area > 0 || loopsInfo[intPoly].used ||
+			    std::abs(loopsInfo[intPoly].area) > loopsInfo[extPoly].area)
 			{
 				continue;
 			}
@@ -429,12 +438,12 @@ void Triangulator::buildPolygonAndTriangulate(std::vector<Edge>& edges, Vertex* 
 				loopsInfo[intPoly].used = true;
 			};
 		}
-		triangulatePolygonWithEarClipping(serializedLoops[baseLoop],vertices, dir);
+		triangulatePolygonWithEarClipping(serializedLoops[baseLoop], vertices, dir);
 	}
 	for (uint32_t i = oldSize; i < mBaseMeshTriangles.size(); ++i)
 	{
-		mBaseMeshTriangles[i].userData = userData;
-		mBaseMeshTriangles[i].materialId = materialId;
+		mBaseMeshTriangles[i].userData       = userData;
+		mBaseMeshTriangles[i].materialId     = materialId;
 		mBaseMeshTriangles[i].smoothingGroup = smoothingGroup;
 	}
 }
@@ -467,23 +476,22 @@ NV_FORCE_INLINE void Triangulator::addEdgeIfValid(EdgeWithParent& ed)
 	}
 	else
 	{
-		if (mBaseMeshEdges[it->second].s == NOT_VALID_VERTEX)
+		if (mBaseMeshEdges[it->second].s == kNotValidVertexIndex)
 		{
 			mBaseMeshEdges[it->second].s = ed.s;
 			mBaseMeshEdges[it->second].e = ed.e;
 		}
 		else
 		{
-			mBaseMeshEdges[it->second].s = NOT_VALID_VERTEX;
+			mBaseMeshEdges[it->second].s = kNotValidVertexIndex;
 		}
 	}
 }
 
 
-
 void Triangulator::prepare(const Mesh* mesh)
 {
-	const Edge* ed = mesh->getEdges();
+	const Edge* ed   = mesh->getEdges();
 	const Vertex* vr = mesh->getVertices();
 	mBaseMapping.resize(mesh->getVerticesCount());
 	for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
@@ -491,8 +499,8 @@ void Triangulator::prepare(const Mesh* mesh)
 		const Facet* fc = mesh->getFacet(i);
 		for (uint32_t j = fc->firstEdgeNumber; j < fc->firstEdgeNumber + fc->edgesCount; ++j)
 		{
-			int32_t a = addVerticeIfNotExist(vr[ed[j].s]);
-			int32_t b = addVerticeIfNotExist(vr[ed[j].e]);
+			int32_t a             = addVerticeIfNotExist(vr[ed[j].s]);
+			int32_t b             = addVerticeIfNotExist(vr[ed[j].e]);
 			mBaseMapping[ed[j].s] = a;
 			mBaseMapping[ed[j].e] = b;
 			EdgeWithParent e(a, b, i);
@@ -503,7 +511,7 @@ void Triangulator::prepare(const Mesh* mesh)
 	temp.reserve(mBaseMeshEdges.size());
 	for (uint32_t i = 0; i < mBaseMeshEdges.size(); ++i)
 	{
-		if (mBaseMeshEdges[i].s != NOT_VALID_VERTEX)
+		if (mBaseMeshEdges[i].s != kNotValidVertexIndex)
 		{
 			temp.push_back(mBaseMeshEdges[i]);
 		}
@@ -541,36 +549,36 @@ void Triangulator::triangulate(const Mesh* mesh)
 		{
 			if (temp.empty() == false)
 			{
-				buildPolygonAndTriangulate(temp, mVertices.data(), mesh->getFacet(fP)->userData, mesh->getFacet(fP)->materialId, mesh->getFacet(fP)->smoothingGroup);
+				buildPolygonAndTriangulate(temp, mVertices.data(), mesh->getFacet(fP)->userData,
+				                           mesh->getFacet(fP)->materialId, mesh->getFacet(fP)->smoothingGroup);
 			}
 			temp.clear();
 			fP = mBaseMeshEdges[i].parent;
 		}
-		temp.push_back(Edge(mBaseMeshEdges[i].s, mBaseMeshEdges[i].e));
+		temp.push_back({ mBaseMeshEdges[i].s, mBaseMeshEdges[i].e });
 	}
-	buildPolygonAndTriangulate(temp, mVertices.data(), mesh->getFacet(fP)->userData, mesh->getFacet(fP)->materialId, mesh->getFacet(fP)->smoothingGroup);
+	buildPolygonAndTriangulate(temp, mVertices.data(), mesh->getFacet(fP)->userData, mesh->getFacet(fP)->materialId,
+	                           mesh->getFacet(fP)->smoothingGroup);
 
 	/* Build final triangles */
 	mBaseMeshResultTriangles.clear();
 	for (uint32_t i = 0; i < mBaseMeshTriangles.size(); ++i)
 	{
-		if (mBaseMeshTriangles[i].ea == NOT_VALID_VERTEX)
+		if (mBaseMeshTriangles[i].ea == kNotValidVertexIndex)
 		{
 			continue;
 		}
-		mBaseMeshResultTriangles.push_back(Triangle(mVertices[mBaseMeshTriangles[i].ea], mVertices[mBaseMeshTriangles[i].eb], mVertices[mBaseMeshTriangles[i].ec]));
-		mBaseMeshResultTriangles.back().userData = mBaseMeshTriangles[i].userData;
-		mBaseMeshResultTriangles.back().materialId = mBaseMeshTriangles[i].materialId;
-		mBaseMeshResultTriangles.back().smoothingGroup = mBaseMeshTriangles[i].smoothingGroup;
-
+		mBaseMeshResultTriangles.push_back({ mVertices[mBaseMeshTriangles[i].ea], mVertices[mBaseMeshTriangles[i].eb],
+		                                     mVertices[mBaseMeshTriangles[i].ec], mBaseMeshTriangles[i].userData,
+		                                     mBaseMeshTriangles[i].materialId, mBaseMeshTriangles[i].smoothingGroup });
 	}
-	mBaseMeshUVFittedTriangles = mBaseMeshResultTriangles; // Uvs will be fitted later, in FractureTool.
+	mBaseMeshUVFittedTriangles = mBaseMeshResultTriangles;  // Uvs will be fitted later, in FractureTool.
 	computePositionedMapping();
 }
 
 void Triangulator::computePositionedMapping()
 {
-	std::map<PxVec3, int32_t, VrtPositionComparator> mPosMap;
+	std::map<NvcVec3, int32_t, VrtPositionComparator> mPosMap;
 	mPositionMappedVrt.clear();
 	mPositionMappedVrt.resize(mVertices.size());
 
@@ -581,7 +589,7 @@ void Triangulator::computePositionedMapping()
 		if (it == mPosMap.end())
 		{
 			mPosMap[mVertices[i].p] = i;
-			mPositionMappedVrt[i] = i;
+			mPositionMappedVrt[i]   = i;
 		}
 		else
 		{
@@ -590,5 +598,5 @@ void Triangulator::computePositionedMapping()
 	}
 }
 
-} // namespace Blast
-} // namespace Nv
+}  // namespace Blast
+}  // namespace Nv

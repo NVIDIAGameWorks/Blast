@@ -30,14 +30,9 @@
 #define NVBLASTEXTEXPORTER_H
 
 #include "NvBlastTypes.h"
+#include "NvCTypes.h"
 
 struct NvBlastAsset;
-
-namespace physx
-{
-class PxVec2;
-class PxVec3;
-}
 
 namespace Nv
 {
@@ -62,11 +57,11 @@ struct ExporterMeshData
 
 	uint32_t uvsCount; //Number of textures uv
 
-	physx::PxVec3* positions; //Array of positions
+	NvcVec3* positions; //Array of positions
 
-	physx::PxVec3* normals; //Array of normals
+	NvcVec3* normals;  // Array of normals
 
-	physx::PxVec2* uvs; //Array of textures uv
+	NvcVec2* uvs;  // Array of textures uv
 
 	uint32_t meshCount; //Number of meshes (chunks)
 
@@ -129,17 +124,17 @@ public:
 	/**
 		Get loaded vertex positions
 	*/
-	virtual physx::PxVec3*	getPositionArray() = 0;
+	virtual NvcVec3*	getPositionArray() = 0;
 
 	/**
 		Get loaded vertex normals
 	*/
-	virtual physx::PxVec3*	getNormalsArray() = 0;
+	virtual NvcVec3*	getNormalsArray() = 0;
 
 	/**
 		Get loaded vertex uv-coordinates
 	*/
-	virtual physx::PxVec2*	getUvArray() = 0;
+	virtual NvcVec2*	getUvArray() = 0;
 
 	/**
 		Get loaded per triangle material ids.

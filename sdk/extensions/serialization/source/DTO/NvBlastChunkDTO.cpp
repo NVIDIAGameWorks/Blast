@@ -55,7 +55,7 @@ bool NvBlastChunkDTO::serialize(Nv::Blast::Serialization::NvBlastChunk::Builder 
 NvBlastChunk* NvBlastChunkDTO::deserialize(Nv::Blast::Serialization::NvBlastChunk::Reader reader)
 {
 	//FIXME
-	reader = reader;
+	NV_UNUSED(reader);
 
 	return nullptr;
 }

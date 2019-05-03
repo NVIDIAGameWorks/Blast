@@ -31,22 +31,19 @@
 #include "NvBlastExtAuthoringTypes.h"
 #include <NvBlastAssert.h>
 #include "PxMath.h"
+#include <NvBlastPxSharedHelpers.h>
 #include <cmath>
 #include <string.h>
 #include <vector>
 #include <algorithm>
-
-using physx::PxVec2;
-using physx::PxVec3;
-using physx::PxBounds3;
-
 
 namespace Nv
 {
 namespace Blast
 {
 
-MeshImpl::MeshImpl(const PxVec3* position, const PxVec3* normals, const PxVec2* uv, uint32_t verticesCount, const uint32_t* indices, uint32_t indicesCount)
+MeshImpl::MeshImpl(const NvcVec3* position, const NvcVec3* normals, const NvcVec2* uv, uint32_t verticesCount,
+                   const uint32_t* indices, uint32_t indicesCount)
 {
 
 	mVertices.resize(verticesCount);
@@ -66,7 +63,7 @@ MeshImpl::MeshImpl(const PxVec3* position, const PxVec3* normals, const PxVec2* 
 	{
 		for (uint32_t i = 0; i < mVertices.size(); ++i)
 		{
-			mVertices[i].n = PxVec3(0, 0, 0);
+			mVertices[i].n = {0, 0, 0};
 		}
 	}
 	if (uv != 0)
@@ -80,7 +77,7 @@ MeshImpl::MeshImpl(const PxVec3* position, const PxVec3* normals, const PxVec2* 
 	{
 		for (uint32_t i = 0; i < mVertices.size(); ++i)
 		{
-			mVertices[i].uv[0] = PxVec2(0, 0);
+			mVertices[i].uv[0] = {0, 0};
 		}
 	}
 	mEdges.resize(indicesCount);
@@ -195,9 +192,9 @@ float MeshImpl::getMeshVolume()
 	for (uint32_t i = 0; i < mFacets.size(); ++i)
 	{
 		int32_t offset = mFacets[i].firstEdgeNumber;
-		PxVec3& a = mVertices[mEdges[offset].s].p;
-		PxVec3& b = mVertices[mEdges[offset + 1].s].p;
-		PxVec3& c = mVertices[mEdges[offset + 2].s].p;
+		NvcVec3& a     = mVertices[mEdges[offset].s].p;
+		NvcVec3& b     = mVertices[mEdges[offset + 1].s].p;
+		NvcVec3& c     = mVertices[mEdges[offset + 2].s].p;
 		
 		volume += (a.x * b.y * c.z - a.x * b.z * c.y - a.y * b.x * c.z + a.y * b.z * c.x + a.z * b.x * c.y - a.z * b.y * c.x);
 	}
@@ -264,14 +261,14 @@ void MeshImpl::release()
 	delete this;
 }
 
-const PxBounds3& MeshImpl::getBoundingBox() const
+const NvcBounds3& MeshImpl::getBoundingBox() const
 {
-	return mBounds;
+	return fromPxShared(mBounds);
 }
 
-PxBounds3& MeshImpl::getBoundingBoxWritable() 
+NvcBounds3& MeshImpl::getBoundingBoxWritable()
 {
-	return mBounds;
+	return fromPxShared(mBounds);
 }
 
 
@@ -280,18 +277,18 @@ void MeshImpl::recalculateBoundingBox()
 	mBounds.setEmpty();
 	for (uint32_t i = 0; i < mVertices.size(); ++i)
 	{
-		mBounds.include(mVertices[i].p);
+		mBounds.include(toPxShared(mVertices[i].p));
 	}
 	calcPerFacetBounds();
 }
 
-const physx::PxBounds3* MeshImpl::getFacetBound(uint32_t index) const 
+const NvcBounds3* MeshImpl::getFacetBound(uint32_t index) const 
 {
 	if (mPerFacetBounds.empty())
 	{
 		return nullptr;
 	}
-	return &mPerFacetBounds[index];
+	return &fromPxShared(mPerFacetBounds[index]);
 }
 
 void MeshImpl::calcPerFacetBounds()
@@ -305,8 +302,8 @@ void MeshImpl::calcPerFacetBounds()
 
 		for (uint32_t v = 0; v < mFacets[i].edgesCount; ++v)
 		{
-			fb.include(mVertices[mEdges[mFacets[i].firstEdgeNumber + v].s].p);
-			fb.include(mVertices[mEdges[mFacets[i].firstEdgeNumber + v].e].p);
+			fb.include(toPxShared(mVertices[mEdges[mFacets[i].firstEdgeNumber + v].s].p));
+			fb.include(toPxShared(mVertices[mEdges[mFacets[i].firstEdgeNumber + v].e].p));
 		}
 	}
 }

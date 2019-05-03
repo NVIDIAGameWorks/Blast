@@ -74,9 +74,9 @@ BlastModelPtr BlastModel::loadFromFbxFile(const char* path)
 			{
 				indRemap[j] = (int32_t)cmesh.vertices.size();
 				cmesh.vertices.push_back(SimpleMesh::Vertex());
-				cmesh.vertices.back().normal = normalsArray[j];
-				cmesh.vertices.back().position = positionArray[j];
-				cmesh.vertices.back().uv = uvArray[j];
+				cmesh.vertices.back().normal = reinterpret_cast<physx::PxVec3&>(normalsArray[j]);
+				cmesh.vertices.back().position = reinterpret_cast<physx::PxVec3&>(positionArray[j]);
+				cmesh.vertices.back().uv       = reinterpret_cast<physx::PxVec2&>(uvArray[j]);
 			}
 		}
 		const uint32_t indicesCount = rdr->getIndicesCount();

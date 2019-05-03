@@ -26,14 +26,16 @@
 // Copyright (c) 2016-2018 NVIDIA Corporation. All rights reserved.
 
 
-#include "NvBlastExtAuthoringCutoutImpl.h"
 #include "NvBlastGlobals.h"
 #include <NvBlastAssert.h>
+#include <PxBounds3.h>
+#include <PxMath.h>
+#include <NvBlastPxSharedHelpers.h>
+#include "NvBlastExtAuthoringCutoutImpl.h"
 #include <algorithm>
 #include <set>
 #include <map>
 #include <stack>
-#include "PxMath.h"
 
 #define CUTOUT_DISTANCE_THRESHOLD	(0.7f)
 
@@ -2420,9 +2422,9 @@ PX_INLINE bool calculateUVMapping(const Nv::Blast::Triangle& triangle, physx::Px
 	physx::PxMat33 uvMat;
 	for (unsigned col = 0; col < 3; ++col)
 	{
-		auto v = triangle.getVertex(col);
-		rMat[col] = v.p;
-		uvMat[col] = physx::PxVec3(v.uv[0][0], v.uv[0][1], 1.0f);
+		auto v = (&triangle.a)[col];
+		rMat[col] = toPxShared(v.p);
+		uvMat[col] = physx::PxVec3(v.uv[0].x, v.uv[0].y, 1.0f);
 	}
 
 	if (uvMat.getDeterminant() == 0.0f)
@@ -2503,4 +2505,12 @@ PX_INLINE bool calculateUVMapping(const Nv::Blast::Triangle& triangle, physx::Px
 //	return ::calculateUVMapping(targetDirection, theMapping);
 //}
 
+const NvcVec3& CutoutSetImpl::getCutoutVertex(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const
+{
+	return fromPxShared(cutoutLoops[cutouts[cutoutIndex] + loopIndex].vertices[vertexIndex]);
+}
 
+const NvcVec2& CutoutSetImpl::getDimensions() const
+{
+	return fromPxShared(dimensions);
+}

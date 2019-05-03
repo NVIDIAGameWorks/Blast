@@ -29,6 +29,7 @@
 #include "NvBlastExtPxManagerImpl.h"
 #include "NvBlastExtPxAssetImpl.h"
 #include "NvBlastExtPxActorImpl.h"
+#include "NvBlastExtPxCollisionBuilderImpl.h"
 #include "NvBlastExtPxFamilyImpl.h"
 
 #include "NvBlastAssert.h"
@@ -38,6 +39,7 @@
 #include "NvBlastTkGroup.h"
 #include "NvBlastTkJoint.h"
 
+#include "PxPhysics.h"
 #include "PxRigidDynamic.h"
 #include "PxJoint.h"
 
@@ -51,6 +53,11 @@ namespace Blast
 ExtPxManager* ExtPxManager::create(PxPhysics& physics, TkFramework& framework, ExtPxCreateJointFunction createFn, bool useUserData)
 {
 	return NVBLAST_NEW(ExtPxManagerImpl)(physics, framework, createFn, useUserData);
+}
+
+ExtPxCollisionBuilder* ExtPxManager::createCollisionBuilder(PxPhysics& physics, PxCooking& cooking)
+{
+	return NVBLAST_NEW(ExtPxCollisionBuilderImpl(&cooking, &physics.getPhysicsInsertionCallback()));
 }
 
 void ExtPxManagerImpl::release()

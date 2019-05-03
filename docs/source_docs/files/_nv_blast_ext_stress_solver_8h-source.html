@@ -68,141 +68,140 @@
 <a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#define NVBLASTEXTSTRESSSOLVER_H</span>
 <a name="l00031"></a>00031 <span class="preprocessor"></span>
 <a name="l00032"></a>00032 <span class="preprocessor">#include "<a class="code" href="_nv_blast_types_8h.html">NvBlastTypes.h</a>"</span>
-<a name="l00033"></a>00033 <span class="preprocessor">#include "PxVec3.h"</span>
-<a name="l00034"></a>00034 <span class="preprocessor">#include &lt;vector&gt;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include "<a class="code" href="_nv_c_types_8h.html">NvCTypes.h</a>"</span>
+<a name="l00034"></a>00034 
 <a name="l00035"></a>00035 
-<a name="l00036"></a>00036 
-<a name="l00037"></a>00037 <span class="keyword">namespace </span>Nv
-<a name="l00038"></a>00038 {
-<a name="l00039"></a>00039 <span class="keyword">namespace </span>Blast
-<a name="l00040"></a>00040 {
+<a name="l00036"></a>00036 <span class="keyword">namespace </span>Nv
+<a name="l00037"></a>00037 {
+<a name="l00038"></a>00038 <span class="keyword">namespace </span>Blast
+<a name="l00039"></a>00039 {
+<a name="l00040"></a>00040 
 <a name="l00041"></a>00041 
-<a name="l00042"></a>00042 
-<a name="l00057"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">00057</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a>
-<a name="l00058"></a>00058 {
-<a name="l00059"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#e29c611e4420f2c331f596a6017c64d0">00059</a>     <span class="keywordtype">float</span>       <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#e29c611e4420f2c331f596a6017c64d0" title="hardness of bond&amp;#39;s material">hardness</a>;                   
-<a name="l00060"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#ee4b24619f255f4e8bbb131fa552abe4">00060</a>     <span class="keywordtype">float</span>       <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#ee4b24619f255f4e8bbb131fa552abe4" title="linear stress on bond multiplier">stressLinearFactor</a>;         
-<a name="l00061"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#cd0738cf5e4754d8b68e8177c3fa88cb">00061</a>     <span class="keywordtype">float</span>       <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#cd0738cf5e4754d8b68e8177c3fa88cb" title="angular stress on bond multiplier">stressAngularFactor</a>;        
-<a name="l00062"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#d489853b66a5f118e8a70b4d1e296f3d">00062</a>     uint32_t    <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#d489853b66a5f118e8a70b4d1e296f3d" title="number of bond iterations to perform per frame,">bondIterationsPerFrame</a>;     
-<a name="l00063"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#49fa3a64fe091bca26729d8e903a8ba9">00063</a>     uint32_t    <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#49fa3a64fe091bca26729d8e903a8ba9" title="graph reduction level">graphReductionLevel</a>;        
-<a name="l00064"></a>00064 
-<a name="l00065"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#7f3daff473d9766298caea51ee396226">00065</a>     <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#7f3daff473d9766298caea51ee396226">ExtStressSolverSettings</a>() :
-<a name="l00066"></a>00066         <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#e29c611e4420f2c331f596a6017c64d0" title="hardness of bond&amp;#39;s material">hardness</a>(1000.0f),
-<a name="l00067"></a>00067         <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#ee4b24619f255f4e8bbb131fa552abe4" title="linear stress on bond multiplier">stressLinearFactor</a>(0.25f),
-<a name="l00068"></a>00068         <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#cd0738cf5e4754d8b68e8177c3fa88cb" title="angular stress on bond multiplier">stressAngularFactor</a>(0.75f),
-<a name="l00069"></a>00069         <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#d489853b66a5f118e8a70b4d1e296f3d" title="number of bond iterations to perform per frame,">bondIterationsPerFrame</a>(18000),
-<a name="l00070"></a>00070         <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#49fa3a64fe091bca26729d8e903a8ba9" title="graph reduction level">graphReductionLevel</a>(3)
-<a name="l00071"></a>00071     {}
-<a name="l00072"></a>00072 };
+<a name="l00056"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">00056</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a>
+<a name="l00057"></a>00057 {
+<a name="l00058"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#e29c611e4420f2c331f596a6017c64d0">00058</a>     <span class="keywordtype">float</span>       <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#e29c611e4420f2c331f596a6017c64d0" title="hardness of bond&amp;#39;s material">hardness</a>;                   
+<a name="l00059"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#ee4b24619f255f4e8bbb131fa552abe4">00059</a>     <span class="keywordtype">float</span>       <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#ee4b24619f255f4e8bbb131fa552abe4" title="linear stress on bond multiplier">stressLinearFactor</a>;         
+<a name="l00060"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#cd0738cf5e4754d8b68e8177c3fa88cb">00060</a>     <span class="keywordtype">float</span>       <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#cd0738cf5e4754d8b68e8177c3fa88cb" title="angular stress on bond multiplier">stressAngularFactor</a>;        
+<a name="l00061"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#d489853b66a5f118e8a70b4d1e296f3d">00061</a>     uint32_t    <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#d489853b66a5f118e8a70b4d1e296f3d" title="number of bond iterations to perform per frame,">bondIterationsPerFrame</a>;     
+<a name="l00062"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#49fa3a64fe091bca26729d8e903a8ba9">00062</a>     uint32_t    <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#49fa3a64fe091bca26729d8e903a8ba9" title="graph reduction level">graphReductionLevel</a>;        
+<a name="l00063"></a>00063 
+<a name="l00064"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#7f3daff473d9766298caea51ee396226">00064</a>     <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#7f3daff473d9766298caea51ee396226">ExtStressSolverSettings</a>() :
+<a name="l00065"></a>00065         <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#e29c611e4420f2c331f596a6017c64d0" title="hardness of bond&amp;#39;s material">hardness</a>(1000.0f),
+<a name="l00066"></a>00066         <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#ee4b24619f255f4e8bbb131fa552abe4" title="linear stress on bond multiplier">stressLinearFactor</a>(0.25f),
+<a name="l00067"></a>00067         <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#cd0738cf5e4754d8b68e8177c3fa88cb" title="angular stress on bond multiplier">stressAngularFactor</a>(0.75f),
+<a name="l00068"></a>00068         <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#d489853b66a5f118e8a70b4d1e296f3d" title="number of bond iterations to perform per frame,">bondIterationsPerFrame</a>(18000),
+<a name="l00069"></a>00069         <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#49fa3a64fe091bca26729d8e903a8ba9" title="graph reduction level">graphReductionLevel</a>(3)
+<a name="l00070"></a>00070     {}
+<a name="l00071"></a>00071 };
+<a name="l00072"></a>00072 
 <a name="l00073"></a>00073 
-<a name="l00074"></a>00074 
-<a name="l00080"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html">00080</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html">ExtForceMode</a>
-<a name="l00081"></a>00081 {
-<a name="l00082"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d">00082</a>     <span class="keyword">enum</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d">Enum</a>
-<a name="l00083"></a>00083     {
-<a name="l00084"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d00b3f5edacba18c30f3519ab28827545">00084</a>         <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d00b3f5edacba18c30f3519ab28827545" title="parameter has unit of mass * distance /time">IMPULSE</a>,    
-<a name="l00085"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d1817b8c6d54b7904ce139f9953deac4a">00085</a>         <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d1817b8c6d54b7904ce139f9953deac4a" title="parameter has unit of distance / time, i.e. the effect is mass independent: a velocity...">VELOCITY</a>,   
-<a name="l00086"></a>00086     };
-<a name="l00087"></a>00087 };
+<a name="l00079"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html">00079</a> <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html">ExtForceMode</a>
+<a name="l00080"></a>00080 {
+<a name="l00081"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d">00081</a>     <span class="keyword">enum</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d">Enum</a>
+<a name="l00082"></a>00082     {
+<a name="l00083"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d00b3f5edacba18c30f3519ab28827545">00083</a>         <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d00b3f5edacba18c30f3519ab28827545" title="parameter has unit of mass * distance /time">IMPULSE</a>,    
+<a name="l00084"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d1817b8c6d54b7904ce139f9953deac4a">00084</a>         <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d1817b8c6d54b7904ce139f9953deac4a" title="parameter has unit of distance / time, i.e. the effect is mass independent: a velocity...">VELOCITY</a>,   
+<a name="l00085"></a>00085     };
+<a name="l00086"></a>00086 };
+<a name="l00087"></a>00087 
 <a name="l00088"></a>00088 
-<a name="l00089"></a>00089 
-<a name="l00105"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">00105</a> <span class="keyword">class </span><a class="code" href="group__foundation.html#gb099143f4f29cc000cff7819bbf0f9e0">NV_DLL_EXPORT</a> <a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">ExtStressSolver</a>
-<a name="l00106"></a>00106 {
-<a name="l00107"></a>00107 <span class="keyword">public</span>:
-<a name="l00109"></a>00109 
-<a name="l00118"></a>00118     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">ExtStressSolver</a>*                 create(<a class="code" href="struct_nv_blast_family.html">NvBlastFamily</a>&amp; family, <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a> settings = <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a>());
+<a name="l00104"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">00104</a> <span class="keyword">class </span><a class="code" href="group__foundation.html#gb099143f4f29cc000cff7819bbf0f9e0">NV_DLL_EXPORT</a> <a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">ExtStressSolver</a>
+<a name="l00105"></a>00105 {
+<a name="l00106"></a>00106 <span class="keyword">public</span>:
+<a name="l00108"></a>00108 
+<a name="l00117"></a>00117     <span class="keyword">static</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html">ExtStressSolver</a>*                 create(<a class="code" href="struct_nv_blast_family.html">NvBlastFamily</a>&amp; family, <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a> settings = <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a>());
+<a name="l00118"></a>00118 
 <a name="l00119"></a>00119 
-<a name="l00120"></a>00120 
-<a name="l00122"></a>00122 
-<a name="l00126"></a>00126     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            release() = 0;
-<a name="l00127"></a>00127 
-<a name="l00139"></a>00139     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            setNodeInfo(uint32_t graphNodeIndex, <span class="keywordtype">float</span> mass, <span class="keywordtype">float</span> volume, physx::PxVec3 localPosition, <span class="keywordtype">bool</span> isStatic) = 0;
-<a name="l00140"></a>00140 
-<a name="l00148"></a>00148     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            setAllNodesInfoFromLL(<span class="keywordtype">float</span> density = 1.0f) = 0;
-<a name="l00149"></a>00149 
-<a name="l00157"></a>00157     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            setSettings(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a>&amp; settings) = 0;
-<a name="l00158"></a>00158 
-<a name="l00164"></a>00164     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a>&amp;  getSettings() <span class="keyword">const</span> = 0;
-<a name="l00165"></a>00165 
-<a name="l00175"></a>00175     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                            notifyActorCreated(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>&amp; actor) = 0;
-<a name="l00176"></a>00176 
-<a name="l00184"></a>00184     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            notifyActorDestroyed(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>&amp; actor) = 0;
-<a name="l00185"></a>00185 
-<a name="l00196"></a>00196     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                            addForce(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>&amp; actor, physx::PxVec3 localPosition, physx::PxVec3 localForce, <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d">ExtForceMode::Enum</a> mode = <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d00b3f5edacba18c30f3519ab28827545" title="parameter has unit of mass * distance /time">ExtForceMode::IMPULSE</a>) = 0;
-<a name="l00197"></a>00197 
-<a name="l00205"></a>00205     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            addForce(uint32_t graphNodeIndex, physx::PxVec3 localForce, <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d">ExtForceMode::Enum</a> mode = <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d00b3f5edacba18c30f3519ab28827545" title="parameter has unit of mass * distance /time">ExtForceMode::IMPULSE</a>) = 0;
-<a name="l00206"></a>00206 
-<a name="l00215"></a>00215     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                            addGravityForce(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>&amp; actor, physx::PxVec3 localGravity) = 0;
-<a name="l00216"></a>00216 
-<a name="l00226"></a>00226     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                            addAngularVelocity(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>&amp; actor, physx::PxVec3 localCenterMass, physx::PxVec3 localAngularVelocity) = 0;
-<a name="l00227"></a>00227 
-<a name="l00233"></a>00233     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            update() = 0;
-<a name="l00234"></a>00234 
-<a name="l00242"></a>00242     <span class="keyword">virtual</span> uint32_t                        getOverstressedBondCount() <span class="keyword">const</span> = 0;
-<a name="l00243"></a>00243 
-<a name="l00256"></a>00256     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            generateFractureCommands(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>&amp; actor, <a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>&amp; commands) = 0;
-<a name="l00257"></a>00257 
-<a name="l00268"></a>00268     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            generateFractureCommands(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>&amp; commands) = 0;
-<a name="l00269"></a>00269 
-<a name="l00286"></a>00286     <span class="keyword">virtual</span> uint32_t                        generateFractureCommandsPerActor(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>** actorBuffer, <a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandsBuffer, uint32_t bufferSize) = 0;
-<a name="l00287"></a>00287 
-<a name="l00294"></a>00294     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            reset() = 0;
-<a name="l00295"></a>00295 
-<a name="l00301"></a>00301     <span class="keyword">virtual</span> <span class="keywordtype">float</span>                           getStressErrorLinear() <span class="keyword">const</span> = 0;
-<a name="l00302"></a>00302 
-<a name="l00308"></a>00308     <span class="keyword">virtual</span> <span class="keywordtype">float</span>                           getStressErrorAngular() <span class="keyword">const</span> = 0;
-<a name="l00309"></a>00309 
-<a name="l00315"></a>00315     <span class="keyword">virtual</span> uint32_t                        getFrameCount() <span class="keyword">const</span> = 0;
-<a name="l00316"></a>00316 
-<a name="l00322"></a>00322     <span class="keyword">virtual</span> uint32_t                        getBondCount() <span class="keyword">const</span> = 0;
+<a name="l00121"></a>00121 
+<a name="l00125"></a>00125     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            release() = 0;
+<a name="l00126"></a>00126 
+<a name="l00138"></a>00138     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            setNodeInfo(uint32_t graphNodeIndex, <span class="keywordtype">float</span> mass, <span class="keywordtype">float</span> volume, <a class="code" href="struct_nvc_vec3.html">NvcVec3</a> localPosition, <span class="keywordtype">bool</span> isStatic) = 0;
+<a name="l00139"></a>00139 
+<a name="l00147"></a>00147     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            setAllNodesInfoFromLL(<span class="keywordtype">float</span> density = 1.0f) = 0;
+<a name="l00148"></a>00148 
+<a name="l00156"></a>00156     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            setSettings(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a>&amp; settings) = 0;
+<a name="l00157"></a>00157 
+<a name="l00163"></a>00163     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a>&amp;  getSettings() <span class="keyword">const</span> = 0;
+<a name="l00164"></a>00164 
+<a name="l00174"></a>00174     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                            notifyActorCreated(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>&amp; actor) = 0;
+<a name="l00175"></a>00175 
+<a name="l00183"></a>00183     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            notifyActorDestroyed(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>&amp; actor) = 0;
+<a name="l00184"></a>00184 
+<a name="l00195"></a>00195     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                            addForce(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>&amp; actor, <a class="code" href="struct_nvc_vec3.html">NvcVec3</a> localPosition, <a class="code" href="struct_nvc_vec3.html">NvcVec3</a> localForce, <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d">ExtForceMode::Enum</a> mode = <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d00b3f5edacba18c30f3519ab28827545" title="parameter has unit of mass * distance /time">ExtForceMode::IMPULSE</a>) = 0;
+<a name="l00196"></a>00196 
+<a name="l00204"></a>00204     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            addForce(uint32_t graphNodeIndex, <a class="code" href="struct_nvc_vec3.html">NvcVec3</a> localForce, <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d">ExtForceMode::Enum</a> mode = <a class="code" href="struct_nv_1_1_blast_1_1_ext_force_mode.html#e217d8688f97667f7efbf8d4f5988c3d00b3f5edacba18c30f3519ab28827545" title="parameter has unit of mass * distance /time">ExtForceMode::IMPULSE</a>) = 0;
+<a name="l00205"></a>00205 
+<a name="l00214"></a>00214     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                            addGravityForce(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>&amp; actor, <a class="code" href="struct_nvc_vec3.html">NvcVec3</a> localGravity) = 0;
+<a name="l00215"></a>00215 
+<a name="l00225"></a>00225     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                            addAngularVelocity(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>&amp; actor, <a class="code" href="struct_nvc_vec3.html">NvcVec3</a> localCenterMass, <a class="code" href="struct_nvc_vec3.html">NvcVec3</a> localAngularVelocity) = 0;
+<a name="l00226"></a>00226 
+<a name="l00232"></a>00232     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            update() = 0;
+<a name="l00233"></a>00233 
+<a name="l00241"></a>00241     <span class="keyword">virtual</span> uint32_t                        getOverstressedBondCount() <span class="keyword">const</span> = 0;
+<a name="l00242"></a>00242 
+<a name="l00255"></a>00255     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            generateFractureCommands(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>&amp; actor, <a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>&amp; commands) = 0;
+<a name="l00256"></a>00256 
+<a name="l00267"></a>00267     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            generateFractureCommands(<a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>&amp; commands) = 0;
+<a name="l00268"></a>00268 
+<a name="l00285"></a>00285     <span class="keyword">virtual</span> uint32_t                        generateFractureCommandsPerActor(<span class="keyword">const</span> <a class="code" href="struct_nv_blast_actor.html">NvBlastActor</a>** actorBuffer, <a class="code" href="struct_nv_blast_fracture_buffers.html">NvBlastFractureBuffers</a>* commandsBuffer, uint32_t bufferSize) = 0;
+<a name="l00286"></a>00286 
+<a name="l00293"></a>00293     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                            reset() = 0;
+<a name="l00294"></a>00294 
+<a name="l00300"></a>00300     <span class="keyword">virtual</span> <span class="keywordtype">float</span>                           getStressErrorLinear() <span class="keyword">const</span> = 0;
+<a name="l00301"></a>00301 
+<a name="l00307"></a>00307     <span class="keyword">virtual</span> <span class="keywordtype">float</span>                           getStressErrorAngular() <span class="keyword">const</span> = 0;
+<a name="l00308"></a>00308 
+<a name="l00314"></a>00314     <span class="keyword">virtual</span> uint32_t                        getFrameCount() <span class="keyword">const</span> = 0;
+<a name="l00315"></a>00315 
+<a name="l00321"></a>00321     <span class="keyword">virtual</span> uint32_t                        getBondCount() <span class="keyword">const</span> = 0;
+<a name="l00322"></a>00322 
 <a name="l00323"></a>00323 
-<a name="l00324"></a>00324 
-<a name="l00328"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d">00328</a>     <span class="keyword">enum</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d">DebugRenderMode</a>
-<a name="l00329"></a>00329     {
-<a name="l00330"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d1fd3b240bb76745efd8d5d3d2664cabc">00330</a>         STRESS_GRAPH = 0,                   
-<a name="l00331"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d0b55d93864b9c304d94922037b53eb13">00331</a>         STRESS_GRAPH_NODES_IMPULSES = 1,    
-<a name="l00332"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4df00fff35b251ccbeaa7097a7b8a3054c">00332</a>         STRESS_GRAPH_BONDS_IMPULSES = 2     
-<a name="l00333"></a>00333     };
-<a name="l00334"></a>00334 
-<a name="l00338"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html">00338</a>     <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html">DebugLine</a>
-<a name="l00339"></a>00339     {
-<a name="l00340"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html#ea42657ac811fb58a470ee89cc4f5787">00340</a>         <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html">DebugLine</a>(<span class="keyword">const</span> physx::PxVec3&amp; p0, <span class="keyword">const</span> physx::PxVec3&amp; p1, <span class="keyword">const</span> uint32_t&amp; c)
-<a name="l00341"></a>00341             : pos0(p0), color0(c), pos1(p1), color1(c) {}
-<a name="l00342"></a>00342 
-<a name="l00343"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html#7df3330b67c018806d733ae0ffb483ea">00343</a>         physx::PxVec3   pos0;
-<a name="l00344"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html#fef4a37c2e3fa5d9c433cb43df3de012">00344</a>         uint32_t        color0;
-<a name="l00345"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html#01d92769dc92b65374b8c921d561f305">00345</a>         physx::PxVec3   pos1;
-<a name="l00346"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html#cffbd32f1e8c16de7ba37faaef2d0b61">00346</a>         uint32_t        color1;
-<a name="l00347"></a>00347     };
-<a name="l00348"></a>00348 
-<a name="l00352"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html">00352</a>     <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html">DebugBuffer</a>
-<a name="l00353"></a>00353     {
-<a name="l00354"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html#ca6097175e78875d77bf5d6aa35ab412">00354</a>         <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html">DebugLine</a>* lines;
-<a name="l00355"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html#af02834820040ff83f9e5f9f5ba85d5a">00355</a>         uint32_t         lineCount;
-<a name="l00356"></a>00356     };
-<a name="l00357"></a>00357 
-<a name="l00370"></a>00370     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html">DebugBuffer</a>               fillDebugRender(<span class="keyword">const</span> uint32_t* nodes, uint32_t nodeCount, <a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d">DebugRenderMode</a> mode, <span class="keywordtype">float</span> scale = 1.0f) = 0;
+<a name="l00327"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d">00327</a>     <span class="keyword">enum</span> <a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d">DebugRenderMode</a>
+<a name="l00328"></a>00328     {
+<a name="l00329"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d1fd3b240bb76745efd8d5d3d2664cabc">00329</a>         STRESS_GRAPH = 0,                   
+<a name="l00330"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d0b55d93864b9c304d94922037b53eb13">00330</a>         STRESS_GRAPH_NODES_IMPULSES = 1,    
+<a name="l00331"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4df00fff35b251ccbeaa7097a7b8a3054c">00331</a>         STRESS_GRAPH_BONDS_IMPULSES = 2     
+<a name="l00332"></a>00332     };
+<a name="l00333"></a>00333 
+<a name="l00337"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html">00337</a>     <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html">DebugLine</a>
+<a name="l00338"></a>00338     {
+<a name="l00339"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html#c68812ff79a6dbb01e2d878597b2928e">00339</a>         <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html">DebugLine</a>(<span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>&amp; p0, <span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>&amp; p1, <span class="keyword">const</span> uint32_t&amp; c)
+<a name="l00340"></a>00340             : pos0(p0), color0(c), pos1(p1), color1(c) {}
+<a name="l00341"></a>00341 
+<a name="l00342"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html#9b58409d5c1052bf6fe1d66890df71be">00342</a>         <a class="code" href="struct_nvc_vec3.html">NvcVec3</a> pos0;
+<a name="l00343"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html#fef4a37c2e3fa5d9c433cb43df3de012">00343</a>         uint32_t        color0;
+<a name="l00344"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html#d835a1b4746aecc19359b88501d7e0dc">00344</a>         <a class="code" href="struct_nvc_vec3.html">NvcVec3</a> pos1;
+<a name="l00345"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html#cffbd32f1e8c16de7ba37faaef2d0b61">00345</a>         uint32_t        color1;
+<a name="l00346"></a>00346     };
+<a name="l00347"></a>00347 
+<a name="l00351"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html">00351</a>     <span class="keyword">struct </span><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html">DebugBuffer</a>
+<a name="l00352"></a>00352     {
+<a name="l00353"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html#ca6097175e78875d77bf5d6aa35ab412">00353</a>         <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_line.html">DebugLine</a>* lines;
+<a name="l00354"></a><a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html#af02834820040ff83f9e5f9f5ba85d5a">00354</a>         uint32_t         lineCount;
+<a name="l00355"></a>00355     };
+<a name="l00356"></a>00356 
+<a name="l00369"></a>00369     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_1_1_debug_buffer.html">DebugBuffer</a>               fillDebugRender(<span class="keyword">const</span> uint32_t* nodes, uint32_t nodeCount, <a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#d0250c97326fe162fe78a2801f35ef4d">DebugRenderMode</a> mode, <span class="keywordtype">float</span> scale = 1.0f) = 0;
+<a name="l00370"></a>00370 
 <a name="l00371"></a>00371 
-<a name="l00372"></a>00372 
-<a name="l00374"></a>00374 
-<a name="l00386"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#dfc63fbe02a9de751e97500f88d0c823">00386</a>     <span class="keyword">static</span> uint32_t                         getIterationsPerFrame(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a>&amp; settings, uint32_t bondCount)
-<a name="l00387"></a>00387     {
-<a name="l00388"></a>00388         uint32_t perFrame = settings.<a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#d489853b66a5f118e8a70b4d1e296f3d" title="number of bond iterations to perform per frame,">bondIterationsPerFrame</a> / (bondCount + 1);
-<a name="l00389"></a>00389         <span class="keywordflow">return</span> perFrame &gt; 0 ? perFrame : 1;
-<a name="l00390"></a>00390     }
-<a name="l00391"></a>00391 
-<a name="l00399"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#5862a13c3ad815bc1b2128c142e2af82">00399</a>     uint32_t                                getIterationsPerFrame()<span class="keyword"> const</span>
-<a name="l00400"></a>00400 <span class="keyword">    </span>{
-<a name="l00401"></a>00401         <span class="keywordflow">return</span> getIterationsPerFrame(getSettings(), getBondCount());
-<a name="l00402"></a>00402     }
-<a name="l00403"></a>00403 
-<a name="l00404"></a>00404 };
-<a name="l00405"></a>00405 
-<a name="l00406"></a>00406 } <span class="comment">// namespace Blast</span>
-<a name="l00407"></a>00407 } <span class="comment">// namespace Nv</span>
+<a name="l00373"></a>00373 
+<a name="l00385"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#dfc63fbe02a9de751e97500f88d0c823">00385</a>     <span class="keyword">static</span> uint32_t                         getIterationsPerFrame(<span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html">ExtStressSolverSettings</a>&amp; settings, uint32_t bondCount)
+<a name="l00386"></a>00386     {
+<a name="l00387"></a>00387         uint32_t perFrame = settings.<a class="code" href="struct_nv_1_1_blast_1_1_ext_stress_solver_settings.html#d489853b66a5f118e8a70b4d1e296f3d" title="number of bond iterations to perform per frame,">bondIterationsPerFrame</a> / (bondCount + 1);
+<a name="l00388"></a>00388         <span class="keywordflow">return</span> perFrame &gt; 0 ? perFrame : 1;
+<a name="l00389"></a>00389     }
+<a name="l00390"></a>00390 
+<a name="l00398"></a><a class="code" href="class_nv_1_1_blast_1_1_ext_stress_solver.html#5862a13c3ad815bc1b2128c142e2af82">00398</a>     uint32_t                                getIterationsPerFrame()<span class="keyword"> const</span>
+<a name="l00399"></a>00399 <span class="keyword">    </span>{
+<a name="l00400"></a>00400         <span class="keywordflow">return</span> getIterationsPerFrame(getSettings(), getBondCount());
+<a name="l00401"></a>00401     }
+<a name="l00402"></a>00402 
+<a name="l00403"></a>00403 };
+<a name="l00404"></a>00404 
+<a name="l00405"></a>00405 } <span class="comment">// namespace Blast</span>
+<a name="l00406"></a>00406 } <span class="comment">// namespace Nv</span>
+<a name="l00407"></a>00407 
 <a name="l00408"></a>00408 
-<a name="l00409"></a>00409 
-<a name="l00410"></a>00410 <span class="preprocessor">#endif // ifndef NVBLASTEXTSTRESSSOLVER_H</span>
+<a name="l00409"></a>00409 <span class="preprocessor">#endif // ifndef NVBLASTEXTSTRESSSOLVER_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

@@ -29,6 +29,7 @@
 #define NVBLASTAUTHORINGMESHIMPL_H
 
 #include "NvBlastExtAuthoringMesh.h"
+#include <PxBounds3.h>
 #include <vector>
 #include <map>
 #include <set>
@@ -54,7 +55,7 @@ public:
 		\param[in] indices			Array of vertex indices. Indices contain vertex index triplets which form a mesh triangle. 
 		\param[in] indicesCount		Indices count (should be equal to numberOfTriangles * 3)
 	*/
-	MeshImpl(const physx::PxVec3* position, const physx::PxVec3* normals, const physx::PxVec2* uv, uint32_t verticesCount, const uint32_t* indices, uint32_t indicesCount);
+	MeshImpl(const NvcVec3* position, const NvcVec3* normals, const NvcVec2* uv, uint32_t verticesCount, const uint32_t* indices, uint32_t indicesCount);
 
 	/**
 		Constructs mesh object from array of facets.
@@ -139,12 +140,12 @@ public:
 	/**
 		Return reference on mesh bounding box.
 	*/
-	const physx::PxBounds3&	getBoundingBox() const override;
+	const NvcBounds3&	getBoundingBox() const override;
 
 	/**
 		Return writable reference on mesh bounding box.
 	*/
-	physx::PxBounds3&	getBoundingBoxWritable() override;
+	NvcBounds3&	getBoundingBoxWritable() override;
 
 	/**
 		Recalculate bounding box
@@ -181,17 +182,15 @@ public:
 	/**
 		Get pointer on facet bounding box, if not calculated return nullptr.
 	*/
-	virtual const  physx::PxBounds3*	getFacetBound(uint32_t index) const override;
+	virtual const  NvcBounds3*	getFacetBound(uint32_t index) const override;
 
 private:
 	std::vector<Vertex>	mVertices;
 	std::vector<Edge>	mEdges;
 	std::vector<Facet>	mFacets;
-	physx::PxBounds3	mBounds;
+	physx::PxBounds3 mBounds;
 	std::vector<physx::PxBounds3> mPerFacetBounds;
 };
-
-
 
 } // namespace Blast
 } // namespace Nv

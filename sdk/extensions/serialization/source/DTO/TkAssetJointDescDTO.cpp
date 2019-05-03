@@ -53,7 +53,7 @@ Nv::Blast::TkAssetJointDesc* TkAssetJointDescDTO::deserialize(Nv::Blast::Seriali
 {
 	//TODO: Allocate with ExtContent and return
 
-	reader = reader;
+	NV_UNUSED(reader);
 
 	return nullptr;
 }

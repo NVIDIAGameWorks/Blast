@@ -31,13 +31,6 @@
 
 #include "NvBlastExtAuthoringTypes.h"
 
-namespace physx
-{
-class PxPlane;
-class PxCooking;
-class PxPhysicsInsertionCallback;
-}
-
 struct NvBlastBondDesc;
 struct NvBlastChunkDesc;
 struct NvBlastBond;
@@ -68,10 +61,9 @@ struct BondGenerationConfig
 
 struct PlaneChunkIndexer
 {
-	PlaneChunkIndexer(int32_t chunkId, int32_t trId, physx::PxPlane pl) : chunkId(chunkId), trId(trId), plane(pl) {}
 	int32_t chunkId;
 	int32_t trId;
-	physx::PxPlane plane;
+	NvcPlane plane;
 };
 
 

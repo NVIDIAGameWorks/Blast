@@ -31,9 +31,9 @@
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#3cb47793b60f763b5bac58c17a3c5bb8">calcPerFacetBounds</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const physx::PxBounds3 &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#b14c86e03b94b1d2cb2bc691009f04b5">getBoundingBox</a> () const =0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#2dcb0655c4e75c15dd465e756ec6f174">getBoundingBox</a> () const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual physx::PxBounds3 &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#29110bbb30c0de321bd0de1812750c30">getBoundingBoxWritable</a> ()=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#d7c27dcdd5d5f28da04605410721d016">getBoundingBoxWritable</a> ()=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#085ffcc67f9cd938f93d3aa43a0d0bf0">getEdges</a> () const =0</td></tr>
 
@@ -43,7 +43,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#1737163f2dc8fe4456f5df27ab5740b8">getFacet</a> (int32_t facet) const =0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const physx::PxBounds3 *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#8129eb703f7cbd34e3937fe4938ca4bd">getFacetBound</a> (uint32_t index) const =0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#93b7642d29e27da93b76d420a804aef2">getFacetBound</a> (uint32_t index) const =0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh.html#5bb922c1dcb50c67e2105f84454019af">getFacetCount</a> () const =0</td></tr>
 
@@ -117,12 +117,12 @@ Class for internal mesh representation <hr><h2>Constructor &amp; Destructor Docu
 Calculate per-facet bounding boxes. 
 </div>
 </div><p>
-<a class="anchor" name="b14c86e03b94b1d2cb2bc691009f04b5"></a><!-- doxytag: member="Nv::Blast::Mesh::getBoundingBox" ref="b14c86e03b94b1d2cb2bc691009f04b5" args="() const =0" -->
+<a class="anchor" name="2dcb0655c4e75c15dd465e756ec6f174"></a><!-- doxytag: member="Nv::Blast::Mesh::getBoundingBox" ref="2dcb0655c4e75c15dd465e756ec6f174" args="() const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const physx::PxBounds3&amp; Nv::Blast::Mesh::getBoundingBox           </td>
+          <td class="memname">virtual const <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a>&amp; Nv::Blast::Mesh::getBoundingBox           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
@@ -136,12 +136,12 @@ Calculate per-facet bounding boxes.
 Return reference on mesh bounding box. 
 </div>
 </div><p>
-<a class="anchor" name="29110bbb30c0de321bd0de1812750c30"></a><!-- doxytag: member="Nv::Blast::Mesh::getBoundingBoxWritable" ref="29110bbb30c0de321bd0de1812750c30" args="()=0" -->
+<a class="anchor" name="d7c27dcdd5d5f28da04605410721d016"></a><!-- doxytag: member="Nv::Blast::Mesh::getBoundingBoxWritable" ref="d7c27dcdd5d5f28da04605410721d016" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">virtual physx::PxBounds3&amp; Nv::Blast::Mesh::getBoundingBoxWritable           </td>
+          <td class="memname">virtual <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a>&amp; Nv::Blast::Mesh::getBoundingBoxWritable           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
@@ -232,12 +232,12 @@ Return writable pointer on edges array
 Return pointer on specified facet 
 </div>
 </div><p>
-<a class="anchor" name="8129eb703f7cbd34e3937fe4938ca4bd"></a><!-- doxytag: member="Nv::Blast::Mesh::getFacetBound" ref="8129eb703f7cbd34e3937fe4938ca4bd" args="(uint32_t index) const =0" -->
+<a class="anchor" name="93b7642d29e27da93b76d420a804aef2"></a><!-- doxytag: member="Nv::Blast::Mesh::getFacetBound" ref="93b7642d29e27da93b76d420a804aef2" args="(uint32_t index) const =0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const physx::PxBounds3* Nv::Blast::Mesh::getFacetBound           </td>
+          <td class="memname">virtual const <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a>* Nv::Blast::Mesh::getFacetBound           </td>
           <td>(</td>
           <td class="paramtype">uint32_t&nbsp;</td>
           <td class="paramname"> <em>index</em>          </td>

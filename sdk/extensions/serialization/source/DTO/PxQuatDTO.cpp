@@ -26,6 +26,7 @@
 // Copyright (c) 2018 NVIDIA Corporation. All rights reserved.
 
 
+#include "NvPreprocessor.h"
 #include "PxQuatDTO.h"
 
 namespace Nv
@@ -46,7 +47,7 @@ bool PxQuatDTO::serialize(Nv::Blast::Serialization::PxQuat::Builder builder, con
 
 physx::PxQuat* PxQuatDTO::deserialize(Nv::Blast::Serialization::PxQuat::Reader reader)
 {
-	reader = reader;
+	NV_UNUSED(reader);
 	return nullptr;
 }
 

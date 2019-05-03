@@ -104,9 +104,9 @@
 <a name="l00069"></a>00069 
 <a name="l00073"></a>00073     <span class="keyword">virtual</span> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#01c925f55875fe9d85433bd6ab953d60">getCollision</a>(uint32_t*&amp; hullsOffset, <a class="code" href="struct_nv_1_1_blast_1_1_collision_hull.html">Nv::Blast::CollisionHull</a>**&amp; hulls) <span class="keyword">override</span>;
 <a name="l00074"></a>00074 
-<a name="l00078"></a>00078     <span class="keyword">virtual</span> physx::PxVec3* <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#c4dffb9e822d34b53c671626b751524f">getPositionArray</a>() <span class="keyword">override</span>;
-<a name="l00082"></a>00082     <span class="keyword">virtual</span> physx::PxVec3* <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#07a1caf7be42dbb4756863e3656e0569">getNormalsArray</a>() <span class="keyword">override</span>;
-<a name="l00086"></a>00086     <span class="keyword">virtual</span> physx::PxVec2* <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#cc9c67ddef9335ddab7a7674001ca131">getUvArray</a>() <span class="keyword">override</span>;
+<a name="l00078"></a>00078     <span class="keyword">virtual</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>* <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#9c3ec51c8116e8d87449e98f9343839e">getPositionArray</a>() <span class="keyword">override</span>;
+<a name="l00082"></a>00082     <span class="keyword">virtual</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>* <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#24ed2e4ec3bdbec2cc3279e662eb94d2">getNormalsArray</a>() <span class="keyword">override</span>;
+<a name="l00086"></a>00086     <span class="keyword">virtual</span> <a class="code" href="struct_nvc_vec2.html">NvcVec2</a>* <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#0c8602219afcb8c73168a36ee87228c5">getUvArray</a>() <span class="keyword">override</span>;
 <a name="l00090"></a>00090     <span class="keyword">virtual</span> uint32_t* <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#7b207f2b310fa696848d436f4c8b0c2c">getIndexArray</a>() <span class="keyword">override</span>;
 <a name="l00091"></a>00091 
 <a name="l00095"></a><a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#5e8db96253945dbb3baa036064f6aff4">00095</a>     int32_t*        <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#5e8db96253945dbb3baa036064f6aff4">getMaterialIds</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> mPerFaceMatId.data(); };
@@ -118,9 +118,9 @@
 <a name="l00110"></a><a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#166b9ee741b2c887f059d476ee0c17cc">00110</a>     int32_t     <a class="code" href="class_nv_1_1_blast_1_1_obj_file_reader.html#166b9ee741b2c887f059d476ee0c17cc">getMaterialCount</a>() { <span class="keywordflow">return</span> mMaterialNames.size(); };
 <a name="l00111"></a>00111 
 <a name="l00112"></a>00112 <span class="keyword">private</span>:
-<a name="l00113"></a>00113     std::vector&lt;physx::PxVec3&gt;  mVertexPositions;
-<a name="l00114"></a>00114     std::vector&lt;physx::PxVec3&gt;  mVertexNormals;
-<a name="l00115"></a>00115     std::vector&lt;physx::PxVec2&gt;  mVertexUv;
+<a name="l00113"></a>00113     std::vector&lt;NvcVec3&gt;    mVertexPositions;
+<a name="l00114"></a>00114     std::vector&lt;NvcVec3&gt;    mVertexNormals;
+<a name="l00115"></a>00115     std::vector&lt;NvcVec2&gt;    mVertexUv;
 <a name="l00116"></a>00116     std::vector&lt;uint32_t&gt;       mIndices;
 <a name="l00117"></a>00117 
 <a name="l00118"></a>00118     std::vector&lt;std::string&gt;    mMaterialNames;

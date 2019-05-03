@@ -64,11 +64,11 @@ Inheritance diagram for Nv::Blast::GridWalker:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html#addc0455047474051b8cf67177594d9b">setPointCmpDirection</a> (int32_t dir) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html#b014929b706f1e485b107b058ba287c1">setState</a> (const physx::PxVec3 &amp;point) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html#7859e830c542a4c1686de3d55634dbc9">setState</a> (const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;point) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html#4d6813e9df7f09992daaefe431b5407b">setState</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *pos, const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *ed, const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> &amp;fc) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html#b69077cc6d4d51b3d0a82d2583f7c1f5">setState</a> (const physx::PxBounds3 *bounds) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html#4215912435a6b50f7300c9f0a1f49e16">setState</a> (const <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a> *bounds) override</td></tr>
 
 </table>
 <hr><h2>Constructor &amp; Destructor Documentation</h2>
@@ -137,14 +137,14 @@ Recieve next facet for setted state. <dl class="return" compact><dt><b>Returns:<
 
 </div>
 </div><p>
-<a class="anchor" name="b014929b706f1e485b107b058ba287c1"></a><!-- doxytag: member="Nv::Blast::GridWalker::setState" ref="b014929b706f1e485b107b058ba287c1" args="(const physx::PxVec3 &amp;point) override" -->
+<a class="anchor" name="7859e830c542a4c1686de3d55634dbc9"></a><!-- doxytag: member="Nv::Blast::GridWalker::setState" ref="7859e830c542a4c1686de3d55634dbc9" args="(const NvcVec3 &amp;point) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">virtual void Nv::Blast::GridWalker::setState           </td>
           <td>(</td>
-          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>point</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td><code> [override, virtual]</code></td>
@@ -160,7 +160,7 @@ Set state of accelerator to return all facets which possibly can cover given poi
   </table>
 </dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#3cb229ff33aba656813bf88ec740e29e">Nv::Blast::SpatialAccelerator</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#fb11c09557dfc60e0e5dcf0bce33dec5">Nv::Blast::SpatialAccelerator</a>.</p>
 
 </div>
 </div><p>
@@ -208,14 +208,14 @@ Set state of accelerator to return all facets which possibly can intersect given
 
 </div>
 </div><p>
-<a class="anchor" name="b69077cc6d4d51b3d0a82d2583f7c1f5"></a><!-- doxytag: member="Nv::Blast::GridWalker::setState" ref="b69077cc6d4d51b3d0a82d2583f7c1f5" args="(const physx::PxBounds3 *bounds) override" -->
+<a class="anchor" name="4215912435a6b50f7300c9f0a1f49e16"></a><!-- doxytag: member="Nv::Blast::GridWalker::setState" ref="4215912435a6b50f7300c9f0a1f49e16" args="(const NvcBounds3 *bounds) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">virtual void Nv::Blast::GridWalker::setState           </td>
           <td>(</td>
-          <td class="paramtype">const physx::PxBounds3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a> *&nbsp;</td>
           <td class="paramname"> <em>bounds</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td><code> [override, virtual]</code></td>
@@ -233,7 +233,7 @@ Set state of accelerator to return all facets which possibly can intersect given
   </table>
 </dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#ed70b8dde16ce3c248597763f9531313">Nv::Blast::SpatialAccelerator</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_spatial_accelerator.html#3b2d7511d86e393aa09335123bd52afe">Nv::Blast::SpatialAccelerator</a>.</p>
 
 </div>
 </div><p>

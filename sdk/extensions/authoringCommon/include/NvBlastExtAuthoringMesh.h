@@ -113,12 +113,12 @@ public:
 	/**
 		Return reference on mesh bounding box.
 	*/
-	virtual const physx::PxBounds3&	getBoundingBox() const = 0;
+	virtual const NvcBounds3&	getBoundingBox() const = 0;
 
 	/**
 		Return writable reference on mesh bounding box.
 	*/
-	virtual physx::PxBounds3&	getBoundingBoxWritable() = 0;
+	virtual NvcBounds3&	getBoundingBoxWritable() = 0;
 
 
 	/**
@@ -156,7 +156,7 @@ public:
 	/**
 		Get pointer on facet bounding box, if not calculated return nullptr.
 	*/
-	virtual const physx::PxBounds3*	getFacetBound(uint32_t index) const = 0;
+	virtual const NvcBounds3*	getFacetBound(uint32_t index) const = 0;
 
 };
 

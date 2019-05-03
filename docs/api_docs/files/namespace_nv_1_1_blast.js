@@ -13,10 +13,8 @@ var namespace_nv_1_1_blast =
     [ "ChunkGraph", "struct_nv_1_1_blast_1_1_chunk_graph.html", "struct_nv_1_1_blast_1_1_chunk_graph" ],
     [ "ChunkGraphLink", "struct_nv_1_1_blast_1_1_chunk_graph_link.html", "struct_nv_1_1_blast_1_1_chunk_graph_link" ],
     [ "ChunkInfo", "struct_nv_1_1_blast_1_1_chunk_info.html", "struct_nv_1_1_blast_1_1_chunk_info" ],
-    [ "CollisionHull", "struct_nv_1_1_blast_1_1_collision_hull.html", [
-      [ "HullPolygon", "struct_nv_1_1_blast_1_1_collision_hull_1_1_hull_polygon.html", "struct_nv_1_1_blast_1_1_collision_hull_1_1_hull_polygon" ]
-    ] ],
-    [ "CollisionParams", "struct_nv_1_1_blast_1_1_collision_params.html", "struct_nv_1_1_blast_1_1_collision_params" ],
+    [ "CollisionHull", "struct_nv_1_1_blast_1_1_collision_hull.html", "struct_nv_1_1_blast_1_1_collision_hull" ],
+    [ "ConvexDecompositionParams", "struct_nv_1_1_blast_1_1_convex_decomposition_params.html", "struct_nv_1_1_blast_1_1_convex_decomposition_params" ],
     [ "ConvexMeshBuilder", "class_nv_1_1_blast_1_1_convex_mesh_builder.html", "class_nv_1_1_blast_1_1_convex_mesh_builder" ],
     [ "CutoutConfiguration", "struct_nv_1_1_blast_1_1_cutout_configuration.html", "struct_nv_1_1_blast_1_1_cutout_configuration" ],
     [ "CutoutSet", "class_nv_1_1_blast_1_1_cutout_set.html", "class_nv_1_1_blast_1_1_cutout_set" ],
@@ -39,6 +37,7 @@ var namespace_nv_1_1_blast =
     [ "ExtPxAsset", "class_nv_1_1_blast_1_1_ext_px_asset.html", "class_nv_1_1_blast_1_1_ext_px_asset" ],
     [ "ExtPxAssetDesc", "struct_nv_1_1_blast_1_1_ext_px_asset_desc.html", "struct_nv_1_1_blast_1_1_ext_px_asset_desc" ],
     [ "ExtPxChunk", "struct_nv_1_1_blast_1_1_ext_px_chunk.html", "struct_nv_1_1_blast_1_1_ext_px_chunk" ],
+    [ "ExtPxCollisionBuilder", "class_nv_1_1_blast_1_1_ext_px_collision_builder.html", "class_nv_1_1_blast_1_1_ext_px_collision_builder" ],
     [ "ExtPxFamily", "class_nv_1_1_blast_1_1_ext_px_family.html", "class_nv_1_1_blast_1_1_ext_px_family" ],
     [ "ExtPxFamilyDesc", "struct_nv_1_1_blast_1_1_ext_px_family_desc.html", "struct_nv_1_1_blast_1_1_ext_px_family_desc" ],
     [ "ExtPxListener", "class_nv_1_1_blast_1_1_ext_px_listener.html", "class_nv_1_1_blast_1_1_ext_px_listener" ],
@@ -66,6 +65,7 @@ var namespace_nv_1_1_blast =
     [ "FractureTool", "class_nv_1_1_blast_1_1_fracture_tool.html", "class_nv_1_1_blast_1_1_fracture_tool" ],
     [ "Grid", "class_nv_1_1_blast_1_1_grid.html", "class_nv_1_1_blast_1_1_grid" ],
     [ "GridWalker", "class_nv_1_1_blast_1_1_grid_walker.html", "class_nv_1_1_blast_1_1_grid_walker" ],
+    [ "HullPolygon", "struct_nv_1_1_blast_1_1_hull_polygon.html", "struct_nv_1_1_blast_1_1_hull_polygon" ],
     [ "IFbxFileReader", "class_nv_1_1_blast_1_1_i_fbx_file_reader.html", "class_nv_1_1_blast_1_1_i_fbx_file_reader" ],
     [ "IJsonCollisionExporter", "class_nv_1_1_blast_1_1_i_json_collision_exporter.html", "class_nv_1_1_blast_1_1_i_json_collision_exporter" ],
     [ "IMeshFileReader", "class_nv_1_1_blast_1_1_i_mesh_file_reader.html", "class_nv_1_1_blast_1_1_i_mesh_file_reader" ],

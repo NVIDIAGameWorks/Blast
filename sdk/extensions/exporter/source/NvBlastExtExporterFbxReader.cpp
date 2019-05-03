@@ -35,12 +35,9 @@
 #include <sstream>
 #include <unordered_map>
 
-#include "PxVec3.h"
-#include "PxVec2.h"
-#include "PxPlane.h"
 #include "NvBlastExtAuthoringMesh.h"
 #include "NvBlastExtAuthoringBondGenerator.h"
-#include "NvBlastExtAuthoringCollisionBuilder.h"
+#include "NvBlastPxSharedHelpers.h"
 
 using physx::PxVec3;
 using physx::PxVec2;
@@ -201,15 +198,15 @@ void FbxFileReader::loadFromFile(const char* filename)
 	bool bAllTriangles = mesh->IsTriangleMesh();
 	if (!bAllTriangles)
 	{
+		//It creates corrupted mesh and return true. Disable it to prevent crash.
 		//try letting the FBX SDK triangulate it
-		geoConverter.Triangulate(mesh, true);
-		bAllTriangles = mesh->IsTriangleMesh();
+		//bAllTriangles = geoConverter.Triangulate(mesh, true) && mesh->IsTriangleMesh();
 	}
 
 	int polyCount = mesh->GetPolygonCount();
 	if (!bAllTriangles)
 	{
-		std::cerr << "Mesh 0 has " << polyCount << " but not all polygons are triangles. Mesh must be triangulated." << std::endl;
+		std::cerr << "Mesh 0 has " << polyCount << " polygons but not all of them are triangles. Mesh must be triangulated." << std::endl;
 		return;
 	}
 
@@ -219,9 +216,9 @@ void FbxFileReader::loadFromFile(const char* filename)
 
 	const char * uvSetName = uvSetNames.GetStringAt(0);
 
-	std::vector<PxVec3> positions;
-	std::vector<PxVec3> normals;
-	std::vector<PxVec2> uv;
+	std::vector<NvcVec3> positions;
+	std::vector<NvcVec3> normals;
+	std::vector<NvcVec2> uv;
 	std::vector<uint32_t> indices;
 
 	int* polyVertices = mesh->GetPolygonVertices();
@@ -259,9 +256,9 @@ void FbxFileReader::loadFromFile(const char* filename)
 			vert = trans.MultT(vert);
 			normVec = normalTransf.MultT(normVec);
 
-			positions.push_back(PxVec3((float) vert[0], (float)vert[1], (float)vert[2]));
-			normals.push_back(PxVec3((float)normVec[0], (float)normVec[1], (float)normVec[2]));
-			uv.push_back(PxVec2((float)uvVec[0], (float)uvVec[1]));
+			positions.push_back({(float) vert[0], (float)vert[1], (float)vert[2]});
+			normals.push_back({(float)normVec[0], (float)normVec[1], (float)normVec[2]});
+			uv.push_back({(float)uvVec[0], (float)uvVec[1]});
 			indices.push_back(vertIndex++);
 		}
 		if (matLayer != nullptr)
@@ -431,7 +428,7 @@ bool FbxFileReader::getCollisionInternal()
 			vpos++;
 		}
 
-		chull.points = new PxVec3[uniqueCPValues.size()];
+		chull.points = new NvcVec3[uniqueCPValues.size()];
 		chull.pointsCount = uint32_t(uniqueCPValues.size());
 	
 		physx::PxVec3 hullCentroid(0.0f);
@@ -442,7 +439,7 @@ bool FbxFileReader::getCollisionInternal()
 			chull.points[i].x = (float)worldVPos[0];
 			chull.points[i].y = (float)worldVPos[1];
 			chull.points[i].z = (float)worldVPos[2];
-			hullCentroid += chull.points[i];
+			hullCentroid += toPxShared(chull.points[i]);
 		}
 
 		if (chull.pointsCount)
@@ -451,7 +448,7 @@ bool FbxFileReader::getCollisionInternal()
 		}
 
 		uint32_t polyCount = meshNode->GetPolygonCount();
-		chull.polygonData = new Nv::Blast::CollisionHull::HullPolygon[polyCount];
+		chull.polygonData = new Nv::Blast::HullPolygon[polyCount];
 		chull.polygonDataCount = polyCount;
 
 		chull.indicesCount = meshNode->GetPolygonVertexCount();
@@ -462,8 +459,8 @@ bool FbxFileReader::getCollisionInternal()
 		{
 			int32_t vInPolyCount = meshNode->GetPolygonSize(poly);
 			auto& pd = chull.polygonData[poly];
-			pd.mIndexBase = (uint16_t)curIndexCount;
-			pd.mNbVerts = (uint16_t)vInPolyCount;
+			pd.indexBase = (uint16_t)curIndexCount;
+			pd.vertexCount = (uint16_t)vInPolyCount;
 			int32_t* ind = &meshNode->GetPolygonVertices()[meshNode->GetPolygonVertexIndex(poly)];
 			uint32_t* destInd = chull.indices + curIndexCount;
 			for (int32_t v = 0; v < vInPolyCount; v++)
@@ -474,9 +471,9 @@ bool FbxFileReader::getCollisionInternal()
 
 			//Don't depend on the normals to create the plane normal, they could be wrong
 			PxVec3 lastThreeVerts[3] = {
-				chull.points[chull.indices[curIndexCount - 1]],
-				chull.points[chull.indices[curIndexCount - 2]],
-				chull.points[chull.indices[curIndexCount - 3]]
+				toPxShared(chull.points[chull.indices[curIndexCount - 1]]),
+				toPxShared(chull.points[chull.indices[curIndexCount - 2]]),
+				toPxShared(chull.points[chull.indices[curIndexCount - 3]])
 			};
 
 			physx::PxPlane plane(lastThreeVerts[0], lastThreeVerts[1], lastThreeVerts[2]);
@@ -484,10 +481,10 @@ bool FbxFileReader::getCollisionInternal()
 
 			const float s = plane.n.dot(lastThreeVerts[0] - hullCentroid) >= 0.0f ? 1.0f : -1.0f;
 
-			pd.mPlane[0] = s*plane.n.x;
-			pd.mPlane[1] = s*plane.n.y;
-			pd.mPlane[2] = s*plane.n.z;
-			pd.mPlane[3] = s*plane.d;
+			pd.plane[0] = s*plane.n.x;
+			pd.plane[1] = s*plane.n.y;
+			pd.plane[2] = s*plane.n.z;
+			pd.plane[3] = s*plane.d;
 		}
 	}
 
@@ -582,17 +579,17 @@ bool FbxFileReader::getBoneInfluencesInternal(FbxMesh* meshNode)
 	return true;
 };
 
-physx::PxVec3* FbxFileReader::getPositionArray()
+NvcVec3* FbxFileReader::getPositionArray()
 {
 	return mVertexPositions.data();
 };
 
-physx::PxVec3* FbxFileReader::getNormalsArray()
+NvcVec3* FbxFileReader::getNormalsArray()
 {
 	return mVertexNormals.data();
 };
 
-physx::PxVec2* FbxFileReader::getUvArray()
+NvcVec2* FbxFileReader::getUvArray()
 {
 	return mVertexUv.data();
 };

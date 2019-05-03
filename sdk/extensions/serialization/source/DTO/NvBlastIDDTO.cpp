@@ -50,7 +50,7 @@ bool NvBlastIDDTO::serialize(Nv::Blast::Serialization::UUID::Builder builder, co
 NvBlastID* NvBlastIDDTO::deserialize(Nv::Blast::Serialization::UUID::Reader reader)
 {
 	//FIXME
-	reader = reader;
+	NV_UNUSED(reader);
 	//TODO: Allocate with ExtContext and return
 
 	return nullptr;

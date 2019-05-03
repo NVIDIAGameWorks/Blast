@@ -84,7 +84,7 @@ Nv::Blast::TkAsset* TkAssetDTO::deserialize(Nv::Blast::Serialization::TkAsset::R
 
 bool TkAssetDTO::deserializeInto(Nv::Blast::Serialization::TkAsset::Reader reader, Nv::Blast::TkAsset * poco)
 {
-	reader = reader;
+	NV_UNUSED(reader);
 	poco = nullptr;
 	// NOTE: Because of the way TkAsset is currently structured, this won't work.
 	return false;

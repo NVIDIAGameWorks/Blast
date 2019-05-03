@@ -113,7 +113,7 @@ namespace Nv
 			virtual DamagePattern* generateRegularRadialPattern(const RegularRadialPatternDesc* desc) = 0;
 
 
-			virtual DamagePattern* generateVoronoiPattern(uint32_t pointCount, const physx::PxVec3* points, int32_t interiorMaterialId) = 0;
+			virtual DamagePattern* generateVoronoiPattern(uint32_t pointCount, const NvcVec3* points, int32_t interiorMaterialId) = 0;
 			virtual void release() = 0;
 		};
 

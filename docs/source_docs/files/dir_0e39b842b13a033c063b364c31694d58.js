@@ -5,6 +5,10 @@ var dir_0e39b842b13a033c063b364c31694d58 =
       [ "PxActorCreateInfo", "struct_nv_1_1_blast_1_1_px_actor_create_info.html", "struct_nv_1_1_blast_1_1_px_actor_create_info" ]
     ] ],
     [ "NvBlastExtPxAssetImpl.h", "_nv_blast_ext_px_asset_impl_8h.html", "_nv_blast_ext_px_asset_impl_8h" ],
+    [ "NvBlastExtPxCollisionBuilderImpl.h", "_nv_blast_ext_px_collision_builder_impl_8h.html", [
+      [ "CollisionHullImpl", "struct_nv_1_1_blast_1_1_collision_hull_impl.html", "struct_nv_1_1_blast_1_1_collision_hull_impl" ],
+      [ "ExtPxCollisionBuilderImpl", "class_nv_1_1_blast_1_1_ext_px_collision_builder_impl.html", "class_nv_1_1_blast_1_1_ext_px_collision_builder_impl" ]
+    ] ],
     [ "NvBlastExtPxFamilyImpl.h", "_nv_blast_ext_px_family_impl_8h.html", [
       [ "ExtPxFamilyImpl", "class_nv_1_1_blast_1_1_ext_px_family_impl.html", "class_nv_1_1_blast_1_1_ext_px_family_impl" ]
     ] ],

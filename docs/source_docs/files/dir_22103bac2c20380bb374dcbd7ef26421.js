@@ -46,6 +46,7 @@ var dir_22103bac2c20380bb374dcbd7ef26421 =
     [ "NvBlastMath.h", "_nv_blast_math_8h.html", "_nv_blast_math_8h" ],
     [ "NvBlastMemory.h", "_nv_blast_memory_8h.html", "_nv_blast_memory_8h" ],
     [ "NvBlastPreprocessorInternal.h", "_nv_blast_preprocessor_internal_8h.html", "_nv_blast_preprocessor_internal_8h" ],
+    [ "NvBlastPxSharedHelpers.h", "_nv_blast_px_shared_helpers_8h.html", "_nv_blast_px_shared_helpers_8h" ],
     [ "NvBlastTime.h", "_nv_blast_time_8h.html", [
       [ "Time", "class_nv_1_1_blast_1_1_time.html", "class_nv_1_1_blast_1_1_time" ]
     ] ]

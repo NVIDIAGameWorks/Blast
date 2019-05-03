@@ -50,13 +50,13 @@ Inheritance diagram for Nv::Blast::IMeshFileReader:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const char *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#a369ee4923ae0cfff1c65155f2926a32">getMaterialName</a> (int32_t id)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual physx::PxVec3 *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#4a42fc1404f946de90572e439c73d3c0">getNormalsArray</a> ()=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#9e2310a080883391b0c91f997b31ee67">getNormalsArray</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual physx::PxVec3 *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#f17eaa1f59013c225ac6ef35ce7c181e">getPositionArray</a> ()=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#dc2cd50409ba9fd286570f41d0bf5cc1">getPositionArray</a> ()=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#bc8eec8be3fec8415a7ca40e5b1d7976">getSmoothingGroups</a> ()=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual physx::PxVec2 *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#de95470ff6a168f79386b20613437228">getUvArray</a> ()=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual <a class="el" href="struct_nvc_vec2.html">NvcVec2</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#52fd70f13257ec57bf00a5109335fa24">getUvArray</a> ()=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_mesh_file_reader.html#a3490dad05f3e1c701c5e4c6a8bf8fcc">getVerticesCount</a> () const =0</td></tr>
 
@@ -202,12 +202,12 @@ Get loaded per triangle material ids.
 Get material name. 
 </div>
 </div><p>
-<a class="anchor" name="4a42fc1404f946de90572e439c73d3c0"></a><!-- doxytag: member="Nv::Blast::IMeshFileReader::getNormalsArray" ref="4a42fc1404f946de90572e439c73d3c0" args="()=0" -->
+<a class="anchor" name="9e2310a080883391b0c91f997b31ee67"></a><!-- doxytag: member="Nv::Blast::IMeshFileReader::getNormalsArray" ref="9e2310a080883391b0c91f997b31ee67" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">virtual physx::PxVec3* Nv::Blast::IMeshFileReader::getNormalsArray           </td>
+          <td class="memname">virtual <a class="el" href="struct_nvc_vec3.html">NvcVec3</a>* Nv::Blast::IMeshFileReader::getNormalsArray           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
@@ -221,12 +221,12 @@ Get material name.
 Get loaded vertex normals 
 </div>
 </div><p>
-<a class="anchor" name="f17eaa1f59013c225ac6ef35ce7c181e"></a><!-- doxytag: member="Nv::Blast::IMeshFileReader::getPositionArray" ref="f17eaa1f59013c225ac6ef35ce7c181e" args="()=0" -->
+<a class="anchor" name="dc2cd50409ba9fd286570f41d0bf5cc1"></a><!-- doxytag: member="Nv::Blast::IMeshFileReader::getPositionArray" ref="dc2cd50409ba9fd286570f41d0bf5cc1" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">virtual physx::PxVec3* Nv::Blast::IMeshFileReader::getPositionArray           </td>
+          <td class="memname">virtual <a class="el" href="struct_nvc_vec3.html">NvcVec3</a>* Nv::Blast::IMeshFileReader::getPositionArray           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
@@ -259,12 +259,12 @@ Get loaded vertex positions
 Get loaded per triangle smoothing groups. 
 </div>
 </div><p>
-<a class="anchor" name="de95470ff6a168f79386b20613437228"></a><!-- doxytag: member="Nv::Blast::IMeshFileReader::getUvArray" ref="de95470ff6a168f79386b20613437228" args="()=0" -->
+<a class="anchor" name="52fd70f13257ec57bf00a5109335fa24"></a><!-- doxytag: member="Nv::Blast::IMeshFileReader::getUvArray" ref="52fd70f13257ec57bf00a5109335fa24" args="()=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">virtual physx::PxVec2* Nv::Blast::IMeshFileReader::getUvArray           </td>
+          <td class="memname">virtual <a class="el" href="struct_nvc_vec2.html">NvcVec2</a>* Nv::Blast::IMeshFileReader::getUvArray           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>

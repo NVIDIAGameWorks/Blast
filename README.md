@@ -1,4 +1,4 @@
-Blast 1.1.4
+Blast 1.1.5
 ===========
 
 ![Alt text](/images/blast.png?raw=true "Blast Intro")
@@ -63,11 +63,11 @@ See [docs/release_notes.txt](docs/release_notes.txt) for changes.
 Compiling
 ---------
 
-For windows (VS2015 or VS2017):
-* Run `generate_projects_vc14win64.bat' or `generate_projects_vc15win64.bat'.
+For windows (VS2017):
+* Run `generate_projects_vc15win64.bat'.
 This step will download all necessary dependencies that are not already downloaded into a folder `NVIDIA/packman-repo` at the root of your hard drive, so
 this might take some time the first time one of these scripts is run (or when a dependency version changes).
-* Open `compiler/vc14winBB-cmake/BlastAll.sln`.  This contains all Blast windows projects, including the
+* Open `compiler/vc15winBB-cmake/BlastAll.sln`.  This contains all Blast windows projects, including the
 low-level, toolkit, extensions, tools, tests, and sample.
 * If you run the sample, you should first run `download_sample_resources.bat`.  This will load complex asset
 files with nontrivial graphics meshes.  Without these assets, only procedurally-generated box assets are available
@@ -95,15 +95,15 @@ BlastTool-1.1 (Windows 64-bit only)
 
 BlastTool is a standalone GUI application for authoring Blast assets.  It imports fbx graphics files and exports Blast assets in the low-level, high-level (Tk),
 and ExtPx formats, along with fractured meshes and (optionally) collision geometry in a separate file or embedded in an fbx along with the graphics meshes.
-It is now included in [blast_tools_and_samples-windows.zip](blast_tools_and_samples-windows.zip) (see above).  Run BlastTool.Profile.win64.exe in the bin/vc14win64-cmake folder.
+It is now included in [blast_tools_and_samples-windows.zip](blast_tools_and_samples-windows.zip) (see above).  Run BlastTool.Profile.win64.exe in the bin/vc15win64-cmake folder.
 
 Documentation may be found here: https://docs.nvidia.com/gameworks/content/gameworkslibrary/blast/1.1/authoring_docs/index.html
 
 Unreal Engine 4 Plugin
 ----------------------
 
-UE4.18.3: https://github.com/NvPhysX/UnrealEngine/tree/Blast-4.18  
 UE4.19.2: https://github.com/NvPhysX/UnrealEngine/tree/Blast-4.19
+UE4.20.3: https://github.com/NvPhysX/UnrealEngine/tree/Blast-4.20
 
 UE4 github access is required to access this repo, more info: https://developer.nvidia.com/nvidia-gameworks-and-ue4
 

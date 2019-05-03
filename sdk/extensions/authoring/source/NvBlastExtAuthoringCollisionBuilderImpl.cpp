@@ -27,147 +27,27 @@
 
 #include <NvBlastGlobals.h>
 #include "NvBlastExtAuthoringCollisionBuilderImpl.h"
-#include <PxConvexMesh.h>
-#include <PxVec3.h>
-#include <PxBounds3.h>
-#include "PxPhysics.h"
-#include "cooking/PxCooking.h"
-#include  <NvBlastExtApexSharedParts.h>
+#include <NvBlastExtApexSharedParts.h>
 #include <NvBlastExtAuthoringInternalCommon.h>
 
 #include <NvBlastExtAuthoringBooleanTool.h>
 #include <NvBlastExtAuthoringMeshImpl.h>
 #include <NvBlastExtAuthoringMeshUtils.h>
+#include <NvBlastPxSharedHelpers.h>
 #include <VHACD.h>
+#include <vector>
 
 using namespace physx;
-
-#define SAFE_ARRAY_NEW(T, x) ((x) > 0) ? reinterpret_cast<T*>(NVBLAST_ALLOC(sizeof(T) * (x))) : nullptr;
-#define SAFE_ARRAY_DELETE(x) if (x != nullptr) {NVBLAST_FREE(x); x = nullptr;}
 
 namespace Nv
 {
 namespace Blast
 {
 
-CollisionHullImpl::~CollisionHullImpl()
-{
-	SAFE_ARRAY_DELETE(points);
-	SAFE_ARRAY_DELETE(indices);
-	SAFE_ARRAY_DELETE(polygonData);
-}
+#define SAFE_ARRAY_NEW(T, x) ((x) > 0) ? reinterpret_cast<T*>(NVBLAST_ALLOC(sizeof(T) * (x))) : nullptr;
+#define SAFE_ARRAY_DELETE(x) if (x != nullptr) {NVBLAST_FREE(x); x = nullptr;}
 
-CollisionHullImpl::CollisionHullImpl(const CollisionHull& hullToCopy)
-{
-	pointsCount = hullToCopy.pointsCount;
-	indicesCount = hullToCopy.indicesCount;
-	polygonDataCount = hullToCopy.polygonDataCount;
-
-	points = SAFE_ARRAY_NEW(physx::PxVec3, pointsCount);
-	indices = SAFE_ARRAY_NEW(uint32_t, indicesCount);
-	polygonData = SAFE_ARRAY_NEW(CollisionHull::HullPolygon, polygonDataCount);
-	memcpy(points, hullToCopy.points, sizeof(points[0]) * pointsCount);
-	memcpy(indices, hullToCopy.indices, sizeof(indices[0]) * indicesCount);
-	memcpy(polygonData, hullToCopy.polygonData, sizeof(polygonData[0]) * polygonDataCount);
-}
-
-void CollisionHullImpl::release()
-{
-	delete this;
-}
-
-CollisionHull* ConvexMeshBuilderImpl::buildCollisionGeometry(uint32_t verticesCount, const physx::PxVec3* vData)
-{
-	CollisionHull* output = new CollisionHullImpl();
-	std::vector<physx::PxVec3> vertexData(verticesCount);
-	memcpy(vertexData.data(), vData, sizeof(physx::PxVec3) * verticesCount);
-
-	PxConvexMeshDesc convexMeshDescr;
-	PxConvexMesh* resultConvexMesh;
-	PxBounds3 bounds;
-	// Scale chunk to unit cube size, to avoid numerical errors
-	bounds.setEmpty();
-	for (uint32_t i = 0; i < vertexData.size(); ++i)
-	{
-		bounds.include(vertexData[i]);
-	}
-	PxVec3 bbCenter = bounds.getCenter();
-	float scale = PxMax(PxAbs(bounds.getExtents(0)), PxMax(PxAbs(bounds.getExtents(1)), PxAbs(bounds.getExtents(2))));
-	for (uint32_t i = 0; i < vertexData.size(); ++i)
-	{
-		vertexData[i] = vertexData[i] - bbCenter;
-		vertexData[i] *= (1.0f / scale);
-	}
-	bounds.setEmpty();
-	for (uint32_t i = 0; i < vertexData.size(); ++i)
-	{
-		bounds.include(vertexData[i]);
-	}
-	convexMeshDescr.points.data = vertexData.data();
-	convexMeshDescr.points.stride = sizeof(PxVec3);
-	convexMeshDescr.points.count = (uint32_t)vertexData.size();
-	convexMeshDescr.flags = PxConvexFlag::eCOMPUTE_CONVEX;
-	resultConvexMesh = mCooking->createConvexMesh(convexMeshDescr, *mInsertionCallback);
-	if (!resultConvexMesh)
-	{
-		vertexData.clear();
-		vertexData.push_back(bounds.minimum);
-		vertexData.push_back(PxVec3(bounds.minimum.x, bounds.maximum.y, bounds.minimum.z));
-		vertexData.push_back(PxVec3(bounds.maximum.x, bounds.maximum.y, bounds.minimum.z));
-		vertexData.push_back(PxVec3(bounds.maximum.x, bounds.minimum.y, bounds.minimum.z));
-		vertexData.push_back(PxVec3(bounds.minimum.x, bounds.minimum.y, bounds.maximum.z));
-		vertexData.push_back(PxVec3(bounds.minimum.x, bounds.maximum.y, bounds.maximum.z));
-		vertexData.push_back(PxVec3(bounds.maximum.x, bounds.maximum.y, bounds.maximum.z));
-		vertexData.push_back(PxVec3(bounds.maximum.x, bounds.minimum.y, bounds.maximum.z));
-		convexMeshDescr.points.data = vertexData.data();
-		convexMeshDescr.points.count = (uint32_t)vertexData.size();
-		resultConvexMesh = mCooking->createConvexMesh(convexMeshDescr, *mInsertionCallback);
-	}
-	output->polygonDataCount = resultConvexMesh->getNbPolygons();
-	if (output->polygonDataCount)
-	output->polygonData = SAFE_ARRAY_NEW(CollisionHull::HullPolygon, output->polygonDataCount);
-	output->pointsCount = resultConvexMesh->getNbVertices();
-	output->points = SAFE_ARRAY_NEW(PxVec3, output->pointsCount);
-	int32_t indicesCount = 0;
-	PxHullPolygon hPoly;
-	for (uint32_t i = 0; i < resultConvexMesh->getNbPolygons(); ++i)
-	{
-		CollisionHull::HullPolygon& pd = output->polygonData[i];
-		resultConvexMesh->getPolygonData(i, hPoly);
-		pd.mIndexBase = hPoly.mIndexBase;
-		pd.mNbVerts = hPoly.mNbVerts;
-		pd.mPlane[0] = hPoly.mPlane[0];
-		pd.mPlane[1] = hPoly.mPlane[1];
-		pd.mPlane[2] = hPoly.mPlane[2];
-		pd.mPlane[3] = hPoly.mPlane[3];
-
-		pd.mPlane[0] /= scale;
-		pd.mPlane[1] /= scale;
-		pd.mPlane[2] /= scale;
-		pd.mPlane[3] -= (pd.mPlane[0] * bbCenter.x + pd.mPlane[1] * bbCenter.y + pd.mPlane[2] * bbCenter.z);
-		float length = sqrt(pd.mPlane[0] * pd.mPlane[0] + pd.mPlane[1] * pd.mPlane[1] + pd.mPlane[2] * pd.mPlane[2]);
-		pd.mPlane[0] /= length;
-		pd.mPlane[1] /= length;
-		pd.mPlane[2] /= length;
-		pd.mPlane[3] /= length;
-		indicesCount = PxMax(indicesCount, pd.mIndexBase + pd.mNbVerts);
-	}
-	output->indicesCount = indicesCount;
-	output->indices = SAFE_ARRAY_NEW(uint32_t, indicesCount);
-	for (uint32_t i = 0; i < resultConvexMesh->getNbVertices(); ++i)
-	{
-		PxVec3 p = resultConvexMesh->getVertices()[i] * scale + bbCenter;
-		output->points[i] = p;
-	}
-	for (int32_t i = 0; i < indicesCount; ++i)
-	{
-		output->indices[i] = resultConvexMesh->getIndexBuffer()[i];
-	}
-	resultConvexMesh->release();
-	return output;
-}
-
-void ConvexMeshBuilderImpl::trimCollisionGeometry(uint32_t chunksCount, CollisionHull** in, const uint32_t* chunkDepth)
+void trimCollisionGeometry(ConvexMeshBuilder& cmb, uint32_t chunksCount, CollisionHull** in, const uint32_t* chunkDepth)
 {
 	std::vector<std::vector<PxPlane> > chunkMidplanes(chunksCount);
 	std::vector<PxVec3> centers(chunksCount);
@@ -178,8 +58,8 @@ void ConvexMeshBuilderImpl::trimCollisionGeometry(uint32_t chunksCount, Collisio
 		centers[i] = PxVec3(0, 0, 0);
 		for (uint32_t p = 0; p < in[i]->pointsCount; ++p)
 		{
-			centers[i] += in[i]->points[p];
-			hullsBounds[i].include(in[i]->points[p]);
+			centers[i] += toPxShared(in[i]->points[p]);
+			hullsBounds[i].include(toPxShared(in[i]->points[p]));
 		}
 		centers[i] = hullsBounds[i].getCenter();
 	}
@@ -193,8 +73,10 @@ void ConvexMeshBuilderImpl::trimCollisionGeometry(uint32_t chunksCount, Collisio
 			{
 				continue;
 			}
-			if (importerHullsInProximityApexFree(in[hull]->pointsCount, in[hull]->points, hullsBounds[hull], PxTransform(PxIdentity), PxVec3(1, 1, 1),
-				in[hull2]->pointsCount, in[hull2]->points, hullsBounds[hull2], PxTransform(PxIdentity), PxVec3(1, 1, 1), 0.0, &params) == false)
+			if (importerHullsInProximityApexFree(in[hull]->pointsCount, toPxShared(in[hull]->points), hullsBounds[hull],
+			                                     PxTransform(PxIdentity), PxVec3(1, 1, 1), in[hull2]->pointsCount,
+			                                     toPxShared(in[hull2]->points), hullsBounds[hull2], PxTransform(PxIdentity),
+			                                     PxVec3(1, 1, 1), 0.0, &params) == false)
 			{
 				continue;
 			}
@@ -205,20 +87,20 @@ void ConvexMeshBuilderImpl::trimCollisionGeometry(uint32_t chunksCount, Collisio
 			PxVec3 n2;
 			for (uint32_t p = 0; p < in[hull]->pointsCount; ++p)
 			{
-				float ld = (in[hull]->points[p] - c2).magnitude();
+				float ld = (toPxShared(in[hull]->points[p]) - c2).magnitude();
 				if (ld < d)
 				{
-					n1 = in[hull]->points[p];
+					n1 = toPxShared(in[hull]->points[p]);
 					d = ld;
 				}
 			}
 			d = FLT_MAX;
 			for (uint32_t p = 0; p < in[hull2]->pointsCount; ++p)
 			{
-				float ld = (in[hull2]->points[p] - c1).magnitude();
+				float ld = (toPxShared(in[hull2]->points[p]) - c1).magnitude();
 				if (ld < d)
 				{
-					n2 = in[hull2]->points[p];
+					n2 = toPxShared(in[hull2]->points[p]);
 					d = ld;
 				}
 			}
@@ -242,12 +124,12 @@ void ConvexMeshBuilderImpl::trimCollisionGeometry(uint32_t chunksCount, Collisio
 			Facet nFc;
 			nFc.firstEdgeNumber = edges.size();
 			auto& pd = in[i]->polygonData[fc];
-			uint32_t n = pd.mNbVerts;
+			uint32_t n = pd.vertexCount;
 			for (uint32_t ed = 0; ed < n; ++ed)
 			{
-				uint32_t vr1 = in[i]->indices[(ed) + pd.mIndexBase];
-				uint32_t vr2 = in[i]->indices[(ed + 1) % n + pd.mIndexBase];
-				edges.push_back(Edge(vr1, vr2));
+				uint32_t vr1 = in[i]->indices[(ed) + pd.indexBase];
+				uint32_t vr2 = in[i]->indices[(ed + 1) % n + pd.indexBase];
+				edges.push_back({vr1, vr2});
 			}
 			nFc.edgesCount = n;
 			facets.push_back(nFc);
@@ -260,7 +142,7 @@ void ConvexMeshBuilderImpl::trimCollisionGeometry(uint32_t chunksCount, Collisio
 		Mesh* hullMesh = new MeshImpl(vertices.data(), edges.data(), facets.data(), vertices.size(), edges.size(), facets.size());
 		BooleanEvaluator evl;
 		//I think the material ID is unused for collision meshes so harcoding MATERIAL_INTERIOR is ok
-		Mesh* cuttingMesh = getCuttingBox(PxVec3(0, 0, 0), PxVec3(0, 0, 1), 40, 0, MATERIAL_INTERIOR);
+		Mesh* cuttingMesh = getCuttingBox(PxVec3(0, 0, 0), PxVec3(0, 0, 1), 40, 0, kMaterialInteriorId);
 		for (uint32_t p = 0; p < chunkMidplanes[i].size(); ++p)
 		{
 			PxPlane& pl = chunkMidplanes[i][p];
@@ -283,72 +165,19 @@ void ConvexMeshBuilderImpl::trimCollisionGeometry(uint32_t chunksCount, Collisio
 		hPoints.resize(hullMesh->getVerticesCount());
 		for (uint32_t v = 0; v < hullMesh->getVerticesCount(); ++v)
 		{
-			hPoints[v] = hullMesh->getVertices()[v].p;
+			hPoints[v] = toPxShared(hullMesh->getVertices()[v].p);
 		}
 		delete hullMesh;
 		if (in[i] != nullptr)
 		{
-			in[i]->release();
+			delete in[i];
 		}
-		in[i] = buildCollisionGeometry(hPoints.size(), hPoints.data());
+		in[i] = cmb.buildCollisionGeometry(hPoints.size(), fromPxShared(hPoints.data()));
 	}
 }
 
-
-PxConvexMesh* ConvexMeshBuilderImpl::buildConvexMesh(uint32_t verticesCount, const physx::PxVec3* vertexData)
-{
-	CollisionHull* hull = buildCollisionGeometry(verticesCount, vertexData);
-	PxConvexMesh* convexMesh = buildConvexMesh(*hull);
-	hull->release();
-	return convexMesh;
-}
-
-PxConvexMesh* ConvexMeshBuilderImpl::buildConvexMesh(const CollisionHull& hull)
-{	
-	/* PxCooking::createConvexMesh expects PxHullPolygon input, which matches CollisionHull::HullPolygon */
-	static_assert(sizeof(PxHullPolygon) == sizeof(CollisionHull::HullPolygon), "CollisionHull::HullPolygon size mismatch");
-	static_assert(offsetof(PxHullPolygon, mPlane) == offsetof(CollisionHull::HullPolygon, mPlane), "CollisionHull::HullPolygon layout mismatch");
-	static_assert(offsetof(PxHullPolygon, mNbVerts) == offsetof(CollisionHull::HullPolygon, mNbVerts), "CollisionHull::HullPolygon layout mismatch");
-	static_assert(offsetof(PxHullPolygon, mIndexBase) == offsetof(CollisionHull::HullPolygon, mIndexBase), "CollisionHull::HullPolygon layout mismatch");
-
-	PxConvexMeshDesc convexMeshDescr;
-	convexMeshDescr.indices.data = hull.indices;
-	convexMeshDescr.indices.count = (uint32_t)hull.indicesCount;
-	convexMeshDescr.indices.stride = sizeof(uint32_t);
-
-	convexMeshDescr.points.data = hull.points;
-	convexMeshDescr.points.count = (uint32_t)hull.pointsCount;
-	convexMeshDescr.points.stride = sizeof(PxVec3);
-
-	convexMeshDescr.polygons.data = hull.polygonData;
-	convexMeshDescr.polygons.count = (uint32_t)hull.polygonDataCount;
-	convexMeshDescr.polygons.stride = sizeof(PxHullPolygon);
-
-	PxConvexMesh* convexMesh = mCooking->createConvexMesh(convexMeshDescr, *mInsertionCallback);
-	return convexMesh;
-}
-
-
-PxConvexMesh* ConvexMeshBuilderImpl::buildConvexMeshRT(const Nv::Blast::Vertex* vrs, uint32_t count)
-{	
-	PxConvexMeshDesc convexMeshDescr;
-
-	convexMeshDescr.points.data = vrs;
-	convexMeshDescr.points.count = (uint32_t)count;
-	convexMeshDescr.points.stride = sizeof(Nv::Blast::Vertex);
-	
-	convexMeshDescr.flags = PxConvexFlag::eCOMPUTE_CONVEX | PxConvexFlag::eGPU_COMPATIBLE;
-
-	PxConvexMesh* convexMesh = mCooking->createConvexMesh(convexMeshDescr, *mInsertionCallback);
-	return convexMesh;
-}
-
-void ConvexMeshBuilderImpl::release()
-{
-	delete this;
-}
-
-int32_t	ConvexMeshBuilderImpl::buildMeshConvexDecomposition(const Triangle* mesh, uint32_t triangleCount, const CollisionParams& iparams, CollisionHull**& convexes)
+int32_t buildMeshConvexDecomposition(ConvexMeshBuilder& cmb, const Triangle* mesh, uint32_t triangleCount,
+                                     const ConvexDecompositionParams& iparams, CollisionHull**& convexes)
 {
 	std::vector<float> coords(triangleCount * 9);
 	std::vector<uint32_t> indices(triangleCount * 3);
@@ -362,7 +191,7 @@ int32_t	ConvexMeshBuilderImpl::buildMeshConvexDecomposition(const Triangle* mesh
 		for (auto& t : { mesh[i].a.p , mesh[i].b.p , mesh[i].c.p })
 		{
 
-			chunkBound.include(t);
+			chunkBound.include(toPxShared(t));
 			coords[indxCoord] = t.x;
 			coords[indxCoord + 1] = t.y;
 			coords[indxCoord + 2] = t.z;
@@ -411,7 +240,7 @@ int32_t	ConvexMeshBuilderImpl::buildMeshConvexDecomposition(const Triangle* mesh
 			vertices.back().z = vertices.back().z * rsc.z + chunkBound.minimum.z;
 
 		}
-		convexes[i] = buildCollisionGeometry(vertices.size(), vertices.data());
+		convexes[i] = cmb.buildCollisionGeometry(vertices.size(), fromPxShared(vertices.data()));
 	}
 	//VHACD::~VHACD called from release does nothign and does not call Clean()
 	decomposer->Clean();

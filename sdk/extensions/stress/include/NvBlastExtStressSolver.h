@@ -30,8 +30,7 @@
 #define NVBLASTEXTSTRESSSOLVER_H
 
 #include "NvBlastTypes.h"
-#include "PxVec3.h"
-#include <vector>
+#include "NvCTypes.h"
 
 
 namespace Nv
@@ -136,7 +135,7 @@ public:
 	\param[in]	localPosition	Node local position.
 	\param[in]	isStatic		Is node static.
 	*/
-	virtual void							setNodeInfo(uint32_t graphNodeIndex, float mass, float volume, physx::PxVec3 localPosition, bool isStatic) = 0;
+	virtual void							setNodeInfo(uint32_t graphNodeIndex, float mass, float volume, NvcVec3 localPosition, bool isStatic) = 0;
 
 	/**
 	Set all nodes info using low level NvBlastAsset data.
@@ -193,7 +192,7 @@ public:
 
 	\return true iff node was found and force applied.
 	*/
-	virtual bool							addForce(const NvBlastActor& actor, physx::PxVec3 localPosition, physx::PxVec3 localForce, ExtForceMode::Enum mode = ExtForceMode::IMPULSE) = 0;
+	virtual bool							addForce(const NvBlastActor& actor, NvcVec3 localPosition, NvcVec3 localForce, ExtForceMode::Enum mode = ExtForceMode::IMPULSE) = 0;
 
 	/**
 	Apply external impulse on particular node.
@@ -202,7 +201,7 @@ public:
 	\param[in]	localForce		Force to apply in local actor's coordinates.
 	\param[in]	mode			The mode to use when applying the force/impulse(see #ExtForceMode)
 	*/
-	virtual void							addForce(uint32_t graphNodeIndex, physx::PxVec3 localForce, ExtForceMode::Enum mode = ExtForceMode::IMPULSE) = 0;
+	virtual void							addForce(uint32_t graphNodeIndex, NvcVec3 localForce, ExtForceMode::Enum mode = ExtForceMode::IMPULSE) = 0;
 
 	/**
 	Apply external gravity on particular actor of family. This function applies gravity on every node withing actor, so it makes sense only for static actors.
@@ -212,7 +211,7 @@ public:
 
 	\return true iff force was applied on at least one node.
 	*/
-	virtual bool							addGravityForce(const NvBlastActor& actor, physx::PxVec3 localGravity) = 0;
+	virtual bool							addGravityForce(const NvBlastActor& actor, NvcVec3 localGravity) = 0;
 
 	/**
 	Apply centrifugal force produced by actor's angular movement.
@@ -223,7 +222,7 @@ public:
 
 	\return true iff force was applied on at least one node.
 	*/
-	virtual bool							addAngularVelocity(const NvBlastActor& actor, physx::PxVec3 localCenterMass, physx::PxVec3 localAngularVelocity) = 0;
+	virtual bool							addAngularVelocity(const NvBlastActor& actor, NvcVec3 localCenterMass, NvcVec3 localAngularVelocity) = 0;
 
 	/**
 	Update stress solver.
@@ -337,12 +336,12 @@ public:
 	*/
 	struct DebugLine
 	{
-		DebugLine(const physx::PxVec3& p0, const physx::PxVec3& p1, const uint32_t& c)
+		DebugLine(const NvcVec3& p0, const NvcVec3& p1, const uint32_t& c)
 			: pos0(p0), color0(c), pos1(p1), color1(c) {}
 
-		physx::PxVec3	pos0;
+		NvcVec3	pos0;
 		uint32_t		color0;
-		physx::PxVec3	pos1;
+		NvcVec3	pos1;
 		uint32_t		color1;
 	};
 

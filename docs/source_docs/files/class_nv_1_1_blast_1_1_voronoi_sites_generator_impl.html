@@ -58,19 +58,19 @@ Inheritance diagram for Nv::Blast::VoronoiSitesGeneratorImpl:</div>
 <a href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl.html#901490060ad6796983d449cdfe063a53">addSite</a> (const physx::PxVec3 &amp;site) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl.html#3939730ea1fa9eef6843dbbccfe1b921">addSite</a> (const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;site) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl.html#7377b65b5fafdb2eb4832f57c74f127d">clearStencil</a> () override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl.html#57ec8f7229999994e516d4edefdf9eed">clusteredSitesGeneration</a> (uint32_t numberOfClusters, uint32_t sitesPerCluster, float clusterRadius) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl.html#512b872ac001de3ba8d5fded984d78f2">deleteInSphere</a> (const float radius, const physx::PxVec3 &amp;center, const float eraserProbability=1) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl.html#d2e1a222053fc19348990fb7ea8ed1a6">deleteInSphere</a> (const float radius, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;center, const float eraserProbability=1) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl.html#cb109e78959289208cf2e6eddb7ebe65">generateInSphere</a> (const uint32_t count, const float radius, const physx::PxVec3 &amp;center) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl.html#5b18977952c1d5efcd4772f8ce7520c2">generateInSphere</a> (const uint32_t count, const float radius, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;center) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl.html#b618d8a8b1b1ea2b5e29460f20312dbe">getVoronoiSites</a> (const physx::PxVec3 *&amp;sites) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl.html#d4a5521b93a40601ad53c36882f63a04">getVoronoiSites</a> (const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&amp;sites) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl.html#a06fcc68fa2f64b09bfdff955ceab3b3">radialPattern</a> (const physx::PxVec3 &amp;center, const physx::PxVec3 &amp;normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset=0.0f, float variability=0.0f) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl.html#84aa94e4229dbf2ea8ac304ce1a96a1f">radialPattern</a> (const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;center, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset=0.0f, float variability=0.0f) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator_impl.html#d37927c9e02c8259b2607099d484decc">release</a> () override</td></tr>
 
@@ -143,14 +143,14 @@ Voronoi sites should not be generated outside of the fractured mesh, so <a class
 </div>
 </div><p>
 <hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="901490060ad6796983d449cdfe063a53"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGeneratorImpl::addSite" ref="901490060ad6796983d449cdfe063a53" args="(const physx::PxVec3 &amp;site) override" -->
+<a class="anchor" name="3939730ea1fa9eef6843dbbccfe1b921"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGeneratorImpl::addSite" ref="3939730ea1fa9eef6843dbbccfe1b921" args="(const NvcVec3 &amp;site) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void Nv::Blast::VoronoiSitesGeneratorImpl::addSite           </td>
           <td>(</td>
-          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>site</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td><code> [override, virtual]</code></td>
@@ -166,7 +166,7 @@ Add site in particular point <dl compact><dt><b>Parameters:</b></dt><dd>
   </table>
 </dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#5142e8884ef7b25748b8ae4ab9c2356f">Nv::Blast::VoronoiSitesGenerator</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#348cdad317d00510f625dd1997147aaf">Nv::Blast::VoronoiSitesGenerator</a>.</p>
 
 </div>
 </div><p>
@@ -235,7 +235,7 @@ Generate sites in clustered fashion <dl compact><dt><b>Parameters:</b></dt><dd>
 
 </div>
 </div><p>
-<a class="anchor" name="512b872ac001de3ba8d5fded984d78f2"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGeneratorImpl::deleteInSphere" ref="512b872ac001de3ba8d5fded984d78f2" args="(const float radius, const physx::PxVec3 &amp;center, const float eraserProbability=1) override" -->
+<a class="anchor" name="d2e1a222053fc19348990fb7ea8ed1a6"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGeneratorImpl::deleteInSphere" ref="d2e1a222053fc19348990fb7ea8ed1a6" args="(const float radius, const NvcVec3 &amp;center, const float eraserProbability=1) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -248,7 +248,7 @@ Generate sites in clustered fashion <dl compact><dt><b>Parameters:</b></dt><dd>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>center</em>, </td>
         </tr>
         <tr>
@@ -275,11 +275,11 @@ Deletes sites inside supplied sphere <dl compact><dt><b>Parameters:</b></dt><dd>
   </table>
 </dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#16867c95d16e8eb0e7de6c58742135b9">Nv::Blast::VoronoiSitesGenerator</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#a0c4ff542d7a89144e2cfe4e0ef734d9">Nv::Blast::VoronoiSitesGenerator</a>.</p>
 
 </div>
 </div><p>
-<a class="anchor" name="cb109e78959289208cf2e6eddb7ebe65"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGeneratorImpl::generateInSphere" ref="cb109e78959289208cf2e6eddb7ebe65" args="(const uint32_t count, const float radius, const physx::PxVec3 &amp;center) override" -->
+<a class="anchor" name="5b18977952c1d5efcd4772f8ce7520c2"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGeneratorImpl::generateInSphere" ref="5b18977952c1d5efcd4772f8ce7520c2" args="(const uint32_t count, const float radius, const NvcVec3 &amp;center) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -298,7 +298,7 @@ Deletes sites inside supplied sphere <dl compact><dt><b>Parameters:</b></dt><dd>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>center</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -319,18 +319,18 @@ Generate sites inside sphere <dl compact><dt><b>Parameters:</b></dt><dd>
   </table>
 </dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#dbc02a0d6818fcb252259c64cd6c1dc6">Nv::Blast::VoronoiSitesGenerator</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#e304895ab92caa5c119bfc63370ee394">Nv::Blast::VoronoiSitesGenerator</a>.</p>
 
 </div>
 </div><p>
-<a class="anchor" name="b618d8a8b1b1ea2b5e29460f20312dbe"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGeneratorImpl::getVoronoiSites" ref="b618d8a8b1b1ea2b5e29460f20312dbe" args="(const physx::PxVec3 *&amp;sites) override" -->
+<a class="anchor" name="d4a5521b93a40601ad53c36882f63a04"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGeneratorImpl::getVoronoiSites" ref="d4a5521b93a40601ad53c36882f63a04" args="(const NvcVec3 *&amp;sites) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">uint32_t Nv::Blast::VoronoiSitesGeneratorImpl::getVoronoiSites           </td>
           <td>(</td>
-          <td class="paramtype">const physx::PxVec3 *&amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&amp;&nbsp;</td>
           <td class="paramname"> <em>sites</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td><code> [override, virtual]</code></td>
@@ -348,24 +348,24 @@ Access to generated voronoi sites. <dl class="note" compact><dt><b>Note:</b></dt
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>Count of generated voronoi sites. </dd></dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#285a5922634685029929317047adb4ac">Nv::Blast::VoronoiSitesGenerator</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#a31f1b2170e2ba7f2971d43889be5b7e">Nv::Blast::VoronoiSitesGenerator</a>.</p>
 
 </div>
 </div><p>
-<a class="anchor" name="a06fcc68fa2f64b09bfdff955ceab3b3"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGeneratorImpl::radialPattern" ref="a06fcc68fa2f64b09bfdff955ceab3b3" args="(const physx::PxVec3 &amp;center, const physx::PxVec3 &amp;normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset=0.0f, float variability=0.0f) override" -->
+<a class="anchor" name="84aa94e4229dbf2ea8ac304ce1a96a1f"></a><!-- doxytag: member="Nv::Blast::VoronoiSitesGeneratorImpl::radialPattern" ref="84aa94e4229dbf2ea8ac304ce1a96a1f" args="(const NvcVec3 &amp;center, const NvcVec3 &amp;normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset=0.0f, float variability=0.0f) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void Nv::Blast::VoronoiSitesGeneratorImpl::radialPattern           </td>
           <td>(</td>
-          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>center</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 &amp;&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> &amp;&nbsp;</td>
           <td class="paramname"> <em>normal</em>, </td>
         </tr>
         <tr>
@@ -420,7 +420,7 @@ Radial pattern of sites generation <dl compact><dt><b>Parameters:</b></dt><dd>
   </table>
 </dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#e657e2b3e6e587d7b717128d13e0581b">Nv::Blast::VoronoiSitesGenerator</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_voronoi_sites_generator.html#6215ef7c5124ef4b9baa24941102f740">Nv::Blast::VoronoiSitesGenerator</a>.</p>
 
 </div>
 </div><p>

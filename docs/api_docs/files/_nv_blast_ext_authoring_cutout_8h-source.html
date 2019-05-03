@@ -54,28 +54,25 @@
 <a name="l00047"></a>00047 
 <a name="l00052"></a>00052     <span class="keyword">virtual</span> uint32_t                <a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html#8348b26fd9eda511ccb71b1e201d099b">getCutoutLoopCount</a>(uint32_t cutoutIndex) <span class="keyword">const</span> = 0;
 <a name="l00053"></a>00053 
-<a name="l00058"></a>00058     <span class="keyword">virtual</span> <span class="keyword">const</span> physx::PxVec3&amp;    <a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html#1f6702450bcf27fd07f95cd90b301b1a">getCutoutVertex</a>(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) <span class="keyword">const</span> = 0;
+<a name="l00058"></a>00058     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>&amp;          <a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html#6f6877d1b4eacf09ceb2233a79b607e2">getCutoutVertex</a>(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) <span class="keyword">const</span> = 0;
 <a name="l00059"></a>00059 
 <a name="l00063"></a>00063     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                    <a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html#45d0b1d3f50647cd3b5517b70485f338">isCutoutVertexToggleSmoothingGroup</a>(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) <span class="keyword">const</span> = 0;
 <a name="l00064"></a>00064 
 <a name="l00068"></a>00068     <span class="keyword">virtual</span> <span class="keywordtype">bool</span>                    <a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html#6d3a1b817c323ca2385d1cacf52c98ce">isPeriodic</a>() <span class="keyword">const</span> = 0;
 <a name="l00069"></a>00069 
-<a name="l00073"></a>00073     <span class="keyword">virtual</span> <span class="keyword">const</span> physx::PxVec2&amp;    <a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html#3e83164e0d8814fb9912f1c50c7e8218">getDimensions</a>() <span class="keyword">const</span> = 0;
+<a name="l00073"></a>00073     <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code" href="struct_nvc_vec2.html">NvcVec2</a>&amp;          <a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html#7f13e3c6104d0b306d373024b8f4ffc9">getDimensions</a>() <span class="keyword">const</span> = 0;
 <a name="l00074"></a>00074 
-<a name="l00076"></a>00076     <span class="comment">//virtual void          serialize(physx::PxFileBuf&amp; stream) const = 0;</span>
-<a name="l00077"></a>00077     <span class="comment">//virtual void          deserialize(physx::PxFileBuf&amp; stream) = 0;</span>
-<a name="l00078"></a>00078 
-<a name="l00080"></a>00080     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    <a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html#98936273f2f572f73933a62eded49e6c">release</a>() = 0;
-<a name="l00081"></a>00081 
-<a name="l00082"></a>00082 <span class="keyword">protected</span>:
-<a name="l00084"></a><a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html#6122cea44eca2907f01ec61f1d963e93">00084</a>     <span class="keyword">virtual</span>                         <a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html#6122cea44eca2907f01ec61f1d963e93">~CutoutSet</a>() {}
-<a name="l00085"></a>00085 };
+<a name="l00076"></a>00076     <span class="keyword">virtual</span> <span class="keywordtype">void</span>                    <a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html#98936273f2f572f73933a62eded49e6c">release</a>() = 0;
+<a name="l00077"></a>00077 
+<a name="l00078"></a>00078 <span class="keyword">protected</span>:
+<a name="l00080"></a><a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html#6122cea44eca2907f01ec61f1d963e93">00080</a>     <span class="keyword">virtual</span>                         <a class="code" href="class_nv_1_1_blast_1_1_cutout_set.html#6122cea44eca2907f01ec61f1d963e93">~CutoutSet</a>() {}
+<a name="l00081"></a>00081 };
+<a name="l00082"></a>00082 
+<a name="l00083"></a>00083 } <span class="comment">// namespace Blast</span>
+<a name="l00084"></a>00084 } <span class="comment">// namespace Nv</span>
+<a name="l00085"></a>00085 
 <a name="l00086"></a>00086 
-<a name="l00087"></a>00087 } <span class="comment">// namespace Blast</span>
-<a name="l00088"></a>00088 } <span class="comment">// namespace Nv</span>
-<a name="l00089"></a>00089 
-<a name="l00090"></a>00090 
-<a name="l00091"></a>00091 <span class="preprocessor">#endif // idndef NVBLASTAUTHORINGCUTOUT_H</span>
+<a name="l00087"></a>00087 <span class="preprocessor">#endif // idndef NVBLASTAUTHORINGCUTOUT_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

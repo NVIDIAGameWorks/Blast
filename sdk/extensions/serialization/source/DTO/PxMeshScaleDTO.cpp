@@ -26,6 +26,7 @@
 // Copyright (c) 2018 NVIDIA Corporation. All rights reserved.
 
 
+#include "NvPreprocessor.h"
 #include "PxMeshScaleDTO.h"
 #include "PxVec3DTO.h"
 #include "PxQuatDTO.h"
@@ -47,7 +48,7 @@ bool PxMeshScaleDTO::serialize(Nv::Blast::Serialization::PxMeshScale::Builder bu
 
 physx::PxMeshScale* PxMeshScaleDTO::deserialize(Nv::Blast::Serialization::PxMeshScale::Reader reader)
 {
-	reader = reader;
+	NV_UNUSED(reader);
 	return nullptr;
 }
 

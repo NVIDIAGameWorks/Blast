@@ -103,9 +103,9 @@ bool ObjFileWriter::appendMesh(const AuthoringResult& aResult, const char* /*ass
 	md.positionsCount = triCount * 3;
 	md.normalsCount = md.positionsCount;
 	md.uvsCount = md.positionsCount;
-	md.positions = new PxVec3[md.positionsCount];
-	md.normals = new PxVec3[md.normalsCount];
-	md.uvs = new PxVec2[md.uvsCount];
+	md.positions = new NvcVec3[md.positionsCount];
+	md.normals = new NvcVec3[md.normalsCount];
+	md.uvs = new NvcVec2[md.uvsCount];
 
 	md.posIndex = new uint32_t[triCount * 3];
 	md.normIndex = md.posIndex;
@@ -132,7 +132,7 @@ bool ObjFileWriter::appendMesh(const AuthoringResult& aResult, const char* /*ass
 		{
 			sorted.push_back(aResult.geometry[t]);
 			int32_t cmat = sorted.back().materialId;
-			if (cmat == MATERIAL_INTERIOR)
+			if (cmat == kMaterialInteriorId)
 			{
 				cmat = mIntSurfaceMatIndex;
 			}

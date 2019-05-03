@@ -26,6 +26,7 @@
 // Copyright (c) 2018 NVIDIA Corporation. All rights reserved.
 
 
+#include "NvPreprocessor.h"
 #include "PxTransformDTO.h"
 #include "PxQuatDTO.h"
 #include "PxVec3DTO.h"
@@ -46,7 +47,7 @@ bool PxTransformDTO::serialize(Nv::Blast::Serialization::PxTransform::Builder bu
 
 physx::PxTransform* PxTransformDTO::deserialize(Nv::Blast::Serialization::PxTransform::Reader reader)
 {
-	reader = reader;
+	NV_UNUSED(reader);
 	return nullptr;
 }
 

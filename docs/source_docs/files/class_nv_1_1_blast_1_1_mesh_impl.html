@@ -60,9 +60,9 @@ Inheritance diagram for Nv::Blast::MeshImpl:</div>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#805da38fdd8b669bb1a5cdc86379b20e">calcPerFacetBounds</a> () override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">const physx::PxBounds3 &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#c2248c2993c67362e7e1723fbf7dbb1c">getBoundingBox</a> () const override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">const <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#893f854a70609229802fad4889ab8914">getBoundingBox</a> () const override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">physx::PxBounds3 &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#8113b725623bcc84d6346c02b2ea1253">getBoundingBoxWritable</a> () override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a> &amp;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#e6c92213b91e748fec7a592c20884e2b">getBoundingBoxWritable</a> () override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#db1bc85f36ba170694a268b593f9ff35">getEdges</a> () const override</td></tr>
 
@@ -72,7 +72,7 @@ Inheritance diagram for Nv::Blast::MeshImpl:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#4679ecf7db414191d152e2b79af2c2cc">getFacet</a> (int32_t facet) const override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const physx::PxBounds3 *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#03a638a3062c430771c927af891118c1">getFacetBound</a> (uint32_t index) const override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual const <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a> *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#34690d4553a470169dd160488d861f4a">getFacetBound</a> (uint32_t index) const override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#b930517d05cb83a73aed79788a909979">getFacetCount</a> () const override</td></tr>
 
@@ -98,7 +98,7 @@ Inheritance diagram for Nv::Blast::MeshImpl:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#bb43d4d66eaa32dee98acd9e1ff90fea">MeshImpl</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *vertices, const <a class="el" href="struct_nv_1_1_blast_1_1_edge.html">Edge</a> *edges, const <a class="el" href="struct_nv_1_1_blast_1_1_facet.html">Facet</a> *facets, uint32_t posCount, uint32_t edgesCount, uint32_t facetsCount)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#75e2e25e33e054c1adb008099b37e6d5">MeshImpl</a> (const physx::PxVec3 *position, const physx::PxVec3 *normals, const physx::PxVec2 *uv, uint32_t verticesCount, const uint32_t *indices, uint32_t indicesCount)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#bfeffdee97c4eeee5449a5b0e6e024ce">MeshImpl</a> (const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *position, const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *normals, const <a class="el" href="struct_nvc_vec2.html">NvcVec2</a> *uv, uint32_t verticesCount, const uint32_t *indices, uint32_t indicesCount)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_mesh_impl.html#9e69417e462e30039484a4e405cfed24">recalculateBoundingBox</a> () override</td></tr>
 
@@ -115,26 +115,26 @@ Inheritance diagram for Nv::Blast::MeshImpl:</div>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Class for internal mesh representation <hr><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" name="75e2e25e33e054c1adb008099b37e6d5"></a><!-- doxytag: member="Nv::Blast::MeshImpl::MeshImpl" ref="75e2e25e33e054c1adb008099b37e6d5" args="(const physx::PxVec3 *position, const physx::PxVec3 *normals, const physx::PxVec2 *uv, uint32_t verticesCount, const uint32_t *indices, uint32_t indicesCount)" -->
+<a class="anchor" name="bfeffdee97c4eeee5449a5b0e6e024ce"></a><!-- doxytag: member="Nv::Blast::MeshImpl::MeshImpl" ref="bfeffdee97c4eeee5449a5b0e6e024ce" args="(const NvcVec3 *position, const NvcVec3 *normals, const NvcVec2 *uv, uint32_t verticesCount, const uint32_t *indices, uint32_t indicesCount)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">Nv::Blast::MeshImpl::MeshImpl           </td>
           <td>(</td>
-          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td>
           <td class="paramname"> <em>position</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec3 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec3.html">NvcVec3</a> *&nbsp;</td>
           <td class="paramname"> <em>normals</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const physx::PxVec2 *&nbsp;</td>
+          <td class="paramtype">const <a class="el" href="struct_nvc_vec2.html">NvcVec2</a> *&nbsp;</td>
           <td class="paramname"> <em>uv</em>, </td>
         </tr>
         <tr>
@@ -364,12 +364,12 @@ Calculate per-facet bounding boxes.
 
 </div>
 </div><p>
-<a class="anchor" name="c2248c2993c67362e7e1723fbf7dbb1c"></a><!-- doxytag: member="Nv::Blast::MeshImpl::getBoundingBox" ref="c2248c2993c67362e7e1723fbf7dbb1c" args="() const override" -->
+<a class="anchor" name="893f854a70609229802fad4889ab8914"></a><!-- doxytag: member="Nv::Blast::MeshImpl::getBoundingBox" ref="893f854a70609229802fad4889ab8914" args="() const override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const physx::PxBounds3&amp; Nv::Blast::MeshImpl::getBoundingBox           </td>
+          <td class="memname">const <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a>&amp; Nv::Blast::MeshImpl::getBoundingBox           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
@@ -381,16 +381,16 @@ Calculate per-facet bounding boxes.
 
 <p>
 Return reference on mesh bounding box. 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#b14c86e03b94b1d2cb2bc691009f04b5">Nv::Blast::Mesh</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#2dcb0655c4e75c15dd465e756ec6f174">Nv::Blast::Mesh</a>.</p>
 
 </div>
 </div><p>
-<a class="anchor" name="8113b725623bcc84d6346c02b2ea1253"></a><!-- doxytag: member="Nv::Blast::MeshImpl::getBoundingBoxWritable" ref="8113b725623bcc84d6346c02b2ea1253" args="() override" -->
+<a class="anchor" name="e6c92213b91e748fec7a592c20884e2b"></a><!-- doxytag: member="Nv::Blast::MeshImpl::getBoundingBoxWritable" ref="e6c92213b91e748fec7a592c20884e2b" args="() override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">physx::PxBounds3&amp; Nv::Blast::MeshImpl::getBoundingBoxWritable           </td>
+          <td class="memname"><a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a>&amp; Nv::Blast::MeshImpl::getBoundingBoxWritable           </td>
           <td>(</td>
           <td class="paramname">          </td>
           <td>&nbsp;)&nbsp;</td>
@@ -402,7 +402,7 @@ Return reference on mesh bounding box.
 
 <p>
 Return writable reference on mesh bounding box. 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#29110bbb30c0de321bd0de1812750c30">Nv::Blast::Mesh</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#d7c27dcdd5d5f28da04605410721d016">Nv::Blast::Mesh</a>.</p>
 
 </div>
 </div><p>
@@ -491,12 +491,12 @@ Return writable pointer on specified facet
 
 </div>
 </div><p>
-<a class="anchor" name="03a638a3062c430771c927af891118c1"></a><!-- doxytag: member="Nv::Blast::MeshImpl::getFacetBound" ref="03a638a3062c430771c927af891118c1" args="(uint32_t index) const override" -->
+<a class="anchor" name="34690d4553a470169dd160488d861f4a"></a><!-- doxytag: member="Nv::Blast::MeshImpl::getFacetBound" ref="34690d4553a470169dd160488d861f4a" args="(uint32_t index) const override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const physx::PxBounds3* Nv::Blast::MeshImpl::getFacetBound           </td>
+          <td class="memname">virtual const <a class="el" href="struct_nvc_bounds3.html">NvcBounds3</a>* Nv::Blast::MeshImpl::getFacetBound           </td>
           <td>(</td>
           <td class="paramtype">uint32_t&nbsp;</td>
           <td class="paramname"> <em>index</em>          </td>
@@ -509,7 +509,7 @@ Return writable pointer on specified facet
 
 <p>
 Get pointer on facet bounding box, if not calculated return nullptr. 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#8129eb703f7cbd34e3937fe4938ca4bd">Nv::Blast::Mesh</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_mesh.html#93b7642d29e27da93b76d420a804aef2">Nv::Blast::Mesh</a>.</p>
 
 </div>
 </div><p>

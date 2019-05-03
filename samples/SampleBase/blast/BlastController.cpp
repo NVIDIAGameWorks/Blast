@@ -66,9 +66,9 @@
 
 #include <PxFoundation.h>
 
-#define SAFE_RELEASE_(p)                                                                                                \
+#define SAFE_RELEASE_(p)                                                                                               \
 	{                                                                                                                  \
-		if(p)                                                                                                          \
+		if (p)                                                                                                         \
 		{                                                                                                              \
 			(p)->release();                                                                                            \
 			(p) = NULL;                                                                                                \
@@ -80,9 +80,12 @@
 //												Joint creation
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static physx::PxJoint* createPxJointCallback(ExtPxActor* actor0, const physx::PxTransform& localFrame0, ExtPxActor* actor1, const physx::PxTransform& localFrame1, physx::PxPhysics& physics, TkJoint& joint)
+static physx::PxJoint*
+createPxJointCallback(ExtPxActor* actor0, const physx::PxTransform& localFrame0, ExtPxActor* actor1,
+                      const physx::PxTransform& localFrame1, physx::PxPhysics& physics, TkJoint& joint)
 {
-	PxDistanceJoint* pxJoint = PxDistanceJointCreate(physics, actor0 ? &actor0->getPhysXActor() : nullptr, localFrame0, actor1 ? &actor1->getPhysXActor() : nullptr, localFrame1);
+	PxDistanceJoint* pxJoint = PxDistanceJointCreate(physics, actor0 ? &actor0->getPhysXActor() : nullptr, localFrame0,
+	                                                 actor1 ? &actor1->getPhysXActor() : nullptr, localFrame1);
 	pxJoint->setMaxDistance(1.0f);
 	return pxJoint;
 }
@@ -92,19 +95,26 @@ static physx::PxJoint* createPxJointCallback(ExtPxActor* actor0, const physx::Px
 //												Controller
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-BlastController::BlastController() 
-: m_eventCallback(nullptr), debugRenderMode(BlastFamily::DEBUG_RENDER_DISABLED), m_impactDamageEnabled(true), 
-m_impactDamageToStressEnabled(false), m_rigidBodyLimitEnabled(true), m_rigidBodyLimit(40000), m_blastAssetsSize(0), debugRenderScale(0.01f),
-m_taskManager(nullptr), m_extGroupTaskManager(nullptr), m_damageDescBuffer(64 * 1024), m_damageParamsBuffer(1024)
+BlastController::BlastController()
+: m_eventCallback(nullptr)
+, debugRenderMode(BlastFamily::DEBUG_RENDER_DISABLED)
+, m_impactDamageEnabled(true)
+, m_impactDamageToStressEnabled(false)
+, m_rigidBodyLimitEnabled(true)
+, m_rigidBodyLimit(40000)
+, m_blastAssetsSize(0)
+, debugRenderScale(0.01f)
+, m_taskManager(nullptr)
+, m_extGroupTaskManager(nullptr)
+, m_damageDescBuffer(64 * 1024)
+, m_damageParamsBuffer(1024)
 {
 	m_impactDamageToStressFactor = 0.01f;
-	m_draggingToStressFactor = 100.0f;
+	m_draggingToStressFactor     = 100.0f;
 }
 
 
-BlastController::~BlastController()
-{
-}
+BlastController::~BlastController() {}
 
 void BlastController::reinitialize()
 {
@@ -118,16 +128,17 @@ void BlastController::onSampleStart()
 
 	m_replay = new BlastReplay();
 
-	m_taskManager = PxTaskManager::createTaskManager(NvBlastGetPxErrorCallback(), getPhysXController().getCPUDispatcher(), 0);
+	m_taskManager =
+	    PxTaskManager::createTaskManager(NvBlastGetPxErrorCallback(), getPhysXController().getCPUDispatcher(), 0);
 
 	TkGroupDesc gdesc;
 	gdesc.workerCount = m_taskManager->getCpuDispatcher()->getWorkerCount();
-	m_tkGroup = m_tkFramework->createGroup(gdesc);
+	m_tkGroup         = m_tkFramework->createGroup(gdesc);
 
 	m_extPxManager = ExtPxManager::create(getPhysXController().getPhysics(), *m_tkFramework, createPxJointCallback);
 	m_extPxManager->setActorCountLimit(m_rigidBodyLimitEnabled ? m_rigidBodyLimit : 0);
 	m_extImpactDamageManager = ExtImpactDamageManager::create(m_extPxManager, m_extImpactDamageManagerSettings);
-	m_eventCallback = new EventCallback(m_extImpactDamageManager);
+	m_eventCallback          = new EventCallback(m_extImpactDamageManager);
 
 	m_extGroupTaskManager = ExtGroupTaskManager::create(*m_taskManager);
 	m_extGroupTaskManager->setGroup(m_tkGroup);
@@ -138,7 +149,8 @@ void BlastController::onSampleStart()
 	if (m_extSerialization != nullptr)
 	{
 		NvBlastExtTkSerializerLoadSet(*m_tkFramework, *m_extSerialization);
-		NvBlastExtPxSerializerLoadSet(*m_tkFramework, getPhysXController().getPhysics(), getPhysXController().getCooking(), *m_extSerialization);
+		NvBlastExtPxSerializerLoadSet(*m_tkFramework, getPhysXController().getPhysics(),
+		                              getPhysXController().getCooking(), *m_extSerialization);
 	}
 }
 
@@ -172,12 +184,14 @@ void BlastController::notifyPhysXControllerRelease()
 //												Deffered/Immediate damage
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void BlastController::deferDamage(ExtPxActor *actor, BlastFamily& family, const NvBlastDamageProgram& program, const void* damageDesc, uint32_t damageDescSize)
+void BlastController::deferDamage(ExtPxActor* actor, BlastFamily& family, const NvBlastDamageProgram& program,
+                                  const void* damageDesc, uint32_t damageDescSize)
 {
 	const void* bufferedDamageDesc = m_damageDescBuffer.push(damageDesc, damageDescSize);
 	PX_ASSERT_WITH_MESSAGE(bufferedDamageDesc, "Damage desc buffer exhausted.");
 
-	NvBlastExtProgramParams programParams = { bufferedDamageDesc, &family.getMaterial(), actor->getFamily().getPxAsset().getAccelerator() };
+	NvBlastExtProgramParams programParams = { bufferedDamageDesc, &family.getMaterial(),
+		                                      actor->getFamily().getPxAsset().getAccelerator() };
 
 	const void* bufferedProgramParams = m_damageParamsBuffer.push(&programParams, sizeof(NvBlastExtProgramParams));
 	PX_ASSERT_WITH_MESSAGE(bufferedProgramParams, "Damage params buffer exhausted.");
@@ -190,21 +204,29 @@ void BlastController::deferDamage(ExtPxActor *actor, BlastFamily& family, const 
 
 NvBlastFractureBuffers& BlastController::getFractureBuffers(ExtPxActor* actor)
 {
-	const TkAsset* tkAsset = actor->getTkActor().getAsset();
+	const TkAsset* tkAsset    = actor->getTkActor().getAsset();
 	const uint32_t chunkCount = tkAsset->getChunkCount();
-	const uint32_t bondCount = tkAsset->getBondCount();
+	const uint32_t bondCount  = tkAsset->getBondCount();
 
-	m_fractureBuffers.bondFractureCount = bondCount;
+	m_fractureBuffers.bondFractureCount  = bondCount;
 	m_fractureBuffers.chunkFractureCount = chunkCount;
-	m_fractureData.resize((uint32_t)(m_fractureBuffers.bondFractureCount * sizeof(NvBlastBondFractureData) + m_fractureBuffers.chunkFractureCount * sizeof(NvBlastChunkFractureData))); // chunk count + bond count
+	m_fractureData.resize((uint32_t)(m_fractureBuffers.bondFractureCount * sizeof(NvBlastBondFractureData) +
+	                                 m_fractureBuffers.chunkFractureCount * sizeof(NvBlastChunkFractureData)));  // chunk
+	                                                                                                             // count
+	                                                                                                             // +
+	                                                                                                             // bond
+	                                                                                                             // count
 	m_fractureBuffers.chunkFractures = reinterpret_cast<NvBlastChunkFractureData*>(m_fractureData.data());
-	m_fractureBuffers.bondFractures = reinterpret_cast<NvBlastBondFractureData*>(&m_fractureData.data()[m_fractureBuffers.chunkFractureCount * sizeof(NvBlastChunkFractureData)]);
+	m_fractureBuffers.bondFractures  = reinterpret_cast<NvBlastBondFractureData*>(
+        &m_fractureData.data()[m_fractureBuffers.chunkFractureCount * sizeof(NvBlastChunkFractureData)]);
 	return m_fractureBuffers;
 }
 
-void BlastController::immediateDamage(ExtPxActor *actor, BlastFamily& family, const NvBlastDamageProgram& program, const void* damageDesc)
+void BlastController::immediateDamage(ExtPxActor* actor, BlastFamily& family, const NvBlastDamageProgram& program,
+                                      const void* damageDesc)
 {
-	NvBlastExtProgramParams programParams = { damageDesc, &family.getMaterial(), actor->getFamily().getPxAsset().getAccelerator() };
+	NvBlastExtProgramParams programParams = { damageDesc, &family.getMaterial(),
+		                                      actor->getFamily().getPxAsset().getAccelerator() };
 
 	NvBlastFractureBuffers& fractureEvents = getFractureBuffers(actor);
 	actor->getTkActor().generateFracture(&fractureEvents, program, &programParams);
@@ -220,7 +242,8 @@ void BlastController::updateImpactDamage()
 {
 	if (m_impactDamageUpdatePending)
 	{
-		getPhysXController().getPhysXScene().setSimulationEventCallback(m_impactDamageEnabled ? m_eventCallback : nullptr);
+		getPhysXController().getPhysXScene().setSimulationEventCallback(m_impactDamageEnabled ? m_eventCallback :
+		                                                                                        nullptr);
 		refreshImpactDamageSettings();
 		m_impactDamageUpdatePending = false;
 	}
@@ -230,17 +253,18 @@ void BlastController::setImpactDamageEnabled(bool enabled, bool forceUpdate)
 {
 	if (m_impactDamageEnabled != enabled || forceUpdate)
 	{
-		m_impactDamageEnabled = enabled;
+		m_impactDamageEnabled       = enabled;
 		m_impactDamageUpdatePending = true;
 	}
 }
 
-bool BlastController::customImpactDamageFunction(void* data, ExtPxActor* actor, physx::PxShape* shape, physx::PxVec3 position, physx::PxVec3 force)
+bool BlastController::customImpactDamageFunction(void* data, ExtPxActor* actor, physx::PxShape* shape,
+                                                 physx::PxVec3 position, physx::PxVec3 force)
 {
 	return reinterpret_cast<BlastController*>(data)->stressDamage(actor, position, force);
 }
 
-bool BlastController::stressDamage(ExtPxActor *actor, physx::PxVec3 position, physx::PxVec3 force)
+bool BlastController::stressDamage(ExtPxActor* actor, physx::PxVec3 position, physx::PxVec3 force)
 {
 	if (actor->getTkActor().getGraphNodeCount() > 1)
 	{
@@ -248,7 +272,8 @@ bool BlastController::stressDamage(ExtPxActor *actor, physx::PxVec3 position, ph
 		if (userData)
 		{
 			ExtPxStressSolver* solver = reinterpret_cast<ExtPxStressSolver*>(userData);
-			solver->getSolver().addForce(*actor->getTkActor().getActorLL(), position, force * m_impactDamageToStressFactor);
+			solver->getSolver().addForce(*actor->getTkActor().getActorLL(), reinterpret_cast<const NvcVec3&>(position),
+			                             reinterpret_cast<const NvcVec3&>(force * m_impactDamageToStressFactor));
 			return true;
 		}
 	}
@@ -258,7 +283,8 @@ bool BlastController::stressDamage(ExtPxActor *actor, physx::PxVec3 position, ph
 
 void BlastController::refreshImpactDamageSettings()
 {
-	m_extImpactDamageManagerSettings.damageFunction = m_impactDamageToStressEnabled ? customImpactDamageFunction : nullptr;
+	m_extImpactDamageManagerSettings.damageFunction =
+	    m_impactDamageToStressEnabled ? customImpactDamageFunction : nullptr;
 	m_extImpactDamageManagerSettings.damageFunctionData = this;
 	m_extImpactDamageManager->setSettings(m_extImpactDamageManagerSettings);
 }
@@ -271,20 +297,23 @@ void BlastController::refreshImpactDamageSettings()
 void BlastController::updateDraggingStress()
 {
 	auto physxController = getPhysXController();
-	auto actor = physxController.getDraggingActor();
+	auto actor           = physxController.getDraggingActor();
 	if (actor)
 	{
 		ExtPxActor* pxActor = m_extPxManager->getActorFromPhysXActor(*actor);
-		if (pxActor && pxActor->getTkActor().getGraphNodeCount() > 1 && pxActor->getPhysXActor().getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC)
+		if (pxActor && pxActor->getTkActor().getGraphNodeCount() > 1 &&
+		    pxActor->getPhysXActor().getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC)
 		{
 			void* userData = pxActor->getFamily().userData;
 			if (userData)
 			{
 				ExtPxStressSolver* solver = reinterpret_cast<ExtPxStressSolver*>(userData);
 				PxTransform t(pxActor->getPhysXActor().getGlobalPose().getInverse());
-				PxVec3 dragVector = t.rotate(physxController.getDragVector());
+				PxVec3 dragVector  = t.rotate(physxController.getDragVector());
 				const float factor = dragVector.magnitudeSquared() * m_draggingToStressFactor;
-				solver->getSolver().addForce(*pxActor->getTkActor().getActorLL(), physxController.getDragActorHookLocalPoint(), dragVector.getNormalized() * factor);
+				solver->getSolver().addForce(*pxActor->getTkActor().getActorLL(),
+				                             reinterpret_cast<const NvcVec3&>(physxController.getDragActorHookLocalPoint()),
+				                             reinterpret_cast<const NvcVec3&>(dragVector.getNormalized() * factor));
 			}
 		}
 	}
@@ -297,26 +326,20 @@ void BlastController::updateDraggingStress()
 
 uint32_t BlastController::getActorCount() const
 {
-	return std::accumulate(m_families.begin(), m_families.end(), (uint32_t)0, [](uint32_t sum, const BlastFamilyPtr& a)
-	{
-		return sum += a->getActorCount();
-	});
+	return std::accumulate(m_families.begin(), m_families.end(), (uint32_t)0,
+	                       [](uint32_t sum, const BlastFamilyPtr& a) { return sum += a->getActorCount(); });
 }
 
 uint32_t BlastController::getTotalVisibleChunkCount() const
 {
-	return std::accumulate(m_families.begin(), m_families.end(), (uint32_t)0, [](uint32_t sum, const BlastFamilyPtr& a)
-	{
-		return sum += a->getTotalVisibleChunkCount();
-	});
+	return std::accumulate(m_families.begin(), m_families.end(), (uint32_t)0,
+	                       [](uint32_t sum, const BlastFamilyPtr& a) { return sum += a->getTotalVisibleChunkCount(); });
 }
 
 size_t BlastController::getFamilySize() const
 {
-	return std::accumulate(m_families.begin(), m_families.end(), (size_t)0, [](size_t sum, const BlastFamilyPtr& a)
-	{
-		return sum += a->getFamilySize();
-	});
+	return std::accumulate(m_families.begin(), m_families.end(), (size_t)0,
+	                       [](size_t sum, const BlastFamilyPtr& a) { return sum += a->getFamilySize(); });
 }
 
 
@@ -365,7 +388,7 @@ void BlastController::Animate(double dt)
 	m_extGroupTaskManager->process();
 	m_extGroupTaskManager->wait();
 
-#else // process group on main thread
+#else  // process group on main thread
 
 	m_tkGroup->process();
 
@@ -381,10 +404,10 @@ void BlastController::Animate(double dt)
 	TkGroupStats gstats;
 	m_tkGroup->getStats(gstats);
 
-	this->m_lastBlastTimers.blastDamageMaterial = NvBlastTicksToSeconds(gstats.timers.material);
-	this->m_lastBlastTimers.blastDamageFracture = NvBlastTicksToSeconds(gstats.timers.fracture);
-	this->m_lastBlastTimers.blastSplitIsland = NvBlastTicksToSeconds(gstats.timers.island);
-	this->m_lastBlastTimers.blastSplitPartition = NvBlastTicksToSeconds(gstats.timers.partition);
+	this->m_lastBlastTimers.blastDamageMaterial  = NvBlastTicksToSeconds(gstats.timers.material);
+	this->m_lastBlastTimers.blastDamageFracture  = NvBlastTicksToSeconds(gstats.timers.fracture);
+	this->m_lastBlastTimers.blastSplitIsland     = NvBlastTicksToSeconds(gstats.timers.island);
+	this->m_lastBlastTimers.blastSplitPartition  = NvBlastTicksToSeconds(gstats.timers.partition);
 	this->m_lastBlastTimers.blastSplitVisibility = NvBlastTicksToSeconds(gstats.timers.visibility);
 
 	for (uint32_t i = 0; i < m_families.size(); ++i)
@@ -410,9 +433,12 @@ void BlastController::drawUI()
 		refresh |= ImGui::Checkbox("Use Shear Damage", &m_extImpactDamageManagerSettings.shearDamage);
 		refresh |= ImGui::DragFloat("Material Hardness", &m_extImpactDamageManagerSettings.hardness);
 		refresh |= ImGui::DragFloat("Damage Radius (Max)", &m_extImpactDamageManagerSettings.damageRadiusMax);
-		refresh |= ImGui::DragFloat("Damage Threshold (Min)", &m_extImpactDamageManagerSettings.damageThresholdMin, 1.0f, 0.0f, 1.0f);
-		refresh |= ImGui::DragFloat("Damage Threshold (Max)", &m_extImpactDamageManagerSettings.damageThresholdMax, 1.0f, 0.0f, 1.0f);
-		refresh |= ImGui::DragFloat("Damage Falloff Radius Factor", &m_extImpactDamageManagerSettings.damageFalloffRadiusFactor, 1.0f, 0.0f, 32.0f);
+		refresh |= ImGui::DragFloat("Damage Threshold (Min)", &m_extImpactDamageManagerSettings.damageThresholdMin,
+		                            1.0f, 0.0f, 1.0f);
+		refresh |= ImGui::DragFloat("Damage Threshold (Max)", &m_extImpactDamageManagerSettings.damageThresholdMax,
+		                            1.0f, 0.0f, 1.0f);
+		refresh |= ImGui::DragFloat("Damage Falloff Radius Factor",
+		                            &m_extImpactDamageManagerSettings.damageFalloffRadiusFactor, 1.0f, 0.0f, 32.0f);
 		refresh |= ImGui::Checkbox("Impact Damage To Stress Solver", &m_impactDamageToStressEnabled);
 
 		if (refresh)
@@ -438,7 +464,7 @@ void BlastController::drawUI()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 BlastFamilyPtr BlastController::spawnFamily(BlastAsset* blastAsset, const BlastAsset::ActorDesc& desc)
-{	
+{
 	BlastFamilyPtr actor = blastAsset->createFamily(getPhysXController(), *m_extPxManager, desc);
 	m_families.push_back(actor);
 	recalculateAssetsSize();
@@ -477,7 +503,8 @@ void BlastController::recalculateAssetsSize()
 	}
 }
 
-bool BlastController::overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*, BlastFamily&)> hitCall)
+bool BlastController::overlap(const PxGeometry& geometry, const PxTransform& pose,
+                              std::function<void(ExtPxActor*, BlastFamily&)> hitCall)
 {
 	PROFILER_SCOPED_FUNCTION();
 

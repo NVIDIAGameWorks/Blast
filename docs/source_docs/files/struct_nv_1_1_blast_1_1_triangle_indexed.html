@@ -49,15 +49,7 @@
 <a href="struct_nv_1_1_blast_1_1_triangle_indexed-members.html">List of all members.</a><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#adc1efaf4d0f77ab8f092cd14fb82a00">convertToTriangle</a> (<a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *vertices)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#446e31b797cbe07774e80a81c5fbe05c">getOpposite</a> (uint32_t a, uint32_t b)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#e8501aa397ccc049b5a7927f32c04c72">isContainEdge</a> (uint32_t a, uint32_t b)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#bff0963d62134aabe871bbea37b68444">TriangleIndexed</a> (uint32_t a, uint32_t b, uint32_t c)</td></tr>
-
-<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#26f032d412ed150b68bb531e7a1b639d">TriangleIndexed</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#13e1a4dfce080ec72bb928f463bd0185">TriangleIndexed</a> (uint32_t <a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#9174058ba483b96c990ca30e5d985e32">ea</a>, uint32_t <a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#7324ae8ef71b4ddb947bf00f04b7dd97">eb</a>, uint32_t <a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#6a3ccd2a6daec7b15916e4c83c97d116">ec</a>, int32_t mid=0, int32_t sid=0, int32_t ud=0)</td></tr>
 
 <tr><td colspan="2"><br><h2>Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_triangle_indexed.html#9174058ba483b96c990ca30e5d985e32">ea</a></td></tr>
@@ -75,26 +67,7 @@
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Index based triangle <hr><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" name="26f032d412ed150b68bb531e7a1b639d"></a><!-- doxytag: member="Nv::Blast::TriangleIndexed::TriangleIndexed" ref="26f032d412ed150b68bb531e7a1b639d" args="()" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Nv::Blast::TriangleIndexed::TriangleIndexed           </td>
-          <td>(</td>
-          <td class="paramname">          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [inline]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="bff0963d62134aabe871bbea37b68444"></a><!-- doxytag: member="Nv::Blast::TriangleIndexed::TriangleIndexed" ref="bff0963d62134aabe871bbea37b68444" args="(uint32_t a, uint32_t b, uint32_t c)" -->
+<a class="anchor" name="13e1a4dfce080ec72bb928f463bd0185"></a><!-- doxytag: member="Nv::Blast::TriangleIndexed::TriangleIndexed" ref="13e1a4dfce080ec72bb928f463bd0185" args="(uint32_t ea, uint32_t eb, uint32_t ec, int32_t mid=0, int32_t sid=0, int32_t ud=0)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -102,98 +75,37 @@ Index based triangle <hr><h2>Constructor &amp; Destructor Documentation</h2>
           <td class="memname">Nv::Blast::TriangleIndexed::TriangleIndexed           </td>
           <td>(</td>
           <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>a</em>, </td>
+          <td class="paramname"> <em>ea</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>b</em>, </td>
+          <td class="paramname"> <em>eb</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>c</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [inline]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<hr><h2>Member Function Documentation</h2>
-<a class="anchor" name="adc1efaf4d0f77ab8f092cd14fb82a00"></a><!-- doxytag: member="Nv::Blast::TriangleIndexed::convertToTriangle" ref="adc1efaf4d0f77ab8f092cd14fb82a00" args="(Vertex *vertices)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> Nv::Blast::TriangleIndexed::convertToTriangle           </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> *&nbsp;</td>
-          <td class="paramname"> <em>vertices</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [inline]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="446e31b797cbe07774e80a81c5fbe05c"></a><!-- doxytag: member="Nv::Blast::TriangleIndexed::getOpposite" ref="446e31b797cbe07774e80a81c5fbe05c" args="(uint32_t a, uint32_t b)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t Nv::Blast::TriangleIndexed::getOpposite           </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>a</em>, </td>
+          <td class="paramname"> <em>ec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>b</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td><code> [inline]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-
-</div>
-</div><p>
-<a class="anchor" name="e8501aa397ccc049b5a7927f32c04c72"></a><!-- doxytag: member="Nv::Blast::TriangleIndexed::isContainEdge" ref="e8501aa397ccc049b5a7927f32c04c72" args="(uint32_t a, uint32_t b)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Nv::Blast::TriangleIndexed::isContainEdge           </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>a</em>, </td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>mid</em> = <code>0</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>b</em></td><td>&nbsp;</td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>sid</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&nbsp;</td>
+          <td class="paramname"> <em>ud</em> = <code>0</code></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>

@@ -148,7 +148,7 @@ Nv::Blast::ExtPxAsset* ExtPxAssetDTO::deserialize(Nv::Blast::Serialization::ExtP
 
 bool ExtPxAssetDTO::deserializeInto(Nv::Blast::Serialization::ExtPxAsset::Reader reader, Nv::Blast::ExtPxAsset * poco)
 {
-	reader = reader;
+	NV_UNUSED(reader);
 	poco = nullptr;
 	//NOTE: Because of the way this is structured, can't do this.
 	return false;

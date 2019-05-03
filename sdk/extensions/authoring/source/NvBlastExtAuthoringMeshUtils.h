@@ -77,8 +77,7 @@ typedef std::map<physx::PxVec3, std::map<uint32_t, uint32_t>, CmpVec> PointMap;
 struct SharedFace
 {
 	SharedFace() {}
-	SharedFace(uint32_t inW, uint32_t inH, int64_t inUD, int32_t inMatId)
-		: w(inW), h(inH), f(0, 3, inMatId, inUD)
+	SharedFace(uint32_t inW, uint32_t inH, int64_t inUD, int32_t inMatId) : w(inW), h(inH), f(Facet( 0, 3, inUD, inMatId ))
 	{
 		vertices.reserve((w + 1) * (h + 1));
 	}

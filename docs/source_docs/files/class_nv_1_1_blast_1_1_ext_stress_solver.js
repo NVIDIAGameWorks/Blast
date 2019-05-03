@@ -7,10 +7,10 @@ var class_nv_1_1_blast_1_1_ext_stress_solver =
       [ "STRESS_GRAPH_NODES_IMPULSES", "class_nv_1_1_blast_1_1_ext_stress_solver.html#ad0250c97326fe162fe78a2801f35ef4da0b55d93864b9c304d94922037b53eb13", null ],
       [ "STRESS_GRAPH_BONDS_IMPULSES", "class_nv_1_1_blast_1_1_ext_stress_solver.html#ad0250c97326fe162fe78a2801f35ef4daf00fff35b251ccbeaa7097a7b8a3054c", null ]
     ] ],
-    [ "addAngularVelocity", "class_nv_1_1_blast_1_1_ext_stress_solver.html#a1d9a764d4ae041cce5154d8b3b314ec1", null ],
-    [ "addForce", "class_nv_1_1_blast_1_1_ext_stress_solver.html#aa1ca6a1101fa2c9fee8143a772dcc9f1", null ],
-    [ "addForce", "class_nv_1_1_blast_1_1_ext_stress_solver.html#a91dfb9e712ca7ce1af32ce05064ec46f", null ],
-    [ "addGravityForce", "class_nv_1_1_blast_1_1_ext_stress_solver.html#a1ac066c6d4a0e1385ceec64f1d1d7e02", null ],
+    [ "addAngularVelocity", "class_nv_1_1_blast_1_1_ext_stress_solver.html#a9b17b16a8bd584b227d4775b597f9728", null ],
+    [ "addForce", "class_nv_1_1_blast_1_1_ext_stress_solver.html#a3fcc77af643dcda564356341d1478044", null ],
+    [ "addForce", "class_nv_1_1_blast_1_1_ext_stress_solver.html#ac7f791653c289b1332fce8c79ddb4e9d", null ],
+    [ "addGravityForce", "class_nv_1_1_blast_1_1_ext_stress_solver.html#aac597fc490544acfb0e9518486affdb3", null ],
     [ "fillDebugRender", "class_nv_1_1_blast_1_1_ext_stress_solver.html#a4b35d74e1dcce20d903bff6d6cf8a63f", null ],
     [ "generateFractureCommands", "class_nv_1_1_blast_1_1_ext_stress_solver.html#ad75b9476c3b6189d4d84d3b55016bdf7", null ],
     [ "generateFractureCommands", "class_nv_1_1_blast_1_1_ext_stress_solver.html#a8d878c56d8151b9f3c06d3b8f793fc00", null ],
@@ -27,7 +27,7 @@ var class_nv_1_1_blast_1_1_ext_stress_solver =
     [ "release", "class_nv_1_1_blast_1_1_ext_stress_solver.html#a9f740702a06e3bd915218ec8aa8415d8", null ],
     [ "reset", "class_nv_1_1_blast_1_1_ext_stress_solver.html#a1d0593b22f6cd335a479c18eaf102e40", null ],
     [ "setAllNodesInfoFromLL", "class_nv_1_1_blast_1_1_ext_stress_solver.html#a419c77935487b2e689e377c986bf6eb5", null ],
-    [ "setNodeInfo", "class_nv_1_1_blast_1_1_ext_stress_solver.html#a21b7a38036c0db1e7dfc9591e7d1efed", null ],
+    [ "setNodeInfo", "class_nv_1_1_blast_1_1_ext_stress_solver.html#a61c7764ec17fac216dc052d6b74b3237", null ],
     [ "setSettings", "class_nv_1_1_blast_1_1_ext_stress_solver.html#acfef7926067c389179248e7dbd1e3686", null ],
     [ "update", "class_nv_1_1_blast_1_1_ext_stress_solver.html#a0a994dd1c576f36e5acd73895817ee72", null ]
 ];

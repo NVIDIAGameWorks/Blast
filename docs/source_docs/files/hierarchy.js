@@ -1,10 +1,11 @@
 var hierarchy =
 [
     [ "Nv::Blast::Serialization::Asset::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_asset_1_1__capnp_private.html", null ],
+    [ "Nv::Blast::Serialization::PxTransform::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_px_transform_1_1__capnp_private.html", null ],
     [ "Nv::Blast::Serialization::TkAsset::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1__capnp_private.html", null ],
     [ "Nv::Blast::Serialization::TkAssetJointDesc::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_tk_asset_joint_desc_1_1__capnp_private.html", null ],
     [ "Nv::Blast::Serialization::PxVec3::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_px_vec3_1_1__capnp_private.html", null ],
-    [ "Nv::Blast::Serialization::PxTransform::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_px_transform_1_1__capnp_private.html", null ],
+    [ "Nv::Blast::Serialization::PxMeshScale::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_px_mesh_scale_1_1__capnp_private.html", null ],
     [ "Nv::Blast::Serialization::NvBlastDataBlock::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_nv_blast_data_block_1_1__capnp_private.html", null ],
     [ "Nv::Blast::Serialization::NvBlastChunk::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_nv_blast_chunk_1_1__capnp_private.html", null ],
     [ "Nv::Blast::Serialization::NvBlastBond::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_nv_blast_bond_1_1__capnp_private.html", null ],
@@ -15,7 +16,6 @@ var hierarchy =
     [ "Nv::Blast::Serialization::ExtPxSubchunk::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_ext_px_subchunk_1_1__capnp_private.html", null ],
     [ "Nv::Blast::Serialization::PxConvexMeshGeometry::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_px_convex_mesh_geometry_1_1__capnp_private.html", null ],
     [ "Nv::Blast::Serialization::PxQuat::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_px_quat_1_1__capnp_private.html", null ],
-    [ "Nv::Blast::Serialization::PxMeshScale::_capnpPrivate", "struct_nv_1_1_blast_1_1_serialization_1_1_px_mesh_scale_1_1__capnp_private.html", null ],
     [ "Nv::Blast::ExtSyncEventPhysicsSync::ActorData", "struct_nv_1_1_blast_1_1_ext_sync_event_physics_sync_1_1_actor_data.html", null ],
     [ "Nv::Blast::ActorSerializationFormat", "struct_nv_1_1_blast_1_1_actor_serialization_format.html", null ],
     [ "Nv::Blast::ActorSerializationHeader", "struct_nv_1_1_blast_1_1_actor_serialization_header.html", null ],
@@ -85,8 +85,8 @@ var hierarchy =
     [ "Nv::Blast::Serialization::NvBlastDataBlock::Builder", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_data_block_1_1_builder.html", null ],
     [ "Nv::Blast::Serialization::NvBlastChunk::Builder", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_chunk_1_1_builder.html", null ],
     [ "Nv::Blast::Serialization::NvBlastBond::Builder", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_bond_1_1_builder.html", null ],
-    [ "Nv::Blast::Serialization::NvBlastSupportGraph::Builder", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_support_graph_1_1_builder.html", null ],
     [ "Nv::Blast::Serialization::UUID::Builder", "class_nv_1_1_blast_1_1_serialization_1_1_u_u_i_d_1_1_builder.html", null ],
+    [ "Nv::Blast::Serialization::NvBlastSupportGraph::Builder", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_support_graph_1_1_builder.html", null ],
     [ "Nv::Blast::Asset::ChunkAnnotation", "struct_nv_1_1_blast_1_1_asset_1_1_chunk_annotation.html", null ],
     [ "Nv::Blast::ExtPxAssetDesc::ChunkDesc", "struct_nv_1_1_blast_1_1_ext_px_asset_desc_1_1_chunk_desc.html", null ],
     [ "Nv::Blast::ChunkGraph", "struct_nv_1_1_blast_1_1_chunk_graph.html", null ],
@@ -105,15 +105,17 @@ var hierarchy =
     [ "Nv::Blast::CollisionHull", "struct_nv_1_1_blast_1_1_collision_hull.html", [
       [ "Nv::Blast::CollisionHullImpl", "struct_nv_1_1_blast_1_1_collision_hull_impl.html", null ]
     ] ],
-    [ "Nv::Blast::CollisionParams", "struct_nv_1_1_blast_1_1_collision_params.html", null ],
     [ "Comparator", null, [
       [ "Nv::Blast::FixedPriorityQueue< Element, Comparator >", "class_nv_1_1_blast_1_1_fixed_priority_queue.html", null ]
     ] ],
     [ "VHACD::IVHACD::Constraint", "class_v_h_a_c_d_1_1_i_v_h_a_c_d_1_1_constraint.html", null ],
+    [ "Nv::Blast::ConvexDecompositionParams", "struct_nv_1_1_blast_1_1_convex_decomposition_params.html", null ],
     [ "VHACD::IVHACD::ConvexHull", "class_v_h_a_c_d_1_1_i_v_h_a_c_d_1_1_convex_hull.html", null ],
     [ "Nv::Blast::ConvexLoop", "struct_nv_1_1_blast_1_1_convex_loop.html", null ],
     [ "Nv::Blast::ConvexMeshBuilder", "class_nv_1_1_blast_1_1_convex_mesh_builder.html", [
-      [ "Nv::Blast::ConvexMeshBuilderImpl", "class_nv_1_1_blast_1_1_convex_mesh_builder_impl.html", null ]
+      [ "Nv::Blast::ExtPxCollisionBuilder", "class_nv_1_1_blast_1_1_ext_px_collision_builder.html", [
+        [ "Nv::Blast::ExtPxCollisionBuilderImpl", "class_nv_1_1_blast_1_1_ext_px_collision_builder_impl.html", null ]
+      ] ]
     ] ],
     [ "Nv::Blast::Cutout", "struct_nv_1_1_blast_1_1_cutout.html", null ],
     [ "Nv::Blast::CutoutConfiguration", "struct_nv_1_1_blast_1_1_cutout_configuration.html", null ],
@@ -156,8 +158,8 @@ var hierarchy =
       [ "Nv::Blast::ExtPxAssetImpl", "class_nv_1_1_blast_1_1_ext_px_asset_impl.html", null ]
     ] ],
     [ "Nv::Blast::Serialization::ExtPxAsset", "struct_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset.html", null ],
-    [ "Nv::Blast::ExtPxChunk", "struct_nv_1_1_blast_1_1_ext_px_chunk.html", null ],
     [ "Nv::Blast::Serialization::ExtPxChunk", "struct_nv_1_1_blast_1_1_serialization_1_1_ext_px_chunk.html", null ],
+    [ "Nv::Blast::ExtPxChunk", "struct_nv_1_1_blast_1_1_ext_px_chunk.html", null ],
     [ "Nv::Blast::ExtPxFamily", "class_nv_1_1_blast_1_1_ext_px_family.html", [
       [ "Nv::Blast::ExtPxFamilyImpl", "class_nv_1_1_blast_1_1_ext_px_family_impl.html", null ]
     ] ],
@@ -230,7 +232,7 @@ var hierarchy =
     [ "Nv::Blast::HashSet< Key, HashFn >", "struct_nv_1_1_blast_1_1_hash_set.html", null ],
     [ "Nv::Blast::HashSet< Nv::Blast::ExtPxActor *>", "struct_nv_1_1_blast_1_1_hash_set.html", null ],
     [ "Nv::Blast::HashSet< Nv::Blast::TkJointImpl *>", "struct_nv_1_1_blast_1_1_hash_set.html", null ],
-    [ "Nv::Blast::CollisionHull::HullPolygon", "struct_nv_1_1_blast_1_1_collision_hull_1_1_hull_polygon.html", null ],
+    [ "Nv::Blast::HullPolygon", "struct_nv_1_1_blast_1_1_hull_polygon.html", null ],
     [ "VHACD::ICHull", "class_v_h_a_c_d_1_1_i_c_hull.html", null ],
     [ "Nv::Blast::IJsonCollisionExporter", "class_nv_1_1_blast_1_1_i_json_collision_exporter.html", null ],
     [ "Nv::Blast::IMeshFileReader", "class_nv_1_1_blast_1_1_i_mesh_file_reader.html", [
@@ -290,10 +292,10 @@ var hierarchy =
     [ "Nv::Blast::LocalBuffer< NvBlastChunkFractureData >", "class_nv_1_1_blast_1_1_local_buffer.html", null ],
     [ "Nv::Blast::Material", "struct_nv_1_1_blast_1_1_material.html", null ],
     [ "VHACD::Material", "struct_v_h_a_c_d_1_1_material.html", null ],
-    [ "VHACD::Mesh", "class_v_h_a_c_d_1_1_mesh.html", null ],
     [ "Nv::Blast::Mesh", "class_nv_1_1_blast_1_1_mesh.html", [
       [ "Nv::Blast::MeshImpl", "class_nv_1_1_blast_1_1_mesh_impl.html", null ]
     ] ],
+    [ "VHACD::Mesh", "class_v_h_a_c_d_1_1_mesh.html", null ],
     [ "Nv::Blast::MeshCleaner", "class_nv_1_1_blast_1_1_mesh_cleaner.html", [
       [ "Nv::Blast::MeshCleanerImpl", "class_nv_1_1_blast_1_1_mesh_cleaner_impl.html", null ]
     ] ],
@@ -384,20 +386,20 @@ var hierarchy =
     ] ],
     [ "Nv::Blast::PerlinNoise", "class_nv_1_1_blast_1_1_perlin_noise.html", null ],
     [ "Nv::Blast::PerTriangleAdditionalData", "struct_nv_1_1_blast_1_1_per_triangle_additional_data.html", null ],
-    [ "Nv::Blast::Serialization::NvBlastBond::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_bond_1_1_pipeline.html", null ],
     [ "Nv::Blast::Serialization::ExtPxAsset::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_pipeline.html", null ],
     [ "Nv::Blast::Serialization::ExtPxChunk::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_ext_px_chunk_1_1_pipeline.html", null ],
+    [ "Nv::Blast::Serialization::ExtPxSubchunk::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_ext_px_subchunk_1_1_pipeline.html", null ],
+    [ "Nv::Blast::Serialization::PxConvexMeshGeometry::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_px_convex_mesh_geometry_1_1_pipeline.html", null ],
     [ "Nv::Blast::Serialization::PxQuat::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_px_quat_1_1_pipeline.html", null ],
     [ "Nv::Blast::Serialization::PxMeshScale::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_px_mesh_scale_1_1_pipeline.html", null ],
     [ "Nv::Blast::Serialization::PxTransform::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_px_transform_1_1_pipeline.html", null ],
     [ "Nv::Blast::Serialization::TkAsset::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1_pipeline.html", null ],
-    [ "Nv::Blast::Serialization::PxVec3::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_px_vec3_1_1_pipeline.html", null ],
     [ "Nv::Blast::Serialization::TkAssetJointDesc::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_joint_desc_1_1_pipeline.html", null ],
-    [ "Nv::Blast::Serialization::PxConvexMeshGeometry::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_px_convex_mesh_geometry_1_1_pipeline.html", null ],
-    [ "Nv::Blast::Serialization::ExtPxSubchunk::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_ext_px_subchunk_1_1_pipeline.html", null ],
+    [ "Nv::Blast::Serialization::PxVec3::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_px_vec3_1_1_pipeline.html", null ],
+    [ "Nv::Blast::Serialization::NvBlastBond::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_bond_1_1_pipeline.html", null ],
+    [ "Nv::Blast::Serialization::NvBlastChunk::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_chunk_1_1_pipeline.html", null ],
     [ "Nv::Blast::Serialization::Asset::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_asset_1_1_pipeline.html", null ],
     [ "Nv::Blast::Serialization::NvBlastDataBlock::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_data_block_1_1_pipeline.html", null ],
-    [ "Nv::Blast::Serialization::NvBlastChunk::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_chunk_1_1_pipeline.html", null ],
     [ "Nv::Blast::Serialization::NvBlastSupportGraph::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_support_graph_1_1_pipeline.html", null ],
     [ "Nv::Blast::Serialization::UUID::Pipeline", "class_nv_1_1_blast_1_1_serialization_1_1_u_u_i_d_1_1_pipeline.html", null ],
     [ "VHACD::Plane", "struct_v_h_a_c_d_1_1_plane.html", null ],
@@ -430,22 +432,22 @@ var hierarchy =
     [ "Nv::Blast::ExtDamageAcceleratorInternal::QueryBondData", "struct_nv_1_1_blast_1_1_ext_damage_accelerator_internal_1_1_query_bond_data.html", null ],
     [ "Nv::Blast::RandomGeneratorBase", "class_nv_1_1_blast_1_1_random_generator_base.html", null ],
     [ "VHACD::RaycastMesh", "class_v_h_a_c_d_1_1_raycast_mesh.html", null ],
-    [ "Nv::Blast::Serialization::ExtPxAsset::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html", null ],
-    [ "Nv::Blast::Serialization::ExtPxSubchunk::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_ext_px_subchunk_1_1_reader.html", null ],
-    [ "Nv::Blast::Serialization::PxConvexMeshGeometry::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_px_convex_mesh_geometry_1_1_reader.html", null ],
     [ "Nv::Blast::Serialization::TkAsset::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_1_1_reader.html", null ],
+    [ "Nv::Blast::Serialization::ExtPxAsset::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_ext_px_asset_1_1_reader.html", null ],
     [ "Nv::Blast::Serialization::ExtPxChunk::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_ext_px_chunk_1_1_reader.html", null ],
     [ "Nv::Blast::Serialization::PxTransform::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_px_transform_1_1_reader.html", null ],
-    [ "Nv::Blast::Serialization::NvBlastChunk::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_chunk_1_1_reader.html", null ],
     [ "Nv::Blast::Serialization::TkAssetJointDesc::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_tk_asset_joint_desc_1_1_reader.html", null ],
-    [ "Nv::Blast::Serialization::PxMeshScale::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_px_mesh_scale_1_1_reader.html", null ],
     [ "Nv::Blast::Serialization::PxVec3::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_px_vec3_1_1_reader.html", null ],
-    [ "Nv::Blast::Serialization::PxQuat::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_px_quat_1_1_reader.html", null ],
     [ "Nv::Blast::Serialization::NvBlastSupportGraph::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_support_graph_1_1_reader.html", null ],
     [ "Nv::Blast::Serialization::Asset::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_asset_1_1_reader.html", null ],
+    [ "Nv::Blast::Serialization::ExtPxSubchunk::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_ext_px_subchunk_1_1_reader.html", null ],
+    [ "Nv::Blast::Serialization::PxMeshScale::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_px_mesh_scale_1_1_reader.html", null ],
+    [ "Nv::Blast::Serialization::PxQuat::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_px_quat_1_1_reader.html", null ],
     [ "Nv::Blast::Serialization::NvBlastDataBlock::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_data_block_1_1_reader.html", null ],
-    [ "Nv::Blast::Serialization::UUID::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_u_u_i_d_1_1_reader.html", null ],
+    [ "Nv::Blast::Serialization::NvBlastChunk::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_chunk_1_1_reader.html", null ],
+    [ "Nv::Blast::Serialization::PxConvexMeshGeometry::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_px_convex_mesh_geometry_1_1_reader.html", null ],
     [ "Nv::Blast::Serialization::NvBlastBond::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_nv_blast_bond_1_1_reader.html", null ],
+    [ "Nv::Blast::Serialization::UUID::Reader", "class_nv_1_1_blast_1_1_serialization_1_1_u_u_i_d_1_1_reader.html", null ],
     [ "btAlignedAllocator< T, Alignment >::rebind< O >", "structbt_aligned_allocator_1_1rebind.html", null ],
     [ "Nv::Blast::ExtDamageAcceleratorInternal::ResultCallback", "class_nv_1_1_blast_1_1_ext_damage_accelerator_internal_1_1_result_callback.html", null ],
     [ "VHACD::SArray< T, N >", "class_v_h_a_c_d_1_1_s_array.html", null ],
@@ -481,8 +483,8 @@ var hierarchy =
     [ "Nv::Blast::TkActorData", "struct_nv_1_1_blast_1_1_tk_actor_data.html", null ],
     [ "Nv::Blast::TkActorFlag", "struct_nv_1_1_blast_1_1_tk_actor_flag.html", null ],
     [ "Nv::Blast::Serialization::TkAsset", "struct_nv_1_1_blast_1_1_serialization_1_1_tk_asset.html", null ],
-    [ "Nv::Blast::Serialization::TkAssetJointDesc", "struct_nv_1_1_blast_1_1_serialization_1_1_tk_asset_joint_desc.html", null ],
     [ "Nv::Blast::TkAssetJointDesc", "struct_nv_1_1_blast_1_1_tk_asset_joint_desc.html", null ],
+    [ "Nv::Blast::Serialization::TkAssetJointDesc", "struct_nv_1_1_blast_1_1_serialization_1_1_tk_asset_joint_desc.html", null ],
     [ "Nv::Blast::TkEvent", "struct_nv_1_1_blast_1_1_tk_event.html", null ],
     [ "Nv::Blast::TkEventListener", "class_nv_1_1_blast_1_1_tk_event_listener.html", [
       [ "Nv::Blast::ExtPxFamilyImpl", "class_nv_1_1_blast_1_1_ext_px_family_impl.html", null ],
@@ -534,8 +536,8 @@ var hierarchy =
     [ "Nv::Blast::TrPrcTriangle2d", "struct_nv_1_1_blast_1_1_tr_prc_triangle2d.html", null ],
     [ "Nv::Blast::Serialization::UUID", "struct_nv_1_1_blast_1_1_serialization_1_1_u_u_i_d.html", null ],
     [ "VHACD::Vec2< T >", "class_v_h_a_c_d_1_1_vec2.html", null ],
-    [ "VHACD::Vec3< T >", "class_v_h_a_c_d_1_1_vec3.html", null ],
     [ "Nv::Blast::VSA::Vec3", "struct_nv_1_1_blast_1_1_v_s_a_1_1_vec3.html", null ],
+    [ "VHACD::Vec3< T >", "class_v_h_a_c_d_1_1_vec3.html", null ],
     [ "VHACD::Vec3< double >", "class_v_h_a_c_d_1_1_vec3.html", null ],
     [ "VHACD::Vec3< int32_t >", "class_v_h_a_c_d_1_1_vec3.html", null ],
     [ "VHACD::Vec3< short >", "class_v_h_a_c_d_1_1_vec3.html", null ],

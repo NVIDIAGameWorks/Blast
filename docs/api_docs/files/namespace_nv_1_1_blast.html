@@ -55,7 +55,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_collision_params.html">CollisionParams</a></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_convex_decomposition_params.html">ConvexDecompositionParams</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">ConvexMeshBuilder</a></td></tr>
 
@@ -102,6 +102,8 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_px_asset_desc.html">ExtPxAssetDesc</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_ext_px_chunk.html">ExtPxChunk</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_collision_builder.html">ExtPxCollisionBuilder</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_ext_px_family.html">ExtPxFamily</a></td></tr>
 
@@ -156,6 +158,8 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_grid.html">Grid</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_grid_walker.html">GridWalker</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_nv_1_1_blast_1_1_hull_polygon.html">HullPolygon</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_i_fbx_file_reader.html">IFbxFileReader</a></td></tr>
 
@@ -281,6 +285,13 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">NV_INLINE void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#1152c58af94417b6861e5bb3695b9ddf">logLL</a> (int type, const char *msg, const char *file, int line)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#2af6111d7b1e477fa7b5aee4fec5bdfc">savePatternToObj</a> (<a class="el" href="struct_nv_1_1_blast_1_1_damage_pattern.html">DamagePattern</a> *pattern)</td></tr>
+
+<tr><td colspan="2"><br><h2>Variables</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">const uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#d2d1cde5813011ad60c5a70903063138">kMaterialInteriorId</a> = 1000</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">const uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#ef4edf41a556a4a3a47621a9335b10ea">kNotValidVertexIndex</a> = UINT32_MAX</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">const uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#dbf9e9203bf8bee845964d16b181bec4">kSmoothingGroupInteriorId</a> = 1000</td></tr>
 
 </table>
 <hr><h2>Typedef Documentation</h2>
@@ -415,6 +426,52 @@ Pass this function to LowLevel function calls in order to get logging into globa
 
 <p>
 
+</div>
+</div><p>
+<hr><h2>Variable Documentation</h2>
+<a class="anchor" name="d2d1cde5813011ad60c5a70903063138"></a><!-- doxytag: member="Nv::Blast::kMaterialInteriorId" ref="d2d1cde5813011ad60c5a70903063138" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint32_t <a class="el" href="namespace_nv_1_1_blast.html#d2d1cde5813011ad60c5a70903063138">Nv::Blast::kMaterialInteriorId</a> = 1000          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Default material id assigned to interior faces (faces which created between 2 fractured chunks) 
+</div>
+</div><p>
+<a class="anchor" name="ef4edf41a556a4a3a47621a9335b10ea"></a><!-- doxytag: member="Nv::Blast::kNotValidVertexIndex" ref="ef4edf41a556a4a3a47621a9335b10ea" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint32_t <a class="el" href="namespace_nv_1_1_blast.html#ef4edf41a556a4a3a47621a9335b10ea">Nv::Blast::kNotValidVertexIndex</a> = UINT32_MAX          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+<a class="el" href="struct_nv_1_1_blast_1_1_vertex.html">Vertex</a> index which considired by NvBlast as not valid. 
+</div>
+</div><p>
+<a class="anchor" name="dbf9e9203bf8bee845964d16b181bec4"></a><!-- doxytag: member="Nv::Blast::kSmoothingGroupInteriorId" ref="dbf9e9203bf8bee845964d16b181bec4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint32_t <a class="el" href="namespace_nv_1_1_blast.html#dbf9e9203bf8bee845964d16b181bec4">Nv::Blast::kSmoothingGroupInteriorId</a> = 1000          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Default smoothing group id assigned to interior faces 
 </div>
 </div><p>
 </div>

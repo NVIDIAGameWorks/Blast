@@ -36,13 +36,11 @@
 	<dependency name="PhysX">
 		<package name="PhysX-${platform}" version="3.4.24990349" platforms="win.*.vc140"/>
 		<package name="PhysX-${platform}" version="3.4.24990349" platforms="win.*.vc150"/>
-		<package name="PhysX-${platform}" version="3.4.23426887" platforms="xboxone"/>
 		<package name="PhysX-linux64" version="3.4.24990349" platforms="linux"/>
 	</dependency>
 
 	<dependency name="googletest">
 		<package name="googletest-win" version="1.4.0.2" platforms="win.*"/>
-		<package name="googletest-${platform}" version="1.4.0.2" platforms="xboxone"/>
 		<package name="googletest-linux-x86_64" version="1.8.0.1" platforms="linux"/>
 	</dependency>
 </project>

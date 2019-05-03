@@ -30,88 +30,87 @@
 #include "NvBlastExtAuthoringMesh.h"
 #include "NvBlastExtAuthoringInternalCommon.h"
 #include "NvBlastGlobals.h"
-
-using namespace physx;
-
+#include "NvBlastPxSharedHelpers.h"
 
 namespace Nv
 {
 namespace Blast
 {
 
-DummyAccelerator::DummyAccelerator(int32_t count) :count(count)
+DummyAccelerator::DummyAccelerator(int32_t count) : m_count(count)
 {
-	current = 0;
+	m_current = 0;
 }
 void DummyAccelerator::setState(const Vertex* pos, const Edge* ed, const Facet& fc)
 {
-	current = 0;
+	m_current = 0;
 	NV_UNUSED(pos);
 	NV_UNUSED(ed);
 	NV_UNUSED(fc);
 }
-void DummyAccelerator::setState(const physx::PxBounds3* bound) {
-	current = 0;
+void DummyAccelerator::setState(const NvcBounds3* bound) {
+	m_current = 0;
 	NV_UNUSED(bound);
 }
 
-void DummyAccelerator::setState(const physx::PxVec3& point) {
-	current = 0;
+void DummyAccelerator::setState(const NvcVec3& point) {
+	m_current = 0;
 	NV_UNUSED(point);
 }
 int32_t DummyAccelerator::getNextFacet()
 {
-	if (current < count)
+	if (m_current < m_count)
 	{
-		++current;
-		return current - 1;
+		++m_current;
+		return m_current - 1;
 	}
 	else
 		return -1;
 }
 
-Grid::Grid(int32_t resolution) : mResolution(resolution)
+Grid::Grid(int32_t resolution) : m_resolution(resolution)
 {
 	/**
 		Set up 3d grid
 	*/
-	r3 = resolution * resolution * resolution;
-	mSpatialMap.resize(resolution * resolution * resolution);
+	m_r3 = resolution * resolution * resolution;
+	m_spatialMap.resize(resolution * resolution * resolution);
 }
 
 void Grid::setMesh(const Mesh* m)
 {
-	physx::PxBounds3 bd = m->getBoundingBox();
-	mappedFacetCount = m->getFacetCount();
+	physx::PxBounds3 bd = toPxShared(m->getBoundingBox());
+	m_mappedFacetCount  = m->getFacetCount();
 	bd.fattenFast(0.001f);
-	spos = bd.minimum;
-	deltas = PxVec3(mResolution / bd.getDimensions().x, mResolution / bd.getDimensions().y, mResolution / bd.getDimensions().z);
+	m_spos = fromPxShared(bd.minimum);
+	m_deltas = { m_resolution / bd.getDimensions().x, m_resolution / bd.getDimensions().y,
+		         m_resolution / bd.getDimensions().z };
 
-	for (int32_t i = 0; i < r3; ++i)
-		mSpatialMap[i].clear();
+	for (int32_t i = 0; i < m_r3; ++i)
+		m_spatialMap[i].clear();
 
 	const float ofs = 0.001f;
 
 	for (uint32_t fc = 0; fc < m->getFacetCount(); ++fc)
 	{
-		physx::PxBounds3 cfc = *m->getFacetBound(fc);
+		NvcBounds3 cfc = *m->getFacetBound(fc);
 
-		int32_t is = std::max(0.f, (cfc.minimum.x - spos.x - ofs) * deltas.x);
-		int32_t ie = std::max(0.f, (cfc.maximum.x - spos.x + ofs) * deltas.x);
+		int32_t is = std::max(0.f, (cfc.minimum.x - m_spos.x - ofs) * m_deltas.x);
+		int32_t ie = std::max(0.f, (cfc.maximum.x - m_spos.x + ofs) * m_deltas.x);
 
-		int32_t js = std::max(0.f, (cfc.minimum.y - spos.y - ofs) * deltas.y);
-		int32_t je = std::max(0.f, (cfc.maximum.y - spos.y + ofs) * deltas.y);
+		int32_t js = std::max(0.f, (cfc.minimum.y - m_spos.y - ofs) * m_deltas.y);
+		int32_t je = std::max(0.f, (cfc.maximum.y - m_spos.y + ofs) * m_deltas.y);
 
-		int32_t ks = std::max(0.f, (cfc.minimum.z - spos.z - ofs) * deltas.z);
-		int32_t ke = std::max(0.f, (cfc.maximum.z - spos.z + ofs) * deltas.z);
+		int32_t ks = std::max(0.f, (cfc.minimum.z - m_spos.z - ofs) * m_deltas.z);
+		int32_t ke = std::max(0.f, (cfc.maximum.z - m_spos.z + ofs) * m_deltas.z);
 
-		for (int32_t i = is; i < mResolution && i <= ie; ++i)
+		for (int32_t i = is; i < m_resolution && i <= ie; ++i)
 		{
-			for (int32_t j = js; j < mResolution && j <= je; ++j)
+			for (int32_t j = js; j < m_resolution && j <= je; ++j)
 			{
-				for (int32_t k = ks; k < mResolution && k <= ke; ++k)
+				for (int32_t k = ks; k < m_resolution && k <= ke; ++k)
 				{
-					mSpatialMap[(i * mResolution + j) * mResolution + k].push_back(fc);
+					m_spatialMap[(i * m_resolution + j) * m_resolution + k].push_back(fc);
 				}
 			}
 		}
@@ -121,236 +120,234 @@ void Grid::setMesh(const Mesh* m)
 
 GridWalker::GridWalker(Grid* grd)
 {
-	mGrid = grd;
-	alreadyGotValue = 0;
-	alreadyGotFlag.resize(1 << 12);
-	cellList.resize(1 << 12);
-	pointCmdDir = 0;
+	m_grid = grd;
+	m_alreadyGotValue = 0;
+	m_alreadyGotFlag.resize(1 << 12);
+	m_cellList.resize(1 << 12);
+	m_pointCmdDir = 0;
 }
 
 void GridWalker::setState(const Vertex* pos, const Edge* ed, const Facet& fc)
 {
 	
-	physx::PxBounds3 cfc(PxBounds3::empty());
+	physx::PxBounds3 cfc(physx::PxBounds3::empty());
 
 	for (uint32_t v = 0; v < fc.edgesCount; ++v)
 	{
-		cfc.include(pos[ed[fc.firstEdgeNumber + v].s].p);
-		cfc.include(pos[ed[fc.firstEdgeNumber + v].e].p);
+		cfc.include(toPxShared(pos[ed[fc.firstEdgeNumber + v].s].p));
+		cfc.include(toPxShared(pos[ed[fc.firstEdgeNumber + v].e].p));
 	}
-	setState(&cfc);
+	setState(&fromPxShared(cfc));
 }
 
-void GridWalker::setState(const PxBounds3* facetBounding)
+void GridWalker::setState(const NvcBounds3* facetBounding)
 {
-	alreadyGotValue++;
-	mIteratorCell = -1;
-	mIteratorFacet = -1;
-	gotCells = 0;
+	m_alreadyGotValue++;
+	m_iteratorCell = -1;
+	m_iteratorFacet = -1;
+	m_gotCells = 0;
 
-	physx::PxBounds3 cfc = *facetBounding;
+	NvcBounds3 cfc = *facetBounding;
 
+	int32_t is = std::max(0.f, (cfc.minimum.x - m_grid->m_spos.x - 0.001f) * m_grid->m_deltas.x);
+	int32_t ie = std::max(0.f, (cfc.maximum.x - m_grid->m_spos.x + 0.001f) * m_grid->m_deltas.x);
 
+	int32_t js = std::max(0.f, (cfc.minimum.y - m_grid->m_spos.y - 0.001f) * m_grid->m_deltas.y);
+	int32_t je = std::max(0.f, (cfc.maximum.y - m_grid->m_spos.y + 0.001f) * m_grid->m_deltas.y);
 
-	int32_t is = std::max(0.f, (cfc.minimum.x - mGrid->spos.x - 0.001f) * mGrid->deltas.x);
-	int32_t ie = std::max(0.f, (cfc.maximum.x - mGrid->spos.x + 0.001f) * mGrid->deltas.x);
+	int32_t ks = std::max(0.f, (cfc.minimum.z - m_grid->m_spos.z - 0.001f) * m_grid->m_deltas.z);
+	int32_t ke = std::max(0.f, (cfc.maximum.z - m_grid->m_spos.z + 0.001f) * m_grid->m_deltas.z);
 
-	int32_t js = std::max(0.f, (cfc.minimum.y - mGrid->spos.y - 0.001f) * mGrid->deltas.y);
-	int32_t je = std::max(0.f, (cfc.maximum.y - mGrid->spos.y + 0.001f) * mGrid->deltas.y);
-
-	int32_t ks = std::max(0.f, (cfc.minimum.z - mGrid->spos.z - 0.001f) * mGrid->deltas.z);
-	int32_t ke = std::max(0.f, (cfc.maximum.z - mGrid->spos.z + 0.001f) * mGrid->deltas.z);
-
-	for (int32_t i = is; i < mGrid->mResolution && i <= ie; ++i)
+	for (int32_t i = is; i < m_grid->m_resolution && i <= ie; ++i)
 	{
-		for (int32_t j = js; j < mGrid->mResolution && j <= je; ++j)
+		for (int32_t j = js; j < m_grid->m_resolution && j <= je; ++j)
 		{
-			for (int32_t k = ks; k < mGrid->mResolution && k <= ke; ++k)
+			for (int32_t k = ks; k < m_grid->m_resolution && k <= ke; ++k)
 			{
-				int32_t id = (i * mGrid->mResolution + j) * mGrid->mResolution + k;
-				if (!mGrid->mSpatialMap[id].empty())
+				int32_t id = (i * m_grid->m_resolution + j) * m_grid->m_resolution + k;
+				if (!m_grid->m_spatialMap[id].empty())
 				{
-					cellList[gotCells++] = id;
+					m_cellList[m_gotCells++] = id;
 				}
 
 			}
 		}
 	}
-	if (gotCells != 0)
+	if (m_gotCells != 0)
 	{
-		mIteratorFacet = 0;
-		mIteratorCell = cellList[gotCells - 1];
-		gotCells--;
+		m_iteratorFacet = 0;
+		m_iteratorCell = m_cellList[m_gotCells - 1];
+		m_gotCells--;
 	}
 }
 
 
 void GridWalker::setPointCmpDirection(int32_t d)
 {
-	pointCmdDir = d;
+	m_pointCmdDir = d;
 }
 
 
-void GridWalker::setState(const physx::PxVec3& point)
+void GridWalker::setState(const NvcVec3& point)
 {
-	alreadyGotValue++;
-	mIteratorCell = -1;
-	mIteratorFacet = -1;
-	gotCells = 0;
+	m_alreadyGotValue++;
+	m_iteratorCell = -1;
+	m_iteratorFacet = -1;
+	m_gotCells = 0;
 	
-	int32_t is = std::max(0.f, (point.x - mGrid->spos.x - 0.001f) * mGrid->deltas.x);
-	int32_t ie = std::max(0.f, (point.x - mGrid->spos.x + 0.001f) * mGrid->deltas.x);
+	int32_t is = std::max(0.f, (point.x - m_grid->m_spos.x - 0.001f) * m_grid->m_deltas.x);
+	int32_t ie = std::max(0.f, (point.x - m_grid->m_spos.x + 0.001f) * m_grid->m_deltas.x);
 
-	int32_t js = std::max(0.f, (point.y - mGrid->spos.y - 0.001f) * mGrid->deltas.y);
-	int32_t je = std::max(0.f, (point.y - mGrid->spos.y + 0.001f) * mGrid->deltas.y);
+	int32_t js = std::max(0.f, (point.y - m_grid->m_spos.y - 0.001f) * m_grid->m_deltas.y);
+	int32_t je = std::max(0.f, (point.y - m_grid->m_spos.y + 0.001f) * m_grid->m_deltas.y);
 
 	int32_t ks = 0;
-	int32_t ke = mGrid->mResolution;
-	switch (pointCmdDir)
+	int32_t ke = m_grid->m_resolution;
+	switch (m_pointCmdDir)
 	{
 	case 1:
-		ks = std::max(0.f, (point.z - mGrid->spos.z - 0.001f) * mGrid->deltas.z);
+		ks = std::max(0.f, (point.z - m_grid->m_spos.z - 0.001f) * m_grid->m_deltas.z);
 		break;
 	case -1:
-		ke = std::max(0.f, (point.z - mGrid->spos.z + 0.001f) * mGrid->deltas.z);
+		ke = std::max(0.f, (point.z - m_grid->m_spos.z + 0.001f) * m_grid->m_deltas.z);
 	}
 
-	for (int32_t i = is; i < mGrid->mResolution && i <= ie; ++i)
+	for (int32_t i = is; i < m_grid->m_resolution && i <= ie; ++i)
 	{
-		for (int32_t j = js; j < mGrid->mResolution && j <= je; ++j)
+		for (int32_t j = js; j < m_grid->m_resolution && j <= je; ++j)
 		{
-			for (int32_t k = ks; k <= ke && k < mGrid->mResolution; ++k)
+			for (int32_t k = ks; k <= ke && k < m_grid->m_resolution; ++k)
 			{
-				int32_t id = (i * mGrid->mResolution + j) * mGrid->mResolution + k;
-				if (!mGrid->mSpatialMap[id].empty())
+				int32_t id = (i * m_grid->m_resolution + j) * m_grid->m_resolution + k;
+				if (!m_grid->m_spatialMap[id].empty())
 				{
-					cellList[gotCells++] = id;
+					m_cellList[m_gotCells++] = id;
 				}
 			}
 		}
 	}
 
-	if (gotCells != 0)
+	if (m_gotCells != 0)
 	{
-		mIteratorFacet = 0;
-		mIteratorCell = cellList[gotCells - 1];
-		gotCells--;
+		m_iteratorFacet = 0;
+		m_iteratorCell = m_cellList[m_gotCells - 1];
+		m_gotCells--;
 	}
 }
 int32_t GridWalker::getNextFacet()
 {
 	int32_t facetId = -1;
 
-	while (mIteratorCell != -1)
+	while (m_iteratorCell != -1)
 	{
-		if (mIteratorFacet >= (int32_t)mGrid->mSpatialMap[mIteratorCell].size())
+		if (m_iteratorFacet >= (int32_t)m_grid->m_spatialMap[m_iteratorCell].size())
 		{
-			if (gotCells != 0)
+			if (m_gotCells != 0)
 			{
-				mIteratorCell = cellList[gotCells - 1];
-				gotCells--;
-				mIteratorFacet = 0;
+				m_iteratorCell = m_cellList[m_gotCells - 1];
+				m_gotCells--;
+				m_iteratorFacet = 0;
 			}
 			else
 			{
-				mIteratorCell = -1;
+				m_iteratorCell = -1;
 				break;
 			}
 		}
-		if (alreadyGotFlag[mGrid->mSpatialMap[mIteratorCell][mIteratorFacet]] != alreadyGotValue)
+		if (m_alreadyGotFlag[m_grid->m_spatialMap[m_iteratorCell][m_iteratorFacet]] != m_alreadyGotValue)
 		{
-			facetId = mGrid->mSpatialMap[mIteratorCell][mIteratorFacet];
-			mIteratorFacet++;
+			facetId = m_grid->m_spatialMap[m_iteratorCell][m_iteratorFacet];
+			m_iteratorFacet++;
 			break;
 		}
 		else
 		{
-			mIteratorFacet++;
+			m_iteratorFacet++;
 		}
 	}
 	if (facetId != -1)
 	{
-		alreadyGotFlag[facetId] = alreadyGotValue;
+		m_alreadyGotFlag[facetId] = m_alreadyGotValue;
 	}
 	return facetId;
 }
 
 
 
-BBoxBasedAccelerator::BBoxBasedAccelerator(const Mesh* mesh, int32_t resolution) : mResolution(resolution), alreadyGotValue(1)
+BBoxBasedAccelerator::BBoxBasedAccelerator(const Mesh* mesh, int32_t resolution) : m_resolution(resolution), m_alreadyGotValue(1)
 {
-	mBounds = mesh->getBoundingBox();
-	mSpatialMap.resize(resolution * resolution * resolution);
-	mCells.resize(resolution * resolution * resolution);
+	m_bounds = mesh->getBoundingBox();
+	m_spatialMap.resize(resolution * resolution * resolution);
+	m_cells.resize(resolution * resolution * resolution);
 	int32_t currentCell = 0;
-	PxVec3 incr = (mBounds.maximum - mBounds.minimum) * (1.0f / mResolution);
+	NvcVec3 incr = (m_bounds.maximum - m_bounds.minimum) * (1.0f / m_resolution);
 	for (int32_t z = 0; z < resolution; ++z)
 	{
 		for (int32_t y = 0; y < resolution; ++y)
 		{
 			for (int32_t x = 0; x < resolution; ++x)
 			{
-				mCells[currentCell].minimum.x = mBounds.minimum.x + x * incr.x;
-				mCells[currentCell].minimum.y = mBounds.minimum.y + y * incr.y;
-				mCells[currentCell].minimum.z = mBounds.minimum.z + z * incr.z;
+				m_cells[currentCell].minimum.x = m_bounds.minimum.x + x * incr.x;
+				m_cells[currentCell].minimum.y = m_bounds.minimum.y + y * incr.y;
+				m_cells[currentCell].minimum.z = m_bounds.minimum.z + z * incr.z;
 
-				mCells[currentCell].maximum.x = mBounds.minimum.x + (x + 1) * incr.x;
-				mCells[currentCell].maximum.y = mBounds.minimum.y + (y + 1) * incr.y;
-				mCells[currentCell].maximum.z = mBounds.minimum.z + (z + 1) * incr.z;
+				m_cells[currentCell].maximum.x = m_bounds.minimum.x + (x + 1) * incr.x;
+				m_cells[currentCell].maximum.y = m_bounds.minimum.y + (y + 1) * incr.y;
+				m_cells[currentCell].maximum.z = m_bounds.minimum.z + (z + 1) * incr.z;
 
 				++currentCell;
 			}
 		}
 	}
-	cellList.resize(1 << 16);
-	gotCells = 0;
+	m_cellList.resize(1 << 16);
+	m_gotCells = 0;
 	buildAccelStructure(mesh->getVertices(), mesh->getEdges(), mesh->getFacetsBuffer(), mesh->getFacetCount());
 }
 
 
 BBoxBasedAccelerator::~BBoxBasedAccelerator()
 {
-	mResolution = 0;
-	mBounds.setEmpty();
-	mSpatialMap.clear();
-	mCells.clear();
-	cellList.clear();
+	m_resolution = 0;
+	toPxShared(m_bounds).setEmpty();
+	m_spatialMap.clear();
+	m_cells.clear();
+	m_cellList.clear();
 }
 
 int32_t BBoxBasedAccelerator::getNextFacet()
 {
 	int32_t facetId = -1;
 
-	while (mIteratorCell != -1)
+	while (m_iteratorCell != -1)
 	{
-		if (mIteratorFacet >= (int32_t)mSpatialMap[mIteratorCell].size())
+		if (m_iteratorFacet >= (int32_t)m_spatialMap[m_iteratorCell].size())
 		{
-			if (gotCells != 0)
+			if (m_gotCells != 0)
 			{
-				mIteratorCell = cellList[gotCells - 1];
-				gotCells--;
-				mIteratorFacet = 0;
+				m_iteratorCell = m_cellList[m_gotCells - 1];
+				m_gotCells--;
+				m_iteratorFacet = 0;
 			}
 			else
 			{
-				mIteratorCell = -1;
+				m_iteratorCell = -1;
 				break;
 			}
 		}
-		if (alreadyGotFlag[mSpatialMap[mIteratorCell][mIteratorFacet]] != alreadyGotValue)
+		if (m_alreadyGotFlag[m_spatialMap[m_iteratorCell][m_iteratorFacet]] != m_alreadyGotValue)
 		{
-			facetId = mSpatialMap[mIteratorCell][mIteratorFacet];
-			mIteratorFacet++;
+			facetId = m_spatialMap[m_iteratorCell][m_iteratorFacet];
+			m_iteratorFacet++;
 			break;
 		}
 		else
 		{
-			mIteratorFacet++;
+			m_iteratorFacet++;
 		}
 	}
 	if (facetId != -1)
 	{
-		alreadyGotFlag[facetId] = alreadyGotValue;
+		m_alreadyGotFlag[facetId] = m_alreadyGotValue;
 	}
 	return facetId;
 }
@@ -359,65 +356,65 @@ int32_t BBoxBasedAccelerator::getNextFacet()
 void BBoxBasedAccelerator::setState(const Vertex* pos, const Edge* ed, const Facet& fc)
 {
 
-	physx::PxBounds3 cfc(PxBounds3::empty());
+	physx::PxBounds3 cfc(physx::PxBounds3::empty());
 
 	for (uint32_t v = 0; v < fc.edgesCount; ++v)
 	{
-		cfc.include(pos[ed[fc.firstEdgeNumber + v].s].p);
-		cfc.include(pos[ed[fc.firstEdgeNumber + v].e].p);
+		cfc.include(toPxShared(pos[ed[fc.firstEdgeNumber + v].s].p));
+		cfc.include(toPxShared(pos[ed[fc.firstEdgeNumber + v].e].p));
 	}
-	setState(&cfc);
+	setState(&fromPxShared(cfc));
 }
 
-void BBoxBasedAccelerator::setState(const PxBounds3* facetBox)
+void BBoxBasedAccelerator::setState(const NvcBounds3* facetBox)
 {
-	alreadyGotValue++;
-	mIteratorCell = -1;
-	mIteratorFacet = -1;
-	gotCells = 0;
+	m_alreadyGotValue++;
+	m_iteratorCell = -1;
+	m_iteratorFacet = -1;
+	m_gotCells = 0;
 	
-	for (uint32_t i = 0; i < mCells.size(); ++i)
+	for (uint32_t i = 0; i < m_cells.size(); ++i)
 	{
-		if (weakBoundingBoxIntersection(mCells[i], *facetBox))
+		if (weakBoundingBoxIntersection(toPxShared(m_cells[i]), *toPxShared(facetBox)))
 		{
-			if (!mSpatialMap[i].empty())
-				cellList[gotCells++] = i;
+			if (!m_spatialMap[i].empty())
+				m_cellList[m_gotCells++] = i;
 		}
 	}
-	if (gotCells != 0)
+	if (m_gotCells != 0)
 	{
-		mIteratorFacet = 0;
-		mIteratorCell = cellList[gotCells - 1];
-		gotCells--;
+		m_iteratorFacet = 0;
+		m_iteratorCell = m_cellList[m_gotCells - 1];
+		m_gotCells--;
 	}
 }
 
 
-void BBoxBasedAccelerator::setState(const PxVec3& p)
+void BBoxBasedAccelerator::setState(const NvcVec3& p)
 {
-	alreadyGotValue++;
-	mIteratorCell = -1;
-	mIteratorFacet = -1;
-	gotCells = 0;
-	int32_t perSlice = mResolution * mResolution;
-	for (uint32_t i = 0; i < mCells.size(); ++i)
+	m_alreadyGotValue++;
+	m_iteratorCell = -1;
+	m_iteratorFacet = -1;
+	m_gotCells = 0;
+	int32_t perSlice = m_resolution * m_resolution;
+	for (uint32_t i = 0; i < m_cells.size(); ++i)
 	{
-		if (mCells[i].contains(p))
+		if (toPxShared(m_cells[i]).contains(toPxShared(p)))
 		{
 			int32_t xyCellId = i % perSlice;
-			for (int32_t zCell = 0; zCell < mResolution; ++zCell)
+			for (int32_t zCell = 0; zCell < m_resolution; ++zCell)
 			{
 				int32_t cell = zCell * perSlice + xyCellId;
-				if (!mSpatialMap[cell].empty())
-					cellList[gotCells++] = cell;
+				if (!m_spatialMap[cell].empty())
+					m_cellList[m_gotCells++] = cell;
 			}
 		}
 	}
-	if (gotCells != 0)
+	if (m_gotCells != 0)
 	{
-		mIteratorFacet = 0;
-		mIteratorCell = cellList[gotCells - 1];
-		gotCells--;
+		m_iteratorFacet = 0;
+		m_iteratorCell = m_cellList[m_gotCells - 1];
+		m_gotCells--;
 	}
 }
 
@@ -426,27 +423,27 @@ void BBoxBasedAccelerator::buildAccelStructure(const Vertex* pos, const Edge* ed
 {
 	for (int32_t facet = 0; facet < facetCount; ++facet)
 	{
-		PxBounds3 bBox;
+		physx::PxBounds3 bBox;
 		bBox.setEmpty();
 		const Edge* edge = &edges[0] + fc->firstEdgeNumber;
 		int32_t count = fc->edgesCount;
 		for (int32_t ec = 0; ec < count; ++ec)
 		{
-			bBox.include(pos[edge->s].p);
-			bBox.include(pos[edge->e].p);
+			bBox.include(toPxShared(pos[edge->s].p));
+			bBox.include(toPxShared(pos[edge->e].p));
 			edge++;
 		}
 
-		for (uint32_t i = 0; i < mCells.size(); ++i)
+		for (uint32_t i = 0; i < m_cells.size(); ++i)
 		{
-			if (weakBoundingBoxIntersection(mCells[i], bBox))
+			if (weakBoundingBoxIntersection(toPxShared(m_cells[i]), bBox))
 			{
-				mSpatialMap[i].push_back(facet);
+				m_spatialMap[i].push_back(facet);
 			}
 		}
 		fc++;
 	}
-	alreadyGotFlag.resize(facetCount, 0);
+	m_alreadyGotFlag.resize(facetCount, 0);
 }
 
 #define SWEEP_RESOLUTION 2048
@@ -484,15 +481,15 @@ void buildIndex(std::vector<SegmentToIndex>& segm, float offset, float mlt, std:
 
 SweepingAccelerator::SweepingAccelerator(Nv::Blast::Mesh* in)
 {
-	PxBounds3 bnd;
+	physx::PxBounds3 bnd;
 
 	const Vertex* verts = in->getVertices();
 	const Edge* edges = in->getEdges();
 
-	facetCount = in->getFacetCount();
+	m_facetCount = in->getFacetCount();
 
-	foundx.resize(facetCount, 0);
-	foundy.resize(facetCount, 0);
+	m_foundx.resize(m_facetCount, 0);
+	m_foundy.resize(m_facetCount, 0);
 
 
 	std::vector<SegmentToIndex> xevs;
@@ -506,7 +503,7 @@ SweepingAccelerator::SweepingAccelerator(Nv::Blast::Mesh* in)
 		bnd.setEmpty();
 		for (uint32_t v = 0; v < fc->edgesCount; ++v)
 		{
-			bnd.include(verts[edges[v + fc->firstEdgeNumber].s].p);
+			bnd.include(toPxShared(verts[edges[v + fc->firstEdgeNumber].s].p));
 		}
 		bnd.scaleFast(1.1f);
 		xevs.push_back(SegmentToIndex(bnd.minimum.x, i, false));
@@ -525,126 +522,126 @@ SweepingAccelerator::SweepingAccelerator(Nv::Blast::Mesh* in)
 	std::sort(zevs.begin(), zevs.end());
 
 	
-	minimal.x = xevs[0].coord;
-	minimal.y = yevs[0].coord;
-	minimal.z = zevs[0].coord;
+	m_minimal.x = xevs[0].coord;
+	m_minimal.y = yevs[0].coord;
+	m_minimal.z = zevs[0].coord;
 
 	
-	maximal.x = xevs.back().coord;
-	maximal.y = yevs.back().coord;
-	maximal.z = zevs.back().coord;
+	m_maximal.x = xevs.back().coord;
+	m_maximal.y = yevs.back().coord;
+	m_maximal.z = zevs.back().coord;
 
 		
-	rescale = (maximal - minimal) * 1.01f;
-	rescale.x = 1.0f / rescale.x * SWEEP_RESOLUTION;
-	rescale.y = 1.0f / rescale.y * SWEEP_RESOLUTION;
-	rescale.z = 1.0f / rescale.z * SWEEP_RESOLUTION;
+	m_rescale = (m_maximal - m_minimal) * 1.01f;
+	m_rescale.x = 1.0f / m_rescale.x * SWEEP_RESOLUTION;
+	m_rescale.y = 1.0f / m_rescale.y * SWEEP_RESOLUTION;
+	m_rescale.z = 1.0f / m_rescale.z * SWEEP_RESOLUTION;
 
-	xSegm.resize(SWEEP_RESOLUTION);
-	ySegm.resize(SWEEP_RESOLUTION);
-	zSegm.resize(SWEEP_RESOLUTION);
+	m_xSegm.resize(SWEEP_RESOLUTION);
+	m_ySegm.resize(SWEEP_RESOLUTION);
+	m_zSegm.resize(SWEEP_RESOLUTION);
 
 
-	buildIndex(xevs, minimal.x, rescale.x, xSegm);
-	buildIndex(yevs, minimal.y, rescale.y, ySegm);
-	buildIndex(zevs, minimal.z, rescale.z, zSegm);
+	buildIndex(xevs, m_minimal.x, m_rescale.x, m_xSegm);
+	buildIndex(yevs, m_minimal.y, m_rescale.y, m_ySegm);
+	buildIndex(zevs, m_minimal.z, m_rescale.z, m_zSegm);
 
 	
-	iterId = 1;
-	current = 0;
+	m_iterId  = 1;
+	m_current = 0;
 }
 
-void SweepingAccelerator::setState(const PxBounds3* facetBounds)
+void SweepingAccelerator::setState(const NvcBounds3* facetBounds)
 {
-	current = 0;
-	indices.clear();
+	m_current = 0;
+	m_indices.clear();
 	
-	PxBounds3 bnd = *facetBounds;
+	physx::PxBounds3 bnd = *toPxShared(facetBounds);
 
 	bnd.scaleFast(1.1);
-	uint32_t start = (std::max(0.0f, bnd.minimum.x - minimal.x)) * rescale.x;
-	uint32_t end = (std::max(0.0f, bnd.maximum.x - minimal.x)) * rescale.x;
+	uint32_t start = (std::max(0.0f, bnd.minimum.x - m_minimal.x)) * m_rescale.x;
+	uint32_t end   = (std::max(0.0f, bnd.maximum.x - m_minimal.x)) * m_rescale.x;
 	for (uint32_t i = start; i <= end && i < SWEEP_RESOLUTION; ++i)
 	{
-		for (auto id : xSegm[i])
+		for (auto id : m_xSegm[i])
 		{
-			foundx[id] = iterId;
+			m_foundx[id] = m_iterId;
 		}
 	}
-	start = (std::max(0.0f, bnd.minimum.y - minimal.y)) * rescale.y;
-	end = (std::max(0.0f, bnd.maximum.y - minimal.y)) * rescale.y;
+	start = (std::max(0.0f, bnd.minimum.y - m_minimal.y)) * m_rescale.y;
+	end   = (std::max(0.0f, bnd.maximum.y - m_minimal.y)) * m_rescale.y;
 	for (uint32_t i = start; i <= end && i < SWEEP_RESOLUTION; ++i)
 	{
-		for (auto id : ySegm[i])
+		for (auto id : m_ySegm[i])
 		{
-			foundy[id] = iterId;
+			m_foundy[id] = m_iterId;
 		}
 	}
-	start = (std::max(0.0f, bnd.minimum.z - minimal.z)) * rescale.z;
-	end = (std::max(0.0f, bnd.maximum.z - minimal.z)) * rescale.z;
+	start = (std::max(0.0f, bnd.minimum.z - m_minimal.z)) * m_rescale.z;
+	end   = (std::max(0.0f, bnd.maximum.z - m_minimal.z)) * m_rescale.z;
 	for (uint32_t i = start; i <= end && i < SWEEP_RESOLUTION; ++i)
 	{
-		for (auto id : zSegm[i])
+		for (auto id : m_zSegm[i])
 		{
-			if (foundy[id] == iterId && foundx[id] == iterId)
+			if (m_foundy[id] == m_iterId && m_foundx[id] == m_iterId)
 			{
-				foundx[id] = iterId + 1;
-				foundy[id] = iterId + 1;
-				indices.push_back(id);
+				m_foundx[id] = m_iterId + 1;
+				m_foundy[id] = m_iterId + 1;
+				m_indices.push_back(id);
 			}
 		}
 	}
 
-	iterId += 2;
+	m_iterId += 2;
 }
 
 void SweepingAccelerator::setState(const Vertex* pos, const Edge* ed, const Facet& fc)
 {
 
-	physx::PxBounds3 cfc(PxBounds3::empty());
+	physx::PxBounds3 cfc(physx::PxBounds3::empty());
 
 	for (uint32_t v = 0; v < fc.edgesCount; ++v)
 	{
-		cfc.include(pos[ed[fc.firstEdgeNumber + v].s].p);
-		cfc.include(pos[ed[fc.firstEdgeNumber + v].e].p);
+		cfc.include(toPxShared(pos[ed[fc.firstEdgeNumber + v].s].p));
+		cfc.include(toPxShared(pos[ed[fc.firstEdgeNumber + v].e].p));
 	}
-	setState(&cfc);
+	setState(&fromPxShared(cfc));
 }
 
 
-void SweepingAccelerator::setState(const physx::PxVec3& point) {
+void SweepingAccelerator::setState(const NvcVec3& point) {
 	
-	indices.clear();
+	m_indices.clear();
 
 	/*for (uint32_t i = 0; i < facetCount; ++i)
 	{
 		indices.push_back(i);
 	}*/
 
-	uint32_t xIndex = (point.x - minimal.x) * rescale.x;
-	uint32_t yIndex = (point.y- minimal.y) * rescale.y;
+	uint32_t xIndex = (point.x - m_minimal.x) * m_rescale.x;
+	uint32_t yIndex = (point.y - m_minimal.y) * m_rescale.y;
 
-	for (uint32_t i = 0; i < xSegm[xIndex].size(); ++i)
+	for (uint32_t i = 0; i < m_xSegm[xIndex].size(); ++i)
 	{
-		foundx[xSegm[xIndex][i]] = iterId;
+		m_foundx[m_xSegm[xIndex][i]] = m_iterId;
 	}
-	for (uint32_t i = 0; i < ySegm[yIndex].size(); ++i)
+	for (uint32_t i = 0; i < m_ySegm[yIndex].size(); ++i)
 	{
-		if (foundx[ySegm[yIndex][i]] == iterId)
+		if (m_foundx[m_ySegm[yIndex][i]] == m_iterId)
 		{
-			indices.push_back(ySegm[yIndex][i]);
+			m_indices.push_back(m_ySegm[yIndex][i]);
 		}
 	}
-	iterId++;
-	current = 0;
+	m_iterId++;
+	m_current = 0;
 	NV_UNUSED(point);
 }
 int32_t SweepingAccelerator::getNextFacet()
 {
-	if (static_cast<uint32_t>(current) < indices.size())
+	if (static_cast<uint32_t>(m_current) < m_indices.size())
 	{
-		++current;
-		return indices[current - 1];
+		++m_current;
+		return m_indices[m_current - 1];
 	}
 	else
 		return -1;

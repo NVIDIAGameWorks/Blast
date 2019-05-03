@@ -13,7 +13,6 @@ SET(COMMON_EXT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/extensions/common/source)
 SET(AUTHORING_EXT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/extensions/authoring/include)
 
 FIND_PACKAGE(PxSharedSDK $ENV{PM_PxShared_VERSION} REQUIRED)
-FIND_PACKAGE(PhysXSDK $ENV{PM_PhysX_VERSION} REQUIRED)
 FIND_PACKAGE(BoostMultiprecision $ENV{PM_BoostMultiprecision_VERSION} REQUIRED)
 
 # Include here after the directories are defined so that the platform specific file can use the variables.
@@ -21,19 +20,19 @@ include(${PROJECT_CMAKE_FILES_DIR}/${TARGET_BUILD_PLATFORM}/NvBlastExtAuthoring.
 
 SET(COMMON_FILES
 	${BLASTEXT_PLATFORM_COMMON_FILES}
-	
+	${COMMON_SOURCE_DIR}/NvBlastPxSharedHelpers.h
 	#${COMMON_SOURCE_DIR}/NvBlastAssert.cpp
 	#${COMMON_SOURCE_DIR}/NvBlastAssert.h
 )
 
 SET(PUBLIC_FILES
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringBondGenerator.h
-	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringCollisionBuilder.h
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringFractureTool.h
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoring.h
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringMeshCleaner.h
 	${AUTHORING_EXT_INCLUDE_DIR}/NvBlastExtAuthoringCutout.h
-	
+
+	${AUTHORING_COMMON_EXT_INCLUDE_DIR}/NvBlastExtAuthoringConvexMeshBuilder.h	
 	${AUTHORING_COMMON_EXT_INCLUDE_DIR}/NvBlastExtAuthoringPatternGenerator.h
 	${AUTHORING_COMMON_EXT_INCLUDE_DIR}/NvBlastExtAuthoringMesh.h
 	${AUTHORING_COMMON_EXT_INCLUDE_DIR}/NvBlastExtAuthoringTypes.h
@@ -116,11 +115,8 @@ TARGET_INCLUDE_DIRECTORIES(NvBlastExtAuthoring
 	PUBLIC ${AUTHORING_COMMON_EXT_INCLUDE_DIR}
 	PRIVATE ${AUTHORING_COMMON_EXT_SOURCE_DIR}
 	
-	
-
 	PRIVATE ${PROJECT_SOURCE_DIR}/toolkit/include
-	PRIVATE ${PHYSX_EXT_INCLUDE_DIR}
-	
+		
 	PRIVATE ${PROJECT_SOURCE_DIR}/common
 	PRIVATE ${COMMON_EXT_SOURCE_DIR}
 	
@@ -129,7 +125,6 @@ TARGET_INCLUDE_DIRECTORIES(NvBlastExtAuthoring
 	PRIVATE ${PROJECT_SOURCE_DIR}/extensions/assetutils/include
 	PRIVATE ${PROJECT_SOURCE_DIR}/extensions/RT/source
 
-	PRIVATE ${PHYSXSDK_INCLUDE_DIRS}
 	PRIVATE ${PXSHAREDSDK_INCLUDE_DIRS}
 
 	PRIVATE ${BOOSTMULTIPRECISION_INCLUDE_DIRS}

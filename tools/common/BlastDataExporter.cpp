@@ -28,7 +28,6 @@
 
 #include "BlastDataExporter.h"
 #include "NvBlastExtPxManager.h"
-#include <NvBlastExtAuthoringCollisionBuilder.h>
 #include "NvBlastExtSerialization.h"
 #include "NvBlastExtLlSerialization.h"
 #include "NvBlastExtTkSerialization.h"

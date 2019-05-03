@@ -28,24 +28,18 @@
 
 #include "fbxsdk.h"
 #include "NvBlastExtExporterFbxUtils.h"
-#include "PxVec3.h"
-#include "PxVec2.h"
 #include "NvBlastExtAuthoringTypes.h"
 #include <sstream>
 #include <cctype>
 
-using physx::PxVec3;
-using physx::PxVec2;
-
-
 void FbxUtils::VertexToFbx(const Nv::Blast::Vertex& vert, FbxVector4& outVertex, FbxVector4& outNormal, FbxVector2& outUV)
 {
-	PxVec3ToFbx(vert.p, outVertex);
-	PxVec3ToFbx(vert.n, outNormal);
-	PxVec2ToFbx(vert.uv[0], outUV);
+	NvcVec3ToFbx(vert.p, outVertex);
+	NvcVec3ToFbx(vert.n, outNormal);
+	NvcVec2ToFbx(vert.uv[0], outUV);
 }
 
-void FbxUtils::PxVec3ToFbx(const physx::PxVec3& inVector, FbxVector4& outVector)
+void FbxUtils::NvcVec3ToFbx(const NvcVec3& inVector, FbxVector4& outVector)
 {
 	outVector[0] = inVector.x;
 	outVector[1] = inVector.y;
@@ -53,7 +47,7 @@ void FbxUtils::PxVec3ToFbx(const physx::PxVec3& inVector, FbxVector4& outVector)
 	outVector[3] = 0;
 }
 
-void FbxUtils::PxVec2ToFbx(const physx::PxVec2& inVector, FbxVector2& outVector)
+void FbxUtils::NvcVec2ToFbx(const NvcVec2& inVector, FbxVector2& outVector)
 {
 	outVector[0] = inVector.x;
 	outVector[1] = inVector.y;

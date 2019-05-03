@@ -49,12 +49,12 @@
 #include "NvBlastGlobals.h"
 #include "NvBlastExtAuthoringPerlinNoise.h"
 #include <NvBlastAssert.h>
-using namespace physx;
+#include <NvBlastPxSharedHelpers.h>
 
 #ifndef SAFE_DELETE
 #define SAFE_DELETE(p)                                                                                                 \
 	{                                                                                                                  \
-		if(p)                                                                                                          \
+		if (p)                                                                                                         \
 		{                                                                                                              \
 			delete (p);                                                                                                \
 			(p) = NULL;                                                                                                \
@@ -72,20 +72,21 @@ namespace Blast
 
 struct Halfspace_partitioning : public VSA::VS3D_Halfspace_Set
 {
-	std::vector<physx::PxPlane> planes;
+	std::vector<NvcPlane> planes;
 	VSA::real farthest_halfspace(VSA::real plane[4], const VSA::real point[4])
 	{
 		float biggest_d = -FLT_MAX;
 		for (uint32_t i = 0; i < planes.size(); ++i)
 		{
-			float d = planes[i].n.x * point[0] + planes[i].n.y * point[1] + planes[i].n.z * point[2] + planes[i].d * point[3];
+			float d =
+			    planes[i].n.x * point[0] + planes[i].n.y * point[1] + planes[i].n.z * point[2] + planes[i].d * point[3];
 			if (d > biggest_d)
 			{
 				biggest_d = d;
-				plane[0] = planes[i].n.x;
-				plane[1] = planes[i].n.y;
-				plane[2] = planes[i].n.z;
-				plane[3] = planes[i].d;
+				plane[0]  = planes[i].n.x;
+				plane[1]  = planes[i].n.y;
+				plane[2]  = planes[i].n.z;
+				plane[3]  = planes[i].d;
 			}
 		}
 		return biggest_d;
@@ -93,30 +94,30 @@ struct Halfspace_partitioning : public VSA::VS3D_Halfspace_Set
 };
 
 
-void findCellBasePlanes(const std::vector<PxVec3>& sites, std::vector<std::vector<int32_t> >& neighboors)
+void findCellBasePlanes(const std::vector<NvcVec3>& sites, std::vector<std::vector<int32_t> >& neighboors)
 {
 	Halfspace_partitioning prt;
-	std::vector<physx::PxPlane>& planes = prt.planes;
+	std::vector<NvcPlane>& planes = prt.planes;
 	neighboors.resize(sites.size());
 	for (uint32_t cellId = 0; cellId + 1 < sites.size(); ++cellId)
 	{
 		planes.clear();
 		planes.resize(sites.size() - 1 - cellId);
-		std::vector<PxVec3> midpoints(sites.size() - 1);
+		std::vector<NvcVec3> midpoints(sites.size() - 1);
 		int32_t collected = 0;
 
 		for (uint32_t i = cellId + 1; i < sites.size(); ++i)
 		{
-			PxVec3 midpoint = 0.5 * (sites[i] + sites[cellId]);
-			PxVec3 direction = (sites[i] - sites[cellId]).getNormalized();
-			planes[collected].n = direction;
-			planes[collected].d = -direction.dot(midpoint);
+			NvcVec3 midpoint     = 0.5 * (sites[i] + sites[cellId]);
+			NvcVec3 direction    = fromPxShared(toPxShared(sites[i] - sites[cellId]).getNormalized());
+			planes[collected].n  = direction;
+			planes[collected].d  = -dot(direction, midpoint);
 			midpoints[collected] = midpoint;
 			++collected;
 		}
 		for (uint32_t i = 0; i < planes.size(); ++i)
 		{
-			planes[i].n = -planes[i].n;
+			planes[i].n = neg(planes[i].n);
 			planes[i].d = -planes[i].d;
 
 			if (VSA::vs3d_test(prt))
@@ -124,7 +125,7 @@ void findCellBasePlanes(const std::vector<PxVec3>& sites, std::vector<std::vecto
 				neighboors[cellId].push_back(i + cellId + 1);
 				neighboors[i + cellId + 1].push_back(cellId);
 			};
-			planes[i].n = -planes[i].n;
+			planes[i].n = neg(planes[i].n);
 			planes[i].d = -planes[i].d;
 		}
 	}
@@ -134,17 +135,19 @@ void findCellBasePlanes(const std::vector<PxVec3>& sites, std::vector<std::vecto
 #define SITE_BOX_SIZE 4
 #define CUTTING_BOX_SIZE 40
 
-Mesh* getCellMesh(BooleanEvaluator& eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector<PxVec3>& sites, std::vector < std::vector<int32_t> >& neighboors, int32_t interiorMaterialId, physx::PxVec3 origin)
+Mesh* getCellMesh(BooleanEvaluator& eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector<NvcVec3>& sites,
+                  std::vector<std::vector<int32_t> >& neighboors, int32_t interiorMaterialId, NvcVec3 origin)
 {
-	Mesh* cell = getBigBox(origin, SITE_BOX_SIZE, interiorMaterialId);
+	Mesh* cell        = getBigBox(toPxShared(origin), SITE_BOX_SIZE, interiorMaterialId);
 	Mesh* cuttingMesh = getCuttingBox(PxVec3(0, 0, 0), PxVec3(1, 1, 1), CUTTING_BOX_SIZE, 0, interiorMaterialId);
 
 	for (uint32_t i = 0; i < neighboors[cellId].size(); ++i)
 	{
-		int32_t nCell = neighboors[cellId][i];
-		PxVec3 midpoint = 0.5 * (sites[nCell] + sites[cellId]);
-		PxVec3 direction = (sites[nCell] - sites[cellId]).getNormalized();
-		int32_t planeIndex = static_cast<int32_t>(sites.size()) * std::min(cellId, nCell) + std::max(cellId, nCell) + planeIndexerOffset;
+		int32_t nCell    = neighboors[cellId][i];
+		PxVec3 midpoint  = 0.5 * toPxShared(sites[nCell] + sites[cellId]);
+		PxVec3 direction = toPxShared(sites[nCell] - sites[cellId]).getNormalized();
+		int32_t planeIndex =
+		    static_cast<int32_t>(sites.size()) * std::min(cellId, nCell) + std::max(cellId, nCell) + planeIndexerOffset;
 		if (nCell < cellId)
 			planeIndex = -planeIndex;
 		setCuttingBox(midpoint, -direction, cuttingMesh, CUTTING_BOX_SIZE, planeIndex);
@@ -173,17 +176,17 @@ bool blastBondComparator(const NvBlastBondDesc& a, const NvBlastBondDesc& b)
 
 VoronoiSitesGeneratorImpl::VoronoiSitesGeneratorImpl(const Mesh* mesh, RandomGeneratorBase* rnd)
 {
-	mMesh = mesh;
-	mRnd = rnd;
+	mMesh        = mesh;
+	mRnd         = rnd;
 	mAccelerator = new BBoxBasedAccelerator(mMesh, DEFAULT_BB_ACCELARATOR_RES);
-	mStencil = nullptr;
+	mStencil     = nullptr;
 }
 
 void VoronoiSitesGeneratorImpl::setBaseMesh(const Mesh* m)
 {
 	mGeneratedSites.clear();
 	delete mAccelerator;
-	mMesh = m;
+	mMesh        = m;
 	mAccelerator = new BBoxBasedAccelerator(mMesh, DEFAULT_BB_ACCELARATOR_RES);
 }
 
@@ -213,21 +216,21 @@ void VoronoiSitesGeneratorImpl::clearStencil()
 void VoronoiSitesGeneratorImpl::uniformlyGenerateSitesInMesh(const uint32_t sitesCount)
 {
 	BooleanEvaluator voronoiMeshEval;
-	PxVec3 mn = mMesh->getBoundingBox().minimum;
-	PxVec3 mx = mMesh->getBoundingBox().maximum;
-	PxVec3 vc = mx - mn;
-	uint32_t attemptNumber = 0;
+	NvcVec3 mn              = mMesh->getBoundingBox().minimum;
+	NvcVec3 mx              = mMesh->getBoundingBox().maximum;
+	NvcVec3 vc              = mx - mn;
+	uint32_t attemptNumber  = 0;
 	uint32_t generatedSites = 0;
 	while (generatedSites < sitesCount && attemptNumber < MAX_VORONOI_ATTEMPT_NUMBER)
 	{
 		float rn1 = mRnd->getRandomValue() * vc.x;
 		float rn2 = mRnd->getRandomValue() * vc.y;
 		float rn3 = mRnd->getRandomValue() * vc.z;
-		if (voronoiMeshEval.isPointContainedInMesh(mMesh, PxVec3(rn1, rn2, rn3) + mn) && (mStencil == nullptr
-			|| voronoiMeshEval.isPointContainedInMesh(mStencil, PxVec3(rn1, rn2, rn3) + mn)))
+		if (voronoiMeshEval.isPointContainedInMesh(mMesh, NvcVec3{ rn1, rn2, rn3 } + mn) &&
+		    (mStencil == nullptr || voronoiMeshEval.isPointContainedInMesh(mStencil, NvcVec3{ rn1, rn2, rn3 } + mn)))
 		{
 			generatedSites++;
-			mGeneratedSites.push_back(PxVec3(rn1, rn2, rn3) + mn);
+			mGeneratedSites.push_back(NvcVec3{ rn1, rn2, rn3 } + mn);
 			attemptNumber = 0;
 		}
 		else
@@ -240,25 +243,26 @@ void VoronoiSitesGeneratorImpl::uniformlyGenerateSitesInMesh(const uint32_t site
 }
 
 
-void VoronoiSitesGeneratorImpl::clusteredSitesGeneration(const uint32_t numberOfClusters, const uint32_t sitesPerCluster, float clusterRadius)
+void VoronoiSitesGeneratorImpl::clusteredSitesGeneration(const uint32_t numberOfClusters,
+                                                         const uint32_t sitesPerCluster, float clusterRadius)
 {
 	BooleanEvaluator voronoiMeshEval;
-	PxVec3 mn = mMesh->getBoundingBox().minimum;
-	PxVec3 mx = mMesh->getBoundingBox().maximum;
-	PxVec3 middle = (mx + mn) * 0.5;
-	PxVec3 vc = (mx - mn) * 0.5;
-	uint32_t attemptNumber = 0;
+	NvcVec3 mn              = mMesh->getBoundingBox().minimum;
+	NvcVec3 mx              = mMesh->getBoundingBox().maximum;
+	NvcVec3 middle          = (mx + mn) * 0.5;
+	NvcVec3 vc              = (mx - mn) * 0.5;
+	uint32_t attemptNumber  = 0;
 	uint32_t generatedSites = 0;
-	std::vector<PxVec3> tempPoints;
+	std::vector<NvcVec3> tempPoints;
 	while (generatedSites < numberOfClusters)
 	{
 		float rn1 = mRnd->getRandomValue() * 2 - 1;
 		float rn2 = mRnd->getRandomValue() * 2 - 1;
 		float rn3 = mRnd->getRandomValue() * 2 - 1;
-		PxVec3 p = PxVec3(middle.x + rn1 * vc.x, middle.y + rn2 * vc.y, middle.z + rn3 * vc.z);
+		NvcVec3 p = { middle.x + rn1 * vc.x, middle.y + rn2 * vc.y, middle.z + rn3 * vc.z };
 
-		if (voronoiMeshEval.isPointContainedInMesh(mMesh, p) && (mStencil == nullptr
-			|| voronoiMeshEval.isPointContainedInMesh(mStencil, p)))
+		if (voronoiMeshEval.isPointContainedInMesh(mMesh, p) &&
+		    (mStencil == nullptr || voronoiMeshEval.isPointContainedInMesh(mStencil, p)))
 		{
 			generatedSites++;
 			tempPoints.push_back(p);
@@ -274,13 +278,17 @@ void VoronoiSitesGeneratorImpl::clusteredSitesGeneration(const uint32_t numberOf
 	int32_t totalCount = 0;
 	for (; tempPoints.size() > 0; tempPoints.pop_back())
 	{
-		uint32_t unif = sitesPerCluster;
+		uint32_t unif  = sitesPerCluster;
 		generatedSites = 0;
 		while (generatedSites < unif)
 		{
-			PxVec3 p = tempPoints.back() + PxVec3(mRnd->getRandomValue() * 2 - 1, mRnd->getRandomValue() * 2 - 1, mRnd->getRandomValue() * 2 - 1).getNormalized() * (mRnd->getRandomValue() + 0.001f) * clusterRadius;
-			if (voronoiMeshEval.isPointContainedInMesh(mMesh, p) && (mStencil == nullptr
-				|| voronoiMeshEval.isPointContainedInMesh(mStencil, p)))
+			NvcVec3 p =
+			    tempPoints.back() + fromPxShared(PxVec3(mRnd->getRandomValue() * 2 - 1, mRnd->getRandomValue() * 2 - 1,
+			                                         mRnd->getRandomValue() * 2 - 1)
+			                                      .getNormalized()) *
+			                            (mRnd->getRandomValue() + 0.001f) * clusterRadius;
+			if (voronoiMeshEval.isPointContainedInMesh(mMesh, p) &&
+			    (mStencil == nullptr || voronoiMeshEval.isPointContainedInMesh(mStencil, p)))
 			{
 				totalCount++;
 				generatedSites++;
@@ -294,36 +302,35 @@ void VoronoiSitesGeneratorImpl::clusteredSitesGeneration(const uint32_t numberOf
 					break;
 			}
 		}
-
 	}
-
 }
 
 
 #define IN_SPHERE_ATTEMPT_NUMBER 20
 
-void VoronoiSitesGeneratorImpl::addSite(const physx::PxVec3& site)
+void VoronoiSitesGeneratorImpl::addSite(const NvcVec3& site)
 {
 	mGeneratedSites.push_back(site);
 }
 
 
-void VoronoiSitesGeneratorImpl::generateInSphere(const uint32_t count, const float radius, const physx::PxVec3& center)
+void VoronoiSitesGeneratorImpl::generateInSphere(const uint32_t count, const float radius, const NvcVec3& center)
 {
 	BooleanEvaluator voronoiMeshEval;
-	uint32_t attemptNumber = 0;
+	uint32_t attemptNumber  = 0;
 	uint32_t generatedSites = 0;
-	std::vector<PxVec3> tempPoints;
+	std::vector<NvcVec3> tempPoints;
 	float radiusSquared = radius * radius;
 
 	while (generatedSites < count && attemptNumber < MAX_VORONOI_ATTEMPT_NUMBER)
 	{
-		float rn1 = (mRnd->getRandomValue() - 0.5f) * 2.f * radius;
-		float rn2 = (mRnd->getRandomValue() - 0.5f) * 2.f * radius;
-		float rn3 = (mRnd->getRandomValue() - 0.5f) * 2.f * radius;
-		PxVec3 point(rn1, rn2, rn3);
-		if (point.magnitudeSquared() < radiusSquared && voronoiMeshEval.isPointContainedInMesh(mMesh, point + center) && (mStencil == nullptr
-			|| voronoiMeshEval.isPointContainedInMesh(mStencil, point + center)))
+		float rn1     = (mRnd->getRandomValue() - 0.5f) * 2.f * radius;
+		float rn2     = (mRnd->getRandomValue() - 0.5f) * 2.f * radius;
+		float rn3     = (mRnd->getRandomValue() - 0.5f) * 2.f * radius;
+		NvcVec3 point = { rn1, rn2, rn3 };
+		if (toPxShared(point).magnitudeSquared() < radiusSquared &&
+		    voronoiMeshEval.isPointContainedInMesh(mMesh, point + center) &&
+		    (mStencil == nullptr || voronoiMeshEval.isPointContainedInMesh(mStencil, point + center)))
 		{
 			generatedSites++;
 			mGeneratedSites.push_back(point + center);
@@ -339,12 +346,12 @@ void VoronoiSitesGeneratorImpl::generateInSphere(const uint32_t count, const flo
 }
 
 
-void VoronoiSitesGeneratorImpl::deleteInSphere(const float radius, const physx::PxVec3& center, float deleteProbability)
+void VoronoiSitesGeneratorImpl::deleteInSphere(const float radius, const NvcVec3& center, float deleteProbability)
 {
 	float r2 = radius * radius;
 	for (uint32_t i = 0; i < mGeneratedSites.size(); ++i)
 	{
-		if ((mGeneratedSites[i] - center).magnitudeSquared() < r2 && mRnd->getRandomValue() <= deleteProbability)
+		if (toPxShared(mGeneratedSites[i] - center).magnitudeSquared() < r2 && mRnd->getRandomValue() <= deleteProbability)
 		{
 			std::swap(mGeneratedSites[i], mGeneratedSites.back());
 			mGeneratedSites.pop_back();
@@ -354,26 +361,28 @@ void VoronoiSitesGeneratorImpl::deleteInSphere(const float radius, const physx::
 }
 
 
-void VoronoiSitesGeneratorImpl::radialPattern(const physx::PxVec3& center, const physx::PxVec3& normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset, float variability)
+void VoronoiSitesGeneratorImpl::radialPattern(const NvcVec3& center, const NvcVec3& normal, float radius,
+                                              int32_t angularSteps, int32_t radialSteps, float angleOffset,
+                                              float variability)
 {
-//	mGeneratedSites.push_back(center);
-	physx::PxVec3 t1, t2;
+	//	mGeneratedSites.push_back(center);
+	PxVec3 t1, t2;
 	if (std::abs(normal.z) < 0.9)
 	{
-		t1 = normal.cross(PxVec3(0, 0, 1));
+		t1 = toPxShared(normal).cross(PxVec3(0, 0, 1));
 	}
 	else
 	{
-		t1 = normal.cross(PxVec3(1, 0, 0));
+		t1 = toPxShared(normal).cross(PxVec3(1, 0, 0));
 	}
-	t2 = t1.cross(normal);
+	t2 = t1.cross(toPxShared(normal));
 	t1.normalize();
 	t2.normalize();
 
 	float radStep = radius / radialSteps;
-	int32_t cCr = 0;
+	int32_t cCr   = 0;
 
-	float angleStep = PxPi * 2 / angularSteps;
+	float angleStep = physx::PxPi * 2 / angularSteps;
 	for (float cRadius = radStep; cRadius < radius; cRadius += radStep)
 	{
 		float cAngle = angleOffset * cCr;
@@ -382,7 +391,7 @@ void VoronoiSitesGeneratorImpl::radialPattern(const physx::PxVec3& center, const
 			float angVars = mRnd->getRandomValue() * variability + (1.0f - 0.5f * variability);
 			float radVars = mRnd->getRandomValue() * variability + (1.0f - 0.5f * variability);
 
-			PxVec3 nPos = (PxCos(cAngle * angVars) * t1 + PxSin(cAngle * angVars) * t2) * cRadius * radVars + center;
+			NvcVec3 nPos = fromPxShared(std::cos(cAngle * angVars) * t1 + std::sin(cAngle * angVars) * t2) * cRadius * radVars + center;
 			mGeneratedSites.push_back(nPos);
 			cAngle += angleStep;
 		}
@@ -390,7 +399,7 @@ void VoronoiSitesGeneratorImpl::radialPattern(const physx::PxVec3& center, const
 	}
 }
 
-uint32_t VoronoiSitesGeneratorImpl::getVoronoiSites(const physx::PxVec3*& sites)
+uint32_t VoronoiSitesGeneratorImpl::getVoronoiSites(const NvcVec3*& sites)
 {
 	if (mGeneratedSites.size())
 	{
@@ -399,7 +408,8 @@ uint32_t VoronoiSitesGeneratorImpl::getVoronoiSites(const physx::PxVec3*& sites)
 	return (uint32_t)mGeneratedSites.size();
 }
 
-int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3* cellPointsIn, bool replaceChunk)
+int32_t
+FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const NvcVec3* cellPointsIn, bool replaceChunk)
 {
 	if (chunkId == 0 && replaceChunk)
 	{
@@ -419,7 +429,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 
 	Mesh* mesh = mChunkData[chunkIndex].meshData;
 
-	std::vector<PxVec3> cellPoints(cellCount);
+	std::vector<NvcVec3> cellPoints(cellCount);
 	for (uint32_t i = 0; i < cellCount; ++i)
 	{
 		cellPoints[i] = (cellPointsIn[i] - mOffset) * (1.0f / mScaleFactor);
@@ -443,7 +453,8 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 	std::vector<uint32_t> newlyCreatedChunksIds;
 	for (uint32_t i = 0; i < cellPoints.size(); ++i)
 	{
-		Mesh* cell = getCellMesh(eval, mPlaneIndexerOffset, i, cellPoints, neighboors, mInteriorMaterialId, cellPoints[i]);
+		Mesh* cell =
+		    getCellMesh(eval, mPlaneIndexerOffset, i, cellPoints, neighboors, mInteriorMaterialId, cellPoints[i]);
 
 		if (cell == nullptr)
 		{
@@ -454,8 +465,8 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 		Mesh* resultMesh = voronoiMeshEval.createNewMesh();
 		if (resultMesh)
 		{
-			uint32_t ncidx = createNewChunk(parentChunk);
-			mChunkData[ncidx].isLeaf = true;
+			uint32_t ncidx             = createNewChunk(parentChunk);
+			mChunkData[ncidx].isLeaf   = true;
 			mChunkData[ncidx].meshData = resultMesh;
 			newlyCreatedChunksIds.push_back(mChunkData[ncidx].chunkId);
 		}
@@ -476,7 +487,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 			islandDetectionAndRemoving(chunkToCheck);
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -500,11 +511,11 @@ Mesh* FractureToolImpl::createChunkMesh(int32_t chunkId)
 
 bool FractureToolImpl::isMeshContainOpenEdges(const Mesh* input)
 {
-	std::map<PxVec3, int32_t, VrtPositionComparator> vertexMapping;
+	std::map<NvcVec3, int32_t, VrtPositionComparator> vertexMapping;
 	std::vector<int32_t> vertexRemappingArray(input->getVerticesCount());
 	std::vector<Edge> remappedEdges(input->getEdgesCount());
 	/**
-		Remap vertices
+	    Remap vertices
 	*/
 
 	const Vertex* vrx = input->getVertices();
@@ -513,7 +524,7 @@ bool FractureToolImpl::isMeshContainOpenEdges(const Mesh* input)
 		auto it = vertexMapping.find(vrx->p);
 		if (it == vertexMapping.end())
 		{
-			vertexMapping[vrx->p] = i;
+			vertexMapping[vrx->p]   = i;
 			vertexRemappingArray[i] = i;
 		}
 		else
@@ -522,7 +533,7 @@ bool FractureToolImpl::isMeshContainOpenEdges(const Mesh* input)
 		}
 		++vrx;
 	}
-	
+
 	const Edge* ed = input->getEdges();
 	for (uint32_t i = 0; i < input->getEdgesCount(); ++i)
 	{
@@ -559,7 +570,8 @@ bool FractureToolImpl::isMeshContainOpenEdges(const Mesh* input)
 	return collected & 1;
 }
 
-int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3* cellPointsIn, const physx::PxVec3& scale, const physx::PxQuat& rotation, bool replaceChunk)
+int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const NvcVec3* cellPointsIn,
+                                            const NvcVec3& scale, const NvcQuat& rotation, bool replaceChunk)
 {
 	if (chunkId == 0 && replaceChunk)
 	{
@@ -579,17 +591,16 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 
 	Mesh* mesh = mChunkData[chunkIndex].meshData;
 
-	std::vector<PxVec3> cellPoints(cellCount);
+	std::vector<NvcVec3> cellPoints(cellCount);
 	for (uint32_t i = 0; i < cellCount; ++i)
 	{
 		cellPoints[i] = (cellPointsIn[i] - mOffset) * (1.0f / mScaleFactor);
-	
-		cellPoints[i] = rotation.rotateInv(cellPoints[i]);
+
+		toPxShared(cellPoints[i]) = toPxShared(rotation).rotateInv(toPxShared(cellPoints[i]));
 
 		cellPoints[i].x *= (1.0f / scale.x);
 		cellPoints[i].y *= (1.0f / scale.y);
 		cellPoints[i].z *= (1.0f / scale.z);
-		
 	}
 
 	/**
@@ -611,8 +622,9 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 
 	for (uint32_t i = 0; i < cellPoints.size(); ++i)
 	{
-		Mesh* cell = getCellMesh(eval, mPlaneIndexerOffset, i, cellPoints, neighboors, mInteriorMaterialId, cellPoints[i]);
-				
+		Mesh* cell =
+		    getCellMesh(eval, mPlaneIndexerOffset, i, cellPoints, neighboors, mInteriorMaterialId, cellPoints[i]);
+
 		if (cell == nullptr)
 		{
 			continue;
@@ -623,7 +635,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 			cell->getVerticesWritable()[v].p.x *= scale.x;
 			cell->getVerticesWritable()[v].p.y *= scale.y;
 			cell->getVerticesWritable()[v].p.z *= scale.z;
-			cell->getVerticesWritable()[v].p = rotation.rotate(cell->getVerticesWritable()[v].p);
+			toPxShared(cell->getVerticesWritable()[v].p) = toPxShared(rotation).rotate(toPxShared(cell->getVerticesWritable()[v].p));
 		}
 		cell->recalculateBoundingBox();
 		DummyAccelerator dmAccel(cell->getFacetCount());
@@ -631,8 +643,8 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 		Mesh* resultMesh = voronoiMeshEval.createNewMesh();
 		if (resultMesh)
 		{
-			uint32_t ncidx = createNewChunk(parentChunk);
-			mChunkData[ncidx].isLeaf = true;
+			uint32_t ncidx             = createNewChunk(parentChunk);
+			mChunkData[ncidx].isLeaf   = true;
 			mChunkData[ncidx].meshData = resultMesh;
 			newlyCreatedChunksIds.push_back(mChunkData[ncidx].chunkId);
 		}
@@ -657,7 +669,8 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 	return 0;
 }
 
-int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& conf, bool replaceChunk, RandomGeneratorBase* rnd)
+int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& conf, bool replaceChunk,
+                                  RandomGeneratorBase* rnd)
 {
 	if (conf.noise.amplitude != 0)
 	{
@@ -679,19 +692,19 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 		deleteAllChildrenOfChunk(chunkId);
 	}
 	chunkIndex = getChunkIndex(chunkId);
-	
 
-	Mesh* mesh = new MeshImpl(*reinterpret_cast <MeshImpl*>(mChunkData[chunkIndex].meshData));
-	
+
+	Mesh* mesh = new MeshImpl(*reinterpret_cast<MeshImpl*>(mChunkData[chunkIndex].meshData));
+
 	BooleanEvaluator bTool;
 
 	int32_t x_slices = conf.x_slices;
 	int32_t y_slices = conf.y_slices;
 	int32_t z_slices = conf.z_slices;
 
-	const PxBounds3 sourceBBox = mesh->getBoundingBox();
+	const physx::PxBounds3 sourceBBox = toPxShared(mesh->getBoundingBox());
 
-	PxVec3 center = PxVec3(mesh->getBoundingBox().minimum.x, 0, 0);
+	PxVec3 center = {mesh->getBoundingBox().minimum.x, 0, 0};
 
 
 	float x_offset = (sourceBBox.maximum.x - sourceBBox.minimum.x) * (1.0f / (x_slices + 1));
@@ -700,15 +713,15 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 
 	center.x += x_offset;
 
-	PxVec3 dir(1, 0, 0);
+	PxVec3 dir = {1, 0, 0};
 
 	Mesh* slBox = getCuttingBox(center, dir, 20, 0, mInteriorMaterialId);
 
 	ChunkInfo ch;
-	ch.isLeaf = true;
+	ch.isLeaf    = true;
 	ch.isChanged = true;
-	ch.flags = ChunkInfo::NO_FLAGS;
-	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
+	ch.flags     = ChunkInfo::NO_FLAGS;
+	ch.parent    = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
 	std::vector<ChunkInfo> xSlicedChunks;
 	std::vector<ChunkInfo> ySlicedChunks;
 	std::vector<uint32_t> newlyCreatedChunksIds;
@@ -717,7 +730,8 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 	*/
 	for (int32_t slice = 0; slice < x_slices; ++slice)
 	{
-		PxVec3 randVect = PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
+		PxVec3 randVect =
+		    PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
 		PxVec3 lDir = dir + randVect * conf.angle_variations;
 
 		setCuttingBox(center, -lDir, slBox, 20, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET);
@@ -751,15 +765,16 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 	{
 		center = PxVec3(0, sourceBBox.minimum.y, 0);
 		center.y += y_offset;
-		dir = PxVec3(0, 1, 0);
+		dir  = PxVec3(0, 1, 0);
 		mesh = xSlicedChunks[chunk].meshData;
 
 		for (int32_t slice = 0; slice < y_slices; ++slice)
 		{
-			PxVec3 randVect = PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
+			PxVec3 randVect =
+			    PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
 			PxVec3 lDir = dir + randVect * conf.angle_variations;
 
-			
+
 			setCuttingBox(center, -lDir, slBox, 20, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET);
 			bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_INTERSECION());
 			ch.meshData = bTool.createNewMesh();
@@ -791,12 +806,13 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 	{
 		center = PxVec3(0, 0, sourceBBox.minimum.z);
 		center.z += z_offset;
-		dir = PxVec3(0, 0, 1);
+		dir  = PxVec3(0, 0, 1);
 		mesh = ySlicedChunks[chunk].meshData;
 
 		for (int32_t slice = 0; slice < z_slices; ++slice)
 		{
-			PxVec3 randVect = PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
+			PxVec3 randVect =
+			    PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
 			PxVec3 lDir = dir + randVect * conf.angle_variations;
 			setCuttingBox(center, -lDir, slBox, 20, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET);
 			bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_INTERSECION());
@@ -821,7 +837,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 		}
 		if (mesh != 0)
 		{
-			ch.chunkId = mChunkIdCounter++;
+			ch.chunkId  = mChunkIdCounter++;
 			ch.meshData = mesh;
 			mChunkData.push_back(ch);
 			newlyCreatedChunksIds.push_back(ch.chunkId);
@@ -848,7 +864,8 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 	return 0;
 }
 
-int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfiguration& conf, bool replaceChunk, RandomGeneratorBase* rnd)
+int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfiguration& conf, bool replaceChunk,
+                                       RandomGeneratorBase* rnd)
 {
 	if (replaceChunk && chunkId == 0)
 	{
@@ -867,7 +884,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 	chunkIndex = getChunkIndex(chunkId);
 
 
-	Mesh* mesh = new MeshImpl(*reinterpret_cast <MeshImpl*>(mChunkData[chunkIndex].meshData));
+	Mesh* mesh = new MeshImpl(*reinterpret_cast<MeshImpl*>(mChunkData[chunkIndex].meshData));
 
 	BooleanEvaluator bTool;
 
@@ -875,7 +892,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 	int32_t y_slices = conf.y_slices;
 	int32_t z_slices = conf.z_slices;
 
-	const PxBounds3 sourceBBox = mesh->getBoundingBox();
+	const physx::PxBounds3 sourceBBox = toPxShared(mesh->getBoundingBox());
 
 	PxVec3 center = PxVec3(mesh->getBoundingBox().minimum.x, 0, 0);
 
@@ -884,7 +901,8 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 	float y_offset = (sourceBBox.maximum.y - sourceBBox.minimum.y) * (1.0f / (y_slices + 1));
 	float z_offset = (sourceBBox.maximum.z - sourceBBox.minimum.z) * (1.0f / (z_slices + 1));
 
-	physx::PxVec3 resolution(mScaleFactor / conf.noise.samplingInterval.x, mScaleFactor / conf.noise.samplingInterval.y, mScaleFactor / conf.noise.samplingInterval.z);
+	PxVec3 resolution(mScaleFactor / conf.noise.samplingInterval.x, mScaleFactor / conf.noise.samplingInterval.y,
+	                   mScaleFactor / conf.noise.samplingInterval.z);
 
 	center.x += x_offset;
 
@@ -893,24 +911,28 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 	Mesh* slBox = nullptr;
 
 	ChunkInfo ch;
-	ch.isLeaf = true;
+	ch.isLeaf    = true;
 	ch.isChanged = true;
-	ch.flags = ChunkInfo::NO_FLAGS;
-	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
+	ch.flags     = ChunkInfo::NO_FLAGS;
+	ch.parent    = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
 	std::vector<ChunkInfo> xSlicedChunks;
 	std::vector<ChunkInfo> ySlicedChunks;
 	std::vector<uint32_t> newlyCreatedChunksIds;
 	float noisyPartSize = 1.2f;
-//	int32_t acceleratorRes = 8;
+	//	int32_t acceleratorRes = 8;
 	/**
-		Slice along x direction
+	    Slice along x direction
 	*/
 	for (int32_t slice = 0; slice < x_slices; ++slice)
 	{
-		PxVec3 randVect = PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
+		PxVec3 randVect =
+		    PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
 		PxVec3 lDir = dir + randVect * conf.angle_variations;
-		slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, resolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude, conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
-	//	DummyAccelerator accel(mesh->getFacetCount());
+		slBox        = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, resolution,
+                                       mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude,
+                                       conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(),
+                                       mInteriorMaterialId);
+		//	DummyAccelerator accel(mesh->getFacetCount());
 		SweepingAccelerator accel(mesh);
 		SweepingAccelerator dummy(slBox);
 		bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_DIFFERENCE());
@@ -937,22 +959,26 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 		ch.meshData = mesh;
 		xSlicedChunks.push_back(ch);
 	}
-	slBox = getCuttingBox(center, dir, 20, 0, mInteriorMaterialId);
+	slBox                    = getCuttingBox(center, dir, 20, 0, mInteriorMaterialId);
 	uint32_t slicedChunkSize = xSlicedChunks.size();
 	for (uint32_t chunk = 0; chunk < slicedChunkSize; ++chunk)
 	{
 		center = PxVec3(0, sourceBBox.minimum.y, 0);
 		center.y += y_offset;
-		dir = PxVec3(0, 1, 0);
+		dir  = PxVec3(0, 1, 0);
 		mesh = xSlicedChunks[chunk].meshData;
 
 		for (int32_t slice = 0; slice < y_slices; ++slice)
 		{
-			PxVec3 randVect = PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
+			PxVec3 randVect =
+			    PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
 			PxVec3 lDir = dir + randVect * conf.angle_variations;
 
-			slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, resolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude, conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
-		//	DummyAccelerator accel(mesh->getFacetCount());
+			slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, resolution,
+			                               mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude,
+			                               conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(),
+			                               mInteriorMaterialId);
+			//	DummyAccelerator accel(mesh->getFacetCount());
 			SweepingAccelerator accel(mesh);
 			SweepingAccelerator dummy(slBox);
 			bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_DIFFERENCE());
@@ -985,15 +1011,19 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 	{
 		center = PxVec3(0, 0, sourceBBox.minimum.z);
 		center.z += z_offset;
-		dir = PxVec3(0, 0, 1);
+		dir  = PxVec3(0, 0, 1);
 		mesh = ySlicedChunks[chunk].meshData;
 
 		for (int32_t slice = 0; slice < z_slices; ++slice)
 		{
-			PxVec3 randVect = PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
+			PxVec3 randVect =
+			    PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
 			PxVec3 lDir = dir + randVect * conf.angle_variations;
-			slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, resolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude, conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
-	//		DummyAccelerator accel(mesh->getFacetCount());
+			slBox        = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, resolution,
+                                           mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude,
+                                           conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(),
+                                           mInteriorMaterialId);
+			//		DummyAccelerator accel(mesh->getFacetCount());
 			SweepingAccelerator accel(mesh);
 			SweepingAccelerator dummy(slBox);
 			bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_DIFFERENCE());
@@ -1019,14 +1049,14 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 		}
 		if (mesh != 0)
 		{
-			ch.chunkId = mChunkIdCounter++;
+			ch.chunkId  = mChunkIdCounter++;
 			ch.meshData = mesh;
 			mChunkData.push_back(ch);
 			newlyCreatedChunksIds.push_back(ch.chunkId);
 		}
 	}
 
-//	delete slBox;
+	//	delete slBox;
 
 	mChunkData[chunkIndex].isLeaf = false;
 	if (replaceChunk)
@@ -1044,7 +1074,8 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 
 	return 0;
 }
-int32_t	FractureToolImpl::cut(uint32_t chunkId, const physx::PxVec3& normal, const physx::PxVec3& point, const NoiseConfiguration& noise, bool replaceChunk, RandomGeneratorBase* rnd)
+int32_t FractureToolImpl::cut(uint32_t chunkId, const NvcVec3& normal, const NvcVec3& point,
+                              const NoiseConfiguration& noise, bool replaceChunk, RandomGeneratorBase* rnd)
 {
 	if (replaceChunk && chunkId == 0)
 	{
@@ -1062,21 +1093,24 @@ int32_t	FractureToolImpl::cut(uint32_t chunkId, const physx::PxVec3& normal, con
 	}
 	chunkIndex = getChunkIndex(chunkId);
 
-	Mesh* mesh = new MeshImpl(*reinterpret_cast <MeshImpl*>(mChunkData[chunkIndex].meshData));
+	Mesh* mesh = new MeshImpl(*reinterpret_cast<MeshImpl*>(mChunkData[chunkIndex].meshData));
 	BooleanEvaluator bTool;
 
 	ChunkInfo ch;
-	ch.chunkId = -1;
-	ch.isLeaf = true;
-	ch.isChanged = true;
-	ch.flags = ChunkInfo::NO_FLAGS;
-	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
+	ch.chunkId          = -1;
+	ch.isLeaf           = true;
+	ch.isChanged        = true;
+	ch.flags            = ChunkInfo::NO_FLAGS;
+	ch.parent           = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
 	float noisyPartSize = 1.2f;
-	
-	physx::PxVec3 resolution(mScaleFactor / noise.samplingInterval.x, mScaleFactor / noise.samplingInterval.y, mScaleFactor / noise.samplingInterval.z);
+
+	PxVec3 resolution(mScaleFactor / noise.samplingInterval.x, mScaleFactor / noise.samplingInterval.y,
+	                   mScaleFactor / noise.samplingInterval.z);
 
 	// Perform cut
-	Mesh* slBox = getNoisyCuttingBoxPair((point - mOffset) / mScaleFactor, normal, 40, noisyPartSize, resolution, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, noise.amplitude, noise.frequency, noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
+	Mesh* slBox = getNoisyCuttingBoxPair(toPxShared(point - mOffset) / mScaleFactor, toPxShared(normal), 40, noisyPartSize, resolution,
+	                                     mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, noise.amplitude, noise.frequency,
+	                                     noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
 	SweepingAccelerator accel(mesh);
 	SweepingAccelerator dummy(slBox);
 	bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_DIFFERENCE());
@@ -1088,8 +1122,8 @@ int32_t	FractureToolImpl::cut(uint32_t chunkId, const physx::PxVec3& normal, con
 	delete slBox;
 	delete mesh;
 	mesh = result;
-	
-	if (mesh == 0) //Return if it doesn't cut specified chunk
+
+	if (mesh == 0)  // Return if it doesn't cut specified chunk
 	{
 		return 1;
 	}
@@ -1109,11 +1143,11 @@ int32_t	FractureToolImpl::cut(uint32_t chunkId, const physx::PxVec3& normal, con
 	}
 	if (mesh != 0)
 	{
-		ch.chunkId = mChunkIdCounter++;
+		ch.chunkId  = mChunkIdCounter++;
 		ch.meshData = mesh;
 		mChunkData.push_back(ch);
 	}
-	
+
 	mChunkData[chunkIndex].isLeaf = false;
 	if (replaceChunk)
 	{
@@ -1133,7 +1167,7 @@ int32_t	FractureToolImpl::cut(uint32_t chunkId, const physx::PxVec3& normal, con
 }
 
 
-bool CmpVec::operator()(const physx::PxVec3& v1, const physx::PxVec3& v2) const
+bool CmpVec::operator()(const PxVec3& v1, const PxVec3& v2) const
 {
 	auto v = (v2 - v1).abs();
 	if (v.x < 1e-5)
@@ -1164,42 +1198,42 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 	{
 		deleteAllChildrenOfChunk(chunkId);
 	}
-	chunkIndex = getChunkIndex(chunkId);
+	chunkIndex                      = getChunkIndex(chunkId);
 	Nv::Blast::CutoutSet& cutoutSet = *conf.cutoutSet;
 
-	Mesh* mesh = new MeshImpl(*reinterpret_cast <MeshImpl*>(mChunkData[chunkIndex].meshData));
-	float extrusionLength = mesh->getBoundingBox().getDimensions().magnitude();
-	auto scale = conf.scale / mScaleFactor;
-	conf.transform.p = (conf.transform.p - mOffset) / mScaleFactor;
+	Mesh* mesh            = new MeshImpl(*reinterpret_cast<MeshImpl*>(mChunkData[chunkIndex].meshData));
+	float extrusionLength = toPxShared(mesh->getBoundingBox()).getDimensions().magnitude();
+	auto scale            = toPxShared(conf.scale) / mScaleFactor;
+	conf.transform.p      = (conf.transform.p - mOffset) / mScaleFactor;
 	if (scale.x < 0.f || scale.y < 0.f)
 	{
-		scale = physx::PxVec2(extrusionLength);
+		scale = { extrusionLength, extrusionLength };
 	}
 	if (conf.isRelativeTransform)
 	{
-		conf.transform.p += mesh->getBoundingBox().getCenter() / mScaleFactor;
+		toPxShared(conf.transform.p) += toPxShared(mesh->getBoundingBox()).getCenter() / mScaleFactor;
 	}
-	conf.noise.samplingInterval /= mScaleFactor;
+	toPxShared(conf.noise.samplingInterval) /= mScaleFactor;
 	float xDim = cutoutSet.getDimensions().x;
 	float yDim = cutoutSet.getDimensions().y;
 
-	if (conf.cutoutSet->isPeriodic()) //cutout with periodic boundary do not support noise and conicity
+	if (conf.cutoutSet->isPeriodic())  // cutout with periodic boundary do not support noise and conicity
 	{
-		conf.aperture = 0.f;
+		conf.aperture        = 0.f;
 		conf.noise.amplitude = 0.f;
 	}
 
 	BooleanEvaluator bTool;
 	ChunkInfo ch;
-	ch.isLeaf = true;
+	ch.isLeaf    = true;
 	ch.isChanged = true;
-	ch.flags = ChunkInfo::NO_FLAGS;
-	ch.parent = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
+	ch.flags     = ChunkInfo::NO_FLAGS;
+	ch.parent    = replaceChunk ? mChunkData[chunkIndex].parent : chunkId;
 	std::vector<uint32_t> newlyCreatedChunksIds;
 
 	SharedFacesMap sharedFacesMap;
-	std::vector<std::vector<physx::PxVec3>> verts;
-	std::vector<std::set<int32_t>> smoothingGroups;
+	std::vector<std::vector<PxVec3> > verts;
+	std::vector<std::set<int32_t> > smoothingGroups;
 	std::vector<uint32_t> cutoutStarts;
 
 	for (uint32_t c = 0; c < cutoutSet.getCutoutCount(); c++)
@@ -1208,14 +1242,14 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 		for (uint32_t l = 0; l < cutoutSet.getCutoutLoopCount(c); l++)
 		{
 			uint32_t vertCount = cutoutSet.getCutoutVertexCount(c, l);
-			verts.push_back(std::vector<physx::PxVec3>(vertCount));
+			verts.push_back(std::vector<PxVec3>(vertCount));
 			smoothingGroups.push_back(std::set<int32_t>());
 			for (uint32_t v = 0; v < vertCount; v++)
 			{
-				auto vert = cutoutSet.getCutoutVertex(c, l, v);
-				vert.x = (vert.x / xDim - 0.5f) * scale.x;
-				vert.y = (vert.y / yDim - 0.5f) * scale.y;
-				verts.back()[v] = vert;
+				auto vert       = cutoutSet.getCutoutVertex(c, l, v);
+				vert.x          = (vert.x / xDim - 0.5f) * scale.x;
+				vert.y          = (vert.y / yDim - 0.5f) * scale.y;
+				verts.back()[v] = toPxShared(vert);
 
 				if (cutoutSet.isCutoutVertexToggleSmoothingGroup(c, l, v))
 				{
@@ -1226,25 +1260,27 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 	}
 
 	float dimension = scale.magnitude();
-	float conicityMultiplierBot = 1.f + 2.f * extrusionLength / dimension * physx::PxTan(physx::PxClamp(conf.aperture, -179.f, 179.f) * physx::PxPi / 360.f);
+	float conicityMultiplierBot =
+	    1.f + 2.f * extrusionLength / dimension *
+	              physx::PxTan(physx::PxClamp(conf.aperture, -179.f, 179.f) * physx::PxPi / 360.f);
 	float conicityMultiplierTop = 2.f - conicityMultiplierBot;
 	float heightBot = extrusionLength, heightTop = extrusionLength;
 	if (conicityMultiplierBot < 0.f)
 	{
 		conicityMultiplierBot = 0.f;
-		heightBot = 0.5f * dimension / std::abs(physx::PxTan(conf.aperture * physx::PxPi / 360.f));
+		heightBot             = 0.5f * dimension / std::abs(physx::PxTan(conf.aperture * physx::PxPi / 360.f));
 	}
 	if (conicityMultiplierTop < 0.f)
 	{
 		conicityMultiplierTop = 0.f;
-		heightTop = 0.5f * dimension / std::abs(physx::PxTan(conf.aperture * physx::PxPi / 360.f));
+		heightTop             = 0.5f * dimension / std::abs(physx::PxTan(conf.aperture * physx::PxPi / 360.f));
 	}
 
 	uint32_t seed = rnd->getRandomValue();
-	buildCuttingConeFaces(conf, verts, heightBot, heightTop, conicityMultiplierBot, conicityMultiplierTop, 
-		mPlaneIndexerOffset, seed, mInteriorMaterialId, sharedFacesMap);
+	buildCuttingConeFaces(conf, verts, heightBot, heightTop, conicityMultiplierBot, conicityMultiplierTop,
+	                      mPlaneIndexerOffset, seed, mInteriorMaterialId, sharedFacesMap);
 
-	std::vector<std::vector<Mesh*>> cutoutMeshes;
+	std::vector<std::vector<Mesh*> > cutoutMeshes;
 	for (uint32_t c = 0; c < cutoutSet.getCutoutCount(); c++)
 	{
 		cutoutMeshes.push_back(std::vector<Mesh*>());
@@ -1254,19 +1290,21 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 			{
 				continue;
 			}
-			cutoutMeshes.back().push_back(getCuttingCone(conf, verts[cutoutStarts[c] + l], smoothingGroups[cutoutStarts[c] + l], heightBot, heightTop, conicityMultiplierBot, conicityMultiplierTop,
-				mPlaneIndexerOffset, seed, mInteriorMaterialId, sharedFacesMap, l != 0));
+			cutoutMeshes.back().push_back(
+			    getCuttingCone(conf, verts[cutoutStarts[c] + l], smoothingGroups[cutoutStarts[c] + l], heightBot,
+			                   heightTop, conicityMultiplierBot, conicityMultiplierTop, mPlaneIndexerOffset, seed,
+			                   mInteriorMaterialId, sharedFacesMap, l != 0));
 		}
 	}
 
-	std::stack<std::pair<int32_t, int32_t>> cellsStack;
-	std::set<std::pair<int32_t, int32_t>> visited;
+	std::stack<std::pair<int32_t, int32_t> > cellsStack;
+	std::set<std::pair<int32_t, int32_t> > visited;
 	cellsStack.push(std::make_pair(0, 0));
 
 	while (!cellsStack.empty())
 	{
-		auto cell = cellsStack.top();
-		auto transformedCell = conf.transform.rotate(physx::PxVec3(cell.first * scale.x, cell.second * scale.y, 0));
+		auto cell            = cellsStack.top();
+		auto transformedCell = toPxShared(conf.transform).rotate(PxVec3(cell.first * scale.x, cell.second * scale.y, 0));
 		cellsStack.pop();
 		if (visited.find(cell) != visited.end())
 		{
@@ -1289,10 +1327,10 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 				auto vertices = cutoutMesh->getVerticesWritable();
 				for (uint32_t v = 0; v < cutoutMesh->getVerticesCount(); v++)
 				{
-					vertices[v].p += transformedCell;
+					toPxShared(vertices[v].p) += transformedCell;
 				}
-				cutoutMesh->getBoundingBoxWritable().minimum += transformedCell;
-				cutoutMesh->getBoundingBoxWritable().maximum += transformedCell;
+				toPxShared(cutoutMesh->getBoundingBoxWritable().minimum) += transformedCell;
+				toPxShared(cutoutMesh->getBoundingBoxWritable().maximum) += transformedCell;
 				if (l == 0)
 				{
 					SweepingAccelerator accel(mesh);
@@ -1305,16 +1343,17 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 				{
 					SweepingAccelerator accel(ch.meshData);
 					SweepingAccelerator dummy(cutoutMesh);
-					bTool.performBoolean(ch.meshData, cutoutMesh, &accel, &dummy, BooleanConfigurations::BOOLEAN_DIFFERENCE());
+					bTool.performBoolean(ch.meshData, cutoutMesh, &accel, &dummy,
+					                     BooleanConfigurations::BOOLEAN_DIFFERENCE());
 
 					ch.meshData = bTool.createNewMesh();
 				}
 				for (uint32_t v = 0; v < cutoutMesh->getVerticesCount(); v++)
 				{
-					vertices[v].p -= transformedCell;
+					toPxShared(vertices[v].p) -= transformedCell;
 				}
-				cutoutMesh->getBoundingBoxWritable().minimum -= transformedCell;
-				cutoutMesh->getBoundingBoxWritable().maximum -= transformedCell;
+				toPxShared(cutoutMesh->getBoundingBoxWritable().minimum )-= transformedCell;
+				toPxShared(cutoutMesh->getBoundingBoxWritable().maximum) -= transformedCell;
 			}
 			if (ch.meshData != 0)
 			{
@@ -1331,7 +1370,7 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 			{
 				const int32_t i0 = i & 1;
 				const int32_t i1 = (i >> 1) & 1;
-				auto newCell = std::make_pair(cell.first + i0 - i1, cell.second + i0 + i1 - 1);
+				auto newCell     = std::make_pair(cell.first + i0 - i1, cell.second + i0 + i1 - 1);
 				if (visited.find(newCell) == visited.end())
 				{
 					cellsStack.push(newCell);
@@ -1393,7 +1432,7 @@ int32_t FractureToolImpl::getChunkDepth(int32_t chunkId)
 		++depth;
 		chunkIndex = getChunkIndex(mChunkData[chunkIndex].parent);
 	}
-	return depth;	
+	return depth;
 }
 
 uint32_t FractureToolImpl::getChunksIdAtDepth(uint32_t depth, int32_t*& chunkIds)
@@ -1414,10 +1453,10 @@ uint32_t FractureToolImpl::getChunksIdAtDepth(uint32_t depth, int32_t*& chunkIds
 }
 
 
-void FractureToolImpl::getTransformation(PxVec3& offset, float& scale)
+void FractureToolImpl::getTransformation(NvcVec3& offset, float& scale)
 {
 	offset = mOffset;
-	scale = mScaleFactor;
+	scale  = mScaleFactor;
 }
 
 void FractureToolImpl::setSourceMesh(const Mesh* meshInput)
@@ -1434,41 +1473,41 @@ void FractureToolImpl::setSourceMesh(const Mesh* meshInput)
 	}
 
 
-	//mChunkData.resize(1);
-	//mChunkData[0].meshData = new MeshImpl(*reinterpret_cast <const MeshImpl*>(meshInput));
-	//mChunkData[0].parent = -1;
-	//mChunkData[0].isLeaf = true;
-	//mChunkData[0].chunkId = mChunkIdCounter++;
-	//Mesh* mesh = mChunkData[0].meshData;
+	// mChunkData.resize(1);
+	// mChunkData[0].meshData = new MeshImpl(*reinterpret_cast <const MeshImpl*>(meshInput));
+	// mChunkData[0].parent = -1;
+	// mChunkData[0].isLeaf = true;
+	// mChunkData[0].chunkId = mChunkIdCounter++;
+	// Mesh* mesh = mChunkData[0].meshData;
 
 	/**
 	Move to origin and scale to unit cube
 	*/
 
-	mOffset = (meshInput->getBoundingBox().maximum + meshInput->getBoundingBox().minimum) * 0.5f;
-	PxVec3 bbSizes = (meshInput->getBoundingBox().maximum - meshInput->getBoundingBox().minimum);
+	mOffset         = (meshInput->getBoundingBox().maximum + meshInput->getBoundingBox().minimum) * 0.5f;
+	NvcVec3 bbSizes = (meshInput->getBoundingBox().maximum - meshInput->getBoundingBox().minimum);
 
 	mScaleFactor = std::max(bbSizes.x, std::max(bbSizes.y, bbSizes.z));
 
 	setChunkMesh(meshInput, -1);
 
-	//Vertex* verticesBuffer = mesh->getVerticesWritable();
-	//for (uint32_t i = 0; i < mesh->getVerticesCount(); ++i)
+	// Vertex* verticesBuffer = mesh->getVerticesWritable();
+	// for (uint32_t i = 0; i < mesh->getVerticesCount(); ++i)
 	//{
 	//	verticesBuffer[i].p = (verticesBuffer[i].p - mOffset) * (1.0f / mScaleFactor);
 	//}
 
-	//mesh->getBoundingBoxWritable().minimum = (mesh->getBoundingBox().minimum - mOffset) * (1.0f / mScaleFactor);
-	//mesh->getBoundingBoxWritable().maximum = (mesh->getBoundingBox().maximum - mOffset) * (1.0f / mScaleFactor);
+	// mesh->getBoundingBoxWritable().minimum = (mesh->getBoundingBox().minimum - mOffset) * (1.0f / mScaleFactor);
+	// mesh->getBoundingBoxWritable().maximum = (mesh->getBoundingBox().maximum - mOffset) * (1.0f / mScaleFactor);
 
 
-	//for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
+	// for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
 	//{
 	//	mesh->getFacetWritable(i)->userData = 0; // Mark facet as initial boundary facet
 	//}
 }
 
-int32_t	FractureToolImpl::setChunkMesh(const Mesh* meshInput, int32_t parentId)
+int32_t FractureToolImpl::setChunkMesh(const Mesh* meshInput, int32_t parentId)
 {
 	ChunkInfo* parent = nullptr;
 	for (size_t i = 0; i < mChunkData.size(); i++)
@@ -1484,18 +1523,18 @@ int32_t	FractureToolImpl::setChunkMesh(const Mesh* meshInput, int32_t parentId)
 	}
 
 	mChunkData.push_back(ChunkInfo());
-	auto& chunk = mChunkData.back();
-	chunk.meshData = new MeshImpl(*reinterpret_cast <const MeshImpl*>(meshInput));
-	chunk.parent = parentId;
-	chunk.isLeaf = true;
+	auto& chunk     = mChunkData.back();
+	chunk.meshData  = new MeshImpl(*reinterpret_cast<const MeshImpl*>(meshInput));
+	chunk.parent    = parentId;
+	chunk.isLeaf    = true;
 	chunk.isChanged = true;
-	chunk.flags = ChunkInfo::NO_FLAGS;
+	chunk.flags     = ChunkInfo::NO_FLAGS;
 	if ((size_t)parentId < mChunkData.size())
 	{
 		mChunkData[parentId].isLeaf = false;
 	}
 	chunk.chunkId = mChunkIdCounter++;
-	Mesh* mesh = chunk.meshData;
+	Mesh* mesh    = chunk.meshData;
 
 	/**
 	Move to origin and scale to unit cube
@@ -1510,11 +1549,11 @@ int32_t	FractureToolImpl::setChunkMesh(const Mesh* meshInput, int32_t parentId)
 	mesh->getBoundingBoxWritable().minimum = (mesh->getBoundingBox().minimum - mOffset) * (1.0f / mScaleFactor);
 	mesh->getBoundingBoxWritable().maximum = (mesh->getBoundingBox().maximum - mOffset) * (1.0f / mScaleFactor);
 
-	if (parentId == -1) // We are setting root mesh. Set all facets as boundary.
+	if (parentId == -1)  // We are setting root mesh. Set all facets as boundary.
 	{
 		for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
 		{
-			mesh->getFacetWritable(i)->userData = 0; // Mark facet as initial boundary facet
+			mesh->getFacetWritable(i)->userData = 0;  // Mark facet as initial boundary facet
 		}
 	}
 
@@ -1540,8 +1579,8 @@ void FractureToolImpl::reset()
 	}
 	mChunkData.clear();
 	mPlaneIndexerOffset = 1;
-	mChunkIdCounter = 0;
-	mInteriorMaterialId = MATERIAL_INTERIOR;
+	mChunkIdCounter     = 0;
+	mInteriorMaterialId = kMaterialInteriorId;
 }
 
 
@@ -1607,7 +1646,7 @@ bool FractureToolImpl::deleteAllChildrenOfChunk(int32_t chunkId)
 
 void FractureToolImpl::finalizeFracturing()
 {
-	std::vector<Triangulator* > oldTriangulators = mChunkPostprocessors;
+	std::vector<Triangulator*> oldTriangulators = mChunkPostprocessors;
 	std::map<int32_t, int32_t> chunkIdToTriangulator;
 	std::set<uint32_t> newChunkMask;
 	for (uint32_t i = 0; i < oldTriangulators.size(); ++i)
@@ -1616,7 +1655,8 @@ void FractureToolImpl::finalizeFracturing()
 	}
 	mChunkPostprocessors.clear();
 	mChunkPostprocessors.resize(mChunkData.size());
-	newChunkMask.insert(0xffffffff); // To trigger masking mode, if newChunkMask will happen to be empty, all UVs will be updated.
+	newChunkMask.insert(0xffffffff);  // To trigger masking mode, if newChunkMask will happen to be empty, all UVs will
+	                                  // be updated.
 	for (uint32_t i = 0; i < mChunkPostprocessors.size(); ++i)
 	{
 
@@ -1639,7 +1679,7 @@ void FractureToolImpl::finalizeFracturing()
 			mChunkPostprocessors[i] = oldTriangulators[it->second];
 		}
 	}
-	
+
 	std::vector<int32_t> badOnes;
 	for (uint32_t i = 0; i < mChunkPostprocessors.size(); ++i)
 	{
@@ -1678,11 +1718,11 @@ uint32_t FractureToolImpl::getBaseMesh(int32_t chunkIndex, Triangle*& output)
 {
 	NVBLAST_ASSERT(mChunkPostprocessors.size() > 0);
 	if (mChunkPostprocessors.size() == 0)
-	{		
-		return 0; // finalizeFracturing() should be called before getting mesh!
+	{
+		return 0;  // finalizeFracturing() should be called before getting mesh!
 	}
 	auto& baseMesh = mChunkPostprocessors[chunkIndex]->getBaseMesh();
-	output = new Triangle[baseMesh.size()];
+	output         = new Triangle[baseMesh.size()];
 	memcpy(output, baseMesh.data(), baseMesh.size() * sizeof(Triangle));
 
 	/* Scale mesh back */
@@ -1690,9 +1730,9 @@ uint32_t FractureToolImpl::getBaseMesh(int32_t chunkIndex, Triangle*& output)
 	for (uint32_t i = 0; i < baseMesh.size(); ++i)
 	{
 		Triangle& triangle = output[i];
-		triangle.a.p = triangle.a.p * mScaleFactor + mOffset;
-		triangle.b.p = triangle.b.p * mScaleFactor + mOffset;
-		triangle.c.p = triangle.c.p * mScaleFactor + mOffset;
+		triangle.a.p       = triangle.a.p * mScaleFactor + mOffset;
+		triangle.b.p       = triangle.b.p * mScaleFactor + mOffset;
+		triangle.c.p       = triangle.c.p * mScaleFactor + mOffset;
 	}
 
 	return baseMesh.size();
@@ -1703,7 +1743,7 @@ uint32_t FractureToolImpl::updateBaseMesh(int32_t chunkIndex, Triangle* output)
 	NVBLAST_ASSERT(mChunkPostprocessors.size() > 0);
 	if (mChunkPostprocessors.size() == 0)
 	{
-		return 0; // finalizeFracturing() should be called before getting mesh!
+		return 0;  // finalizeFracturing() should be called before getting mesh!
 	}
 	auto& baseMesh = mChunkPostprocessors[chunkIndex]->getBaseMesh();
 	memcpy(output, baseMesh.data(), baseMesh.size() * sizeof(Triangle));
@@ -1713,9 +1753,9 @@ uint32_t FractureToolImpl::updateBaseMesh(int32_t chunkIndex, Triangle* output)
 	for (uint32_t i = 0; i < baseMesh.size(); ++i)
 	{
 		Triangle& triangle = output[i];
-		triangle.a.p = triangle.a.p * mScaleFactor + mOffset;
-		triangle.b.p = triangle.b.p * mScaleFactor + mOffset;
-		triangle.c.p = triangle.c.p * mScaleFactor + mOffset;
+		triangle.a.p       = triangle.a.p * mScaleFactor + mOffset;
+		triangle.b.p       = triangle.b.p * mScaleFactor + mOffset;
+		triangle.c.p       = triangle.c.p * mScaleFactor + mOffset;
 	}
 	return baseMesh.size();
 }
@@ -1727,12 +1767,13 @@ float getVolume(std::vector<Triangle>& triangles)
 
 	for (uint32_t i = 0; i < triangles.size(); ++i)
 	{
-		PxVec3& a = triangles[i].a.p;
-		PxVec3& b = triangles[i].b.p;
-		PxVec3& c = triangles[i].c.p;
-		volume += (a.x * b.y * c.z - a.x * b.z * c.y - a.y * b.x * c.z + a.y * b.z * c.x + a.z * b.x * c.y - a.z * b.y * c.x);
+		NvcVec3& a = triangles[i].a.p;
+		NvcVec3& b = triangles[i].b.p;
+		NvcVec3& c = triangles[i].c.p;
+		volume +=
+		    (a.x * b.y * c.z - a.x * b.z * c.y - a.y * b.x * c.z + a.y * b.z * c.x + a.z * b.x * c.y - a.z * b.y * c.x);
 	}
-	return (1.0f / 6.0f) * PxAbs(volume);
+	return (1.0f / 6.0f) * std::abs(volume);
 }
 
 float FractureToolImpl::getMeshOverlap(const Mesh& meshA, const Mesh& meshB)
@@ -1761,7 +1802,8 @@ float FractureToolImpl::getMeshOverlap(const Mesh& meshA, const Mesh& meshB)
 	return intrsVolume / baseVolume;
 }
 
-void weldVertices(std::map<Vertex, uint32_t, VrtComp>& vertexMapping, std::vector<Vertex>& vertexBuffer, std::vector<uint32_t>& indexBuffer, std::vector<Triangle>& trb)
+void weldVertices(std::map<Vertex, uint32_t, VrtComp>& vertexMapping, std::vector<Vertex>& vertexBuffer,
+                  std::vector<uint32_t>& indexBuffer, std::vector<Triangle>& trb)
 {
 	for (uint32_t i = 0; i < trb.size(); ++i)
 	{
@@ -1799,7 +1841,6 @@ void weldVertices(std::map<Vertex, uint32_t, VrtComp>& vertexMapping, std::vecto
 			indexBuffer.push_back(it->second);
 		}
 	}
-
 }
 
 void FractureToolImpl::setRemoveIslands(bool isRemoveIslands)
@@ -1819,7 +1860,7 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool creat
 
 	Mesh* chunk = mChunkData[chunkIndex].meshData;
 
-	std::vector<uint32_t>& mapping = prc.getBaseMapping();
+	std::vector<uint32_t>& mapping    = prc.getBaseMapping();
 	std::vector<TriangleIndexed>& trs = prc.getBaseMeshIndexed();
 
 	std::vector<std::vector<uint32_t> > graph(prc.getWeldedVerticesCount());
@@ -1830,7 +1871,7 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool creat
 	}
 
 	/**
-		Chunk graph
+	    Chunk graph
 	*/
 	for (uint32_t i = 0; i < trs.size(); ++i)
 	{
@@ -1853,22 +1894,22 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool creat
 
 		graph[v1].push_back(v2);
 		graph[v2].push_back(v1);
-
 	}
 
 
 	/**
-		Walk graph, mark components
+	    Walk graph, mark components
 	*/
 
 	std::vector<int32_t> comps(prc.getWeldedVerticesCount(), -1);
 	std::queue<uint32_t> que;
 	int32_t cComp = 0;
-	
+
 	for (uint32_t i = 0; i < prc.getWeldedVerticesCount(); ++i)
 	{
 		int32_t to = pm[i];
-		if (comps[to] != -1) continue;
+		if (comps[to] != -1)
+			continue;
 		que.push(to);
 		comps[to] = cComp;
 
@@ -1876,7 +1917,7 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool creat
 		{
 			int32_t c = que.front();
 			que.pop();
-			
+
 			for (uint32_t j = 0; j < graph[c].size(); ++j)
 			{
 				if (comps[graph[c][j]] == -1)
@@ -1891,33 +1932,33 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool creat
 	for (uint32_t i = 0; i < prc.getWeldedVerticesCount(); ++i)
 	{
 		int32_t to = pm[i];
-		comps[i] = comps[to];
+		comps[i]   = comps[to];
 	}
 	std::vector<uint32_t> longComps(chunk->getVerticesCount());
 	for (uint32_t i = 0; i < chunk->getVerticesCount(); ++i)
 	{
-		int32_t to = mapping[i];
+		int32_t to   = mapping[i];
 		longComps[i] = comps[to];
 	}
-	
+
 	if (cComp > 1)
 	{
-		std::vector<std::vector<Vertex> >	compVertices(cComp);
-		std::vector<std::vector<Facet> >	compFacets(cComp);
-		std::vector<std::vector<Edge> >		compEdges(cComp);
+		std::vector<std::vector<Vertex> > compVertices(cComp);
+		std::vector<std::vector<Facet> > compFacets(cComp);
+		std::vector<std::vector<Edge> > compEdges(cComp);
 
 
-		std::vector<uint32_t>				compVertexMapping(chunk->getVerticesCount(), 0);
+		std::vector<uint32_t> compVertexMapping(chunk->getVerticesCount(), 0);
 		const Vertex* vrts = chunk->getVertices();
 		for (uint32_t v = 0; v < chunk->getVerticesCount(); ++v)
 		{
-			int32_t vComp = comps[mapping[v]];
+			int32_t vComp        = comps[mapping[v]];
 			compVertexMapping[v] = static_cast<uint32_t>(compVertices[vComp].size());
 			compVertices[vComp].push_back(vrts[v]);
 		}
-		
+
 		const Facet* fcb = chunk->getFacetsBuffer();
-		const Edge* edb = chunk->getEdges();
+		const Edge* edb  = chunk->getEdges();
 
 		for (uint32_t fc = 0; fc < chunk->getFacetCount(); ++fc)
 		{
@@ -1926,7 +1967,7 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool creat
 			{
 				int32_t vComp = comps[mapping[edb[ep].s]];
 				edgesPerComp[vComp]++;
-				compEdges[vComp].push_back(Edge(compVertexMapping[edb[ep].s], compVertexMapping[edb[ep].e]));
+				compEdges[vComp].push_back({compVertexMapping[edb[ep].s], compVertexMapping[edb[ep].e]});
 			}
 			for (int32_t c = 0; c < cComp; ++c)
 			{
@@ -1935,7 +1976,7 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool creat
 					continue;
 				}
 				compFacets[c].push_back(*chunk->getFacet(fc));
-				compFacets[c].back().edgesCount = edgesPerComp[c];
+				compFacets[c].back().edgesCount      = edgesPerComp[c];
 				compFacets[c].back().firstEdgeNumber = static_cast<int32_t>(compEdges[c].size()) - edgesPerComp[c];
 			}
 		}
@@ -1943,50 +1984,57 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool creat
 		if (createAtNewDepth == false || chunkId != 0)
 		{
 			delete mChunkData[chunkIndex].meshData;
-			mChunkData[chunkIndex].meshData = new MeshImpl(compVertices[0].data(), compEdges[0].data(), compFacets[0].data(), static_cast<uint32_t>(compVertices[0].size()),
-				static_cast<uint32_t>(compEdges[0].size()), static_cast<uint32_t>(compFacets[0].size()));;
+			mChunkData[chunkIndex].meshData =
+			    new MeshImpl(compVertices[0].data(), compEdges[0].data(), compFacets[0].data(),
+			                 static_cast<uint32_t>(compVertices[0].size()), static_cast<uint32_t>(compEdges[0].size()),
+			                 static_cast<uint32_t>(compFacets[0].size()));
+			;
 			for (int32_t i = 1; i < cComp; ++i)
 			{
 				mChunkData.push_back(ChunkInfo(mChunkData[chunkIndex]));
 				mChunkData.back().chunkId = mChunkIdCounter++;
-				mChunkData.back().meshData = new MeshImpl(compVertices[i].data(), compEdges[i].data(), compFacets[i].data(), static_cast<uint32_t>(compVertices[i].size()),
-					static_cast<uint32_t>(compEdges[i].size()), static_cast<uint32_t>(compFacets[i].size()));
+				mChunkData.back().meshData =
+				    new MeshImpl(compVertices[i].data(), compEdges[i].data(), compFacets[i].data(),
+				                 static_cast<uint32_t>(compVertices[i].size()),
+				                 static_cast<uint32_t>(compEdges[i].size()), static_cast<uint32_t>(compFacets[i].size()));
 			}
 		}
 		else
-		{			
+		{
 			mChunkData[chunkIndex].isLeaf = false;
 			deleteAllChildrenOfChunk(chunkId);
 			for (int32_t i = 0; i < cComp; ++i)
 			{
-				uint32_t nc = createNewChunk(chunkId);
-				mChunkData[nc].isLeaf = true;
-				mChunkData[nc].flags = ChunkInfo::CREATED_BY_ISLAND_DETECTOR;
-				mChunkData[nc].meshData = new MeshImpl(compVertices[i].data(), compEdges[i].data(), compFacets[i].data(), static_cast<uint32_t>(compVertices[i].size()),
-					static_cast<uint32_t>(compEdges[i].size()), static_cast<uint32_t>(compFacets[i].size()));
+				uint32_t nc             = createNewChunk(chunkId);
+				mChunkData[nc].isLeaf   = true;
+				mChunkData[nc].flags    = ChunkInfo::CREATED_BY_ISLAND_DETECTOR;
+				mChunkData[nc].meshData = new MeshImpl(compVertices[i].data(), compEdges[i].data(), compFacets[i].data(),
+				                                       static_cast<uint32_t>(compVertices[i].size()),
+				                                       static_cast<uint32_t>(compEdges[i].size()),
+				                                       static_cast<uint32_t>(compFacets[i].size()));
 			}
-		}		
+		}
 		return cComp;
 	}
 	return 0;
 }
 
-uint32_t FractureToolImpl::getBufferedBaseMeshes(Vertex*& vertexBuffer, uint32_t*& indexBuffer,
-	uint32_t*& indexBufferOffsets)
+uint32_t
+FractureToolImpl::getBufferedBaseMeshes(Vertex*& vertexBuffer, uint32_t*& indexBuffer, uint32_t*& indexBufferOffsets)
 {
 	std::map<Vertex, uint32_t, VrtComp> vertexMapping;
 	std::vector<Vertex> _vertexBuffer;
-	std::vector<std::vector<uint32_t>> _indexBuffer(mChunkPostprocessors.size());
-	
+	std::vector<std::vector<uint32_t> > _indexBuffer(mChunkPostprocessors.size());
+
 	indexBufferOffsets = new uint32_t[mChunkPostprocessors.size() + 1];
 
 	uint32_t totalIndices = 0;
 	for (uint32_t ch = 0; ch < mChunkPostprocessors.size(); ++ch)
 	{
 		std::vector<Triangle>& trb = mChunkPostprocessors[ch]->getBaseMesh();
-		
+
 		weldVertices(vertexMapping, _vertexBuffer, _indexBuffer[ch], trb);
-		
+
 		indexBufferOffsets[ch] = totalIndices;
 		totalIndices += _indexBuffer[ch].size();
 	}
@@ -1998,8 +2046,8 @@ uint32_t FractureToolImpl::getBufferedBaseMeshes(Vertex*& vertexBuffer, uint32_t
 	}
 
 	vertexBuffer = new Vertex[_vertexBuffer.size()];
-	indexBuffer = new uint32_t[totalIndices];
-	
+	indexBuffer  = new uint32_t[totalIndices];
+
 	memcpy(vertexBuffer, _vertexBuffer.data(), _vertexBuffer.size() * sizeof(Vertex));
 	for (uint32_t ch = 0; ch < _indexBuffer.size(); ++ch)
 	{
@@ -2035,12 +2083,11 @@ void FractureToolImpl::replaceMaterialId(int32_t oldMaterialId, int32_t newMater
 	}
 }
 
-uint32_t FractureToolImpl::stretchGroup(const std::vector<uint32_t>& grp, std::vector<std::vector<uint32_t>>& graph)
+uint32_t FractureToolImpl::stretchGroup(const std::vector<uint32_t>& grp, std::vector<std::vector<uint32_t> >& graph)
 {
-	uint32_t parent = mChunkData[grp[0]].parent;
+	uint32_t parent        = mChunkData[grp[0]].parent;
 	uint32_t newChunkIndex = createNewChunk(parent);
 	graph.push_back(std::vector<uint32_t>());
-
 
 
 	std::vector<Vertex> nVertices;
@@ -2048,12 +2095,12 @@ uint32_t FractureToolImpl::stretchGroup(const std::vector<uint32_t>& grp, std::v
 	std::vector<Facet> nFacets;
 
 	uint32_t offsetVertices = 0;
-	uint32_t offsetEdges = 0;
+	uint32_t offsetEdges    = 0;
 
 	for (uint32_t i = 0; i < grp.size(); ++i)
 	{
-		mChunkData[grp[i]].parent = mChunkData[newChunkIndex].chunkId;	
-		
+		mChunkData[grp[i]].parent = mChunkData[newChunkIndex].chunkId;
+
 		auto vr = mChunkData[grp[i]].meshData->getVertices();
 		auto ed = mChunkData[grp[i]].meshData->getEdges();
 		auto fc = mChunkData[grp[i]].meshData->getFacetsBuffer();
@@ -2068,13 +2115,13 @@ uint32_t FractureToolImpl::stretchGroup(const std::vector<uint32_t>& grp, std::v
 			nEdges.push_back(ed[v]);
 			nEdges.back().s += offsetVertices;
 			nEdges.back().e += offsetVertices;
-		}		
+		}
 		for (uint32_t v = 0; v < mChunkData[grp[i]].meshData->getFacetCount(); ++v)
 		{
 			nFacets.push_back(fc[v]);
 			nFacets.back().firstEdgeNumber += offsetEdges;
 		}
-		offsetEdges = nEdges.size();
+		offsetEdges    = nEdges.size();
 		offsetVertices = nVertices.size();
 	}
 	std::vector<Facet> finalFacets;
@@ -2086,24 +2133,27 @@ uint32_t FractureToolImpl::stretchGroup(const std::vector<uint32_t>& grp, std::v
 	}
 	for (uint32_t i = 0; i < nFacets.size(); ++i)
 	{
-		if (nFacets[i].userData == 0  || (hasCutting.find(-nFacets[i].userData) == hasCutting.end()) || std::abs(nFacets[i].userData) >= SLICING_INDEXER_OFFSET)
+		if (nFacets[i].userData == 0 || (hasCutting.find(-nFacets[i].userData) == hasCutting.end()) ||
+		    std::abs(nFacets[i].userData) >= SLICING_INDEXER_OFFSET)
 		{
 			finalFacets.push_back(nFacets[i]);
 		}
 	}
-	mChunkData[newChunkIndex].meshData = new MeshImpl(nVertices.data(), nEdges.data(), finalFacets.data(), static_cast<uint32_t>(nVertices.size()), static_cast<uint32_t>(nEdges.size()), static_cast<uint32_t>(finalFacets.size()));
+	mChunkData[newChunkIndex].meshData =
+	    new MeshImpl(nVertices.data(), nEdges.data(), finalFacets.data(), static_cast<uint32_t>(nVertices.size()),
+	                 static_cast<uint32_t>(nEdges.size()), static_cast<uint32_t>(finalFacets.size()));
 	return newChunkIndex;
 }
 
 uint32_t FractureToolImpl::createNewChunk(uint32_t parent)
 {
 	mChunkData.push_back(ChunkInfo());
-	mChunkData.back().parent = parent;
-	mChunkData.back().chunkId = mChunkIdCounter++;
-	mChunkData.back().meshData = nullptr;
-	mChunkData.back().isLeaf = false;
+	mChunkData.back().parent    = parent;
+	mChunkData.back().chunkId   = mChunkIdCounter++;
+	mChunkData.back().meshData  = nullptr;
+	mChunkData.back().isLeaf    = false;
 	mChunkData.back().isChanged = true;
-	mChunkData.back().flags = ChunkInfo::NO_FLAGS;
+	mChunkData.back().flags     = ChunkInfo::NO_FLAGS;
 
 	return mChunkData.size() - 1;
 }
@@ -2112,23 +2162,24 @@ uint32_t FractureToolImpl::createNewChunk(uint32_t parent)
 void FractureToolImpl::fitUvToRect(float side, uint32_t chunk)
 {
 	int32_t index = getChunkIndex(chunk);
-	if (mChunkPostprocessors.empty()) // It seems finalize have not been called, call it here. 
+	if (mChunkPostprocessors.empty())  // It seems finalize have not been called, call it here.
 	{
 		finalizeFracturing();
 	}
-	if (index == -1  || (int32_t)mChunkPostprocessors.size() <= index)
+	if (index == -1 || (int32_t)mChunkPostprocessors.size() <= index)
 	{
-		return; // We dont have such chunk tringulated;
+		return;  // We dont have such chunk tringulated;
 	}
-	PxBounds3 bnd;
+	physx::PxBounds3 bnd;
 	bnd.setEmpty();
-	
-	std::vector<Triangle>& ctrs = mChunkPostprocessors[index]->getBaseMesh();
+
+	std::vector<Triangle>& ctrs   = mChunkPostprocessors[index]->getBaseMesh();
 	std::vector<Triangle>& output = mChunkPostprocessors[index]->getBaseMesh();
 
 	for (uint32_t trn = 0; trn < ctrs.size(); ++trn)
 	{
-		if (ctrs[trn].userData == 0) continue;
+		if (ctrs[trn].userData == 0)
+			continue;
 		bnd.include(PxVec3(ctrs[trn].a.uv[0].x, ctrs[trn].a.uv[0].y, 0.0f));
 		bnd.include(PxVec3(ctrs[trn].b.uv[0].x, ctrs[trn].b.uv[0].y, 0.0f));
 		bnd.include(PxVec3(ctrs[trn].c.uv[0].x, ctrs[trn].c.uv[0].y, 0.0f));
@@ -2136,11 +2187,12 @@ void FractureToolImpl::fitUvToRect(float side, uint32_t chunk)
 
 	float xscale = side / (bnd.maximum.x - bnd.minimum.x);
 	float yscale = side / (bnd.maximum.y - bnd.minimum.y);
-	xscale = std::min(xscale, yscale); // To have uniform scaling
+	xscale       = std::min(xscale, yscale);  // To have uniform scaling
 
 	for (uint32_t trn = 0; trn < ctrs.size(); ++trn)
 	{
-		if (ctrs[trn].userData == 0) continue;
+		if (ctrs[trn].userData == 0)
+			continue;
 		output[trn].a.uv[0].x = (ctrs[trn].a.uv[0].x - bnd.minimum.x) * xscale;
 		output[trn].b.uv[0].x = (ctrs[trn].b.uv[0].x - bnd.minimum.x) * xscale;
 		output[trn].c.uv[0].x = (ctrs[trn].c.uv[0].x - bnd.minimum.x) * xscale;
@@ -2159,26 +2211,27 @@ void FractureToolImpl::fitAllUvToRect(float side)
 
 void FractureToolImpl::fitAllUvToRect(float side, std::set<uint32_t>& mask)
 {
-	if (mChunkPostprocessors.empty()) // It seems finalize have not been called, call it here. 
+	if (mChunkPostprocessors.empty())  // It seems finalize have not been called, call it here.
 	{
 		finalizeFracturing();
 	}
 	if (mChunkPostprocessors.empty())
 	{
-		return; // We dont have triangulated chunks.
+		return;  // We dont have triangulated chunks.
 	}
-	PxBounds3 bnd;
+	physx::PxBounds3 bnd;
 	bnd.setEmpty();
 
 	for (uint32_t chunk = 0; chunk < mChunkData.size(); ++chunk)
 	{
-		Mesh* m = mChunkData[chunk].meshData;
-		const Edge* edges = m->getEdges();
+		Mesh* m                = mChunkData[chunk].meshData;
+		const Edge* edges      = m->getEdges();
 		const Vertex* vertices = m->getVertices();
 
 		for (uint32_t trn = 0; trn < m->getFacetCount(); ++trn)
 		{
-			if (m->getFacet(trn)->userData == 0) continue;
+			if (m->getFacet(trn)->userData == 0)
+				continue;
 			for (uint32_t ei = 0; ei < m->getFacet(trn)->edgesCount; ++ei)
 			{
 				int32_t v1 = edges[m->getFacet(trn)->firstEdgeNumber + ei].s;
@@ -2190,17 +2243,19 @@ void FractureToolImpl::fitAllUvToRect(float side, std::set<uint32_t>& mask)
 	}
 	float xscale = side / (bnd.maximum.x - bnd.minimum.x);
 	float yscale = side / (bnd.maximum.y - bnd.minimum.y);
-	xscale = std::min(xscale, yscale); // To have uniform scaling
+	xscale       = std::min(xscale, yscale);  // To have uniform scaling
 
 	for (uint32_t chunk = 0; chunk < mChunkPostprocessors.size(); ++chunk)
 	{
-		if (!mask.empty() && mask.find(mChunkPostprocessors[chunk]->getParentChunkId()) == mask.end()) continue;
-		std::vector<Triangle>& ctrs = mChunkPostprocessors[chunk]->getBaseMeshNotFitted();
+		if (!mask.empty() && mask.find(mChunkPostprocessors[chunk]->getParentChunkId()) == mask.end())
+			continue;
+		std::vector<Triangle>& ctrs   = mChunkPostprocessors[chunk]->getBaseMeshNotFitted();
 		std::vector<Triangle>& output = mChunkPostprocessors[chunk]->getBaseMesh();
 
 		for (uint32_t trn = 0; trn < ctrs.size(); ++trn)
 		{
-			if (ctrs[trn].userData == 0) continue;
+			if (ctrs[trn].userData == 0)
+				continue;
 			output[trn].a.uv[0].x = (ctrs[trn].a.uv[0].x - bnd.minimum.x) * xscale;
 			output[trn].b.uv[0].x = (ctrs[trn].b.uv[0].x - bnd.minimum.x) * xscale;
 			output[trn].c.uv[0].x = (ctrs[trn].c.uv[0].x - bnd.minimum.x) * xscale;
@@ -2213,10 +2268,10 @@ void FractureToolImpl::fitAllUvToRect(float side, std::set<uint32_t>& mask)
 }
 
 
-
-void FractureToolImpl::rebuildAdjGraph(const std::vector<uint32_t>& chunks, std::vector<std::vector<uint32_t> >& chunkGraph)
+void FractureToolImpl::rebuildAdjGraph(const std::vector<uint32_t>& chunks, const NvcVec2i* adjChunks,
+                                       uint32_t adjChunksSize, std::vector<std::vector<uint32_t> >& chunkGraph)
 {
-	std::vector<std::pair<uint64_t, uint32_t>> planeChunkIndex;
+	std::vector<std::pair<uint64_t, uint32_t> > planeChunkIndex;
 
 	for (uint32_t i = 0; i < chunks.size(); ++i)
 	{
@@ -2224,7 +2279,8 @@ void FractureToolImpl::rebuildAdjGraph(const std::vector<uint32_t>& chunks, std:
 		{
 			if (mChunkData[chunks[i]].meshData->getFacet(fc)->userData != 0)
 			{
-				planeChunkIndex.push_back(std::make_pair(std::abs(mChunkData[chunks[i]].meshData->getFacet(fc)->userData), chunks[i]));
+				planeChunkIndex.push_back(
+				    std::make_pair(std::abs(mChunkData[chunks[i]].meshData->getFacet(fc)->userData), chunks[i]));
 			}
 		}
 	}
@@ -2246,7 +2302,8 @@ void FractureToolImpl::rebuildAdjGraph(const std::vector<uint32_t>& chunks, std:
 			{
 				for (uint32_t p2 = p1 + 1; p2 < b; ++p2)
 				{
-					if (planeChunkIndex[p1].second == planeChunkIndex[p2].second || mChunkData[planeChunkIndex[p1].second].parent != mChunkData[planeChunkIndex[p2].second].parent)
+					if (planeChunkIndex[p1].second == planeChunkIndex[p2].second ||
+					    mChunkData[planeChunkIndex[p1].second].parent != mChunkData[planeChunkIndex[p2].second].parent)
 					{
 						continue;
 					}
@@ -2281,32 +2338,81 @@ void FractureToolImpl::rebuildAdjGraph(const std::vector<uint32_t>& chunks, std:
 			a = b;
 		}
 	}
+
+    // Add in extra adjacency info, if we have it
+    if (adjChunks && adjChunksSize)
+    {
+		std::set<uint32_t> chunkSet(chunks.begin(), chunks.end());
+
+#if NV_DEBUG || NV_CHECKED  // Make sure these arrays are sorted
+        for (std::vector<uint32_t>& adj : chunkGraph)
+        {
+			const bool isSorted = std::is_sorted(adj.begin(), adj.end());
+			if (!isSorted)
+            {
+			    NVBLAST_ASSERT(0);
+			    NvBlastGlobalGetErrorCallback()->reportError(Nv::Blast::ErrorCode::eDEBUG_WARNING, "Adjacency array not sorted; subsequent code assumes it is.", __FILE__, __LINE__);
+            }
+        }
+#endif
+        for (uint32_t i = 0; i < adjChunksSize; ++i)
+        {
+			const NvcVec2i& pair = adjChunks[i];
+			if (chunkSet.find((uint32_t)pair.x) == chunkSet.end() || chunkSet.find((uint32_t)pair.y) == chunkSet.end())
+			{
+				continue;
+            }
+
+            {
+                std::vector<uint32_t>& adj0 = chunkGraph[pair.x];
+			    std::vector<uint32_t>::iterator it0 = std::lower_bound(adj0.begin(), adj0.end(), (uint32_t)pair.y);
+                if (it0 == adj0.end() || *it0 != (uint32_t)pair.y)
+                {
+				    adj0.insert(it0, (uint32_t)pair.y);
+                }
+            }
+
+            {
+                std::vector<uint32_t>& adj1 = chunkGraph[pair.y];
+			    std::vector<uint32_t>::iterator it1 = std::lower_bound(adj1.begin(), adj1.end(), (uint32_t)pair.x);
+                if (it1 == adj1.end() || *it1 != (uint32_t)pair.x)
+                {
+				    adj1.insert(it1, (uint32_t)pair.x);
+                }
+            }
+        }
+    }
 }
 
-bool VecIntComp(const std::pair<PxVec3, uint32_t>& a, const std::pair<PxVec3, uint32_t>& b)
+bool VecIntComp(const std::pair<NvcVec3, uint32_t>& a, const std::pair<NvcVec3, uint32_t>& b)
 {
-	if (a.first.x < b.first.x) return true;
-	if (a.first.x > b.first.x) return false;
-	if (a.first.y < b.first.y) return true;
-	if (a.first.y > b.first.y) return false;
-	if (a.first.z < b.first.z) return true;
-	if (a.first.z > b.first.z) return false;
+	if (a.first.x < b.first.x)
+		return true;
+	if (a.first.x > b.first.x)
+		return false;
+	if (a.first.y < b.first.y)
+		return true;
+	if (a.first.y > b.first.y)
+		return false;
+	if (a.first.z < b.first.z)
+		return true;
+	if (a.first.z > b.first.z)
+		return false;
 
 	return a.second < b.second;
 }
 
-#define MAXIMUM_DEPTH_TO_REARRANGE 255
-
-void FractureToolImpl::uniteChunks(uint32_t maxChunksAtLevel, uint32_t maxGroup)
+void FractureToolImpl::uniteChunks(uint32_t maxChunksAtLevel, uint32_t maxGroup, const NvcVec2i* adjChunks,
+                                   uint32_t adjChunksSize, bool removeOriginalChunks /*= false*/)
 {
 	maxChunksAtLevel = std::max(maxChunksAtLevel, maxGroup);
 
 	std::vector<int32_t> depth(mChunkData.size(), 0);
 
-	std::vector<std::vector<uint32_t>> chunkGraph(mChunkData.size());
+	std::vector<std::vector<uint32_t> > chunkGraph(mChunkData.size());
 
-	
-	std::vector<uint32_t> atEachDepth(MAXIMUM_DEPTH_TO_REARRANGE, 0); // Probably we will never have 255 depth levels...
+
+	std::vector<uint32_t> atEachDepth;
 	std::vector<uint32_t> childNumber(mChunkData.size(), 0);
 
 
@@ -2318,40 +2424,52 @@ void FractureToolImpl::uniteChunks(uint32_t maxChunksAtLevel, uint32_t maxGroup)
 		NVBLAST_ASSERT(depth[i] >= 0);
 		if (depth[i] >= 0)
 		{
+            if ((size_t)depth[i] >= atEachDepth.size())
+            {
+				atEachDepth.resize(depth[i]+1, 0);
+            }
 			atEachDepth[depth[i]]++;
 		}
 	}
 
-	std::vector<uint32_t> chunkUsage(mChunkData.size(), 0);
-	uint32_t chunkUsageFlag = 1;
+	std::vector<uint32_t> chunksToRemove;
 
-	for (int32_t level = MAXIMUM_DEPTH_TO_REARRANGE - 1; level >= 1; --level) // go from leaves to trunk and rebuild hierarchy
-	{		
-		if (atEachDepth[level] < maxChunksAtLevel) continue;
+    std::vector<uint32_t> chunkFlags(mChunkData.size(), 0);
+
+    enum ChunkFlags
+    {
+		ChunkUsage  = (1 << 0),
+        MergedChunk = (1 << 1)
+    };
+    
+	for (int32_t level = (int32_t)atEachDepth.size(); level--;)  // go from leaves to trunk and rebuild hierarchy
+	{
+		if (atEachDepth[level] < maxChunksAtLevel)
+			continue;
 
 		std::vector<uint32_t> cGroup;
 		std::vector<uint32_t> chunksToUnify;
 
-		PxVec3 minPoint(MAXIMUM_EXTENT, MAXIMUM_EXTENT, MAXIMUM_EXTENT);
+		NvcVec3 minPoint = {MAXIMUM_EXTENT, MAXIMUM_EXTENT, MAXIMUM_EXTENT};
 		VrtPositionComparator posc;
-	
+
 		for (uint32_t ch = 0; ch < depth.size(); ++ch)
 		{
 			if (depth[ch] == level && childNumber[getChunkIndex(mChunkData[ch].parent)] > maxChunksAtLevel)
 			{
 				chunksToUnify.push_back(ch);
-				PxVec3 cp = mChunkData[ch].meshData->getBoundingBox().getCenter();
+				NvcVec3 cp = fromPxShared(toPxShared(mChunkData[ch].meshData->getBoundingBox()).getCenter());
 				if (posc(cp, minPoint))
 				{
 					minPoint = cp;
 				}
 			}
-		}		
+		}
 
 		std::vector<std::pair<float, uint32_t> > distances;
 		for (uint32_t i = 0; i < chunksToUnify.size(); ++i)
 		{
-			float d = (minPoint - mChunkData[chunksToUnify[i]].meshData->getBoundingBox().getCenter()).magnitude();
+			float d = (toPxShared(minPoint) - toPxShared(mChunkData[chunksToUnify[i]].meshData->getBoundingBox()).getCenter()).magnitude();
 			distances.push_back(std::make_pair(d, chunksToUnify[i]));
 		}
 		std::sort(distances.begin(), distances.end());
@@ -2360,8 +2478,8 @@ void FractureToolImpl::uniteChunks(uint32_t maxChunksAtLevel, uint32_t maxGroup)
 		{
 			chunksToUnify[i] = distances[i].second;
 		}
-		rebuildAdjGraph(chunksToUnify, chunkGraph);
-		
+		rebuildAdjGraph(chunksToUnify, adjChunks, adjChunksSize, chunkGraph);
+
 
 		for (uint32_t iter = 0; iter < 32 && chunksToUnify.size() > maxChunksAtLevel; ++iter)
 		{
@@ -2369,26 +2487,35 @@ void FractureToolImpl::uniteChunks(uint32_t maxChunksAtLevel, uint32_t maxGroup)
 
 			for (uint32_t c = 0; c < chunksToUnify.size(); ++c)
 			{
-				if (chunkUsage[chunksToUnify[c]] == chunkUsageFlag) continue;
+				if (chunkFlags[chunksToUnify[c]] & ChunkUsage)
+					continue;
 
-				chunkUsage[chunksToUnify[c]] = chunkUsageFlag;
+				chunkFlags[chunksToUnify[c]] |= ChunkUsage;
 				cGroup.push_back(chunksToUnify[c]);
 				for (uint32_t sc = 0; sc < cGroup.size() && cGroup.size() < maxGroup; ++sc)
 				{
 					uint32_t sid = cGroup[sc];
 					for (uint32_t neighb = 0; neighb < chunkGraph[sid].size() && cGroup.size() < maxGroup; ++neighb)
 					{
-						if (chunkUsage[chunkGraph[sid][neighb]] == chunkUsageFlag) continue;
+						if (chunkFlags[chunkGraph[sid][neighb]] & ChunkUsage)
+							continue;
 						cGroup.push_back(chunkGraph[sid][neighb]);
-						chunkUsage[chunkGraph[sid][neighb]] = chunkUsageFlag;
+						chunkFlags[chunkGraph[sid][neighb]] |= ChunkUsage;
 					}
 				}
 				if (cGroup.size() > 1)
 				{
 					uint32_t newChunk = stretchGroup(cGroup, chunkGraph);
+                    for (uint32_t chunk : cGroup)
+                    {
+						if (removeOriginalChunks  && !(chunkFlags[chunk] & MergedChunk))
+                        {
+							chunksToRemove.push_back(chunk);
+                        }
+                    }
 					cGroup.clear();
 					newChunksToUnify.push_back(newChunk);
-					chunkUsage.push_back(0);
+					chunkFlags.push_back(MergedChunk);
 				}
 				else
 				{
@@ -2396,10 +2523,18 @@ void FractureToolImpl::uniteChunks(uint32_t maxChunksAtLevel, uint32_t maxGroup)
 				}
 			}
 			chunksToUnify = newChunksToUnify;
-			rebuildAdjGraph(chunksToUnify, chunkGraph);
-		}	
+			rebuildAdjGraph(chunksToUnify, adjChunks, adjChunksSize, chunkGraph);
+		}
+	}
+
+	for (uint32_t i = (uint32_t)chunksToRemove.size(); i--;)
+	{
+		const uint32_t m = chunksToRemove[i];
+		delete mChunkData[m].meshData;
+		std::swap(mChunkData.back(), mChunkData[m]);
+		mChunkData.pop_back();
 	}
 }
 
-} // namespace Blast
-} // namespace Nv
+}  // namespace Blast
+}  // namespace Nv

@@ -47,8 +47,8 @@ bool ExtPxSubchunkDTO::serialize(Nv::Blast::Serialization::ExtPxSubchunk::Builde
 
 Nv::Blast::ExtPxSubchunk* ExtPxSubchunkDTO::deserialize(Nv::Blast::Serialization::ExtPxSubchunk::Reader reader)
 {
-	reader = reader;
-	//TODO: Allocate with ExtContext and return
+	NV_UNUSED(reader);
+	// TODO: Allocate with ExtContext and return
 
 	return nullptr;
 }

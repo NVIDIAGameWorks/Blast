@@ -72,13 +72,13 @@ public:
 		\param[out]				Pointer to generated voronoi sites
 		\return					Count of generated voronoi sites.
 	*/
-	 uint32_t					getVoronoiSites(const physx::PxVec3*& sites) override;
+	 uint32_t					getVoronoiSites(const NvcVec3*& sites) override;
 	
 	/**
 		Add site in particular point
 		\param[in] site		Site coordinates
 	*/
-	void						addSite(const physx::PxVec3& site) override;
+	void						addSite(const NvcVec3& site) override;
 	/**
 		Uniformly generate sites inside the mesh
 		\param[in] numberOfSites	Number of generated sites
@@ -103,7 +103,7 @@ public:
 		\param[in] angleOffset	Angle offset at each radial step
 		\param[in] variability	Randomness of sites distribution 
 	*/
-	void						radialPattern(const physx::PxVec3& center, const physx::PxVec3& normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset = 0.0f, float variability = 0.0f) override;
+	void						radialPattern(const NvcVec3& center, const NvcVec3& normal, float radius, int32_t angularSteps, int32_t radialSteps, float angleOffset = 0.0f, float variability = 0.0f) override;
 
 	/**
 		Generate sites inside sphere
@@ -111,7 +111,7 @@ public:
 		\param[in] radius		Radius of sphere
 		\param[in] center		Center of sphere
 	*/
-	void						generateInSphere(const uint32_t count, const float radius, const physx::PxVec3& center) override;
+	void						generateInSphere(const uint32_t count, const float radius, const NvcVec3& center) override;
 	/**
 		Set stencil mesh. With stencil mesh sites are generated only inside both of fracture and stencil meshes. 
 		\param[in] stencil		Stencil mesh.
@@ -128,10 +128,10 @@ public:
 		\param[in] center				Center of sphere
 		\param[in] eraserProbability	Probability of removing some particular site
 	*/
-	void						deleteInSphere(const float radius, const physx::PxVec3& center, const float eraserProbability = 1) override;
+	void						deleteInSphere(const float radius, const NvcVec3& center, const float eraserProbability = 1) override;
 
 private:
-	std::vector <physx::PxVec3>	mGeneratedSites;
+	std::vector <NvcVec3>	mGeneratedSites;
 	const Mesh*					mMesh;
 	const Mesh*					mStencil;
 	RandomGeneratorBase*		mRnd;
@@ -156,7 +156,7 @@ public:
 		mPlaneIndexerOffset = 1;
 		mChunkIdCounter = 0;
 		mRemoveIslands = false;
-		mInteriorMaterialId = MATERIAL_INTERIOR;
+		mInteriorMaterialId = kMaterialInteriorId;
 	}
 
 	~FractureToolImpl()
@@ -172,7 +172,7 @@ public:
 	void									reset() override;
 	
 	/**
-	Set the material id to use for new interior faces. Defaults to MATERIAL_INTERIOR
+	Set the material id to use for new interior faces. Defaults to kMaterialInteriorId
 	*/
 	void									setInteriorMaterialId(int32_t materialId) override;
 
@@ -205,7 +205,7 @@ public:
 		Input mesh is scaled and transformed internally to fit unit cube centered in origin.
 		Method provides offset vector and scale parameter;
 	*/
-	void									getTransformation(physx::PxVec3& offset, float& scale) override;
+	void									getTransformation(NvcVec3& offset, float& scale) override;
 
 
 	/**
@@ -216,7 +216,7 @@ public:
 										Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
 		\return   If 0, fracturing is successful.
 	*/
-	int32_t									voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3* cellPoints, bool replaceChunk) override;
+	int32_t									voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const NvcVec3* cellPoints, bool replaceChunk) override;
 
 	/**
 		Fractures specified chunk with voronoi method. Cells can be scaled along x,y,z axes.
@@ -229,7 +229,7 @@ public:
 									    Case replaceChunk == true && chunkId == 0 considered as wrong input parameters
 		\return   If 0, fracturing is successful.
 	*/
-	int32_t									voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const physx::PxVec3* cellPoints, const physx::PxVec3& scale, const physx::PxQuat& rotation, bool replaceChunk) override;
+	int32_t									voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const NvcVec3* cellPoints, const NvcVec3& scale, const NvcQuat& rotation, bool replaceChunk) override;
 
 
 	/**
@@ -257,7 +257,7 @@ public:
 
 	\return   If 0, fracturing is successful.
 	*/
-	int32_t									cut(uint32_t chunkId, const physx::PxVec3& normal, const physx::PxVec3& position, const NoiseConfiguration& noise, bool replaceChunk, RandomGeneratorBase* rnd) override;
+	int32_t									cut(uint32_t chunkId, const NvcVec3& normal, const NvcVec3& position, const NoiseConfiguration& noise, bool replaceChunk, RandomGeneratorBase* rnd) override;
 
 	/**
 	Cutout fracture for specified chunk.
@@ -375,7 +375,8 @@ public:
 
 	bool									deleteAllChildrenOfChunk(int32_t chunkId) override;
 
-	void									uniteChunks(uint32_t maxAtLevel, uint32_t maxGroupSize) override;
+	void									uniteChunks(uint32_t maxAtLevel, uint32_t maxGroupSize, const NvcVec2i* adjChunks, uint32_t adjChunksSize,
+	                                                    bool removeOriginalChunks = false) override;
 	
 
 	/**
@@ -398,7 +399,8 @@ private:
 	bool									isAncestorForChunk(int32_t ancestorId, int32_t chunkId);
 	int32_t									slicingNoisy(uint32_t chunkId, const SlicingConfiguration& conf, bool replaceChunk, RandomGeneratorBase* rnd);
 	uint32_t								stretchGroup(const std::vector<uint32_t>& group, std::vector<std::vector<uint32_t>>& graph);
-	void									rebuildAdjGraph(const std::vector<uint32_t>& chunksToRebuild, std::vector<std::vector<uint32_t> >& chunkGraph);
+	void									rebuildAdjGraph(const std::vector<uint32_t>& chunksToRebuild, const NvcVec2i* adjChunks, uint32_t adjChunksSize,
+                                                            std::vector<std::vector<uint32_t> >& chunkGraph);
 	void									fitAllUvToRect(float side, std::set<uint32_t>& mask);
 
 	/**
@@ -412,7 +414,7 @@ protected:
 	Mesh scaled to unite-cube and translated to the origin
 	*/
 	float								mScaleFactor;
-	physx::PxVec3						mOffset;
+	NvcVec3								mOffset;
 
 	/* Chunk mesh wrappers */
 	std::vector<Triangulator*>	        mChunkPostprocessors;
@@ -427,8 +429,8 @@ protected:
 	int32_t								mInteriorMaterialId;
 };
 
-void findCellBasePlanes(const std::vector<physx::PxVec3>& sites, std::vector<std::vector<int32_t> >& neighboors);
-Mesh* getCellMesh(class BooleanEvaluator& eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector<physx::PxVec3>& sites, std::vector < std::vector<int32_t> >& neighboors, int32_t interiorMaterialId, physx::PxVec3 origin);
+void findCellBasePlanes(const std::vector<NvcVec3>& sites, std::vector<std::vector<int32_t> >& neighboors);
+Mesh* getCellMesh(class BooleanEvaluator& eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector<NvcVec3>& sites, std::vector < std::vector<int32_t> >& neighboors, int32_t interiorMaterialId, NvcVec3 origin);
 
 } // namespace Blast
 } // namespace Nv
