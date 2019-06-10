@@ -2402,51 +2402,70 @@ bool VecIntComp(const std::pair<NvcVec3, uint32_t>& a, const std::pair<NvcVec3, 
 	return a.second < b.second;
 }
 
-void FractureToolImpl::uniteChunks(uint32_t maxChunksAtLevel, uint32_t maxGroup, const NvcVec2i* adjChunks,
-                                   uint32_t adjChunksSize, bool removeOriginalChunks /*= false*/)
+void FractureToolImpl::uniteChunks(uint32_t threshold, uint32_t targetClusterSize, const uint32_t* chunksToMerge, uint32_t mergeChunkCount,
+                                   const NvcVec2i* adjChunks, uint32_t adjChunksSize, bool removeOriginalChunks /*= false*/)
 {
-	maxChunksAtLevel = std::max(maxChunksAtLevel, maxGroup);
-
 	std::vector<int32_t> depth(mChunkData.size(), 0);
 
 	std::vector<std::vector<uint32_t> > chunkGraph(mChunkData.size());
 
-
 	std::vector<uint32_t> atEachDepth;
 	std::vector<uint32_t> childNumber(mChunkData.size(), 0);
 
+    std::vector<uint32_t> chunksToRemove;
 
-	for (uint32_t i = 0; i < mChunkData.size(); ++i)
+    enum ChunkFlags
+    {
+        Mergeable   = (1 << 0),
+        Merged      = (1 << 1)
+    };
+
+    std::vector<uint32_t> chunkFlags(mChunkData.size());
+
+    if (chunksToMerge == nullptr)
+    {
+        std::fill(chunkFlags.begin(), chunkFlags.end(), Mergeable);
+    }
+    else
+    {
+        // Seed all mergeable chunks with Mergeable flag
+        for (uint32_t chunkN = 0; chunkN < mergeChunkCount; ++chunkN)
+        {
+            const uint32_t chunkIndex = chunksToMerge[chunkN];
+            chunkFlags[chunkIndex] |= Mergeable;
+        }
+
+        // Make all descendants mergable too
+        std::vector<int32_t> treeWalk;
+        for (uint32_t chunkIndex = 0; chunkIndex < mChunkData.size(); ++chunkIndex)
+        {
+            treeWalk.clear();
+            int32_t walkIndex = (int32_t)chunkIndex;
+            do
+            {
+                if (chunkFlags[walkIndex] & Mergeable)
+                {
+                    std::for_each(treeWalk.begin(), treeWalk.end(), [&chunkFlags](int32_t index) {chunkFlags[index] |= Mergeable; });
+                    break;
+                }
+                treeWalk.push_back(walkIndex);
+            } while ((walkIndex = mChunkData[walkIndex].parent) >= 0);
+        }
+    }
+
+    int32_t maxDepth = 0;
+
+    for (uint32_t i = 0; i < mChunkData.size(); ++i)
 	{
 		if (mChunkData[i].parent != -1)
 			childNumber[getChunkIndex(mChunkData[i].parent)]++;
 		depth[i] = getChunkDepth(mChunkData[i].chunkId);
 		NVBLAST_ASSERT(depth[i] >= 0);
-		if (depth[i] >= 0)
-		{
-            if ((size_t)depth[i] >= atEachDepth.size())
-            {
-				atEachDepth.resize(depth[i]+1, 0);
-            }
-			atEachDepth[depth[i]]++;
-		}
+        maxDepth = std::max(maxDepth, depth[i]);
 	}
 
-	std::vector<uint32_t> chunksToRemove;
-
-    std::vector<uint32_t> chunkFlags(mChunkData.size(), 0);
-
-    enum ChunkFlags
-    {
-		ChunkUsage  = (1 << 0),
-        MergedChunk = (1 << 1)
-    };
-    
-	for (int32_t level = (int32_t)atEachDepth.size(); level--;)  // go from leaves to trunk and rebuild hierarchy
+    for (int32_t level = maxDepth; level > 0; --level)  // go from leaves to trunk and rebuild hierarchy
 	{
-		if (atEachDepth[level] < maxChunksAtLevel)
-			continue;
-
 		std::vector<uint32_t> cGroup;
 		std::vector<uint32_t> chunksToUnify;
 
@@ -2455,7 +2474,7 @@ void FractureToolImpl::uniteChunks(uint32_t maxChunksAtLevel, uint32_t maxGroup,
 
 		for (uint32_t ch = 0; ch < depth.size(); ++ch)
 		{
-			if (depth[ch] == level && childNumber[getChunkIndex(mChunkData[ch].parent)] > maxChunksAtLevel)
+			if (depth[ch] == level && childNumber[getChunkIndex(mChunkData[ch].parent)] > threshold && (chunkFlags[ch] & Mergeable) != 0)
 			{
 				chunksToUnify.push_back(ch);
 				NvcVec3 cp = fromPxShared(toPxShared(mChunkData[ch].meshData->getBoundingBox()).getCenter());
@@ -2480,42 +2499,43 @@ void FractureToolImpl::uniteChunks(uint32_t maxChunksAtLevel, uint32_t maxGroup,
 		}
 		rebuildAdjGraph(chunksToUnify, adjChunks, adjChunksSize, chunkGraph);
 
-
-		for (uint32_t iter = 0; iter < 32 && chunksToUnify.size() > maxChunksAtLevel; ++iter)
+		for (uint32_t iter = 0; iter < 32 && chunksToUnify.size() > threshold; ++iter)
 		{
 			std::vector<uint32_t> newChunksToUnify;
 
 			for (uint32_t c = 0; c < chunksToUnify.size(); ++c)
 			{
-				if (chunkFlags[chunksToUnify[c]] & ChunkUsage)
+				if ((chunkFlags[chunksToUnify[c]] & Mergeable) == 0)
 					continue;
-
-				chunkFlags[chunksToUnify[c]] |= ChunkUsage;
+				chunkFlags[chunksToUnify[c]] &= ~Mergeable;
 				cGroup.push_back(chunksToUnify[c]);
-				for (uint32_t sc = 0; sc < cGroup.size() && cGroup.size() < maxGroup; ++sc)
+				for (uint32_t sc = 0; sc < cGroup.size() && cGroup.size() < targetClusterSize; ++sc)
 				{
 					uint32_t sid = cGroup[sc];
-					for (uint32_t neighb = 0; neighb < chunkGraph[sid].size() && cGroup.size() < maxGroup; ++neighb)
+					for (uint32_t neighbN = 0; neighbN < chunkGraph[sid].size() && cGroup.size() < targetClusterSize; ++neighbN)
 					{
-						if (chunkFlags[chunkGraph[sid][neighb]] & ChunkUsage)
+                        const uint32_t chunkNeighb = chunkGraph[sid][neighbN];
+                        if (mChunkData[chunkNeighb].parent != mChunkData[sid].parent)
+                            continue;
+						if ((chunkFlags[chunkNeighb] & Mergeable) == 0)
 							continue;
-						cGroup.push_back(chunkGraph[sid][neighb]);
-						chunkFlags[chunkGraph[sid][neighb]] |= ChunkUsage;
-					}
+						chunkFlags[chunkNeighb] &= ~Mergeable;
+                        cGroup.push_back(chunkNeighb);
+                    }
 				}
 				if (cGroup.size() > 1)
 				{
 					uint32_t newChunk = stretchGroup(cGroup, chunkGraph);
                     for (uint32_t chunk : cGroup)
                     {
-						if (removeOriginalChunks  && !(chunkFlags[chunk] & MergedChunk))
+						if (removeOriginalChunks  && !(chunkFlags[chunk] & Merged))
                         {
 							chunksToRemove.push_back(chunk);
                         }
                     }
 					cGroup.clear();
 					newChunksToUnify.push_back(newChunk);
-					chunkFlags.push_back(MergedChunk);
+					chunkFlags.push_back(Merged);
 				}
 				else
 				{

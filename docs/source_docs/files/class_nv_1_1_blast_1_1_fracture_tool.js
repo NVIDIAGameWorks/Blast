@@ -29,7 +29,7 @@ var class_nv_1_1_blast_1_1_fracture_tool =
     [ "setRemoveIslands", "class_nv_1_1_blast_1_1_fracture_tool.html#a251738022e498b819e88536577470735", null ],
     [ "setSourceMesh", "class_nv_1_1_blast_1_1_fracture_tool.html#ac14c1ff1d50756694be24c34476af965", null ],
     [ "slicing", "class_nv_1_1_blast_1_1_fracture_tool.html#a45e8a5d3b6d98da1b44b6888a5054cce", null ],
-    [ "uniteChunks", "class_nv_1_1_blast_1_1_fracture_tool.html#ac0c886a68b51652184c126e965dc6209", null ],
+    [ "uniteChunks", "class_nv_1_1_blast_1_1_fracture_tool.html#ae4bd5dab498f9e894c648d570c5b60ba", null ],
     [ "updateBaseMesh", "class_nv_1_1_blast_1_1_fracture_tool.html#a384be45a1310ee0652d315127e62da22", null ],
     [ "voronoiFracturing", "class_nv_1_1_blast_1_1_fracture_tool.html#a4c3308b909153982aded9366f9d3ee7c", null ],
     [ "voronoiFracturing", "class_nv_1_1_blast_1_1_fracture_tool.html#a2d38fb6aac3c36d51d60dad428a43074", null ]

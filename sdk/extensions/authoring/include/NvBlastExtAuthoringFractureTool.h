@@ -497,14 +497,17 @@ class FractureTool
 	    Optimize chunk hierarhy for better runtime performance.
 	    It tries to unite chunks to groups of some size in order to transform flat hierarchy (all chunks are children of
 	    single root) to tree like hieracrhy with limited number of children for each chunk.
-        \param[in] maxAtLevel	If number of children of some chunk less then maxAtLevel then it would be considered as already
+        \param[in] threshold	If number of children of some chunk less then maxAtLevel then it would be considered as already
             optimized and skipped.
-        \param[in] maxGroupSize Max number of children for processed chunks. \param[in] removeOriginalChunks.
+        \param[in] targetClusterSize Target number of children for processed chunks.
+        \param[in] chunksToMerge Which chunks are merge candidate.  If NULL, all chunks will be a merge candidate.
+        \param[in] mergeChunkCount size of chunksToMerge array, if chunksToMerge != NULL.
         \param[in] adjChunks    Optional index pairs to describe chunk adjacency.  May be NULL.
         \param[in] adjChunksSize If 'adjChunks' is not NULL, the number of index pairs in the adjChunks array.
         \param[in] removeOriginalChunks If true, original chunks that are merged are removed.
 	*/
-	virtual void uniteChunks(uint32_t maxAtLevel, uint32_t maxGroupSize,
+	virtual void uniteChunks(uint32_t threshold, uint32_t targetClusterSize,
+                             const uint32_t* chunksToMerge, uint32_t mergeChunkCount,
                              const NvcVec2i* adjChunks, uint32_t adjChunksSize,
 	                         bool removeOriginalChunks = false) = 0;
 

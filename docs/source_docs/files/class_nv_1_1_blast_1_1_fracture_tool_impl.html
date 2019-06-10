@@ -116,7 +116,7 @@ Inheritance diagram for Nv::Blast::FractureToolImpl:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c2b3addf8c9d4e4c81511c8b0071f031">slicing</a> (uint32_t chunkId, const <a class="el" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a> &amp;conf, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c1c3a18e82a53972ea362acc1a0272f8">uniteChunks</a> (uint32_t maxAtLevel, uint32_t maxGroupSize, const <a class="el" href="struct_nvc_vec2i.html">NvcVec2i</a> *adjChunks, uint32_t adjChunksSize, bool removeOriginalChunks=false) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#7be81de54f32a49d2f5885275c59bece">uniteChunks</a> (uint32_t threshold, uint32_t targetClusterSize, const uint32_t *chunksToMerge, uint32_t mergeChunkCount, const <a class="el" href="struct_nvc_vec2i.html">NvcVec2i</a> *adjChunks, uint32_t adjChunksSize, bool removeOriginalChunks=false) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#0217eb658aa3890c3d1d2e030436b07b">updateBaseMesh</a> (int32_t chunkIndex, <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *output) override</td></tr>
 
@@ -1066,7 +1066,7 @@ Fractures specified chunk with slicing method. <dl compact><dt><b>Parameters:</b
 
 </div>
 </div><p>
-<a class="anchor" name="c1c3a18e82a53972ea362acc1a0272f8"></a><!-- doxytag: member="Nv::Blast::FractureToolImpl::uniteChunks" ref="c1c3a18e82a53972ea362acc1a0272f8" args="(uint32_t maxAtLevel, uint32_t maxGroupSize, const NvcVec2i *adjChunks, uint32_t adjChunksSize, bool removeOriginalChunks=false) override" -->
+<a class="anchor" name="7be81de54f32a49d2f5885275c59bece"></a><!-- doxytag: member="Nv::Blast::FractureToolImpl::uniteChunks" ref="7be81de54f32a49d2f5885275c59bece" args="(uint32_t threshold, uint32_t targetClusterSize, const uint32_t *chunksToMerge, uint32_t mergeChunkCount, const NvcVec2i *adjChunks, uint32_t adjChunksSize, bool removeOriginalChunks=false) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1074,13 +1074,25 @@ Fractures specified chunk with slicing method. <dl compact><dt><b>Parameters:</b
           <td class="memname">void Nv::Blast::FractureToolImpl::uniteChunks           </td>
           <td>(</td>
           <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>maxAtLevel</em>, </td>
+          <td class="paramname"> <em>threshold</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t&nbsp;</td>
-          <td class="paramname"> <em>maxGroupSize</em>, </td>
+          <td class="paramname"> <em>targetClusterSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&nbsp;</td>
+          <td class="paramname"> <em>chunksToMerge</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>mergeChunkCount</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1112,16 +1124,17 @@ Fractures specified chunk with slicing method. <dl compact><dt><b>Parameters:</b
 <p>
 Optimize chunk hierarhy for better runtime performance. It tries to unite chunks to groups of some size in order to transform flat hierarchy (all chunks are children of single root) to tree like hieracrhy with limited number of children for each chunk. <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>maxAtLevel</em>&nbsp;</td><td>If number of children of some chunk less then maxAtLevel then it would be considered as already optimized and skipped. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>maxGroupSize</em>&nbsp;</td><td>Max number of children for processed chunks. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>removeOriginalChunks.</em>&nbsp;</td><td></td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>threshold</em>&nbsp;</td><td>If number of children of some chunk less then maxAtLevel then it would be considered as already optimized and skipped. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>targetClusterSize</em>&nbsp;</td><td>Target number of children for processed chunks. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunksToMerge</em>&nbsp;</td><td>Which chunks are merge candidate. If NULL, all chunks will be a merge candidate. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>mergeChunkCount</em>&nbsp;</td><td>size of chunksToMerge array, if chunksToMerge != NULL. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adjChunks</em>&nbsp;</td><td>Optional index pairs to describe chunk adjacency. May be NULL. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>adjChunksSize</em>&nbsp;</td><td>If 'adjChunks' is not NULL, the number of index pairs in the adjChunks array. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>removeOriginalChunks</em>&nbsp;</td><td>If true, original chunks that are merged are removed. </td></tr>
   </table>
 </dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c0c886a68b51652184c126e965dc6209">Nv::Blast::FractureTool</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#e4bd5dab498f9e894c648d570c5b60ba">Nv::Blast::FractureTool</a>.</p>
 
 </div>
 </div><p>
