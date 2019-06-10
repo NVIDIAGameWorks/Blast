@@ -375,7 +375,9 @@ public:
 
 	bool									deleteAllChildrenOfChunk(int32_t chunkId) override;
 
-	void									uniteChunks(uint32_t maxAtLevel, uint32_t maxGroupSize, const NvcVec2i* adjChunks, uint32_t adjChunksSize,
+	void									uniteChunks(uint32_t threshold, uint32_t targetClusterSize,
+                                                        const uint32_t* chunksToMerge, uint32_t mergeChunkCount,
+                                                        const NvcVec2i* adjChunks, uint32_t adjChunksSize,
 	                                                    bool removeOriginalChunks = false) override;
 	
 
