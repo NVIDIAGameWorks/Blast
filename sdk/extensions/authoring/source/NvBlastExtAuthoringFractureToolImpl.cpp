@@ -2547,13 +2547,40 @@ void FractureToolImpl::uniteChunks(uint32_t threshold, uint32_t targetClusterSiz
 		}
 	}
 
-	for (uint32_t i = (uint32_t)chunksToRemove.size(); i--;)
-	{
-		const uint32_t m = chunksToRemove[i];
-		delete mChunkData[m].meshData;
-		std::swap(mChunkData.back(), mChunkData[m]);
-		mChunkData.pop_back();
-	}
+    // Remove chunks
+    std::vector<uint32_t> remap(mChunkData.size(), 0xFFFFFFFF);
+    std::sort(chunksToRemove.begin(), chunksToRemove.end());
+    std::vector<uint32_t>::iterator removeIt = chunksToRemove.begin();
+    size_t chunkWriteIndex = 0;
+    for (size_t chunkReadIndex = 0; chunkReadIndex < mChunkData.size(); ++chunkReadIndex)
+    {
+        if (removeIt < chunksToRemove.end())
+        {
+            if (*removeIt == chunkReadIndex)
+            {
+                ++removeIt;
+                continue;
+            }
+        }
+        if (chunkReadIndex != chunkWriteIndex)
+        {
+            mChunkData[chunkWriteIndex] = mChunkData[chunkReadIndex];
+        }
+        remap[chunkReadIndex] = chunkWriteIndex++;
+    }
+    mChunkData.resize(chunkWriteIndex);
+    for (ChunkInfo& chunkInfo : mChunkData)
+    {
+        if (chunkInfo.parent > 0)
+        {
+            const uint32_t mappedParent = remap[chunkInfo.parent];
+            NVBLAST_ASSERT(mappedParent < mChunkData.size());
+            if (mappedParent < mChunkData.size())
+            {
+                chunkInfo.parent = mappedParent;
+            }
+        }
+    }
 }
 
 }  // namespace Blast

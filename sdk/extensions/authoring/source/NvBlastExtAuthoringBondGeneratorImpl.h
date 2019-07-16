@@ -76,7 +76,7 @@ public:
 private:
 	float	processWithMidplanes(TriangleProcessor* trProcessor, const Triangle* mA, uint32_t mavc, const Triangle* mB, uint32_t mbvc, const CollisionHull* hull1, const CollisionHull* hull2,
 	                         const std::vector<physx::PxVec3>& hull1p, const std::vector<physx::PxVec3>& hull2p,
-	                         physx::PxVec3& normal, physx::PxVec3& centroid, float maxSeparation);
+	                         physx::PxVec3& normal, physx::PxVec3& centroid, float maxRelSeparation);
 
 	int32_t	createFullBondListAveraged(	uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry, const CollisionHull** chunkHulls,
 										const bool* supportFlags, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf, std::set<std::pair<uint32_t, uint32_t> >* pairNotToTest = nullptr);

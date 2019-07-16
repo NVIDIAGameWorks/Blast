@@ -267,7 +267,7 @@ float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcesso
                                                    const Triangle* mB, uint32_t mbvc, const CollisionHull* hull1,
                                                    const CollisionHull* hull2, const std::vector<PxVec3>& hull1p,
                                                    const std::vector<PxVec3>& hull2p, PxVec3& normal, PxVec3& centroid,
-                                                   float maxSeparation)
+                                                   float maxRelSeparation)
 {
 	PxBounds3 bounds;
 	PxBounds3 aBounds;
@@ -302,6 +302,7 @@ float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcesso
 	chunk1Centroid *= (1.0f / hull1p.size());
 	chunk2Centroid *= (1.0f / hull2p.size());
 
+    const float maxSeparation = maxRelSeparation * std::sqrt(std::max(aBounds.getExtents().magnitudeSquared(), bBounds.getExtents().magnitudeSquared()));
 
 	Separation separation;
 	if (!importerHullsInProximityApexFree(hull1p.size(), hull1p.data(), aBounds, PxTransform(PxIdentity),
@@ -1283,7 +1284,7 @@ int32_t BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool
 
 		BondGenerationConfig cfg;
 		cfg.bondMode      = BondGenerationConfig::AVERAGE;
-		cfg.maxSeparation = 0.0f;
+		cfg.maxSeparation = 0.01f;
 
 		uint32_t nbListSize =
 		    createFullBondListAveraged(chunkCount, chunkTrianglesOffsets.data(), chunkTriangles.data(), nullptr,
