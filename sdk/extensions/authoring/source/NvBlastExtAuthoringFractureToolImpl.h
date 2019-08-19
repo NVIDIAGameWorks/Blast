@@ -373,7 +373,7 @@ public:
 	*/
 	bool									isMeshContainOpenEdges(const Mesh* input) override;
 
-	bool									deleteAllChildrenOfChunk(int32_t chunkId) override;
+	bool									deleteChunkSubhierarchy(int32_t chunkId, bool deleteRoot = false) override;
 
 	void									uniteChunks(uint32_t threshold, uint32_t targetClusterSize,
                                                         const uint32_t* chunksToMerge, uint32_t mergeChunkCount,
@@ -397,7 +397,6 @@ public:
 
 
 private:	
-	void									eraseChunk(int32_t chunkId);	
 	bool									isAncestorForChunk(int32_t ancestorId, int32_t chunkId);
 	int32_t									slicingNoisy(uint32_t chunkId, const SlicingConfiguration& conf, bool replaceChunk, RandomGeneratorBase* rnd);
 	uint32_t								stretchGroup(const std::vector<uint32_t>& group, std::vector<std::vector<uint32_t>>& graph);

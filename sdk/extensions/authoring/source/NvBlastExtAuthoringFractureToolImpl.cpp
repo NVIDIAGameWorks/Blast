@@ -423,7 +423,7 @@ FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const 
 	}
 	if (!mChunkData[chunkIndex].isLeaf)
 	{
-		deleteAllChildrenOfChunk(chunkId);
+        deleteChunkSubhierarchy(chunkId);
 	}
 	chunkIndex = getChunkIndex(chunkId);
 
@@ -476,7 +476,7 @@ FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const 
 	mChunkData[chunkIndex].isLeaf = false;
 	if (replaceChunk)
 	{
-		eraseChunk(chunkId);
+		deleteChunkSubhierarchy(chunkId, true);
 	}
 	mPlaneIndexerOffset += static_cast<int32_t>(cellPoints.size() * cellPoints.size());
 
@@ -585,7 +585,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 	}
 	if (!mChunkData[chunkIndex].isLeaf)
 	{
-		deleteAllChildrenOfChunk(chunkId);
+        deleteChunkSubhierarchy(chunkId);
 	}
 	chunkIndex = getChunkIndex(chunkId);
 
@@ -654,7 +654,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 	mChunkData[chunkIndex].isLeaf = false;
 	if (replaceChunk)
 	{
-		eraseChunk(chunkId);
+        deleteChunkSubhierarchy(chunkId, true);
 	}
 	mPlaneIndexerOffset += static_cast<int32_t>(cellPoints.size() * cellPoints.size());
 
@@ -689,7 +689,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 	}
 	if (!mChunkData[chunkIndex].isLeaf)
 	{
-		deleteAllChildrenOfChunk(chunkId);
+        deleteChunkSubhierarchy(chunkId);
 	}
 	chunkIndex = getChunkIndex(chunkId);
 
@@ -850,7 +850,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 	mChunkData[chunkIndex].isLeaf = false;
 	if (replaceChunk)
 	{
-		eraseChunk(chunkId);
+        deleteChunkSubhierarchy(chunkId, true);
 	}
 
 	if (mRemoveIslands)
@@ -879,7 +879,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 	}
 	if (!mChunkData[chunkIndex].isLeaf)
 	{
-		deleteAllChildrenOfChunk(chunkId);
+        deleteChunkSubhierarchy(chunkId);
 	}
 	chunkIndex = getChunkIndex(chunkId);
 
@@ -1061,7 +1061,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 	mChunkData[chunkIndex].isLeaf = false;
 	if (replaceChunk)
 	{
-		eraseChunk(chunkId);
+        deleteChunkSubhierarchy(chunkId, true);
 	}
 
 	if (mRemoveIslands)
@@ -1089,7 +1089,7 @@ int32_t FractureToolImpl::cut(uint32_t chunkId, const NvcVec3& normal, const Nvc
 	}
 	if (!mChunkData[chunkIndex].isLeaf)
 	{
-		deleteAllChildrenOfChunk(chunkId);
+        deleteChunkSubhierarchy(chunkId);
 	}
 	chunkIndex = getChunkIndex(chunkId);
 
@@ -1130,7 +1130,7 @@ int32_t FractureToolImpl::cut(uint32_t chunkId, const NvcVec3& normal, const Nvc
 
 	if (!mChunkData[chunkIndex].isLeaf)
 	{
-		deleteAllChildrenOfChunk(chunkId);
+        deleteChunkSubhierarchy(chunkId);
 	}
 	chunkIndex = getChunkIndex(chunkId);
 
@@ -1151,7 +1151,7 @@ int32_t FractureToolImpl::cut(uint32_t chunkId, const NvcVec3& normal, const Nvc
 	mChunkData[chunkIndex].isLeaf = false;
 	if (replaceChunk)
 	{
-		eraseChunk(chunkId);
+        deleteChunkSubhierarchy(chunkId, true);
 	}
 
 	if (mRemoveIslands && firstChunkId >= 0)
@@ -1196,7 +1196,7 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 	}
 	if (!mChunkData[chunkIndex].isLeaf)
 	{
-		deleteAllChildrenOfChunk(chunkId);
+        deleteChunkSubhierarchy(chunkId);
 	}
 	chunkIndex                      = getChunkIndex(chunkId);
 	Nv::Blast::CutoutSet& cutoutSet = *conf.cutoutSet;
@@ -1391,7 +1391,7 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 	mChunkData[chunkIndex].isLeaf = false;
 	if (replaceChunk)
 	{
-		eraseChunk(chunkId);
+        deleteChunkSubhierarchy(chunkId, true);
 	}
 
 	if (mRemoveIslands)
@@ -1611,25 +1611,12 @@ bool FractureToolImpl::isAncestorForChunk(int32_t ancestorId, int32_t chunkId)
 	return false;
 }
 
-void FractureToolImpl::eraseChunk(int32_t chunkId)
-{
-	deleteAllChildrenOfChunk(chunkId);
-	int32_t index = getChunkIndex(chunkId);
-	if (index != -1)
-	{
-		delete mChunkData[index].meshData;
-		std::swap(mChunkData.back(), mChunkData[index]);
-		mChunkData.pop_back();
-	}
-}
-
-
-bool FractureToolImpl::deleteAllChildrenOfChunk(int32_t chunkId)
+bool FractureToolImpl::deleteChunkSubhierarchy(int32_t chunkId, bool deleteRoot /*= false*/)
 {
 	std::vector<int32_t> chunkToDelete;
 	for (uint32_t i = 0; i < mChunkData.size(); ++i)
 	{
-		if (isAncestorForChunk(chunkId, mChunkData[i].chunkId))
+		if (isAncestorForChunk(chunkId, mChunkData[i].chunkId) || (deleteRoot && chunkId == mChunkData[i].chunkId))
 		{
 			chunkToDelete.push_back(i);
 		}
@@ -2002,7 +1989,7 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool creat
 		else
 		{
 			mChunkData[chunkIndex].isLeaf = false;
-			deleteAllChildrenOfChunk(chunkId);
+            deleteChunkSubhierarchy(chunkId);
 			for (int32_t i = 0; i < cComp; ++i)
 			{
 				uint32_t nc             = createNewChunk(chunkId);
@@ -2449,7 +2436,7 @@ void FractureToolImpl::uniteChunks(uint32_t threshold, uint32_t targetClusterSiz
                     break;
                 }
                 treeWalk.push_back(walkIndex);
-            } while ((walkIndex = mChunkData[walkIndex].parent) >= 0);
+            } while ((walkIndex = getChunkIndex(mChunkData[walkIndex].parent)) >= 0);
         }
     }
 
@@ -2571,13 +2558,13 @@ void FractureToolImpl::uniteChunks(uint32_t threshold, uint32_t targetClusterSiz
     mChunkData.resize(chunkWriteIndex);
     for (ChunkInfo& chunkInfo : mChunkData)
     {
-        if (chunkInfo.parent > 0)
+        if (chunkInfo.parent >= 0)
         {
-            const uint32_t mappedParent = remap[chunkInfo.parent];
-            NVBLAST_ASSERT(mappedParent < mChunkData.size());
-            if (mappedParent < mChunkData.size())
+            const uint32_t mappedParentIndex = remap[getChunkIndex(chunkInfo.parent)];
+            NVBLAST_ASSERT(mappedParentIndex < mChunkData.size());
+            if (mappedParentIndex < mChunkData.size())
             {
-                chunkInfo.parent = mappedParent;
+                chunkInfo.parent = mChunkData[mappedParentIndex].chunkId;
             }
         }
     }
