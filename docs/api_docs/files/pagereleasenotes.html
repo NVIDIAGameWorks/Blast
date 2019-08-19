@@ -24,7 +24,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Blast(tm) SDK 1.1.5 (02-May-2019)
+Blast(tm) SDK 1.1.5 (18-Aug-2019)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Changes
@@ -33,6 +33,7 @@ Changes
 * Numerous API changes to meet new coding conventions.
 * Packman package manager updated to v. 5.7.2, cleaned up dependency files.
 * Chunks created from islands use padded bounds to determine connectivity.
+* FractureTool::deleteAllChildrenOfChunk renamed FractureTool::deleteChunkSubhierarchy, added ability to delete chunks
 
 New Features
 ------------
@@ -40,6 +41,7 @@ New Features
   * Ability to pass chunk connectivity info to uniteChunks function, enabling chunks split by island detection to  be united.
   * Option to remove original merged chunks in uniteChunks function.
   * The function uniteChunks allows the user to specify a chunk set to merge.  Chunks from that set, and all descendants, are considered for merging.
+  * Ability to delete chunks (see note about FractureTool::deleteChunkSubhierarchy in Changes section, above)
 
 Bug fixes
 ---------

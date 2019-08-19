@@ -35,7 +35,7 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#247f0e36c015237002dc87675562289b">cutout</a> (uint32_t chunkId, <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a> conf, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd)=0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#eaa46bf5fe4fe7035ac624f49ade64a8">deleteAllChildrenOfChunk</a> (int32_t chunkId)=0</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#ec74731e5a147120f0536b6674fc0f42">deleteChunkSubhierarchy</a> (int32_t chunkId, bool deleteRoot=false)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#8830959a8f7e4babc1983ea31c61ef5d">finalizeFracturing</a> ()=0</td></tr>
 
@@ -252,17 +252,26 @@ Cutout fracture for specified chunk. <dl compact><dt><b>Parameters:</b></dt><dd>
 
 </div>
 </div><p>
-<a class="anchor" name="eaa46bf5fe4fe7035ac624f49ade64a8"></a><!-- doxytag: member="Nv::Blast::FractureTool::deleteAllChildrenOfChunk" ref="eaa46bf5fe4fe7035ac624f49ade64a8" args="(int32_t chunkId)=0" -->
+<a class="anchor" name="ec74731e5a147120f0536b6674fc0f42"></a><!-- doxytag: member="Nv::Blast::FractureTool::deleteChunkSubhierarchy" ref="ec74731e5a147120f0536b6674fc0f42" args="(int32_t chunkId, bool deleteRoot=false)=0" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">virtual bool Nv::Blast::FractureTool::deleteAllChildrenOfChunk           </td>
+          <td class="memname">virtual bool Nv::Blast::FractureTool::deleteChunkSubhierarchy           </td>
           <td>(</td>
           <td class="paramtype">int32_t&nbsp;</td>
-          <td class="paramname"> <em>chunkId</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [pure virtual]</code></td>
+          <td class="paramname"> <em>chunkId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>deleteRoot</em> = <code>false</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -272,6 +281,7 @@ Cutout fracture for specified chunk. <dl compact><dt><b>Parameters:</b></dt><dd>
 Delete all children for specified chunk (also recursively delete chidren of children). <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkId</em>&nbsp;</td><td>Chunk ID which children should be deleted </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>deleteRoot</em>&nbsp;</td><td>(optional) If true, deletes the given chunk too </td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>true if one or more chunks were removed </dd></dl>

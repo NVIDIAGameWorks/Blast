@@ -255,22 +255,22 @@
 <a name="l00482"></a>00482 
 <a name="l00487"></a>00487     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#5710c73457bcceba3f20d130e231a028">isMeshContainOpenEdges</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* input) = 0;
 <a name="l00488"></a>00488 
-<a name="l00494"></a>00494     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#eaa46bf5fe4fe7035ac624f49ade64a8">deleteAllChildrenOfChunk</a>(int32_t chunkId) = 0;
-<a name="l00495"></a>00495 
-<a name="l00509"></a>00509     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#e4bd5dab498f9e894c648d570c5b60ba">uniteChunks</a>(uint32_t threshold, uint32_t targetClusterSize,
-<a name="l00510"></a>00510                              <span class="keyword">const</span> uint32_t* chunksToMerge, uint32_t mergeChunkCount,
-<a name="l00511"></a>00511                              <span class="keyword">const</span> <a class="code" href="struct_nvc_vec2i.html">NvcVec2i</a>* adjChunks, uint32_t adjChunksSize,
-<a name="l00512"></a>00512                              <span class="keywordtype">bool</span> removeOriginalChunks = <span class="keyword">false</span>) = 0;
-<a name="l00513"></a>00513 
-<a name="l00519"></a>00519     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#db1c311cbb3d84c7bfbfd12abe01af0b">fitUvToRect</a>(<span class="keywordtype">float</span> side, uint32_t chunkId) = 0;
-<a name="l00520"></a>00520 
-<a name="l00525"></a>00525     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#a9a87637d6d190d71678f0fb9a100bfd">fitAllUvToRect</a>(<span class="keywordtype">float</span> side) = 0;
-<a name="l00526"></a>00526 };
-<a name="l00527"></a>00527 
-<a name="l00528"></a>00528 }  <span class="comment">// namespace Blast</span>
-<a name="l00529"></a>00529 }  <span class="comment">// namespace Nv</span>
-<a name="l00530"></a>00530 
-<a name="l00531"></a>00531 <span class="preprocessor">#endif  // ifndef NVBLASTAUTHORINGFRACTURETOOL_H</span>
+<a name="l00495"></a>00495     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#ec74731e5a147120f0536b6674fc0f42">deleteChunkSubhierarchy</a>(int32_t chunkId, <span class="keywordtype">bool</span> deleteRoot = <span class="keyword">false</span>) = 0;
+<a name="l00496"></a>00496 
+<a name="l00510"></a>00510     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#e4bd5dab498f9e894c648d570c5b60ba">uniteChunks</a>(uint32_t threshold, uint32_t targetClusterSize,
+<a name="l00511"></a>00511                              <span class="keyword">const</span> uint32_t* chunksToMerge, uint32_t mergeChunkCount,
+<a name="l00512"></a>00512                              <span class="keyword">const</span> <a class="code" href="struct_nvc_vec2i.html">NvcVec2i</a>* adjChunks, uint32_t adjChunksSize,
+<a name="l00513"></a>00513                              <span class="keywordtype">bool</span> removeOriginalChunks = <span class="keyword">false</span>) = 0;
+<a name="l00514"></a>00514 
+<a name="l00520"></a>00520     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#db1c311cbb3d84c7bfbfd12abe01af0b">fitUvToRect</a>(<span class="keywordtype">float</span> side, uint32_t chunkId) = 0;
+<a name="l00521"></a>00521 
+<a name="l00526"></a>00526     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#a9a87637d6d190d71678f0fb9a100bfd">fitAllUvToRect</a>(<span class="keywordtype">float</span> side) = 0;
+<a name="l00527"></a>00527 };
+<a name="l00528"></a>00528 
+<a name="l00529"></a>00529 }  <span class="comment">// namespace Blast</span>
+<a name="l00530"></a>00530 }  <span class="comment">// namespace Nv</span>
+<a name="l00531"></a>00531 
+<a name="l00532"></a>00532 <span class="preprocessor">#endif  // ifndef NVBLASTAUTHORINGFRACTURETOOL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

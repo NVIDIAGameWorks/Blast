@@ -5,7 +5,7 @@ var class_nv_1_1_blast_1_1_fracture_tool_impl =
     [ "createChunkMesh", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#a7ffacc77ed102a8cd52c080055a08c3f", null ],
     [ "cut", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#a4a1ab63d90ed2514038f299606583527", null ],
     [ "cutout", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#a6c74f2ddd8b73705675767149c2ce69e", null ],
-    [ "deleteAllChildrenOfChunk", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#afe1100c6aa5907b10ae574d18152c5ac", null ],
+    [ "deleteChunkSubhierarchy", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#a507e1b343d2d0fc38396ef5643f729f6", null ],
     [ "finalizeFracturing", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#a9a93aab1c2f46963ae406964b639cb82", null ],
     [ "fitAllUvToRect", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#a21dee486b1499f135740cac4a4d85af0", null ],
     [ "fitUvToRect", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#a6cab6022e3cfb8bfc287428c507a9459", null ],

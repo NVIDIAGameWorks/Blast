@@ -486,12 +486,13 @@ class FractureTool
 	*/
 	virtual bool isMeshContainOpenEdges(const Mesh* input) = 0;
 
-	/**
+    /**
 	    Delete all children for specified chunk (also recursively delete chidren of children).
 	    \param[in] chunkId Chunk ID which children should be deleted
+        \param[in] deleteRoot (optional) If true, deletes the given chunk too
 	    \return true if one or more chunks were removed
 	*/
-	virtual bool deleteAllChildrenOfChunk(int32_t chunkId) = 0;
+	virtual bool deleteChunkSubhierarchy(int32_t chunkId, bool deleteRoot = false) = 0;
 
 	/**
 	    Optimize chunk hierarhy for better runtime performance.

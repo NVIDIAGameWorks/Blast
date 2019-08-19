@@ -64,7 +64,7 @@ Inheritance diagram for Nv::Blast::FractureToolImpl:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#6c74f2ddd8b73705675767149c2ce69e">cutout</a> (uint32_t chunkId, <a class="el" href="struct_nv_1_1_blast_1_1_cutout_configuration.html">CutoutConfiguration</a> conf, bool replaceChunk, <a class="el" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a> *rnd) override</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#fe1100c6aa5907b10ae574d18152c5ac">deleteAllChildrenOfChunk</a> (int32_t chunkId) override</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#507e1b343d2d0fc38396ef5643f729f6">deleteChunkSubhierarchy</a> (int32_t chunkId, bool deleteRoot=false) override</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#9a93aab1c2f46963ae406964b639cb82">finalizeFracturing</a> () override</td></tr>
 
@@ -325,17 +325,26 @@ Cut chunk with plane. <dl compact><dt><b>Parameters:</b></dt><dd>
 
 </div>
 </div><p>
-<a class="anchor" name="fe1100c6aa5907b10ae574d18152c5ac"></a><!-- doxytag: member="Nv::Blast::FractureToolImpl::deleteAllChildrenOfChunk" ref="fe1100c6aa5907b10ae574d18152c5ac" args="(int32_t chunkId) override" -->
+<a class="anchor" name="507e1b343d2d0fc38396ef5643f729f6"></a><!-- doxytag: member="Nv::Blast::FractureToolImpl::deleteChunkSubhierarchy" ref="507e1b343d2d0fc38396ef5643f729f6" args="(int32_t chunkId, bool deleteRoot=false) override" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool Nv::Blast::FractureToolImpl::deleteAllChildrenOfChunk           </td>
+          <td class="memname">bool Nv::Blast::FractureToolImpl::deleteChunkSubhierarchy           </td>
           <td>(</td>
           <td class="paramtype">int32_t&nbsp;</td>
-          <td class="paramname"> <em>chunkId</em>          </td>
-          <td>&nbsp;)&nbsp;</td>
-          <td><code> [override, virtual]</code></td>
+          <td class="paramname"> <em>chunkId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>deleteRoot</em> = <code>false</code></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [override, virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -345,11 +354,12 @@ Cut chunk with plane. <dl compact><dt><b>Parameters:</b></dt><dd>
 Delete all children for specified chunk (also recursively delete chidren of children). <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkId</em>&nbsp;</td><td>Chunk ID which children should be deleted </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>deleteRoot</em>&nbsp;</td><td>(optional) If true, deletes the given chunk too </td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>true if one or more chunks were removed </dd></dl>
 
-<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#eaa46bf5fe4fe7035ac624f49ade64a8">Nv::Blast::FractureTool</a>.</p>
+<p>Implements <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#ec74731e5a147120f0536b6674fc0f42">Nv::Blast::FractureTool</a>.</p>
 
 </div>
 </div><p>
