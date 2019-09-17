@@ -104,6 +104,8 @@ Inheritance diagram for Nv::Blast::FractureTool:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#b462c92fa47a5359bf3d19cf44af80f4">reset</a> ()=0</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#33c19de2bc8ea52394651d184076db5c">setApproximateBonding</a> (uint32_t chunkIndex, bool useApproximateBonding)=0</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#ecd9be996bba9329418fd91db8235ebe">setChunkMesh</a> (const <a class="el" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a> *mesh, int32_t parentId)=0</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html#c8c4f90133fdf32969cad6e4c520414f">setInteriorMaterialId</a> (int32_t materialId)=0</td></tr>
@@ -878,6 +880,44 @@ Replaces an material id on faces with a new one
 <p>
 Reset <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool.html">FractureTool</a> state. 
 <p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#1ccbcbfde4e58f8357a589ae56ff043f">Nv::Blast::FractureToolImpl</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="33c19de2bc8ea52394651d184076db5c"></a><!-- doxytag: member="Nv::Blast::FractureTool::setApproximateBonding" ref="33c19de2bc8ea52394651d184076db5c" args="(uint32_t chunkIndex, bool useApproximateBonding)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool Nv::Blast::FractureTool::setApproximateBonding           </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&nbsp;</td>
+          <td class="paramname"> <em>chunkIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&nbsp;</td>
+          <td class="paramname"> <em>useApproximateBonding</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set the APPROXIMATE_BONDING flag in the chunk's <a class="el" href="struct_nv_1_1_blast_1_1_chunk_info.html">ChunkInfo</a> <dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkIndex</em>&nbsp;</td><td>chunk index - use getChunkIndex(ID) </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>useApproximateBonding</em>&nbsp;</td><td>value of flag to set </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>true if the chunk ID is found, false otherwise </dd></dl>
+
+<p>Implemented in <a class="el" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3fdd1a0df69a82898a6ec8c0f51094fc">Nv::Blast::FractureToolImpl</a>.</p>
 
 </div>
 </div><p>

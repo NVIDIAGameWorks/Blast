@@ -367,7 +367,7 @@ public:
 		if (!useTk)
 		{
 			std::vector<uint32_t> chunkReorderMap(chunkDescCount);
-			std::vector<char> scratch2(2 * chunkDescCount * sizeof(uint32_t));
+			std::vector<char> scratch2(3 * chunkDescCount * sizeof(uint32_t));
 			const bool isIdentity = NvBlastBuildAssetDescChunkReorderMap(chunkReorderMap.data(), shuffledChunkDescs.data(), chunkDescCount, scratch2.data(), messageLog);
 			EXPECT_FALSE(isIdentity);
 			NvBlastApplyAssetDescChunkReorderMap(chunkDescs, shuffledChunkDescs.data(), chunkDescCount, bondDescs, bondDescCount, chunkReorderMap.data(), true, messageLog);

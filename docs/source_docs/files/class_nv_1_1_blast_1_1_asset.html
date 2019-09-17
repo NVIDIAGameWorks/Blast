@@ -605,7 +605,7 @@ getChunks returns an array of size m_chunkCount.
 
 <p>
 Tests a set of chunk descriptors to see if chunks are in valid chunk order.<p>
-Chunk order conditions checked: 1. 'all chunks with same parent index should go in a row'. 2. 'root chunks should go first'. 3. 'upper-support chunks should come before subsupport chunks'.<p>
+Chunk order conditions checked: 1. 'all chunks with same parent index should go in a row'. 2. 'chunks should come after their parents'. 3. 'root chunks should go first'. 4. 'upper-support chunks should come before subsupport chunks'.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkCount</em>&nbsp;</td><td>The number of chunk descriptors. </td></tr>

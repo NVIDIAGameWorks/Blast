@@ -1,5 +1,8 @@
 var NAVTREEINDEX17 =
 {
+"struct_nv_1_1_blast_1_1_edge_to_triangles.html#a70cb4d757a5e60e392ed88043c08664b":[3,0,2,0,47,1],
+"struct_nv_1_1_blast_1_1_edge_to_triangles.html#a8352a92eb1d63043f23353a142dfeaf0":[3,0,2,0,47,5],
+"struct_nv_1_1_blast_1_1_edge_to_triangles.html#a9089977b271562c9c59a8c164bea593b":[3,0,2,0,47,2],
 "struct_nv_1_1_blast_1_1_edge_to_triangles.html#ac789134fae1cf431cf298dc71a7dc4c3":[3,0,2,0,47,4],
 "struct_nv_1_1_blast_1_1_edge_to_triangles.html#af8461a7114523bdc114624d99e76daa7":[3,0,2,0,47,0],
 "struct_nv_1_1_blast_1_1_edge_with_parent.html":[3,0,2,0,48],
@@ -246,8 +249,5 @@ var NAVTREEINDEX17 =
 "struct_nv_1_1_blast_1_1_per_triangle_additional_data.html#aeb0bb7f2575a26dda3c81de46b2486d8":[3,0,2,0,153,0],
 "struct_nv_1_1_blast_1_1_plane_chunk_indexer.html":[3,0,2,0,154],
 "struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#a80203dd762ab3448bf15ebb38035b0c6":[3,0,2,0,154,2],
-"struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#a8e162e0f4064a7371039968158c86d2f":[3,0,2,0,154,0],
-"struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#ad7fc6cfbd651eef3d621e14df664fc4c":[3,0,2,0,154,1],
-"struct_nv_1_1_blast_1_1_poly_vert.html":[3,0,2,0,156],
-"struct_nv_1_1_blast_1_1_poly_vert.html#a8ea78901480aee9ff5b42cbfa4f53efa":[3,0,2,0,156,1]
+"struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#a8e162e0f4064a7371039968158c86d2f":[3,0,2,0,154,0]
 };

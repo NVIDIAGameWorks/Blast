@@ -1,13 +1,16 @@
 var NAVTREEINDEX16 =
 {
+"group__foundation.html#gae9e06fb68b9ca307fa4377186da9052e":[1,0,24],
+"group__foundation.html#gaf345e5634817936729c938b00cf10a25":[4,0,0,3,0,4,15],
+"group__foundation.html#gaf345e5634817936729c938b00cf10a25":[1,0,16],
 "group__foundation.html#gaf3a2e42fdfaeb8ba7832216b3fd8f8bd":[4,0,0,3,0,4,40],
 "group__foundation.html#gaf3a2e42fdfaeb8ba7832216b3fd8f8bd":[1,0,41],
 "group__foundation.html#gaf8c6a384ad2d9150720d111c154ac570":[4,0,0,3,0,4,42],
 "group__foundation.html#gaf8c6a384ad2d9150720d111c154ac570":[1,0,43],
 "group__foundation.html#gafd60b0665f37480ed74e7ce61618bda7":[4,0,0,3,0,4,26],
 "group__foundation.html#gafd60b0665f37480ed74e7ce61618bda7":[1,0,27],
-"group__foundation.html#gafff0169bf95189167358fd42525ea524":[1,0,44],
 "group__foundation.html#gafff0169bf95189167358fd42525ea524":[4,0,0,3,0,4,43],
+"group__foundation.html#gafff0169bf95189167358fd42525ea524":[1,0,44],
 "hierarchy.html":[3,2],
 "index.html":[],
 "modules.html":[1],
@@ -158,8 +161,8 @@ var NAVTREEINDEX16 =
 "struct_nv_1_1_blast_1_1_chunk_info.html#a7e5b05c30d6a4deceb2da1e840fa442c":[3,0,2,0,25,6],
 "struct_nv_1_1_blast_1_1_chunk_info.html#a864945bf41b9ab726c8df191e9acae35":[3,0,2,0,25,5],
 "struct_nv_1_1_blast_1_1_chunk_info.html#ac1ebabf88ad2eb905b6482519530824c":[3,0,2,0,25,0],
-"struct_nv_1_1_blast_1_1_chunk_info.html#ac1ebabf88ad2eb905b6482519530824ca083e487cf5083f1063904b52be3982de":[3,0,2,0,25,0,1],
 "struct_nv_1_1_blast_1_1_chunk_info.html#ac1ebabf88ad2eb905b6482519530824ca10ffae1afc03f59373bf48244a58dd47":[3,0,2,0,25,0,0],
+"struct_nv_1_1_blast_1_1_chunk_info.html#ac1ebabf88ad2eb905b6482519530824ca673ab883edb6ff4c69fe85deed5ba3ff":[3,0,2,0,25,0,1],
 "struct_nv_1_1_blast_1_1_cmp_shared_face.html":[3,0,2,0,26],
 "struct_nv_1_1_blast_1_1_cmp_shared_face.html#a17f411532ee2ed61076e110cdd3dca2f":[3,0,2,0,26,0],
 "struct_nv_1_1_blast_1_1_cmp_vec.html":[3,0,2,0,27],
@@ -246,8 +249,5 @@ var NAVTREEINDEX16 =
 "struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#a6dd22cefbaad1235b8835c9ac2a56676":[3,0,2,0,46,1],
 "struct_nv_1_1_blast_1_1_edge_facet_intersection_data.html#a9eaeac91e248bdd89a96303cdbed5640":[3,0,2,0,46,5],
 "struct_nv_1_1_blast_1_1_edge_to_triangles.html":[3,0,2,0,47],
-"struct_nv_1_1_blast_1_1_edge_to_triangles.html#a66a5922811f503f3259cb15f92f17bd5":[3,0,2,0,47,3],
-"struct_nv_1_1_blast_1_1_edge_to_triangles.html#a70cb4d757a5e60e392ed88043c08664b":[3,0,2,0,47,1],
-"struct_nv_1_1_blast_1_1_edge_to_triangles.html#a8352a92eb1d63043f23353a142dfeaf0":[3,0,2,0,47,5],
-"struct_nv_1_1_blast_1_1_edge_to_triangles.html#a9089977b271562c9c59a8c164bea593b":[3,0,2,0,47,2]
+"struct_nv_1_1_blast_1_1_edge_to_triangles.html#a66a5922811f503f3259cb15f92f17bd5":[3,0,2,0,47,3]
 };

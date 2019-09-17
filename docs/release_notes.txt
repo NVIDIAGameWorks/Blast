@@ -3,7 +3,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Blast(tm) SDK 1.1.5 (18-Aug-2019)
+Blast(tm) SDK 1.1.5 (16-Sep-2019)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Changes
@@ -12,7 +12,8 @@ Changes
 * Numerous API changes to meet new coding conventions.
 * Packman package manager updated to v. 5.7.2, cleaned up dependency files.
 * Chunks created from islands use padded bounds to determine connectivity.
-* FractureTool::deleteAllChildrenOfChunk renamed FractureTool::deleteChunkSubhierarchy, added ability to delete chunks
+* FractureTool::deleteAllChildrenOfChunk renamed FractureTool::deleteChunkSubhierarchy, added ability to delete chunks.
+* NvBlastAsset::testForValidChunkOrder (used when creating an NvBlastAsset) is now more strict, requiring parent chunk descriptors to come before their children.  It is still less strict than the order created by NvBlastBuildAssetDescChunkReorderMap.
 
 New Features
 ------------
@@ -20,12 +21,16 @@ New Features
   * Ability to pass chunk connectivity info to uniteChunks function, enabling chunks split by island detection to  be united.
   * Option to remove original merged chunks in uniteChunks function.
   * The function uniteChunks allows the user to specify a chunk set to merge.  Chunks from that set, and all descendants, are considered for merging.
-  * Ability to delete chunks (see note about FractureTool::deleteChunkSubhierarchy in Changes section, above)
+  * Ability to delete chunks (see note about FractureTool::deleteChunkSubhierarchy in Changes section, above).
+  * Added FractureTool::setApproximateBonding function.  Signals the tool to create bonds by proximity instead of just using cut plane data.
 
 Bug fixes
 ---------
 * Authoring tools:
   * Fixed chunk reordering bug in BlastTool.
+  * Chunks which have been merged using the uniteChunks function may be merged again
+  * Restored chunk volume calculation
+* NvBlastBuildAssetDescChunkReorderMap failure cases fixed.
 
 Known Issues
 ------------

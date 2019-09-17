@@ -380,6 +380,7 @@ public:
                                                         const NvcVec2i* adjChunks, uint32_t adjChunksSize,
 	                                                    bool removeOriginalChunks = false) override;
 	
+    bool                                    setApproximateBonding(uint32_t chunkId, bool useApproximateBonding) override;
 
 	/**
 		Rescale interior uv coordinates of given chunk to fit square of given size. 
@@ -403,6 +404,7 @@ private:
 	void									rebuildAdjGraph(const std::vector<uint32_t>& chunksToRebuild, const NvcVec2i* adjChunks, uint32_t adjChunksSize,
                                                             std::vector<std::vector<uint32_t> >& chunkGraph);
 	void									fitAllUvToRect(float side, std::set<uint32_t>& mask);
+    void                                    markLeaves();
 
 	/**
 		Returns newly created chunk index in mChunkData.

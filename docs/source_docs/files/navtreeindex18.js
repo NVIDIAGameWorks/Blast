@@ -1,5 +1,8 @@
 var NAVTREEINDEX18 =
 {
+"struct_nv_1_1_blast_1_1_plane_chunk_indexer.html#ad7fc6cfbd651eef3d621e14df664fc4c":[3,0,2,0,154,1],
+"struct_nv_1_1_blast_1_1_poly_vert.html":[3,0,2,0,156],
+"struct_nv_1_1_blast_1_1_poly_vert.html#a8ea78901480aee9ff5b42cbfa4f53efa":[3,0,2,0,156,1],
 "struct_nv_1_1_blast_1_1_poly_vert.html#aeedaedbf387cbd04889f4dd54152e252":[3,0,2,0,156,0],
 "struct_nv_1_1_blast_1_1_profiler_detail.html":[3,0,2,0,158],
 "struct_nv_1_1_blast_1_1_profiler_detail.html#a06be79d41391dfde43f6aa02866a3c1f":[3,0,2,0,158,0],
@@ -246,8 +249,5 @@ var NAVTREEINDEX18 =
 "struct_nv_1_1_blast_1_1_vertex.html#aaac433633e99222e1d4d42442eba6b18":[3,0,2,0,217,3],
 "struct_nv_1_1_blast_1_1_vertex.html#abf6db15e85ed0013429dd263d6dc0e09":[3,0,2,0,217,0],
 "struct_nv_1_1_blast_1_1_vrt_comp.html":[3,0,2,0,221],
-"struct_nv_1_1_blast_1_1_vrt_comp.html#a394c39b826fd05e37f7ea5403f13fb2a":[3,0,2,0,221,0],
-"struct_nv_1_1_blast_1_1_vrt_position_comparator.html":[3,0,2,0,222],
-"struct_nv_1_1_blast_1_1_vrt_position_comparator.html#a03573f86530a247194da20c946c159b9":[3,0,2,0,222,0],
-"struct_nv_1_1_blast_1_1_vrt_position_comparator.html#aaf2b5a71ca93c9365d8ddf2df3dab86c":[3,0,2,0,222,1]
+"struct_nv_1_1_blast_1_1_vrt_comp.html#a394c39b826fd05e37f7ea5403f13fb2a":[3,0,2,0,221,0]
 };

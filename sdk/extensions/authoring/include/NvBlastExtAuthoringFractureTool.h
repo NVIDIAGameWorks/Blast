@@ -48,8 +48,8 @@ struct ChunkInfo
 {
 	enum ChunkFlags
 	{
-		NO_FLAGS                   = 0,
-		CREATED_BY_ISLAND_DETECTOR = 1
+		NO_FLAGS            = 0,
+		APPROXIMATE_BONDING = 1 // Created by island splitting or chunk merge, etc. and should check for inexact bonds
 	};
 
 	Mesh* meshData;
@@ -512,7 +512,15 @@ class FractureTool
                              const NvcVec2i* adjChunks, uint32_t adjChunksSize,
 	                         bool removeOriginalChunks = false) = 0;
 
-	/**
+    /**
+        Set the APPROXIMATE_BONDING flag in the chunk's ChunkInfo
+        \param[in] chunkIndex chunk index - use getChunkIndex(ID)
+        \param[in] useApproximateBonding value of flag to set
+        \return true if the chunk ID is found, false otherwise
+    */
+    virtual bool setApproximateBonding(uint32_t chunkIndex, bool useApproximateBonding) = 0;
+
+    /**
 	    Rescale interior uv coordinates of given chunk to fit square of given size.
 	    \param[in] side Size of square side
 	    \param[in] chunkId Chunk ID for which UVs should be scaled.

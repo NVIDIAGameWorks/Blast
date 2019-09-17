@@ -1,5 +1,8 @@
 var NAVTREEINDEX19 =
 {
+"struct_nv_1_1_blast_1_1_vrt_position_comparator.html":[3,0,2,0,222],
+"struct_nv_1_1_blast_1_1_vrt_position_comparator.html#a03573f86530a247194da20c946c159b9":[3,0,2,0,222,0],
+"struct_nv_1_1_blast_1_1_vrt_position_comparator.html#aaf2b5a71ca93c9365d8ddf2df3dab86c":[3,0,2,0,222,1],
 "struct_nv_blast_actor.html":[3,0,14],
 "struct_nv_blast_actor_desc.html":[3,0,15],
 "struct_nv_blast_actor_desc.html#a363b057cfbee1c7ea8edb23d6b04388d":[3,0,15,0],
@@ -246,8 +249,5 @@ var NAVTREEINDEX19 =
 "vhacd_i_c_hull_8h.html#af80ac6741c5c7f99f1c7db89ae70a9f3ae4636f6d8dc64f99fd3389e0b8532032":[4,0,0,1,1,1,0,0,8,2,0],
 "vhacd_i_c_hull_8h.html#afe0e7ce57f81f4e0288fe80ed993c7e2":[4,0,0,1,1,1,0,0,8,1],
 "vhacd_i_c_hull_8h_source.html":[4,0,0,1,1,1,0,0,8],
-"vhacd_manifold_mesh_8h.html":[4,0,0,1,1,1,0,0,9],
-"vhacd_manifold_mesh_8h.html#a922080a88d085134e2874f362840edb6":[4,0,0,1,1,1,0,0,9,4],
-"vhacd_manifold_mesh_8h_source.html":[4,0,0,1,1,1,0,0,9],
-"vhacd_mesh_8h.html":[4,0,0,1,1,1,0,0,10]
+"vhacd_manifold_mesh_8h.html":[4,0,0,1,1,1,0,0,9]
 };

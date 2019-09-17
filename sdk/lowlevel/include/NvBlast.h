@@ -325,7 +325,7 @@ Iff chunks are already ordered correctly, function returns 'true' and identity c
 \param[out] chunkReorderMap	User-supplied map of size chunkCount to fill. For every chunk index this array will contain new chunk position (index).
 \param[in]  chunkDescs		Array of chunk descriptors of size chunkCount.
 \param[in]  chunkCount		The number of chunk descriptors.
-\param[in]	scratch			User-supplied scratch storage, must point to 2 * chunkCount * sizeof(uint32_t) valid bytes of memory.
+\param[in]	scratch			User-supplied scratch storage, must point to 3 * chunkCount * sizeof(uint32_t) valid bytes of memory.
 \param[in]  logFn			User-supplied message function (see NvBlastLog definition).  May be NULL.
 
 \return	true iff the chunks did not require reordering (chunkReorderMap is the identity map).

@@ -25,6 +25,7 @@ var class_nv_1_1_blast_1_1_fracture_tool_impl =
     [ "release", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#a05d2e5fd981d54d55ee5dbc5bf454a50", null ],
     [ "replaceMaterialId", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#abe1f6bf365964825a2c939e22c85d96a", null ],
     [ "reset", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#a1ccbcbfde4e58f8357a589ae56ff043f", null ],
+    [ "setApproximateBonding", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#a3fdd1a0df69a82898a6ec8c0f51094fc", null ],
     [ "setChunkMesh", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#ac466495627ca99252433c7e1c702c7f9", null ],
     [ "setInteriorMaterialId", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#ac9c8e18748b18fa6dd29a328eaf63026", null ],
     [ "setRemoveIslands", "class_nv_1_1_blast_1_1_fracture_tool_impl.html#a92dec92822ab9e0807400a7d63bfc553", null ],

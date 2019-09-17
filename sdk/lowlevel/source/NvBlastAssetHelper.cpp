@@ -47,28 +47,49 @@ Class to hold chunk descriptor and annotation context for sorting a list of indi
 class ChunksOrdered
 {
 public:
-	ChunksOrdered(const NvBlastChunkDesc* descs, const char* annotation) : m_descs(descs), m_annotation(annotation) {}
+    ChunksOrdered(const NvBlastChunkDesc* descs, const char* annotation)
+        : m_descs(descs), m_annotation(annotation), m_chunkMap(nullptr), m_chunkInvMap(nullptr) {}
 
-	bool	operator () (uint32_t i0, uint32_t i1) const
-	{
-		const bool upperSupport0 = (m_annotation[i0] & Asset::ChunkAnnotation::UpperSupport) != 0;
-		const bool upperSupport1 = (m_annotation[i1] & Asset::ChunkAnnotation::UpperSupport) != 0;
+    // Map and inverse to apply to chunk descs
+    bool    setMap(const uint32_t* map, const uint32_t* inv)
+    {
+        if ((map == nullptr) != (inv == nullptr))
+        {
+            return false;
+        }
+        m_chunkMap = map;
+        m_chunkInvMap = inv;
+        return true;
+    }
 
-		if (upperSupport0 != upperSupport1)
-		{
-			return upperSupport0;	// If one is uppersupport and one is subsupport, uppersupport should come first
-		}
+    bool	operator () (uint32_t ii0, uint32_t ii1) const
+    {
+        const uint32_t i0 = m_chunkMap ? m_chunkMap[ii0] : ii0;
+        const uint32_t i1 = m_chunkMap ? m_chunkMap[ii1] : ii1;
 
-		// Parent chunk index (+1 so that UINT32_MAX becomes the lowest value)
-		const uint32_t p0 = m_descs[i0].parentChunkIndex + 1;
-		const uint32_t p1 = m_descs[i1].parentChunkIndex + 1;
+        const bool upperSupport0 = (m_annotation[i0] & Asset::ChunkAnnotation::UpperSupport) != 0;
+        const bool upperSupport1 = (m_annotation[i1] & Asset::ChunkAnnotation::UpperSupport) != 0;
 
-		return p0 < p1;	// With the same support relationship, order by parent index
-	}
+        if (upperSupport0 != upperSupport1)
+        {
+            return upperSupport0;	// If one is uppersupport and one is subsupport, uppersupport should come first
+        }
+
+        const uint32_t p0 = m_descs[i0].parentChunkIndex;
+        const uint32_t p1 = m_descs[i1].parentChunkIndex;
+
+        // Parent chunk index (+1 so that UINT32_MAX becomes the lowest value)
+        const uint32_t pp0 = 1 + (m_chunkInvMap && !isInvalidIndex(p0) ? m_chunkInvMap[p0] : p0);
+        const uint32_t pp1 = 1 + (m_chunkInvMap && !isInvalidIndex(p1) ? m_chunkInvMap[p1] : p1);
+
+        return pp0 < pp1;	// With the same support relationship, order by parent index
+    }
 
 private:
-	const NvBlastChunkDesc*	m_descs;
-	const char*				m_annotation;
+    const NvBlastChunkDesc*	m_descs;
+    const char*				m_annotation;
+    const uint32_t* 		m_chunkMap;
+    const uint32_t* 		m_chunkInvMap;
 };
 
 } // namespace Blast
@@ -86,6 +107,7 @@ bool NvBlastBuildAssetDescChunkReorderMap(uint32_t* chunkReorderMap, const NvBla
 	NVBLASTLL_CHECK(chunkReorderMap == nullptr || chunkCount != 0, logFn, "NvBlastBuildAssetDescChunkReorderMap: NULL chunkReorderMap input with non-zero chunkCount", return false);
 	NVBLASTLL_CHECK(chunkCount == 0 || scratch != nullptr, logFn, "NvBlastBuildAssetDescChunkReorderMap: NULL scratch input with non-zero chunkCount", return false);
 
+    uint32_t* composedMap = static_cast<uint32_t*>(scratch);	scratch = pointerOffset(scratch, chunkCount * sizeof(uint32_t));
 	uint32_t* chunkMap = static_cast<uint32_t*>(scratch);	scratch = pointerOffset(scratch, chunkCount * sizeof(uint32_t));
 	char* chunkAnnotation = static_cast<char*>(scratch);	scratch = pointerOffset(scratch, chunkCount * sizeof(char));
 
@@ -97,24 +119,65 @@ bool NvBlastBuildAssetDescChunkReorderMap(uint32_t* chunkReorderMap, const NvBla
 		return false;
 	}
 
-	// check order for fast out (identity map)
-	if (Asset::testForValidChunkOrder(chunkCount, chunkDescs, chunkAnnotation, scratch))
-	{
-		for (uint32_t i = 0; i < chunkCount; ++i)
-		{
-			chunkReorderMap[i] = i;
-		}
+    // Initialize composedMap and its inverse to identity
+    for (uint32_t i = 0; i < chunkCount; ++i)
+    {
+        composedMap[i] = i;
+        chunkReorderMap[i] = i;
+    }
 
-		return true;
-	}
-	
-	for (uint32_t i = 0; i < chunkCount; ++i)
-	{
-		chunkMap[i] = i;
-	}
-	std::sort(chunkMap, chunkMap + chunkCount, ChunksOrdered(chunkDescs, chunkAnnotation));
+    // Create a chunk ordering operator using the composedMap
+    ChunksOrdered chunksOrdered(chunkDescs, chunkAnnotation);
+    chunksOrdered.setMap(composedMap, chunkReorderMap);
 
-	invertMap(chunkReorderMap, chunkMap, chunkCount);
+    // Check initial order
+    bool ordered = true;
+    if (chunkCount > 1)
+    {
+        for (uint32_t i = chunkCount - 1; ordered && i--;)
+        {
+            ordered = !chunksOrdered(i + 1, i);
+        }
+    }
+    if (ordered)
+    {
+        return true;    // Initially ordered, return true
+    }
+
+    NVBLAST_ASSERT(chunkCount > 1);
+
+    // Max depth is bounded by chunkCount, so that is the vound on the number of iterations
+    uint32_t iter = chunkCount;
+    do
+    {
+        // Reorder based on current composed map
+        for (uint32_t i = 0; i < chunkCount; ++i)
+        {
+            chunkMap[i] = i;
+        }
+        std::stable_sort(chunkMap, chunkMap + chunkCount, chunksOrdered);
+
+        // Fold chunkMap into composedMap
+        for (uint32_t i = 0; i < chunkCount; ++i)
+        {
+            chunkMap[i] = composedMap[chunkMap[i]];
+        }
+        for (uint32_t i = 0; i < chunkCount; ++i)
+        {
+            composedMap[i] = chunkMap[i];
+            chunkMap[i] = i;
+        }
+        invertMap(chunkReorderMap, composedMap, chunkCount);
+
+        // Check order
+        ordered = true;
+        for (uint32_t i = chunkCount - 1; ordered && i--;)
+        {
+            ordered = !chunksOrdered(i + 1, i);
+        }
+    } while (!ordered && iter--);
+
+    NVBLAST_ASSERT(ordered);
 
 	return false;
 }

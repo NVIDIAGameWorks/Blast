@@ -1091,15 +1091,15 @@ int32_t BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool
 	}
 
 
-	bool hasCreatedByIslands = false;
+	bool hasApproximateBonding = false;
 
 	for (uint32_t i = 1; i < chunkCount; ++i)
 	{
 		NvBlastChunkDesc& desc = resultChunkDescriptors[i];
-		desc.userData          = i;
+		desc.userData          = tool->getChunkId(i);
 		desc.parentChunkIndex  = tool->getChunkIndex(tool->getChunkInfo(i).parent);
 		desc.flags             = NvBlastChunkDesc::NoFlags;
-		hasCreatedByIslands |= (tool->getChunkInfo(i).flags & ChunkInfo::CREATED_BY_ISLAND_DETECTOR);
+        hasApproximateBonding |= !!(tool->getChunkInfo(i).flags & ChunkInfo::APPROXIMATE_BONDING);
 		if (chunkIsSupport[i])
 		{
 			desc.flags = NvBlastChunkDesc::SupportFlag;
@@ -1246,7 +1246,7 @@ int32_t BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool
 		}
 	}
 
-	if (hasCreatedByIslands)
+	if (hasApproximateBonding)
 	{
 		std::vector<Triangle> chunkTriangles;
 		std::vector<uint32_t> chunkTrianglesOffsets;
@@ -1262,6 +1262,7 @@ int32_t BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool
 			pairsAlreadyCreated.insert(pr);
 		}
 
+        const float EXPANSION = 0.01f;
 
 		chunkTrianglesOffsets.push_back(0);
 		for (uint32_t i = 0; i < chunkCount; ++i)
@@ -1273,18 +1274,19 @@ int32_t BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool
 			{
 				chunkTriangles.push_back(trianglesBuffer[i].get()[k]);
 
-				chunkTriangles.back().a.p =
-				    (chunkTriangles.back().a.p - centroid) * SCALE_FACTOR + centroid;  // inflate mesh a bit to find
-			}
+                // inflate mesh a bit
+				chunkTriangles.back().a.p = chunkTriangles.back().a.p + (chunkTriangles.back().a.p - centroid) * EXPANSION;
+                chunkTriangles.back().b.p = chunkTriangles.back().b.p + (chunkTriangles.back().b.p - centroid) * EXPANSION;
+                chunkTriangles.back().c.p = chunkTriangles.back().c.p + (chunkTriangles.back().c.p - centroid) * EXPANSION;
+            }
 			chunkTrianglesOffsets.push_back(chunkTriangles.size());
 		}
 
 		NvBlastBondDesc* adsc;
 
-
 		BondGenerationConfig cfg;
 		cfg.bondMode      = BondGenerationConfig::AVERAGE;
-		cfg.maxSeparation = 0.01f;
+		cfg.maxSeparation = EXPANSION;
 
 		uint32_t nbListSize =
 		    createFullBondListAveraged(chunkCount, chunkTrianglesOffsets.data(), chunkTriangles.data(), nullptr,

@@ -86,8 +86,8 @@
 <a name="l00048"></a>00048 {
 <a name="l00049"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html#c1ebabf88ad2eb905b6482519530824c">00049</a>     <span class="keyword">enum</span> <a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html#c1ebabf88ad2eb905b6482519530824c">ChunkFlags</a>
 <a name="l00050"></a>00050     {
-<a name="l00051"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html#c1ebabf88ad2eb905b6482519530824c10ffae1afc03f59373bf48244a58dd47">00051</a>         <a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html#c1ebabf88ad2eb905b6482519530824c10ffae1afc03f59373bf48244a58dd47">NO_FLAGS</a>                   = 0,
-<a name="l00052"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html#c1ebabf88ad2eb905b6482519530824c083e487cf5083f1063904b52be3982de">00052</a>         <a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html#c1ebabf88ad2eb905b6482519530824c083e487cf5083f1063904b52be3982de">CREATED_BY_ISLAND_DETECTOR</a> = 1
+<a name="l00051"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html#c1ebabf88ad2eb905b6482519530824c10ffae1afc03f59373bf48244a58dd47">00051</a>         <a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html#c1ebabf88ad2eb905b6482519530824c10ffae1afc03f59373bf48244a58dd47">NO_FLAGS</a>            = 0,
+<a name="l00052"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html#c1ebabf88ad2eb905b6482519530824c673ab883edb6ff4c69fe85deed5ba3ff">00052</a>         <a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html#c1ebabf88ad2eb905b6482519530824c673ab883edb6ff4c69fe85deed5ba3ff">APPROXIMATE_BONDING</a> = 1 <span class="comment">// Created by island splitting or chunk merge, etc. and should check for inexact bonds</span>
 <a name="l00053"></a>00053     };
 <a name="l00054"></a>00054 
 <a name="l00055"></a><a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html#864945bf41b9ab726c8df191e9acae35">00055</a>     <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* <a class="code" href="struct_nv_1_1_blast_1_1_chunk_info.html#864945bf41b9ab726c8df191e9acae35">meshData</a>;
@@ -262,15 +262,17 @@
 <a name="l00512"></a>00512                              <span class="keyword">const</span> <a class="code" href="struct_nvc_vec2i.html">NvcVec2i</a>* adjChunks, uint32_t adjChunksSize,
 <a name="l00513"></a>00513                              <span class="keywordtype">bool</span> removeOriginalChunks = <span class="keyword">false</span>) = 0;
 <a name="l00514"></a>00514 
-<a name="l00520"></a>00520     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#db1c311cbb3d84c7bfbfd12abe01af0b">fitUvToRect</a>(<span class="keywordtype">float</span> side, uint32_t chunkId) = 0;
-<a name="l00521"></a>00521 
-<a name="l00526"></a>00526     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#a9a87637d6d190d71678f0fb9a100bfd">fitAllUvToRect</a>(<span class="keywordtype">float</span> side) = 0;
-<a name="l00527"></a>00527 };
-<a name="l00528"></a>00528 
-<a name="l00529"></a>00529 }  <span class="comment">// namespace Blast</span>
-<a name="l00530"></a>00530 }  <span class="comment">// namespace Nv</span>
-<a name="l00531"></a>00531 
-<a name="l00532"></a>00532 <span class="preprocessor">#endif  // ifndef NVBLASTAUTHORINGFRACTURETOOL_H</span>
+<a name="l00521"></a>00521     <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#33c19de2bc8ea52394651d184076db5c">setApproximateBonding</a>(uint32_t chunkIndex, <span class="keywordtype">bool</span> useApproximateBonding) = 0;
+<a name="l00522"></a>00522 
+<a name="l00528"></a>00528     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#db1c311cbb3d84c7bfbfd12abe01af0b">fitUvToRect</a>(<span class="keywordtype">float</span> side, uint32_t chunkId) = 0;
+<a name="l00529"></a>00529 
+<a name="l00534"></a>00534     <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool.html#a9a87637d6d190d71678f0fb9a100bfd">fitAllUvToRect</a>(<span class="keywordtype">float</span> side) = 0;
+<a name="l00535"></a>00535 };
+<a name="l00536"></a>00536 
+<a name="l00537"></a>00537 }  <span class="comment">// namespace Blast</span>
+<a name="l00538"></a>00538 }  <span class="comment">// namespace Nv</span>
+<a name="l00539"></a>00539 
+<a name="l00540"></a>00540 <span class="preprocessor">#endif  // ifndef NVBLASTAUTHORINGFRACTURETOOL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

@@ -156,21 +156,22 @@ public:
 	static bool		ensureExactSupportCoverage(uint32_t& supportChunkCount, uint32_t& leafChunkCount, char* chunkAnnotation, uint32_t chunkCount, NvBlastChunkDesc* chunkDescs, bool testOnly, NvBlastLog logFn);
 
 	/**
-	Tests a set of chunk descriptors to see if chunks are in valid chunk order.
+    Tests a set of chunk descriptors to see if chunks are in valid chunk order.
 
-	Chunk order conditions checked:
-	1. 'all chunks with same parent index should go in a row'.
-	2. 'root chunks should go first'.
-	3. 'upper-support chunks should come before subsupport chunks'.
+    Chunk order conditions checked:
+    1. 'all chunks with same parent index should go in a row'.
+    2. 'chunks should come after their parents'.
+    3. 'root chunks should go first'.
+    4. 'upper-support chunks should come before subsupport chunks'.
 
-	\param[in]	chunkCount		The number of chunk descriptors.
-	\param[in]	chunkDescs		An array of chunk descriptors of length chunkCount.
-	\param[in]	chunkAnnotation	Annotation generated from ensureExactSupportCoverage (see ensureExactSupportCoverage).
-	\param[in]	scratch			User-supplied scratch memory of chunkCount bytes.
+    \param[in]	chunkCount		The number of chunk descriptors.
+    \param[in]	chunkDescs		An array of chunk descriptors of length chunkCount.
+    \param[in]	chunkAnnotation	Annotation generated from ensureExactSupportCoverage (see ensureExactSupportCoverage).
+    \param[in]	scratch			User-supplied scratch memory of chunkCount bytes.
 
-	\return true if the descriptors meet the ordering conditions, false otherwise.
-	*/
-	static bool		testForValidChunkOrder(uint32_t chunkCount, const NvBlastChunkDesc* chunkDescs, const char* chunkAnnotation, void* scratch);
+    \return true if the descriptors meet the ordering conditions, false otherwise.
+    */
+    static bool		testForValidChunkOrder(uint32_t chunkCount, const NvBlastChunkDesc* chunkDescs, const char* chunkAnnotation, void* scratch);
 
 
 	//////// Data ////////
