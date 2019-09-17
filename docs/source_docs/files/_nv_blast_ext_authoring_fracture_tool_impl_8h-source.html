@@ -202,49 +202,51 @@
 <a name="l00380"></a>00380                                                         <span class="keyword">const</span> <a class="code" href="struct_nvc_vec2i.html">NvcVec2i</a>* adjChunks, uint32_t adjChunksSize,
 <a name="l00381"></a>00381                                                         <span class="keywordtype">bool</span> removeOriginalChunks = <span class="keyword">false</span>) <span class="keyword">override</span>;
 <a name="l00382"></a>00382     
-<a name="l00383"></a>00383 
-<a name="l00389"></a>00389     <span class="keywordtype">void</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#6cab6022e3cfb8bfc287428c507a9459">fitUvToRect</a>(<span class="keywordtype">float</span> side, uint32_t chunkId) <span class="keyword">override</span>;
-<a name="l00390"></a>00390 
-<a name="l00395"></a>00395     <span class="keywordtype">void</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#21dee486b1499f135740cac4a4d85af0">fitAllUvToRect</a>(<span class="keywordtype">float</span> side) <span class="keyword">override</span>;
-<a name="l00396"></a>00396 
+<a name="l00383"></a>00383     <span class="keywordtype">bool</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3fdd1a0df69a82898a6ec8c0f51094fc">setApproximateBonding</a>(uint32_t chunkId, <span class="keywordtype">bool</span> useApproximateBonding) <span class="keyword">override</span>;
+<a name="l00384"></a>00384 
+<a name="l00390"></a>00390     <span class="keywordtype">void</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#6cab6022e3cfb8bfc287428c507a9459">fitUvToRect</a>(<span class="keywordtype">float</span> side, uint32_t chunkId) <span class="keyword">override</span>;
+<a name="l00391"></a>00391 
+<a name="l00396"></a>00396     <span class="keywordtype">void</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#21dee486b1499f135740cac4a4d85af0">fitAllUvToRect</a>(<span class="keywordtype">float</span> side) <span class="keyword">override</span>;
 <a name="l00397"></a>00397 
 <a name="l00398"></a>00398 
-<a name="l00399"></a>00399 <span class="keyword">private</span>:    
-<a name="l00400"></a>00400     <span class="keywordtype">bool</span>                                    isAncestorForChunk(int32_t ancestorId, int32_t chunkId);
-<a name="l00401"></a>00401     int32_t                                 slicingNoisy(uint32_t chunkId, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a>&amp; conf, <span class="keywordtype">bool</span> replaceChunk, <a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a>* rnd);
-<a name="l00402"></a>00402     uint32_t                                stretchGroup(<span class="keyword">const</span> std::vector&lt;uint32_t&gt;&amp; group, std::vector&lt;std::vector&lt;uint32_t&gt;&gt;&amp; graph);
-<a name="l00403"></a>00403     <span class="keywordtype">void</span>                                    rebuildAdjGraph(<span class="keyword">const</span> std::vector&lt;uint32_t&gt;&amp; chunksToRebuild, <span class="keyword">const</span> <a class="code" href="struct_nvc_vec2i.html">NvcVec2i</a>* adjChunks, uint32_t adjChunksSize,
-<a name="l00404"></a>00404                                                             std::vector&lt;std::vector&lt;uint32_t&gt; &gt;&amp; chunkGraph);
-<a name="l00405"></a>00405     <span class="keywordtype">void</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#21dee486b1499f135740cac4a4d85af0">fitAllUvToRect</a>(<span class="keywordtype">float</span> side, std::set&lt;uint32_t&gt;&amp; mask);
-<a name="l00406"></a>00406 
-<a name="l00410"></a>00410     uint32_t                                createNewChunk(uint32_t parentId);
-<a name="l00411"></a>00411 
-<a name="l00412"></a>00412 
-<a name="l00413"></a>00413 <span class="keyword">protected</span>:
-<a name="l00417"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3853cd248b6b0531f18f8cf1711bc90f">00417</a>     <span class="keywordtype">float</span>                               <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3853cd248b6b0531f18f8cf1711bc90f">mScaleFactor</a>;
-<a name="l00418"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3a9a2ccd3b9f5122f5153431b2eb2925">00418</a>     <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3a9a2ccd3b9f5122f5153431b2eb2925">mOffset</a>;
-<a name="l00419"></a>00419 
-<a name="l00420"></a>00420     <span class="comment">/* Chunk mesh wrappers */</span>
-<a name="l00421"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c2202d728cefb26446a60593b03dcbe1">00421</a>     std::vector&lt;Triangulator*&gt;          <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c2202d728cefb26446a60593b03dcbe1">mChunkPostprocessors</a>;
-<a name="l00422"></a>00422 
-<a name="l00423"></a>00423 
-<a name="l00424"></a>00424     
-<a name="l00425"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#1cf29d3d972240ac368f6acef7bcb93b">00425</a>     int64_t                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#1cf29d3d972240ac368f6acef7bcb93b">mPlaneIndexerOffset</a>;
-<a name="l00426"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#77957e191451f94d3753e31695c37914">00426</a>     int32_t                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#77957e191451f94d3753e31695c37914">mChunkIdCounter</a>;
-<a name="l00427"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#516359070dc5bf6cd0770d3e33b8c8d1">00427</a>     std::vector&lt;ChunkInfo&gt;              <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#516359070dc5bf6cd0770d3e33b8c8d1">mChunkData</a>;
-<a name="l00428"></a>00428 
-<a name="l00429"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#bcc6a73e16008d488bbf81623ec5a33e">00429</a>     <span class="keywordtype">bool</span>                                <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#bcc6a73e16008d488bbf81623ec5a33e">mRemoveIslands</a>;
-<a name="l00430"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#e9fdc3a9dd7eefe632a24c7abb6c4962">00430</a>     int32_t                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#e9fdc3a9dd7eefe632a24c7abb6c4962">mInteriorMaterialId</a>;
-<a name="l00431"></a>00431 };
-<a name="l00432"></a>00432 
-<a name="l00433"></a>00433 <span class="keywordtype">void</span> <a class="code" href="namespace_nv_1_1_blast.html#83271d24d04e44d4b938de44bce332e8">findCellBasePlanes</a>(<span class="keyword">const</span> std::vector&lt;NvcVec3&gt;&amp; sites, std::vector&lt;std::vector&lt;int32_t&gt; &gt;&amp; neighboors);
-<a name="l00434"></a>00434 <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* <a class="code" href="namespace_nv_1_1_blast.html#4371fd33bb235ab1c79ddce6caf51ee5">getCellMesh</a>(<span class="keyword">class</span> <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html">BooleanEvaluator</a>&amp; eval, int32_t planeIndexerOffset, int32_t cellId, <span class="keyword">const</span> std::vector&lt;NvcVec3&gt;&amp; sites, std::vector &lt; std::vector&lt;int32_t&gt; &gt;&amp; neighboors, int32_t interiorMaterialId, <a class="code" href="struct_nvc_vec3.html">NvcVec3</a> origin);
-<a name="l00435"></a>00435 
-<a name="l00436"></a>00436 } <span class="comment">// namespace Blast</span>
-<a name="l00437"></a>00437 } <span class="comment">// namespace Nv</span>
-<a name="l00438"></a>00438 
-<a name="l00439"></a>00439 
-<a name="l00440"></a>00440 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORINGFRACTURETOOLIMPL_H</span>
+<a name="l00399"></a>00399 
+<a name="l00400"></a>00400 <span class="keyword">private</span>:    
+<a name="l00401"></a>00401     <span class="keywordtype">bool</span>                                    isAncestorForChunk(int32_t ancestorId, int32_t chunkId);
+<a name="l00402"></a>00402     int32_t                                 slicingNoisy(uint32_t chunkId, <span class="keyword">const</span> <a class="code" href="struct_nv_1_1_blast_1_1_slicing_configuration.html">SlicingConfiguration</a>&amp; conf, <span class="keywordtype">bool</span> replaceChunk, <a class="code" href="class_nv_1_1_blast_1_1_random_generator_base.html">RandomGeneratorBase</a>* rnd);
+<a name="l00403"></a>00403     uint32_t                                stretchGroup(<span class="keyword">const</span> std::vector&lt;uint32_t&gt;&amp; group, std::vector&lt;std::vector&lt;uint32_t&gt;&gt;&amp; graph);
+<a name="l00404"></a>00404     <span class="keywordtype">void</span>                                    rebuildAdjGraph(<span class="keyword">const</span> std::vector&lt;uint32_t&gt;&amp; chunksToRebuild, <span class="keyword">const</span> <a class="code" href="struct_nvc_vec2i.html">NvcVec2i</a>* adjChunks, uint32_t adjChunksSize,
+<a name="l00405"></a>00405                                                             std::vector&lt;std::vector&lt;uint32_t&gt; &gt;&amp; chunkGraph);
+<a name="l00406"></a>00406     <span class="keywordtype">void</span>                                    <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#21dee486b1499f135740cac4a4d85af0">fitAllUvToRect</a>(<span class="keywordtype">float</span> side, std::set&lt;uint32_t&gt;&amp; mask);
+<a name="l00407"></a>00407     <span class="keywordtype">void</span>                                    markLeaves();
+<a name="l00408"></a>00408 
+<a name="l00412"></a>00412     uint32_t                                createNewChunk(uint32_t parentId);
+<a name="l00413"></a>00413 
+<a name="l00414"></a>00414 
+<a name="l00415"></a>00415 <span class="keyword">protected</span>:
+<a name="l00419"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3853cd248b6b0531f18f8cf1711bc90f">00419</a>     <span class="keywordtype">float</span>                               <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3853cd248b6b0531f18f8cf1711bc90f">mScaleFactor</a>;
+<a name="l00420"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3a9a2ccd3b9f5122f5153431b2eb2925">00420</a>     <a class="code" href="struct_nvc_vec3.html">NvcVec3</a>                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#3a9a2ccd3b9f5122f5153431b2eb2925">mOffset</a>;
+<a name="l00421"></a>00421 
+<a name="l00422"></a>00422     <span class="comment">/* Chunk mesh wrappers */</span>
+<a name="l00423"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c2202d728cefb26446a60593b03dcbe1">00423</a>     std::vector&lt;Triangulator*&gt;          <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#c2202d728cefb26446a60593b03dcbe1">mChunkPostprocessors</a>;
+<a name="l00424"></a>00424 
+<a name="l00425"></a>00425 
+<a name="l00426"></a>00426     
+<a name="l00427"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#1cf29d3d972240ac368f6acef7bcb93b">00427</a>     int64_t                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#1cf29d3d972240ac368f6acef7bcb93b">mPlaneIndexerOffset</a>;
+<a name="l00428"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#77957e191451f94d3753e31695c37914">00428</a>     int32_t                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#77957e191451f94d3753e31695c37914">mChunkIdCounter</a>;
+<a name="l00429"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#516359070dc5bf6cd0770d3e33b8c8d1">00429</a>     std::vector&lt;ChunkInfo&gt;              <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#516359070dc5bf6cd0770d3e33b8c8d1">mChunkData</a>;
+<a name="l00430"></a>00430 
+<a name="l00431"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#bcc6a73e16008d488bbf81623ec5a33e">00431</a>     <span class="keywordtype">bool</span>                                <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#bcc6a73e16008d488bbf81623ec5a33e">mRemoveIslands</a>;
+<a name="l00432"></a><a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#e9fdc3a9dd7eefe632a24c7abb6c4962">00432</a>     int32_t                             <a class="code" href="class_nv_1_1_blast_1_1_fracture_tool_impl.html#e9fdc3a9dd7eefe632a24c7abb6c4962">mInteriorMaterialId</a>;
+<a name="l00433"></a>00433 };
+<a name="l00434"></a>00434 
+<a name="l00435"></a>00435 <span class="keywordtype">void</span> <a class="code" href="namespace_nv_1_1_blast.html#83271d24d04e44d4b938de44bce332e8">findCellBasePlanes</a>(<span class="keyword">const</span> std::vector&lt;NvcVec3&gt;&amp; sites, std::vector&lt;std::vector&lt;int32_t&gt; &gt;&amp; neighboors);
+<a name="l00436"></a>00436 <a class="code" href="class_nv_1_1_blast_1_1_mesh.html">Mesh</a>* <a class="code" href="namespace_nv_1_1_blast.html#4371fd33bb235ab1c79ddce6caf51ee5">getCellMesh</a>(<span class="keyword">class</span> <a class="code" href="class_nv_1_1_blast_1_1_boolean_evaluator.html">BooleanEvaluator</a>&amp; eval, int32_t planeIndexerOffset, int32_t cellId, <span class="keyword">const</span> std::vector&lt;NvcVec3&gt;&amp; sites, std::vector &lt; std::vector&lt;int32_t&gt; &gt;&amp; neighboors, int32_t interiorMaterialId, <a class="code" href="struct_nvc_vec3.html">NvcVec3</a> origin);
+<a name="l00437"></a>00437 
+<a name="l00438"></a>00438 } <span class="comment">// namespace Blast</span>
+<a name="l00439"></a>00439 } <span class="comment">// namespace Nv</span>
+<a name="l00440"></a>00440 
+<a name="l00441"></a>00441 
+<a name="l00442"></a>00442 <span class="preprocessor">#endif // ifndef NVBLASTAUTHORINGFRACTURETOOLIMPL_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

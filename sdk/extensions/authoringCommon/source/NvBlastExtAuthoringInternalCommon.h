@@ -29,6 +29,7 @@
 #ifndef NVBLASTINTERNALCOMMON_H
 #define NVBLASTINTERNALCOMMON_H
 #include "NvBlastExtAuthoringTypes.h"
+#include "NvBlastPxSharedHelpers.h"
 #include <PxVec2.h>
 #include <PxVec3.h>
 #include <PxPlane.h>
@@ -274,6 +275,47 @@ struct VrtPositionComparator
 		return operator()(a.p, b.p);
 	};
 };
+
+
+NV_INLINE float calculateCollisionHullVolume(const CollisionHull& hull)
+{
+    if (hull.pointsCount == 0)
+    {
+        return 0.0f;
+    }
+
+    // Find an approximate centroid for a more accurate calculation
+    NvcVec3 centroid = { 0.0f, 0.0f, 0.0f };
+    for (uint32_t i = 0; i < hull.pointsCount; ++i)
+    {
+        centroid = centroid + hull.points[i];
+    }
+    centroid = centroid / hull.pointsCount;
+
+    float volume = 0.0f;
+
+    for (uint32_t i = 0; i < hull.polygonDataCount; ++i)
+    {
+        const HullPolygon& poly = hull.polygonData[i];
+        if (poly.vertexCount < 3)
+        {
+            continue;
+        }
+        const uint32_t i0 = hull.indices[poly.indexBase];
+        uint32_t i1 = hull.indices[poly.indexBase + 1];
+        for (uint32_t j = 2; j < poly.vertexCount; ++j)
+        {
+            const uint32_t i2 = hull.indices[poly.indexBase + j];
+            const NvcVec3 a = hull.points[i0] - centroid;
+            const NvcVec3 b = hull.points[i1] - centroid;
+            const NvcVec3 c = hull.points[i2] - centroid;
+            volume +=
+                (a.x * b.y * c.z - a.x * b.z * c.y - a.y * b.x * c.z + a.y * b.z * c.x + a.z * b.x * c.y - a.z * b.y * c.x);
+            i1 = i2;
+        }
+    }
+    return (1.0f / 6.0f) * std::abs(volume);
+}
 
 }	// namespace Blast
 }	// namespace Nv

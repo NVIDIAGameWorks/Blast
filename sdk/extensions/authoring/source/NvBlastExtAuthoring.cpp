@@ -40,6 +40,7 @@
 #include "NvBlastExtAuthoringBondGeneratorImpl.h"
 #include "NvBlastExtAuthoringCollisionBuilderImpl.h"
 #include "NvBlastExtAuthoringCutoutImpl.h"
+#include "NvBlastExtAuthoringInternalCommon.h"
 #include "NvBlastPxSharedHelpers.h"
 
 #include <algorithm>
@@ -381,21 +382,19 @@ AuthoringResult* NvBlastExtAuthoringProcessFracture(FractureTool& fTool, BlastBo
 	buildPhysicsChunks(collisionBuilder, aResult, collisionParam);
 
 	// set NvBlastChunk volume from Px geometry
-	//for (uint32_t i = 0; i < chunkCount; i++)
-	//{
-	//	float totalVolume = 0.f;
-	//	for (uint32_t k = 0; k < aResult.physicsChunks[i].subchunkCount; k++)
-	//	{
-	//		const auto& subChunk = aResult.physicsSubchunks[aResult.physicsChunks[i].firstSubchunkIndex + k];
-	//		physx::PxVec3 localCenterOfMass; physx::PxMat33 intertia; float mass;
-	//		subChunk.geometry.convexMesh->getMassInformation(mass, intertia, localCenterOfMass);
-	//		const physx::PxVec3 scale = subChunk.geometry.scale.scale;
-	//		mass *= scale.x * scale.y * scale.z;
-	//		totalVolume += mass / 1.0f; // unit density
-	//	}
-
-	//	aResult.chunkDescs[i].volume = totalVolume;
-	//}
+	for (uint32_t i = 0; i < chunkCount; i++)
+	{
+		float totalVolume = 0.f;
+		for (uint32_t k = aResult.collisionHullOffset[i]; k < aResult.collisionHullOffset[i+1]; k++)
+		{
+            const CollisionHull* hull = aResult.collisionHull[k];
+            if (hull)
+            {
+                totalVolume += calculateCollisionHullVolume(*hull);
+            }
+		}
+		aResult.chunkDescs[i].volume = totalVolume;
+	}
 
 	// build and serialize ExtPhysicsAsset
 	NvBlastAssetDesc	descriptor;

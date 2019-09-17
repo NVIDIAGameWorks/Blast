@@ -777,42 +777,48 @@ bool Asset::ensureExactSupportCoverage(uint32_t& supportChunkCount, uint32_t& le
 
 bool Asset::testForValidChunkOrder(uint32_t chunkCount, const NvBlastChunkDesc* chunkDescs, const char* chunkAnnotation, void* scratch)
 {
-	char* chunkMarks = static_cast<char*>(memset(scratch, 0, chunkCount));
+    char* chunkMarks = static_cast<char*>(memset(scratch, 0, chunkCount));
 
-	uint32_t currentParentChunkIndex = invalidIndex<uint32_t>();
-	for (uint32_t i = 0; i < chunkCount; ++i)
-	{
-		const uint32_t parentChunkIndex = chunkDescs[i].parentChunkIndex;
-		if (parentChunkIndex != currentParentChunkIndex)
-		{
-			if (!isInvalidIndex(currentParentChunkIndex))
-			{
-				chunkMarks[currentParentChunkIndex] = 1;
-			}
-			currentParentChunkIndex = parentChunkIndex;
-			if (isInvalidIndex(currentParentChunkIndex))
-			{
-				return false;
-			}
-			else if (chunkMarks[currentParentChunkIndex] != 0)
-			{
-				return false;
-			}
-		}
+    uint32_t currentParentChunkIndex = invalidIndex<uint32_t>();
+    for (uint32_t i = 0; i < chunkCount; ++i)
+    {
+        const uint32_t parentChunkIndex = chunkDescs[i].parentChunkIndex;
 
-		if (i < chunkCount - 1)
-		{
-			const bool upperSupport0 = (chunkAnnotation[i] & ChunkAnnotation::UpperSupport) != 0;
-			const bool upperSupport1 = (chunkAnnotation[i + 1] & ChunkAnnotation::UpperSupport) != 0;
+        if (!isInvalidIndex(parentChunkIndex) && parentChunkIndex >= i) // 'chunks should come after their parents'
+        {
+            return false;
+        }
 
-			if (!upperSupport0 && upperSupport1)
-			{
-				return false;
-			}
-		}
-	}
+        if (parentChunkIndex != currentParentChunkIndex)
+        {
+            if (!isInvalidIndex(currentParentChunkIndex))
+            {
+                chunkMarks[currentParentChunkIndex] = 1;
+            }
+            currentParentChunkIndex = parentChunkIndex;
+            if (isInvalidIndex(currentParentChunkIndex))    // 'root chunks should go first'
+            {
+                return false;
+            }
+            else if (chunkMarks[currentParentChunkIndex] != 0)  // 'all chunks with same parent index should go in a row'
+            {
+                return false;
+            }
+        }
 
-	return true;
+        if (i < chunkCount - 1)
+        {
+            const bool upperSupport0 = (chunkAnnotation[i] & ChunkAnnotation::UpperSupport) != 0;
+            const bool upperSupport1 = (chunkAnnotation[i + 1] & ChunkAnnotation::UpperSupport) != 0;
+
+            if (!upperSupport0 && upperSupport1)    // 'upper-support chunks should come before subsupport chunks'
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 } // namespace Blast

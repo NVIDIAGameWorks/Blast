@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"_nv_blast_ext_custom_profiler_8h_source.html":[4,0,0,1,5,0,0],
 "_nv_blast_ext_damage_accelerator_a_a_b_b_tree_8h.html":[4,0,0,1,8,1,0],
 "_nv_blast_ext_damage_accelerator_a_a_b_b_tree_8h_source.html":[4,0,0,1,8,1,0],
 "_nv_blast_ext_damage_accelerator_internal_8h.html":[4,0,0,1,8,1,1],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "_nv_blast_include_windows_8h.html#a22c56a31990574a86b40f60b6073cdba":[4,0,0,0,12,37],
 "_nv_blast_include_windows_8h.html#a256fe1caeb996b1142c3eb51097fef0e":[4,0,0,0,12,15],
 "_nv_blast_include_windows_8h.html#a271ce221dc9c5c8887d443008b3d718c":[4,0,0,0,12,29],
-"_nv_blast_include_windows_8h.html#a2bedaca1c6ca66de2397772910fbe140":[4,0,0,0,12,8],
-"_nv_blast_include_windows_8h.html#a2d7186e4a6dfcc0011461ce1e8b70a05":[4,0,0,0,12,22]
+"_nv_blast_include_windows_8h.html#a2bedaca1c6ca66de2397772910fbe140":[4,0,0,0,12,8]
 };

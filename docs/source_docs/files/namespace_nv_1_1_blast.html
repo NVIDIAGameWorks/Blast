@@ -525,6 +525,8 @@
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">int32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#8ebc2507c0fdfa452f1000b86b590af5">buildMeshConvexDecomposition</a> (<a class="el" href="class_nv_1_1_blast_1_1_convex_mesh_builder.html">ConvexMeshBuilder</a> &amp;cmb, const <a class="el" href="struct_nv_1_1_blast_1_1_triangle.html">Triangle</a> *mesh, uint32_t triangleCount, const <a class="el" href="struct_nv_1_1_blast_1_1_convex_decomposition_params.html">ConvexDecompositionParams</a> &amp;params, <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> **&amp;convexes)</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">NV_INLINE float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#d7f758469903c6a753a827ee1525a1e8">calculateCollisionHullVolume</a> (const <a class="el" href="struct_nv_1_1_blast_1_1_collision_hull.html">CollisionHull</a> &amp;hull)</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_nv_1_1_blast.html#3c3bd8c624a44bbffc27f6ab8e8f2012">createCutoutSet</a> (<a class="el" href="struct_nv_1_1_blast_1_1_cutout_set_impl.html">Nv::Blast::CutoutSetImpl</a> &amp;cutoutSet, const uint8_t *pixelBuffer, uint32_t bufferWidth, uint32_t bufferHeight, float segmentationErrorThreshold, float snapThreshold, bool periodic, bool expandGaps)</td></tr>
 
 <tr><td class="memTemplParams" nowrap colspan="2">template&lt;typename T &gt; </td></tr>
@@ -1038,6 +1040,26 @@ Returns the aligned value.
           <td></td>
           <td>)</td>
           <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+
+</div>
+</div><p>
+<a class="anchor" name="d7f758469903c6a753a827ee1525a1e8"></a><!-- doxytag: member="Nv::Blast::calculateCollisionHullVolume" ref="d7f758469903c6a753a827ee1525a1e8" args="(const CollisionHull &amp;hull)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_INLINE float Nv::Blast::calculateCollisionHullVolume           </td>
+          <td>(</td>
+          <td class="paramtype">const CollisionHull &amp;&nbsp;</td>
+          <td class="paramname"> <em>hull</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td></td>
         </tr>
       </table>
 </div>

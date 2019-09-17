@@ -1768,7 +1768,7 @@ Iff chunks are already ordered correctly, function returns 'true' and identity c
     <tr><td valign="top"><tt>[out]</tt>&nbsp;</td><td valign="top"><em>chunkReorderMap</em>&nbsp;</td><td>User-supplied map of size chunkCount to fill. For every chunk index this array will contain new chunk position (index). </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkDescs</em>&nbsp;</td><td>Array of chunk descriptors of size chunkCount. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>chunkCount</em>&nbsp;</td><td>The number of chunk descriptors. </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>scratch</em>&nbsp;</td><td>User-supplied scratch storage, must point to 2 * chunkCount * sizeof(uint32_t) valid bytes of memory. </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>scratch</em>&nbsp;</td><td>User-supplied scratch storage, must point to 3 * chunkCount * sizeof(uint32_t) valid bytes of memory. </td></tr>
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>logFn</em>&nbsp;</td><td>User-supplied message function (see NvBlastLog definition). May be NULL.</td></tr>
   </table>
 </dl>

@@ -1628,6 +1628,7 @@ bool FractureToolImpl::deleteChunkSubhierarchy(int32_t chunkId, bool deleteRoot 
 		std::swap(mChunkData.back(), mChunkData[m]);
 		mChunkData.pop_back();
 	}
+    markLeaves();
 	return chunkToDelete.size() > 0;
 }
 
@@ -1688,7 +1689,10 @@ void FractureToolImpl::finalizeFracturing()
 		std::swap(mChunkData[badOnes[i]], mChunkData.back());
 		mChunkData.pop_back();
 	}
-	fitAllUvToRect(1.0f, newChunkMask);
+    if (!mChunkPostprocessors.empty())  // Failsafe to prevent infinite loop (leading to stack overflow)
+    {
+        fitAllUvToRect(1.0f, newChunkMask);
+    }
 }
 
 uint32_t FractureToolImpl::getChunkCount() const
@@ -1750,13 +1754,26 @@ uint32_t FractureToolImpl::updateBaseMesh(int32_t chunkIndex, Triangle* output)
 
 float getVolume(std::vector<Triangle>& triangles)
 {
+    if (triangles.size() == 0)
+    {
+        return 0.0f;
+    }
+
+    // Find an approximate centroid for a more accurate calculation
+    NvcVec3 centroid = { 0.0f, 0.0f, 0.0f };
+    for (size_t i = 0; i < triangles.size(); ++i)
+    {
+        centroid = centroid + triangles[i].a.p + triangles[i].b.p + triangles[i].c.p;
+    }
+    centroid = centroid / (3 * triangles.size());
+
 	float volume = 0.0f;
 
-	for (uint32_t i = 0; i < triangles.size(); ++i)
+	for (size_t i = 0; i < triangles.size(); ++i)
 	{
-		NvcVec3& a = triangles[i].a.p;
-		NvcVec3& b = triangles[i].b.p;
-		NvcVec3& c = triangles[i].c.p;
+		const NvcVec3 a = triangles[i].a.p - centroid;
+		const NvcVec3 b = triangles[i].b.p - centroid;
+		const NvcVec3 c = triangles[i].c.p - centroid;
 		volume +=
 		    (a.x * b.y * c.z - a.x * b.z * c.y - a.y * b.x * c.z + a.y * b.z * c.x + a.z * b.x * c.y - a.z * b.y * c.x);
 	}
@@ -1988,19 +2005,19 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool creat
 		}
 		else
 		{
-			mChunkData[chunkIndex].isLeaf = false;
             deleteChunkSubhierarchy(chunkId);
 			for (int32_t i = 0; i < cComp; ++i)
 			{
 				uint32_t nc             = createNewChunk(chunkId);
 				mChunkData[nc].isLeaf   = true;
-				mChunkData[nc].flags    = ChunkInfo::CREATED_BY_ISLAND_DETECTOR;
+				mChunkData[nc].flags    = ChunkInfo::APPROXIMATE_BONDING;
 				mChunkData[nc].meshData = new MeshImpl(compVertices[i].data(), compEdges[i].data(), compFacets[i].data(),
 				                                       static_cast<uint32_t>(compVertices[i].size()),
 				                                       static_cast<uint32_t>(compEdges[i].size()),
 				                                       static_cast<uint32_t>(compFacets[i].size()));
 			}
-		}
+            mChunkData[chunkIndex].isLeaf = false;
+        }
 		return cComp;
 	}
 	return 0;
@@ -2110,7 +2127,12 @@ uint32_t FractureToolImpl::stretchGroup(const std::vector<uint32_t>& grp, std::v
 		}
 		offsetEdges    = nEdges.size();
 		offsetVertices = nVertices.size();
-	}
+
+        if (mChunkData[grp[i]].flags & ChunkInfo::APPROXIMATE_BONDING)
+        {
+            mChunkData[newChunkIndex].flags |= ChunkInfo::APPROXIMATE_BONDING;
+        }
+    }
 	std::vector<Facet> finalFacets;
 	std::set<int64_t> hasCutting;
 	for (uint32_t i = 0; i < nFacets.size(); ++i)
@@ -2129,6 +2151,7 @@ uint32_t FractureToolImpl::stretchGroup(const std::vector<uint32_t>& grp, std::v
 	mChunkData[newChunkIndex].meshData =
 	    new MeshImpl(nVertices.data(), nEdges.data(), finalFacets.data(), static_cast<uint32_t>(nVertices.size()),
 	                 static_cast<uint32_t>(nEdges.size()), static_cast<uint32_t>(finalFacets.size()));
+
 	return newChunkIndex;
 }
 
@@ -2254,6 +2277,22 @@ void FractureToolImpl::fitAllUvToRect(float side, std::set<uint32_t>& mask)
 	}
 }
 
+void FractureToolImpl::markLeaves()
+{
+    for (ChunkInfo& info : mChunkData)
+    {
+        info.isLeaf = true;
+    }
+
+    for (ChunkInfo& info : mChunkData)
+    {
+        const int32_t index = getChunkIndex(info.parent);
+        if (index >= 0)
+        {
+            mChunkData[index].isLeaf = false;
+        }
+    }
+}
 
 void FractureToolImpl::rebuildAdjGraph(const std::vector<uint32_t>& chunks, const NvcVec2i* adjChunks,
                                        uint32_t adjChunksSize, std::vector<std::vector<uint32_t> >& chunkGraph)
@@ -2568,6 +2607,25 @@ void FractureToolImpl::uniteChunks(uint32_t threshold, uint32_t targetClusterSiz
             }
         }
     }
+}
+
+bool FractureToolImpl::setApproximateBonding(uint32_t chunkIndex, bool useApproximateBonding)
+{
+    if ((size_t)chunkIndex >= mChunkData.size())
+    {
+        return false;
+    }
+
+    if (useApproximateBonding)
+    {
+        mChunkData[chunkIndex].flags |= (uint32_t)ChunkInfo::APPROXIMATE_BONDING;
+    }
+    else
+    {
+        mChunkData[chunkIndex].flags &= ~(uint32_t)ChunkInfo::APPROXIMATE_BONDING;
+    }
+
+    return true;
 }
 
 }  // namespace Blast

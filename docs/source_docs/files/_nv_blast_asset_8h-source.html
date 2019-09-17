@@ -120,93 +120,93 @@
 <a name="l00136"></a>00136 
 <a name="l00156"></a>00156     <span class="keyword">static</span> <span class="keywordtype">bool</span>     <a class="code" href="class_nv_1_1_blast_1_1_asset.html#14908228fdf062c9b39b76ce027feedc">ensureExactSupportCoverage</a>(uint32_t&amp; supportChunkCount, uint32_t&amp; leafChunkCount, <span class="keywordtype">char</span>* chunkAnnotation, uint32_t chunkCount, <a class="code" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a>* chunkDescs, <span class="keywordtype">bool</span> testOnly, <a class="code" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn);
 <a name="l00157"></a>00157 
-<a name="l00173"></a>00173     <span class="keyword">static</span> <span class="keywordtype">bool</span>     <a class="code" href="class_nv_1_1_blast_1_1_asset.html#d8dea6287a5ffcab093b7b79b6266033">testForValidChunkOrder</a>(uint32_t chunkCount, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a>* chunkDescs, <span class="keyword">const</span> <span class="keywordtype">char</span>* chunkAnnotation, <span class="keywordtype">void</span>* scratch);
-<a name="l00174"></a>00174 
+<a name="l00174"></a>00174     <span class="keyword">static</span> <span class="keywordtype">bool</span>     <a class="code" href="class_nv_1_1_blast_1_1_asset.html#d8dea6287a5ffcab093b7b79b6266033">testForValidChunkOrder</a>(uint32_t chunkCount, <span class="keyword">const</span> <a class="code" href="struct_nv_blast_chunk_desc.html">NvBlastChunkDesc</a>* chunkDescs, <span class="keyword">const</span> <span class="keywordtype">char</span>* chunkAnnotation, <span class="keywordtype">void</span>* scratch);
 <a name="l00175"></a>00175 
-<a name="l00177"></a>00177 
-<a name="l00181"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#5922a3310ddab6fd4e9bedbf23c8dd1a">00181</a>     <a class="code" href="struct_nv_blast_data_block.html">NvBlastDataBlock</a>    <a class="code" href="class_nv_1_1_blast_1_1_asset.html#5922a3310ddab6fd4e9bedbf23c8dd1a">m_header</a>;
-<a name="l00182"></a>00182 
-<a name="l00186"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#68b3de340801db06e5e057434ca6137e">00186</a>     <a class="code" href="struct_nv_blast_i_d.html">NvBlastID</a>           <a class="code" href="class_nv_1_1_blast_1_1_asset.html#68b3de340801db06e5e057434ca6137e">m_ID</a>;
-<a name="l00187"></a>00187 
-<a name="l00191"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">00191</a>     uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>;
-<a name="l00192"></a>00192 
-<a name="l00196"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">00196</a>     <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>        <a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>;
-<a name="l00197"></a>00197 
-<a name="l00201"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#97582e0fbb4b6c1b36ec613c850bc3b4">00201</a>     uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_asset.html#97582e0fbb4b6c1b36ec613c850bc3b4">m_leafChunkCount</a>;
-<a name="l00202"></a>00202 
-<a name="l00206"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#6cfa7f72e5f815e519550dd46dc087a9">00206</a>     uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_asset.html#6cfa7f72e5f815e519550dd46dc087a9">m_firstSubsupportChunkIndex</a>;
-<a name="l00207"></a>00207 
-<a name="l00211"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#afdb7951c9cc382b47f65c9bcd68e2a2">00211</a>     uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_asset.html#afdb7951c9cc382b47f65c9bcd68e2a2">m_bondCount</a>;
-<a name="l00212"></a>00212 
-<a name="l00218"></a>00218     <a class="code" href="class_nv_1_1_blast_1_1_asset.html#93a386a2854b15b238c18ac220170924">NvBlastBlockArrayData</a>(<a class="code" href="struct_nv_blast_chunk.html">NvBlastChunk</a>, m_chunksOffset, getChunks, <a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>);
-<a name="l00219"></a>00219 
-<a name="l00228"></a>00228     <a class="code" href="class_nv_1_1_blast_1_1_asset.html#93a386a2854b15b238c18ac220170924">NvBlastBlockArrayData</a>(<a class="code" href="struct_nv_blast_bond.html">NvBlastBond</a>, m_bondsOffset, getBonds, <a class="code" href="class_nv_1_1_blast_1_1_asset.html#afdb7951c9cc382b47f65c9bcd68e2a2">m_bondCount</a>);
-<a name="l00229"></a>00229 
-<a name="l00236"></a>00236     <a class="code" href="class_nv_1_1_blast_1_1_asset.html#93a386a2854b15b238c18ac220170924">NvBlastBlockArrayData</a>(uint32_t, m_subtreeLeafChunkCountsOffset, getSubtreeLeafChunkCounts, <a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>);
-<a name="l00237"></a>00237 
-<a name="l00243"></a>00243     <a class="code" href="class_nv_1_1_blast_1_1_asset.html#93a386a2854b15b238c18ac220170924">NvBlastBlockArrayData</a>(uint32_t, m_chunkToGraphNodeMapOffset, getChunkToGraphNodeMap, <a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>);
-<a name="l00244"></a>00244 
+<a name="l00176"></a>00176 
+<a name="l00178"></a>00178 
+<a name="l00182"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#5922a3310ddab6fd4e9bedbf23c8dd1a">00182</a>     <a class="code" href="struct_nv_blast_data_block.html">NvBlastDataBlock</a>    <a class="code" href="class_nv_1_1_blast_1_1_asset.html#5922a3310ddab6fd4e9bedbf23c8dd1a">m_header</a>;
+<a name="l00183"></a>00183 
+<a name="l00187"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#68b3de340801db06e5e057434ca6137e">00187</a>     <a class="code" href="struct_nv_blast_i_d.html">NvBlastID</a>           <a class="code" href="class_nv_1_1_blast_1_1_asset.html#68b3de340801db06e5e057434ca6137e">m_ID</a>;
+<a name="l00188"></a>00188 
+<a name="l00192"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">00192</a>     uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>;
+<a name="l00193"></a>00193 
+<a name="l00197"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">00197</a>     <a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html">SupportGraph</a>        <a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>;
+<a name="l00198"></a>00198 
+<a name="l00202"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#97582e0fbb4b6c1b36ec613c850bc3b4">00202</a>     uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_asset.html#97582e0fbb4b6c1b36ec613c850bc3b4">m_leafChunkCount</a>;
+<a name="l00203"></a>00203 
+<a name="l00207"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#6cfa7f72e5f815e519550dd46dc087a9">00207</a>     uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_asset.html#6cfa7f72e5f815e519550dd46dc087a9">m_firstSubsupportChunkIndex</a>;
+<a name="l00208"></a>00208 
+<a name="l00212"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#afdb7951c9cc382b47f65c9bcd68e2a2">00212</a>     uint32_t            <a class="code" href="class_nv_1_1_blast_1_1_asset.html#afdb7951c9cc382b47f65c9bcd68e2a2">m_bondCount</a>;
+<a name="l00213"></a>00213 
+<a name="l00219"></a>00219     <a class="code" href="class_nv_1_1_blast_1_1_asset.html#93a386a2854b15b238c18ac220170924">NvBlastBlockArrayData</a>(<a class="code" href="struct_nv_blast_chunk.html">NvBlastChunk</a>, m_chunksOffset, getChunks, <a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>);
+<a name="l00220"></a>00220 
+<a name="l00229"></a>00229     <a class="code" href="class_nv_1_1_blast_1_1_asset.html#93a386a2854b15b238c18ac220170924">NvBlastBlockArrayData</a>(<a class="code" href="struct_nv_blast_bond.html">NvBlastBond</a>, m_bondsOffset, getBonds, <a class="code" href="class_nv_1_1_blast_1_1_asset.html#afdb7951c9cc382b47f65c9bcd68e2a2">m_bondCount</a>);
+<a name="l00230"></a>00230 
+<a name="l00237"></a>00237     <a class="code" href="class_nv_1_1_blast_1_1_asset.html#93a386a2854b15b238c18ac220170924">NvBlastBlockArrayData</a>(uint32_t, m_subtreeLeafChunkCountsOffset, getSubtreeLeafChunkCounts, <a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>);
+<a name="l00238"></a>00238 
+<a name="l00244"></a>00244     <a class="code" href="class_nv_1_1_blast_1_1_asset.html#93a386a2854b15b238c18ac220170924">NvBlastBlockArrayData</a>(uint32_t, m_chunkToGraphNodeMapOffset, getChunkToGraphNodeMap, <a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>);
 <a name="l00245"></a>00245 
-<a name="l00247"></a>00247 
-<a name="l00252"></a><a class="code" href="class_nv_1_1_blast_1_1_asset_1_1_depth_first_it.html">00252</a>     <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_asset_1_1_depth_first_it.html">DepthFirstIt</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_chunk_depth_first_it.html">ChunkDepthFirstIt</a>
-<a name="l00253"></a>00253     {
-<a name="l00254"></a>00254     <span class="keyword">public</span>:
-<a name="l00256"></a><a class="code" href="class_nv_1_1_blast_1_1_asset_1_1_depth_first_it.html#8310079aa0f6e7b2ff0c5feaef88c0ca">00256</a>         <a class="code" href="class_nv_1_1_blast_1_1_asset_1_1_depth_first_it.html">DepthFirstIt</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_asset.html">Asset</a>&amp; asset, uint32_t startChunkIndex, <span class="keywordtype">bool</span> upperSupportOnly = <span class="keyword">false</span>) :
-<a name="l00257"></a>00257             <a class="code" href="class_nv_1_1_blast_1_1_chunk_depth_first_it.html">ChunkDepthFirstIt</a>(asset.getChunks(), startChunkIndex, upperSupportOnly ? asset.<a class="code" href="class_nv_1_1_blast_1_1_asset.html#60aa9c06e57f369ed24c185bb9769ddc">getUpperSupportChunkCount</a>() : asset.<a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>) {}
-<a name="l00258"></a>00258     };
-<a name="l00259"></a>00259 };
-<a name="l00260"></a>00260 
+<a name="l00246"></a>00246 
+<a name="l00248"></a>00248 
+<a name="l00253"></a><a class="code" href="class_nv_1_1_blast_1_1_asset_1_1_depth_first_it.html">00253</a>     <span class="keyword">class </span><a class="code" href="class_nv_1_1_blast_1_1_asset_1_1_depth_first_it.html">DepthFirstIt</a> : <span class="keyword">public</span> <a class="code" href="class_nv_1_1_blast_1_1_chunk_depth_first_it.html">ChunkDepthFirstIt</a>
+<a name="l00254"></a>00254     {
+<a name="l00255"></a>00255     <span class="keyword">public</span>:
+<a name="l00257"></a><a class="code" href="class_nv_1_1_blast_1_1_asset_1_1_depth_first_it.html#8310079aa0f6e7b2ff0c5feaef88c0ca">00257</a>         <a class="code" href="class_nv_1_1_blast_1_1_asset_1_1_depth_first_it.html">DepthFirstIt</a>(<span class="keyword">const</span> <a class="code" href="class_nv_1_1_blast_1_1_asset.html">Asset</a>&amp; asset, uint32_t startChunkIndex, <span class="keywordtype">bool</span> upperSupportOnly = <span class="keyword">false</span>) :
+<a name="l00258"></a>00258             <a class="code" href="class_nv_1_1_blast_1_1_chunk_depth_first_it.html">ChunkDepthFirstIt</a>(asset.getChunks(), startChunkIndex, upperSupportOnly ? asset.<a class="code" href="class_nv_1_1_blast_1_1_asset.html#60aa9c06e57f369ed24c185bb9769ddc">getUpperSupportChunkCount</a>() : asset.<a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>) {}
+<a name="l00259"></a>00259     };
+<a name="l00260"></a>00260 };
 <a name="l00261"></a>00261 
-<a name="l00263"></a>00263 
-<a name="l00264"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#60aa9c06e57f369ed24c185bb9769ddc">00264</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_asset.html#60aa9c06e57f369ed24c185bb9769ddc">Asset::getUpperSupportChunkCount</a>()<span class="keyword"> const</span>
-<a name="l00265"></a>00265 <span class="keyword"></span>{
-<a name="l00266"></a>00266     <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_asset.html#6cfa7f72e5f815e519550dd46dc087a9">m_firstSubsupportChunkIndex</a>;
-<a name="l00267"></a>00267 }
-<a name="l00268"></a>00268 
+<a name="l00262"></a>00262 
+<a name="l00264"></a>00264 
+<a name="l00265"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#60aa9c06e57f369ed24c185bb9769ddc">00265</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_asset.html#60aa9c06e57f369ed24c185bb9769ddc">Asset::getUpperSupportChunkCount</a>()<span class="keyword"> const</span>
+<a name="l00266"></a>00266 <span class="keyword"></span>{
+<a name="l00267"></a>00267     <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_asset.html#6cfa7f72e5f815e519550dd46dc087a9">m_firstSubsupportChunkIndex</a>;
+<a name="l00268"></a>00268 }
 <a name="l00269"></a>00269 
-<a name="l00270"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#0b0439d2efbbf360b98342720126deb2">00270</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_asset.html#0b0439d2efbbf360b98342720126deb2">Asset::getLowerSupportChunkCount</a>()<span class="keyword"> const</span>
-<a name="l00271"></a>00271 <span class="keyword"></span>{
-<a name="l00272"></a>00272     <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>.<a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html#8e25ca3c8d3213c3737e53b7094431d1">m_nodeCount</a> + (<a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a> - <a class="code" href="class_nv_1_1_blast_1_1_asset.html#6cfa7f72e5f815e519550dd46dc087a9">m_firstSubsupportChunkIndex</a>);
-<a name="l00273"></a>00273 }
-<a name="l00274"></a>00274 
+<a name="l00270"></a>00270 
+<a name="l00271"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#0b0439d2efbbf360b98342720126deb2">00271</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_asset.html#0b0439d2efbbf360b98342720126deb2">Asset::getLowerSupportChunkCount</a>()<span class="keyword"> const</span>
+<a name="l00272"></a>00272 <span class="keyword"></span>{
+<a name="l00273"></a>00273     <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>.<a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html#8e25ca3c8d3213c3737e53b7094431d1">m_nodeCount</a> + (<a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a> - <a class="code" href="class_nv_1_1_blast_1_1_asset.html#6cfa7f72e5f815e519550dd46dc087a9">m_firstSubsupportChunkIndex</a>);
+<a name="l00274"></a>00274 }
 <a name="l00275"></a>00275 
-<a name="l00276"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#3b4976a2cdaf417d35fe5dffdd8b7374">00276</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_asset.html#3b4976a2cdaf417d35fe5dffdd8b7374">Asset::getBondCount</a>()<span class="keyword"> const</span>
-<a name="l00277"></a>00277 <span class="keyword"></span>{
-<a name="l00278"></a>00278     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>((<a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>.getAdjacencyPartition()[<a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>.<a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html#8e25ca3c8d3213c3737e53b7094431d1">m_nodeCount</a>] &amp; 1) == 0);    <span class="comment">// The bidirectional graph data should have an even number of edges</span>
-<a name="l00279"></a>00279     <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>.getAdjacencyPartition()[<a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>.<a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html#8e25ca3c8d3213c3737e53b7094431d1">m_nodeCount</a>] / 2;    <span class="comment">// Directional bonds, divide by two</span>
-<a name="l00280"></a>00280 }
-<a name="l00281"></a>00281 
+<a name="l00276"></a>00276 
+<a name="l00277"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#3b4976a2cdaf417d35fe5dffdd8b7374">00277</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_asset.html#3b4976a2cdaf417d35fe5dffdd8b7374">Asset::getBondCount</a>()<span class="keyword"> const</span>
+<a name="l00278"></a>00278 <span class="keyword"></span>{
+<a name="l00279"></a>00279     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>((<a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>.getAdjacencyPartition()[<a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>.<a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html#8e25ca3c8d3213c3737e53b7094431d1">m_nodeCount</a>] &amp; 1) == 0);    <span class="comment">// The bidirectional graph data should have an even number of edges</span>
+<a name="l00280"></a>00280     <span class="keywordflow">return</span> <a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>.getAdjacencyPartition()[<a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>.<a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html#8e25ca3c8d3213c3737e53b7094431d1">m_nodeCount</a>] / 2;    <span class="comment">// Directional bonds, divide by two</span>
+<a name="l00281"></a>00281 }
 <a name="l00282"></a>00282 
-<a name="l00283"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#8ad946e6215f8a15d0d6d4e79f21202b">00283</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_asset.html#8ad946e6215f8a15d0d6d4e79f21202b">Asset::getHierarchyCount</a>()<span class="keyword"> const</span>
-<a name="l00284"></a>00284 <span class="keyword"></span>{
-<a name="l00285"></a>00285     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_chunk.html">NvBlastChunk</a>* chunks = getChunks();
-<a name="l00286"></a>00286     <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; <a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>; ++i)
-<a name="l00287"></a>00287     {
-<a name="l00288"></a>00288         <span class="keywordflow">if</span> (!<a class="code" href="namespace_nv_1_1_blast.html#a5e952ab38e3501215eee523cb0a0d20">isInvalidIndex</a>(chunks[i].parentChunkIndex))
-<a name="l00289"></a>00289         {
-<a name="l00290"></a>00290             <span class="keywordflow">return</span> i;
-<a name="l00291"></a>00291         }
-<a name="l00292"></a>00292     }
-<a name="l00293"></a>00293     <span class="keywordflow">return</span> m_chunkCount;
-<a name="l00294"></a>00294 }
-<a name="l00295"></a>00295 
+<a name="l00283"></a>00283 
+<a name="l00284"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#8ad946e6215f8a15d0d6d4e79f21202b">00284</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_asset.html#8ad946e6215f8a15d0d6d4e79f21202b">Asset::getHierarchyCount</a>()<span class="keyword"> const</span>
+<a name="l00285"></a>00285 <span class="keyword"></span>{
+<a name="l00286"></a>00286     <span class="keyword">const</span> <a class="code" href="struct_nv_blast_chunk.html">NvBlastChunk</a>* chunks = getChunks();
+<a name="l00287"></a>00287     <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; <a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>; ++i)
+<a name="l00288"></a>00288     {
+<a name="l00289"></a>00289         <span class="keywordflow">if</span> (!<a class="code" href="namespace_nv_1_1_blast.html#a5e952ab38e3501215eee523cb0a0d20">isInvalidIndex</a>(chunks[i].parentChunkIndex))
+<a name="l00290"></a>00290         {
+<a name="l00291"></a>00291             <span class="keywordflow">return</span> i;
+<a name="l00292"></a>00292         }
+<a name="l00293"></a>00293     }
+<a name="l00294"></a>00294     <span class="keywordflow">return</span> m_chunkCount;
+<a name="l00295"></a>00295 }
 <a name="l00296"></a>00296 
-<a name="l00297"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#0db3cb362aad67c63e682c9d9fe8bbb2">00297</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_asset.html#0db3cb362aad67c63e682c9d9fe8bbb2">Asset::getContiguousLowerSupportIndex</a>(uint32_t chunkIndex)<span class="keyword"> const</span>
-<a name="l00298"></a>00298 <span class="keyword"></span>{
-<a name="l00299"></a>00299     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(chunkIndex &lt; <a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>);
-<a name="l00300"></a>00300 
-<a name="l00301"></a>00301     <span class="keywordflow">return</span> chunkIndex &lt; <a class="code" href="class_nv_1_1_blast_1_1_asset.html#6cfa7f72e5f815e519550dd46dc087a9">m_firstSubsupportChunkIndex</a> ? getChunkToGraphNodeMap()[chunkIndex] : (chunkIndex - <a class="code" href="class_nv_1_1_blast_1_1_asset.html#6cfa7f72e5f815e519550dd46dc087a9">m_firstSubsupportChunkIndex</a> + <a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>.<a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html#8e25ca3c8d3213c3737e53b7094431d1">m_nodeCount</a>);
-<a name="l00302"></a>00302 }
-<a name="l00303"></a>00303 
+<a name="l00297"></a>00297 
+<a name="l00298"></a><a class="code" href="class_nv_1_1_blast_1_1_asset.html#0db3cb362aad67c63e682c9d9fe8bbb2">00298</a> <a class="code" href="group__foundation.html#g36a01a4a51968418a26b06da7e1ad5d0">NV_INLINE</a> uint32_t <a class="code" href="class_nv_1_1_blast_1_1_asset.html#0db3cb362aad67c63e682c9d9fe8bbb2">Asset::getContiguousLowerSupportIndex</a>(uint32_t chunkIndex)<span class="keyword"> const</span>
+<a name="l00299"></a>00299 <span class="keyword"></span>{
+<a name="l00300"></a>00300     <a class="code" href="_nv_blast_assert_8h.html#2b179fca67cdb57b12b65e33fe3f6c93">NVBLAST_ASSERT</a>(chunkIndex &lt; <a class="code" href="class_nv_1_1_blast_1_1_asset.html#2fca1fdbe87c49f04736dd6b6d176177">m_chunkCount</a>);
+<a name="l00301"></a>00301 
+<a name="l00302"></a>00302     <span class="keywordflow">return</span> chunkIndex &lt; <a class="code" href="class_nv_1_1_blast_1_1_asset.html#6cfa7f72e5f815e519550dd46dc087a9">m_firstSubsupportChunkIndex</a> ? getChunkToGraphNodeMap()[chunkIndex] : (chunkIndex - <a class="code" href="class_nv_1_1_blast_1_1_asset.html#6cfa7f72e5f815e519550dd46dc087a9">m_firstSubsupportChunkIndex</a> + <a class="code" href="class_nv_1_1_blast_1_1_asset.html#d07d72453b9db6a1387f7fbd934eb2fd">m_graph</a>.<a class="code" href="struct_nv_1_1_blast_1_1_support_graph.html#8e25ca3c8d3213c3737e53b7094431d1">m_nodeCount</a>);
+<a name="l00303"></a>00303 }
 <a name="l00304"></a>00304 
-<a name="l00305"></a>00305 <span class="comment">//JDM: Expose this so serialization layer can use it.</span>
-<a name="l00306"></a>00306 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_asset.html">Asset</a>* <a class="code" href="namespace_nv_1_1_blast.html#ae75b7f94762b03efcbbe11cb3752ef1">initializeAsset</a>(<span class="keywordtype">void</span>* mem, <a class="code" href="struct_nv_blast_i_d.html">NvBlastID</a> <span class="keywordtype">id</span>, uint32_t chunkCount, uint32_t graphNodeCount, uint32_t leafChunkCount, uint32_t firstSubsupportChunkIndex, uint32_t bondCount, <a class="code" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn);
-<a name="l00307"></a>00307 
-<a name="l00308"></a>00308 } <span class="comment">// namespace Blast</span>
-<a name="l00309"></a>00309 } <span class="comment">// namespace Nv</span>
-<a name="l00310"></a>00310 
+<a name="l00305"></a>00305 
+<a name="l00306"></a>00306 <span class="comment">//JDM: Expose this so serialization layer can use it.</span>
+<a name="l00307"></a>00307 <a class="code" href="_nv_blast_preprocessor_8h.html#e5c980f1b9848025a2fefa05a9d3bce1">NVBLAST_API</a> <a class="code" href="class_nv_1_1_blast_1_1_asset.html">Asset</a>* <a class="code" href="namespace_nv_1_1_blast.html#ae75b7f94762b03efcbbe11cb3752ef1">initializeAsset</a>(<span class="keywordtype">void</span>* mem, <a class="code" href="struct_nv_blast_i_d.html">NvBlastID</a> <span class="keywordtype">id</span>, uint32_t chunkCount, uint32_t graphNodeCount, uint32_t leafChunkCount, uint32_t firstSubsupportChunkIndex, uint32_t bondCount, <a class="code" href="_nv_blast_types_8h.html#fa1be237d696dc68e343189c19cc76e0">NvBlastLog</a> logFn);
+<a name="l00308"></a>00308 
+<a name="l00309"></a>00309 } <span class="comment">// namespace Blast</span>
+<a name="l00310"></a>00310 } <span class="comment">// namespace Nv</span>
 <a name="l00311"></a>00311 
-<a name="l00312"></a>00312 <span class="preprocessor">#endif // ifndef NVBLASTASSET_H</span>
+<a name="l00312"></a>00312 
+<a name="l00313"></a>00313 <span class="preprocessor">#endif // ifndef NVBLASTASSET_H</span>
 </pre></div></div>
 <!-- start footer part -->
 <div class="footer">

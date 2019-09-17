@@ -1,5 +1,6 @@
 var NAVTREEINDEX5 =
 {
+"struct_nv_1_1_blast_1_1_profiler_detail.html#a06be79d41391dfde43f6aa02866a3c1fa39c81d6175ee0aa27db53d0cd7e944e3":[3,0,0,0,82,0,2],
 "struct_nv_1_1_blast_1_1_profiler_detail.html#a06be79d41391dfde43f6aa02866a3c1faa045a667a2428770e974158ff5c3f721":[3,0,0,0,82,0,1],
 "struct_nv_1_1_blast_1_1_regular_radial_pattern_desc.html":[3,0,0,0,84],
 "struct_nv_1_1_blast_1_1_regular_radial_pattern_desc.html#a05be2d62a3e6c523f4fefd38eb051ac3":[3,0,0,0,84,1],
@@ -248,6 +249,5 @@ var NAVTREEINDEX5 =
 "struct_nv_blast_graph_shader_actor.html#ae890e417040d5998f4b6a0bc7a317aec":[3,0,27,12],
 "struct_nv_blast_graph_shader_actor.html#aeb7929bcf27fd95c49fdd5bd8909a9b9":[3,0,27,6],
 "struct_nv_blast_graph_shader_actor.html#aebb7e8d55ddf8cb2ef71326632952cfe":[3,0,27,4],
-"struct_nv_blast_i_d.html":[3,0,28],
-"struct_nv_blast_i_d.html#ae7f7abc9562d83d9537f6c876f4c04e8":[3,0,28,0]
+"struct_nv_blast_i_d.html":[3,0,28]
 };
