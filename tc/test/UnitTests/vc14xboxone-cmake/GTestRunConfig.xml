@@ -1,0 +1,22 @@
+<GTestRun>
+  <GlobalConfigs>
+  </GlobalConfigs>
+  <Manifests>
+    <Manifest name="Bin">
+      <File>./bin/vc14xboxone-cmake/BlastUnitTests/BlastUnitTestsDEBUG.exe</File>
+    </Manifest>
+  </Manifests>
+  <Medias>
+    <Media/>
+  </Medias>
+  <Tests>
+    <Test index="1" name="BlastUnitTestsDEBUG">
+      <TestCFG name="BlastUnitTestsDEBUG" path="./bin/vc14xboxone-cmake/BlastUnitTests/BlastUnitTestsDEBUG.exe" enable='yes'>
+        <Manifest name="Bin"/>
+        <RunSingleTests>yes</RunSingleTests>
+        <SingleTestMaxTimeout>120</SingleTestMaxTimeout>
+        <Timeout target='LOCAL'>1800</Timeout>
+      </TestCFG>
+    </Test>    
+  </Tests>
+</GTestRun>

@@ -1,0 +1,24 @@
+<GTestRun>
+  <GlobalConfigs>
+  </GlobalConfigs>
+  <Manifests>
+    <Manifest name="Bin">
+      <File>./Bin/vc11xboxone/BlastPerfTests/BlastPerfTestsPROFILE.exe</File>
+    </Manifest>
+  </Manifests>
+  <Medias>
+    <Media name="test-data">
+      <Path>./test/data/xb1</Path>
+    </Media>
+  </Medias>
+  <Tests>
+    <Test index="1" name="BlastPerfTests">
+      <TestCFG name="BlastPerfTests" path="./Bin/vc11xboxone/BlastPerfTests/BlastPerfTestsPROFILE.exe" enable='yes'>
+        <Manifest name="Bin"/>
+        <RunSingleTests>yes</RunSingleTests>
+        <SingleTestMaxTimeout>120</SingleTestMaxTimeout>
+        <Timeout target='LOCAL'>1800</Timeout>
+      </TestCFG>
+    </Test>    
+  </Tests>
+</GTestRun>

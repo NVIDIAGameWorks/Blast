@@ -1,0 +1,58 @@
+Profile tests randomly damage assets (.blast) twice,
+once bonds and once chunk damage at 1/4th of the asset's size (smallest axis).
+All actors are damaged each time, no pre-selection happens.
+
+
+
+
+x64 i7-5930K CPU @ 3.50GHz
+PS4/XB1	AMD @ 1.6 GHz
+
+
+
+
+observations on various assets
+
+table:
+PS4 and XB1 lay about in the same range, around 4x slower compared to PC
+PS4 shows a larger impact on material and fracture with increasing number of actors --- (1)
+
+
+towerSupport:
+PS4: 		
+	Increasing number of actors bloating material and fracture becomes dominant. --- (1)
+	Blast() time unviable: Instance needs resetting scratch memory which is 
+	used in damage shader to avoid visiting/damaging bonds multiple times.
+	(1) PS4vsXB1: PS4 LL slightly faster, Blast() slighly slower.
+		
+XB1/WIN: 	
+	Massive spike on very first Actor Blast, less pronounced on PS4. --- comparable on PS4 since (1)
+	
+
+towerSubsupport2:
+PS4 becomes 10x slower than XB1. --- (1)
+Actor vs. Instance Count still show variation. This is the only 2-depth asset currently tested.
+Consoles show slowdown with many actors, on Instance material/fracture. 
+PC Instance is rather flat and uses less material/fracture time compared to Actor.
+
+
+
+bunny, bunnySubsupport, vase:
+Instance seems on par or slightly faster when fully fractured. (Mind, this is still iterating all actors.)
+
+
+
+
+
+Solved, Answers:
+(1): use of PS4 platform specific time stamp counter
+- actor count dominates material/fracture: check PS4 compiler options. is inlining not taking place (fracture)? 
+  is the function call in fracture the problem?
+
+  
+  
+Actions, Questions:
+- make a 2-depth hierarchical fracture test with cube.
+- other tests showed up to 20% improvement on PS4 when avoiding allocations, 
+  yet it seems futile since only split actually does in LL. since (1) this is less futile
+- towerSubsupport2, where is that time going on XB1? 

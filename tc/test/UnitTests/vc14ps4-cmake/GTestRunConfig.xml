@@ -1,0 +1,22 @@
+<GTestRun>
+  <GlobalConfigs>
+  </GlobalConfigs>
+  <Manifests>
+    <Manifest name="Bin">
+      <File>./bin/vc14ps4-cmake/BlastUnitTestsDEBUG.elf</File>
+      <File>./GTestRunConfig.xml</File>
+    </Manifest>
+  </Manifests>
+  <Medias>
+    <Media />
+  </Medias>
+  <Tests>
+    <Test index="1" name="BlastUnitTestsDEBUG">
+      <TestCFG name="BlastUnitTestsDEBUG" path="./bin/vc14ps4-cmake/BlastUnitTestsDEBUG.elf">
+        <Manifest name="Bin"/>
+        <Timeout>1200</Timeout>
+        <RunSingleTests>no</RunSingleTests>
+      </TestCFG>
+    </Test>
+  </Tests>
+</GTestRun>
