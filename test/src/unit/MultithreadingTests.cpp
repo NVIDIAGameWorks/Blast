@@ -36,10 +36,6 @@
 #include "NvBlastActor.h"
 #include "NvBlastExtDamageShaders.h"
 
-#if NV_XBOXONE
-#undef min
-#undef max
-#endif
 
 typedef std::function<void(const Nv::Blast::Actor&, NvBlastLog)> ActorTestFunction;
 typedef std::function<void(std::vector<NvBlastActor*>&, NvBlastLog)> PostDamageTestFunction;

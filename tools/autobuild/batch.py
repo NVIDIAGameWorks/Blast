@@ -22,7 +22,7 @@ def set_env_paths():
 def filter_platform(p):
 	isWindows = (os.name == 'nt')
 	if isWindows:
-		return p in ['win32', 'win64', 'xboxone', 'ps4']
+		return p in ['win32', 'win64']
 	else:
 		return p in ['linux32', 'linux64']
 
@@ -108,7 +108,7 @@ def main():
 	parser.add_argument('-b', '--build', action='store_true', help='build all')
 	parser.add_argument('-r', '--run', action='store_true', help='run all')
 	parser.add_argument('-e', '--echo_only', action='store_true', help='print all filtered configurations without actually performing build or run.', default=False)
-	parser.add_argument('-f', '--filter', type=str, default='.', help="regex to filter configurations, use -e to check result before running. Example: '-f win32 ps4'", nargs='*')
+	parser.add_argument('-f', '--filter', type=str, default='.', help="regex to filter configurations, use -e to check result before running. Example: '-f win64'", nargs='*')
 
 	if len(sys.argv) <= 1:
 		parser.print_help()

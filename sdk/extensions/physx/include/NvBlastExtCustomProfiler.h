@@ -37,12 +37,6 @@
 NV_INLINE void platformZoneStart(const char* name) { nvtxRangePushA(name); }
 NV_INLINE void platformZoneEnd() { nvtxRangePop(); }
 
-#elif NV_XBOXONE
-#include "xboxone/NvBlastProfilerXB1.h"
-
-#elif NV_PS4
-#include "ps4/NvBlastProfilerPS4.h"
-
 #else
 NV_INLINE void platformZoneStart(const char*) { }
 NV_INLINE void platformZoneEnd() { }

@@ -127,12 +127,6 @@ align16(_lastOffset + _lastSize)
 #elif NV_APPLE_FAMILY
 #include <alloca.h>
 #define NvBlastAlloca(x) alloca(x)
-#elif NV_PS4
-#include <memory.h>
-#define NvBlastAlloca(x) alloca(x)
-#elif NV_XBOXONE
-#include <malloc.h>
-#define NvBlastAlloca(x) alloca(x)
 #endif
 
 #define NvBlastAllocaAligned16(x) (void*)(((uintptr_t)PxAlloca(x + 0xF) + 0xF) & ~(uintptr_t)0xF)

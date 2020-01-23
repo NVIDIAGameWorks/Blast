@@ -58,7 +58,7 @@ NvBlast(config)(arch).(ext)
 
 (arch) is _x86 or _x64 for Windows 32- and 64-bit builds, respectively, and empty for non-Windows platforms.
 
-(ext) is .lib for static linking and .dll for dynamic linking on Windows.  On XBoxOne it is .lib, and on PS4 it is .a.
+(ext) is .lib for static linking and .dll for dynamic linking on Windows.
 
 <br>
 \section assets Creating an Asset from a Descriptor (Authoring)

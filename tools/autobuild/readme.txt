@@ -22,13 +22,8 @@ Most of the scripts accept: target, platform, config, tool, workspace.
 	Blast-Tests
 	
 - platforms:
-	win32
 	win64
-	linux32
 	linux64
-	ps4 
-	xboxone
-	android9
 	
 - configs:
 	debug 
@@ -37,9 +32,7 @@ Most of the scripts accept: target, platform, config, tool, workspace.
 	profile
 	
 - tools:
-	vc10
-	vc11
-	vc12
+	vc14
 	make
 	
 - workspace:

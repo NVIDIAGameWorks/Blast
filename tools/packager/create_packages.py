@@ -9,12 +9,10 @@ import xml.etree.ElementTree as ET
 
 __author__ = 'hfannar'
 
-PLATFORMS = ['windows', 'linux', 'xboxone', 'ps4']
+PLATFORMS = ['windows', 'linux']
 
 PLATFORM_DIRS = {
     # platform name : platform specific directories (will be excluded on other platforms)
-    'ps4': ['**/*ps4*/**', '**/*PS4*/**'],
-    'xboxone': ['**/*xboxone*/**', '**/*XboxOne*/**'],
     'windows': ['**/windows/*.cmake', '**/windows/CMakeLists.txt', '**/vc*win*/**'],
     'linux': ['**/unix/**', '**/linux*-gcc/**'],  # I don't know yet what cmake will generate here
 }
@@ -68,7 +66,7 @@ ARTIFACTS = [
     # Source (consoles)
     {
         'file': 'blast_source-%platform%@%version%',
-        'platforms': ['xboxone', 'ps4', 'linux'],
+        'platforms': ['linux'],
         'include': 
         [
             '/sdk/**/*.h',
@@ -81,9 +79,6 @@ ARTIFACTS = [
             '/test/**/*.cpp',
             '/test/**/CMakeLists.txt',
             '/test/**/*.cmake',
-            '/test/**/*.png', #xboxone specific
-            '/test/**/*.appxmanifest', #xboxone specific
-            '/test/compiler/cmake/ps4/*.vcxproj.user', #ps4 specific, will be excluded by PLATFORM_DIRS on others
             '/shared/utils/*.h',
             '/shared/utils/*.cpp',
             '/docs/**',
@@ -118,7 +113,7 @@ ARTIFACTS = [
     # SDK Binary (all platforms)
     {
         'file': 'blast_sdk_binary-%platform%@%version%',
-        'platforms': ['windows', 'xboxone', 'ps4', 'linux'],
+        'platforms': ['windows', 'linux'],
         'include':
         [
             '/sdk/**/include/*.h',

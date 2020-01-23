@@ -37,11 +37,7 @@ TARGETS = {
 		'solutionFile' 	: 'NvBlast.sln',
 		'platforms' 	: 
 		{
-			'win32' 	: ['vc11', 'vc12', 'vc14'],
-			'win64' 	: ['vc11', 'vc12', 'vc14'],
-			'ps4' 		: ['vc11', 'vc12'],
-			'xboxone' 	: ['vc11'],
-			'linux32' 	: ['make'],
+			'win64' 	: ['vc14'],
 			'linux64' 	: ['make']
 		}
 	},
@@ -57,15 +53,9 @@ TARGETS = {
 		'runCmd' 		: ['process_tool.exe', '-wait', '-ignore_seh_exception', 'launch', '{0}.exe', '--gtest_output=xml:'],
 #		'runCmd' 		: ['{0}.exe', '--gtest_output=xml:'],
 		'runShell' 		: ['./{0}', '--gtest_output=xml:'],
-		'xboxAppPath' 	: os.path.join(BLAST_PATH, 'test/compiler/{0}/Durango/AllTests/Layout/Image/Loose'),
-		'xboxAppAUMID' 	: 'AllTests_93eprs1gvvrwg!App',
 		'platforms' 	: 
 		{
-			'win32' 	: ['vc11', 'vc12', 'vc14'],
-			'win64' 	: ['vc11', 'vc12', 'vc14'],
-			'ps4' 		: ['vc11', 'vc12'],
-			'xboxone' 	: ['vc11'],
-			'linux32' 	: ['make'],
+			'win64' 	: ['vc14'],
 			'linux64' 	: ['make']
 		}
 	},
@@ -137,10 +127,7 @@ def get_project_folder(target, platform, tool):
 # solution config (e.g. {debug|x64}), used by VS toolchains)
 def get_solution_cfg(config, platform):
 	platformMap = {
-		'win32' : 'win32',
-		'win64' : 'x64',
-		'ps4' : 'ORBIS',
-		'xboxone' : 'Durango'
+		'win64' : 'x64'
 	}
 	platformName = platformMap.get(platform, platform)
 	return '{0}|{1}'.format(config, platformName)

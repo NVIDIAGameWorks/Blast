@@ -67,17 +67,6 @@ NV_FORCE_INLINE void platformAlignedFree(void* ptr)
 {
 	::free(ptr);
 }
-#elif NV_XBOXONE || NV_PS4
-// on these platforms we get 16-byte alignment by default
-NV_FORCE_INLINE void* platformAlignedAlloc(size_t size)
-{
-	return ::malloc(size);
-}
-
-NV_FORCE_INLINE void platformAlignedFree(void* ptr)
-{
-	::free(ptr);
-}
 #else
 NV_FORCE_INLINE void* platformAlignedAlloc(size_t size)
 {

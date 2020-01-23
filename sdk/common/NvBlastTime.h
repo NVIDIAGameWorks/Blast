@@ -112,10 +112,6 @@ NV_INLINE double Nv::Blast::Time::getTickDuration()
 	return 1.e-9;
 }
 
-#elif NV_PS4
-
-#include "ps4/NvBlastTimePS4.h"
-
 #endif
 
 #endif // #ifndef NVBLASTTIME_H

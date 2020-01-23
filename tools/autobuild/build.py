@@ -47,11 +47,6 @@ def buildWithMake(target, platform, config, tool, workspace = "."):
 def build(target, platform, config, tool, workspace = "."):
 	print("Build: {0} {1} {2} {3} {4}".format(target, platform, config, tool, workspace))
 	
-	# clean xbox manifests before the build
-	if 'xboxone' in platform:
-		xboxoneBinPath = os.path.join(workspace, conf.BLAST_PATH, 'bin', conf.get_project_folder(target, platform, tool))
-		searchAndDelete(xboxoneBinPath, 'AppxManifest.xml')
-
 	if 'vc' in tool:
 		if conf.USE_INCREDIBUILD:
 			buildWithIncrediBuild(target, platform, config, tool, workspace)

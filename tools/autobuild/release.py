@@ -12,8 +12,8 @@ ARTIFACTS = [
 	# source windows-like platforms
 	{
 		'file' 	  	: 'blast_source_{0}_{1}',
-		'platforms' : ['win32', 'win64', 'xboxone', 'ps4'],
-		'tools'		: ['vc11', 'vc12', 'vc14'],
+		'platforms' : ['win64'],
+		'tools'		: ['vc14'],
 		'include' 	:
 		{
 			'.' 								 						: [".h", ".cpp", ".vsprops"],
@@ -41,7 +41,7 @@ ARTIFACTS = [
 	# source unix-like platforms
 	{
 		'file' 	  	: 'blast_source_{0}_{1}',
-		'platforms' : ['linux32', 'linux64'],
+		'platforms' : ['linux64'],
 		'tools'		: ['make'],
 		'include' 	:
 		{
@@ -93,8 +93,8 @@ ARTIFACTS = [
 	# SDK only for windows-like platforms
 	{
 		'file' 	  	: 'blast_sdk_only_{0}_{1}',
-		'platforms' : ['win32', 'win64', 'xboxone'],
-		'tools'		: ['vc11', 'vc12', 'vc14'],
+		'platforms' : ['win64'],
+		'tools'		: ['vc14'],
 		'include' 	:
 		{
 			'./bin/%tool%%platform%': [".dll"],
@@ -118,37 +118,11 @@ ARTIFACTS = [
 		],
 		
 	},
-	# SDK only for PS4
-	{
-		'file' 	  	: 'blast_sdk_only_{0}_{1}',
-		'platforms' : ['ps4'],
-		'tools'		: ['vc11', 'vc12', 'vc14'],
-		'include' 	:
-		{
-			'./lib/%tool%%platform%': [".a"],
-			'./include' : ["*"],
-			'./docs/api_docs'					 						: ["*"],
-		},
-		
-		'exclude' 	:
-		{
-			'./tools'			: ["*"],
-		},
-		
-		'skipwithsubstr' 	:
-		{
-			'./bin/%tool%%platform%': ['AntTweakBar', 'Assimp32', 'PhysX', 'GFSDK', 'd3dcompiler_47', 'nvToolsExt', 'SDL2']
-		},
-		
-		'files' : [
-			'./docs/release_notes.txt',
-		],
-	},
 	# Tools and samples
 	{
 		'file' 	  	: 'blast_tools_and_samples_{0}_{1}',
-		'platforms' : ['win32', 'win64'],
-		'tools'		: ['vc12'],
+		'platforms' : ['win64'],
+		'tools'		: ['vc14'],
 		'include' 	:
 		{
 			'./bin/%tool%%platform%': [".dll"],
@@ -175,7 +149,7 @@ ARTIFACTS = [
 	# SDK only unix-like platforms
 	{
 		'file' 	  	: 'blast_sdk_only_{0}_{1}',
-		'platforms' : ['linux32', 'linux64'],
+		'platforms' : ['linux64'],
 		'tools'		: ['make'],
 		'include' 	:
 		{
@@ -205,10 +179,8 @@ BUILD_CONFS= ['checked', 'debug', 'profile', 'release']
 
 PLATFORM_DIRS = {
 	# 	platform directory 		: 	platform(s) name
-		'/ps4'					:	['ps4'],
-		'/xboxone'				:	['xboxone'],
-		'/windows'				:	['win32','win64'],
-		'/unix'					:	['linux32','linux64'],
+		'/windows'				:	['win64'],
+		'/unix'					:	['linux64'],
 	}
 
 def onDeleteError(f, p, inf):
@@ -365,8 +337,8 @@ def getCL():
 	
 def main():
 	parser = argparse.ArgumentParser(description = 'Create release builds and pack them.')
-	parser.add_argument('-p', '--platform', type=str, help = 'Platform (e.g. win32, win64, linux32..)')
-	parser.add_argument('-t', '--tool', type=str, default='.', help = 'Tool (e.g. vc11, vc12, vc14, make..)')
+	parser.add_argument('-p', '--platform', type=str, help = 'Platform (e.g. win64, linux64..)')
+	parser.add_argument('-t', '--tool', type=str, default='.', help = 'Tool (e.g. vc14, make..)')
 	parser.add_argument('-n', '--nophysx', action='store_true', help = 'Disable PhysX build', default=False)
 	parser.add_argument('-e', '--echo_only', action='store_true', help='print directory tree for each artifact without actually building or zipping.', default=False)
 	

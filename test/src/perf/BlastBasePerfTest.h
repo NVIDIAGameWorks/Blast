@@ -208,10 +208,6 @@ static const char* getPlatformSuffix()
 	return "win32";
 #elif NV_WIN64
 	return "win64";
-#elif NV_XBOXONE
-	return "xb1";
-#elif NV_PS4
-	return "ps4";
 #elif NV_LINUX 
 	#if NV_X64
 		return "linux64";
@@ -225,11 +221,7 @@ static const char* getPlatformSuffix()
 
 static const char* getPlatformRoot()
 {
-#if NV_PS4
-	return "/app0/";
-#elif NV_XBOXONE
-	return "G:/";
-#elif NV_LINUX
+#if NV_LINUX
 	return "../../";
 #else
 	return "../../../";
