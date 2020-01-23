@@ -7,11 +7,11 @@
 @SET BLAST_ROOT_DIR=%~sdp0
 
 :: Run packman to ensure dependencies are present and run cmake generation script afterwards
-@call "%~dp0buildtools\get_build_deps.cmd" win.msvc
+@call "%~dp0tools\get_build_deps.cmd" win.msvc
 @if %ERRORLEVEL% neq 0 exit /b %errorlevel%
 
 @echo Getting target platform dependencies for win.x86_64.vc150 ...
-@call "%~dp0buildtools\packman5\packman.cmd" pull "%~dp0target_platform_deps.xml" --platform win.x86_64.vc150 --postscript "%~dp0buildtools\cmake_projects_vc15win64.bat"
+@call "%~dp0tools\packman5\packman.cmd" pull "%~dp0target_platform_deps.xml" --platform win.x86_64.vc150 --postscript "%~dp0tools\cmake_projects_vc15win64.bat"
 @if %ERRORLEVEL% neq 0 (
     @exit /b %errorlevel%
 ) else (

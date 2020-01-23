@@ -15,9 +15,6 @@ These are the current Blast&tm; extensions:
 \subpage pageextauthoring - Powerful tools for cleaning and fracturing meshes using voronoi, clustered voronoi, and slicing methods.
 <br>
 <br>
-\subpage pageextimport - Functions to import data from external formats and convert to a Blast&tm; asset.  Currently handles APEX NvDestructibleAsset data.
-<br>
-<br>
 \subpage pageextexporter - Standard mesh and collision writer tools in fbx, obj, and json formats.
 <br>
 <br>

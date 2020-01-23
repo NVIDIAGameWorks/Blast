@@ -16,14 +16,12 @@ INPUT                  = ../../sdk \
 						 ../_source/ext_stress.txt \
 						 ../_source/ext_assetutils.txt \
 						 ../_source/ext_authoring.txt \
-						 ../_source/ext_import.txt \
 						 ../_source/ext_exporter.txt \
 						 ../_source/ext_serialization.txt \
 						 ../_source/ext_tkserialization.txt \
 						 ../_source/ext_pxserialization.txt \
 						 ../_source/ext_physx.txt \
 						 ../_source/tools.txt \
-						 ../_source/apex_importer.txt \
 						 ../_source/legacy_converter.txt \
 						 ../_source/authoring_tool.txt \
 						 ../_source/samples.txt \
@@ -32,7 +30,7 @@ INPUT                  = ../../sdk \
 						 ../_source/copyrights.txt
 FILE_PATTERNS		   = *.h
 RECURSIVE			   = YES
-EXCLUDE_PATTERNS       = NvPreprocessor.h */common/* */ps4/* */xboxone/* */source/* */waiting/* */apexmodules/*
+EXCLUDE_PATTERNS       = NvPreprocessor.h */common/* */source/*
 CHM_FILE               = chm\Blast.chm
 TOC_EXPAND             = YES
 OUTPUT_DIRECTORY       = ../api_docs/

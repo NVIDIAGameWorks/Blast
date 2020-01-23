@@ -127,7 +127,4 @@ Where:
 \endverbatim
 
 <br>
-See \ref pagecopyrights for license information regarding third-party software used by ApexImporter.
-
-<br>
 */

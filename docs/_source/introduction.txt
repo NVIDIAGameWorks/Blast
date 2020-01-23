@@ -69,11 +69,5 @@ chunks, if any.
 The effect of damage on leaf chunks depends upon which API is used.  The low-level API does not delete leaf chunks.  It is up to the
 user to delete them, and manage their physical and graphical representation outside of Blast&tm; if so desired.
 
-\section backwards_compatibility Backwards Compatibility
-
-The Blast&tm; SDK provides the \ref pageimporter tool to allow APEX Destructible assets to be reused.  A Blast&tm; asset requires more information
-in its support graph than an APEX Destuctible asset does.  Whereas the latter only contains a list of chunk neighbors, the bonds used by Blast&tm;
-include a small amount of geometric information, as described in \ref asset_structure.
-
 <br>
 */

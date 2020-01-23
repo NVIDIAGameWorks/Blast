@@ -1,4 +1,8 @@
 compiler/
 !compiler/cmake
+samples/resources
+bin/
 lib/
 sdk/extensions/serialization/source/generated/
+*.dll
+*.pdb

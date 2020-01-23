@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<mappings>
-<path source="${BLAST_ROOT_DIR}test\data\xb1" target="\test\data\xb1"/>
-</mappings>

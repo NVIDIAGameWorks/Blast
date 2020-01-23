@@ -44,7 +44,6 @@ and joints.  The source code for this extension, like all Blast extensions, is i
 Current blast extensions:
 * ExtAssetUtils - NvBlastAsset utility functions. Add world bonds, merge assets, and transform geometric data. 
 * ExtAuthoring - a set of geometric tools which can split a mesh hierarchically and create a Blast asset, along with collision geometry and chunk graphics meshes in a separate files.
-* ExtImport - provides functions to import an APEX Destructible Asset to create a Blast asset.
 * ExtExporter - standard mesh and collision writer tools in fbx, obj, and json formats. 
 * ExtPhysX - a physics manager using PhysX which keeps PxActors and PxJoints updated in a user-supplied PxScene.  It handles impact damage (through the contact callback), includes a stress solver wrapper, and provides a listener that enables multiple clients to keep their state synchronized.
 * ExtSerialization, ExtTkSerialization, ExtPxSerialization - serialization extensions for low-level, Tk and Px layers. Uses Cap'n Proto to provide robust serialization across different platforms.
@@ -79,9 +78,6 @@ downloaded into a folder `NVIDIA/packman-repo` at the root of your hard drive, s
 time the script is run (or when a dependency version changes).
 * Makefiles will be generated in `compiler/linux64-CONFIG-gcc`, where CONFIG = debug or release.
 These will build all Blast linux projects, including the low-level, toolkit, extensions, and tests.
-
-For PS4 and XBoxOne:
-* Please visit https://developer.nvidia.com in order to contact NVIDIA for further information.
 
 Tools and Samples Binaries (Windows only)
 -----------------------------------------
