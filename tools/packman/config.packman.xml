@@ -1,0 +1,8 @@
+<config remotes="cloudfront gtl">
+    <remote name="cloudfront" type="https" packageLocation="d4i3qtqj3r0z5.cloudfront.net/${name}@${version}" />
+    <remote name="cloudfront_upload" type="s3" packageLocation="REDACTED" />
+    <remote name="gtl" type="gtl">
+        <credentials id="svcgtlautomate" key="QHV0ME1AdDNHVEwkY3IxcHQk"/>
+    </remote>
+    <remote name="gitlab-repo" type="https" packageLocation="gitlab-master.nvidia.com/api/v4/projects/omniverse%2Frepo%2F${name}/repository/archive.zip?sha=${version}" />
+</config>

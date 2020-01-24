@@ -1,3 +1,4 @@
+_*/
 compiler/
 !compiler/cmake
 samples/resources
@@ -6,3 +7,4 @@ lib/
 sdk/extensions/serialization/source/generated/
 *.dll
 *.pdb
+*.pyc

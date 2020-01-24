@@ -1,0 +1,104 @@
+########################################################################################################################
+# Memo:
+########################################################################################################################
+
+# Mappings ($ string substitutions). Name and examples:
+# |==========================================================
+# | $platform      | 'windows-x86_64'     | 'linux-x86_64'  | 
+# |----------------------------------------------------------
+# | $lib_ext       | '.dll'               | '.so'           |
+# | $lib_prefix    | ''                   | 'lib'           |
+# | $bindings_ext  | '.pyd'               | '.so'           |
+# | $exe_ext       | '.exe'               | ''              |
+# | $shell_ext     | '.bat'               | '.sh'           |
+# |==========================================================
+#
+# |==========================================================
+# | $config        | 'debug'              | 'release'       |
+# |==========================================================
+
+# Filters. For example, if packaging gfx, debug, on linux-x86_64 all those toml keys will be used for this package:
+# [gfx.linux-x86_64]
+# [gfx.debug]
+# [gfx.linux.debug]
+# So you can use those in any order as a keys: ["gfx", "linux-x86_64", "debug", "linux", "x86_64"]
+
+# Note that keys can only contain ASCII letters, ASCII digits, underscores, and dashes (A-Za-z0-9_-). If anything else
+# is in the key you need to quote it. E.g. "carb_sdk+plugins".
+
+
+########################################################################################################################
+# Common section:
+########################################################################################################################
+
+files = []
+
+
+########################################################################################################################
+# blastsdk package
+########################################################################################################################
+
+[blastsdk]
+files = [
+    ["sdk/extensions/assetutils/include"],
+    ["sdk/extensions/authoring/include"],
+    ["sdk/extensions/authoringCommon/include"],
+    ["sdk/extensions/exporter/include"],
+    ["sdk/extensions/physx/include"],
+    ["sdk/extensions/RT/include"],
+    ["sdk/extensions/serialization/include"],
+    ["sdk/extensions/shaders/include"],
+    ["sdk/extensions/stress/include"],
+    ["sdk/globals/include"],
+    ["sdk/lowlevel/include"],
+    ["sdk/toolkit/include"],
+]
+
+[blastsdk.windows-x86_64]
+files = []
+
+[blastsdk.windows-x86_64.debug]
+files = [
+    ["lib/vc15win64-cmake/NvBlast*DEBUG_x64.lib", "lib/"],
+    ["bin/vc15win64-cmake/NvBlast*DEBUG_x64.dll", "bin/"],
+]
+
+[blastsdk.windows-x86_64.checked]
+files = [
+    ["lib/vc15win64-cmake/NvBlast*CHECKED_x64.lib", "lib/"],
+    ["bin/vc15win64-cmake/NvBlast*CHECKED_x64.dll", "bin/"],
+]
+
+[blastsdk.windows-x86_64.profile]
+files = [
+    ["lib/vc15win64-cmake/NvBlast*PROFILE_x64.lib", "lib/"],
+    ["bin/vc15win64-cmake/NvBlast*PROFILE_x64.dll", "bin/"],
+]
+
+[blastsdk.windows-x86_64.release]
+files = [
+    ["lib/vc15win64-cmake/NvBlastGlobals_x64.lib", "lib/"],
+    ["lib/vc15win64-cmake/NvBlast_x64.lib", "lib/"],
+    ["lib/vc15win64-cmake/NvBlastTk_x64.lib", "lib/"],
+    ["lib/vc15win64-cmake/NvBlastExtPxSerialization_x64.lib", "lib/"],
+    ["lib/vc15win64-cmake/NvBlastExtExporter_x64.lib", "lib/"],
+    ["lib/vc15win64-cmake/NvBlastExtTkSerialization_x64.lib", "lib/"],
+    ["lib/vc15win64-cmake/NvBlastExtAuthoring_x64.lib", "lib/"],
+    ["lib/vc15win64-cmake/NvBlastExtPhysX_x64.lib", "lib/"],
+    ["lib/vc15win64-cmake/NvBlastExtStress_x64.lib", "lib/"],
+    ["lib/vc15win64-cmake/NvBlastExtAssetUtils_x64.lib", "lib/"],
+    ["lib/vc15win64-cmake/NvBlastExtSerialization_x64.lib", "lib/"],
+    ["lib/vc15win64-cmake/NvBlastExtShaders_x64.lib", "lib/"],
+    ["bin/vc15win64-cmake/NvBlastGlobals_x64.dll", "bin/"],
+    ["bin/vc15win64-cmake/NvBlast_x64.dll", "bin/"],
+    ["bin/vc15win64-cmake/NvBlastTk_x64.dll", "bin/"],
+    ["bin/vc15win64-cmake/NvBlastExtPxSerialization_x64.dll", "bin/"],
+    ["bin/vc15win64-cmake/NvBlastExtExporter_x64.dll", "bin/"],
+    ["bin/vc15win64-cmake/NvBlastExtTkSerialization_x64.dll", "bin/"],
+    ["bin/vc15win64-cmake/NvBlastExtAuthoring_x64.dll", "bin/"],
+    ["bin/vc15win64-cmake/NvBlastExtPhysX_x64.dll", "bin/"],
+    ["bin/vc15win64-cmake/NvBlastExtStress_x64.dll", "bin/"],
+    ["bin/vc15win64-cmake/NvBlastExtAssetUtils_x64.dll", "bin/"],
+    ["bin/vc15win64-cmake/NvBlastExtSerialization_x64.dll", "bin/"],
+    ["bin/vc15win64-cmake/NvBlastExtShaders_x64.dll", "bin/"],
+]
