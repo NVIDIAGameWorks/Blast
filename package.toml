@@ -52,6 +52,7 @@ files = [
     ["sdk/globals/include"],
     ["sdk/lowlevel/include"],
     ["sdk/toolkit/include"],
+    ["sdk/common"],
 ]
 
 [blastsdk.windows-x86_64]

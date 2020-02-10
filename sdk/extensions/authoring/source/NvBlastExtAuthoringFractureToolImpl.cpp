@@ -2030,7 +2030,7 @@ FractureToolImpl::getBufferedBaseMeshes(Vertex*& vertexBuffer, uint32_t*& indexB
 	std::vector<Vertex> _vertexBuffer;
 	std::vector<std::vector<uint32_t> > _indexBuffer(mChunkPostprocessors.size());
 
-	indexBufferOffsets = new uint32_t[mChunkPostprocessors.size() + 1];
+    indexBufferOffsets = reinterpret_cast<uint32_t*>(NVBLAST_ALLOC((mChunkPostprocessors.size() + 1) * sizeof(uint32_t)));
 
 	uint32_t totalIndices = 0;
 	for (uint32_t ch = 0; ch < mChunkPostprocessors.size(); ++ch)
@@ -2049,8 +2049,8 @@ FractureToolImpl::getBufferedBaseMeshes(Vertex*& vertexBuffer, uint32_t*& indexB
 		_vertexBuffer[i].p = _vertexBuffer[i].p * mScaleFactor + mOffset;
 	}
 
-	vertexBuffer = new Vertex[_vertexBuffer.size()];
-	indexBuffer  = new uint32_t[totalIndices];
+    vertexBuffer = reinterpret_cast<Vertex*>(NVBLAST_ALLOC(_vertexBuffer.size() * sizeof(Vertex)));
+    indexBuffer = reinterpret_cast<uint32_t*>(NVBLAST_ALLOC(totalIndices * sizeof(uint32_t)));
 
 	memcpy(vertexBuffer, _vertexBuffer.data(), _vertexBuffer.size() * sizeof(Vertex));
 	for (uint32_t ch = 0; ch < _indexBuffer.size(); ++ch)
