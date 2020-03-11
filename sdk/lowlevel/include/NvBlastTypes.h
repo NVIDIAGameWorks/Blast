@@ -400,7 +400,7 @@ struct NvBlastActorDesc
 	float			uniformInitialBondHealth;
 
 	/**
-	Initial bond healths.  If not NULL, this array must be of length NvBlastAssetGetChunkCount(asset, logFn).
+	Initial bond healths.  If not NULL, this array must be of length NvBlastAssetGetBondCount(asset, logFn).
 	If NULL, uniformInitialBondHealth must be set.
 	*/
 	const float*	initialBondHealths;
