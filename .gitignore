@@ -1,6 +1,6 @@
 _*/
-compiler/
-!compiler/cmake
+compiler/*
+!compiler/cmake/
 samples/resources
 bin/
 lib/
