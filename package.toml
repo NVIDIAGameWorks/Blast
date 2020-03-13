@@ -60,44 +60,44 @@ files = []
 
 [blastsdk.windows-x86_64.debug]
 files = [
-    ["lib/vc15win64-cmake/debug/NvBlast*_x64.lib"],
-    ["bin/vc15win64-cmake/debug/NvBlast*_x64.dll"],
-    ["bin/vc15win64-cmake/debug/NvBlast*_x64.pdb"],
+    ["lib/vc15win64-cmake/debug/NvBlast*_x64.lib", "lib/vc15win64-cmake/debug/"],
+    ["bin/vc15win64-cmake/debug/NvBlast*_x64.dll", "bin/vc15win64-cmake/debug/"],
+    ["bin/vc15win64-cmake/debug/NvBlast*_x64.pdb", "bin/vc15win64-cmake/debug/"],
 ]
 
 [blastsdk.windows-x86_64.checked]
 files = [
-    ["lib/vc15win64-cmake/checked/NvBlast*_x64.lib"],
-    ["bin/vc15win64-cmake/checked/NvBlast*_x64.dll"],
-    ["bin/vc15win64-cmake/checked/NvBlast*_x64.pdb"],
+    ["lib/vc15win64-cmake/checked/NvBlast*_x64.lib", "lib/vc15win64-cmake/checked/"],
+    ["bin/vc15win64-cmake/checked/NvBlast*_x64.dll", "bin/vc15win64-cmake/checked/"],
+    ["bin/vc15win64-cmake/checked/NvBlast*_x64.pdb", "bin/vc15win64-cmake/checked/"],
 ]
 
 [blastsdk.windows-x86_64.profile]
 files = [
-    ["lib/vc15win64-cmake/profile/NvBlast*_x64.lib"],
-    ["bin/vc15win64-cmake/profile/NvBlast*_x64.dll"],
-    ["bin/vc15win64-cmake/profile/NvBlast*_x64.pdb"],
+    ["lib/vc15win64-cmake/profile/NvBlast*_x64.lib", "lib/vc15win64-cmake/profile/"],
+    ["bin/vc15win64-cmake/profile/NvBlast*_x64.dll", "bin/vc15win64-cmake/profile/"],
+    ["bin/vc15win64-cmake/profile/NvBlast*_x64.pdb", "bin/vc15win64-cmake/profile/"],
 ]
 
 [blastsdk.windows-x86_64.release]
 files = [
-    ["lib/vc15win64-cmake/release/NvBlast*_x64.lib"],
-    ["bin/vc15win64-cmake/release/NvBlast*_x64.dll"],
-    ["bin/vc15win64-cmake/release/NvBlast*_x64.pdb"],
+    ["lib/vc15win64-cmake/release/NvBlast*_x64.lib", "lib/vc15win64-cmake/release/"],
+    ["bin/vc15win64-cmake/release/NvBlast*_x64.dll", "bin/vc15win64-cmake/release/"],
+    ["bin/vc15win64-cmake/release/NvBlast*_x64.pdb", "bin/vc15win64-cmake/release/"],
 ]
 
 [blastsdk.windows-x86_64.all]
 files = [
-    ["lib/vc15win64-cmake/debug/NvBlast*_x64.lib"],
-    ["bin/vc15win64-cmake/debug/NvBlast*_x64.dll"],
-    ["bin/vc15win64-cmake/debug/NvBlast*_x64.pdb"],
-    ["lib/vc15win64-cmake/checked/NvBlast*_x64.lib"],
-    ["bin/vc15win64-cmake/checked/NvBlast*_x64.dll"],
-    ["bin/vc15win64-cmake/checked/NvBlast*_x64.pdb"],
-    ["lib/vc15win64-cmake/profile/NvBlast*_x64.lib"],
-    ["bin/vc15win64-cmake/profile/NvBlast*_x64.dll"],
-    ["bin/vc15win64-cmake/profile/NvBlast*_x64.pdb"],
-    ["lib/vc15win64-cmake/release/NvBlast*_x64.lib"],
-    ["bin/vc15win64-cmake/release/NvBlast*_x64.dll"],
-    ["bin/vc15win64-cmake/release/NvBlast*_x64.pdb"],
+    ["lib/vc15win64-cmake/debug/NvBlast*_x64.lib", "lib/vc15win64-cmake/debug/"],
+    ["bin/vc15win64-cmake/debug/NvBlast*_x64.dll", "bin/vc15win64-cmake/debug/"],
+    ["bin/vc15win64-cmake/debug/NvBlast*_x64.pdb", "bin/vc15win64-cmake/debug/"],
+    ["lib/vc15win64-cmake/checked/NvBlast*_x64.lib", "lib/vc15win64-cmake/checked/"],
+    ["bin/vc15win64-cmake/checked/NvBlast*_x64.dll", "bin/vc15win64-cmake/checked/"],
+    ["bin/vc15win64-cmake/checked/NvBlast*_x64.pdb", "bin/vc15win64-cmake/checked/"],
+    ["lib/vc15win64-cmake/profile/NvBlast*_x64.lib", "lib/vc15win64-cmake/profile/"],
+    ["bin/vc15win64-cmake/profile/NvBlast*_x64.dll", "bin/vc15win64-cmake/profile/"],
+    ["bin/vc15win64-cmake/profile/NvBlast*_x64.pdb", "bin/vc15win64-cmake/profile/"],
+    ["lib/vc15win64-cmake/release/NvBlast*_x64.lib", "lib/vc15win64-cmake/release/"],
+    ["bin/vc15win64-cmake/release/NvBlast*_x64.dll", "bin/vc15win64-cmake/release/"],
+    ["bin/vc15win64-cmake/release/NvBlast*_x64.pdb", "bin/vc15win64-cmake/release/"],
 ]
