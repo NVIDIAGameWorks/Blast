@@ -173,30 +173,30 @@ MeshImpl::MeshImpl(const Vertex* vertices, uint32_t count, uint32_t* indices, ui
 	recalculateBoundingBox();
 }
 
-
-
 float MeshImpl::getMeshVolume()
 {
-	/**
-		Check if mesh boundary consist only of triangles
-	*/
-	for (uint32_t i = 0; i < mFacets.size(); ++i)
-	{
-		if (mFacets[i].edgesCount != 3)
-		{
-			return 0.0f;
-		}
-	}	
-
 	float volume = 0;
 	for (uint32_t i = 0; i < mFacets.size(); ++i)
 	{
 		int32_t offset = mFacets[i].firstEdgeNumber;
 		NvcVec3& a     = mVertices[mEdges[offset].s].p;
-		NvcVec3& b     = mVertices[mEdges[offset + 1].s].p;
-		NvcVec3& c     = mVertices[mEdges[offset + 2].s].p;
-		
-		volume += (a.x * b.y * c.z - a.x * b.z * c.y - a.y * b.x * c.z + a.y * b.z * c.x + a.z * b.x * c.y - a.z * b.y * c.x);
+		for (uint32_t j = 0; j < mFacets[i].edgesCount-2; j++) {
+			NVBLAST_ASSERT_WITH_MESSAGE(
+				mEdges[offset + j + 1].e == mEdges[offset + j + 2].s,
+				"The end of one edge should be the start of the next"
+			);
+			NvcVec3& b     = mVertices[mEdges[offset + j + 1].s].p;
+			NvcVec3& c     = mVertices[mEdges[offset + j + 2].s].p;
+
+			volume += (
+				a.x * b.y * c.z - 
+				a.x * b.z * c.y - 
+				a.y * b.x * c.z + 
+				a.y * b.z * c.x + 
+				a.z * b.x * c.y - 
+				a.z * b.y * c.x
+			);
+		}
 	}
 	return (1.0f / 6.0f) * std::abs(volume);
 }
