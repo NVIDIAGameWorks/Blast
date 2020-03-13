@@ -118,7 +118,7 @@ PACKAGES = {
     "blastsdk": create_blastsdk_package_desc,
 }
 
-CONFIGS = ["release", "debug", "checked", "profile"]
+CONFIGS = ["release", "debug", "checked", "profile", "all"]
 PLATFORMS = ["windows-x86_64", "linux-x86_64"]
 
 
