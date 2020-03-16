@@ -1,6 +1,7 @@
 _*/
 compiler/*
 !compiler/cmake/
+docs/api_docs/
 samples/resources
 bin/
 lib/
