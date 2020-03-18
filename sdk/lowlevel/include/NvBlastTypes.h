@@ -368,10 +368,9 @@ struct NvBlastAssetDesc
 /**
 Family (opaque)
 
-a family can be created by the NvBlastAssetCreateFamily function and released 
-by the NvBlastFamilyRelease.  Family is needed to create first actor.  All the following
-actors which can be created with NvBlastActorSplit function (as a result of fracture) will share the same family
-block.  NvBlastFamilyGetActorCount can be used to know if family can be safely released.
+A family can be created by the NvBlastAssetCreateFamily function.  Family is needed to create first actor.  
+All the following actors which can be created with NvBlastActorSplit function (as a result of fracture) 
+will share the same family block.  NvBlastFamilyGetActorCount can be used to know if family can be safely released.
 */
 struct NvBlastFamily {};
 

@@ -44,15 +44,9 @@ namespace Blast
 
 //////// Actor static methods ////////
 
-size_t Actor::createRequiredScratch(const NvBlastFamily* family)
+size_t Actor::createRequiredScratch(const NvBlastFamily* family, NvBlastLog logFn)
 {
-#if NVBLASTLL_CHECK_PARAMS
-	if (family == nullptr || reinterpret_cast<const FamilyHeader*>(family)->m_asset == nullptr)
-	{
-		NVBLAST_ALWAYS_ASSERT();
-		return 0;
-	}
-#endif
+	NVBLASTLL_CHECK(family != nullptr && reinterpret_cast<const FamilyHeader*>(family)->m_asset != nullptr, logFn, "Actor::createRequiredScratch: NULL family input or asset.", return 0);
 	
 	const Asset& solverAsset = *reinterpret_cast<const FamilyHeader*>(family)->m_asset;
 	return FamilyGraph::findIslandsRequiredScratch(solverAsset.m_graph.m_nodeCount);
@@ -707,7 +701,7 @@ size_t NvBlastFamilyGetRequiredScratchForCreateFirstActor(const NvBlastFamily* f
 	NVBLASTLL_CHECK(reinterpret_cast<const Nv::Blast::FamilyHeader*>(family)->m_asset != nullptr, 
 		logFn, "NvBlastFamilyGetRequiredScratchForCreateFirstActor: family has NULL asset.", return 0);
 
-	return Nv::Blast::Actor::createRequiredScratch(family);
+	return Nv::Blast::Actor::createRequiredScratch(family, logFn);
 }
 
 

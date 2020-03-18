@@ -91,7 +91,7 @@ public:
 
 	\return the number of bytes required.
 	*/
-	static size_t	createRequiredScratch(const NvBlastAssetDesc* desc);
+	static size_t	createRequiredScratch(const NvBlastAssetDesc* desc, NvBlastLog logFn);
 
 
 	/**

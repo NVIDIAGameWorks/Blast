@@ -309,15 +309,9 @@ size_t Asset::getMemorySize(const NvBlastAssetDesc* desc)
 }
 
 
-size_t Asset::createRequiredScratch(const NvBlastAssetDesc* desc)
+size_t Asset::createRequiredScratch(const NvBlastAssetDesc* desc, NvBlastLog logFn)
 {
-#if NVBLASTLL_CHECK_PARAMS
-	if (desc == nullptr)
-	{
-		NVBLAST_ALWAYS_ASSERT();
-		return 0;
-	}
-#endif
+	NVBLASTLL_CHECK(desc != nullptr, logFn, "Asset::createRequiredScratch: NULL desc.", return 0);
 
 	// Aligned and padded
 	return 16 +
@@ -834,7 +828,7 @@ size_t NvBlastGetRequiredScratchForCreateAsset(const NvBlastAssetDesc* desc, NvB
 {
 	NVBLASTLL_CHECK(desc != nullptr, logFn, "NvBlastGetRequiredScratchForCreateAsset: NULL desc pointer input.", return 0);
 
-	return Nv::Blast::Asset::createRequiredScratch(desc);
+	return Nv::Blast::Asset::createRequiredScratch(desc, logFn);
 }
 
 

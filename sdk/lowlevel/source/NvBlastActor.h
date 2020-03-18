@@ -282,7 +282,7 @@ public:
 
 	\return the number of bytes required.
 	*/
-	static size_t		createRequiredScratch(const NvBlastFamily* family);
+	static size_t		createRequiredScratch(const NvBlastFamily* family, NvBlastLog logFn);
 
 	/**
 	Deserialize a single Actor from a buffer.  An actor family must given, into which
