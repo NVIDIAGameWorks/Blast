@@ -603,7 +603,7 @@ uint32_t NvBlastFamilyGetFormatVersion(const NvBlastFamily* family, NvBlastLog l
 
 const NvBlastAsset* NvBlastFamilyGetAsset(const NvBlastFamily* family, NvBlastLog logFn)
 {
-	NVBLASTLL_CHECK(family != nullptr, logFn, "NvBlastFamilyGetAssetID: NULL family pointer input.", return nullptr);
+	NVBLASTLL_CHECK(family != nullptr, logFn, "NvBlastFamilyGetAsset: NULL family pointer input.", return nullptr);
 	return reinterpret_cast<const Nv::Blast::FamilyHeader*>(family)->m_asset;
 }
 
