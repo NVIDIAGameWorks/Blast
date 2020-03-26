@@ -36,6 +36,7 @@
 #include "NvBlastMemory.h"
 
 #include <algorithm>
+#include <random>
 
 
 namespace Nv
@@ -247,6 +248,21 @@ static bool testForValidTrees(uint32_t chunkCount, const NvBlastChunkDesc* chunk
 	}
 
 	return true;
+}
+
+
+/**
+ * Helper to generate random GUID
+ */
+static NvBlastID NvBlastExtCreateRandomID()
+{
+	NvBlastID id;
+	static std::default_random_engine re;
+	*reinterpret_cast<uint32_t*>(&id.data[0]) = re();
+	*reinterpret_cast<uint32_t*>(&id.data[4]) = re();
+	*reinterpret_cast<uint32_t*>(&id.data[8]) = re();
+	*reinterpret_cast<uint32_t*>(&id.data[12]) = re();
+	return id;
 }
 
 
@@ -497,8 +513,7 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 	}
 
 	// Allocate memory for asset
-	NvBlastID id;
-	memset(&id, 0, sizeof(NvBlastID));	// To do - create an actual id
+	NvBlastID id = NvBlastExtCreateRandomID();
 	Asset* asset = initializeAsset(mem, id, desc->chunkCount, graphNodeCount, leafChunkCount, firstSubsupportChunkIndex, bondCount, logFn);
 
 	// Asset data pointers
