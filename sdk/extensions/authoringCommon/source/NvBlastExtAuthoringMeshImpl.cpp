@@ -173,20 +173,20 @@ MeshImpl::MeshImpl(const Vertex* vertices, uint32_t count, uint32_t* indices, ui
 	recalculateBoundingBox();
 }
 
-float MeshImpl::getMeshVolume()
+float MeshImpl::getMeshVolume() const
 {
 	float volume = 0;
 	for (uint32_t i = 0; i < mFacets.size(); ++i)
 	{
 		int32_t offset = mFacets[i].firstEdgeNumber;
-		NvcVec3& a     = mVertices[mEdges[offset].s].p;
+		const NvcVec3& a     = mVertices[mEdges[offset].s].p;
 		for (uint32_t j = 0; j < mFacets[i].edgesCount-2; j++) {
 			NVBLAST_ASSERT_WITH_MESSAGE(
 				mEdges[offset + j + 1].e == mEdges[offset + j + 2].s,
 				"The end of one edge should be the start of the next"
 			);
-			NvcVec3& b     = mVertices[mEdges[offset + j + 1].s].p;
-			NvcVec3& c     = mVertices[mEdges[offset + j + 2].s].p;
+			const NvcVec3& b = mVertices[mEdges[offset + j + 1].s].p;
+			const NvcVec3& c = mVertices[mEdges[offset + j + 2].s].p;
 
 			volume += (
 				a.x * b.y * c.z - 
