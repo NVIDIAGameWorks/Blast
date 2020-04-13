@@ -156,7 +156,7 @@ public:
 		Compute mesh volume. Can be used only for triangulated meshes.
 		Return mesh volume. If mesh is not triangulated return 0.
 	*/
-	float				getMeshVolume() override;
+	float				getMeshVolume() const override;
 
 
 	/**

@@ -145,7 +145,7 @@ public:
 		Compute mesh volume. Can be used only for triangulated meshes.
 		Return mesh volume. If mesh is not triangulated return 0.
 	*/
-	virtual float				getMeshVolume() = 0;
+	virtual float				getMeshVolume() const = 0;
 
 
 	/**

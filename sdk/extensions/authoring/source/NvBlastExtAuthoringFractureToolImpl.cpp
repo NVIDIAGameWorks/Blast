@@ -491,22 +491,80 @@ FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const 
 	return 0;
 }
 
-Mesh* FractureToolImpl::createChunkMesh(int32_t chunkId)
+Mesh* FractureToolImpl::createChunkMesh(int32_t chunkIndex)
 {
-	int32_t chunkIndex = getChunkIndex(chunkId);
-	if (chunkIndex < 0 || static_cast<size_t>(chunkIndex) >= mChunkData.size())
-	{
+	// make sure the chunk is valid
+	if (chunkIndex < 0 || uint32_t(chunkIndex) >= this->getChunkCount()) {
 		return nullptr;
 	}
 
-	auto temp = new MeshImpl(*reinterpret_cast<MeshImpl*>(mChunkData[chunkIndex].meshData));
-	for (uint32_t i = 0; i < temp->getVerticesCount(); ++i)
-	{
-		temp->getVerticesWritable()[i].p = temp->getVertices()[i].p * mScaleFactor + mOffset;
+	// grab the original source mesh
+	const auto sourceMesh = this->getChunkInfo(chunkIndex).meshData;
+	if (!sourceMesh) {
+		return nullptr;
 	}
-	temp->recalculateBoundingBox();
 
-	return temp;
+	// compact the vertex buffer
+	const auto sourceVertices = sourceMesh->getVertices();
+	const auto numSourceVerts = sourceMesh->getVerticesCount();
+	std::map<Vertex, uint32_t, VrtComp> vertexMapping;
+	std::vector<Vertex> _vertexBuffer;
+	for (uint32_t i = 0; i < numSourceVerts; i++) {
+		const auto& vert = sourceVertices[i];
+		auto it = vertexMapping.find(vert);
+		if (it == vertexMapping.end()) {
+			const uint32_t size = static_cast<uint32_t>(_vertexBuffer.size());
+			vertexMapping[vert] = size;
+
+			// transform the position back to world space before storing it
+			auto transformedVert = vert;
+			transformedVert.p = vert.p * mScaleFactor + mOffset;
+			_vertexBuffer.push_back(transformedVert);
+		}
+	}
+
+	// now we need convert the list of edges to be based on the compacted vertex buffer
+	const auto numEdges = sourceMesh->getEdgesCount();
+	const auto edgeBufferSize = numEdges * sizeof(Edge);
+    Edge* edges = reinterpret_cast<Edge*>(NVBLAST_ALLOC(edgeBufferSize));
+	const auto sourceEdges = sourceMesh->getEdges();
+	memcpy(edges, sourceEdges, edgeBufferSize);
+	for (uint32_t i = 0; i < numEdges; i++) {
+		Edge &edge = edges[i];
+		edge.s = vertexMapping[sourceVertices[edges[i].s]];
+		edge.e = vertexMapping[sourceVertices[edges[i].e]];
+	}
+
+	// now fix the order of the edges
+	// compacting the vertex buffer can put them out of order
+	// the end of one edge needs to be the start of the next
+	const auto facets = sourceMesh->getFacetsBuffer();
+	const auto facetsCount = sourceMesh->getFacetCount();
+	for (uint32_t f = 0; f < facetsCount; f++) {
+		const Facet& facet = facets[f];
+		uint32_t nextIndex = edges[facet.firstEdgeNumber].e;
+		for (uint32_t edge = 1; edge < facet.edgesCount; edge++) {
+			for (uint32_t test = edge; test < facet.edgesCount; test++) {
+				if (nextIndex == edges[facet.firstEdgeNumber + test].s) {
+					if (test != edge) {
+						std::swap(edges[facet.firstEdgeNumber + edge], edges[facet.firstEdgeNumber + test]);
+					}
+					nextIndex = edges[facet.firstEdgeNumber + edge].e;
+					break;
+				}
+			}
+
+			// make sure the last edge wraps around and points back at the first edge
+			NVBLAST_ASSERT(edges[facet.firstEdgeNumber + edge - 1].e == edges[facet.firstEdgeNumber + edge].s);
+		}
+	}
+
+	// build a new mesh from the converted data
+	Vertex* vertices    = reinterpret_cast<Vertex*>(_vertexBuffer.data());
+	const auto numVerts = static_cast<uint32_t>(_vertexBuffer.size());
+	Mesh* chunkMesh = new MeshImpl(vertices, edges, facets, numVerts, numEdges, facetsCount);
+	NVBLAST_FREE(edges);
+	return chunkMesh;
 }
 
 bool FractureToolImpl::isMeshContainOpenEdges(const Mesh* input)
@@ -2028,21 +2086,18 @@ FractureToolImpl::getBufferedBaseMeshes(Vertex*& vertexBuffer, uint32_t*& indexB
 {
 	std::map<Vertex, uint32_t, VrtComp> vertexMapping;
 	std::vector<Vertex> _vertexBuffer;
-	std::vector<std::vector<uint32_t> > _indexBuffer(mChunkPostprocessors.size());
+	std::vector<uint32_t> _indexBuffer;
 
     indexBufferOffsets = reinterpret_cast<uint32_t*>(NVBLAST_ALLOC((mChunkPostprocessors.size() + 1) * sizeof(uint32_t)));
 
-	uint32_t totalIndices = 0;
 	for (uint32_t ch = 0; ch < mChunkPostprocessors.size(); ++ch)
 	{
 		std::vector<Triangle>& trb = mChunkPostprocessors[ch]->getBaseMesh();
 
-		weldVertices(vertexMapping, _vertexBuffer, _indexBuffer[ch], trb);
-
-		indexBufferOffsets[ch] = totalIndices;
-		totalIndices += _indexBuffer[ch].size();
+		indexBufferOffsets[ch] = _indexBuffer.size();
+		weldVertices(vertexMapping, _vertexBuffer, _indexBuffer, trb);
 	}
-	indexBufferOffsets[mChunkPostprocessors.size()] = totalIndices;
+	indexBufferOffsets[mChunkPostprocessors.size()] = _indexBuffer.size();
 
 	for (uint32_t i = 0; i < _vertexBuffer.size(); ++i)
 	{
@@ -2050,13 +2105,10 @@ FractureToolImpl::getBufferedBaseMeshes(Vertex*& vertexBuffer, uint32_t*& indexB
 	}
 
     vertexBuffer = reinterpret_cast<Vertex*>(NVBLAST_ALLOC(_vertexBuffer.size() * sizeof(Vertex)));
-    indexBuffer = reinterpret_cast<uint32_t*>(NVBLAST_ALLOC(totalIndices * sizeof(uint32_t)));
+    indexBuffer = reinterpret_cast<uint32_t*>(NVBLAST_ALLOC(_indexBuffer.size() * sizeof(uint32_t)));
 
 	memcpy(vertexBuffer, _vertexBuffer.data(), _vertexBuffer.size() * sizeof(Vertex));
-	for (uint32_t ch = 0; ch < _indexBuffer.size(); ++ch)
-	{
-		memcpy(indexBuffer + indexBufferOffsets[ch], _indexBuffer[ch].data(), _indexBuffer[ch].size() * sizeof(uint32_t));
-	}
+	memcpy(indexBuffer, _indexBuffer.data(), _indexBuffer.size() * sizeof(uint32_t));
 
 	return _vertexBuffer.size();
 }

@@ -199,7 +199,7 @@ public:
 	/**
 		Get chunk mesh in polygonal representation
 	*/
-	Mesh*									createChunkMesh(int32_t chunkId) override;
+	Mesh*									createChunkMesh(int32_t chunkIndex) override;
 
 	/**
 		Input mesh is scaled and transformed internally to fit unit cube centered in origin.
