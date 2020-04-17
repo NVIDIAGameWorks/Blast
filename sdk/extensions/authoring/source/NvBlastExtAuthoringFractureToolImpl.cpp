@@ -540,6 +540,11 @@ Mesh* FractureToolImpl::createChunkMesh(int32_t chunkIndex)
 	// the end of one edge needs to be the start of the next
 	const auto facets = sourceMesh->getFacetsBuffer();
 	const auto facetsCount = sourceMesh->getFacetCount();
+	Vertex* vertices    = reinterpret_cast<Vertex*>(_vertexBuffer.data());
+	const auto numVerts = static_cast<uint32_t>(_vertexBuffer.size());
+	physx::PxBounds3 bnd;
+	bnd.setEmpty();
+	std::set<int32_t> vertUVsToFix;
 	for (uint32_t f = 0; f < facetsCount; f++) {
 		const Facet& facet = facets[f];
 		uint32_t nextIndex = edges[facet.firstEdgeNumber].e;
@@ -557,11 +562,35 @@ Mesh* FractureToolImpl::createChunkMesh(int32_t chunkIndex)
 			// make sure the last edge wraps around and points back at the first edge
 			NVBLAST_ASSERT(edges[facet.firstEdgeNumber + edge - 1].e == edges[facet.firstEdgeNumber + edge].s);
 		}
+
+		// we need to de-normalize the UVs for interior faces
+		// build a set of interior vertex indices as we inflate the bounds to include all the UVs
+		if (facet.userData != 0) {
+			for (uint32_t edge = 0; edge < facet.edgesCount; edge++) {
+				const int32_t v1 = edges[facet.firstEdgeNumber + edge].s;
+				if (vertUVsToFix.insert(v1).second) {
+					bnd.include(PxVec3(vertices[v1].uv[0].x, vertices[v1].uv[0].y, 0.0f));
+				}
+
+				const int32_t v2 = edges[facet.firstEdgeNumber + edge].e;
+				if (vertUVsToFix.insert(v2).second) {
+					bnd.include(PxVec3(vertices[v2].uv[0].x, vertices[v2].uv[0].y, 0.0f));
+				}
+			}
+		}
 	}
 
+	const float xscale = (bnd.maximum.x - bnd.minimum.x);
+	const float yscale = (bnd.maximum.y - bnd.minimum.y);
+	const float scale = 1.0f / std::min(xscale, yscale);  // To have uniform scaling
+	for (auto vertIdx: vertUVsToFix) {
+		NVBLAST_ASSERT(uint32_t(vertIdx) < numVerts);
+		auto& vert = vertices[vertIdx];
+		vert.uv[0].x = (vert.uv[0].x - bnd.minimum.x) * scale;
+		vert.uv[0].y = (vert.uv[0].y - bnd.minimum.y) * scale;
+	}
+	
 	// build a new mesh from the converted data
-	Vertex* vertices    = reinterpret_cast<Vertex*>(_vertexBuffer.data());
-	const auto numVerts = static_cast<uint32_t>(_vertexBuffer.size());
 	Mesh* chunkMesh = new MeshImpl(vertices, edges, facets, numVerts, numEdges, facetsCount);
 	NVBLAST_FREE(edges);
 	return chunkMesh;

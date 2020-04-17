@@ -888,68 +888,68 @@ void BooleanEvaluator::buildFastFaceFaceIntersection(BooleanConf mode)
 	{
 		const Edge* facetAEdges = mMeshA->getEdges() + mMeshA->getFacet(facetA)->firstEdgeNumber;
 		int32_t facetB = 0;
-			const Edge* facetBEdges = mMeshB->getEdges() + mMeshB->getFacet(facetB)->firstEdgeNumber;
-			const Edge* fae = facetAEdges;
-			retainedStarts.clear();
-			retainedEnds.clear();
-			NvcVec3 compositeEndPoint = {0, 0, 0};
-			NvcVec3 compositeStartPoint = {0, 0, 0};
-			uint32_t facetAEdgeCount = mMeshA->getFacet(facetA)->edgesCount;
-			uint32_t facetBEdgeCount = mMeshB->getFacet(facetB)->edgesCount;
-			int32_t ic = 0;
-			for (uint32_t i = 0; i < facetAEdgeCount; ++i)
+		const Edge* facetBEdges = mMeshB->getEdges() + mMeshB->getFacet(facetB)->firstEdgeNumber;
+		const Edge* fae = facetAEdges;
+		retainedStarts.clear();
+		retainedEnds.clear();
+		NvcVec3 compositeEndPoint = {0, 0, 0};
+		NvcVec3 compositeStartPoint = {0, 0, 0};
+		uint32_t facetAEdgeCount = mMeshA->getFacet(facetA)->edgesCount;
+		uint32_t facetBEdgeCount = mMeshB->getFacet(facetB)->edgesCount;
+		int32_t ic = 0;
+		for (uint32_t i = 0; i < facetAEdgeCount; ++i)
+		{
+			if (shouldSwap(meshAPoints[fae->e].p, meshAPoints[fae->s].p))
 			{
-				if (shouldSwap(meshAPoints[fae->e].p, meshAPoints[fae->s].p))
-				{
-					statusValue = -edgeFacetIntersection12(meshAPoints[fae->e], meshAPoints[fae->s], mMeshB->getVertices(), facetBEdges, facetBEdgeCount, newPointA, newPointB);
-				}
-				else
-				{
-					statusValue = edgeFacetIntersection12(meshAPoints[fae->s], meshAPoints[fae->e], mMeshB->getVertices(), facetBEdges, facetBEdgeCount, newPointA, newPointB);
-				}
-				inclusionValue = -inclusionValueEdgeFace(mode, statusValue);
-				if (inclusionValue > 0)
-				{
-					for (ic = 0; ic < inclusionValue; ++ic)
-					{
-						retainedEnds.push_back(std::make_pair(newPointA, newPointB));
-					    compositeEndPoint = compositeEndPoint + newPointA.p;
-					}
-					mEdgeFacetIntersectionData12[facetA].push_back(EdgeFacetIntersectionData(i, statusValue, newPointA));
-				}
-				if (inclusionValue < 0)
-				{
-					for (ic = 0; ic < -inclusionValue; ++ic)
-					{
-						retainedStarts.push_back(std::make_pair(newPointA, newPointB));
-					    compositeStartPoint = compositeStartPoint + newPointA.p;
-					}
-					mEdgeFacetIntersectionData12[facetA].push_back(EdgeFacetIntersectionData(i, statusValue, newPointA));
-				}
-				fae++;
+				statusValue = -edgeFacetIntersection12(meshAPoints[fae->e], meshAPoints[fae->s], mMeshB->getVertices(), facetBEdges, facetBEdgeCount, newPointA, newPointB);
 			}
-			if (retainedStarts.size() != retainedEnds.size())
+			else
 			{
-				NVBLAST_LOG_ERROR("Not equal number of starting and ending vertices! Probably input mesh has open edges.");
-				return;
+				statusValue = edgeFacetIntersection12(meshAPoints[fae->s], meshAPoints[fae->e], mMeshB->getVertices(), facetBEdges, facetBEdgeCount, newPointA, newPointB);
 			}
-			if (retainedStarts.size() > 1)
+			inclusionValue = -inclusionValueEdgeFace(mode, statusValue);
+			if (inclusionValue > 0)
 			{
-				comp.basePoint = compositeEndPoint - compositeStartPoint;
-				std::sort(retainedStarts.begin(), retainedStarts.end(), comp);
-				std::sort(retainedEnds.begin(), retainedEnds.end(), comp);
+				for (ic = 0; ic < inclusionValue; ++ic)
+				{
+					retainedEnds.push_back(std::make_pair(newPointA, newPointB));
+					compositeEndPoint = compositeEndPoint + newPointA.p;
+				}
+				mEdgeFacetIntersectionData12[facetA].push_back(EdgeFacetIntersectionData(i, statusValue, newPointA));
 			}
-			for (uint32_t rv = 0; rv < retainedStarts.size(); ++rv)
+			if (inclusionValue < 0)
 			{
-				newEdge.s = addIfNotExist(retainedStarts[rv].first);
-				newEdge.e = addIfNotExist(retainedEnds[rv].first);
-				newEdge.parent = facetA;
-				addEdgeIfValid(newEdge);
-				newEdge.parent = facetB + mMeshA->getFacetCount();
-				newEdge.e = addIfNotExist(retainedStarts[rv].second);
-				newEdge.s = addIfNotExist(retainedEnds[rv].second);
-				addEdgeIfValid(newEdge);
+				for (ic = 0; ic < -inclusionValue; ++ic)
+				{
+					retainedStarts.push_back(std::make_pair(newPointA, newPointB));
+					compositeStartPoint = compositeStartPoint + newPointA.p;
+				}
+				mEdgeFacetIntersectionData12[facetA].push_back(EdgeFacetIntersectionData(i, statusValue, newPointA));
 			}
+			fae++;
+		}
+		if (retainedStarts.size() != retainedEnds.size())
+		{
+			NVBLAST_LOG_ERROR("Not equal number of starting and ending vertices! Probably input mesh has open edges.");
+			return;
+		}
+		if (retainedStarts.size() > 1)
+		{
+			comp.basePoint = compositeEndPoint - compositeStartPoint;
+			std::sort(retainedStarts.begin(), retainedStarts.end(), comp);
+			std::sort(retainedEnds.begin(), retainedEnds.end(), comp);
+		}
+		for (uint32_t rv = 0; rv < retainedStarts.size(); ++rv)
+		{
+			newEdge.s = addIfNotExist(retainedStarts[rv].first);
+			newEdge.e = addIfNotExist(retainedEnds[rv].first);
+			newEdge.parent = facetA;
+			addEdgeIfValid(newEdge);
+			newEdge.parent = facetB + mMeshA->getFacetCount();
+			newEdge.e = addIfNotExist(retainedStarts[rv].second);
+			newEdge.s = addIfNotExist(retainedEnds[rv].second);
+			addEdgeIfValid(newEdge);
+		}
 	}
 
 }
