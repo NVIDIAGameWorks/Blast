@@ -101,3 +101,34 @@ files = [
     ["bin/vc15win64-cmake/release/NvBlast*_x64.dll", "bin/vc15win64-cmake/release/"],
     ["bin/vc15win64-cmake/release/NvBlast*_x64.pdb", "bin/vc15win64-cmake/release/"],
 ]
+
+[blastsdk.linux-x86_64]
+files = []
+
+[blastsdk.linux-x86_64.debug]
+files = [
+    ["bin/linux64-gcc/debug/libNvBlast*_x64.so", "bin/linux64-gcc/debug/"],
+]
+
+[blastsdk.linux-x86_64.checked]
+files = [
+    ["bin/linux64-gcc/checked/libNvBlast*_x64.so", "bin/linux64-gcc/checked/"],
+]
+
+[blastsdk.linux-x86_64.profile]
+files = [
+    ["bin/linux64-gcc/profile/libNvBlast*_x64.so", "bin/linux64-gcc/profile/"],
+]
+
+[blastsdk.linux-x86_64.release]
+files = [
+    ["bin/linux64-gcc/release/libNvBlast*_x64.so", "bin/linux64-gcc/release/"],
+]
+
+[blastsdk.linux-x86_64.all]
+files = [
+    ["bin/linux64-gcc/debug/libNvBlast*_x64.so", "bin/linux64-gcc/debug/"],
+    ["bin/linux64-gcc/checked/libNvBlast*_x64.so", "bin/linux64-gcc/checked/"],
+    ["bin/linux64-gcc/profile/libNvBlast*_x64.so", "bin/linux64-gcc/profile/"],
+    ["bin/linux64-gcc/release/libNvBlast*_x64.so", "bin/linux64-gcc/release/"],
+]
