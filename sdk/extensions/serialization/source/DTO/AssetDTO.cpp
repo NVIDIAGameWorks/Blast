@@ -108,12 +108,9 @@ bool AssetDTO::serialize(Nv::Blast::Serialization::Asset::Builder builder, const
 
 Nv::Blast::Asset* AssetDTO::deserialize(Nv::Blast::Serialization::Asset::Reader reader)
 {
-	NvBlastID EmptyId;
-	memset(EmptyId.data, 0, sizeof(NvBlastID));
-
 	void* mem = NVBLAST_ALLOC(reader.totalSize().wordCount * sizeof(uint64_t));
 
-	auto asset = Nv::Blast::initializeAsset(mem, EmptyId, reader.getChunkCount(), reader.getGraph().getNodeCount(), reader.getLeafChunkCount(), reader.getFirstSubsupportChunkIndex(), reader.getBondCount(), logLL);
+	auto asset = Nv::Blast::initializeAsset(mem, reader.getChunkCount(), reader.getGraph().getNodeCount(), reader.getLeafChunkCount(), reader.getFirstSubsupportChunkIndex(), reader.getBondCount(), logLL);
 
 	bool result = deserializeInto(reader, asset);
 

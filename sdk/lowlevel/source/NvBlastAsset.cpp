@@ -36,7 +36,7 @@
 #include "NvBlastMemory.h"
 
 #include <algorithm>
-#include <random>
+//#include <random>
 
 
 namespace Nv
@@ -121,7 +121,7 @@ static size_t createAssetDataOffsets(AssetDataOffsets& offsets, uint32_t chunkCo
 }
 
 
-Asset* initializeAsset(void* mem, NvBlastID id, uint32_t chunkCount, uint32_t graphNodeCount, uint32_t leafChunkCount, uint32_t firstSubsupportChunkIndex, uint32_t bondCount, NvBlastLog logFn)
+Asset* initializeAsset(void* mem, uint32_t chunkCount, uint32_t graphNodeCount, uint32_t leafChunkCount, uint32_t firstSubsupportChunkIndex, uint32_t bondCount, NvBlastLog logFn)
 {
 	// Data offsets
 	AssetDataOffsets offsets;
@@ -143,7 +143,7 @@ Asset* initializeAsset(void* mem, NvBlastID id, uint32_t chunkCount, uint32_t gr
 	asset->m_header.formatVersion = 0;	// Not currently using this field
 	asset->m_header.size = (uint32_t)dataSize;
 	asset->m_header.reserved = 0;
-	asset->m_ID = id;
+	memset(&asset->m_ID, 0, sizeof(NvBlastID));
 	asset->m_chunkCount = chunkCount;
 	asset->m_graph.m_nodeCount = graphNodeCount;
 	asset->m_graph.m_chunkIndicesOffset = (uint32_t)(offsets.m_supportChunkIndices - graphOffset);
@@ -251,6 +251,7 @@ static bool testForValidTrees(uint32_t chunkCount, const NvBlastChunkDesc* chunk
 }
 
 
+#if 0
 /**
  * Helper to generate random GUID
  */
@@ -263,6 +264,47 @@ static NvBlastID NvBlastExtCreateRandomID()
 	*reinterpret_cast<uint32_t*>(&id.data[8]) = re();
 	*reinterpret_cast<uint32_t*>(&id.data[12]) = re();
 	return id;
+}
+#endif
+
+// CRC-32C (iSCSI) polynomial in reversed bit order.
+inline uint32_t crc32c(uint32_t crc, const char* buf, size_t len)
+{
+    crc = ~crc;
+    while (len--)
+    {
+        crc ^= *buf++;
+        for (int k = 0; k < 8; k++)
+            crc = (crc >> 1) ^ (-(int)(crc & 1) & 0x82f63b78);
+    }
+    return ~crc;
+}
+
+/**
+ * Helper to generate GUID from NvBlastAsset memory
+ */
+static NvBlastID createIDFromAsset(const NvBlastAsset* asset, NvBlastLog logFn)
+{
+    // Divide memory into quarters
+    const char* m0 = reinterpret_cast<const char*>(asset);
+    const char* m4 = m0 + NvBlastAssetGetSize(asset, logFn);
+    const char* m2 = m0 + (m4 - m0) / 2;
+    const char* m1 = m0 + (m2 - m0) / 2;
+    const char* m3 = m2 + (m4 - m2) / 2;
+
+    // CRC hash quarters
+    const uint32_t a = crc32c(0, m0, m1 - m0);
+    const uint32_t b = crc32c(a, m1, m2 - m1);
+    const uint32_t c = crc32c(b, m2, m3 - m2);
+    const uint32_t d = crc32c(c, m3, m4 - m3);
+
+    // Build ID out of hashes
+    NvBlastID id;
+    *reinterpret_cast<uint32_t*>(&id.data[0x0]) = a;
+    *reinterpret_cast<uint32_t*>(&id.data[0x4]) = b;
+    *reinterpret_cast<uint32_t*>(&id.data[0x8]) = c;
+    *reinterpret_cast<uint32_t*>(&id.data[0xc]) = d;
+    return id;
 }
 
 
@@ -513,8 +555,7 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 	}
 
 	// Allocate memory for asset
-	NvBlastID id = NvBlastExtCreateRandomID();
-	Asset* asset = initializeAsset(mem, id, desc->chunkCount, graphNodeCount, leafChunkCount, firstSubsupportChunkIndex, bondCount, logFn);
+	Asset* asset = initializeAsset(mem, desc->chunkCount, graphNodeCount, leafChunkCount, firstSubsupportChunkIndex, bondCount, logFn);
 
 	// Asset data pointers
 	SupportGraph& graph = asset->m_graph;
@@ -615,6 +656,9 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 			}
 		}
 	}
+
+    // Assign ID after data has been created
+    asset->m_ID = createIDFromAsset(asset, logFn);
 
 	return asset;
 }
