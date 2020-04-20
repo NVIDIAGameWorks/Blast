@@ -1208,6 +1208,7 @@ void btConvexHullInternal::computeInternal(int32_t start, int32_t end, Intermedi
 
             return;
         }
+        __attribute__ ((fallthrough));
     }
     // lint -fallthrough
     case 1: {

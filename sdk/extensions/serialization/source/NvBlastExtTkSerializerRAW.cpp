@@ -88,7 +88,7 @@ struct ExtTkSerializationLegacyFamilyVersion
 static bool deserializeTkObjectHeader(uint32_t& legacyTypeID, uint32_t& legacyVersion, NvBlastID& objID, uint64_t& userIntData, ExtIStream& stream)
 {
 	// Read framework ID
-	uint32_t fwkID;
+	uint32_t fwkID = 0;	// Initialize to silence some compilers
 	stream >> fwkID;
 	if (fwkID != ExtTkSerializationLegacyID::Framework)
 	{
