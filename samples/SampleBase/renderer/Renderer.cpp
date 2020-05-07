@@ -242,7 +242,6 @@ void Renderer::DeviceDestroyed()
 void Renderer::onInitialize()
 {
 	// search paths
-	m_resourceManager.addSearchDir("..\\..\\samples\\resources");
 	m_resourceManager.addSearchDir("..\\..\\..\\samples\\resources");
 	for (const std::string& d : getManager()->getConfig().additionalResourcesDir)
 	{
