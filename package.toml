@@ -53,6 +53,7 @@ files = [
     ["sdk/lowlevel/include"],
     ["sdk/toolkit/include"],
     ["sdk/common"],
+	["PACKAGE-LICENSES"],
 ]
 
 [blastsdk.windows-x86_64]
