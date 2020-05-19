@@ -548,6 +548,17 @@ NVBLAST_API uint32_t NvBlastFamilyGetActors(NvBlastActor** actors, uint32_t acto
 
 
 /**
+Retrieve the actor associated with the given actor index.
+
+\param[in] family		The family.
+\param[in] actorIndex	The index of actor.
+\param[in] logFn		User-supplied message function (see NvBlastLog definition).  May be NULL.
+
+\return	pointer to actor associated with given actor index.  NULL if there is no such actor or it is inactive.
+*/
+NVBLAST_API NvBlastActor* NvBlastFamilyGetActorByIndex(const NvBlastFamily* family, uint32_t actorIndex, NvBlastLog logFn);
+
+/**
 Retrieve the actor associated with the given chunk.
 
 \param[in] family		The family.
