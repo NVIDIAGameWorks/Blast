@@ -673,6 +673,14 @@ uint32_t NvBlastFamilyGetActors(NvBlastActor** actors, uint32_t actorsSize, cons
 }
 
 
+NvBlastActor* NvBlastFamilyGetActorByIndex(const NvBlastFamily* family, uint32_t actorIndex, NvBlastLog logFn)
+{
+	NVBLASTLL_CHECK(family != nullptr, logFn, "NvBlastFamilyGetActorByIndex: NULL family pointer input.", return nullptr);
+	const Nv::Blast::FamilyHeader* header = reinterpret_cast<const Nv::Blast::FamilyHeader*>(family);
+    return header->getActorByIndex(actorIndex);
+}
+
+
 NvBlastActor* NvBlastFamilyGetChunkActor(const NvBlastFamily* family, uint32_t chunkIndex, NvBlastLog logFn)
 {
 	NVBLASTLL_CHECK(family != nullptr, logFn, "NvBlastFamilyGetChunkActor: NULL family pointer input.", return nullptr);
