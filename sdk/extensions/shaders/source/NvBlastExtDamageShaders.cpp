@@ -628,8 +628,6 @@ void NvBlastExtTriangleIntersectionSubgraphShader(NvBlastFractureBuffers* comman
 
 void NvBlastExtImpactSpreadGraphShader(NvBlastFractureBuffers* commandBuffers, const NvBlastGraphShaderActor* actor, const void* params)
 {
-	uint32_t chunkFractureCount = 0;
-	uint32_t chunkFractureCountMax = commandBuffers->chunkFractureCount;
 	uint32_t bondFractureCount = 0;
 	uint32_t bondFractureCountMax = commandBuffers->bondFractureCount;
 	const NvBlastExtProgramParams* programParams = static_cast<const NvBlastExtProgramParams*>(params);
@@ -653,15 +651,6 @@ void NvBlastExtImpactSpreadGraphShader(NvBlastFractureBuffers* commandBuffers, c
 		, assetChunks, supportChunkHealths, chunkIndices);
 
 	uint32_t nodeIndex = closestNode;
-
-	// Damage this chunk
-	if (chunkFractureCount < chunkFractureCountMax)
-	{
-		const uint32_t chunkIndex = chunkIndices[nodeIndex];
-		NvBlastChunkFractureData& frac = commandBuffers->chunkFractures[chunkFractureCount++];
-		frac.chunkIndex = chunkIndex;
-		frac.health = desc.damage;
-	}
 
 	// Breadth-first support graph traversal. For radial falloff metric distance is measured along the edges of the graph
 	ExtDamageAcceleratorInternal* damageAccelerator = programParams->accelerator ? static_cast<ExtDamageAcceleratorInternal*>(programParams->accelerator) : nullptr;
@@ -722,7 +711,7 @@ void NvBlastExtImpactSpreadGraphShader(NvBlastFractureBuffers* commandBuffers, c
 
 				const float distance = (c1 - c0).magnitude() * (isNeighbourWorldChunk ? 2.f : 1.f);
 				float totalDistance = currentNode.distance + distance;
-				float totalDamage = falloffProfile(desc.minRadius, desc.maxRadius, totalDistance);
+				float totalDamage = desc.damage * falloffProfile(desc.minRadius, desc.maxRadius, totalDistance);
 				if (totalDamage > 0.0f && bondFractureCount < bondFractureCountMax)
 				{
 					NvBlastBondFractureData& frac = commandBuffers->bondFractures[bondFractureCount++];
@@ -740,7 +729,7 @@ void NvBlastExtImpactSpreadGraphShader(NvBlastFractureBuffers* commandBuffers, c
 	}
 
 	commandBuffers->bondFractureCount = bondFractureCount;
-	commandBuffers->chunkFractureCount = chunkFractureCount;
+	commandBuffers->chunkFractureCount = 0;
 }
 
 void NvBlastExtImpactSpreadSubgraphShader(NvBlastFractureBuffers* commandBuffers, const NvBlastSubgraphShaderActor* actor, const void* params)
