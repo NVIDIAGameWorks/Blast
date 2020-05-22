@@ -21,5 +21,5 @@ else
 fi
 
 pushd "$(dirname "$0")/../packager/"
-./create_packages.sh linux $OPTIONS $@
+./create_packages.sh $OPTIONS $@ linux-x86_64
 popd

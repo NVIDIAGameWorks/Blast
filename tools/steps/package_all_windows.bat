@@ -1,7 +1,7 @@
 @set ROOT_PATH=%~dp0..\..
 
 ::Remove old builds to keep things clean (important on build agents so we don't fill them up)
-@del /q /f "%ROOT_PATH%\blast_*.zip"
+@del /q /f "%ROOT_PATH%\blastsdk*.zip"
 
 @pushd "%ROOT_PATH%\docs\_compile"
 @call build_all.bat
@@ -12,7 +12,7 @@
 @set OPTIONS=
 @if ["%VERSION%"] NEQ [""] set OPTIONS=-v %VERSION%
 
-@call "%ROOT_PATH%\tools\packager\create_packages.bat" %OPTIONS% windows
+@call "%ROOT_PATH%\tools\packager\create_packages.bat" %OPTIONS% windows-x86_64
 @if %ERRORLEVEL% EQU 0 goto :eof
 
 :ERROR

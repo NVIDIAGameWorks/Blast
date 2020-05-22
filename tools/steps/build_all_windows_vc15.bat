@@ -1,6 +1,10 @@
 :: Setup VS2017 build environment
-set COMMAND="C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-FOR /F "tokens=*" %%i IN ('%COMMAND%') do (SET "COMNTOOLS=%%i\Common7\Tools\")
+@echo off
+SET PATH=%PATH%;C:\Program Files (x86)\Microsoft Visual Studio\Installer
+@echo on
+
+set COMMAND=vswhere -version "[15.0,16.0)" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+FOR /F "usebackq tokens=*" %%i IN (`%COMMAND%`) do (SET "COMNTOOLS=%%i\Common7\Tools\")
 @call "%COMNTOOLS%..\..\VC\Auxiliary\Build\vcvarsx86_amd64.bat"
 
 :: Note that we use /build rather than /rebuild because cmake cleans the directories when we

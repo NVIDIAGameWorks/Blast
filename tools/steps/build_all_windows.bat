@@ -1,4 +1,3 @@
-@cmd /c "%~dp0build_all_windows_vc14.bat"
 @cmd /c "%~dp0build_all_windows_vc15.bat"
 @if %ERRORLEVEL% neq 0 goto ERROR
 
