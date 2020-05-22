@@ -9,13 +9,24 @@ import xml.etree.ElementTree as ET
 
 __author__ = 'hfannar'
 
-PLATFORMS = ['windows', 'linux']
+PLATFORMS = ['windows-x86_64', 'linux-x86_64']
 
 PLATFORM_DIRS = {
     # platform name : platform specific directories (will be excluded on other platforms)
-    'windows': ['**/windows/*.cmake', '**/windows/CMakeLists.txt', '**/vc*win*/**'],
-    'linux': ['**/unix/**', '**/linux*-gcc/**'],  # I don't know yet what cmake will generate here
+    'windows-x86_64': ['**/windows/*.cmake', '**/windows/CMakeLists.txt', '**/vc*win*/**'],
+    'linux-x86_64': ['**/unix/**', '**/linux*-gcc/**'],  # I don't know yet what cmake will generate here
 }
+
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+VERSION_PATH = os.path.realpath(os.path.join(SCRIPT_DIR, "..", "..", "version"))
+
+
+def get_version():
+    version = '0'
+    with open(VERSION_PATH, "r") as file:
+        version = file.read().replace("\n", "")
+    return version
+
 
 # Filters work recursively
 # Exclude filter has higher priority than include filter
@@ -24,16 +35,14 @@ PLATFORM_DIRS = {
 ARTIFACTS = [
     # Source (windows)
     {
-        'file': 'blast_source-%platform%@%version%',
-        'platforms': ['windows'],
+        'file': 'blastsdk_source@%version%-%platform%',
+        'platforms': ['windows-x86_64'],
         'include': 
         [
             '*.h',
             '*.cpp',
             '*.inl',
             '*.capn',
-            '/shared/external/hbao/**',
-            '/shared/external/shadow_lib/**',
             '/docs/**',
             '/examples/**',
             '/images/**',
@@ -50,6 +59,7 @@ ARTIFACTS = [
             '/tools/cmake_projects_*win*.bat',
             '/tools/packman*/**',
             '/samples/resources/**',
+            'PACKAGE-LICENSES/**'
         ],
         'exclude':
         [
@@ -57,16 +67,15 @@ ARTIFACTS = [
             '**/generated/*',
             'cmake_install.cmake',
             #'/test/**',
-            '/shared/external/GraphicsLib/**',
             'SDK/source/waiting/**',
             'CMakeCXXCompilerId.*'
         ]
     },
 
-    # Source (consoles)
+    # Source (linux)
     {
-        'file': 'blast_source-%platform%@%version%',
-        'platforms': ['linux'],
+        'file': 'blastsdk_source@%version%-%platform%',
+        'platforms': ['linux-x86_64'],
         'include': 
         [
             '/sdk/**/*.h',
@@ -98,7 +107,8 @@ ARTIFACTS = [
             '/tools/cmake_projects_%platform%.sh',
             '/tools/steps/build_all_linux.sh',
             '/tools/packman*/**',
-			'/tools/platform/**' # PLATFORM_DIRS will only allow the proper subfolders
+			'/tools/platform/**', # PLATFORM_DIRS will only allow the proper subfolders
+            'PACKAGE-LICENSES/**'
         ],
         'exclude':
         [
@@ -112,38 +122,40 @@ ARTIFACTS = [
 
     # SDK Binary (all platforms)
     {
-        'file': 'blast_sdk_binary-%platform%@%version%',
-        'platforms': ['windows', 'linux'],
+        'file': 'blastsdk@%version%-%platform%',
+        'platforms': ['windows-x86_64', 'linux-x86_64'],
         'include':
         [
             '/sdk/**/include/*.h',
-            '/bin/*/*NvBlast*.dll',
-            '/bin/*/*NvBlast*.so',
-            '/lib/*/*NvBlast*.lib',
-            '/lib/*/*NvBlast*.a',
+            '/bin/**/*NvBlast*.dll',
+            '/bin/**/*NvBlast*.so',
+            '/lib/**/*NvBlast*.lib',
+            '/lib/**/*NvBlast*.a',
             '/docs/api_docs/**',
-            '/docs/release_notes.txt'
+            '/docs/release_notes.txt',
+            'PACKAGE-LICENSES/**'
         ]
     },
 
     # Tools and Samples Binary (windows)
     {
-        'file': 'blast_tools_and_samples-%platform%@%version%',
-        'platforms': ['windows'],
+        'file': 'blastsdk_tools_and_samples@%version%-%platform%',
+        'platforms': ['windows-x86_64'],
         'include':
         [
-            '/bin/vc14win64-cmake/*PROFILE*.dll',
-            '/bin/vc14win64-cmake/*PROFILE*.exe',
-            '/bin/vc14win64-cmake/nvToolsExt64_1.dll',
-            '/bin/vc14win64-cmake/d3dcompiler_47.dll',
-            '/bin/vc14win64-cmake/GFSDK_ShadowLib_DX11.win64.dll',
-            '/bin/vc14win64-cmake/GFSDK_SSAO_D3D11.win64.dll',
+            '/bin/vc15win64-cmake/profile/*.dll',
+            '/bin/vc15win64-cmake/profile/*.exe',
+            '/bin/vc15win64-cmake/profile/nvToolsExt64_1.dll',
+            '/bin/vc15win64-cmake/profile/d3dcompiler_47.dll',
+            '/bin/vc15win64-cmake/profile/GFSDK_ShadowLib_DX11.win64.dll',
+            '/bin/vc15win64-cmake/profile/GFSDK_SSAO_D3D11.win64.dll',
             '/samples/resources/**',
             '/docs/api_docs/**',
             '/docs/release_notes.txt',
             '/tools/packman*/**',
             '/resources.xml',
             '/download_sample_resources.bat',
+            'PACKAGE-LICENSES/**'
         ]
     },
 
@@ -234,12 +246,27 @@ def main():
     parser.add_argument('-v', '--version', help='version to tag packages with')
     args = parser.parse_args()
 
+    build_number = '0'
+    git_hash = 'undefined'
+    if args.version:
+        split = args.version.split('-')
+        if (len(split) > 0):
+            build_number = split[0]
+            if (len(split) > 1):
+                git_hash = split[1]
+                if (len(git_hash) > 8):
+                    git_hash = git_hash[:8]
+
+    version = get_version()
+    if not version:
+        version = "0.0.0"
+    full_version = "{}.{}.{}".format(version, build_number, git_hash)
+
     # Pack zip with some extension filter
     platform = args.platform
     for artifact in ARTIFACTS:
         if platform not in artifact['platforms']:
             continue
-        version = "undefined"
         if args.version:
             version = args.version
         # make a copy and perform substitutions
@@ -252,7 +279,7 @@ def main():
 
         platform_artifact.setdefault('exclude', [])
         platform_artifact['exclude'] += illegal_paths
-        package_name = platform_artifact['file'].replace('%version%', version)
+        package_name = platform_artifact['file'].replace('%version%', full_version)
         root_path = get_root_path()
         package_path = os.path.join(root_path, package_name)
 

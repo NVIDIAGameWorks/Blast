@@ -1209,9 +1209,12 @@ void btConvexHullInternal::computeInternal(int32_t start, int32_t end, Intermedi
             return;
         }
 #if defined(__GNUC__)
-        __attribute__ ((fallthrough));   // Needed to silence gcc
+        goto fallthrough;   // Needed to silence gcc
 #endif
     }
+#if defined(__GNUC__)
+fallthrough:   // Needed to silence gcc
+#endif
     // lint -fallthrough
     case 1: {
         Vertex* v = originalVertices[start];
