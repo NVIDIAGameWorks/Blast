@@ -28,7 +28,7 @@
 
 #include "NvBlastExtExporterJsonCollision.h"
 #include "NvBlastExtAuthoringTypes.h"
-#include <PxVec3.h>
+#include <foundation/PxVec3.h>
 #include <iostream>
 #include <sstream>
 #include <fstream>

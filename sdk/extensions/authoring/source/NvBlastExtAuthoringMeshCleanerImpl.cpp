@@ -25,9 +25,9 @@
 //
 // Copyright (c) 2016-2018 NVIDIA Corporation. All rights reserved.
 
-#include <PxVec3.h>
-#include <PxVec2.h>
-#include <PxBounds3.h>
+#include <foundation/PxVec3.h>
+#include <foundation/PxVec2.h>
+#include <foundation/PxBounds3.h>
 #include <vector>
 #include <queue>
 #include <map>

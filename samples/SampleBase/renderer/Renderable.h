@@ -31,9 +31,9 @@
 
 #include "RenderMaterial.h"
 #include <DirectXMath.h>
-#include "PxMat44.h"
-#include "PxVec3.h"
-#include "PxVec4.h"
+#include "foundation/PxMat44.h"
+#include "foundation/PxVec3.h"
+#include "foundation/PxVec4.h"
 
 using namespace physx;
 

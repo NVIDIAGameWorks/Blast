@@ -31,7 +31,7 @@
 
 #include "NvBlastExtPxActor.h"
 #include "NvBlastArray.h"
-#include "PxTransform.h"
+#include "foundation/PxTransform.h"
 
 
 using namespace physx;

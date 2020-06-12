@@ -30,11 +30,11 @@
 #define NVBLASTINTERNALCOMMON_H
 #include "NvBlastExtAuthoringTypes.h"
 #include "NvBlastPxSharedHelpers.h"
-#include <PxVec2.h>
-#include <PxVec3.h>
-#include <PxPlane.h>
-#include <PxBounds3.h>
-#include <PxMath.h>
+#include <foundation/PxVec2.h>
+#include <foundation/PxVec3.h>
+#include <foundation/PxPlane.h>
+#include <foundation/PxBounds3.h>
+#include <foundation/PxMath.h>
 #include <algorithm>
 
 namespace Nv

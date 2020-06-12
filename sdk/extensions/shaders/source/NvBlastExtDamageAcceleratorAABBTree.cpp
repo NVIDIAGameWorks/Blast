@@ -28,7 +28,7 @@
 #include "NvBlastExtDamageAcceleratorAABBTree.h"
 #include "NvBlastIndexFns.h"
 #include "NvBlastAssert.h"
-#include "PxVec4.h"
+#include "foundation/PxVec4.h"
 #include <algorithm>
 
 using namespace physx;

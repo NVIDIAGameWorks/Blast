@@ -42,7 +42,7 @@
 
 #include "NvBlastTkActor.h"
 
-#include "PxFlags.h"
+#include "foundation/PxFlags.h"
 
 namespace Nv
 {

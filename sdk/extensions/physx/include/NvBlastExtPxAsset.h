@@ -31,7 +31,7 @@
 
 #include "NvBlastTkFramework.h"
 #include "PxConvexMeshGeometry.h"
-#include "PxTransform.h"
+#include "foundation/PxTransform.h"
 #include "NvBlastPreprocessor.h"
 
 

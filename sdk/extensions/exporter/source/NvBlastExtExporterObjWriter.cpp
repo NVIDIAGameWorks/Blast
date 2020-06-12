@@ -27,7 +27,7 @@
 
 
 #include "NvBlastExtExporterObjWriter.h"
-#include <PxVec3.h>
+#include <foundation/PxVec3.h>
 #include <sstream>
 #include "NvBlastExtAuthoringTypes.h"
 #include "NvBlastExtAuthoringMesh.h"

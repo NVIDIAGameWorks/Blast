@@ -30,7 +30,7 @@
 #define NVBLASTEXTPXTASKIMPL_H
 
 #include "NvBlastExtPxTask.h"
-#include "PxTask.h"
+#include "task/PxTask.h"
 #include "NvBlastTkGroup.h"
 
 #include <atomic>

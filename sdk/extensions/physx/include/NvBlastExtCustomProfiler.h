@@ -30,7 +30,7 @@
 #define NVBLASTDEFAULTPROFILER_H
 
 #include "NvBlastProfiler.h"
-#include "PxProfiler.h"
+#include "foundation/PxProfiler.h"
 
 #if NV_NVTX  
 #include "nvToolsExt.h"

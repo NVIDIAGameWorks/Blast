@@ -43,10 +43,10 @@
 #include "TestProfiler.h"
 #include "NvBlastExtPxTask.h"
 
-#include "PxCpuDispatcher.h"
-#include "PxTask.h"
-#include "PxFoundation.h"
-#include "PxFoundationVersion.h"
+#include "task/PxCpuDispatcher.h"
+#include "task/PxTask.h"
+#include "foundation/PxFoundation.h"
+#include "foundation/PxFoundationVersion.h"
 
 #include <thread>
 #include <algorithm>

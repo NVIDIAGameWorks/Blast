@@ -37,7 +37,7 @@
 #include "NvBlastGlobals.h"
 #include "NvBlastTkFramework.h"
 #include "NvBlast.h"
-#include "PxVec3.h"
+#include "foundation/PxVec3.h"
 #include "NvBlastAssert.h"
 #include <unordered_set>
 #include <functional>

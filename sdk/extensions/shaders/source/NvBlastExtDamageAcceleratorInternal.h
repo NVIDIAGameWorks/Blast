@@ -28,7 +28,7 @@
 #pragma once
 
 #include "NvBlastExtDamageShaders.h"
-#include "PxBounds3.h"
+#include "foundation/PxBounds3.h"
 
 
 namespace Nv

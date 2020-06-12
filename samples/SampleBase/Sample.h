@@ -29,7 +29,7 @@
 #ifndef SAMPLE_H
 #define SAMPLE_H
 
-#include "PxTransform.h"
+#include "foundation/PxTransform.h"
 #include <string>
 #include <vector>
 

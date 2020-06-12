@@ -31,7 +31,7 @@
 
 #include "NvBlastExtAuthoringBondGenerator.h"
 #include "NvBlastExtAuthoringFractureTool.h"
-#include <PxPlane.h>
+#include <foundation/PxPlane.h>
 #include <NvBlastExtAuthoringConvexMeshBuilder.h>
 #include <vector>
 #include <set>

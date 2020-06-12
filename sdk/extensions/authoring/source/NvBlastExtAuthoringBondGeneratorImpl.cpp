@@ -43,7 +43,7 @@
 #include "NvBlastExtAuthoringTypes.h"
 #include <vector>
 #include <map>
-#include <PxPlane.h>
+#include <foundation/PxPlane.h>
 #include <algorithm>
 #include <cmath>
 #include <memory>

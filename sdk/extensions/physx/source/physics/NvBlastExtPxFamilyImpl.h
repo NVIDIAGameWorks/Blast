@@ -32,7 +32,7 @@
 #include "NvBlastExtPxFamily.h"
 #include "NvBlastArray.h"
 #include "NvBlastHashSet.h"
-#include "PxTransform.h"
+#include "foundation/PxTransform.h"
 #include "NvBlastTkEvent.h"
 
 

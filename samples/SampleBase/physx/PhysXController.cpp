@@ -41,7 +41,7 @@
 #include "NvBlastPxCallbacks.h"
 
 #include "PxPhysicsVersion.h"
-#include "PxPvdTransport.h"
+#include "pvd/PxPvdTransport.h"
 #include "PxDefaultCpuDispatcher.h"
 #include "PxPhysics.h"
 #include "PxScene.h"
@@ -52,8 +52,8 @@
 #include "PxRigidDynamic.h"
 #include "PxRigidStatic.h"
 #include "PxMaterial.h"
-#include "PxFoundationVersion.h"
-#include "PxMath.h"
+#include "foundation/PxFoundationVersion.h"
+#include "foundation/PxMath.h"
 
 #include <imgui.h>
 #include <chrono>
