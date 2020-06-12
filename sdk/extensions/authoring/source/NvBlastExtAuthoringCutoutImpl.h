@@ -31,9 +31,9 @@
 
 #include "NvBlastExtAuthoringCutout.h"
 #include <vector>
-#include <PxVec2.h>
-#include <PxVec3.h>
-#include <PxMat44.h>
+#include <foundation/PxVec2.h>
+#include <foundation/PxVec3.h>
+#include <foundation/PxMat44.h>
 
 namespace Nv
 {

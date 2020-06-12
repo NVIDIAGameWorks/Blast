@@ -29,7 +29,7 @@
 #include "SampleAssetListParser.h"
 #include <PsFastXml.h>
 #include "Sample.h"
-#include "PxVec4.h"
+#include "foundation/PxVec4.h"
 #include "PxInputDataFromPxFileBuf.h"
 #include <bitset>
 

@@ -31,7 +31,7 @@
 
 #include "NvBlastTkIdentifiable.h"
 #include "NvBlastTypes.h"
-#include "PxVec3.h"
+#include "foundation/PxVec3.h"
 
 // Forward declarations
 struct NvBlastAsset;

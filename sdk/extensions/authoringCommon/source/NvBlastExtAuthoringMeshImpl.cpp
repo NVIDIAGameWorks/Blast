@@ -30,7 +30,7 @@
 #include "NvBlastExtAuthoringMeshImpl.h"
 #include "NvBlastExtAuthoringTypes.h"
 #include <NvBlastAssert.h>
-#include "PxMath.h"
+#include "foundation/PxMath.h"
 #include <NvBlastPxSharedHelpers.h>
 #include <cmath>
 #include <string.h>

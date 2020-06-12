@@ -51,7 +51,7 @@
 #include "NvBlastTkFramework.h"
 
 #include "PsString.h"
-#include "PxTaskManager.h"
+#include "task/PxTaskManager.h"
 #include "PxDefaultCpuDispatcher.h"
 #include "PxRigidBody.h"
 #include "PxScene.h"
@@ -64,7 +64,7 @@
 
 #include "imgui.h"
 
-#include <PxFoundation.h>
+#include <foundation/PxFoundation.h>
 
 #define SAFE_RELEASE_(p)                                                                                               \
 	{                                                                                                                  \

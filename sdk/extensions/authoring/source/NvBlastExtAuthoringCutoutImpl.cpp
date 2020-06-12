@@ -28,8 +28,8 @@
 
 #include "NvBlastGlobals.h"
 #include <NvBlastAssert.h>
-#include <PxBounds3.h>
-#include <PxMath.h>
+#include <foundation/PxBounds3.h>
+#include <foundation/PxMath.h>
 #include <NvBlastPxSharedHelpers.h>
 #include "NvBlastExtAuthoringCutoutImpl.h"
 #include <algorithm>

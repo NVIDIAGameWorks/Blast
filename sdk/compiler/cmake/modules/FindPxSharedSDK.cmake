@@ -265,10 +265,6 @@ if (PXSHAREDSDK_FOUND)
 	# Also may not be good enough for all users.
 	SET(PXSHAREDSDK_INCLUDE_DIRS 
 		${PXSHAREDSDK_PATH}/include 
-		${PXSHAREDSDK_PATH}/include/pvd
-		${PXSHAREDSDK_PATH}/include/task
-		${PXSHAREDSDK_PATH}/include/filebuf
-		${PXSHAREDSDK_PATH}/include/foundation
 		${PXSHAREDSDK_PATH}/src/foundation/include
 		${PXSHAREDSDK_PATH}/src/filebuf/include
 		${PXSHAREDSDK_PATH}/src/fastxml/include

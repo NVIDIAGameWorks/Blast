@@ -28,7 +28,7 @@
 
 #pragma once
 #include "DTOMacros.h"
-#include "PxTransform.h"
+#include "foundation/PxTransform.h"
 #include "generated/NvBlastExtPxSerialization.capn.h"
 #include "PxCooking.h"
 

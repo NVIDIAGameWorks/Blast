@@ -30,8 +30,8 @@
 #include "NvBlastExtDamageShaders.h"
 #include "NvBlastExtSerialization.h"
 #include "NvBlastTime.h"
-#include "PxVec3.h"
-#include "PxBounds3.h"
+#include "foundation/PxVec3.h"
+#include "foundation/PxBounds3.h"
 #include <memory>
 #include <random>
 #include <cstdio>

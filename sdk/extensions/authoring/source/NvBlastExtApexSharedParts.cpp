@@ -28,9 +28,9 @@
 
 #include "NvBlastExtApexSharedParts.h"
 
-#include "PxMat44.h"
-#include "PxBounds3.h"
-#include "PxFoundation.h"
+#include "foundation/PxMat44.h"
+#include "foundation/PxBounds3.h"
+#include "foundation/PxFoundation.h"
 #include "PsVecMath.h"
 #include <vector>
 

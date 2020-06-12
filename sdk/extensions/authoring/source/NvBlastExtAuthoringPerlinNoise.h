@@ -31,8 +31,8 @@
 
 #include <NvBlastExtAuthoringFractureTool.h>
 
-#include <PxVec4.h>
-#include <PxVec3.h>
+#include <foundation/PxVec4.h>
+#include <foundation/PxVec3.h>
 
 #define PERLIN_NOISE_SAMPLE_TABLE 512
 using physx::PxVec3;

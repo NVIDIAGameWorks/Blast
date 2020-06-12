@@ -29,7 +29,7 @@
 #define NVBLASTAUTHORINGMESHIMPL_H
 
 #include "NvBlastExtAuthoringMesh.h"
-#include <PxBounds3.h>
+#include <foundation/PxBounds3.h>
 #include <vector>
 #include <map>
 #include <set>

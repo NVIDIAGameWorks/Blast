@@ -34,9 +34,9 @@
 
 #include "NvBlastTkAsset.h"
 
-#include "PxIO.h"
+#include "foundation/PxIO.h"
 #include "PxPhysics.h"
-#include "PxFileBuf.h"
+#include "filebuf/PxFileBuf.h"
 #include "cooking/PxCooking.h"
 
 #include <algorithm>

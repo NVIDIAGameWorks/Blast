@@ -27,7 +27,7 @@
 
 
 #include "ResourceManager.h"
-#include "PxAssert.h"
+#include "foundation/PxAssert.h"
 #include "PsString.h"
 #include "Utils.h"
 

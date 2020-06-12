@@ -30,7 +30,7 @@
 #define NVBLASTEXTAPEXSHAREDPARTS_H
 
 #include "NvBlast.h"
-#include <PxPlane.h>
+#include <foundation/PxPlane.h>
 namespace physx
 {
 	class PxVec3;

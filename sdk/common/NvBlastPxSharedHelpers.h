@@ -30,14 +30,14 @@
 #define NVBLASTPXSHAREDTYPESHELPERS_H
 
 #include "NvCTypes.h"
-#include <PxVec2.h>
-#include <PxVec3.h>
-#include <PxVec4.h>
-#include <PxTransform.h>
-#include <PxPlane.h>
-#include <PxMat33.h>
-#include <PxMat44.h>
-#include <PxBounds3.h>
+#include <foundation/PxVec2.h>
+#include <foundation/PxVec3.h>
+#include <foundation/PxVec4.h>
+#include <foundation/PxTransform.h>
+#include <foundation/PxPlane.h>
+#include <foundation/PxMat33.h>
+#include <foundation/PxMat44.h>
+#include <foundation/PxBounds3.h>
 
 #define WCast(type, name) reinterpret_cast<type>(name)
 #define RCast(type, name) reinterpret_cast<const type>(name)

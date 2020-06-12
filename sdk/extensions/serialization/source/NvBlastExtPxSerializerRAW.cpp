@@ -37,7 +37,7 @@
 
 #include "PxPhysics.h"
 #include "PsMemoryBuffer.h"
-#include "PxIO.h"
+#include "foundation/PxIO.h"
 
 
 namespace Nv

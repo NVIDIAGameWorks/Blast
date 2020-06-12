@@ -30,8 +30,8 @@
 #define NVBLASTPXCALLBACKS_H
 
 #include "NvBlastGlobals.h"
-#include "PxErrorCallback.h"
-#include "PxAllocatorCallback.h"
+#include "foundation/PxErrorCallback.h"
+#include "foundation/PxAllocatorCallback.h"
 
 /**
 This file contains helper functions to get PxShared compatible versions of global AllocatorCallback and ErrorCallback.
