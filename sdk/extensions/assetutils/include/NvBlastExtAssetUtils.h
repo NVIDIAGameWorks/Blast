@@ -70,6 +70,20 @@ struct NvBlastExtAssetUtilsBondDesc : public NvBlastBondDesc
 
 
 /**
+Creates an asset descriptor from an asset.
+
+NOTE: This function allocates memory using the allocator in NvBlastGlobals, to create the new chunk and bond
+descriptor arrays referenced in the returned NvBlastAssetDesc.  The user must free this memory after use with
+NVBLAST_FREE appied to the pointers in the returned NvBlastAssetDesc.
+
+\param[in]	asset	The asset from which to create a descriptor.
+
+\return an asset descriptor that will build an exact duplicate of the input asset.
+*/
+NVBLAST_API NvBlastAssetDesc NvBlastExtAssetUtilsCreateDesc(const NvBlastAsset* asset);
+
+
+/**
 Creates an asset descriptor which will build an asset that merges several assets.  Each asset (or component)
 is given a transform, applied to the geometric information in the chunk and bond descriptors.
 

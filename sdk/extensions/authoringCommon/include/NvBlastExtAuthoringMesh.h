@@ -142,11 +142,9 @@ public:
 	virtual void				recalculateBoundingBox() = 0;
 
 	/**
-		Compute mesh volume. Can be used only for triangulated meshes.
-		Return mesh volume. If mesh is not triangulated return 0.
+		Compute mesh volume and centroid.  Assumes mesh has outward normals and no holes.
 	*/
-	virtual float				getMeshVolume() const = 0;
-
+	virtual float				getMeshVolumeAndCentroid(NvcVec3& centroid) const = 0;
 
 	/**
 		Calculate per-facet bounding boxes.

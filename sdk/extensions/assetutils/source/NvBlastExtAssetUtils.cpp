@@ -209,6 +209,12 @@ NvBlastAsset* NvBlastExtAssetUtilsAddWorldBonds
 }
 
 
+NvBlastAssetDesc NvBlastExtAssetUtilsCreateDesc(const NvBlastAsset* asset)
+{
+	return NvBlastExtAssetUtilsMergeAssets(&asset, nullptr, nullptr, nullptr, 1, nullptr, 0, nullptr, nullptr, 0);
+}
+
+
 NvBlastAssetDesc NvBlastExtAssetUtilsMergeAssets
 (
 	const NvBlastAsset** components,
