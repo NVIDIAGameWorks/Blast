@@ -285,6 +285,36 @@ void NvBlastExtAuthoringReleaseAuthoringResult(Nv::Blast::ConvexMeshBuilder& col
 	delete ar;
 }
 
+static float getGeometryVolumeAndCentroid(NvcVec3& centroid, const Nv::Blast::Triangle* tris, size_t triCount)
+{
+	class GeometryQuery
+	{
+	public:
+		GeometryQuery(const Nv::Blast::Triangle* tris, size_t triCount) : m_tris(tris), m_triCount(triCount) {}
+
+		size_t faceCount() const { return m_triCount; }
+
+		size_t vertexCount(size_t faceIndex) const { return 3; }
+
+		NvcVec3 vertex(size_t faceIndex, size_t vertexIndex) const
+		{
+			const Nv::Blast::Triangle& tri = m_tris[faceIndex];
+			switch (vertexIndex)
+			{
+			case 0: return tri.a.p;
+			case 1: return tri.b.p;
+			case 2: return tri.c.p;
+			}
+			return NvcVec3({0.0f, 0.0f, 0.0f});
+		}
+
+		const Nv::Blast::Triangle* m_tris;	
+		size_t m_triCount;
+	};
+
+    return calculateMeshVolumeAndCentroid<GeometryQuery>(centroid, {tris, triCount});
+}
+
 AuthoringResult* NvBlastExtAuthoringProcessFracture(FractureTool& fTool, BlastBondGenerator& bondGenerator, ConvexMeshBuilder& collisionBuilder, const ConvexDecompositionParams& collisionParam, int32_t defaultSupportDepth)
 {
 	fTool.finalizeFracturing();
@@ -381,19 +411,47 @@ AuthoringResult* NvBlastExtAuthoringProcessFracture(FractureTool& fTool, BlastBo
 	// prepare physics data (convexes)
 	buildPhysicsChunks(collisionBuilder, aResult, collisionParam);
 
-	// set NvBlastChunk volume from Px geometry
+	// set NvBlastChunk volume and centroid from Px geometry
 	for (uint32_t i = 0; i < chunkCount; i++)
 	{
 		float totalVolume = 0.f;
+		NvcVec3 totalCentroid = {0.0f, 0.0f, 0.0f};
 		for (uint32_t k = aResult.collisionHullOffset[i]; k < aResult.collisionHullOffset[i+1]; k++)
 		{
-            const CollisionHull* hull = aResult.collisionHull[k];
-            if (hull)
-            {
-                totalVolume += calculateCollisionHullVolume(*hull);
-            }
+			const CollisionHull* hull = aResult.collisionHull[k];
+			if (hull)
+			{
+				NvcVec3 centroid;
+				const float volume = calculateCollisionHullVolumeAndCentroid(centroid, *hull);
+			    totalVolume += volume;
+				totalCentroid = totalCentroid + volume*centroid;
+			}
+			else
+			{
+				totalVolume = 0.0f;	// Found a null hull, signal this with zero volume
+				break;
+			}
 		}
-		aResult.chunkDescs[i].volume = totalVolume;
+		if (totalVolume > 0.0f)
+		{
+			totalCentroid = totalCentroid / totalVolume;
+			aResult.chunkDescs[i].volume = totalVolume;
+			aResult.chunkDescs[i].centroid[0] = totalCentroid.x;
+			aResult.chunkDescs[i].centroid[1] = totalCentroid.y;
+			aResult.chunkDescs[i].centroid[2] = totalCentroid.z;
+		}
+		else
+		{
+			// Fallback to using mesh
+			size_t triCount = aResult.geometryOffset[i+1] - aResult.geometryOffset[i];
+			const Nv::Blast::Triangle* tris = aResult.geometry + aResult.geometryOffset[i];
+			NvcVec3 centroid;
+			aResult.chunkDescs[i].volume = getGeometryVolumeAndCentroid(centroid, tris, triCount);
+			aResult.chunkDescs[i].centroid[0] = centroid.x;
+			aResult.chunkDescs[i].centroid[1] = centroid.y;
+			aResult.chunkDescs[i].centroid[2] = centroid.z;
+		}
+		
 	}
 
 	// build and serialize ExtPhysicsAsset

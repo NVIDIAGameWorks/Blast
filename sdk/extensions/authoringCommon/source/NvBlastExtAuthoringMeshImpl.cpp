@@ -32,6 +32,7 @@
 #include <NvBlastAssert.h>
 #include "foundation/PxMath.h"
 #include <NvBlastPxSharedHelpers.h>
+#include <NvBlastVolumeIntegrals.h>
 #include <cmath>
 #include <string.h>
 #include <vector>
@@ -173,34 +174,28 @@ MeshImpl::MeshImpl(const Vertex* vertices, uint32_t count, uint32_t* indices, ui
 	recalculateBoundingBox();
 }
 
-float MeshImpl::getMeshVolume() const
+float MeshImpl::getMeshVolumeAndCentroid(NvcVec3& centroid) const
 {
-	float volume = 0;
-	for (uint32_t i = 0; i < mFacets.size(); ++i)
+	class MeshImplQuery
 	{
-		int32_t offset = mFacets[i].firstEdgeNumber;
-		const NvcVec3& a     = mVertices[mEdges[offset].s].p;
-		for (uint32_t j = 0; j < mFacets[i].edgesCount-2; j++) {
-			NVBLAST_ASSERT_WITH_MESSAGE(
-				mEdges[offset + j + 1].e == mEdges[offset + j + 2].s,
-				"The end of one edge should be the start of the next"
-			);
-			const NvcVec3& b = mVertices[mEdges[offset + j + 1].s].p;
-			const NvcVec3& c = mVertices[mEdges[offset + j + 2].s].p;
+	public:
+		MeshImplQuery(const MeshImpl& mesh) : m_mesh(mesh) {}
 
-			volume += (
-				a.x * b.y * c.z - 
-				a.x * b.z * c.y - 
-				a.y * b.x * c.z + 
-				a.y * b.z * c.x + 
-				a.z * b.x * c.y - 
-				a.z * b.y * c.x
-			);
+		size_t faceCount() const { return (size_t)m_mesh.getFacetCount(); }
+
+		size_t vertexCount(size_t faceIndex) const { return (size_t)m_mesh.getFacet((int32_t)faceIndex)->edgesCount; }
+
+		NvcVec3 vertex(size_t faceIndex, size_t vertexIndex) const
+		{
+			const Nv::Blast::Facet* facet = m_mesh.getFacet(faceIndex);
+			return m_mesh.getVertices()[m_mesh.getEdges()[facet->firstEdgeNumber + vertexIndex].s].p;
 		}
-	}
-	return (1.0f / 6.0f) * std::abs(volume);
-}
 
+		const MeshImpl& m_mesh;
+	};
+
+    return calculateMeshVolumeAndCentroid<MeshImplQuery>(centroid, *this);
+}
 
 uint32_t MeshImpl::getFacetCount() const
 {

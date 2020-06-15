@@ -153,11 +153,9 @@ public:
 	void				recalculateBoundingBox() override;
 
 	/**
-		Compute mesh volume. Can be used only for triangulated meshes.
-		Return mesh volume. If mesh is not triangulated return 0.
+		Compute mesh volume and centroid.  Assumes mesh has outward normals and no holes.
 	*/
-	float				getMeshVolume() const override;
-
+	float				getMeshVolumeAndCentroid(NvcVec3& centroid) const override;
 
 	/**
 	Set per-facet material id.
