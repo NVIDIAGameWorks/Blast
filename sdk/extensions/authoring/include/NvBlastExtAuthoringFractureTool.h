@@ -284,6 +284,11 @@ class FractureTool
 	virtual void setSourceMesh(const Mesh* mesh) = 0;
 
 	/**
+	    Set input mesh which will be fractured, FractureTool will be reseted.
+	*/
+	virtual void setSourceMeshes(const Mesh** meshes, uint32_t meshesSize) = 0;
+
+	/**
 	    Set chunk mesh, parentId should be valid, return id of new chunk.
 	*/
 	virtual int32_t setChunkMesh(const Mesh* mesh, int32_t parentId) = 0;
