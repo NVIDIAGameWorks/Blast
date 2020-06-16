@@ -192,6 +192,11 @@ public:
 	void									setSourceMesh(const Mesh* mesh) override;
 
 	/**
+	    Set input mesh which will be fractured, FractureTool will be reseted.
+	*/
+	void                                    setSourceMeshes(const Mesh** meshes, uint32_t meshesSize) override;
+
+	/**
 		Set chunk mesh, parentId should be valid, return id of new chunk.
 	*/
 	int32_t									setChunkMesh(const Mesh* mesh, int32_t parentId) override;

@@ -1548,50 +1548,60 @@ void FractureToolImpl::getTransformation(NvcVec3& offset, float& scale)
 
 void FractureToolImpl::setSourceMesh(const Mesh* meshInput)
 {
-	if (meshInput == nullptr)
+    setSourceMeshes(&meshInput, 1);
+}
+
+void FractureToolImpl::setSourceMeshes(const Mesh** meshes, uint32_t meshesSize)
+{
+	if (meshes == nullptr)
 	{
 		return;
 	}
 	reset();
 
-	if (isMeshContainOpenEdges(meshInput))
-	{
-		NVBLAST_LOG_WARNING("Input mesh contains open edges, it may lead to wrong fractruing results!. \n");
-	}
+	NvcVec3 boxMax = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+	NvcVec3 boxMin = { FLT_MAX, FLT_MAX, FLT_MAX };
+	for (int32_t m = meshesSize - 1; m >= 0; m--)
+    {
+        const auto mesh = meshes[m];
+        if (mesh == nullptr)
+        {
+			meshes[m] = meshes[--meshesSize];
+            continue;
+        }
+        else if (isMeshContainOpenEdges(mesh))
+        {
+            NVBLAST_LOG_WARNING("Input mesh contains open edges, it may lead to wrong fractruing results!. \n");
+        }
 
+        // inflate the bounding box around all the meshes
+        const NvcBounds3& bounds = mesh->getBoundingBox();
+        boxMin.x = std::min(boxMin.x, bounds.minimum.x);
+        boxMin.y = std::min(boxMin.y, bounds.minimum.y);
+        boxMin.z = std::min(boxMin.z, bounds.minimum.z);
+        boxMax.x = std::max(boxMax.x, bounds.maximum.x);
+        boxMax.y = std::max(boxMax.y, bounds.maximum.y);
+        boxMax.z = std::max(boxMax.z, bounds.maximum.z);
+    }
 
-	// mChunkData.resize(1);
-	// mChunkData[0].meshData = new MeshImpl(*reinterpret_cast <const MeshImpl*>(meshInput));
-	// mChunkData[0].parent = -1;
-	// mChunkData[0].isLeaf = true;
-	// mChunkData[0].chunkId = mChunkIdCounter++;
-	// Mesh* mesh = mChunkData[0].meshData;
+    if (meshesSize == 0)
+    {
+        return;
+    }
 
 	/**
 	Move to origin and scale to unit cube
 	*/
-
-	mOffset         = (meshInput->getBoundingBox().maximum + meshInput->getBoundingBox().minimum) * 0.5f;
-	NvcVec3 bbSizes = (meshInput->getBoundingBox().maximum - meshInput->getBoundingBox().minimum);
-
+	mOffset         = (boxMax + boxMin) * 0.5f;
+	NvcVec3 bbSizes = (boxMax - boxMin);
 	mScaleFactor = std::max(bbSizes.x, std::max(bbSizes.y, bbSizes.z));
 
-	setChunkMesh(meshInput, -1);
-
-	// Vertex* verticesBuffer = mesh->getVerticesWritable();
-	// for (uint32_t i = 0; i < mesh->getVerticesCount(); ++i)
-	//{
-	//	verticesBuffer[i].p = (verticesBuffer[i].p - mOffset) * (1.0f / mScaleFactor);
-	//}
-
-	// mesh->getBoundingBoxWritable().minimum = (mesh->getBoundingBox().minimum - mOffset) * (1.0f / mScaleFactor);
-	// mesh->getBoundingBoxWritable().maximum = (mesh->getBoundingBox().maximum - mOffset) * (1.0f / mScaleFactor);
-
-
-	// for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
-	//{
-	//	mesh->getFacetWritable(i)->userData = 0; // Mark facet as initial boundary facet
-	//}
+    // now make a second pass to actually set up the chunk meshes after the scale factor and offset have been computed
+    for (uint32_t m = 0; m < meshesSize; m++)
+    {
+		const auto mesh = meshes[m];
+		setChunkMesh(mesh, -1);
+    }
 }
 
 int32_t FractureToolImpl::setChunkMesh(const Mesh* meshInput, int32_t parentId)
