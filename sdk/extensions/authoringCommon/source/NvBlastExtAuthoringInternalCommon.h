@@ -230,8 +230,11 @@ NV_INLINE bool getPlaneSegmentIntersection(const physx::PxPlane& pl, const physx
 /**
 Vertex comparator for vertex welding.
 */
-struct VrtComp
+template<bool splitUVs>
+struct VrtCompare
 {
+	// This implements a "less than" function for vertices.
+	// Vertices a and b are considered equivalent if !(a < b) && !(b < a)
 	bool operator()(const Vertex& a, const Vertex& b) const
 	{
 		if (a.p.x + POS_COMPARISON_OFFSET < b.p.x) return true;
@@ -246,15 +249,21 @@ struct VrtComp
 		if (a.n.y + NORM_COMPARISON_OFFSET < b.n.y) return true;
 		if (a.n.y - NORM_COMPARISON_OFFSET > b.n.y) return false;
 		if (a.n.z + NORM_COMPARISON_OFFSET < b.n.z) return true;
-		if (a.n.z - NORM_COMPARISON_OFFSET > b.n.z) return false;
+		if (a.n.z - NORM_COMPARISON_OFFSET > b.n.z) return false;	// This is not actually needed if (!splitUVs)
 
+		if (!splitUVs) return false;
 
 		if (a.uv[0].x + NORM_COMPARISON_OFFSET < b.uv[0].x) return true;
 		if (a.uv[0].x - NORM_COMPARISON_OFFSET > b.uv[0].x) return false;
 		if (a.uv[0].y + NORM_COMPARISON_OFFSET < b.uv[0].y) return true;
+		if (a.uv[0].y - NORM_COMPARISON_OFFSET > b.uv[0].y) return false;	// This is not actually needed
+
 		return false;
 	};
 };
+
+typedef VrtCompare<true> VrtComp;
+typedef VrtCompare<false> VrtCompNoUV;
 
 /**
 Vertex comparator for vertex welding (not accounts normal and uv parameters of vertice).
