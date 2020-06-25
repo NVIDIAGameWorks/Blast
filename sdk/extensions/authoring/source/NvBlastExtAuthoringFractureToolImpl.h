@@ -204,7 +204,7 @@ public:
 	/**
 		Get chunk mesh in polygonal representation
 	*/
-	Mesh*									createChunkMesh(int32_t chunkIndex) override;
+	Mesh*									createChunkMesh(int32_t chunkIndex, bool splitUVs = true) override;
 
 	/**
 		Input mesh is scaled and transformed internally to fit unit cube centered in origin.
@@ -419,7 +419,7 @@ private:
 
 protected:
 	/**
-	Mesh scaled to unite-cube and translated to the origin
+	Mesh scaled to unit-cube and translated to the origin
 	*/
 	float								mScaleFactor;
 	NvcVec3								mOffset;

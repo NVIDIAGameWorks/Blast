@@ -310,8 +310,10 @@ class FractureTool
 
 	/**
 	    Get chunk mesh in polygonal representation. User's code should release it after usage.
+		This function welds vertices based upon vertex position and normal.  If splitUVs == true,
+		UV coordinates are also considered in vertex welding.
 	*/
-	virtual Mesh* createChunkMesh(int32_t chunkIndex) = 0;
+	virtual Mesh* createChunkMesh(int32_t chunkIndex, bool splitUVs = true) = 0;
 
 	/**
 	    Input mesh is scaled and transformed internally to fit unit cube centered in origin.

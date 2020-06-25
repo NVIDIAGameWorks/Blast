@@ -491,7 +491,43 @@ FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const 
 	return 0;
 }
 
-Mesh* FractureToolImpl::createChunkMesh(int32_t chunkIndex)
+template<typename Cmp>
+static void compactifyAndTransformVertexBuffer
+(
+	std::vector<Nv::Blast::Vertex>& vertexBuffer,
+	Edge* edges,
+	const Nv::Blast::Vertex* sourceVertices,
+	uint32_t numSourceVerts,
+	uint32_t numEdges,
+	float scaleFactor,
+	const NvcVec3& offset
+)
+{
+	std::map<Vertex, uint32_t, Cmp> vertexMapping;
+	for (uint32_t i = 0; i < numSourceVerts; i++)
+	{
+		const auto& vert = sourceVertices[i];
+		auto it = vertexMapping.find(vert);
+		if (it == vertexMapping.end()) {
+			const uint32_t size = static_cast<uint32_t>(vertexBuffer.size());
+			vertexMapping[vert] = size;
+
+			// transform the position back to world space before storing it
+			auto transformedVert = vert;
+			transformedVert.p = vert.p * scaleFactor + offset;
+			vertexBuffer.push_back(transformedVert);
+		}
+	}
+
+	// now we need convert the list of edges to be based on the compacted vertex buffer
+	for (uint32_t i = 0; i < numEdges; i++) {
+		Edge &edge = edges[i];
+		edge.s = vertexMapping[sourceVertices[edges[i].s]];
+		edge.e = vertexMapping[sourceVertices[edges[i].e]];
+	}
+}
+
+Mesh* FractureToolImpl::createChunkMesh(int32_t chunkIndex, bool splitUVs /* = true */)
 {
 	// make sure the chunk is valid
 	if (chunkIndex < 0 || uint32_t(chunkIndex) >= this->getChunkCount()) {
@@ -504,36 +540,20 @@ Mesh* FractureToolImpl::createChunkMesh(int32_t chunkIndex)
 		return nullptr;
 	}
 
-	// compact the vertex buffer
-	const auto sourceVertices = sourceMesh->getVertices();
-	const auto numSourceVerts = sourceMesh->getVerticesCount();
-	std::map<Vertex, uint32_t, VrtComp> vertexMapping;
-	std::vector<Vertex> _vertexBuffer;
-	for (uint32_t i = 0; i < numSourceVerts; i++) {
-		const auto& vert = sourceVertices[i];
-		auto it = vertexMapping.find(vert);
-		if (it == vertexMapping.end()) {
-			const uint32_t size = static_cast<uint32_t>(_vertexBuffer.size());
-			vertexMapping[vert] = size;
-
-			// transform the position back to world space before storing it
-			auto transformedVert = vert;
-			transformedVert.p = vert.p * mScaleFactor + mOffset;
-			_vertexBuffer.push_back(transformedVert);
-		}
-	}
-
-	// now we need convert the list of edges to be based on the compacted vertex buffer
+	const Nv::Blast::Vertex* sourceVertices = sourceMesh->getVertices();
+	const uint32_t numSourceVerts = sourceMesh->getVerticesCount();
+	const auto sourceEdges = sourceMesh->getEdges();
 	const auto numEdges = sourceMesh->getEdgesCount();
 	const auto edgeBufferSize = numEdges * sizeof(Edge);
+
     Edge* edges = reinterpret_cast<Edge*>(NVBLAST_ALLOC(edgeBufferSize));
-	const auto sourceEdges = sourceMesh->getEdges();
 	memcpy(edges, sourceEdges, edgeBufferSize);
-	for (uint32_t i = 0; i < numEdges; i++) {
-		Edge &edge = edges[i];
-		edge.s = vertexMapping[sourceVertices[edges[i].s]];
-		edge.e = vertexMapping[sourceVertices[edges[i].e]];
-	}
+
+	std::vector<Vertex> _vertexBuffer;
+	if (splitUVs)
+		compactifyAndTransformVertexBuffer<VrtComp>(_vertexBuffer, edges, sourceVertices, numSourceVerts, numEdges, mScaleFactor, mOffset);
+	else
+		compactifyAndTransformVertexBuffer<VrtCompNoUV>(_vertexBuffer, edges, sourceVertices, numSourceVerts, numEdges, mScaleFactor, mOffset);		
 
 	// now fix the order of the edges
 	// compacting the vertex buffer can put them out of order
