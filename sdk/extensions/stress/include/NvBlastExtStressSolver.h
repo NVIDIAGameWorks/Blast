@@ -140,7 +140,7 @@ public:
 	/**
 	Set all nodes info using low level NvBlastAsset data.
 	Uses NvBlastChunk's centroid and volume. 
-	Uses 'world' node to mark nodes as static.
+	Uses 'external' node to mark nodes as static.
 
 	\param[in]	density			Density. Used to convert volume to mass.
 	*/

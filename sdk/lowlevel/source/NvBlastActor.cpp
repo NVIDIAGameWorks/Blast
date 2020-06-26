@@ -996,11 +996,11 @@ bool NvBlastActorCanFracture(const NvBlastActor* actor, NvBlastLog logFn)
 }
 
 
-bool NvBlastActorIsBoundToWorld(const NvBlastActor* actor, NvBlastLog logFn)
+bool NvBlastActorHasExternalBonds(const NvBlastActor* actor, NvBlastLog logFn)
 {
-	NVBLASTLL_CHECK(actor != nullptr, logFn, "NvBlastActorIsBoundToWorld: NULL actor input.", return false);
+	NVBLASTLL_CHECK(actor != nullptr, logFn, "NvBlastActorHasExternalBonds: NULL actor input.", return false);
 
-	return static_cast<const Nv::Blast::Actor*>(actor)->isBoundToWorld();
+	return static_cast<const Nv::Blast::Actor*>(actor)->hasExternalBonds();
 }
 
 

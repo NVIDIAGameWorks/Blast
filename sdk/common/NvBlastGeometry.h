@@ -43,7 +43,7 @@ namespace Blast{
 /**
 Find the closest node to point in the graph. Uses primarily distance to chunk centroids.
 Bond normals are expected to be directed from the lower to higher node index.
-Cannot be used for graph actors with only the world chunk in the graph.
+Cannot be used for graph actors with only the external chunk in the graph.
 
 \param[in]	point						the point to test against
 \param[in]	firstGraphNodeIndex			the entry point for familyGraphNodeIndexLinks
@@ -65,11 +65,11 @@ NV_FORCE_INLINE	uint32_t findClosestNode(const float point[4],
 	const NvBlastBond* assetBonds, const float* bondHealths,
 	const NvBlastChunk* assetChunks, const float* supportChunkHealths, const uint32_t* chunkIndices)
 {
-	// firstGraphNodeIndex could still be the world chunk, however
-	// there should be no way a single-node actor that is just the world chunk exists.
+	// firstGraphNodeIndex could still be the external chunk, however
+	// there should be no way a single-node actor that is just the external chunk exists.
 	uint32_t nodeIndex = firstGraphNodeIndex;
 	// Since there should always be a regular chunk in the graph, it is possible to initialize closestNode
-	// as world chunk index but it would always evaluate to some meaningful node index eventually.
+	// as external chunk index but it would always evaluate to some meaningful node index eventually.
 	uint32_t closestNode = nodeIndex;
 	float minDist = std::numeric_limits<float>().max();
 
@@ -79,7 +79,7 @@ NV_FORCE_INLINE	uint32_t findClosestNode(const float point[4],
 		if (supportChunkHealths[nodeIndex] > 0.0f)
 		{
 			uint32_t chunkIndex = chunkIndices[nodeIndex];
-			if (!isInvalidIndex(chunkIndex)) // Invalid if this is the world chunk
+			if (!isInvalidIndex(chunkIndex)) // Invalid if this is the external chunk
 			{
 				const NvBlastChunk& chunk = assetChunks[chunkIndex];
 				const float* centroid = chunk.centroid;
@@ -97,7 +97,7 @@ NV_FORCE_INLINE	uint32_t findClosestNode(const float point[4],
 		nodeIndex = familyGraphNodeIndexLinks[nodeIndex];
 	}
 
-	// as long as the world chunk is not input as a single-node graph actor
+	// as long as the external chunk is not input as a single-node graph actor
 	NVBLAST_ASSERT(!isInvalidIndex(chunkIndices[closestNode]));
 
 	bool iterateOnBonds = true;
@@ -116,7 +116,7 @@ NV_FORCE_INLINE	uint32_t findClosestNode(const float point[4],
 		{
 			const uint32_t neighbourIndex = adjacentNodeIndices[adjacentIndex];
 			const uint32_t neighbourChunk = chunkIndices[neighbourIndex];
-			if (!isInvalidIndex(neighbourChunk)) // Invalid if neighbor is the world chunk
+			if (!isInvalidIndex(neighbourChunk)) // Invalid if neighbor is the external chunk
 			{
 				const uint32_t bondIndex = adjacentBondIndices[adjacentIndex];
 				// do not follow broken bonds, since it means that neighbor is not actually connected in the graph
@@ -154,7 +154,7 @@ NV_FORCE_INLINE	uint32_t findClosestNode(const float point[4],
 Find the closest node to point in the graph. Uses primarily distance to bond centroids.
 Slower compared to chunk based lookup but may yield better accuracy in some cases.
 Bond normals are expected to be directed from the lower to higher node index.
-Cannot be used for graph actors with only the world chunk in the graph.
+Cannot be used for graph actors with only the external chunk in the graph.
 
 \param[in]	point						the point to test against
 \param[in]	firstGraphNodeIndex			the entry point for familyGraphNodeIndexLinks
@@ -173,11 +173,11 @@ NV_FORCE_INLINE uint32_t findClosestNode(const float point[4],
 	const uint32_t* adjacencyPartition, const uint32_t* adjacentNodeIndices, const uint32_t* adjacentBondIndices,
 	const NvBlastBond* bonds, const float* bondHealths, const uint32_t* chunkIndices)
 {
-	// firstGraphNodeIndex could still be the world chunk, however
-	// there should be no way a single-node actor that is just the world chunk exists.
+	// firstGraphNodeIndex could still be the external chunk, however
+	// there should be no way a single-node actor that is just the external chunk exists.
 	uint32_t nodeIndex = firstGraphNodeIndex;
 	// Since there should always be a regular chunk in the graph, it is possible to initialize closestNode
-	// as world chunk index but it would always evaluate to some meaningful node index eventually.
+	// as external chunk index but it would always evaluate to some meaningful node index eventually.
 	uint32_t closestNode = nodeIndex;
 	float minDist = std::numeric_limits<float>().max();
 
@@ -203,7 +203,7 @@ NV_FORCE_INLINE uint32_t findClosestNode(const float point[4],
 					if (dist < minDist)
 					{
 						minDist = dist;
-						// if any of the nodes is the world chunk, use the valid one instead
+						// if any of the nodes is the external chunk, use the valid one instead
 						if (isInvalidIndex(chunkIndices[neighbourIndex]))
 						{
 							closestNode = nodeIndex;
@@ -224,7 +224,7 @@ NV_FORCE_INLINE uint32_t findClosestNode(const float point[4],
 		nodeIndex = familyGraphNodeIndexLinks[nodeIndex];
 	}
 
-	// as long as the world chunk is not input as a single-node graph actor
+	// as long as the external chunk is not input as a single-node graph actor
 	NVBLAST_ASSERT(!isInvalidIndex(chunkIndices[closestNode]));
 	return closestNode;
 }

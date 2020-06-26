@@ -134,7 +134,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 	}
 
 	// Using this function after the family graph data has been set up, so that it will work correctly
-	const bool boundToWorld = actor->isBoundToWorld();
+	const bool hasExternalBonds = actor->hasExternalBonds();
 
 	// Lower support chunk healths
 	{
@@ -186,7 +186,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 				{
 					// Only count if the adjacent node belongs to this actor
 					const uint32_t adjacentChunkIndex = graphChunkIndices[adjacentNodeIndex];
-					if ((boundToWorld && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == actorIndex))
+					if ((hasExternalBonds && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == actorIndex))
 					{
 						const uint32_t adjacentBondIndex = graphAdjacentBondIndices[adjacentIndex];
 						bondHealths[adjacentBondIndex] = serBondHealths[serBondCount++];
@@ -232,7 +232,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 				{
 					// Only count if the adjacent node belongs to this actor
 					const uint32_t adjacentChunkIndex = graphChunkIndices[adjacentNodeIndex];
-					if ((boundToWorld && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == actorIndex))
+					if ((hasExternalBonds && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == actorIndex))
 					{
 						if (!serEdgeRemovedArray->test(serBondIndex))
 						{
@@ -264,7 +264,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 	const FamilyHeader* header = getFamilyHeader();
 	const uint32_t* chunkActorIndices = header->getChunkActorIndices();
 	const uint32_t thisActorIndex = getIndex();
-	const bool boundToWorld = isBoundToWorld();
+	const bool hasExternalBonds = this->hasExternalBonds();
 
 	// Make sure there are no dirty nodes
 	if (m_graphNodeCount)
@@ -397,7 +397,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 				{
 					// Only count if the adjacent node belongs to this actor
 					const uint32_t adjacentChunkIndex = graphChunkIndices[adjacentNodeIndex];
-					if ((boundToWorld && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == thisActorIndex))
+					if ((hasExternalBonds && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == thisActorIndex))
 					{
 						if (offset >= bufferSize)
 						{
@@ -473,7 +473,7 @@ uint32_t Actor::serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) c
 				{
 					// Only count if the adjacent node belongs to this actor
 					const uint32_t adjacentChunkIndex = graphChunkIndices[adjacentNodeIndex];
-					if ((boundToWorld && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == thisActorIndex))
+					if ((hasExternalBonds && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == thisActorIndex))
 					{
 						const uint32_t adjacentBondIndex = graphAdjacentBondIndices[adjacentIndex];
 						if (!edgeRemovedArray->test(adjacentBondIndex))
@@ -504,7 +504,7 @@ uint32_t Actor::serializationRequiredStorage(NvBlastLog logFn) const
 	const uint32_t* graphNodeIndexLinks = getFamilyHeader()->getGraphNodeIndexLinks();
 	const uint32_t* chunkActorIndices = getFamilyHeader()->getChunkActorIndices();
 	const uint32_t thisActorIndex = getIndex();
-	const bool boundToWorld = isBoundToWorld();
+	const bool hasExternalBonds = this->hasExternalBonds();
 
 	// Lower-support chunk count and bond counts for this actor need to be calculated.  Iterate over all support chunks to count these.
 	uint32_t lowerSupportChunkCount = 0;
@@ -521,7 +521,7 @@ uint32_t Actor::serializationRequiredStorage(NvBlastLog logFn) const
 				{
 					// Only count if the adjacent node belongs to this actor or the world
 					const uint32_t adjacentChunkIndex = graphChunkIndices[adjacentNodeIndex];
-					if ((boundToWorld && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == thisActorIndex))
+					if ((hasExternalBonds && isInvalidIndex(adjacentChunkIndex)) || (!isInvalidIndex(adjacentChunkIndex) && chunkActorIndices[adjacentChunkIndex] == thisActorIndex))
 					{
 						++bondCount;
 					}

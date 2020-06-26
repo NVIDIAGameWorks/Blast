@@ -327,8 +327,8 @@ struct NvBlastBondDesc
 	/**
 	The indices of the chunks linked by this bond.  They must be different support chunk indices.
 	If one of the chunk indices is the invalid index (UINT32_MAX), then this will create a bond between
-	the chunk indexed by the other index (which must be valid) and "the world."  Any actor containing
-	this bond will cause the function NvBlastActorIsBoundToWorld to return true.
+	the chunk indexed by the other index (which must be valid) and something external.  Any actor containing
+	this bond will cause the function NvBlastActorHasExternalBonds to return true.
 	*/
 	uint32_t	chunkIndices[2];
 };

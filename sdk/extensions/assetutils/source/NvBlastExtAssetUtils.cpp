@@ -156,18 +156,18 @@ static inline void translate(NvcVec3& v, const NvcVec3& t)
 }
 
 
-NvBlastAsset* NvBlastExtAssetUtilsAddWorldBonds
+NvBlastAsset* NvBlastExtAssetUtilsAddExternalBonds
 (
 	const NvBlastAsset* asset,
-	const uint32_t* worldBoundChunks,
-	uint32_t worldBoundChunkCount,
+	const uint32_t* externalBoundChunks,
+	uint32_t externalBoundChunkCount,
 	const NvcVec3* bondDirections,
 	const uint32_t* bondUserData
 )
 {
 	const uint32_t chunkCount = NvBlastAssetGetChunkCount(asset, logLL);
 	const uint32_t oldBondCount = NvBlastAssetGetBondCount(asset, logLL);
-	const uint32_t newBondCount = oldBondCount + worldBoundChunkCount;
+	const uint32_t newBondCount = oldBondCount + externalBoundChunkCount;
 
 	NvBlastChunkDesc* chunkDescs = static_cast<NvBlastChunkDesc*>(NVBLAST_ALLOC(chunkCount * sizeof(NvBlastChunkDesc)));
 	NvBlastBondDesc* bondDescs = static_cast<NvBlastBondDesc*>(NVBLAST_ALLOC(newBondCount * sizeof(NvBlastBondDesc)));
@@ -179,10 +179,10 @@ NvBlastAsset* NvBlastExtAssetUtilsAddWorldBonds
 
 	// Add world bonds
 	uint32_t bondCount = oldBondCount;
-	for (uint32_t i = 0; i < worldBoundChunkCount; i++)
+	for (uint32_t i = 0; i < externalBoundChunkCount; i++)
 	{
 		NvBlastBondDesc& bondDesc = bondDescs[bondCount++];
-		const uint32_t chunkIndex = worldBoundChunks[i];
+		const uint32_t chunkIndex = externalBoundChunks[i];
 		bondDesc.chunkIndices[0] = chunkIndex;
 		bondDesc.chunkIndices[1] = invalidIndex<uint32_t>();
 		memcpy(&bondDesc.bond.normal, bondDirections + i, sizeof(float) * 3);
