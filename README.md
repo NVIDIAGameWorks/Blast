@@ -42,7 +42,7 @@ In order to help the user get started quickly, however, there is a PhysX-specifi
 and joints.  The source code for this extension, like all Blast extensions, is intended to be a reference implementation.
 
 Current blast extensions:
-* ExtAssetUtils - NvBlastAsset utility functions. Add world bonds, merge assets, and transform geometric data. 
+* ExtAssetUtils - NvBlastAsset utility functions. Add external bonds, merge assets, and transform geometric data. 
 * ExtAuthoring - a set of geometric tools which can split a mesh hierarchically and create a Blast asset, along with collision geometry and chunk graphics meshes in a separate files.
 * ExtExporter - standard mesh and collision writer tools in fbx, obj, and json formats. 
 * ExtPhysX - a physics manager using PhysX which keeps PxActors and PxJoints updated in a user-supplied PxScene.  It handles impact damage (through the contact callback), includes a stress solver wrapper, and provides a listener that enables multiple clients to keep their state synchronized.

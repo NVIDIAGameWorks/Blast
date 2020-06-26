@@ -115,7 +115,7 @@ public:
 
 	virtual uint32_t			getJoints(TkJoint** joints, uint32_t jointsSize) const override;
 
-	virtual bool				isBoundToWorld() const override;
+	virtual bool				hasExternalBonds() const override;
 	// End TkActor
 
 	// Begin TkObject

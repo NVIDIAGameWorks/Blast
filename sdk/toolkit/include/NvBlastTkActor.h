@@ -219,13 +219,16 @@ public:
 	virtual uint32_t			getJoints(TkJoint** joints, uint32_t jointsSize) const = 0;
 
 	/**
-	Whether or not this actor is bound to the world using a bond with an invalid chunk index to represent the NRF.
+	Whether or not this actor is bound to an external body using a bond with an invalid chunk index to represent the NRF.
 
-	NOTE: Wrapper function over low-level function call NvBlastActorIsBoundToWorld.
+	NOTE: Wrapper function over low-level function call NvBlastActorHasExternalBonds.
 
-	\return true iff this actor contains the "world" support graph node, created when a bond contains the UINT32_MAX value for one of their chunkIndices.
+	\return true iff this actor contains the "external" support graph node, created when a bond contains the UINT32_MAX value for one of their chunkIndices.
 	*/
-	virtual bool				isBoundToWorld() const = 0;
+	virtual bool				hasExternalBonds() const = 0;
+
+    // DEPRICATED: remove on next major version bump
+	inline bool				    isBoundToWorld() const { return this->hasExternalBonds(); };
 };
 
 } // namespace Blast

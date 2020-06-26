@@ -36,24 +36,27 @@
 
 
 /**
-Reauthor the provided asset to bond the specified support chunks to the world.
+Reauthor the provided asset to create external bonds in the specified support chunks.
 
 \param[in] asset					Pointer to the original asset. Won't be modified.
-\param[in] worldBoundChunks			Array of support chunk indices which are to be bound to the world.
-\param[in] worldBoundChunksCount	Size of worldBoundChunks array.
-\param[in] bondDirections			Array of normals for each bond (size worldBoundChunksCount)
-\param[in] bondUserData				Array of user data values for the new bonds, of size worldBoundChunksCount.  May be NULL.  If NULL, bond user data will be set to zero.
+\param[in] externalBoundChunks		Array of support chunk indices which are to be bound to the external body.
+\param[in] externalBoundChunksCount	Size of externalBoundChunks array.
+\param[in] bondDirections			Array of normals for each bond (size externalBoundChunksCount)
+\param[in] bondUserData				Array of user data values for the new bonds, of size externalBoundChunksCount.  May be NULL.  If NULL, bond user data will be set to zero.
 
 \return a new asset with added bonds if successful, NULL otherwise.
 */
-NVBLAST_API NvBlastAsset* NvBlastExtAssetUtilsAddWorldBonds
+NVBLAST_API NvBlastAsset* NvBlastExtAssetUtilsAddExternalBonds
 (
 	const NvBlastAsset* asset,
-	const uint32_t* worldBoundChunks,
-	uint32_t worldBoundChunkCount,
+	const uint32_t* externalBoundChunks,
+	uint32_t externalBoundChunkCount,
 	const NvcVec3* bondDirections,
 	const uint32_t* bondUserData
 );
+
+// DEPRICATED: remove on next major version bump
+#define NvBlastExtAssetUtilsAddWorldBonds NvBlastExtAssetUtilsAddExternalBonds
 
 
 /**

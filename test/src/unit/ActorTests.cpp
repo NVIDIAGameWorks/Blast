@@ -385,8 +385,8 @@ public:
 
 			++remainingActorCount;
 
-			NVBLAST_ASSERT(1 == a->getVisibleChunkCount() || a->isBoundToWorld());
-			EXPECT_TRUE(1 == a->getVisibleChunkCount() || a->isBoundToWorld());
+			NVBLAST_ASSERT(1 == a->getVisibleChunkCount() || a->hasExternalBonds());
+			EXPECT_TRUE(1 == a->getVisibleChunkCount() || a->hasExternalBonds());
 			if (!partitionToSubsupport)
 			{
 				EXPECT_EQ(1, a->getGraphNodeCount());
@@ -394,7 +394,7 @@ public:
 
 			if (0 == a->getVisibleChunkCount())
 			{
-				EXPECT_TRUE(a->isBoundToWorld());
+				EXPECT_TRUE(a->hasExternalBonds());
 				EXPECT_EQ(1, a->getGraphNodeCount());
 				EXPECT_EQ(a->getFamilyHeader()->m_asset->m_graph.m_nodeCount - 1, a->getFirstGraphNodeIndex());
 				--remainingActorCount;	// Do not count this as a remaining actor, to be compared with leaf or support chunk counts later
@@ -481,7 +481,7 @@ public:
 					}
 					chunkIndex = chunks[chunkIndex].parentChunkIndex;
 				}
-				EXPECT_TRUE(!Nv::Blast::isInvalidIndex(chunkIndex) || (graphNodeIndex == asset.m_graph.m_nodeCount-1 && actor.isBoundToWorld()));
+				EXPECT_TRUE(!Nv::Blast::isInvalidIndex(chunkIndex) || (graphNodeIndex == asset.m_graph.m_nodeCount-1 && actor.hasExternalBonds()));
 			}
 
 			// Check that all visible chunks are accounted for

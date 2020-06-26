@@ -363,9 +363,9 @@ uint32_t TkActorImpl::getJoints(TkJoint** joints, uint32_t jointsSize) const
 }
 
 
-bool TkActorImpl::isBoundToWorld() const
+bool TkActorImpl::hasExternalBonds() const
 {
-	return NvBlastActorIsBoundToWorld(m_actorLL, logLL);
+	return NvBlastActorHasExternalBonds(m_actorLL, logLL);
 }
 
 

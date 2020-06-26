@@ -173,11 +173,10 @@ NVBLAST_API uint32_t NvBlastAssetGetChunkCount(const NvBlastAsset* asset, NvBlas
 
 
 /**
-Get the number of support chunks in the given asset.  This will equal the number of
-graph nodes in NvBlastSupportGraph::nodeCount returned by NvBlastAssetGetSupportGraph only
-if no extra "world" node was created due to bonds defined between support chunks and the world.
-If such bonds were created, then there is an extra graph node representing the world, and this
-function will return NvBlastSupportGraph::nodeCount - 1.
+Get the number of support chunks in the given asset.  This will equal the number of graph nodes in
+NvBlastSupportGraph::nodeCount returned by NvBlastAssetGetSupportGraph only if no extra "external" node was created.
+If such bonds were created, then an extra "external" graph node is added,
+and this function will return NvBlastSupportGraph::nodeCount - 1.
 
 \param[in] asset	The asset.
 \param[in] logFn	User-supplied message function (see NvBlastLog definition).  May be NULL.
@@ -859,7 +858,7 @@ NVBLAST_API bool NvBlastActorCanFracture(const NvBlastActor* actor, NvBlastLog l
 /**
 Determines if the actor is damaged (was fractured) and split call is required.
 
-The actor could be damaged by calling NvBlastActorApplyFracture or NvBlastFamilyApplyFracture and NvBlastActorSplit is expected after.
+The actor could be damaged by calling NvBlastActorApplyFracture and NvBlastActorSplit is expected after.
 This function gives a hint that NvBlastActorSplit will have some work to be done and actor could potentially be split.
 If actor is not damaged calling NvBlastActorSplit will make no effect.
 
@@ -869,9 +868,12 @@ NVBLAST_API bool NvBlastActorIsSplitRequired(const NvBlastActor* actor, NvBlastL
 
 
 /**
-\return true iff this actor contains the "world" support graph node, created when a bond contains the UINT32_MAX value for one of their chunkIndices.
+\return true iff this actor contains the "external" support graph node, created when a bond contains the UINT32_MAX value for one of their chunkIndices.
 */
-NVBLAST_API bool NvBlastActorIsBoundToWorld(const NvBlastActor* actor, NvBlastLog logFn);
+NVBLAST_API bool NvBlastActorHasExternalBonds(const NvBlastActor* actor, NvBlastLog logFn);
+
+// DEPRICATED: remove on next major version bump
+#define NvBlastActorIsBoundToWorld NvBlastActorHasExternalBonds
 
 ///@} End NvBlastActor damage and fracturing functions
 

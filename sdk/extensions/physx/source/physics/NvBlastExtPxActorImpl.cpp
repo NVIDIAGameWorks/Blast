@@ -132,7 +132,7 @@ ExtPxActorImpl::ExtPxActorImpl(ExtPxFamilyImpl* family, TkActor* tkActor, const 
 	}
 
 	// search for static chunk in actor's graph (make actor static if it contains static chunk)
-	bool staticFound = m_tkActor->isBoundToWorld();
+	bool staticFound = m_tkActor->hasExternalBonds();
 	if (nodeCount > 0)
 	{
 		auto& graphNodeIndices = m_family->m_indicesScratch;

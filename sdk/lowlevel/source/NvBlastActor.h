@@ -432,9 +432,9 @@ public:
 	uint32_t			partitionMultipleGraphNodes(Actor** newActors, uint32_t newActorsSize, NvBlastLog logFn);
 
 	/**
-	\return true iff this actor contains the "world" support graph node, created when a bond contains the invalidIndex<uint32_t>() value for one of their chunkIndices.
+	\return true iff this actor contains the "external" support graph node, created when a bond contains the invalidIndex<uint32_t>() value for one of their chunkIndices.
 	*/
-	bool				isBoundToWorld() const;
+	bool				hasExternalBonds() const;
 
 	/**
 	\return true iff this actor was damaged and split() call is required.
@@ -672,7 +672,7 @@ NV_INLINE uint32_t Actor::partition(Actor** newActors, uint32_t newActorsSize, N
 }
 
 
-NV_INLINE bool Actor::isBoundToWorld() const
+NV_INLINE bool Actor::hasExternalBonds() const
 {
 	const SupportGraph& graph = *getGraph();
 
@@ -685,7 +685,7 @@ NV_INLINE bool Actor::isBoundToWorld() const
 
 	if (!isInvalidIndex(lastGraphChunkIndex))
 	{
-		return false;	// There is no world node
+		return false;	// There is no external node
 	}
 
 	return getFamilyGraph()->getIslandIds()[graph.m_nodeCount - 1] == getIndex();
