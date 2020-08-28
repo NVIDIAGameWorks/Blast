@@ -503,12 +503,15 @@ static void compactifyAndTransformVertexBuffer
 	const NvcVec3& offset
 )
 {
+	std::vector<uint32_t> indexMap;
+	indexMap.reserve(numSourceVerts);
 	std::map<Vertex, uint32_t, Cmp> vertexMapping;
 	for (uint32_t i = 0; i < numSourceVerts; i++)
 	{
 		const auto& vert = sourceVertices[i];
 		auto it = vertexMapping.find(vert);
-		if (it == vertexMapping.end()) {
+		if (it == vertexMapping.end())
+		{
 			const uint32_t size = static_cast<uint32_t>(vertexBuffer.size());
 			vertexMapping[vert] = size;
 
@@ -516,14 +519,20 @@ static void compactifyAndTransformVertexBuffer
 			auto transformedVert = vert;
 			transformedVert.p = vert.p * scaleFactor + offset;
 			vertexBuffer.push_back(transformedVert);
+
+			indexMap.push_back(size);
+		}
+		else
+		{
+			indexMap.push_back(it->second);
 		}
 	}
 
 	// now we need convert the list of edges to be based on the compacted vertex buffer
 	for (uint32_t i = 0; i < numEdges; i++) {
 		Edge &edge = edges[i];
-		edge.s = vertexMapping[sourceVertices[edges[i].s]];
-		edge.e = vertexMapping[sourceVertices[edges[i].e]];
+		edge.s = indexMap[edges[i].s];
+		edge.e = indexMap[edges[i].e];
 	}
 }
 
