@@ -207,13 +207,6 @@ public:
 	Mesh*									createChunkMesh(int32_t chunkIndex, bool splitUVs = true) override;
 
 	/**
-		Input mesh is scaled and transformed internally to fit unit cube centered in origin.
-		Method provides offset vector and scale parameter;
-	*/
-	void									getTransformation(NvcVec3& offset, float& scale) override;
-
-
-	/**
 		Fractures specified chunk with voronoi method.
 		\param[in] chunkId				Chunk to fracture
 		\param[in] cellPoints			Array of voronoi sites
@@ -321,21 +314,21 @@ public:
 		\param[in] chunkId Chunk ID
 		\return Chunk index in internal buffer, if not exist -1 is returned.
 	*/
-	int32_t									getChunkIndex(int32_t chunkId) override;
+	int32_t									getChunkIndex(int32_t chunkId) const override;
 
 	/**
 		Return id of chunk with specified index.
 		\param[in] chunkIndex Chunk index
 		\return Chunk id or -1 if there is no such chunk.
 	*/
-	int32_t									getChunkId(int32_t chunkIndex) override;
+	int32_t									getChunkId(int32_t chunkIndex) const override;
 
 	/**
 		Return depth level of the given chunk
 		\param[in] chunkId Chunk ID
 		\return Chunk depth or -1 if there is no such chunk.
 	*/
-	int32_t									getChunkDepth(int32_t chunkId) override;
+	int32_t									getChunkDepth(int32_t chunkId) const override;
 
 	/**
 		Return array of chunks IDs with given depth.
@@ -344,7 +337,7 @@ public:
 		\param[out] Pointer to array of chunk IDs
 		\return Number of chunks in array
 	*/
-	uint32_t								getChunksIdAtDepth(uint32_t depth, int32_t*& chunkIds) override;
+	uint32_t								getChunksIdAtDepth(uint32_t depth, int32_t*& chunkIds) const override;
 
 
 	/**
@@ -411,24 +404,27 @@ private:
 	void									fitAllUvToRect(float side, std::set<uint32_t>& mask);
     void                                    markLeaves();
 
+	/*
+	 * Meshes are transformed to fit a unit cube, for algorithmic stability.  This transform is stored
+	 * in the ChunkInfo.  Some meshes are created from already-transformed chunks.  If so, set
+	 * fromTransformed = true, so that the transform-to-world can be concatenated with the source mesh's.
+	 * 
+	 * chunkInfo.parentChunkId must be valid if fromTransformed == true.
+	 * 
+	 * Returns true iff successful.
+	 */
+	bool									setChunkInfoMesh(ChunkInfo& chunkInfo, Mesh* mesh, bool fromTransformed = true);
+
 	/**
 		Returns newly created chunk index in mChunkData.
 	*/
-	uint32_t								createNewChunk(uint32_t parentId);
+	uint32_t								createNewChunk(uint32_t parentChunkId);
 
 
 protected:
-	/**
-	Mesh scaled to unit-cube and translated to the origin
-	*/
-	float								mScaleFactor;
-	NvcVec3								mOffset;
-
 	/* Chunk mesh wrappers */
 	std::vector<Triangulator*>	        mChunkPostprocessors;
 
-
-	
 	int64_t								mPlaneIndexerOffset;
 	int32_t								mChunkIdCounter;
 	std::vector<ChunkInfo>				mChunkData;

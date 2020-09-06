@@ -42,23 +42,73 @@ class Mesh;
 class CutoutSet;
 
 /*
-    Chunk data, chunk with chunkId == 0 is always source mesh.
+	Transform used for chunk scaling (uniform scale + translation only)
+*/
+struct TransformST
+{
+	NvcVec3 t;	// Translation
+	float s;	// Uniform scale
+
+	static TransformST identity() { return {{0.0f, 0.0f, 0.0f}, 1.0f}; }
+
+	/* Point and vector transformations.  Note, normals are invariant (up to normalization) under TransformST transformations. */
+	NvcVec3 transformPos(const NvcVec3& p) const { return {s * p.x + t.x, s * p.y + t.y, s * p.z + t.z}; }
+	NvcVec3 transformDir(const NvcVec3& d) const { return {s * d.x, s * d.y, s * d.z}; }
+
+	NvcVec3 invTransformPos(const NvcVec3& p) const { return {(p.x - t.x) / s, (p.y - t.y) / s, (p.z - t.z) / s}; }
+	NvcVec3 invTransformDir(const NvcVec3& d) const { return {d.x / s, d.y / s, d.z / s}; }
+};
+
+/*
+    Chunk data, chunks with parentChunkId == -1 are the source meshes.
 */
 struct ChunkInfo
 {
+	ChunkInfo();
+
 	enum ChunkFlags
 	{
 		NO_FLAGS            = 0,
 		APPROXIMATE_BONDING = 1 // Created by island splitting or chunk merge, etc. and should check for inexact bonds
 	};
 
+protected:
+	/**
+	 * The mesh is transformed to fit within a unit cube centered at the origin.
+	 * This transform puts the mesh back into its original space.
+	 * These fields are protected so that only an authoring class can access them.
+	 * It is important that the tmToWorld be set based upon the mesh bounds and parent tmToWorld.
+	 */
+	TransformST tmToWorld;
 	Mesh* meshData;
-	int32_t parent;
+
+	/**
+	 * Parent ID is set to this value initially, as opposed to -1 (which is a valid parent ID denoting "no parent")
+	 */
+	enum { UninitializedID = 0x80000000 };
+
+public:
+	int32_t parentChunkId;
 	int32_t chunkId;
 	uint32_t flags;
 	bool isLeaf;
 	bool isChanged;
+
+	const TransformST& getTmToWorld() const { return tmToWorld; }
+	Mesh* getMesh() const { return meshData; }
 };
+
+inline ChunkInfo::ChunkInfo() :
+	tmToWorld(TransformST::identity()),
+	meshData(nullptr),
+	parentChunkId(UninitializedID),
+	chunkId(-1),
+	flags(NO_FLAGS),
+	isLeaf(false),
+	isChanged(true)
+{
+}
+
 
 /**
     Abstract base class for user-defined random value generator.
@@ -316,13 +366,6 @@ class FractureTool
 	virtual Mesh* createChunkMesh(int32_t chunkIndex, bool splitUVs = true) = 0;
 
 	/**
-	    Input mesh is scaled and transformed internally to fit unit cube centered in origin.
-	    Method provides offset vector and scale parameter;
-	*/
-	virtual void getTransformation(NvcVec3& offset, float& scale) = 0;
-
-
-	/**
 	    Fractures specified chunk with voronoi method.
 	    \param[in] chunkId				Chunk to fracture
 	    \param[in] cellPoints			Array of voronoi sites
@@ -438,21 +481,21 @@ class FractureTool
 	    \param[in] chunkId Chunk ID
 	    \return Chunk index in internal buffer, if not exist -1 is returned.
 	*/
-	virtual int32_t getChunkIndex(int32_t chunkId) = 0;
+	virtual int32_t getChunkIndex(int32_t chunkId) const = 0;
 
 	/**
 	    Return id of chunk with specified index.
 	    \param[in] chunkIndex Chunk index
 	    \return Chunk id or -1 if there is no such chunk.
 	*/
-	virtual int32_t getChunkId(int32_t chunkIndex) = 0;
+	virtual int32_t getChunkId(int32_t chunkIndex) const = 0;
 
 	/**
 	    Return depth level of the given chunk
 	    \param[in] chunkId Chunk ID
 	    \return Chunk depth or -1 if there is no such chunk.
 	*/
-	virtual int32_t getChunkDepth(int32_t chunkId) = 0;
+	virtual int32_t getChunkDepth(int32_t chunkId) const = 0;
 
 	/**
 	    Return array of chunks IDs with given depth.
@@ -460,7 +503,7 @@ class FractureTool
 	    \param[out] Pointer to array of chunk IDs
 	    \return Number of chunks in array
 	*/
-	virtual uint32_t getChunksIdAtDepth(uint32_t depth, int32_t*& chunkIds) = 0;
+	virtual uint32_t getChunksIdAtDepth(uint32_t depth, int32_t*& chunkIds) const = 0;
 
 	/**
 	    Get result geometry without noise as vertex and index buffers, where index buffers contain series of triplets
