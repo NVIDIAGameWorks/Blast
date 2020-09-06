@@ -1097,7 +1097,7 @@ int32_t BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool
 	{
 		NvBlastChunkDesc& desc = resultChunkDescriptors[i];
 		desc.userData          = tool->getChunkId(i);
-		desc.parentChunkIndex  = tool->getChunkIndex(tool->getChunkInfo(i).parent);
+		desc.parentChunkIndex  = tool->getChunkIndex(tool->getChunkInfo(i).parentChunkId);
 		desc.flags             = NvBlastChunkDesc::NoFlags;
         hasApproximateBonding |= !!(tool->getChunkInfo(i).flags & ChunkInfo::APPROXIMATE_BONDING);
 		if (chunkIsSupport[i])
