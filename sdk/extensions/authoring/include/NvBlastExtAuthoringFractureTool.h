@@ -85,7 +85,7 @@ protected:
 	/**
 	 * Parent ID is set to this value initially, as opposed to -1 (which is a valid parent ID denoting "no parent")
 	 */
-	enum { UninitializedID = 0x80000000 };
+	enum { UninitializedID = INT32_MIN };
 
 public:
 	int32_t parentChunkId;
