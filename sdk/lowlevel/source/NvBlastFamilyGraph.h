@@ -104,7 +104,7 @@ public:
 	bool			notifyEdgeRemoved(ActorIndex actorIndex, NodeIndex node0, NodeIndex node1, const SupportGraph* graph);
 	bool			notifyEdgeRemoved(ActorIndex actorIndex, NodeIndex node0, NodeIndex node1, uint32_t bondIndex, const SupportGraph* graph);
 
-	bool			notifyNodeRemoved(ActorIndex actorIndex, NodeIndex nodeIndex, const SupportGraph* graph);
+	bool			notifyNodeRemoved(ActorIndex actorIndex, NodeIndex nodeIndex, const SupportGraph* graph, float* bondHealths);
 
 	/**
 	Function to find new islands by examining dirty nodes associated with this actor (they can be associated with actor if 

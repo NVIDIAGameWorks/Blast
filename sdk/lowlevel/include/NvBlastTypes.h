@@ -31,6 +31,7 @@
 
 
 #include "NvBlastPreprocessor.h"
+#include <float.h>
 #include <stdint.h>
 
 
@@ -385,6 +386,14 @@ functions.
 */
 struct NvBlastActor {};
 
+namespace Nv
+{
+namespace Blast
+{
+const float kUnbreakableLimit = (0.5f * FLT_MAX);
+}
+}
+inline bool canTakeDamage(float health) { return (health > 0.0f && health < Nv::Blast::kUnbreakableLimit); }
 
 /**
 Actor descriptor, used to create an instance of an NvBlastAsset with NvBlastFamilyCreateFirstActor
@@ -400,6 +409,7 @@ struct NvBlastActorDesc
 
 	/**
 	Initial bond healths.  If not NULL, this array must be of length NvBlastAssetGetBondCount(asset, logFn).
+	Setting it above Nv::Blast::kUnbreakableLimit will make the bond unbreakable.
 	If NULL, uniformInitialBondHealth must be set.
 	*/
 	const float*	initialBondHealths;
@@ -415,6 +425,7 @@ struct NvBlastActorDesc
 	array will correspond to the chunk indices in the NvBlastAssetGetSupportGraph(asset, logFn).chunkIndices
 	array.  Every descendent of a support chunk will have its health initialized to its ancestor support
 	chunk's health, so this initializes all lower-support chunk healths.
+	Setting it above Nv::Blast::kUnbreakableLimit will make the chunk unbreakable.
 	If NULL, uniformInitialLowerSupportChunkHealth must be set.
 	*/
 	const float*	initialSupportChunkHealths;
