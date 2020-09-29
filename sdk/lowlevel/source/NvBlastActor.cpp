@@ -158,17 +158,17 @@ void Actor::damageBond(uint32_t nodeIndex0, uint32_t nodeIndex1, uint32_t bondIn
 	}
 
 	float* bondHealths = getBondHealths();
-	if (bondHealths[bondIndex] > 0 && healthDamage > 0.0f)
+	if (canTakeDamage(bondHealths[bondIndex]) && healthDamage > 0.0f)
 	{
 		// Subtract health
 		bondHealths[bondIndex] -= healthDamage;
 
 		// Was removed?
-		if (bondHealths[bondIndex] <= 0)
+		if (bondHealths[bondIndex] <= 0.0f)
 		{
 			// Notify graph that bond was removed
 			getFamilyGraph()->notifyEdgeRemoved(getIndex(), nodeIndex0, nodeIndex1, bondIndex, getGraph());
-			bondHealths[bondIndex] = 0;	// Doing this for single-actor serialization consistency; should not actually be necessary
+			bondHealths[bondIndex] = 0.0f;	// Doing this for single-actor serialization consistency; should not actually be necessary
 		}
 	}
 }

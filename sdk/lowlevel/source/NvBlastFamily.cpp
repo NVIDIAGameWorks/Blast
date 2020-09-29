@@ -182,7 +182,7 @@ void FamilyHeader::fractureSubSupportNoEvents(uint32_t chunkIndex, uint32_t subo
 		for (uint32_t childIndex = chunk.firstChildIndex; childIndex < chunk.childIndexStop; childIndex++)
 		{
 			float& health = chunkHealths[childIndex - suboffset];
-			if (health > 0.0f)
+			if (canTakeDamage(health))
 			{
 				float remainingDamage = healthDamage - health;
 				health -= healthDamage;
@@ -210,7 +210,7 @@ void FamilyHeader::fractureSubSupport(uint32_t chunkIndex, uint32_t suboffset, f
 		for (uint32_t childIndex = chunk.firstChildIndex; childIndex < chunk.childIndexStop; childIndex++)
 		{
 			float& health = chunkHealths[childIndex - suboffset];
-			if (health > 0.0f)
+			if (canTakeDamage(health))
 			{
 				float remainingDamage = healthDamage - health;
 				health -= healthDamage;
@@ -240,8 +240,6 @@ void FamilyHeader::fractureSubSupport(uint32_t chunkIndex, uint32_t suboffset, f
 void FamilyHeader::fractureNoEvents(uint32_t chunkFractureCount, const NvBlastChunkFractureData* chunkFractures, Actor* filterActor, NvBlastLog logFn)
 {
 	const SupportGraph& graph = m_asset->m_graph;
-	const uint32_t* graphAdjacencyPartition = graph.getAdjacencyPartition();
-	const uint32_t* adjacentBondIndices = graph.getAdjacentBondIndices();
 	float* bondHealths = getBondHealths();
 	float* chunkHealths = getLowerSupportChunkHealths();
 	float* subChunkHealths = getSubsupportChunkHealths();
@@ -258,7 +256,7 @@ void FamilyHeader::fractureNoEvents(uint32_t chunkFractureCount, const NvBlastCh
 			continue;
 		}
 		float& health = chunkHealths[chunkHealthIndex];
-		if (health > 0.0f && command.health > 0.0f)
+		if (canTakeDamage(health) && command.health > 0.0f)
 		{
 			Actor* actor = getGetChunkActor(chunkIndex);
 			if (filterActor && filterActor != actor)
@@ -270,16 +268,7 @@ void FamilyHeader::fractureNoEvents(uint32_t chunkFractureCount, const NvBlastCh
 				const uint32_t nodeIndex = m_asset->getChunkToGraphNodeMap()[chunkIndex];
 				if (actor->getGraphNodeCount() > 1 && !isInvalidIndex(nodeIndex))
 				{
-					for (uint32_t adjacentIndex = graphAdjacencyPartition[nodeIndex]; adjacentIndex < graphAdjacencyPartition[nodeIndex + 1]; adjacentIndex++)
-					{
-						const uint32_t bondIndex = adjacentBondIndices[adjacentIndex];
-						NVBLAST_ASSERT(!isInvalidIndex(bondIndex));
-						if (bondHealths[bondIndex] > 0.0f)
-						{
-							bondHealths[bondIndex] = 0.0f;
-						}
-					}
-					getFamilyGraph()->notifyNodeRemoved(actor->getIndex(), nodeIndex, &graph);
+					getFamilyGraph()->notifyNodeRemoved(actor->getIndex(), nodeIndex, &graph, bondHealths);
 				}
 
 				health -= command.health;
@@ -299,8 +288,6 @@ void FamilyHeader::fractureNoEvents(uint32_t chunkFractureCount, const NvBlastCh
 void FamilyHeader::fractureWithEvents(uint32_t chunkFractureCount, const NvBlastChunkFractureData* commands, NvBlastChunkFractureData* events, uint32_t eventsSize, uint32_t* count, Actor* filterActor, NvBlastLog logFn)
 {
 	const SupportGraph& graph = m_asset->m_graph;
-	const uint32_t* graphAdjacencyPartition = graph.getAdjacencyPartition();
-	const uint32_t* adjacentBondIndices = graph.getAdjacentBondIndices();
 	float* bondHealths = getBondHealths();
 	float* chunkHealths = getLowerSupportChunkHealths();
 	float* subChunkHealths = getSubsupportChunkHealths();
@@ -317,7 +304,7 @@ void FamilyHeader::fractureWithEvents(uint32_t chunkFractureCount, const NvBlast
 			continue;
 		}
 		float& health = chunkHealths[chunkHealthIndex];
-		if (health > 0.0f && command.health > 0.0f)
+		if (canTakeDamage(health) && command.health > 0.0f)
 		{
 			Actor* actor = getGetChunkActor(chunkIndex);
 			if (filterActor && filterActor != actor)
@@ -329,16 +316,7 @@ void FamilyHeader::fractureWithEvents(uint32_t chunkFractureCount, const NvBlast
 				const uint32_t nodeIndex = m_asset->getChunkToGraphNodeMap()[chunkIndex];
 				if (actor->getGraphNodeCount() > 1 && !isInvalidIndex(nodeIndex))
 				{
-					for (uint32_t adjacentIndex = graphAdjacencyPartition[nodeIndex]; adjacentIndex < graphAdjacencyPartition[nodeIndex + 1]; adjacentIndex++)
-					{
-						const uint32_t bondIndex = adjacentBondIndices[adjacentIndex];
-						NVBLAST_ASSERT(!isInvalidIndex(bondIndex));
-						if (bondHealths[bondIndex] > 0.0f)
-						{
-							bondHealths[bondIndex] = 0.0f;
-						}
-					}
-					getFamilyGraph()->notifyNodeRemoved(actor->getIndex(), nodeIndex, &graph);
+					getFamilyGraph()->notifyNodeRemoved(actor->getIndex(), nodeIndex, &graph, bondHealths);
 				}
 
 				health -= command.health;
@@ -367,8 +345,6 @@ void FamilyHeader::fractureWithEvents(uint32_t chunkFractureCount, const NvBlast
 void FamilyHeader::fractureInPlaceEvents(uint32_t chunkFractureCount, NvBlastChunkFractureData* inoutbuffer, uint32_t eventsSize, uint32_t* count, Actor* filterActor, NvBlastLog logFn)
 {
 	const SupportGraph& graph = m_asset->m_graph;
-	const uint32_t* graphAdjacencyPartition = graph.getAdjacencyPartition();
-	const uint32_t* adjacentBondIndices = graph.getAdjacentBondIndices();
 	float* bondHealths = getBondHealths();
 	float* chunkHealths = getLowerSupportChunkHealths();
 	float* subChunkHealths = getSubsupportChunkHealths();
@@ -389,7 +365,7 @@ void FamilyHeader::fractureInPlaceEvents(uint32_t chunkFractureCount, NvBlastChu
 			continue;
 		}
 		float& health = chunkHealths[chunkHealthIndex];
-		if (health > 0.0f && command.health > 0.0f)
+		if (canTakeDamage(health) && command.health > 0.0f)
 		{
 			Actor* actor = getGetChunkActor(chunkIndex);
 			if (filterActor && filterActor != actor)
@@ -401,16 +377,7 @@ void FamilyHeader::fractureInPlaceEvents(uint32_t chunkFractureCount, NvBlastChu
 				const uint32_t nodeIndex = m_asset->getChunkToGraphNodeMap()[chunkIndex];
 				if (actor->getGraphNodeCount() > 1 && !isInvalidIndex(nodeIndex))
 				{
-					for (uint32_t adjacentIndex = graphAdjacencyPartition[nodeIndex]; adjacentIndex < graphAdjacencyPartition[nodeIndex + 1]; adjacentIndex++)
-					{
-						const uint32_t bondIndex = adjacentBondIndices[adjacentIndex];
-						NVBLAST_ASSERT(!isInvalidIndex(bondIndex));
-						if (bondHealths[bondIndex] > 0.0f)
-						{
-							bondHealths[bondIndex] = 0.0f;
-						}
-					}
-					getFamilyGraph()->notifyNodeRemoved(actor->getIndex(), nodeIndex, &graph);
+					getFamilyGraph()->notifyNodeRemoved(actor->getIndex(), nodeIndex, &graph, bondHealths);
 				}
 
 				health -= command.health;
