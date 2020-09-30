@@ -200,7 +200,7 @@ bool FamilyGraph::notifyEdgeRemoved(ActorIndex actorIndex, NodeIndex node0, Node
 	return true;
 }
 
-bool FamilyGraph::notifyNodeRemoved(ActorIndex actorIndex, NodeIndex nodeIndex, const SupportGraph* graph, float* bondHealths)
+bool FamilyGraph::notifyNodeRemoved(ActorIndex actorIndex, NodeIndex nodeIndex, const SupportGraph* graph)
 {
 	NVBLAST_ASSERT(nodeIndex < graph->m_nodeCount);
 
@@ -213,15 +213,10 @@ bool FamilyGraph::notifyNodeRemoved(ActorIndex actorIndex, NodeIndex nodeIndex, 
 	for (uint32_t adjacencyIndex = adjacencyPartition[nodeIndex]; adjacencyIndex < adjacencyPartition[nodeIndex + 1]; adjacencyIndex++)
 	{
 		const uint32_t adjacentNodeIndex = getAdjacentNode(adjacencyIndex, graph);
-        const uint32_t bondIndex = adjacentBondIndices[adjacencyIndex];
-        NVBLAST_ASSERT(!isInvalidIndex(adjacentNodeIndex) && !isInvalidIndex(bondIndex));
-		if (!isInvalidIndex(adjacentNodeIndex) && !isInvalidIndex(bondIndex))
+		if (!isInvalidIndex(adjacentNodeIndex))
 		{
+			const uint32_t bondIndex = adjacentBondIndices[adjacencyIndex];
 			getIsEdgeRemoved()->set(bondIndex);
-            if (bondHealths[bondIndex] > 0.0f)
-            {
-                bondHealths[bondIndex] = 0.0f;
-            }
 
 			if (fastRoute[adjacentNodeIndex] == nodeIndex)
 				fastRoute[adjacentNodeIndex] = invalidIndex<uint32_t>();
