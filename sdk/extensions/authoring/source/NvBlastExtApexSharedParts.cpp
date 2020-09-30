@@ -28,6 +28,9 @@
 
 #include "NvBlastExtApexSharedParts.h"
 
+#include "NvBlastGlobals.h"
+#include "NvBlastMemory.h"
+
 #include "foundation/PxMat44.h"
 #include "foundation/PxBounds3.h"
 #include "foundation/PxFoundation.h"
@@ -923,6 +926,45 @@ static void _arrayVec3ToVec4(const PxVec3* src, const Vec3V& scale, Vec4V* dst, 
 }
 
 
+// TODO: move this to a better long term home
+// scope based helper struct to pick between stack and heap alloc based on the size of the request
+struct ScopeMemoryAllocator {
+public:
+    ScopeMemoryAllocator() : mAlloc(nullptr) {};
+    ~ScopeMemoryAllocator()
+    {
+        this->free();
+    }
+
+    void* alloc(size_t buffSize)
+    {
+        if (mAlloc == nullptr)
+        {
+            mAlloc = NVBLAST_ALLOC(buffSize);
+            return mAlloc;
+        }
+        return nullptr;
+    }
+
+    void free()
+    {
+        if (mAlloc != nullptr)
+        {
+            NVBLAST_FREE(mAlloc);
+            mAlloc = nullptr;
+        }
+    }
+
+private:
+    void* mAlloc;
+};
+
+#define STACK_ALLOC_LIMIT (100 * 1024)
+#define ALLOCATE_TEMP_MEMORY(_out, buffSize)	\
+    ScopeMemoryAllocator _out##Allocator;       \
+    _out = (buffSize < STACK_ALLOC_LIMIT ? NvBlastAlloca(buffSize) : _out##Allocator.alloc(buffSize))
+
+
 bool importerHullsInProximityApexFree(uint32_t hull0Count, const PxVec3* hull0, PxBounds3& hull0Bounds, const physx::PxTransform& localToWorldRT0In, const physx::PxVec3& scale0In,
 	uint32_t hull1Count, const PxVec3* hull1, PxBounds3& hull1Bounds, const physx::PxTransform& localToWorldRT1In, const physx::PxVec3& scale1In,
 	physx::PxF32 maxDistance, Separation* separation)
@@ -933,7 +975,11 @@ bool importerHullsInProximityApexFree(uint32_t hull0Count, const PxVec3* hull0, 
 	const PxU32 numVerts1 = static_cast<PxU32>(hull1Count);
 	const PxU32 numAov0 = (numVerts0 + 3) >> 2;
 	const PxU32 numAov1 = (numVerts1 + 3) >> 2;
-	Vec4V* verts0 = (Vec4V*)alloca((numAov0 + numAov1) * sizeof(Vec4V) * 3);
+
+    const PxU32 buffSize = (numAov0 + numAov1) * sizeof(Vec4V) * 3;
+    void* buff = nullptr;
+    ALLOCATE_TEMP_MEMORY(buff, buffSize);
+	Vec4V* verts0 = (Vec4V*)buff;
 
 	// Make sure it's aligned
 	PX_ASSERT((size_t(verts0) & 0xf) == 0);
