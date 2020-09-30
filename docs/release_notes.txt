@@ -11,6 +11,10 @@ Changes
 * Support unbreakable bonds and chunks by setting their health above Nv::Blast::kUnbreakableLimit
 * Consolidate code when node is removed
 
+Bug fixes
+---------
+* Allocate on heap instead of stack in importerHullsInProximityApexFree() to prevent crash
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Blast(tm) SDK 1.4.3 (6-Sep-2020)
