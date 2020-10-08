@@ -1558,7 +1558,11 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 		}
 	}
 
-	trque.push(best);
+	if (!trs.empty())
+	{
+		trque.push(best);
+	}
+
 	while (!trque.empty())
 	{
 		int32_t trid      = trque.front();
