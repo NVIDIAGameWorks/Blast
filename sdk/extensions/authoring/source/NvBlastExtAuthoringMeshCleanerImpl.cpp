@@ -23,7 +23,7 @@
 // components in life support devices or systems without express written approval of
 // NVIDIA Corporation.
 //
-// Copyright (c) 2016-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
 #include <PxVec3.h>
 #include <PxVec2.h>
@@ -1558,7 +1558,11 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 		}
 	}
 
-	trque.push(best);
+	if (!trs.empty())
+	{
+		trque.push(best);
+	}
+
 	while (!trque.empty())
 	{
 		int32_t trid      = trque.front();

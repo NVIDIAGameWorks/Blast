@@ -23,7 +23,7 @@
 // components in life support devices or systems without express written approval of
 // NVIDIA Corporation.
 //
-// Copyright (c) 2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2020 NVIDIA Corporation. All rights reserved.
 
 #include "NvBlastExtExporterFbxReader.h"
 #include "NvBlastExtExporterFbxUtils.h"
@@ -198,9 +198,9 @@ void FbxFileReader::loadFromFile(const char* filename)
 	bool bAllTriangles = mesh->IsTriangleMesh();
 	if (!bAllTriangles)
 	{
-		//It creates corrupted mesh and return true. Disable it to prevent crash.
 		//try letting the FBX SDK triangulate it
-		//bAllTriangles = geoConverter.Triangulate(mesh, true) && mesh->IsTriangleMesh();
+		mesh = FbxCast<FbxMesh>(geoConverter.Triangulate(mesh, true));
+		bAllTriangles = mesh->IsTriangleMesh();
 	}
 
 	int polyCount = mesh->GetPolygonCount();

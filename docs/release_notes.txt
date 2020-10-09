@@ -3,6 +3,22 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Blast(tm) SDK 1.1.6 (08-Oct-2020)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Changes
+-------
+* Updated license file
+* Updated copyright dates
+* Removed ArtistTool
+
+Bug Fixes
+---------
+* Pull request #15 "Fix Blast bond generation"
+* Pull request #16 "Fix invalid pointer access in authoring tools"
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Blast(tm) SDK 1.1.5 (16-Sep-2019)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24,7 +40,7 @@ New Features
   * Ability to delete chunks (see note about FractureTool::deleteChunkSubhierarchy in Changes section, above).
   * Added FractureTool::setApproximateBonding function.  Signals the tool to create bonds by proximity instead of just using cut plane data.
 
-Bug fixes
+Bug Fixes
 ---------
 * Authoring tools:
   * Fixed chunk reordering bug in BlastTool.
@@ -54,7 +70,7 @@ New Features
   * Added "agg" (aggregate) commandline switch to AuthoringTool.  This allows multiple convex hulls per chunk to be generated.
   * Damage pattern authoring interface.
 
-Bug fixes
+Bug Fixes
 ---------
 * Build working on later C++ versions (e.g. deprecated UINT32_MAX removed).
 * Authoring tools:
@@ -99,7 +115,7 @@ New Features
   * Cutout option "useSmoothing."  Add generatad faces to the same smoothing group as original face without noise.
   * Periodic cutout boundary conditions.
 
-Bug fixes
+Bug Fixes
 ---------
 * Packman target platform dependencies no longer pulling windows packages into other platforms.
 * Fixed bond generation for cutout fracture.
@@ -133,7 +149,7 @@ New Features
 * UV fitting on interior materials using new FractureTool::fitUvToRect and FractureTool::fitAllUvToRect functions.
 * Multi-material support in OBJ file format.
 
-Bug fixes
+Bug Fixes
 ---------
 * Fixed bug causing normals on every other depth level to be flipped when exporting Blast meshes.
 * Fixed bug where faces are missed after hierarchy optimization on a sliced mesh.
@@ -167,7 +183,7 @@ New Features
 * Triangle damage shader for swept segments
 * Impact damage spread shaders
 
-Bug fixes
+Bug Fixes
 ---------
 * Linux build fixes
 * NvBlastExtAuthoring
@@ -235,7 +251,7 @@ New Features
   * Ability to set interior material to existing (external) material, or a new material id.
   * Material ID remapping API.
 
-Bug fixes
+Bug Fixes
 ---------
 * NvBlastExtAuthoring
   * Slicing normals fix.
@@ -293,7 +309,7 @@ New Features
 ------------
 * Serialization enabled for XBoxOne
 
-Bug fixes
+Bug Fixes
 ---------
 * Can change worker thread count in CPU dispatcher
 * TkJoints created from the TkFramework::createJoint function are now released when the TkFramework is released

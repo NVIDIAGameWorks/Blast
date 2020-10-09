@@ -23,7 +23,7 @@
 // components in life support devices or systems without express written approval of
 // NVIDIA Corporation.
 //
-// Copyright (c) 2016-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
 
 #include "NvBlastExtTriangleProcessor.h"
@@ -193,7 +193,7 @@ void TriangleProcessor::sortToCCW(std::vector<PxVec3>& points, PxVec3& normal)
 	int lastUnique = 0;
 	for (uint32_t i = 1; i < points.size(); ++i)
 	{
-		PxVec3 df = points[i] - points[lastUnique];
+		PxVec3 df = (points[i] - points[lastUnique]).abs();
 		if (df.x > V_COMP_EPS || df.y > V_COMP_EPS || df.z > V_COMP_EPS)
 		{
 			points[++lastUnique] = points[i];
@@ -216,7 +216,7 @@ void TriangleProcessor::buildConvexHull(std::vector<PxVec3>& points, std::vector
 	int lastUnique = 0;
 	for (uint32_t i = 1; i < points.size(); ++i)
 	{
-		PxVec3 df = points[i] - points[lastUnique];
+		PxVec3 df = (points[i] - points[lastUnique]).abs();
 		if (df.x > V_COMP_EPS || df.y > V_COMP_EPS || df.z > V_COMP_EPS)
 		{
 			points[++lastUnique] = points[i];
@@ -237,7 +237,7 @@ void TriangleProcessor::buildConvexHull(std::vector<PxVec3>& points, std::vector
 	{
 		PxVec2 pnt = getProjectedPointWithWinding(points[i], projectionDirection);
 		PxVec2 vec = pnt - getProjectedPointWithWinding(convexHull.back(), projectionDirection);
-		if (vec.x < V_COMP_EPS && vec.y < V_COMP_EPS)
+		if (PxAbs(vec.x) < V_COMP_EPS && PxAbs(vec.y) < V_COMP_EPS)
 		{
 			continue;
 		}

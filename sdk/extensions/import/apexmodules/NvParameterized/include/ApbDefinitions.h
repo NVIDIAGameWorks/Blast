@@ -23,7 +23,7 @@
 // components in life support devices or systems without express written approval of
 // NVIDIA Corporation.
 //
-// Copyright (c) 2008-2013 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2020 NVIDIA Corporation. All rights reserved.
 
 #ifndef APB_DEFINITIONS_H_
 #define APB_DEFINITIONS_H_

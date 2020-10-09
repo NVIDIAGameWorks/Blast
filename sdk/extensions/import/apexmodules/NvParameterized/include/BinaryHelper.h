@@ -23,7 +23,7 @@
 // components in life support devices or systems without express written approval of
 // NVIDIA Corporation.
 //
-// Copyright (c) 2008-2013 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2020 NVIDIA Corporation. All rights reserved.
 
 #ifndef PX_SERIALIZE_BINARY_HELPER_H
 #define PX_SERIALIZE_BINARY_HELPER_H

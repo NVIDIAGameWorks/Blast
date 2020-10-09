@@ -23,7 +23,7 @@
 // components in life support devices or systems without express written approval of
 // NVIDIA Corporation.
 //
-// Copyright (c) 2016-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
 
 #include "NvBlastExtApexSharedParts.h"
@@ -821,11 +821,23 @@ Status Collide(const Vec3V& initialDir, const ConvexV& convexA, const Mat34V& bT
 	return Status(BAllEq(bCon, bTrue) == 1 ? STATUS_CONTACT : STATUS_DEGENERATE);
 }
 
-static void _calcSeparation(const ConvexV& convexA, const physx::PxTransform& aToWorldIn, const Mat34V& bToA, ConvexV& convexB, Output& out, Separation& sep)
+static void _calcSeparation(const ConvexV& convexA, const physx::PxTransform& aToWorldIn, const Mat34V& bToA, ConvexV& convexB, const Vec3V& centroidAToB, Output& out, Separation& sep)
 {
 	
 	Mat33V aToB = M34Trnsps33(bToA);
 	Vec3V normalA = out.getNormal();
+	FloatV vEpsilon = FLoad(1e-6f);
+	if (BAllEqFFFF(FIsGrtr(out.mDistSq, vEpsilon)))
+	{
+		if (BAllEqTTTT(FIsGrtr(V3Dot(centroidAToB, centroidAToB), vEpsilon)))
+		{
+			normalA = V3Normalize(centroidAToB);
+		}
+		else
+		{
+			normalA = V3UnitX();
+		}
+	}
 
 	convexA.calcExtent(normalA, sep.min0, sep.max0);
 	Vec3V normalB = M33MulV3(aToB, normalA);
@@ -972,9 +984,16 @@ bool importerHullsInProximityApexFree(uint32_t hull0Count, const PxVec3* hull0, 
 	convexB.mNumAovVertices = numAov1;
 	convexB.mAovVertices = verts1;
 
+	const physx::PxVec3 hullACenter = hull0Bounds.getCenter();
+	const physx::PxVec3 hullBCenter = hull1Bounds.getCenter();
+	const Vec3V centroidA = V3LoadU(&hullACenter.x);
+	const Vec3V centroidB = M34MulV3(bToA, V3LoadU(&hullBCenter.x));
+
 	// Take the origin of B in As space as the inital direction as it is 'the difference in transform origins B-A in A's space'
 	// Should be a good first guess
-	const Vec3V initialDir = bToA.col3;
+	// Use centroid information
+	const Vec3V initialDir = V3Sub(centroidB, centroidA);
+
 	Output output;
 	Status status = Collide(initialDir, convexA, bToA, convexB, output);
 
@@ -999,7 +1018,7 @@ bool importerHullsInProximityApexFree(uint32_t hull0Count, const PxVec3* hull0, 
 	{
 		if (separation)
 		{
-			_calcSeparation(convexA, localToWorldRT0In, bToA, convexB, output, *separation);
+			_calcSeparation(convexA, localToWorldRT0In, bToA, convexB, initialDir, output, *separation);
 		}
 		return true;
 	}
@@ -1008,7 +1027,7 @@ bool importerHullsInProximityApexFree(uint32_t hull0Count, const PxVec3* hull0, 
 	{
 		if (separation)
 		{
-			_calcSeparation(convexA, localToWorldRT0In, bToA, convexB, output, *separation);
+			_calcSeparation(convexA, localToWorldRT0In, bToA, convexB, initialDir, output, *separation);
 		}
 		PxF32 val;
 		FStore(output.mDistSq, &val);
