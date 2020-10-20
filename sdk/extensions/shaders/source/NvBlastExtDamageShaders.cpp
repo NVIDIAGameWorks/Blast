@@ -166,7 +166,7 @@ void RadialProfileGraphShader(NvBlastFractureBuffers* commandBuffers, const NvBl
 		// skip bonds that are already broken or were visited already
 		// TODO: investigate why testing against health > -1.0f seems slower
 		// could reuse the island edge bitmap instead
-		if ((familyBondHealths[bondIndex] > 0.0f))
+		if (canTakeDamage(familyBondHealths[bondIndex]))
 		{
 			const NvBlastBond& bond = assetBonds[bondIndex];
 
@@ -208,7 +208,7 @@ void RadialProfileGraphShader(NvBlastFractureBuffers* commandBuffers, const NvBl
 					const ExtDamageAcceleratorInternal::QueryBondData& bondData = bondBuffer[i];
 					if (m_actor->nodeActorIndices[bondData.node0] == m_actor->actorIndex)
 					{
-						if ((m_actor->familyBondHealths[bondData.bond] > 0.0f))
+						if (canTakeDamage(m_actor->familyBondHealths[bondData.bond]))
 						{
 							const NvBlastBond& bond = m_actor->assetBonds[bondData.bond];
 
@@ -376,7 +376,7 @@ void NvBlastExtShearGraphShader(NvBlastFractureBuffers* commandBuffers, const Nv
 			const uint32_t bondIndex = adjacentBondIndices[adjacentNodeIndex];
 			const NvBlastBond& bond = assetBonds[bondIndex];
 
-			if (!(familyBondHealths[bondIndex] > 0.0f))
+			if (!canTakeDamage(familyBondHealths[bondIndex]))
 				continue;
 
 			float shear = 1 * std::abs(1 - std::abs(VecMath::dot(desc.normal, bond.normal)));
@@ -511,7 +511,7 @@ void NvBlastExtTriangleIntersectionGraphShader(NvBlastFractureBuffers* commandBu
 					const ExtDamageAcceleratorInternal::QueryBondData& bondData = bondBuffer[i];
 					if (m_actor->nodeActorIndices[bondData.node0] == m_actor->actorIndex)
 					{
-						if ((m_actor->familyBondHealths[bondData.bond] > 0.0f))
+						if (canTakeDamage(m_actor->familyBondHealths[bondData.bond]))
 						{
 							const NvBlastBond& bond = m_actor->assetBonds[bondData.bond];
 							const uint32_t chunkIndex0 = m_actor->chunkIndices[bondData.node0];
@@ -561,7 +561,7 @@ void NvBlastExtTriangleIntersectionGraphShader(NvBlastFractureBuffers* commandBu
 					// skip bonds that are already broken or were visited already
 					// TODO: investigate why testing against health > -1.0f seems slower
 					// could reuse the island edge bitmap instead
-					if ((familyBondHealths[bondIndex] > 0.0f))
+					if (canTakeDamage(familyBondHealths[bondIndex]))
 					{
 						const NvBlastBond& bond = assetBonds[bondIndex];
 						const uint32_t chunkIndex0 = chunkIndices[currentNodeIndex];
@@ -696,7 +696,7 @@ void NvBlastExtImpactSpreadGraphShader(NvBlastFractureBuffers* commandBuffers, c
 
 				const PxVec3& bondCentroid = (reinterpret_cast<const PxVec3&>(bond.centroid));
 
-				if (!(familyBondHealths[bondIndex] > 0.0f))
+				if (!canTakeDamage(familyBondHealths[bondIndex]))
 					continue;
 				
 				if (visitedBitmap->test(bondIndex))

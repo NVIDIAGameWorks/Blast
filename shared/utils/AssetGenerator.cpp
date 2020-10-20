@@ -173,7 +173,7 @@ void CubeAssetGenerator::fillBondDesc(std::vector<NvBlastBondDesc>& bondDescs, u
 {
 	NV_UNUSED(size);
 
-	NvBlastBondDesc bondDesc;
+	NvBlastBondDesc bondDesc = NvBlastBondDesc();
 	bondDesc.chunkIndices[0] = id0;
 	bondDesc.chunkIndices[1] = id1;
 	bondDesc.bond.area = area;
