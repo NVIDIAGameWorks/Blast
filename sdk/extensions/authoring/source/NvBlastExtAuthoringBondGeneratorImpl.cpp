@@ -622,7 +622,7 @@ int32_t BlastBondGeneratorImpl::createFullBondListAveraged(uint32_t meshCount, c
 
 					if (area > 0)
 					{
-						NvBlastBondDesc bDesc;
+						NvBlastBondDesc bDesc  = NvBlastBondDesc();
 						bDesc.chunkIndices[0]  = i;
 						bDesc.chunkIndices[1]  = j;
 						bDesc.bond.area        = area;
@@ -772,7 +772,7 @@ int32_t BlastBondGeneratorImpl::createFullBondListExactInternal(uint32_t meshCou
 	TriangleProcessor trPrc;
 	std::vector<PxVec3> intersectionBufferLocal;
 
-	NvBlastBondDesc cleanBond;
+	NvBlastBondDesc cleanBond = NvBlastBondDesc();
 	memset(&cleanBond, 0, sizeof(NvBlastBondDesc));
 	for (uint32_t tIndex = 0; tIndex < planeTriangleMapping.size(); ++tIndex)
 	{
@@ -1041,6 +1041,7 @@ int32_t BlastBondGeneratorImpl::createBondForcedInternal(const std::vector<PxVec
 	resultBond.normal[0]   = pl.n[0];
 	resultBond.normal[1]   = pl.n[1];
 	resultBond.normal[2]   = pl.n[2];
+	resultBond.userData    = 0;
 
 #ifdef DEBUG_OUTPUT
 	saveGeometryToObj(meshBuffer, "ArbitMeshes.obj");
