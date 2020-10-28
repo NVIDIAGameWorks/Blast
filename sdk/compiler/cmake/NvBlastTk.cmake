@@ -6,6 +6,7 @@ SET(TOOLKIT_DIR ${PROJECT_SOURCE_DIR}/toolkit)
 SET(COMMON_SOURCE_DIR ${PROJECT_SOURCE_DIR}/common)
 
 FIND_PACKAGE(PxSharedSDK $ENV{PM_PxShared_VERSION} REQUIRED)
+FIND_PACKAGE(PhysXSDK $ENV{PM_PhysX_VERSION} REQUIRED)
 
 # Include here after the directories are defined so that the platform specific file can use the variables.
 include(${PROJECT_CMAKE_FILES_DIR}/${TARGET_BUILD_PLATFORM}/NvBlastTk.cmake)
@@ -92,6 +93,7 @@ TARGET_INCLUDE_DIRECTORIES(NvBlastTk
 	PUBLIC ${PROJECT_SOURCE_DIR}/toolkit/include
 	
 	PRIVATE ${PXSHAREDSDK_INCLUDE_DIRS}
+	PRIVATE ${PHYSXSDK_INCLUDE_DIRS}
 )
 
 TARGET_COMPILE_DEFINITIONS(NvBlastTk 

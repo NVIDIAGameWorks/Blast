@@ -13,6 +13,7 @@ SET(COMMON_EXT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/extensions/common/source)
 SET(AUTHORING_EXT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/extensions/authoring/include)
 
 FIND_PACKAGE(PxSharedSDK $ENV{PM_PxShared_VERSION} REQUIRED)
+FIND_PACKAGE(PhysXSDK $ENV{PM_PhysX_VERSION} REQUIRED)
 FIND_PACKAGE(BoostMultiprecision $ENV{PM_BoostMultiprecision_VERSION} REQUIRED)
 
 # Include here after the directories are defined so that the platform specific file can use the variables.
@@ -126,6 +127,7 @@ TARGET_INCLUDE_DIRECTORIES(NvBlastExtAuthoring
 	PRIVATE ${PROJECT_SOURCE_DIR}/extensions/RT/source
 
 	PRIVATE ${PXSHAREDSDK_INCLUDE_DIRS}
+	PRIVATE ${PHYSXSDK_INCLUDE_DIRS}
 
 	PRIVATE ${BOOSTMULTIPRECISION_INCLUDE_DIRS}
 	

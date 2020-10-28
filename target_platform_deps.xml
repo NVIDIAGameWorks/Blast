@@ -34,9 +34,9 @@
 	</dependency>
 
 	<dependency name="PhysX">
-		<package name="PhysX-${platform}" version="3.4.24990349" platforms="win.*.vc140"/>
-		<package name="PhysX-${platform}" version="3.4.24990349" platforms="win.*.vc150"/>
-		<package name="PhysX-linux64" version="3.4.24990349" platforms="linux"/>
+		<package name="PhysX-${platform}" version="4.1.0.25992954" platforms="win.*.vc140"/>
+		<package name="PhysX-${platform}" version="4.1.0.25992954" platforms="win.*.vc150"/>
+		<package name="PhysX-linux64" version="4.1.0.25992954" platforms="linux"/>
 	</dependency>
 
 	<dependency name="googletest">
