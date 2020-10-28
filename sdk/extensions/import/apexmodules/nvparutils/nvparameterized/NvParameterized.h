@@ -54,6 +54,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <new> // for placement new
+#include <PxAssert.h>
 
 PX_PUSH_PACK_DEFAULT
 

@@ -52,7 +52,6 @@
 #include "PxRigidDynamic.h"
 #include "PxRigidStatic.h"
 #include "PxMaterial.h"
-#include "PxFoundationVersion.h"
 #include "PxMath.h"
 
 #include <imgui.h>
@@ -110,7 +109,7 @@ void PhysXController::onTerminate()
 
 void PhysXController::initPhysX()
 {
-	m_foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
+	m_foundation = PxCreateFoundation(PX_PHYSICS_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
 
 	m_pvd = PxCreatePvd(*m_foundation);
 
@@ -139,11 +138,11 @@ void PhysXController::initPhysX()
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	m_dispatcher = PxDefaultCpuDispatcherCreate(4);
 	sceneDesc.cpuDispatcher = m_dispatcher;
-	sceneDesc.gpuDispatcher = m_cudaContext != NULL ? m_cudaContext->getGpuDispatcher() : NULL;
+	sceneDesc.cudaContextManager = m_cudaContext;
 	sceneDesc.filterShader = m_filterShader;
 	sceneDesc.flags |= PxSceneFlag::eENABLE_STABILIZATION;
 	sceneDesc.flags |= PxSceneFlag::eENABLE_PCM;
-	if (sceneDesc.gpuDispatcher == nullptr)
+	if (sceneDesc.cudaContextManager == nullptr)
 	{
 		m_gpuPhysicsAvailable = false;
 		m_useGPUPhysics = false;

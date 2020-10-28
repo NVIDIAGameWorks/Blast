@@ -32,6 +32,7 @@
 #include <PxMath.h>
 #include <NvBlastPxSharedHelpers.h>
 #include "NvBlastExtAuthoringCutoutImpl.h"
+#include <PxAssert.h>
 #include <algorithm>
 #include <set>
 #include <map>

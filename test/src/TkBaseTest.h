@@ -46,7 +46,6 @@
 #include "PxCpuDispatcher.h"
 #include "PxTask.h"
 #include "PxFoundation.h"
-#include "PxFoundationVersion.h"
 
 #include <thread>
 #include <algorithm>
@@ -54,6 +53,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
+#include <PxPhysicsVersion.h>
 
 
 #define USE_PHYSX_DISPATCHER 0
@@ -216,7 +216,7 @@ public:
 
 	virtual void SetUp() override
 	{
-		m_foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
+		m_foundation = PxCreateFoundation(PX_PHYSICS_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
 
 		NvBlastProfilerSetCallback(&m_profiler);
 		NvBlastProfilerSetDetail(Nv::Blast::ProfilerDetail::LOW);
@@ -230,7 +230,7 @@ public:
 		m_cpuDispatcher = new TestCpuDispatcher(4);
 #endif
 
-		m_taskman = PxTaskManager::createTaskManager(NvBlastGetPxErrorCallback(), m_cpuDispatcher, nullptr);
+		m_taskman = PxTaskManager::createTaskManager(NvBlastGetPxErrorCallback(), m_cpuDispatcher);
 		m_groupTM = ExtGroupTaskManager::create(*m_taskman);
 	}
 
