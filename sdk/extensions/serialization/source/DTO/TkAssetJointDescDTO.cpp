@@ -39,6 +39,7 @@ bool TkAssetJointDescDTO::serialize(Nv::Blast::Serialization::TkAssetJointDesc::
 {
 	kj::ArrayPtr<const uint32_t> nodeIndices(poco->nodeIndices, 2);
 	builder.setNodeIndices(nodeIndices);
+	builder.initAttachPositions(2);
 
 	for (int i = 0; i < 2; i++)
 	{
