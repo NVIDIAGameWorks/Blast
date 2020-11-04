@@ -32,13 +32,14 @@
 	<dependency name="BoostMultiprecision">
     	<package name="BoostMultiprecision" version="1.64.0.1" platforms="win.* linux"/>
 	</dependency>
-
-	<dependency name="PhysX">
-		<package name="PhysX-${platform}" version="4.1.0.25992954" platforms="win.*.vc140"/>
-		<package name="PhysX-${platform}" version="4.1.0.25992954" platforms="win.*.vc150"/>
-		<package name="PhysX-linux64" version="4.1.0.25992954" platforms="linux"/>
+	<dependency name="physxsdk">
+		<package name="physxsdk" version="4.1.trunk.26400730-windows-x86_64" platforms="win.*" />
+		<package name="physxsdk" version="4.1.trunk.26400730-linux-x86_64" platforms="linux*" />
 	</dependency>
-
+	<dependency name="pxshared">
+		<package name="pxshared" version="1.1.trunk.25954437-windows-x86_64" platforms="win.*" />
+		<package name="pxshared" version="1.1.trunk.25954437-linux-x86_64" platforms="linux*" />
+	</dependency>
 	<dependency name="googletest">
 		<package name="googletest-win" version="1.4.0.2" platforms="win.*"/>
 		<package name="googletest-linux-x86_64" version="1.8.0.1" platforms="linux"/>

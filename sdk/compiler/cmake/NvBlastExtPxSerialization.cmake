@@ -18,8 +18,8 @@ SET(SOLVER_SOURCE_DIR ${PROJECT_SOURCE_DIR}/lowlevel/source)
 
 SET(SERIAL_GENERATED_SOURCE_DIR ${SERIAL_EXT_SOURCE_DIR}/generated)
 
-FIND_PACKAGE(PhysXSDK $ENV{PM_PhysX_VERSION} REQUIRED)
-FIND_PACKAGE(PxSharedSDK $ENV{PM_PxShared_VERSION} REQUIRED)
+FIND_PACKAGE(PxSharedSDK ${PM_physxsdk_VERSION} REQUIRED)
+FIND_PACKAGE(PhysXSDK ${PM_pxshared_VERSION} REQUIRED)
 FIND_PACKAGE(CapnProtoSDK $ENV{PM_CapnProto_VERSION} REQUIRED)
 
 # Include here after the directories are defined so that the platform specific file can use the variables.

@@ -13,8 +13,8 @@ SET(PHYSX_EXT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/extensions/physx/include)
 
 SET(APEX_MODULES_DIR ${PROJECT_SOURCE_DIR}/extensions/import/apexmodules)
 
-FIND_PACKAGE(PhysXSDK $ENV{PM_PhysX_VERSION} REQUIRED)
-FIND_PACKAGE(PxSharedSDK $ENV{PM_PxShared_VERSION} REQUIRED)
+FIND_PACKAGE(PxSharedSDK ${PM_physxsdk_VERSION} REQUIRED)
+FIND_PACKAGE(PhysXSDK ${PM_pxshared_VERSION} REQUIRED)
 
 # Include here after the directories are defined so that the platform specific file can use the variables.
 include(${PROJECT_CMAKE_FILES_DIR}/${TARGET_BUILD_PLATFORM}/NvBlastExtImport.cmake)
