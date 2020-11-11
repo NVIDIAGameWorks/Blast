@@ -241,7 +241,7 @@ unsigned char *LoadBitmapFile(const char *filename, BITMAPINFOHEADER *bitmapInfo
 
 bool initPhysX()
 {
-	gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
+	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
 	if (!gFoundation)
 	{
 		std::cerr << "Can't init PhysX foundation" << std::endl;

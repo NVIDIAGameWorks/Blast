@@ -129,7 +129,7 @@ void BlastController::onSampleStart()
 	m_replay = new BlastReplay();
 
 	m_taskManager =
-	    PxTaskManager::createTaskManager(NvBlastGetPxErrorCallback(), getPhysXController().getCPUDispatcher(), 0);
+	    PxTaskManager::createTaskManager(NvBlastGetPxErrorCallback(), getPhysXController().getCPUDispatcher());
 
 	TkGroupDesc gdesc;
 	gdesc.workerCount = m_taskManager->getCpuDispatcher()->getWorkerCount();

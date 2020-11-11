@@ -181,7 +181,7 @@ uint32_t getPartIndex(const DestructibleAssetParameters* prm, uint32_t id)
 ApexImportTool::ApexImportTool()
 {
 	m_Foundation =
-	    PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
+	    PxCreateFoundation(PX_PHYSICS_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
 	if (!m_Foundation)
 	{
 		NVBLAST_LOG_ERROR("Error: failed to create Foundation\n");

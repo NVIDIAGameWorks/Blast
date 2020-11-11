@@ -1,6 +1,6 @@
 #Platform specific compile flags and project includes
 
-SET(CMAKE_CXX_FLAGS "-Wextra -fdiagnostics-show-option -fno-rtti -fno-exceptions -m64 -msse2 -mfpmath=sse -fpic -ffast-math -fno-exceptions -fno-rtti -Wno-invalid-offsetof -Wno-unknown-pragmas -Wno-multichar -Wno-sign-compare -std=c++0x")
+SET(CMAKE_CXX_FLAGS "-Wextra -fdiagnostics-show-option -fno-rtti -fno-exceptions -m64 -msse2 -mfpmath=sse -fpic -ffast-math -fno-exceptions -fno-rtti -Wno-invalid-offsetof -Wno-unknown-pragmas -Wno-multichar -Wno-uninitialized -Wno-sign-compare -std=c++14")
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     #Starting with 6.0 -fPIE is the default and our gtest build can't link with this
@@ -24,6 +24,12 @@ SET(BLASTTESTS_SLN_RELEASE_COMPILE_DEFS NDEBUG;)
 
 SET(CMAKE_EXECUTABLE_SUFFIX ".elf")
 
+SET(LIBPATH_SUFFIX "x64")
+
+SET(CMAKE_DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}_${LIBPATH_SUFFIX}")
+SET(CMAKE_PROFILE_POSTFIX "${CMAKE_PROFILE_POSTFIX}_${LIBPATH_SUFFIX}")
+SET(CMAKE_CHECKED_POSTFIX "${CMAKE_CHECKED_POSTFIX}_${LIBPATH_SUFFIX}")
+SET(CMAKE_RELEASE_POSTFIX "${CMAKE_RELEASE_POSTFIX}_${LIBPATH_SUFFIX}")
 
 # Include all of the projects
 INCLUDE(${PROJECT_CMAKE_FILES_DIR}/BlastUnitTests.cmake)

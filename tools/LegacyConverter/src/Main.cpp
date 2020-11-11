@@ -47,7 +47,6 @@
 #include "NvBlastExtSerializationInternal.h"
 #include "NvBlastPxCallbacks.h"
 #include "PxFoundation.h"
-#include "PxFoundationVersion.h"
 #include "PxPhysicsVersion.h"
 
 
@@ -108,7 +107,7 @@ static int init_framework()
 		NvBlastExtTkSerializerLoadSet(*sFwk, *sSer);
 	}
 
-	sFnd = PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
+	sFnd = PxCreateFoundation(PX_PHYSICS_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
 	if (sFnd != nullptr)
 	{
 		PxTolerancesScale tol;

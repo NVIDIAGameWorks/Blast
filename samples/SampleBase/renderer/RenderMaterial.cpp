@@ -28,6 +28,7 @@
 
 #include "RenderMaterial.h"
 #include <DirectXMath.h>
+#include "PxAssert.h"
 #include "ShaderUtils.h"
 #include "Renderer.h"
 

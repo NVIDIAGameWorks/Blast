@@ -30,7 +30,7 @@
 #include "RenderUtils.h"
 #include "UIHelpers.h"
 #include "SampleProfiler.h"
-
+#include "PxAssert.h"
 #include "PxRenderBuffer.h"
 
 #include <set>

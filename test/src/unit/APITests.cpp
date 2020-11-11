@@ -1609,25 +1609,9 @@ TEST_F(APITest,CExportsNoNameMangling)
 	//
 
 #if NV_WIN32
-#if NV_DEBUG 
-	const char* dllName = "NvBlastDebug_x86.dll";
-#elif NV_CHECKED
-	const char* dllName = "NvBlastChecked_x86.dll";
-#elif NV_PROFILE
-	const char* dllName = "NvBlastProfile_x86.dll";
-#else
 	const char* dllName = "NvBlast_x86.dll";
-#endif
 #elif NV_WIN64
-#if NV_DEBUG 
-	const char* dllName = "NvBlastDebug_x64.dll";
-#elif NV_CHECKED
-	const char* dllName = "NvBlastChecked_x64.dll";
-#elif NV_PROFILE
-	const char* dllName = "NvBlastProfile_x64.dll";
-#else
 	const char* dllName = "NvBlast_x64.dll";
-#endif
 #endif
 
 	HMODULE dllHandle = LoadLibrary(TEXT(dllName));

@@ -31,6 +31,7 @@
 
 #include "NvBlastProfiler.h"
 #include "PxProfiler.h"
+#include <PxFoundation.h>
 
 #if NV_NVTX  
 #include "nvToolsExt.h"

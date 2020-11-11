@@ -1,4 +1,4 @@
-Blast 1.1.6
+Blast 1.1.7
 ===========
 
 ![Alt text](/images/blast.png?raw=true "Blast Intro")

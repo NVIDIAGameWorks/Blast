@@ -27,6 +27,7 @@
 
 
 #include "Renderable.h"
+#include "PxAssert.h"
 #include "Renderer.h"
 #include "RenderUtils.h"
 

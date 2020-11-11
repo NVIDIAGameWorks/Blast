@@ -31,6 +31,7 @@
 #include <map>
 #include <random>
 #include <algorithm>
+#include <functional>
 
 #include "PsMemoryBuffer.h"
 
