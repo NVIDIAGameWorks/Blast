@@ -24,12 +24,16 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Blast(tm) SDK 1.1.7 (06-Nov-2020)
+Blast(tm) SDK 1.1.7 (12-Nov-2020)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Changes
 -------
 * (Pull request #17 "Physx4 compatibility") PhysX version updated to 4.1.trunk.26400730, which uses a seprarate PxShared package
+* The bin and lib directory structures have changed to match the new layout of PhysX 4.x.  That is, instead of having
+library files with CHECKED, DEBUG, PROFILE suffixes (or no suffix for release), there are now checked, debug, profile,
+and release subfolders of bin/${compiler} and lib/${compiler}.  Within those subfolders the library files have no
+suffix.
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
