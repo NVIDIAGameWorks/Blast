@@ -373,9 +373,9 @@ AuthoringResult* NvBlastExtAuthoringProcessFracture(FractureTool& fTool, BlastBo
 	std::vector<Nv::Blast::Triangle*> chunkGeometry(chunkCount);
 	for (uint32_t i = 0; i < chunkCount; ++i)
 	{
-		uint32_t chunkIndex = chunkReorderInvMap[i];
-		aResult.geometryOffset[i+1] = aResult.geometryOffset[i] + fTool.getBaseMesh(chunkIndex, chunkGeometry[i]);
-		aResult.assetToFractureChunkIdMap[i] = fTool.getChunkId(chunkIndex);
+		uint32_t chunkInfoIndex = chunkReorderInvMap[i];
+		aResult.geometryOffset[i+1] = aResult.geometryOffset[i] + fTool.getBaseMesh(chunkInfoIndex, chunkGeometry[i]);
+		aResult.assetToFractureChunkIdMap[i] = fTool.getChunkId(chunkInfoIndex);
 	}
 	aResult.geometry = SAFE_ARRAY_NEW(Triangle, aResult.geometryOffset[chunkCount]);
 	for (uint32_t i = 0; i < chunkCount; ++i)
@@ -585,7 +585,7 @@ void NvBlastExtAuthoringUpdateGraphicsMesh(Nv::Blast::FractureTool& fTool, Nv::B
 	uint32_t chunkCount = fTool.getChunkCount();
 	for (uint32_t i = 0; i < chunkCount; ++i)
 	{
-		fTool.updateBaseMesh(fTool.getChunkIndex(aResult.assetToFractureChunkIdMap[i]), aResult.geometry + aResult.geometryOffset[i]);
+		fTool.updateBaseMesh(fTool.getChunkInfoIndex(aResult.assetToFractureChunkIdMap[i]), aResult.geometry + aResult.geometryOffset[i]);
 	}
 }
 

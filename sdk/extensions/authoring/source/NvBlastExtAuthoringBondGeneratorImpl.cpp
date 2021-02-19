@@ -1073,9 +1073,9 @@ int32_t BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool
 	}
 	resultChunkDescriptors = SAFE_ARRAY_NEW(NvBlastChunkDesc, trianglesBuffer.size());
 	std::vector<Bond> bondDescriptors;
-	resultChunkDescriptors[0].parentChunkIndex = UINT32_MAX;
-	resultChunkDescriptors[0].userData         = 0;
-	resultChunkDescriptors[0].flags            = NvBlastChunkDesc::NoFlags;
+	resultChunkDescriptors[0].parentChunkDescIndex = UINT32_MAX;
+	resultChunkDescriptors[0].userData             = 0;
+	resultChunkDescriptors[0].flags                = NvBlastChunkDesc::NoFlags;
 
 	{
 		PxVec3 chunkCentroid(0, 0, 0);
@@ -1097,9 +1097,9 @@ int32_t BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool
 	for (uint32_t i = 1; i < chunkCount; ++i)
 	{
 		NvBlastChunkDesc& desc = resultChunkDescriptors[i];
-		desc.userData          = tool->getChunkId(i);
-		desc.parentChunkIndex  = tool->getChunkIndex(tool->getChunkInfo(i).parentChunkId);
-		desc.flags             = NvBlastChunkDesc::NoFlags;
+		desc.userData              = tool->getChunkId(i);
+		desc.parentChunkDescIndex  = tool->getChunkInfoIndex(tool->getChunkInfo(i).parentChunkId);
+		desc.flags                 = NvBlastChunkDesc::NoFlags;
         hasApproximateBonding |= !!(tool->getChunkInfo(i).flags & ChunkInfo::APPROXIMATE_BONDING);
 		if (chunkIsSupport[i])
 		{

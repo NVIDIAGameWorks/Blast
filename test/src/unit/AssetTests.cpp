@@ -327,7 +327,7 @@ public:
 			for (uint32_t i = 0; i < chunkDescCount; ++i)
 			{
 				EXPECT_EQ(chunkDescs[i].userData, shuffledChunkDescs[shuffledOrder[i]].userData);
-				EXPECT_TRUE(chunkDescs[i].parentChunkIndex > chunkDescCount || shuffledChunkDescs[shuffledOrder[i]].parentChunkIndex == shuffledOrder[chunkDescs[i].parentChunkIndex]);
+				EXPECT_TRUE(chunkDescs[i].parentChunkDescIndex > chunkDescCount || shuffledChunkDescs[shuffledOrder[i]].parentChunkDescIndex == shuffledOrder[chunkDescs[i].parentChunkDescIndex]);
 			}
 			for (uint32_t i = 0; i < bondDescCount; ++i)
 			{

@@ -79,7 +79,7 @@ void CubeAssetGenerator::generate(GeneratorAsset& asset, const Settings& setting
 					chunkDesc.volume = extents.x * extents.y * extents.z;
 					chunkDesc.flags = settings.depths[depth].flag;
 					chunkDesc.userData = currentID++;
-					chunkDesc.parentChunkIndex = parentID;
+					chunkDesc.parentChunkDescIndex = parentID;
 					asset.solverChunks.push_back(chunkDesc);
 
 					if (settings.depths[depth].flag & NvBlastChunkDesc::Flags::SupportFlag)

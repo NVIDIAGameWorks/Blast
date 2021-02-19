@@ -329,19 +329,19 @@ class FractureTool
 
 
 	/**
-	    Set input mesh which will be fractured, FractureTool will be reseted.
+	    Set input meshes which will be fractured, FractureTool will be reset.
+		If ids != nullptr, it must point to an array of length meshSizes.
+		Each mesh will be assigned to a chunk with ID given by the corresponding element in ids.
+		If the corresponding element is negative, or ids is NULL, then the chunk will be assigned
+		an arbitrary (but currently unused) ID.
+		Returns true iff all meshes were assigned chunks with valid IDs.
 	*/
-	virtual void setSourceMesh(const Mesh* mesh) = 0;
-
-	/**
-	    Set input mesh which will be fractured, FractureTool will be reseted.
-	*/
-	virtual void setSourceMeshes(const Mesh** meshes, uint32_t meshesSize) = 0;
+	virtual bool setSourceMeshes(Mesh const * const * meshes, uint32_t meshesSize, const int32_t* ids = nullptr) = 0;
 
 	/**
 	    Set chunk mesh, parentId should be valid, return id of new chunk.
 	*/
-	virtual int32_t setChunkMesh(const Mesh* mesh, int32_t parentId) = 0;
+	virtual int32_t setChunkMesh(const Mesh* mesh, int32_t parentId, int32_t chunkId = -1) = 0;
 
 	/**
 	Set the material id to use for new interior faces. Defaults to kMaterialInteriorId
@@ -363,7 +363,7 @@ class FractureTool
 		This function welds vertices based upon vertex position and normal.  If splitUVs == true,
 		UV coordinates are also considered in vertex welding.
 	*/
-	virtual Mesh* createChunkMesh(int32_t chunkIndex, bool splitUVs = true) = 0;
+	virtual Mesh* createChunkMesh(int32_t chunkInfoIndex, bool splitUVs = true) = 0;
 
 	/**
 	    Fractures specified chunk with voronoi method.
@@ -448,7 +448,7 @@ class FractureTool
 	/**
 	    Get chunk information
 	*/
-	virtual const ChunkInfo& getChunkInfo(int32_t chunkIndex) = 0;
+	virtual const ChunkInfo& getChunkInfo(int32_t chunkInfoIndex) = 0;
 
 	/**
 	    Get percentage of mesh overlap.
@@ -477,18 +477,18 @@ class FractureTool
 	virtual uint32_t updateBaseMesh(int32_t chunkIndex, Triangle* output) = 0;
 
 	/**
-	    Return index of chunk with specified chunkId
+	    Return info index of chunk with specified chunkId
 	    \param[in] chunkId Chunk ID
-	    \return Chunk index in internal buffer, if not exist -1 is returned.
+	    \return Chunk info index in internal buffer, if not exist -1 is returned.
 	*/
-	virtual int32_t getChunkIndex(int32_t chunkId) const = 0;
+	virtual int32_t getChunkInfoIndex(int32_t chunkId) const = 0;
 
 	/**
-	    Return id of chunk with specified index.
-	    \param[in] chunkIndex Chunk index
+	    Return id of chunk with specified info index.
+	    \param[in] chunkInfoIndex Chunk info index
 	    \return Chunk id or -1 if there is no such chunk.
 	*/
-	virtual int32_t getChunkId(int32_t chunkIndex) const = 0;
+	virtual int32_t getChunkId(int32_t chunkInfoIndex) const = 0;
 
 	/**
 	    Return depth level of the given chunk
@@ -564,11 +564,11 @@ class FractureTool
 
     /**
         Set the APPROXIMATE_BONDING flag in the chunk's ChunkInfo
-        \param[in] chunkIndex chunk index - use getChunkIndex(ID)
+        \param[in] chunkInfoIndex chunk info index - use getChunkInfoIndex(ID)
         \param[in] useApproximateBonding value of flag to set
         \return true if the chunk ID is found, false otherwise
     */
-    virtual bool setApproximateBonding(uint32_t chunkIndex, bool useApproximateBonding) = 0;
+    virtual bool setApproximateBonding(uint32_t chunkInfoIndex, bool useApproximateBonding) = 0;
 
     /**
 	    Rescale interior uv coordinates of given chunk to fit square of given size.

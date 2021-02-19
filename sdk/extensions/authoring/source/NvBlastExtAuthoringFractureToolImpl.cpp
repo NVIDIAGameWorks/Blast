@@ -431,20 +431,20 @@ FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const 
 		return 1;
 	}
 
-	int32_t chunkIndex = getChunkIndex(chunkId);
-	if (chunkIndex == -1 || cellCount < 2)
+	int32_t chunkInfoIndex = getChunkInfoIndex(chunkId);
+	if (chunkInfoIndex == -1 || cellCount < 2)
 	{
 		return 1;
 	}
-	if (!mChunkData[chunkIndex].isLeaf)
+	if (!mChunkData[chunkInfoIndex].isLeaf)
 	{
         deleteChunkSubhierarchy(chunkId);
 	}
-	chunkIndex = getChunkIndex(chunkId);
+	chunkInfoIndex = getChunkInfoIndex(chunkId);
 
-	Mesh* mesh = mChunkData[chunkIndex].getMesh();
+	Mesh* mesh = mChunkData[chunkInfoIndex].getMesh();
 
-	const TransformST& tm = mChunkData[chunkIndex].getTmToWorld();
+	const TransformST& tm = mChunkData[chunkInfoIndex].getTmToWorld();
 
 	std::vector<NvcVec3> cellPoints(cellCount);
 	for (uint32_t i = 0; i < cellCount; ++i)
@@ -466,7 +466,7 @@ FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const 
 	/**
 	Fracture
 	*/
-	int32_t parentChunkId = replaceChunk ? mChunkData[chunkIndex].parentChunkId : chunkId;
+	int32_t parentChunkId = replaceChunk ? mChunkData[chunkInfoIndex].parentChunkId : chunkId;
 	std::vector<uint32_t> newlyCreatedChunksIds;
 	for (uint32_t i = 0; i < cellPoints.size(); ++i)
 	{
@@ -490,7 +490,7 @@ FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const 
 		eval.reset();
 		delete cell;
 	}
-	mChunkData[chunkIndex].isLeaf = false;
+	mChunkData[chunkInfoIndex].isLeaf = false;
 	if (replaceChunk)
 	{
 		deleteChunkSubhierarchy(chunkId, true);
@@ -552,15 +552,15 @@ static void compactifyAndTransformVertexBuffer
 	}
 }
 
-Mesh* FractureToolImpl::createChunkMesh(int32_t chunkIndex, bool splitUVs /* = true */)
+Mesh* FractureToolImpl::createChunkMesh(int32_t chunkInfoIndex, bool splitUVs /* = true */)
 {
 	// make sure the chunk is valid
-	if (chunkIndex < 0 || uint32_t(chunkIndex) >= this->getChunkCount()) {
+	if (chunkInfoIndex < 0 || uint32_t(chunkInfoIndex) >= this->getChunkCount()) {
 		return nullptr;
 	}
 
 	// grab the original source mesh
-	const auto sourceMesh = this->getChunkInfo(chunkIndex).getMesh();
+	const auto sourceMesh = this->getChunkInfo(chunkInfoIndex).getMesh();
 	if (!sourceMesh) {
 		return nullptr;
 	}
@@ -574,7 +574,7 @@ Mesh* FractureToolImpl::createChunkMesh(int32_t chunkIndex, bool splitUVs /* = t
     Edge* edges = reinterpret_cast<Edge*>(NVBLAST_ALLOC(edgeBufferSize));
 	memcpy(edges, sourceEdges, edgeBufferSize);
 
-	const TransformST& tm = this->getChunkInfo(chunkIndex).getTmToWorld();
+	const TransformST& tm = this->getChunkInfo(chunkInfoIndex).getTmToWorld();
 
 	std::vector<Vertex> _vertexBuffer;
 	if (splitUVs)
@@ -712,20 +712,20 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 		return 1;
 	}
 
-	int32_t chunkIndex = getChunkIndex(chunkId);
-	if (chunkIndex == -1 || cellCount < 2)
+	int32_t chunkInfoIndex = getChunkInfoIndex(chunkId);
+	if (chunkInfoIndex == -1 || cellCount < 2)
 	{
 		return 1;
 	}
-	if (!mChunkData[chunkIndex].isLeaf)
+	if (!mChunkData[chunkInfoIndex].isLeaf)
 	{
         deleteChunkSubhierarchy(chunkId);
 	}
-	chunkIndex = getChunkIndex(chunkId);
+	chunkInfoIndex = getChunkInfoIndex(chunkId);
 
-	Mesh* mesh = mChunkData[chunkIndex].getMesh();
+	Mesh* mesh = mChunkData[chunkInfoIndex].getMesh();
 
-	const TransformST& tm = mChunkData[chunkIndex].getTmToWorld();
+	const TransformST& tm = mChunkData[chunkInfoIndex].getTmToWorld();
 
 	std::vector<NvcVec3> cellPoints(cellCount);
 	for (uint32_t i = 0; i < cellCount; ++i)
@@ -753,7 +753,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 	/**
 	Fracture
 	*/
-	int32_t parentChunkId = replaceChunk ? mChunkData[chunkIndex].parentChunkId : chunkId;
+	int32_t parentChunkId = replaceChunk ? mChunkData[chunkInfoIndex].parentChunkId : chunkId;
 	std::vector<uint32_t> newlyCreatedChunksIds;
 
 	for (uint32_t i = 0; i < cellPoints.size(); ++i)
@@ -787,7 +787,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 		eval.reset();
 		delete cell;
 	}
-	mChunkData[chunkIndex].isLeaf = false;
+	mChunkData[chunkInfoIndex].isLeaf = false;
 	if (replaceChunk)
 	{
         deleteChunkSubhierarchy(chunkId, true);
@@ -818,19 +818,19 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 		return 1;
 	}
 
-	int32_t chunkIndex = getChunkIndex(chunkId);
-	if (chunkIndex == -1)
+	int32_t chunkInfoIndex = getChunkInfoIndex(chunkId);
+	if (chunkInfoIndex == -1)
 	{
 		return 1;
 	}
-	if (!mChunkData[chunkIndex].isLeaf)
+	if (!mChunkData[chunkInfoIndex].isLeaf)
 	{
         deleteChunkSubhierarchy(chunkId);
 	}
-	chunkIndex = getChunkIndex(chunkId);
+	chunkInfoIndex = getChunkInfoIndex(chunkId);
 
 
-	Mesh* mesh = new MeshImpl(*reinterpret_cast<MeshImpl*>(mChunkData[chunkIndex].getMesh()));
+	Mesh* mesh = new MeshImpl(*reinterpret_cast<MeshImpl*>(mChunkData[chunkInfoIndex].getMesh()));
 
 	BooleanEvaluator bTool;
 
@@ -857,7 +857,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 	ch.isLeaf           = true;
 	ch.isChanged        = true;
 	ch.flags            = ChunkInfo::NO_FLAGS;
-	ch.parentChunkId    = replaceChunk ? mChunkData[chunkIndex].parentChunkId : chunkId;
+	ch.parentChunkId    = replaceChunk ? mChunkData[chunkInfoIndex].parentChunkId : chunkId;
 	std::vector<ChunkInfo> xSlicedChunks;
 	std::vector<ChunkInfo> ySlicedChunks;
 	std::vector<uint32_t> newlyCreatedChunksIds;
@@ -955,7 +955,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 			setChunkInfoMesh(ch, bTool.createNewMesh());
 			if (ch.getMesh() != 0)
 			{
-				ch.chunkId = mChunkIdCounter++;
+				ch.chunkId = createId();
 				newlyCreatedChunksIds.push_back(ch.chunkId);
 				mChunkData.push_back(ch);
 			}
@@ -973,7 +973,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 		}
 		if (mesh != 0)
 		{
-			ch.chunkId  = mChunkIdCounter++;
+			ch.chunkId  = createId();
 			setChunkInfoMesh(ch, mesh);
 			mChunkData.push_back(ch);
 			newlyCreatedChunksIds.push_back(ch.chunkId);
@@ -983,7 +983,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 
 	delete slBox;
 
-	mChunkData[chunkIndex].isLeaf = false;
+	mChunkData[chunkInfoIndex].isLeaf = false;
 	if (replaceChunk)
 	{
         deleteChunkSubhierarchy(chunkId, true);
@@ -1008,21 +1008,21 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 		return 1;
 	}
 
-	int32_t chunkIndex = getChunkIndex(chunkId);
-	if (chunkIndex == -1)
+	int32_t chunkInfoIndex = getChunkInfoIndex(chunkId);
+	if (chunkInfoIndex == -1)
 	{
 		return 1;
 	}
-	if (!mChunkData[chunkIndex].isLeaf)
+	if (!mChunkData[chunkInfoIndex].isLeaf)
 	{
         deleteChunkSubhierarchy(chunkId);
 	}
-	chunkIndex = getChunkIndex(chunkId);
+	chunkInfoIndex = getChunkInfoIndex(chunkId);
 
 
-	Mesh* mesh = new MeshImpl(*reinterpret_cast<MeshImpl*>(mChunkData[chunkIndex].getMesh()));
+	Mesh* mesh = new MeshImpl(*reinterpret_cast<MeshImpl*>(mChunkData[chunkInfoIndex].getMesh()));
 
-	const TransformST& tm = mChunkData[chunkIndex].getTmToWorld();
+	const TransformST& tm = mChunkData[chunkInfoIndex].getTmToWorld();
 
 	BooleanEvaluator bTool;
 
@@ -1053,7 +1053,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 	ch.isLeaf           = true;
 	ch.isChanged        = true;
 	ch.flags            = ChunkInfo::NO_FLAGS;
-	ch.parentChunkId    = replaceChunk ? mChunkData[chunkIndex].parentChunkId : chunkId;
+	ch.parentChunkId    = replaceChunk ? mChunkData[chunkInfoIndex].parentChunkId : chunkId;
 	std::vector<ChunkInfo> xSlicedChunks;
 	std::vector<ChunkInfo> ySlicedChunks;
 	std::vector<uint32_t> newlyCreatedChunksIds;
@@ -1169,7 +1169,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 			setChunkInfoMesh(ch, bTool.createNewMesh());
 			if (ch.getMesh() != 0)
 			{
-				ch.chunkId = mChunkIdCounter++;
+				ch.chunkId = createId();
 				mChunkData.push_back(ch);
 				newlyCreatedChunksIds.push_back(ch.chunkId);
 			}
@@ -1188,7 +1188,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 		}
 		if (mesh != 0)
 		{
-			ch.chunkId  = mChunkIdCounter++;
+			ch.chunkId  = createId();
 			setChunkInfoMesh(ch, mesh);
 			mChunkData.push_back(ch);
 			newlyCreatedChunksIds.push_back(ch.chunkId);
@@ -1197,7 +1197,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
 
 	//	delete slBox;
 
-	mChunkData[chunkIndex].isLeaf = false;
+	mChunkData[chunkInfoIndex].isLeaf = false;
 	if (replaceChunk)
 	{
         deleteChunkSubhierarchy(chunkId, true);
@@ -1221,28 +1221,28 @@ int32_t FractureToolImpl::cut(uint32_t chunkId, const NvcVec3& normal, const Nvc
 		return 1;
 	}
 
-	int32_t chunkIndex = getChunkIndex(chunkId);
-	if (chunkIndex == -1)
+	int32_t chunkInfoIndex = getChunkInfoIndex(chunkId);
+	if (chunkInfoIndex == -1)
 	{
 		return 1;
 	}
-	if (!mChunkData[chunkIndex].isLeaf)
+	if (!mChunkData[chunkInfoIndex].isLeaf)
 	{
         deleteChunkSubhierarchy(chunkId);
 	}
-	chunkIndex = getChunkIndex(chunkId);
+	chunkInfoIndex = getChunkInfoIndex(chunkId);
 
-	Mesh* mesh = new MeshImpl(*reinterpret_cast<MeshImpl*>(mChunkData[chunkIndex].getMesh()));
+	Mesh* mesh = new MeshImpl(*reinterpret_cast<MeshImpl*>(mChunkData[chunkInfoIndex].getMesh()));
 	BooleanEvaluator bTool;
 
-	const TransformST& tm = mChunkData[chunkIndex].getTmToWorld();
+	const TransformST& tm = mChunkData[chunkInfoIndex].getTmToWorld();
 
 	ChunkInfo ch;
 	ch.chunkId          = -1;
 	ch.isLeaf           = true;
 	ch.isChanged        = true;
 	ch.flags            = ChunkInfo::NO_FLAGS;
-	ch.parentChunkId    = replaceChunk ? mChunkData[chunkIndex].parentChunkId : chunkId;
+	ch.parentChunkId    = replaceChunk ? mChunkData[chunkInfoIndex].parentChunkId : chunkId;
 	float noisyPartSize = 1.2f;
 
 	PxVec3 resolution(tm.s / noise.samplingInterval.x,
@@ -1272,27 +1272,27 @@ int32_t FractureToolImpl::cut(uint32_t chunkId, const NvcVec3& normal, const Nvc
 		return 1;
 	}
 
-	if (!mChunkData[chunkIndex].isLeaf)
+	if (!mChunkData[chunkInfoIndex].isLeaf)
 	{
         deleteChunkSubhierarchy(chunkId);
 	}
-	chunkIndex = getChunkIndex(chunkId);
+	chunkInfoIndex = getChunkInfoIndex(chunkId);
 
 	int32_t firstChunkId = -1;
 	if (ch.getMesh() != 0)
 	{
-		ch.chunkId = mChunkIdCounter++;
+		ch.chunkId = createId();
 		mChunkData.push_back(ch);
 		firstChunkId = ch.chunkId;
 	}
 	if (mesh != 0)
 	{
-		ch.chunkId  = mChunkIdCounter++;
+		ch.chunkId  = createId();
 		setChunkInfoMesh(ch, mesh);
 		mChunkData.push_back(ch);
 	}
 
-	mChunkData[chunkIndex].isLeaf = false;
+	mChunkData[chunkInfoIndex].isLeaf = false;
 	if (replaceChunk)
 	{
         deleteChunkSubhierarchy(chunkId, true);
@@ -1333,21 +1333,21 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 		return 1;
 	}
 
-	int32_t chunkIndex = getChunkIndex(chunkId);
-	if (chunkIndex == -1)
+	int32_t chunkInfoIndex = getChunkInfoIndex(chunkId);
+	if (chunkInfoIndex == -1)
 	{
 		return 1;
 	}
-	if (!mChunkData[chunkIndex].isLeaf)
+	if (!mChunkData[chunkInfoIndex].isLeaf)
 	{
         deleteChunkSubhierarchy(chunkId);
 	}
-	chunkIndex                      = getChunkIndex(chunkId);
+	chunkInfoIndex                      = getChunkInfoIndex(chunkId);
 	Nv::Blast::CutoutSet& cutoutSet = *conf.cutoutSet;
 
-	const TransformST& tm = mChunkData[chunkIndex].getTmToWorld();
+	const TransformST& tm = mChunkData[chunkInfoIndex].getTmToWorld();
 
-	Mesh* mesh            = new MeshImpl(*reinterpret_cast<MeshImpl*>(mChunkData[chunkIndex].getMesh()));
+	Mesh* mesh            = new MeshImpl(*reinterpret_cast<MeshImpl*>(mChunkData[chunkInfoIndex].getMesh()));
 	float extrusionLength = toPxShared(mesh->getBoundingBox()).getDimensions().magnitude();
 	auto scale            = toPxShared(conf.scale);
 	conf.transform.p      = tm.invTransformPos(conf.transform.p);
@@ -1374,7 +1374,7 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 	ch.isLeaf           = true;
 	ch.isChanged        = true;
 	ch.flags            = ChunkInfo::NO_FLAGS;
-	ch.parentChunkId    = replaceChunk ? mChunkData[chunkIndex].parentChunkId : chunkId;
+	ch.parentChunkId    = replaceChunk ? mChunkData[chunkInfoIndex].parentChunkId : chunkId;
 	std::vector<uint32_t> newlyCreatedChunksIds;
 
 	SharedFacesMap sharedFacesMap;
@@ -1503,7 +1503,7 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 			}
 			if (ch.getMesh() != 0)
 			{
-				ch.chunkId = mChunkIdCounter++;
+				ch.chunkId = createId();
 				newlyCreatedChunksIds.push_back(ch.chunkId);
 				mChunkData.push_back(ch);
 				hasCutout = true;
@@ -1534,7 +1534,7 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 	}
 	SAFE_DELETE(mesh);
 
-	mChunkData[chunkIndex].isLeaf = false;
+	mChunkData[chunkInfoIndex].isLeaf = false;
 	if (replaceChunk)
 	{
         deleteChunkSubhierarchy(chunkId, true);
@@ -1551,7 +1551,7 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
 	return 0;
 }
 
-int32_t FractureToolImpl::getChunkIndex(int32_t chunkId) const
+int32_t FractureToolImpl::getChunkInfoIndex(int32_t chunkId) const
 {
 	for (uint32_t i = 0; i < mChunkData.size(); ++i)
 	{
@@ -1565,18 +1565,18 @@ int32_t FractureToolImpl::getChunkIndex(int32_t chunkId) const
 
 int32_t FractureToolImpl::getChunkDepth(int32_t chunkId) const
 {
-	int32_t chunkIndex = getChunkIndex(chunkId);
-	if (chunkIndex == -1)
+	int32_t chunkInfoIndex = getChunkInfoIndex(chunkId);
+	if (chunkInfoIndex == -1)
 	{
 		return -1;
 	}
 
 	int32_t depth = 0;
 
-	while (mChunkData[chunkIndex].parentChunkId != -1)
+	while (mChunkData[chunkInfoIndex].parentChunkId != -1)
 	{
 		++depth;
-		chunkIndex = getChunkIndex(mChunkData[chunkIndex].parentChunkId);
+		chunkInfoIndex = getChunkInfoIndex(mChunkData[chunkInfoIndex].parentChunkId);
 	}
 	return depth;
 }
@@ -1598,58 +1598,77 @@ uint32_t FractureToolImpl::getChunksIdAtDepth(uint32_t depth, int32_t*& chunkIds
 	return (uint32_t)_chunkIds.size();
 }
 
-void FractureToolImpl::setSourceMesh(const Mesh* meshInput)
-{
-    setSourceMeshes(&meshInput, 1);
-}
-
-void FractureToolImpl::setSourceMeshes(const Mesh** meshes, uint32_t meshesSize)
+bool FractureToolImpl::setSourceMeshes(Mesh const * const * meshes, uint32_t meshesSize, const int32_t* ids /* = nullptr */)
 {
 	if (meshes == nullptr)
 	{
-		return;
+		return false;
 	}
 	reset();
 
     for (uint32_t m = 0; m < meshesSize; m++)
     {
 		const auto mesh = meshes[m];
-		setChunkMesh(mesh, -1);
+        const int32_t chunkId = (ids ? ids[m] : -1);
+		const int32_t id = setChunkMesh(mesh, -1, chunkId);
+
+        // if any mesh fails to get set up correctly,
+        // wipe the data so it isn't in a bad state and report failure
+        if (id < 0)
+        {
+            reset();
+            return false;
+        }
     }
+
+    // all source meshes were set up correctly, report success
+	return true;
 }
 
-int32_t FractureToolImpl::setChunkMesh(const Mesh* meshInput, int32_t parentId)
+int32_t FractureToolImpl::setChunkMesh(const Mesh* meshInput, int32_t parentId, int32_t chunkId /* = -1 */)
 {
-	ChunkInfo* parent = nullptr;
-	for (size_t i = 0; i < mChunkData.size(); i++)
+	if (chunkId < 0)
 	{
-		if (mChunkData[i].chunkId == parentId)
-		{
-			parent = &mChunkData[i];
-		}
+        // allocate a new chunk ID
+		chunkId = createId();
+		if (chunkId < 0)
+        {
+            return -1;
+        }
 	}
-	if (meshInput == nullptr || (parent == nullptr && parentId != -1))
+    else
+    {
+        // make sure the supplied chunk ID gets reserved
+        if (!reserveId(chunkId))
+        {
+            return -1;
+        }
+    }
+
+    const int32_t parentInfoIndex = getChunkInfoIndex(parentId);
+	if (meshInput == nullptr || (parentInfoIndex == -1 && parentId != -1))
 	{
 		return -1;
 	}
 
 	mChunkData.push_back(ChunkInfo());
 	auto& chunk         = mChunkData.back();
+	chunk.chunkId       = chunkId;
 	chunk.parentChunkId = parentId;
 	chunk.isLeaf        = true;
 	chunk.isChanged     = true;
 	chunk.flags         = ChunkInfo::NO_FLAGS;
-	if ((size_t)parentId < mChunkData.size())
-	{
-		mChunkData[parentId].isLeaf = false;
-	}
-	chunk.chunkId = mChunkIdCounter++;
-	Mesh* mesh    = new MeshImpl(*reinterpret_cast<const MeshImpl*>(meshInput));
 
 	/**
 	Set mesh; move to origin and scale to unit cube
 	*/
+	Mesh* mesh = new MeshImpl(*reinterpret_cast<const MeshImpl*>(meshInput));
 	setChunkInfoMesh(chunk, mesh, false);
+
+	if ((size_t)parentInfoIndex < mChunkData.size())
+	{
+		mChunkData[parentInfoIndex].isLeaf = false;
+	}
 
 	if (parentId == -1)  // We are setting root mesh. Set all facets as boundary.
 	{
@@ -1681,7 +1700,8 @@ void FractureToolImpl::reset()
 	}
 	mChunkData.clear();
 	mPlaneIndexerOffset = 1;
-	mChunkIdCounter     = 0;
+	mNextChunkId = 0;
+	mChunkIdsUsed.clear();
 	mInteriorMaterialId = kMaterialInteriorId;
 }
 
@@ -1703,12 +1723,12 @@ bool FractureToolImpl::isAncestorForChunk(int32_t ancestorId, int32_t chunkId)
 		{
 			return true;
 		}
-		chunkId = getChunkIndex(chunkId);
-		if (chunkId == -1)
+		const int32_t chunkInfoIndex = getChunkInfoIndex(chunkId);
+		if (chunkInfoIndex == -1)
 		{
 			return false;
 		}
-		chunkId = mChunkData[chunkId].parentChunkId;
+		chunkId = mChunkData[chunkInfoIndex].parentChunkId;
 	}
 	return false;
 }
@@ -1802,25 +1822,25 @@ uint32_t FractureToolImpl::getChunkCount() const
 	return (uint32_t)mChunkData.size();
 }
 
-const ChunkInfo& FractureToolImpl::getChunkInfo(int32_t chunkIndex)
+const ChunkInfo& FractureToolImpl::getChunkInfo(int32_t chunkInfoIndex)
 {
-	return mChunkData[chunkIndex];
+	return mChunkData[chunkInfoIndex];
 }
 
-uint32_t FractureToolImpl::getBaseMesh(int32_t chunkIndex, Triangle*& output)
+uint32_t FractureToolImpl::getBaseMesh(int32_t chunkInfoIndex, Triangle*& output)
 {
 	NVBLAST_ASSERT(mChunkPostprocessors.size() > 0);
 	if (mChunkPostprocessors.size() == 0)
 	{
 		return 0;  // finalizeFracturing() should be called before getting mesh!
 	}
-	auto& baseMesh = mChunkPostprocessors[chunkIndex]->getBaseMesh();
+	auto& baseMesh = mChunkPostprocessors[chunkInfoIndex]->getBaseMesh();
 	output         = new Triangle[baseMesh.size()];
 	memcpy(output, baseMesh.data(), baseMesh.size() * sizeof(Triangle));
 
 	/* Scale mesh back */
 
-	const TransformST& tm = mChunkData[chunkIndex].getTmToWorld();
+	const TransformST& tm = mChunkData[chunkInfoIndex].getTmToWorld();
 
 	for (uint32_t i = 0; i < baseMesh.size(); ++i)
 	{
@@ -1833,19 +1853,19 @@ uint32_t FractureToolImpl::getBaseMesh(int32_t chunkIndex, Triangle*& output)
 	return baseMesh.size();
 }
 
-uint32_t FractureToolImpl::updateBaseMesh(int32_t chunkIndex, Triangle* output)
+uint32_t FractureToolImpl::updateBaseMesh(int32_t chunkInfoIndex, Triangle* output)
 {
 	NVBLAST_ASSERT(mChunkPostprocessors.size() > 0);
 	if (mChunkPostprocessors.size() == 0)
 	{
 		return 0;  // finalizeFracturing() should be called before getting mesh!
 	}
-	auto& baseMesh = mChunkPostprocessors[chunkIndex]->getBaseMesh();
+	auto& baseMesh = mChunkPostprocessors[chunkInfoIndex]->getBaseMesh();
 	memcpy(output, baseMesh.data(), baseMesh.size() * sizeof(Triangle));
 
 	/* Scale mesh back */
 
-	const TransformST& tm = mChunkData[chunkIndex].getTmToWorld();
+	const TransformST& tm = mChunkData[chunkInfoIndex].getTmToWorld();
 
 	for (uint32_t i = 0; i < baseMesh.size(); ++i)
 	{
@@ -1964,11 +1984,11 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool creat
 	{
 		return 0;
 	}
-	int32_t chunkIndex = getChunkIndex(chunkId);
+	int32_t chunkInfoIndex = getChunkInfoIndex(chunkId);
 	Triangulator prc;
-	prc.triangulate(mChunkData[chunkIndex].getMesh());
+	prc.triangulate(mChunkData[chunkInfoIndex].getMesh());
 
-	Mesh* chunk = mChunkData[chunkIndex].getMesh();
+	Mesh* chunk = mChunkData[chunkInfoIndex].getMesh();
 
 	std::vector<uint32_t>& mapping    = prc.getBaseMapping();
 	std::vector<TriangleIndexed>& trs = prc.getBaseMeshIndexed();
@@ -2093,16 +2113,16 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool creat
 
 		if (createAtNewDepth == false || chunkId != 0)
 		{
-			delete mChunkData[chunkIndex].getMesh();
+			delete mChunkData[chunkInfoIndex].getMesh();
 			Mesh* newMesh0 =
 			    new MeshImpl(compVertices[0].data(), compEdges[0].data(), compFacets[0].data(),
 			                 static_cast<uint32_t>(compVertices[0].size()), static_cast<uint32_t>(compEdges[0].size()),
 			                 static_cast<uint32_t>(compFacets[0].size()));
-			setChunkInfoMesh(mChunkData[chunkIndex], newMesh0);
+			setChunkInfoMesh(mChunkData[chunkInfoIndex], newMesh0);
 			for (int32_t i = 1; i < cComp; ++i)
 			{
-				mChunkData.push_back(ChunkInfo(mChunkData[chunkIndex]));
-				mChunkData.back().chunkId = mChunkIdCounter++;
+				mChunkData.push_back(ChunkInfo(mChunkData[chunkInfoIndex]));
+				mChunkData.back().chunkId = createId();
 				Mesh* newMesh_i =
 				    new MeshImpl(compVertices[i].data(), compEdges[i].data(), compFacets[i].data(),
 				                 static_cast<uint32_t>(compVertices[i].size()),
@@ -2124,7 +2144,7 @@ int32_t FractureToolImpl::islandDetectionAndRemoving(int32_t chunkId, bool creat
 				                                       static_cast<uint32_t>(compFacets[i].size()));
 				setChunkInfoMesh(mChunkData[nc], newMesh);
 			}
-            mChunkData[chunkIndex].isLeaf = false;
+            mChunkData[chunkInfoIndex].isLeaf = false;
         }
 		return cComp;
 	}
@@ -2167,13 +2187,13 @@ FractureToolImpl::getBufferedBaseMeshes(Vertex*& vertexBuffer, uint32_t*& indexB
 	return _vertexBuffer.size();
 }
 
-int32_t FractureToolImpl::getChunkId(int32_t chunkIndex) const
+int32_t FractureToolImpl::getChunkId(int32_t chunkInfoIndex) const
 {
-	if (chunkIndex < 0 || static_cast<uint32_t>(chunkIndex) >= mChunkData.size())
+	if (chunkInfoIndex < 0 || static_cast<uint32_t>(chunkInfoIndex) >= mChunkData.size())
 	{
 		return -1;
 	}
-	return mChunkData[chunkIndex].chunkId;
+	return mChunkData[chunkInfoIndex].chunkId;
 }
 
 int32_t FractureToolImpl::getInteriorMaterialId() const
@@ -2266,27 +2286,27 @@ uint32_t FractureToolImpl::createNewChunk(uint32_t parentChunkId)
 	const uint32_t index = static_cast<uint32_t>(mChunkData.size());
 	mChunkData.push_back(ChunkInfo());
 	mChunkData.back().parentChunkId = parentChunkId;
-	mChunkData.back().chunkId = mChunkIdCounter++;
+	mChunkData.back().chunkId = createId();
 	return index;
 }
 
 
 void FractureToolImpl::fitUvToRect(float side, uint32_t chunk)
 {
-	int32_t index = getChunkIndex(chunk);
+	int32_t infoIndex = getChunkInfoIndex(chunk);
 	if (mChunkPostprocessors.empty())  // It seems finalize have not been called, call it here.
 	{
 		finalizeFracturing();
 	}
-	if (index == -1 || (int32_t)mChunkPostprocessors.size() <= index)
+	if (infoIndex == -1 || (int32_t)mChunkPostprocessors.size() <= infoIndex)
 	{
 		return;  // We dont have such chunk tringulated;
 	}
 	physx::PxBounds3 bnd;
 	bnd.setEmpty();
 
-	std::vector<Triangle>& ctrs   = mChunkPostprocessors[index]->getBaseMesh();
-	std::vector<Triangle>& output = mChunkPostprocessors[index]->getBaseMesh();
+	std::vector<Triangle>& ctrs   = mChunkPostprocessors[infoIndex]->getBaseMesh();
+	std::vector<Triangle>& output = mChunkPostprocessors[infoIndex]->getBaseMesh();
 
 	for (uint32_t trn = 0; trn < ctrs.size(); ++trn)
 	{
@@ -2388,10 +2408,10 @@ void FractureToolImpl::markLeaves()
 
     for (ChunkInfo& info : mChunkData)
     {
-        const int32_t index = getChunkIndex(info.parentChunkId);
-        if (index >= 0)
+        const int32_t infoIndex = getChunkInfoIndex(info.parentChunkId);
+        if (infoIndex >= 0)
         {
-            mChunkData[index].isLeaf = false;
+            mChunkData[infoIndex].isLeaf = false;
         }
     }
 }
@@ -2441,7 +2461,7 @@ bool FractureToolImpl::setChunkInfoMesh(ChunkInfo& chunkInfo, Mesh* mesh, bool f
 	}
 
 	const TransformST parentTM = fromTransformed && chunkInfo.parentChunkId >= 0 ?
-		mChunkData[getChunkIndex(chunkInfo.parentChunkId)].getTmToWorld() : TransformST::identity();
+		mChunkData[getChunkInfoIndex(chunkInfo.parentChunkId)].getTmToWorld() : TransformST::identity();
 
 	auth->setMesh(mesh, parentTM);
 
@@ -2617,19 +2637,19 @@ void FractureToolImpl::uniteChunks(uint32_t threshold, uint32_t targetClusterSiz
 
         // Make all descendants mergable too
         std::vector<int32_t> treeWalk;
-        for (uint32_t chunkIndex = 0; chunkIndex < mChunkData.size(); ++chunkIndex)
+        for (uint32_t chunkInfoIndex = 0; chunkInfoIndex < mChunkData.size(); ++chunkInfoIndex)
         {
             treeWalk.clear();
-            int32_t walkIndex = (int32_t)chunkIndex;
+            int32_t walkInfoIndex = (int32_t)chunkInfoIndex;
             do
             {
-                if (chunkFlags[walkIndex] & Mergeable)
+                if (chunkFlags[walkInfoIndex] & Mergeable)
                 {
                     std::for_each(treeWalk.begin(), treeWalk.end(), [&chunkFlags](int32_t index) {chunkFlags[index] |= Mergeable; });
                     break;
                 }
-                treeWalk.push_back(walkIndex);
-            } while ((walkIndex = getChunkIndex(mChunkData[walkIndex].parentChunkId)) >= 0);
+                treeWalk.push_back(walkInfoIndex);
+            } while ((walkInfoIndex = getChunkInfoIndex(mChunkData[walkInfoIndex].parentChunkId)) >= 0);
         }
     }
 
@@ -2638,7 +2658,7 @@ void FractureToolImpl::uniteChunks(uint32_t threshold, uint32_t targetClusterSiz
     for (uint32_t i = 0; i < mChunkData.size(); ++i)
 	{
 		if (mChunkData[i].parentChunkId != -1)
-			childNumber[getChunkIndex(mChunkData[i].parentChunkId)]++;
+			childNumber[getChunkInfoIndex(mChunkData[i].parentChunkId)]++;
 		depth[i] = getChunkDepth(mChunkData[i].chunkId);
 		NVBLAST_ASSERT(depth[i] >= 0);
         maxDepth = std::max(maxDepth, depth[i]);
@@ -2654,7 +2674,7 @@ void FractureToolImpl::uniteChunks(uint32_t threshold, uint32_t targetClusterSiz
 
 		for (uint32_t ch = 0; ch < depth.size(); ++ch)
 		{
-			if (depth[ch] == level && childNumber[getChunkIndex(mChunkData[ch].parentChunkId)] > threshold && (chunkFlags[ch] & Mergeable) != 0)
+			if (depth[ch] == level && childNumber[getChunkInfoIndex(mChunkData[ch].parentChunkId)] > threshold && (chunkFlags[ch] & Mergeable) != 0)
 			{
 				chunksToUnify.push_back(ch);
 				NvcVec3 cp = fromPxShared(toPxShared(mChunkData[ch].getMesh()->getBoundingBox()).getCenter());
@@ -2753,7 +2773,7 @@ void FractureToolImpl::uniteChunks(uint32_t threshold, uint32_t targetClusterSiz
     {
         if (chunkInfo.parentChunkId >= 0)
         {
-            const uint32_t mappedParentIndex = remap[getChunkIndex(chunkInfo.parentChunkId)];
+            const uint32_t mappedParentIndex = remap[getChunkInfoIndex(chunkInfo.parentChunkId)];
             NVBLAST_ASSERT(mappedParentIndex < mChunkData.size());
             if (mappedParentIndex < mChunkData.size())
             {
@@ -2780,6 +2800,39 @@ bool FractureToolImpl::setApproximateBonding(uint32_t chunkIndex, bool useApprox
     }
 
     return true;
+}
+
+int32_t FractureToolImpl::createId()
+{
+    // make sure there is a free ID to be returned
+	if (mChunkIdsUsed.size() >= (size_t)INT32_MAX + 1)
+	{
+		NvBlastGlobalGetErrorCallback()->reportError(Nv::Blast::ErrorCode::eINTERNAL_ERROR, "Chunk IDs exhausted.", __FILE__, __LINE__);
+		return -1;
+	}
+
+    // find the next free ID
+	while (mChunkIdsUsed.count(mNextChunkId))
+	{
+        // handle wrapping
+		if (++mNextChunkId < 0)
+            mNextChunkId = 0;
+	}
+
+    // step the counter and handle wrapping
+	const int32_t id = mNextChunkId++;
+	if (mNextChunkId < 0)
+        mNextChunkId = 0;
+
+	return (reserveId(id) ? id : -1);
+}
+
+bool FractureToolImpl::reserveId(int32_t id)
+{
+    // add it to the used set and make sure it wasn't already in there
+    const auto ret = mChunkIdsUsed.insert(id);
+    NVBLAST_ASSERT_WITH_MESSAGE(ret.second, "Request to reserve ID, but it is already in use");
+    return ret.second;
 }
 
 }  // namespace Blast
