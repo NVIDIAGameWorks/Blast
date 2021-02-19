@@ -65,7 +65,7 @@ static void fillChunkAndBondDescriptorsFromAsset
 		NvBlastChunkDesc& chunkDesc = chunkDescs[chunkDescsWritten++];
 		memcpy(chunkDesc.centroid, assetChunk->centroid, sizeof(float) * 3);
 		chunkDesc.volume = assetChunk->volume;
-		chunkDesc.parentChunkIndex = assetChunk->parentChunkIndex;
+		chunkDesc.parentChunkDescIndex = assetChunk->parentChunkIndex;
 		chunkDesc.flags = 0;	// To be filled in below
 		chunkDesc.userData = assetChunk->userData;
 	}
@@ -261,9 +261,9 @@ NvBlastAssetDesc NvBlastExtAssetUtilsMergeAssets
 		// Fix chunks' parent indices
 		for (uint32_t i = 0; i < componentChunkCount; ++i)
 		{
-			if (!isInvalidIndex(chunkDescs[chunkCount + i].parentChunkIndex))
+			if (!isInvalidIndex(chunkDescs[chunkCount + i].parentChunkDescIndex))
 			{
-				chunkDescs[chunkCount + i].parentChunkIndex += chunkCount;
+				chunkDescs[chunkCount + i].parentChunkDescIndex += chunkCount;
 			}
 		}
 		// Fix bonds' chunk indices

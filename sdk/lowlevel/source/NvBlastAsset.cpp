@@ -175,24 +175,24 @@ Using the implied digraph given by the chunkDescs' parentChunkIndex fields, the 
 to determine if that walk leads to a loop.
 
 Input:
-chunkDescs	- the chunk descriptors
-chunkIndex	- the index of the starting chunk descriptor
+chunkDescs      - the chunk descriptors
+chunkDescIndex  - the index of the starting chunk descriptor
 
 Return:
 true if a loop is found, false otherwise.
 */
-NV_INLINE bool testForLoop(const NvBlastChunkDesc* chunkDescs, uint32_t chunkIndex)
+NV_INLINE bool testForLoop(const NvBlastChunkDesc* chunkDescs, uint32_t chunkDescIndex)
 {
-	NVBLAST_ASSERT(!isInvalidIndex(chunkIndex));
+	NVBLAST_ASSERT(!isInvalidIndex(chunkDescIndex));
 
-	uint32_t chunkIndex1 = chunkDescs[chunkIndex].parentChunkIndex;
-	if (isInvalidIndex(chunkIndex1))
+	uint32_t chunkDescIndex1 = chunkDescs[chunkDescIndex].parentChunkDescIndex;
+	if (isInvalidIndex(chunkDescIndex1))
 	{
 		return false;
 	}
 
-	uint32_t chunkIndex2 = chunkDescs[chunkIndex1].parentChunkIndex;
-	if (isInvalidIndex(chunkIndex2))
+	uint32_t chunkDescIndex2 = chunkDescs[chunkDescIndex1].parentChunkDescIndex;
+	if (isInvalidIndex(chunkDescIndex2))
 	{
 		return false;
 	}
@@ -200,22 +200,22 @@ NV_INLINE bool testForLoop(const NvBlastChunkDesc* chunkDescs, uint32_t chunkInd
 	do
 	{
 		// advance index 1
-		chunkIndex1 = chunkDescs[chunkIndex1].parentChunkIndex;	// No need to check for termination here.  index 2 would find it first.
+		chunkDescIndex1 = chunkDescs[chunkDescIndex1].parentChunkDescIndex;	// No need to check for termination here.  index 2 would find it first.
 
 		// advance index 2 twice and check for incidence with index 1 as well as termination
-		if ((chunkIndex2 = chunkDescs[chunkIndex2].parentChunkIndex) == chunkIndex1)
+		if ((chunkDescIndex2 = chunkDescs[chunkDescIndex2].parentChunkDescIndex) == chunkDescIndex1)
 		{
 			return true;
 		}
-		if (isInvalidIndex(chunkIndex2))
+		if (isInvalidIndex(chunkDescIndex2))
 		{
 			return false;
 		}
-		if ((chunkIndex2 = chunkDescs[chunkIndex2].parentChunkIndex) == chunkIndex1)
+		if ((chunkDescIndex2 = chunkDescs[chunkDescIndex2].parentChunkDescIndex) == chunkDescIndex1)
 		{
 			return true;
 		}
-	} while (!isInvalidIndex(chunkIndex2));
+	} while (!isInvalidIndex(chunkDescIndex2));
 
 	return false;
 }
@@ -572,7 +572,7 @@ Asset* Asset::create(void* mem, const NvBlastAssetDesc* desc, void* scratch, NvB
 		NvBlastChunk& assetChunk = chunks[i];
 		memcpy(assetChunk.centroid, chunkDesc.centroid, 3 * sizeof(float));
 		assetChunk.volume = chunkDesc.volume;
-		assetChunk.parentChunkIndex = isInvalidIndex(chunkDesc.parentChunkIndex) ? chunkDesc.parentChunkIndex : chunkDesc.parentChunkIndex;
+		assetChunk.parentChunkIndex = chunkDesc.parentChunkDescIndex;
 		assetChunk.firstChildIndex = invalidIndex<uint32_t>();	// Will be filled in below
 		assetChunk.childIndexStop = assetChunk.firstChildIndex;
 		assetChunk.userData = chunkDesc.userData;
@@ -678,10 +678,10 @@ bool Asset::ensureExactSupportCoverage(uint32_t& supportChunkCount, uint32_t& le
 		{
 			continue;
 		}
-		uint32_t chunkIndex = i;
-		while (!isInvalidIndex(chunkIndex = chunkDescs[chunkIndex].parentChunkIndex))
+		uint32_t chunkDescIndex = i;
+		while (!isInvalidIndex(chunkDescIndex = chunkDescs[chunkDescIndex].parentChunkDescIndex))
 		{
-			chunkAnnotation[chunkIndex] = Asset::ChunkAnnotation::Parent;	// Note as non-leaf
+			chunkAnnotation[chunkDescIndex] = Asset::ChunkAnnotation::Parent;	// Note as non-leaf
 		}
 	}
 
@@ -696,43 +696,43 @@ bool Asset::ensureExactSupportCoverage(uint32_t& supportChunkCount, uint32_t& le
 			continue;
 		}
 		++leafChunkCount;
-		uint32_t supportChunkIndex;
-		supportChunkIndex = invalidIndex<uint32_t>();
-		uint32_t chunkIndex = i;
+		uint32_t supportChunkDescIndex;
+		supportChunkDescIndex = invalidIndex<uint32_t>();
+		uint32_t chunkDescIndex = i;
 		bool doneWithChain = false;
 		do
 		{
-			if (chunkDescs[chunkIndex].flags & NvBlastChunkDesc::SupportFlag)
+			if (chunkDescs[chunkDescIndex].flags & NvBlastChunkDesc::SupportFlag)
 			{
-				if (chunkAnnotation[chunkIndex] & Asset::ChunkAnnotation::Support)
+				if (chunkAnnotation[chunkDescIndex] & Asset::ChunkAnnotation::Support)
 				{
 					// We've already been up this chain and marked this as support, so we have unique coverage already
 					doneWithChain = true;
 				}
-				chunkAnnotation[chunkIndex] |= Asset::ChunkAnnotation::Support;	// Note as support
-				if (!isInvalidIndex(supportChunkIndex))
+				chunkAnnotation[chunkDescIndex] |= Asset::ChunkAnnotation::Support;	// Note as support
+				if (!isInvalidIndex(supportChunkDescIndex))
 				{
 					if (testOnly)
 					{
 						return false;
 					}
 					redundantCoverage = true;
-					chunkAnnotation[supportChunkIndex] &= ~Asset::ChunkAnnotation::Support;	// Remove support marking
-					do	// Run up the hierarchy from supportChunkIndex to chunkIndex and remove the supersupport markings
+					chunkAnnotation[supportChunkDescIndex] &= ~Asset::ChunkAnnotation::Support;	// Remove support marking
+					do	// Run up the hierarchy from supportChunkDescIndex to chunkDescIndex and remove the supersupport markings
 					{
-						supportChunkIndex = chunkDescs[supportChunkIndex].parentChunkIndex;
-						chunkAnnotation[supportChunkIndex] &= ~Asset::ChunkAnnotation::SuperSupport;	// Remove supersupport marking
-					} while (supportChunkIndex != chunkIndex);
+						supportChunkDescIndex = chunkDescs[supportChunkDescIndex].parentChunkDescIndex;
+						chunkAnnotation[supportChunkDescIndex] &= ~Asset::ChunkAnnotation::SuperSupport;	// Remove supersupport marking
+					} while (supportChunkDescIndex != chunkDescIndex);
 				}
-				supportChunkIndex = chunkIndex;
+				supportChunkDescIndex = chunkDescIndex;
 			}
 			else
-			if (!isInvalidIndex(supportChunkIndex))
+			if (!isInvalidIndex(supportChunkDescIndex))
 			{
-				chunkAnnotation[chunkIndex] |= Asset::ChunkAnnotation::SuperSupport;	// Not a support chunk and we've already found a support chunk, so this is super-support
+				chunkAnnotation[chunkDescIndex] |= Asset::ChunkAnnotation::SuperSupport;	// Not a support chunk and we've already found a support chunk, so this is super-support
 			}
-		} while (!doneWithChain && !isInvalidIndex(chunkIndex = chunkDescs[chunkIndex].parentChunkIndex));
-		if (isInvalidIndex(supportChunkIndex))
+		} while (!doneWithChain && !isInvalidIndex(chunkDescIndex = chunkDescs[chunkDescIndex].parentChunkDescIndex));
+		if (isInvalidIndex(supportChunkDescIndex))
 		{
 			if (testOnly)
 			{
@@ -758,19 +758,19 @@ bool Asset::ensureExactSupportCoverage(uint32_t& supportChunkCount, uint32_t& le
 				continue;
 			}
 			bool supportFound = false;
-			uint32_t chunkIndex = i;
+			uint32_t chunkDescIndex = i;
 			do
 			{
-				if (chunkAnnotation[chunkIndex] & Asset::ChunkAnnotation::Support)
+				if (chunkAnnotation[chunkDescIndex] & Asset::ChunkAnnotation::Support)
 				{
 					supportFound = true;
 				}
 				else
 				if (supportFound)
 				{
-					chunkAnnotation[chunkIndex] |= Asset::ChunkAnnotation::SuperSupport;	// Note that a descendant has support
+					chunkAnnotation[chunkDescIndex] |= Asset::ChunkAnnotation::SuperSupport;	// Note that a descendant has support
 				}
-			} while (!isInvalidIndex(chunkIndex = chunkDescs[chunkIndex].parentChunkIndex));
+			} while (!isInvalidIndex(chunkDescIndex = chunkDescs[chunkDescIndex].parentChunkDescIndex));
 		}
 
 		// Now walk up the hierarchy from each leaf one more time, and make sure there is coverage
@@ -780,26 +780,26 @@ bool Asset::ensureExactSupportCoverage(uint32_t& supportChunkCount, uint32_t& le
 			{
 				continue;
 			}
-			uint32_t previousChunkIndex;
-			previousChunkIndex = invalidIndex<uint32_t>();
-			uint32_t chunkIndex = i;
+			uint32_t previousChunkDescIndex;
+			previousChunkDescIndex = invalidIndex<uint32_t>();
+			uint32_t chunkDescIndex = i;
 			for (;;)
 			{
-				if (chunkAnnotation[chunkIndex] & Asset::ChunkAnnotation::Support)
+				if (chunkAnnotation[chunkDescIndex] & Asset::ChunkAnnotation::Support)
 				{
 					break;	// There is support along this chain
 				}
-				if (chunkAnnotation[chunkIndex] & Asset::ChunkAnnotation::SuperSupport)
+				if (chunkAnnotation[chunkDescIndex] & Asset::ChunkAnnotation::SuperSupport)
 				{
-					NVBLAST_ASSERT(!isInvalidIndex(previousChunkIndex));	// This should be impossible
-					chunkAnnotation[previousChunkIndex] |= Asset::ChunkAnnotation::Support;	// There is no support along this chain, and this is the highest place where we can put support
+					NVBLAST_ASSERT(!isInvalidIndex(previousChunkDescIndex));	// This should be impossible
+					chunkAnnotation[previousChunkDescIndex] |= Asset::ChunkAnnotation::Support;	// There is no support along this chain, and this is the highest place where we can put support
 					break;
 				}
-				previousChunkIndex = chunkIndex;
-				chunkIndex = chunkDescs[chunkIndex].parentChunkIndex;
-				if (isInvalidIndex(chunkIndex))
+				previousChunkDescIndex = chunkDescIndex;
+				chunkDescIndex = chunkDescs[chunkDescIndex].parentChunkDescIndex;
+				if (isInvalidIndex(chunkDescIndex))
 				{
-					chunkAnnotation[previousChunkIndex] |= Asset::ChunkAnnotation::Support;	// There was no support found anywhere in the hierarchy, so we add it at the root
+					chunkAnnotation[previousChunkDescIndex] |= Asset::ChunkAnnotation::Support;	// There was no support found anywhere in the hierarchy, so we add it at the root
 					break;
 				}
 			}
@@ -832,28 +832,28 @@ bool Asset::testForValidChunkOrder(uint32_t chunkCount, const NvBlastChunkDesc* 
 {
     char* chunkMarks = static_cast<char*>(memset(scratch, 0, chunkCount));
 
-    uint32_t currentParentChunkIndex = invalidIndex<uint32_t>();
+    uint32_t currentParentChunkDescIndex = invalidIndex<uint32_t>();
     for (uint32_t i = 0; i < chunkCount; ++i)
     {
-        const uint32_t parentChunkIndex = chunkDescs[i].parentChunkIndex;
+        const uint32_t parentChunkDescIndex = chunkDescs[i].parentChunkDescIndex;
 
-        if (!isInvalidIndex(parentChunkIndex) && parentChunkIndex >= i) // 'chunks should come after their parents'
+        if (!isInvalidIndex(parentChunkDescIndex) && parentChunkDescIndex >= i) // 'chunks should come after their parents'
         {
             return false;
         }
 
-        if (parentChunkIndex != currentParentChunkIndex)
+        if (parentChunkDescIndex != currentParentChunkDescIndex)
         {
-            if (!isInvalidIndex(currentParentChunkIndex))
+            if (!isInvalidIndex(currentParentChunkDescIndex))
             {
-                chunkMarks[currentParentChunkIndex] = 1;
+                chunkMarks[currentParentChunkDescIndex] = 1;
             }
-            currentParentChunkIndex = parentChunkIndex;
-            if (isInvalidIndex(currentParentChunkIndex))    // 'root chunks should go first'
+            currentParentChunkDescIndex = parentChunkDescIndex;
+            if (isInvalidIndex(currentParentChunkDescIndex))    // 'root chunks should go first'
             {
                 return false;
             }
-            else if (chunkMarks[currentParentChunkIndex] != 0)  // 'all chunks with same parent index should go in a row'
+            else if (chunkMarks[currentParentChunkDescIndex] != 0)  // 'all chunks with same parent index should go in a row'
             {
                 return false;
             }

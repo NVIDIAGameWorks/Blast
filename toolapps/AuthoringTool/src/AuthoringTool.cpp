@@ -537,7 +537,7 @@ int main(int argc, const char* const* argv)
 	mesh->setMaterialId(fileReader->getMaterialIds());
 	mesh->setSmoothingGroup(fileReader->getSmoothingGroups());
 
-	fTool->setSourceMesh(mesh);
+	fTool->setSourceMeshes(&mesh, 1);
 
 
 	SimpleRandomGenerator rng;

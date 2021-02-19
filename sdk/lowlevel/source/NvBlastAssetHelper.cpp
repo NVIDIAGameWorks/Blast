@@ -75,8 +75,8 @@ public:
             return upperSupport0;	// If one is uppersupport and one is subsupport, uppersupport should come first
         }
 
-        const uint32_t p0 = m_descs[i0].parentChunkIndex;
-        const uint32_t p1 = m_descs[i1].parentChunkIndex;
+        const uint32_t p0 = m_descs[i0].parentChunkDescIndex;
+        const uint32_t p1 = m_descs[i1].parentChunkDescIndex;
 
         // Parent chunk index (+1 so that UINT32_MAX becomes the lowest value)
         const uint32_t pp0 = 1 + (m_chunkInvMap && !isInvalidIndex(p0) ? m_chunkInvMap[p0] : p0);
@@ -207,7 +207,7 @@ void NvBlastApplyAssetDescChunkReorderMap
 		for (uint32_t i = 0; i < chunkCount; ++i)
 		{
 			reorderedChunkDescs[chunkReorderMap[i]] = chunkDescs[i];
-			uint32_t& parentIndex = reorderedChunkDescs[chunkReorderMap[i]].parentChunkIndex;
+			uint32_t& parentIndex = reorderedChunkDescs[chunkReorderMap[i]].parentChunkDescIndex;
 			if (parentIndex < chunkCount)
 			{
 				parentIndex = chunkReorderMap[parentIndex];	// If the parent index is valid, remap it too to reflect the new order

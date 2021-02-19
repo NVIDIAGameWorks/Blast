@@ -151,12 +151,9 @@ public:
 	/**
 		FractureTool can log asset creation info if logCallback is provided.
 	*/
-	FractureToolImpl()
+	FractureToolImpl() : mRemoveIslands(false)
 	{
-		mPlaneIndexerOffset = 1;
-		mChunkIdCounter = 0;
-		mRemoveIslands = false;
-		mInteriorMaterialId = kMaterialInteriorId;
+		reset();
 	}
 
 	~FractureToolImpl()
@@ -187,24 +184,26 @@ public:
 	void									replaceMaterialId(int32_t oldMaterialId, int32_t newMaterialId) override;
 
 	/**
-		Set input mesh wich will be fractured, FractureTool will be reseted.
+	    Set input meshes which will be fractured, FractureTool will be reset.
+		If ids != nullptr, it must point to an array of length meshSizes.
+		Each mesh will be assigned to a chunk with ID given by the corresponding element in ids.
+		If the corresponding element is negative, or ids is NULL, then the chunk will be assigned
+		an arbitrary (but currently unused) ID.
+		Returns true iff all meshes were assigned chunks with valid IDs.
 	*/
-	void									setSourceMesh(const Mesh* mesh) override;
+	bool                                    setSourceMeshes(Mesh const * const * meshes, uint32_t meshesSize, const int32_t* ids = nullptr) override;
 
 	/**
-	    Set input mesh which will be fractured, FractureTool will be reseted.
+		Set chunk mesh, parentId should be valid, return ID of new chunk.
+		if chunkId >= 0 and currently unused, then that ID will be used (and returned).
+		Otherwise an arbitrary (but currently unused) ID will be used and returned.
 	*/
-	void                                    setSourceMeshes(const Mesh** meshes, uint32_t meshesSize) override;
-
-	/**
-		Set chunk mesh, parentId should be valid, return id of new chunk.
-	*/
-	int32_t									setChunkMesh(const Mesh* mesh, int32_t parentId) override;
+	int32_t									setChunkMesh(const Mesh* mesh, int32_t parentId, int32_t chunkId = -1) override;
 
 	/**
 		Get chunk mesh in polygonal representation
 	*/
-	Mesh*									createChunkMesh(int32_t chunkIndex, bool splitUVs = true) override;
+	Mesh*									createChunkMesh(int32_t chunkInfoIndex, bool splitUVs = true) override;
 
 	/**
 		Fractures specified chunk with voronoi method.
@@ -280,7 +279,7 @@ public:
 	/**
 		Get chunk information
 	*/
-	const ChunkInfo&    					getChunkInfo(int32_t chunkIndex) override;
+	const ChunkInfo&    					getChunkInfo(int32_t chunkInfoIndex) override;
 
 	/**
 		Get percentage of mesh overlap.
@@ -310,18 +309,18 @@ public:
 	uint32_t								updateBaseMesh(int32_t chunkIndex, Triangle* output) override;
 
 	/**
-		Return index of chunk with specified chunkId
+		Return info index of chunk with specified chunkId
 		\param[in] chunkId Chunk ID
 		\return Chunk index in internal buffer, if not exist -1 is returned.
 	*/
-	int32_t									getChunkIndex(int32_t chunkId) const override;
+	int32_t									getChunkInfoIndex(int32_t chunkId) const override;
 
 	/**
 		Return id of chunk with specified index.
-		\param[in] chunkIndex Chunk index
+		\param[in] chunkInfoIndex Chunk info index
 		\return Chunk id or -1 if there is no such chunk.
 	*/
-	int32_t									getChunkId(int32_t chunkIndex) const override;
+	int32_t									getChunkId(int32_t chunkInfoIndex) const override;
 
 	/**
 		Return depth level of the given chunk
@@ -420,13 +419,22 @@ private:
 	*/
 	uint32_t								createNewChunk(uint32_t parentChunkId);
 
+	/**
+	 * Returns a previously unused ID.
+	 */
+	int32_t									createId();
+	/**
+	 * Mark the given ID as being used.  Returns false if that ID was already marked as in use, true otherwise
+	 */
+    bool                                    reserveId(int32_t id);
 
 protected:
 	/* Chunk mesh wrappers */
 	std::vector<Triangulator*>	        mChunkPostprocessors;
 
 	int64_t								mPlaneIndexerOffset;
-	int32_t								mChunkIdCounter;
+	int32_t								mNextChunkId;
+	std::set<int32_t>					mChunkIdsUsed;
 	std::vector<ChunkInfo>				mChunkData;
 
 	bool								mRemoveIslands;

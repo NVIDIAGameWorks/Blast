@@ -307,7 +307,7 @@ struct NvBlastChunkDesc
 	float		volume;
 
 	/** Index of this chunk's parent.  If this is a root chunk, then this value must be UINT32_MAX. */
-	uint32_t	parentChunkIndex;
+	uint32_t	parentChunkDescIndex;
 
 	/** See Flags enum for possible flags. */
 	uint32_t	flags;
