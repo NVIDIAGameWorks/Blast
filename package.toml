@@ -49,6 +49,7 @@ files = [
     ["sdk/extensions/serialization/include"],
     ["sdk/extensions/shaders/include"],
     ["sdk/extensions/stress/include"],
+    ["sdk/common/include"],
     ["sdk/globals/include"],
     ["sdk/lowlevel/include"],
     ["sdk/toolkit/include"],
