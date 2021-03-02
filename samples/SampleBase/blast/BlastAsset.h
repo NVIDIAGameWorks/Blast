@@ -100,7 +100,7 @@ public:
 
 	float getSupportChunkHealthMax() const
 	{
-		return m_bondHealthMax;
+		return m_supportChunkHealthMax;
 	}
 
 	NvBlastExtDamageAccelerator* getAccelerator() const

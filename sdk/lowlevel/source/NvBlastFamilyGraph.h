@@ -64,9 +64,10 @@ public:
 	/**
 	Constructor. family graph is meant to be placed (with placement new) on family memory.
 
-	\param[in] graph	The graph to instance (see SupportGraph)
+	\param[in] nodeCount	The number of nodes in the support graph (see SupportGraph)
+	\param[in] bondCount	The number of bonds in the support graph (see SupportGraph)
 	*/
-	FamilyGraph(const SupportGraph* graph);
+	FamilyGraph(uint32_t nodeCount, const uint32_t bondCount);
 
 
 	/**

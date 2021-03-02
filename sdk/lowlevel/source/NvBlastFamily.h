@@ -60,260 +60,253 @@ The block address may be cast to a valid FamilyHeader pointer.
 */
 struct FamilyHeader : public NvBlastDataBlock
 {
-	/**
-	The ID for the asset.  This will be resolved into a pointer in the runtime data.
-	*/
-	NvBlastID	m_assetID;
+    /**
+    The ID for the asset.  This will be resolved into a pointer in the runtime data.
+    */
+    NvBlastID    m_assetID;
 
-	/**
-	Actors, of type Actor.
+    /**
+    Actors, of type Actor.
 
-	Actors with support chunks will use this array in the range [0, m_asset->m_graphNodeCount),
-	while subsupport actors will be placed in the range [m_asset->m_graphNodeCount, getActorBufferSize()).
-	*/
-	NvBlastBlockArrayData(Actor, m_actorsOffset, getActors, m_asset->m_graph.m_nodeCount);
+    Actors with support chunks will use this array in the range [0, m_asset->m_graphNodeCount),
+    while subsupport actors will be placed in the range [m_asset->m_graphNodeCount, m_asset->getLowerSupportChunkCount()).
+    */
+    NvBlastBlockArrayData(Actor, m_actorsOffset, getActors, m_asset->getLowerSupportChunkCount());
 
-	/**
-	Visible chunk index links, of type IndexDLink<uint32_t>.
+    /**
+    Visible chunk index links, of type IndexDLink<uint32_t>.
 
-	getVisibleChunkIndexLinks returns an array of size m_asset->m_chunkCount of IndexDLink<uint32_t> (see IndexDLink).
-	*/
-	NvBlastBlockArrayData(IndexDLink<uint32_t>, m_visibleChunkIndexLinksOffset, getVisibleChunkIndexLinks, m_asset->m_chunkCount);
+    getVisibleChunkIndexLinks returns an array of size m_asset->m_chunkCount of IndexDLink<uint32_t> (see IndexDLink).
+    */
+    NvBlastBlockArrayData(IndexDLink<uint32_t>, m_visibleChunkIndexLinksOffset, getVisibleChunkIndexLinks, m_asset->m_chunkCount);
 
-	/**
-	Chunk actor IDs, of type uint32_t.  These correspond to the ID of the actor which owns each chunk.  A value of invalidIndex<uint32_t>() indicates no owner.
+    /**
+    Chunk actor IDs, of type uint32_t.  These correspond to the ID of the actor which owns each chunk.  A value of invalidIndex<uint32_t>() indicates no owner.
 
-	getChunkActorIndices returns an array of size m_asset->m_firstSubsupportChunkIndex.
-	*/
-	NvBlastBlockArrayData(uint32_t, m_chunkActorIndicesOffset, getChunkActorIndices, m_asset->m_firstSubsupportChunkIndex);
+    getChunkActorIndices returns an array of size m_asset->m_firstSubsupportChunkIndex.
+    */
+    NvBlastBlockArrayData(uint32_t, m_chunkActorIndicesOffset, getChunkActorIndices, m_asset->m_firstSubsupportChunkIndex);
 
-	/**
-	Graph node index links, of type uint32_t.  The successor to index[i] is m_graphNodeIndexLinksOffset[i].  A value of invalidIndex<uint32_t>() indicates no successor.
+    /**
+    Graph node index links, of type uint32_t.  The successor to index[i] is m_graphNodeIndexLinksOffset[i].  A value of invalidIndex<uint32_t>() indicates no successor.
 
-	getGraphNodeIndexLinks returns an array of size m_asset->m_graphNodeCount.
-	*/
-	NvBlastBlockArrayData(uint32_t, m_graphNodeIndexLinksOffset, getGraphNodeIndexLinks, m_asset->m_graph.m_nodeCount);
+    getGraphNodeIndexLinks returns an array of size m_asset->m_graphNodeCount.
+    */
+    NvBlastBlockArrayData(uint32_t, m_graphNodeIndexLinksOffset, getGraphNodeIndexLinks, m_asset->m_graph.m_nodeCount);
 
-	/**
-	Health for each support chunk and subsupport chunk, of type float.
+    /**
+    Health for each support chunk and subsupport chunk, of type float.
 
-	To access support chunks, use the corresponding graph node index in the array returned by getLowerSupportChunkHealths.
+    To access support chunks, use the corresponding graph node index in the array returned by getLowerSupportChunkHealths.
 
-	To access subsupport chunk healths, use getSubsupportChunkHealths (see documentation for details).
-	*/
-	NvBlastBlockArrayData(float, m_lowerSupportChunkHealthsOffset, getLowerSupportChunkHealths, m_asset->getLowerSupportChunkCount());
+    To access subsupport chunk healths, use getSubsupportChunkHealths (see documentation for details).
+    */
+    NvBlastBlockArrayData(float, m_lowerSupportChunkHealthsOffset, getLowerSupportChunkHealths, m_asset->getLowerSupportChunkCount());
 
-	/**
-	Utility function to get the start of the subsupport chunk health array.
+    /**
+    Utility function to get the start of the subsupport chunk health array.
 
-	To access a subsupport chunk health indexed by i, use getSubsupportChunkHealths()[i - m_asset->m_firstSubsupportChunkIndex]
+    To access a subsupport chunk health indexed by i, use getSubsupportChunkHealths()[i - m_asset->m_firstSubsupportChunkIndex]
 
-	\return the array of health values associated with all descendants of support chunks.
-	*/
-	float*	getSubsupportChunkHealths() const
-	{
-		NVBLAST_ASSERT(m_asset != nullptr);
-		return (float*)((uintptr_t)this + m_lowerSupportChunkHealthsOffset) + m_asset->m_graph.m_nodeCount;
-	}
+    \return the array of health values associated with all descendants of support chunks.
+    */
+    float*    getSubsupportChunkHealths() const
+    {
+        NVBLAST_ASSERT(m_asset != nullptr);
+        return (float*)((uintptr_t)this + m_lowerSupportChunkHealthsOffset) + m_asset->m_graph.m_nodeCount;
+    }
 
-	/**
-	Bond health for the interfaces between two chunks, of type float.  Since the bond is shared by two chunks, the same bond health is used for chunk[i] -> chunk[j] as for chunk[j] -> chunk[i].
+    /**
+    Bond health for the interfaces between two chunks, of type float.  Since the bond is shared by two chunks, the same bond health is used for chunk[i] -> chunk[j] as for chunk[j] -> chunk[i].
 
-	getBondHealths returns the array of healths associated with all bonds in the support graph.
-	*/
-	NvBlastBlockArrayData(float, m_graphBondHealthsOffset, getBondHealths, m_asset->getBondCount());
+    getBondHealths returns the array of healths associated with all bonds in the support graph.
+    */
+    NvBlastBlockArrayData(float, m_graphBondHealthsOffset, getBondHealths, m_asset->getBondCount());
 
-	/**
-	The instance graph for islands searching, of type FamilyGraph.
+    /**
+    The instance graph for islands searching, of type FamilyGraph.
 
-	Return the dynamic data generated for the support graph.  (See FamilyGraph.)
-	This is used to store current connectivity information based upon bond and chunk healths, as well as cached intermediate data for faster incremental updates.
-	*/
-	NvBlastBlockData(FamilyGraph, m_familyGraphOffset, getFamilyGraph);
+    Return the dynamic data generated for the support graph.  (See FamilyGraph.)
+    This is used to store current connectivity information based upon bond and chunk healths, as well as cached intermediate data for faster incremental updates.
+    */
+    NvBlastBlockData(FamilyGraph, m_familyGraphOffset, getFamilyGraph);
 
 
-	//////// Runtime data ////////
+    //////// Runtime data ////////
 
-	/**
-	The number of actors using this block.
-	*/
-	volatile uint32_t	m_actorCount;
+    /**
+    The number of actors using this block.
+    */
+    volatile uint32_t    m_actorCount;
 
-	/**
-	The asset corresponding to all actors in this family.
-	This is runtime data and will be resolved from m_assetID.
-	*/
-	union
-	{
-		const Asset*	m_asset;
-		uint64_t		m_runtimePlaceholder;	// Make sure we reserve enough room for an 8-byte pointer
-	};
+    /**
+    The asset corresponding to all actors in this family.
+    This is runtime data and will be resolved from m_assetID.
+    */
+    union
+    {
+        const Asset*    m_asset;
+        uint64_t        m_runtimePlaceholder;    // Make sure we reserve enough room for an 8-byte pointer
+    };
 
 
-	//////// Functions ////////
+    //////// Functions ////////
 
-	/**
-	Gets an actor from the actor array and validates it if it is not already valid.  This increments the actor reference count.
+    /**
+    Gets an actor from the actor array and validates it if it is not already valid.  This increments the actor reference count.
 
-	\param[in] index	The index of the actor to borrow.  Must be in the range [0, getActorBufferSize()).
+    \param[in] index    The index of the actor to borrow.  Must be in the range [0, getActorsArraySize()).
 
-	\return	A pointer to the indexed Actor.
-	*/
-	Actor*		borrowActor(uint32_t index);
+    \return    A pointer to the indexed Actor.
+    */
+    Actor*        borrowActor(uint32_t index);
 
-	/**
-	Invalidates the actor if it is not already invalid.  This decrements the actor reference count, but does not free this block when the count goes to zero.
+    /**
+    Invalidates the actor if it is not already invalid.  This decrements the actor reference count, but does not free this block when the count goes to zero.
 
-	\param[in] actor	The actor to invalidate.
-	*/
-	void		returnActor(Actor& actor);
+    \param[in] actor    The actor to invalidate.
+    */
+    void        returnActor(Actor& actor);
 
-	/**
-	Returns the total number of actors in the Actor buffer, active and inactive.
+    /**
+    Returns a value to indicate whether or not the Actor with the given index is valid for use (active).
 
-	\return the number of Actors in the actor buffer.  See borrowActor.
-	*/
-	uint32_t	getActorBufferSize() const;
+    \return    true iff the indexed actor is active.
+    */
+    bool        isActorActive(uint32_t index) const;
 
-	/**
-	Returns a value to indicate whether or not the Actor with the given index is valid for use (active).
+    /**
+    Retrieve the actor from an index. If actor is inactive nullptr is returned.
 
-	\return	true iff the indexed actor is active.
-	*/
-	bool		isActorActive(uint32_t index) const;
+    \param[in] index    The index of an actor.
 
-	/**
-	Retrieve the actor from an index. If actor is inactive nullptr is returned.
+    \return    A pointer to the indexed actor if the actor is active, nullptr otherwise.
+    */
+    Actor*        getActorByIndex(uint32_t index) const;
 
-	\param[in] index	The index of an actor.
+    /**
+    Retrieve the index of an actor associated with the given chunk.
 
-	\return	A pointer to the indexed actor if the actor is active, nullptr otherwise.
-	*/
-	Actor*		getActorByIndex(uint32_t index) const;
+    \param[in] chunkIndex    The index of chunk.
 
-	/**
-	Retrieve the index of an actor associated with the given chunk.
+    \return the index of associated actor in the FamilyHeader's getActors() array.
+    */
+    uint32_t    getGetChunkActorIndex(uint32_t chunkIndex) const;
 
-	\param[in] chunkIndex	The index of chunk.
+    /**
+    Retrieve the index of an actor associated with the given node.
 
-	\return the index of associated actor in the FamilyHeader's getActors() array.
-	*/
-	uint32_t	getGetChunkActorIndex(uint32_t chunkIndex) const;
+    \param[in] nodeIndex    The index of node.
 
-	/**
-	Retrieve the index of an actor associated with the given node.
+    \return the index of associated actor in the FamilyHeader's getActors() array.
+    */
+    uint32_t    getGetNodeActorIndex(uint32_t nodeIndex) const;
 
-	\param[in] nodeIndex	The index of node.
+    /**
+    Retrieve an actor associated with the given chunk.
 
-	\return the index of associated actor in the FamilyHeader's getActors() array.
-	*/
-	uint32_t	getGetNodeActorIndex(uint32_t nodeIndex) const;
+    \param[in] chunkIndex    The index of chunk.
 
-	/**
-	Retrieve an actor associated with the given chunk.
+    \return    A pointer to the actor if the actor is active, nullptr otherwise.
+    */
+    Actor*        getGetChunkActor(uint32_t chunkIndex) const;
 
-	\param[in] chunkIndex	The index of chunk.
+    /**
+    Retrieve an actor associated with the given node.
 
-	\return	A pointer to the actor if the actor is active, nullptr otherwise.
-	*/
-	Actor*		getGetChunkActor(uint32_t chunkIndex) const;
+    \param[in] nodeIndex    The index of node.
 
-	/**
-	Retrieve an actor associated with the given node.
+    \return    A pointer to the actor if the actor is active, nullptr otherwise.
+    */
+    Actor*        getGetNodeActor(uint32_t nodeIndex) const;
 
-	\param[in] nodeIndex	The index of node.
 
-	\return	A pointer to the actor if the actor is active, nullptr otherwise.
-	*/
-	Actor*		getGetNodeActor(uint32_t nodeIndex) const;
+    //////// Fracturing methods ////////
 
+    /**
+    Hierarchically distribute damage to child chunks.
 
-	//////// Fracturing methods ////////
+    \param chunkIndex        asset chunk index to hierarchically damage
+    \param suboffset        index of the first sub-support health
+    \param healthDamage        damage strength to apply
+    \param chunkHealths        instance chunk healths
+    \param chunks            asset chunk collection
+    */
+    void                fractureSubSupportNoEvents(uint32_t chunkIndex, uint32_t suboffset, float healthDamage, float* chunkHealths, const NvBlastChunk* chunks);
 
-	/**
-	Hierarchically distribute damage to child chunks.
+    /**
+    Hierarchically distribute damage to child chunks, recording a fracture event for each health damage applied.
 
-	\param chunkIndex		asset chunk index to hierarchically damage
-	\param suboffset		index of the first sub-support health
-	\param healthDamage		damage strength to apply
-	\param chunkHealths		instance chunk healths
-	\param chunks			asset chunk collection
-	*/
-	void				fractureSubSupportNoEvents(uint32_t chunkIndex, uint32_t suboffset, float healthDamage, float* chunkHealths, const NvBlastChunk* chunks);
+    If outBuffer is too small, events are dropped but the chunks are still damaged.
 
-	/**
-	Hierarchically distribute damage to child chunks, recording a fracture event for each health damage applied.
+    \param chunkIndex        asset chunk index to hierarchically damage
+    \param suboffset        index of the first sub-support health
+    \param healthDamage        damage strength to apply
+    \param chunkHealths        instance chunk healths
+    \param chunks            asset chunk collection
+    \param outBuffer        target buffer for fracture events
+    \param currentIndex        current position in outBuffer - returns the number of damaged chunks
+    \param maxCount            capacity of outBuffer
+    \param[in] filterActor    pointer to the actor to filter commands that target other actors. May be NULL to apply all commands
+    \param[in] logFn        User-supplied message function (see NvBlastLog definition).  May be NULL.
+    */
+    void                fractureSubSupport(uint32_t chunkIndex, uint32_t suboffset, float healthDamage, float* chunkHealths, const NvBlastChunk* chunks, NvBlastChunkFractureData* outBuffer, uint32_t* currentIndex, const uint32_t maxCount);
 
-	If outBuffer is too small, events are dropped but the chunks are still damaged.
+    /**
+    Apply chunk fracture commands hierarchically.
 
-	\param chunkIndex		asset chunk index to hierarchically damage
-	\param suboffset		index of the first sub-support health
-	\param healthDamage		damage strength to apply
-	\param chunkHealths		instance chunk healths
-	\param chunks			asset chunk collection
-	\param outBuffer		target buffer for fracture events
-	\param currentIndex		current position in outBuffer - returns the number of damaged chunks
-	\param maxCount			capacity of outBuffer
-	\param[in] filterActor	pointer to the actor to filter commands that target other actors. May be NULL to apply all commands
-	\param[in] logFn		User-supplied message function (see NvBlastLog definition).  May be NULL.
-	*/
-	void				fractureSubSupport(uint32_t chunkIndex, uint32_t suboffset, float healthDamage, float* chunkHealths, const NvBlastChunk* chunks, NvBlastChunkFractureData* outBuffer, uint32_t* currentIndex, const uint32_t maxCount);
+    \param chunkFractureCount    number of chunk fracture commands to apply
+    \param chunkFractures        array of chunk fracture commands
+    \param filterActor            pointer to the actor to filter commands corresponding to other actors. May be NULL to apply all commands
+    \param[in] logFn            User-supplied message function (see NvBlastLog definition).  May be NULL.
+    */
+    void                fractureNoEvents(uint32_t chunkFractureCount, const NvBlastChunkFractureData* chunkFractures, Actor* filterActor, NvBlastLog logFn);
 
-	/**
-	Apply chunk fracture commands hierarchically.
+    /**
+    Apply chunk fracture commands hierarchically, recording a fracture event for each health damage applied.
 
-	\param chunkFractureCount	number of chunk fracture commands to apply
-	\param chunkFractures		array of chunk fracture commands
-	\param filterActor			pointer to the actor to filter commands corresponding to other actors. May be NULL to apply all commands
-	\param[in] logFn			User-supplied message function (see NvBlastLog definition).  May be NULL.
-	*/
-	void				fractureNoEvents(uint32_t chunkFractureCount, const NvBlastChunkFractureData* chunkFractures, Actor* filterActor, NvBlastLog logFn);
+    If events array is too small, events are dropped but the chunks are still damaged.
 
-	/**
-	Apply chunk fracture commands hierarchically, recording a fracture event for each health damage applied.
+    \param chunkFractureCount    number of chunk fracture commands to apply
+    \param commands                array of chunk fracture commands
+    \param events                target buffer for fracture events
+    \param eventsSize            number of available entries in 'events'
+    \param count                returns the number of damaged chunks
+    \param[in] filterActor        pointer to the actor to filter commands that target other actors. May be NULL to apply all commands
+    \param[in] logFn            User-supplied message function (see NvBlastLog definition).  May be NULL.
 
-	If events array is too small, events are dropped but the chunks are still damaged.
+    */
+    void                fractureWithEvents(uint32_t chunkFractureCount, const NvBlastChunkFractureData* commands, NvBlastChunkFractureData* events, uint32_t eventsSize, uint32_t* count, Actor* filterActor, NvBlastLog logFn);
 
-	\param chunkFractureCount	number of chunk fracture commands to apply
-	\param commands				array of chunk fracture commands
-	\param events				target buffer for fracture events
-	\param eventsSize			number of available entries in 'events'
-	\param count				returns the number of damaged chunks
-	\param[in] filterActor		pointer to the actor to filter commands that target other actors. May be NULL to apply all commands
-	\param[in] logFn			User-supplied message function (see NvBlastLog definition).  May be NULL.
+    /**
+    Apply chunk fracture commands hierarchically, recording a fracture event for each health damage applied.
 
-	*/
-	void				fractureWithEvents(uint32_t chunkFractureCount, const NvBlastChunkFractureData* commands, NvBlastChunkFractureData* events, uint32_t eventsSize, uint32_t* count, Actor* filterActor, NvBlastLog logFn);
+    In-Place version: fracture commands are replaced by fracture events.
 
-	/**
-	Apply chunk fracture commands hierarchically, recording a fracture event for each health damage applied.
+    If inoutbuffer array is too small, events are dropped but the chunks are still damaged.
 
-	In-Place version: fracture commands are replaced by fracture events.
+    \param chunkFractureCount    number of chunk fracture commands to apply
+    \param inoutbuffer            array of chunk fracture commands to be replaced by events
+    \param eventsSize            number of available entries in inoutbuffer
+    \param count                returns the number of damaged chunks
+    \param[in] filterActor        pointer to the actor to filter commands that target other actors. May be NULL to apply all commands
+    \param[in] logFn            User-supplied message function (see NvBlastLog definition).  May be NULL.
 
-	If inoutbuffer array is too small, events are dropped but the chunks are still damaged.
+    */
+    void                fractureInPlaceEvents(uint32_t chunkFractureCount, NvBlastChunkFractureData* inoutbuffer, uint32_t eventsSize, uint32_t* count, Actor* filterActor, NvBlastLog logFn);
 
-	\param chunkFractureCount	number of chunk fracture commands to apply
-	\param inoutbuffer			array of chunk fracture commands to be replaced by events
-	\param eventsSize			number of available entries in inoutbuffer
-	\param count				returns the number of damaged chunks
-	\param[in] filterActor		pointer to the actor to filter commands that target other actors. May be NULL to apply all commands
-	\param[in] logFn			User-supplied message function (see NvBlastLog definition).  May be NULL.
+    /**
+    See NvBlastActorApplyFracture
 
-	*/
-	void				fractureInPlaceEvents(uint32_t chunkFractureCount, NvBlastChunkFractureData* inoutbuffer, uint32_t eventsSize, uint32_t* count, Actor* filterActor, NvBlastLog logFn);
-
-	/**
-	See NvBlastActorApplyFracture
-
-	\param[in,out]	eventBuffers		Target buffers to hold applied fracture events. May be NULL, in which case events are not reported.
-	To avoid data loss, provide an entry for every lower-support chunk and every bond in the original actor.
-	\param[in,out]	actor				The NvBlastActor to apply fracture to.
-	\param[in]		commands			The fracture commands to process.
-	\param[in]		filterActor			pointer to the actor to filter commands that target other actors. May be NULL to apply all commands
-	\param[in]		logFn				User-supplied message function (see NvBlastLog definition).  May be NULL.
-	\param[in,out]	timers				If non-NULL this struct will be filled out with profiling information for the step, in profile build configurations.
-	*/
-	void				applyFracture(NvBlastFractureBuffers* eventBuffers, const NvBlastFractureBuffers* commands, Actor* filterActor, NvBlastLog logFn, NvBlastTimers* timers);
+    \param[in,out]    eventBuffers        Target buffers to hold applied fracture events. May be NULL, in which case events are not reported.
+    To avoid data loss, provide an entry for every lower-support chunk and every bond in the original actor.
+    \param[in,out]    actor                The NvBlastActor to apply fracture to.
+    \param[in]        commands            The fracture commands to process.
+    \param[in]        filterActor            pointer to the actor to filter commands that target other actors. May be NULL to apply all commands
+    \param[in]        logFn                User-supplied message function (see NvBlastLog definition).  May be NULL.
+    \param[in,out]    timers                If non-NULL this struct will be filled out with profiling information for the step, in profile build configurations.
+    */
+    void                applyFracture(NvBlastFractureBuffers* eventBuffers, const NvBlastFractureBuffers* commands, Actor* filterActor, NvBlastLog logFn, NvBlastTimers* timers);
 };
 
 } // namespace Blast
@@ -332,88 +325,81 @@ namespace Blast
 
 NV_INLINE Actor* FamilyHeader::borrowActor(uint32_t index)
 {
-	NVBLAST_ASSERT(index < getActorBufferSize());
-	Actor& actor = getActors()[index];
-	if (actor.m_familyOffset == 0)
-	{
-		const uintptr_t offset = (uintptr_t)&actor - (uintptr_t)this;
-		NVBLAST_ASSERT(offset <= UINT32_MAX);
-		actor.m_familyOffset = (uint32_t)offset;
-		atomicIncrement(reinterpret_cast<volatile int32_t*>(&m_actorCount));
-	}
-	return &actor;
+    NVBLAST_ASSERT(index < getActorsArraySize());
+    Actor& actor = getActors()[index];
+    if (actor.m_familyOffset == 0)
+    {
+        const uintptr_t offset = (uintptr_t)&actor - (uintptr_t)this;
+        NVBLAST_ASSERT(offset <= UINT32_MAX);
+        actor.m_familyOffset = (uint32_t)offset;
+        atomicIncrement(reinterpret_cast<volatile int32_t*>(&m_actorCount));
+    }
+    return &actor;
 }
 
 
 NV_INLINE void FamilyHeader::returnActor(Actor& actor)
 {
-	if (actor.m_familyOffset != 0)
-	{
-		actor.m_familyOffset = 0;
-		// The actor count should be positive since this actor was valid.  Check to be safe.
-		NVBLAST_ASSERT(m_actorCount > 0);
-		atomicDecrement(reinterpret_cast<volatile int32_t*>(&m_actorCount));
-	}
-}
-
-
-NV_INLINE uint32_t FamilyHeader::getActorBufferSize() const
-{
-	NVBLAST_ASSERT(m_asset);
-	return m_asset->getLowerSupportChunkCount();
+    if (actor.m_familyOffset != 0)
+    {
+        actor.m_familyOffset = 0;
+        // The actor count should be positive since this actor was valid.  Check to be safe.
+        NVBLAST_ASSERT(m_actorCount > 0);
+        atomicDecrement(reinterpret_cast<volatile int32_t*>(&m_actorCount));
+    }
 }
 
 
 NV_INLINE bool FamilyHeader::isActorActive(uint32_t index) const
 {
-	NVBLAST_ASSERT(index < getActorBufferSize());
-	return getActors()[index].m_familyOffset != 0;
+    NVBLAST_ASSERT(index < getActorsArraySize());
+    return getActors()[index].m_familyOffset != 0;
 }
 
 
 NV_INLINE Actor* FamilyHeader::getActorByIndex(uint32_t index) const
 {
-	NVBLAST_ASSERT(index < getActorBufferSize());
-	Actor& actor = getActors()[index];
-	return actor.isActive() ? &actor : nullptr;
+    NVBLAST_ASSERT(index < getActorsArraySize());
+    Actor& actor = getActors()[index];
+    return actor.isActive() ? &actor : nullptr;
 }
 
 
 NV_INLINE uint32_t FamilyHeader::getGetChunkActorIndex(uint32_t chunkIndex) const
 {
-	NVBLAST_ASSERT(m_asset);
-	NVBLAST_ASSERT(chunkIndex < m_asset->m_chunkCount);
-	if (chunkIndex < m_asset->getUpperSupportChunkCount())
-	{
-		return getChunkActorIndices()[chunkIndex];
-	}
-	else
-	{
-		return chunkIndex - (m_asset->getUpperSupportChunkCount() - m_asset->m_graph.m_nodeCount);
-	}
+    NVBLAST_ASSERT(m_asset);
+    NVBLAST_ASSERT(chunkIndex < m_asset->m_chunkCount);
+    if (chunkIndex < m_asset->getUpperSupportChunkCount())
+    {
+        return getChunkActorIndices()[chunkIndex];
+    }
+    else
+    {
+        return chunkIndex - (m_asset->getUpperSupportChunkCount() - m_asset->m_graph.m_nodeCount);
+    }
 }
 
 
 NV_INLINE uint32_t FamilyHeader::getGetNodeActorIndex(uint32_t nodeIndex) const
 {
-	NVBLAST_ASSERT(m_asset);
-	NVBLAST_ASSERT(nodeIndex < m_asset->m_graph.m_nodeCount);
-	const uint32_t chunkIndex = m_asset->m_graph.getChunkIndices()[nodeIndex];
-	return isInvalidIndex(chunkIndex) ? chunkIndex : getChunkActorIndices()[chunkIndex];
+    NVBLAST_ASSERT(m_asset);
+    NVBLAST_ASSERT(nodeIndex < m_asset->m_graph.m_nodeCount);
+    const uint32_t chunkIndex = m_asset->m_graph.getChunkIndices()[nodeIndex];
+    return isInvalidIndex(chunkIndex) ? chunkIndex : getChunkActorIndices()[chunkIndex];
 }
 
 
 NV_INLINE Actor* FamilyHeader::getGetChunkActor(uint32_t chunkIndex) const
 {
-	uint32_t actorIndex = getGetChunkActorIndex(chunkIndex);
-	return !isInvalidIndex(actorIndex) ? getActorByIndex(actorIndex) : nullptr;
+    uint32_t actorIndex = getGetChunkActorIndex(chunkIndex);
+    return !isInvalidIndex(actorIndex) ? getActorByIndex(actorIndex) : nullptr;
 }
 
 
 NV_INLINE Actor* FamilyHeader::getGetNodeActor(uint32_t nodeIndex) const
 {
-	uint32_t actorIndex = getGetNodeActorIndex(nodeIndex);
-	return !isInvalidIndex(actorIndex) ? getActorByIndex(actorIndex) : nullptr;
+    uint32_t actorIndex = getGetNodeActorIndex(nodeIndex);
+    return !isInvalidIndex(actorIndex) ? getActorByIndex(actorIndex) : nullptr;
 }
 
 
@@ -423,9 +409,11 @@ NV_INLINE Actor* FamilyHeader::getGetNodeActor(uint32_t nodeIndex) const
 Returns the number of bytes of memory that a family created using the given asset will require.  A pointer
 to a block of memory of at least this size must be passed in as the mem argument of createFamily.
 
-\param[in] asset	The asset that will be passed into NvBlastAssetCreateFamily.
+\param[in] asset        The asset that will be passed into NvBlastAssetCreateFamily.
+\param[in] sizeData     Alternate version where the counts are known but there is not an existing asset.
 */
 size_t getFamilyMemorySize(const Asset* asset);
+size_t getFamilyMemorySize(const NvBlastAssetMemSizeData& sizeData);
 
 } // namespace Blast
 } // namespace Nv

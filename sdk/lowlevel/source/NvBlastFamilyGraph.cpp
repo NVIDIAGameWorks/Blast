@@ -73,13 +73,10 @@ size_t FamilyGraph::fillMemory(FamilyGraph* familyGraph, uint32_t nodeCount, uin
 }
 
 
-FamilyGraph::FamilyGraph(const SupportGraph* graph)
+FamilyGraph::FamilyGraph(uint32_t nodeCount, const uint32_t bondCount)
 {
 	// fill memory with all internal data
 	// we need chunks count for size calculation
-	const uint32_t nodeCount = graph->m_nodeCount;
-	const uint32_t bondCount = graph->getAdjacencyPartition()[nodeCount] / 2;
-
 	fillMemory(this, nodeCount, bondCount);
 
 	// fill arrays with invalid indices / max value (0xFFFFFFFF)
@@ -465,7 +462,7 @@ uint32_t FamilyGraph::findIslands(ActorIndex actorIndex, void* scratch, const Su
 		if (isNodeWitness->test(dirtyNode))
 			continue;
 
-		NodeIndex& islandRootNode = islandIds[dirtyNode];
+		const IslandId& islandRootNode = islandIds[dirtyNode];
 		IslandId islandId = islandRootNode; // the same in this implementation
 		
 		// if this node is island root node we don't need to do anything

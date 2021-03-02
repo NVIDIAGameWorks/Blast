@@ -39,7 +39,7 @@ namespace Blast
 {
 
 /*!
-FixedBitmap is a bitset (bitmap) of fixed side, it's intended to be used with placement new on chunk of memory.
+FixedBitmap is a bitset (bitmap) of fixed size, it's intended to be used with placement new on chunk of memory.
 It'll use following memory for data layout. As follows:
 
 // some memory
@@ -51,7 +51,7 @@ const uint32_t bitsCount = 100;
 FixedBitmap* arr = new (buf) FixedBitmap(bitsCount);
 
 // you can get max requiredMemorySize by an bitMap to use memory left
-buf = buf + FixedBitmap<SomeClass>::requiredMemorySize(bitsCount);
+buf = buf + FixedBitmap::requiredMemorySize(bitsCount);
 
 buf:
 

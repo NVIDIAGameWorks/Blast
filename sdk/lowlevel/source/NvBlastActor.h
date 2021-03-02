@@ -57,429 +57,442 @@ to the user through the NvBlastActor opaque type.
 */
 class Actor : public NvBlastActor
 {
-	friend struct FamilyHeader;
+    friend struct FamilyHeader;
 
-	friend void updateVisibleChunksFromSupportChunk<>(Actor*, IndexDLink<uint32_t>*, uint32_t*, uint32_t, uint32_t, const NvBlastChunk*, uint32_t);
+    friend void updateVisibleChunksFromSupportChunk<>(Actor*, IndexDLink<uint32_t>*, uint32_t*, uint32_t, uint32_t, const NvBlastChunk*, uint32_t);
 
 public:
-	Actor() : m_familyOffset(0), m_firstVisibleChunkIndex(UINT32_MAX), m_visibleChunkCount(0), m_firstGraphNodeIndex(UINT32_MAX), m_graphNodeCount(0), m_leafChunkCount(0) {}
+    Actor() : m_familyOffset(0), m_firstVisibleChunkIndex(UINT32_MAX), m_visibleChunkCount(0), m_firstGraphNodeIndex(UINT32_MAX), m_graphNodeCount(0), m_leafChunkCount(0) {}
 
-	//////// Accessors ////////
+    //////// Accessors ////////
 
-	/**
-	Find the family (see FamilyHeader) that this actor belongs to.
+    /**
+    Find the family (see FamilyHeader) that this actor belongs to.
 
-	\return	a pointer to the FamilyHeader for this actor.
-	*/
-	FamilyHeader*		getFamilyHeader() const;
+    \return    a pointer to the FamilyHeader for this actor.
+    */
+    FamilyHeader*        getFamilyHeader() const;
 
-	/**
-	Utility to get the asset this actor is associated with, through its family.
+    /**
+    Utility to get the asset this actor is associated with, through its family.
 
-	\return	the asset associated with this actor.
-	*/
-	const Asset*		getAsset() const;
+    \return    the asset associated with this actor.
+    */
+    const Asset*        getAsset() const;
 
-	/**
-	Since this object is not deleted (unless the family is deleted), we use m_familyOffset
-	to determine if the actor is valid, or "active."  When no actors in an instance return isActive(),
-	it should be safe to delete the family.
+    /**
+    Since this object is not deleted (unless the family is deleted), we use m_familyOffset
+    to determine if the actor is valid, or "active."  When no actors in an instance return isActive(),
+    it should be safe to delete the family.
 
-	\return true iff this actor is valid for use (active).
-	*/
-	bool				isActive() const;
+    \return true iff this actor is valid for use (active).
+    */
+    bool                isActive() const;
 
-	/**
-	Whether or not this actor represents a subsupport chunk.  If the actor contains a subsupport chunk, then it can have only that chunk.
+    /**
+    Whether or not this actor represents a subsupport chunk.  If the actor contains a subsupport chunk, then it can have only that chunk.
 
-	\return true iff this actor contains a chunk which is a descendant of a support chunk.
-	*/
-	bool				isSubSupportChunk() const;
+    \return true iff this actor contains a chunk which is a descendant of a support chunk.
+    */
+    bool                isSubSupportChunk() const;
 
-	/**
-	Whether or not this actor represents a single support chunk.  If the actor contains a single support chunk, it can have no other
-	chunks associated with it.
+    /**
+    Whether or not this actor represents a single support chunk.  If the actor contains a single support chunk, it can have no other
+    chunks associated with it.
 
-	\return true iff this actor contains exactly one support chunk.
-	*/
-	bool				isSingleSupportChunk() const;
+    \return true iff this actor contains exactly one support chunk.
+    */
+    bool                isSingleSupportChunk() const;
 
-	/**
-	Utility to calculate actor index.
+    /**
+    Utility to calculate actor index.
 
-	\return the index of this actor in the FamilyHeader's getActors() array.
-	*/
-	uint32_t			getIndex() const;
+    \return the index of this actor in the FamilyHeader's getActors() array.
+    */
+    uint32_t            getIndex() const;
 
-	/**
-	The number of visible chunks.  This is calculated from updateVisibleChunksFromGraphNodes().
-	See also getFirstVisibleChunkIndex.
+    /**
+    Offset to block of memory which holds the data associated with all actors in this actor's lineage
 
-	\return the number of chunks in the actor's visible chunk index list.
-	*/
-	uint32_t			getVisibleChunkCount() const;
+    \return the family offset.
+    */
+    uint32_t            getFamilyOffset() const;
+    void                setFamilyOffset(uint32_t familyOffset);
 
-	/**
-	Access to visible chunk linked list for this actor.  The index returned is that of a link in the FamilyHeader's getVisibleChunkIndexLinks().
+    /**
+    The number of visible chunks.  This is calculated from updateVisibleChunksFromGraphNodes().
+    See also getFirstVisibleChunkIndex.
 
-	\return the index of the head of the visible chunk linked list.
-	*/
-	uint32_t			getFirstVisibleChunkIndex() const;
+    \return the number of chunks in the actor's visible chunk index list.
+    */
+    uint32_t            getVisibleChunkCount() const;
+    void                setVisibleChunkCount(uint32_t visibleChunkCount);
 
-	/**
-	The number of graph nodes, corresponding to support chunks, for this actor.
-	See also getFirstGraphNodeIndex.
+    /**
+    Access to visible chunk linked list for this actor.  The index returned is that of a link in the FamilyHeader's getVisibleChunkIndexLinks().
 
-	\return the number of graph nodes in the actor's graph node index list.
-	*/
-	uint32_t			getGraphNodeCount() const;
+    \return the index of the head of the visible chunk linked list.
+    */
+    uint32_t            getFirstVisibleChunkIndex() const;
+    void                setFirstVisibleChunkIndex(uint32_t firstVisibleChunkIndex);
 
-	/**
-	The number of leaf chunks for this actor.
+    /**
+    The number of graph nodes, corresponding to support chunks, for this actor.
+    See also getFirstGraphNodeIndex.
 
-	\return number of leaf chunks for this actor.
-	*/
-	uint32_t			getLeafChunkCount() const;
+    \return the number of graph nodes in the actor's graph node index list.
+    */
+    uint32_t            getGraphNodeCount() const;
+    void                setGraphNodeCount(uint32_t graphNodeCount);
 
-	/**
-	Access to graph node linked list for this actor.  The index returned is that of a link in the FamilyHeader's getGraphNodeIndexLinks().
+    /**
+    The number of leaf chunks for this actor.
 
-	\return the index of the head of the graph node linked list.
-	*/
-	uint32_t			getFirstGraphNodeIndex() const;
+    \return number of leaf chunks for this actor.
+    */
+    uint32_t            getLeafChunkCount() const;
+    void                setLeafChunkCount(uint32_t leafChunkCount);
 
-	/**
-	Access to the index of the first subsupport chunk.
+    /**
+    Access to graph node linked list for this actor.  The index returned is that of a link in the FamilyHeader's getGraphNodeIndexLinks().
 
-	\return the index of the first subsupport chunk.
-	*/
-	uint32_t			getFirstSubsupportChunkIndex() const;
+    \return the index of the head of the graph node linked list.
+    */
+    uint32_t            getFirstGraphNodeIndex() const;
+    void                setFirstGraphNodeIndex(uint32_t firstGraphNodeIndex);
 
-	/**
-	Access to the support graph.
+    /**
+    Access to the index of the first subsupport chunk.
 
-	\return the support graph associated with this actor.
-	*/
-	const SupportGraph*	getGraph() const;
+    \return the index of the first subsupport chunk.
+    */
+    uint32_t            getFirstSubsupportChunkIndex() const;
 
-	/**
-	Access the instance graph for islands searching.
+    /**
+    Access to the support graph.
 
-	Return the dynamic data generated for the support graph.  (See FamilyGraph.)
-	This is used to store current connectivity information based upon bond and chunk healths, as well as cached intermediate data for faster incremental updates.
-	*/
-	FamilyGraph*		getFamilyGraph() const;
+    \return the support graph associated with this actor.
+    */
+    const SupportGraph*    getGraph() const;
 
-	/**
-	Access to the chunks, of type NvBlastChunk.
+    /**
+    Access the instance graph for islands searching.
 
-	\return an array of size m_chunkCount.
-	*/
-	NvBlastChunk*		getChunks() const;
+    Return the dynamic data generated for the support graph.  (See FamilyGraph.)
+    This is used to store current connectivity information based upon bond and chunk healths, as well as cached intermediate data for faster incremental updates.
+    */
+    FamilyGraph*        getFamilyGraph() const;
 
-	/**
-	Access to the bonds, of type NvBlastBond.
+    /**
+    Access to the chunks, of type NvBlastChunk.
 
-	\return an array of size m_bondCount.
-	*/
-	NvBlastBond*		getBonds() const;
+    \return an array of size m_chunkCount.
+    */
+    NvBlastChunk*        getChunks() const;
 
-	/**
-	Access to the health for each support chunk and subsupport chunk, of type float.
+    /**
+    Access to the bonds, of type NvBlastBond.
 
-	Use getAsset()->getContiguousLowerSupportIndex() to map lower-support chunk indices into the range of indices valid for this array.
+    \return an array of size m_bondCount.
+    */
+    NvBlastBond*        getBonds() const;
 
-	\return a float array of chunk healths.
-	*/
-	float*				getLowerSupportChunkHealths() const;
+    /**
+    Access to the health for each support chunk and subsupport chunk, of type float.
 
-	/**
-	Access to the start of the subsupport chunk health array.
+    Use getAsset()->getContiguousLowerSupportIndex() to map lower-support chunk indices into the range of indices valid for this array.
 
-	\return the array of health values associated with all descendants of support chunks.
-	*/
-	float*				getSubsupportChunkHealths() const;
+    \return a float array of chunk healths.
+    */
+    float*                getLowerSupportChunkHealths() const;
 
-	/**
-	Bond health for the interfaces between two chunks, of type float.  Since the bond is shared by two chunks, the same bond health is used for chunk[i] -> chunk[j] as for chunk[j] -> chunk[i].
+    /**
+    Access to the start of the subsupport chunk health array.
 
-	\return the array of healths associated with all bonds in the support graph.
-	*/
-	float*				getBondHealths() const;
+    \return the array of health values associated with all descendants of support chunks.
+    */
+    float*                getSubsupportChunkHealths() const;
 
-	/**
-	Graph node index links, of type uint32_t.  The successor to index[i] is m_graphNodeIndexLinksOffset[i].  A value of invalidIndex<uint32_t>() indicates no successor.
+    /**
+    Bond health for the interfaces between two chunks, of type float.  Since the bond is shared by two chunks, the same bond health is used for chunk[i] -> chunk[j] as for chunk[j] -> chunk[i].
 
-	getGraphNodeIndexLinks returns an array of size m_asset->m_graphNodeCount.
-	*/
-	const uint32_t*		getGraphNodeIndexLinks() const;
+    \return the array of healths associated with all bonds in the support graph.
+    */
+    float*                getBondHealths() const;
 
+    /**
+    Graph node index links, of type uint32_t.  The successor to index[i] is m_graphNodeIndexLinksOffset[i].  A value of invalidIndex<uint32_t>() indicates no successor.
 
-	//////// Iterators ////////
+    getGraphNodeIndexLinks returns an array of size m_asset->m_graphNodeCount.
+    */
+    const uint32_t*        getGraphNodeIndexLinks() const;
 
-	/**
-	Visible chunk iterator.  Usage:
 
-	Given a solver actor a,
+    //////// Iterators ////////
 
-	for (Actor::VisibleChunkIt i = a; (bool)i; ++i)
-	{
-		uint32_t visibleChunkIndex = (uint32_t)i;
+    /**
+    Visible chunk iterator.  Usage:
 
-		// visibleChunkIndex references the asset index list
-	}
+    Given a solver actor a,
 
-	*/
-	class VisibleChunkIt : public DListIt<uint32_t>
-	{
-	public:
-		/** Constructed from an actor. */
-		VisibleChunkIt(const Actor& actor);
-	};
+    for (Actor::VisibleChunkIt i = a; (bool)i; ++i)
+    {
+        uint32_t visibleChunkIndex = (uint32_t)i;
 
-	/**
-	Graph node iterator.  Usage:
+        // visibleChunkIndex references the asset index list
+    }
 
-	Given a solver actor a,
+    */
+    class VisibleChunkIt : public DListIt<uint32_t>
+    {
+    public:
+        /** Constructed from an actor. */
+        VisibleChunkIt(const Actor& actor);
+    };
 
-	for (Actor::GraphNodeIt i = a; (bool)i; ++i)
-	{
-	uint32_t graphNodeIndex = (uint32_t)i;
+    /**
+    Graph node iterator.  Usage:
 
-	// graphNodeIndex references the asset's graph node index list
-	}
+    Given a solver actor a,
 
-	*/
-	class GraphNodeIt : public LListIt<uint32_t>
-	{
-	public:
-		/** Constructed from an actor. */
-		GraphNodeIt(const Actor& actor);
-	};
+    for (Actor::GraphNodeIt i = a; (bool)i; ++i)
+    {
+    uint32_t graphNodeIndex = (uint32_t)i;
 
+    // graphNodeIndex references the asset's graph node index list
+    }
 
-	//////// Operations ////////
+    */
+    class GraphNodeIt : public LListIt<uint32_t>
+    {
+    public:
+        /** Constructed from an actor. */
+        GraphNodeIt(const Actor& actor);
+    };
 
-	/**
-	Create an actor from a descriptor (creates a family).  This actor will represent an unfractured instance of the asset.
-	The asset must be in a valid state, for example each chunk hierarchy in it must contain at least one support chunk (a single
-	support chunk in a hierarchy corresponds to the root chunk).  This will always be the case for assets created by NvBlastCreateAsset.
 
-	\param[in] family	Family in which to create a new actor.  The family must be valid and have no other actors in it.  (See createFamily.)
-	\param[in] desc		Actor initialization data, must be a valid pointer.
-	\param[in] scratch	User-supplied scratch memory of size createRequiredScratch(desc) bytes.
-	\param[in] logFn	User-supplied message function (see NvBlastLog definition).  May be NULL.
+    //////// Operations ////////
 
-	\return the new actor if the input is valid (by the conditions described above), NULL otherwise.
-	*/
-	static Actor*		create(NvBlastFamily* family, const NvBlastActorDesc* desc, void* scratch, NvBlastLog logFn);
+    /**
+    Create an actor from a descriptor (creates a family).  This actor will represent an unfractured instance of the asset.
+    The asset must be in a valid state, for example each chunk hierarchy in it must contain at least one support chunk (a single
+    support chunk in a hierarchy corresponds to the root chunk).  This will always be the case for assets created by NvBlastCreateAsset.
 
-	/**
-	Returns the size of the scratch space (in bytes) required to be passed into the create function, based upon
-	the family that will be passed to the create function.
+    \param[in] family    Family in which to create a new actor.  The family must be valid and have no other actors in it.  (See createFamily.)
+    \param[in] desc        Actor initialization data, must be a valid pointer.
+    \param[in] scratch    User-supplied scratch memory of size createRequiredScratch(desc) bytes.
+    \param[in] logFn    User-supplied message function (see NvBlastLog definition).  May be NULL.
 
-	\param[in] family	The family being instanced.
+    \return the new actor if the input is valid (by the conditions described above), NULL otherwise.
+    */
+    static Actor*        create(NvBlastFamily* family, const NvBlastActorDesc* desc, void* scratch, NvBlastLog logFn);
 
-	\return the number of bytes required.
-	*/
-	static size_t		createRequiredScratch(const NvBlastFamily* family, NvBlastLog logFn);
+    /**
+    Returns the size of the scratch space (in bytes) required to be passed into the create function, based upon
+    the family that will be passed to the create function.
 
-	/**
-	Deserialize a single Actor from a buffer.  An actor family must given, into which
-	the actor will be inserted if it is compatible.  That is, it must not share any chunks or internal
-	IDs with the actors already present in the block.
+    \param[in] family    The family being instanced.
 
-	\param[in] family	Family in which to deserialize the actor.
-	\param[in] buffer	Buffer containing the serialized actor data.
-	\param[in] logFn	User-supplied message function (see NvBlastLog definition).  May be NULL.
+    \return the number of bytes required.
+    */
+    static size_t        createRequiredScratch(const NvBlastFamily* family, NvBlastLog logFn);
 
-	\return the deserialized actor if successful, NULL otherwise.
-	*/
-	static Actor*		deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog logFn);
+    /**
+    Deserialize a single Actor from a buffer.  An actor family must given, into which
+    the actor will be inserted if it is compatible.  That is, it must not share any chunks or internal
+    IDs with the actors already present in the block.
 
-	/**
-	Serialize actor into single-actor buffer.
+    \param[in] family    Family in which to deserialize the actor.
+    \param[in] buffer    Buffer containing the serialized actor data.
+    \param[in] logFn    User-supplied message function (see NvBlastLog definition).  May be NULL.
 
-	\param[out] buffer		User-supplied buffer, must be at least of size given by NvBlastActorGetSerializationSize(actor).
-	\param[in] bufferSize	The size of the user-supplied buffer.  The buffer size must be less than 4GB.  If NvBlastActorGetSerializationSize(actor) >= 4GB, this actor cannot be serialized with this method.
-	\param[in] logFn		User-supplied message function (see NvBlastLog definition).  May be NULL.
+    \return the deserialized actor if successful, NULL otherwise.
+    */
+    static Actor*        deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog logFn);
 
-	\return the number of bytes written to the buffer, or 0 if there is an error (such as an under-sized buffer).
-	*/
-	uint32_t			serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) const;
+    /**
+    Serialize actor into single-actor buffer.
 
-	/**
-	Calculate the space required to serialize this actor.
+    \param[out] buffer        User-supplied buffer, must be at least of size given by NvBlastActorGetSerializationSize(actor).
+    \param[in] bufferSize    The size of the user-supplied buffer.  The buffer size must be less than 4GB.  If NvBlastActorGetSerializationSize(actor) >= 4GB, this actor cannot be serialized with this method.
+    \param[in] logFn        User-supplied message function (see NvBlastLog definition).  May be NULL.
 
-	\param[in] logFn	User-supplied message function (see NvBlastLog definition).  May be NULL.
+    \return the number of bytes written to the buffer, or 0 if there is an error (such as an under-sized buffer).
+    */
+    uint32_t            serialize(void* buffer, uint32_t bufferSize, NvBlastLog logFn) const;
 
-	\return the required buffer size in bytes.
-	*/
-	uint32_t			serializationRequiredStorage(NvBlastLog logFn) const;
+    /**
+    Calculate the space required to serialize this actor.
 
-	/**
-	Release this actor's association with a family, if any.  This actor should be considered deleted
-	after this function is called.
+    \param[in] logFn    User-supplied message function (see NvBlastLog definition).  May be NULL.
 
-	\return true if release was successful (actor was active).
-	*/
-	bool				release();
+    \return the required buffer size in bytes.
+    */
+    uint32_t            serializationRequiredStorage(NvBlastLog logFn) const;
 
+    /**
+    Release this actor's association with a family, if any.  This actor should be considered deleted
+    after this function is called.
 
-	//////// Damage and fracturing methods ////////
+    \return true if release was successful (actor was active).
+    */
+    bool                release();
 
-	/**
-	See NvBlastActorGenerateFracture
-	*/
-	void				generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBlastDamageProgram& program, const void* programParams, NvBlastLog logFn, NvBlastTimers* timers) const;
 
-	/**
-	Damage bond between two chunks by health amount (instance graph also will be notified in case bond is broken after).
-	*/
-	uint32_t			damageBond(uint32_t nodeIndex0, uint32_t nodeIndex1, float healthDamage);
+    //////// Damage and fracturing methods ////////
 
-	/**
-	TODO: document
-	*/
-	void				damageBond(uint32_t nodeIndex0, uint32_t nodeIndex1, uint32_t bondIndex, float healthDamage);
+    /**
+    See NvBlastActorGenerateFracture
+    */
+    void                generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBlastDamageProgram& program, const void* programParams, NvBlastLog logFn, NvBlastTimers* timers) const;
 
-	/**
-	TODO: document
-	*/
-	uint32_t			damageBond(const NvBlastBondFractureData& cmd);
+    /**
+    Damage bond between two chunks by health amount (instance graph also will be notified in case bond is broken after).
+    */
+    uint32_t            damageBond(uint32_t nodeIndex0, uint32_t nodeIndex1, float healthDamage);
 
-	/**
-	See NvBlastActorApplyFracture
-	*/
-	void				applyFracture(NvBlastFractureBuffers* eventBuffers, const NvBlastFractureBuffers* commands, NvBlastLog logFn, NvBlastTimers* timers);
+    /**
+    TODO: document
+    */
+    void                damageBond(uint32_t nodeIndex0, uint32_t nodeIndex1, uint32_t bondIndex, float healthDamage);
 
-	/**
-	The scratch space required to call the findIslands function, or the split function, in bytes.
-	
-	\return the number of bytes required.
-	*/
-	size_t				splitRequiredScratch() const;
+    /**
+    TODO: document
+    */
+    uint32_t            damageBond(const NvBlastBondFractureData& cmd);
 
-	/**
-	See NvBlastActorSplit
-	*/
-	uint32_t			split(NvBlastActorSplitEvent* result, uint32_t newActorsMaxCount, void* scratch, NvBlastLog logFn, NvBlastTimers* timers);
+    /**
+    See NvBlastActorApplyFracture
+    */
+    void                applyFracture(NvBlastFractureBuffers* eventBuffers, const NvBlastFractureBuffers* commands, NvBlastLog logFn, NvBlastTimers* timers);
 
-	/**
-	Perform islands search.  Bonds which are broken when their health values drop to zero (or below) may lead
-	to new islands of chunks which need to be split into new actors.  This function labels all nodes in the instance
-	graph (see FamilyGraph) with a unique index per island that may be used as actor indices for new islands.
+    /**
+    The scratch space required to call the findIslands function, or the split function, in bytes.
+    
+    \return the number of bytes required.
+    */
+    size_t                splitRequiredScratch() const;
 
-	\param[in] scratch	User-supplied scratch memory of size splitRequiredScratch().
+    /**
+    See NvBlastActorSplit
+    */
+    uint32_t            split(NvBlastActorSplitEvent* result, uint32_t newActorsMaxCount, void* scratch, NvBlastLog logFn, NvBlastTimers* timers);
 
-	\return	the number of new islands found.
-	*/
-	uint32_t			findIslands(void* scratch);
+    /**
+    Perform islands search.  Bonds which are broken when their health values drop to zero (or below) may lead
+    to new islands of chunks which need to be split into new actors.  This function labels all nodes in the instance
+    graph (see FamilyGraph) with a unique index per island that may be used as actor indices for new islands.
 
-	/**
-	Partition this actor into smaller pieces.
+    \param[in] scratch    User-supplied scratch memory of size splitRequiredScratch().
 
-	If this actor represents a single support or subsupport chunk, then after this operation
-	this actor will released if child chunks are created (see Return value), and its pointer no longer valid for use (unless it appears in the newActors list).
+    \return    the number of new islands found.
+    */
+    uint32_t            findIslands(void* scratch);
 
-	This function will not split a leaf chunk actor.  In that case, the actor is not destroyed and this function returns 0.
+    /**
+    Partition this actor into smaller pieces.
 
-	\param[in] newActors		user-supplied array of actor pointers to hold the actors generated from this partitioning.
-								This array must be of size equal to the number of leaf chunks in the asset, to guarantee
-								that all actors are reported.  (See AssetDataHeader::m_leafChunkCount.)
-	\param[in] newActorsSize	The size of the user-supplied newActors array.
-	\param[in] logFn			User-supplied message function (see NvBlastLog definition).  May be NULL.
+    If this actor represents a single support or subsupport chunk, then after this operation
+    this actor will released if child chunks are created (see Return value), and its pointer no longer valid for use (unless it appears in the newActors list).
 
-	\return	the number of new actors created.  If greater than newActorsSize, some actors are not reported in the newActors array.
-	*/
-	uint32_t			partition(Actor** newActors, uint32_t newActorsSize, NvBlastLog logFn);
+    This function will not split a leaf chunk actor.  In that case, the actor is not destroyed and this function returns 0.
 
-	/**
-	Recalculate the visible chunk list for this actor based upon it graph node list (does not modify subsupport chunk actors)
-	*/
-	void				updateVisibleChunksFromGraphNodes();
+    \param[in] newActors        user-supplied array of actor pointers to hold the actors generated from this partitioning.
+                                This array must be of size equal to the number of leaf chunks in the asset, to guarantee
+                                that all actors are reported.  (See AssetDataHeader::m_leafChunkCount.)
+    \param[in] newActorsSize    The size of the user-supplied newActors array.
+    \param[in] logFn            User-supplied message function (see NvBlastLog definition).  May be NULL.
 
-	/**
-	Partition this actor into smaller pieces if it is a single lower-support chunk actor.  Use this function on single support or sub-support chunks.
+    \return    the number of new actors created.  If greater than newActorsSize, some actors are not reported in the newActors array.
+    */
+    uint32_t            partition(Actor** newActors, uint32_t newActorsSize, NvBlastLog logFn);
 
-	After this operation, if successful (child chunks created, see Return value), this actor will released, and its pointer no longer valid for use.
+    /**
+    Recalculate the visible chunk list for this actor based upon it graph node list (does not modify subsupport chunk actors)
+    */
+    void                updateVisibleChunksFromGraphNodes();
 
-	This function will not split a leaf chunk actor.  In that case, the actor is not destroyed and this function returns 0.
+    /**
+    Partition this actor into smaller pieces if it is a single lower-support chunk actor.  Use this function on single support or sub-support chunks.
 
-	\param[in] newActors		User-supplied array of actor pointers to hold the actors generated from this partitioning.  Note: this actor will be released.
-								This array must be of size equal to the lower-support chunk's child count, to guarantee that all actors are reported.
-	\param[in] newActorsSize	The size of the user-supplied newActors array.
-	\param[in] logFn			User-supplied message function (see NvBlastLog definition).  May be NULL.
+    After this operation, if successful (child chunks created, see Return value), this actor will released, and its pointer no longer valid for use.
 
-	\return the number of new actors created.
-	*/
-	uint32_t			partitionSingleLowerSupportChunk(Actor** newActors, uint32_t newActorsSize, NvBlastLog logFn);
+    This function will not split a leaf chunk actor.  In that case, the actor is not destroyed and this function returns 0.
 
-	/**
-	Partition this actor into smaller pieces.  Use this function if this actor contains more than one support chunk. 
+    \param[in] newActors        User-supplied array of actor pointers to hold the actors generated from this partitioning.  Note: this actor will be released.
+                                This array must be of size equal to the lower-support chunk's child count, to guarantee that all actors are reported.
+    \param[in] newActorsSize    The size of the user-supplied newActors array.
+    \param[in] logFn            User-supplied message function (see NvBlastLog definition).  May be NULL.
 
-	After this operation, if successful, this actor will released, and its pointer no longer valid for use (unless it appears in the newActors list).
+    \return the number of new actors created.
+    */
+    uint32_t            partitionSingleLowerSupportChunk(Actor** newActors, uint32_t newActorsSize, NvBlastLog logFn);
 
-	\param[in] newActors		User-supplied array of actor pointers to hold the actors generated from this partitioning.  Note: this actor will not be released,
-								but will hold a subset of the graph nodes that it had before the function was called.
-								This array must be of size equal to the number of graph nodes in the asset, to guarantee
-								that all actors are reported.
-	\param[in] newActorsSize	The size of the user-supplied newActors array.
-	\param[in] logFn			User-supplied message function (see NvBlastLog definition).  May be NULL.
+    /**
+    Partition this actor into smaller pieces.  Use this function if this actor contains more than one support chunk. 
 
-	\return the number of new actors created.
-	*/
-	uint32_t			partitionMultipleGraphNodes(Actor** newActors, uint32_t newActorsSize, NvBlastLog logFn);
+    After this operation, if successful, this actor will released, and its pointer no longer valid for use (unless it appears in the newActors list).
 
-	/**
-	\return true iff this actor contains the "external" support graph node, created when a bond contains the invalidIndex<uint32_t>() value for one of their chunkIndices.
-	*/
-	bool				hasExternalBonds() const;
+    \param[in] newActors        User-supplied array of actor pointers to hold the actors generated from this partitioning.  Note: this actor will not be released,
+                                but will hold a subset of the graph nodes that it had before the function was called.
+                                This array must be of size equal to the number of graph nodes in the asset, to guarantee
+                                that all actors are reported.
+    \param[in] newActorsSize    The size of the user-supplied newActors array.
+    \param[in] logFn            User-supplied message function (see NvBlastLog definition).  May be NULL.
 
-	/**
-	\return true iff this actor was damaged and split() call is required.
-	*/
-	bool				isSplitRequired() const;
+    \return the number of new actors created.
+    */
+    uint32_t            partitionMultipleGraphNodes(Actor** newActors, uint32_t newActorsSize, NvBlastLog logFn);
+
+    /**
+    \return true iff this actor contains the "external" support graph node, created when a bond contains the invalidIndex<uint32_t>() value for one of their chunkIndices.
+    */
+    bool                hasExternalBonds() const;
+
+    /**
+    \return true iff this actor was damaged and split() call is required.
+    */
+    bool                isSplitRequired() const;
 
 private:
 
-	//////// Data ////////
+    //////// Data ////////
 
-	/**
-	Offset to block of memory which holds the data associated with all actors in this actor's lineage.
-	This offset is positive.  The block address is this object's pointer _minus_ the m_familyOffset.
-	This value is initialized to 0, which denotes an invalid actor.  Actors should be obtained through
-	the FamilyHeader::borrowActor API, which will create a valid offset, and
-	the FamilyHeader::returnActor API, which will zero the offset.
-	*/
-	uint32_t	m_familyOffset;
+    /**
+    Offset to block of memory which holds the data associated with all actors in this actor's lineage.
+    This offset is positive.  The block address is this object's pointer _minus_ the m_familyOffset.
+    This value is initialized to 0, which denotes an invalid actor.  Actors should be obtained through
+    the FamilyHeader::borrowActor API, which will create a valid offset, and
+    the FamilyHeader::returnActor API, which will zero the offset.
+    */
+    uint32_t    m_familyOffset;
 
-	/**
-	The index of the head of a doubly-linked list of visible chunk indices.  If m_firstVisibleChunkIndex == invalidIndex<uint32_t>(),
-	then there are no visible chunks.
-	*/
-	uint32_t	m_firstVisibleChunkIndex;
+    /**
+    The index of the head of a doubly-linked list of visible chunk indices.  If m_firstVisibleChunkIndex == invalidIndex<uint32_t>(),
+    then there are no visible chunks.
+    */
+    uint32_t    m_firstVisibleChunkIndex;
 
-	/**
-	The number of elements in the visible chunk list.
-	*/
-	uint32_t	m_visibleChunkCount;
+    /**
+    The number of elements in the visible chunk list.
+    */
+    uint32_t    m_visibleChunkCount;
 
-	/**
-	The index of the head of a singly-linked list of graph node indices.  If m_firstGraphNodeIndex == invalidIndex<uint32_t>(),
-	then there are no graph nodes.
-	*/
-	uint32_t	m_firstGraphNodeIndex;
+    /**
+    The index of the head of a singly-linked list of graph node indices.  If m_firstGraphNodeIndex == invalidIndex<uint32_t>(),
+    then there are no graph nodes.
+    */
+    uint32_t    m_firstGraphNodeIndex;
 
-	/**
-	The number of elements in the graph node list.
-	*/
-	uint32_t	m_graphNodeCount;
+    /**
+    The number of elements in the graph node list.
+    */
+    uint32_t    m_graphNodeCount;
 
-	/**
-	The number of leaf chunks in this actor.
-	*/
-	uint32_t	m_leafChunkCount;
+    /**
+    The number of leaf chunks in this actor.
+    */
+    uint32_t    m_leafChunkCount;
 };
 
 } // namespace Blast
@@ -498,229 +511,259 @@ namespace Blast
 
 NV_INLINE FamilyHeader* Actor::getFamilyHeader() const
 {
-	NVBLAST_ASSERT(isActive());
-	return (FamilyHeader*)((uintptr_t)this - (uintptr_t)m_familyOffset);
+    NVBLAST_ASSERT(isActive());
+    return (FamilyHeader*)((uintptr_t)this - (uintptr_t)m_familyOffset);
 }
 
 
 NV_INLINE const Asset* Actor::getAsset() const
 {
-	return getFamilyHeader()->m_asset;
+    return getFamilyHeader()->m_asset;
 }
 
 
 NV_INLINE bool Actor::isActive() const
 {
-	return m_familyOffset != 0;
+    return m_familyOffset != 0;
 }
 
 
 NV_INLINE bool Actor::isSubSupportChunk() const
 {
-	return m_graphNodeCount == 0;
+    return m_graphNodeCount == 0;
 }
 
 
 NV_INLINE bool Actor::isSingleSupportChunk() const
 {
-	return m_graphNodeCount == 1;
+    return m_graphNodeCount == 1;
 }
 
 
 NV_INLINE uint32_t Actor::getIndex() const
 {
-	NVBLAST_ASSERT(isActive());
-	const FamilyHeader* header = getFamilyHeader();
-	NVBLAST_ASSERT(header != nullptr);
-	const size_t index = this - header->getActors();
-	NVBLAST_ASSERT(index <= UINT32_MAX);
-	return (uint32_t)index;
+    NVBLAST_ASSERT(isActive());
+    const FamilyHeader* header = getFamilyHeader();
+    NVBLAST_ASSERT(header != nullptr);
+    const size_t index = this - header->getActors();
+    NVBLAST_ASSERT(index <= UINT32_MAX);
+    return (uint32_t)index;
+}
+
+
+NV_INLINE uint32_t Actor::getFamilyOffset() const
+{
+    return m_familyOffset;
+}
+NV_INLINE void Actor::setFamilyOffset(uint32_t familyOffset)
+{
+    m_familyOffset = familyOffset;
 }
 
 
 NV_INLINE uint32_t Actor::getVisibleChunkCount() const
 {
-	return m_visibleChunkCount;
+    return m_visibleChunkCount;
+}
+NV_INLINE void Actor::setVisibleChunkCount(uint32_t visibleChunkCount)
+{
+    m_visibleChunkCount = visibleChunkCount;
 }
 
 
 NV_INLINE uint32_t Actor::getFirstVisibleChunkIndex() const
 {
-	return m_firstVisibleChunkIndex;
+    return m_firstVisibleChunkIndex;
+}
+NV_INLINE void Actor::setFirstVisibleChunkIndex(uint32_t firstVisibleChunkIndex)
+{
+    m_firstVisibleChunkIndex = firstVisibleChunkIndex;
 }
 
 
 NV_INLINE uint32_t Actor::getGraphNodeCount() const
 {
-	return m_graphNodeCount;
+    return m_graphNodeCount;
+}
+NV_INLINE void Actor::setGraphNodeCount(uint32_t graphNodeCount)
+{
+    m_graphNodeCount = graphNodeCount;
 }
 
 
 NV_INLINE uint32_t Actor::getLeafChunkCount() const
 {
-	return m_leafChunkCount;
+    return m_leafChunkCount;
+}
+NV_INLINE void Actor::setLeafChunkCount(uint32_t leafChunkCount)
+{
+    m_leafChunkCount = leafChunkCount;
 }
 
 
 NV_INLINE uint32_t Actor::getFirstGraphNodeIndex() const
 {
-	return m_firstGraphNodeIndex;
+    return m_firstGraphNodeIndex;
+}
+NV_INLINE void Actor::setFirstGraphNodeIndex(uint32_t firstGraphNodeIndex)
+{
+    m_firstGraphNodeIndex = firstGraphNodeIndex;
 }
 
 NV_INLINE uint32_t Actor::getFirstSubsupportChunkIndex() const
 {
-	return getAsset()->m_firstSubsupportChunkIndex;
+    return getAsset()->m_firstSubsupportChunkIndex;
 }
 
 NV_INLINE const SupportGraph* Actor::getGraph() const
 {
-	return &getAsset()->m_graph;
+    return &getAsset()->m_graph;
 }
 
 NV_INLINE FamilyGraph* Actor::getFamilyGraph() const
 {
-	return getFamilyHeader()->getFamilyGraph();
+    return getFamilyHeader()->getFamilyGraph();
 }
 
 NV_INLINE NvBlastChunk* Actor::getChunks() const
 {
-	return getAsset()->getChunks();
+    return getAsset()->getChunks();
 }
 
 NV_INLINE NvBlastBond* Actor::getBonds() const
 {
-	return getAsset()->getBonds();
+    return getAsset()->getBonds();
 }
 
 NV_INLINE float* Actor::getLowerSupportChunkHealths() const
 {
-	return getFamilyHeader()->getLowerSupportChunkHealths();
+    return getFamilyHeader()->getLowerSupportChunkHealths();
 }
 
-NV_INLINE float*	Actor::getSubsupportChunkHealths() const
+NV_INLINE float*    Actor::getSubsupportChunkHealths() const
 {
-	return getFamilyHeader()->getSubsupportChunkHealths();
+    return getFamilyHeader()->getSubsupportChunkHealths();
 }
 
 NV_INLINE float* Actor::getBondHealths() const
 {
-	return getFamilyHeader()->getBondHealths();
+    return getFamilyHeader()->getBondHealths();
 }
 
 NV_INLINE const uint32_t* Actor::getGraphNodeIndexLinks() const
 {
-	return getFamilyHeader()->getGraphNodeIndexLinks();
+    return getFamilyHeader()->getGraphNodeIndexLinks();
 }
 
 
 NV_INLINE bool Actor::release()
 {
-	// Do nothing if this actor is not currently active.
-	if (!isActive())
-	{
-		return false;
-	}
+    // Do nothing if this actor is not currently active.
+    if (!isActive())
+    {
+        return false;
+    }
 
-	FamilyHeader* header = getFamilyHeader();
+    FamilyHeader* header = getFamilyHeader();
 
-	// Clear the graph node list
-	uint32_t* graphNodeIndexLinks = getFamilyHeader()->getGraphNodeIndexLinks();
-	while (!isInvalidIndex(m_firstGraphNodeIndex))
-	{
-		const uint32_t graphNodeIndex = m_firstGraphNodeIndex;
-		m_firstGraphNodeIndex = graphNodeIndexLinks[m_firstGraphNodeIndex];
-		graphNodeIndexLinks[graphNodeIndex] = invalidIndex<uint32_t>();
-		--m_graphNodeCount;
-	}
-	NVBLAST_ASSERT(m_graphNodeCount == 0);
+    // Clear the graph node list
+    uint32_t* graphNodeIndexLinks = getFamilyHeader()->getGraphNodeIndexLinks();
+    while (!isInvalidIndex(m_firstGraphNodeIndex))
+    {
+        const uint32_t graphNodeIndex = m_firstGraphNodeIndex;
+        m_firstGraphNodeIndex = graphNodeIndexLinks[m_firstGraphNodeIndex];
+        graphNodeIndexLinks[graphNodeIndex] = invalidIndex<uint32_t>();
+        --m_graphNodeCount;
+    }
+    NVBLAST_ASSERT(m_graphNodeCount == 0);
 
-	const Asset* asset = getAsset();
+    const Asset* asset = getAsset();
 
-	// Clear the visible chunk list
-	IndexDLink<uint32_t>* visibleChunkIndexLinks = header->getVisibleChunkIndexLinks();
-	uint32_t* chunkActorIndices = header->getChunkActorIndices();
-	while (!isInvalidIndex(m_firstVisibleChunkIndex))
-	{
-		// Descendants of the visible actor may be accessed again if the actor is deserialized.  Clear subtree.
-		for (Asset::DepthFirstIt i(*asset, m_firstVisibleChunkIndex, true); (bool)i; ++i)
-		{
-			chunkActorIndices[(uint32_t)i] = invalidIndex<uint32_t>();
-		}
-		IndexDList<uint32_t>().removeListHead(m_firstVisibleChunkIndex, visibleChunkIndexLinks);
-		--m_visibleChunkCount;
-	}
-	NVBLAST_ASSERT(m_visibleChunkCount == 0);
+    // Clear the visible chunk list
+    IndexDLink<uint32_t>* visibleChunkIndexLinks = header->getVisibleChunkIndexLinks();
+    uint32_t* chunkActorIndices = header->getChunkActorIndices();
+    while (!isInvalidIndex(m_firstVisibleChunkIndex))
+    {
+        // Descendants of the visible actor may be accessed again if the actor is deserialized.  Clear subtree.
+        for (Asset::DepthFirstIt i(*asset, m_firstVisibleChunkIndex, true); (bool)i; ++i)
+        {
+            chunkActorIndices[(uint32_t)i] = invalidIndex<uint32_t>();
+        }
+        IndexDList<uint32_t>().removeListHead(m_firstVisibleChunkIndex, visibleChunkIndexLinks);
+        --m_visibleChunkCount;
+    }
+    NVBLAST_ASSERT(m_visibleChunkCount == 0);
 
-	// Clear the leaf chunk count
-	m_leafChunkCount = 0;
+    // Clear the leaf chunk count
+    m_leafChunkCount = 0;
 
-	// This invalidates the actor and decrements the reference count
-	header->returnActor(*this);
+    // This invalidates the actor and decrements the reference count
+    header->returnActor(*this);
 
-	return true;
+    return true;
 }
 
 
 NV_INLINE uint32_t Actor::partition(Actor** newActors, uint32_t newActorsSize, NvBlastLog logFn)
 {
-	NVBLASTLL_CHECK(newActorsSize == 0 || newActors != nullptr, logFn, "Nv::Blast::Actor::partition: NULL newActors pointer array input with non-zero newActorCount.", return 0);
+    NVBLASTLL_CHECK(newActorsSize == 0 || newActors != nullptr, logFn, "Nv::Blast::Actor::partition: NULL newActors pointer array input with non-zero newActorCount.", return 0);
 
-	// Call one of two partition functions depending on the actor's support status
-	return m_graphNodeCount <= 1 ?
-		partitionSingleLowerSupportChunk(newActors, newActorsSize, logFn) :	// This actor will partition into subsupport chunks
-		partitionMultipleGraphNodes(newActors, newActorsSize, logFn);		// This actor will partition into support chunks
+    // Call one of two partition functions depending on the actor's support status
+    return m_graphNodeCount <= 1 ?
+        partitionSingleLowerSupportChunk(newActors, newActorsSize, logFn) :    // This actor will partition into subsupport chunks
+        partitionMultipleGraphNodes(newActors, newActorsSize, logFn);        // This actor will partition into support chunks
 }
 
 
 NV_INLINE bool Actor::hasExternalBonds() const
 {
-	const SupportGraph& graph = *getGraph();
+    const SupportGraph& graph = *getGraph();
 
-	if (graph.m_nodeCount == 0)
-	{
-		return false;	// This shouldn't happen
-	}
+    if (graph.m_nodeCount == 0)
+    {
+        return false;    // This shouldn't happen
+    }
 
-	const uint32_t lastGraphChunkIndex = graph.getChunkIndices()[graph.m_nodeCount - 1];
+    const uint32_t lastGraphChunkIndex = graph.getChunkIndices()[graph.m_nodeCount - 1];
 
-	if (!isInvalidIndex(lastGraphChunkIndex))
-	{
-		return false;	// There is no external node
-	}
+    if (!isInvalidIndex(lastGraphChunkIndex))
+    {
+        return false;    // There is no external node
+    }
 
-	return getFamilyGraph()->getIslandIds()[graph.m_nodeCount - 1] == getIndex();
+    return getFamilyGraph()->getIslandIds()[graph.m_nodeCount - 1] == getIndex();
 }
 
 
 NV_INLINE bool Actor::isSplitRequired() const
 {
-	NVBLAST_ASSERT(isActive());
+    NVBLAST_ASSERT(isActive());
 
-	if (getGraphNodeCount() <= 1)
-	{
-		uint32_t chunkHealthIndex = isSingleSupportChunk() ? getIndex() : getFirstVisibleChunkIndex() - getFirstSubsupportChunkIndex() + getGraph()->m_nodeCount;
-		float* chunkHealths = getLowerSupportChunkHealths();
-		if (chunkHealths[chunkHealthIndex] <= 0.0f)
-		{
-			const uint32_t chunkIndex = m_graphNodeCount == 0 ? m_firstVisibleChunkIndex : getGraph()->getChunkIndices()[m_firstGraphNodeIndex];
-			if (!isInvalidIndex(chunkIndex))
-			{
-				const NvBlastChunk& chunk = getChunks()[chunkIndex];
-				uint32_t childCount = chunk.childIndexStop - chunk.firstChildIndex;
-				return childCount > 0;
-			}
-		}
-	}
-	else
-	{
-		uint32_t* firstDirtyNodeIndices = getFamilyGraph()->getFirstDirtyNodeIndices();
-		if (!isInvalidIndex(firstDirtyNodeIndices[getIndex()]))
-		{
-			return true;
-		}
+    if (getGraphNodeCount() <= 1)
+    {
+        uint32_t chunkHealthIndex = isSingleSupportChunk() ? getIndex() : getFirstVisibleChunkIndex() - getFirstSubsupportChunkIndex() + getGraph()->m_nodeCount;
+        float* chunkHealths = getLowerSupportChunkHealths();
+        if (chunkHealths[chunkHealthIndex] <= 0.0f)
+        {
+            const uint32_t chunkIndex = m_graphNodeCount == 0 ? m_firstVisibleChunkIndex : getGraph()->getChunkIndices()[m_firstGraphNodeIndex];
+            if (!isInvalidIndex(chunkIndex))
+            {
+                const NvBlastChunk& chunk = getChunks()[chunkIndex];
+                uint32_t childCount = chunk.childIndexStop - chunk.firstChildIndex;
+                return childCount > 0;
+            }
+        }
+    }
+    else
+    {
+        uint32_t* firstDirtyNodeIndices = getFamilyGraph()->getFirstDirtyNodeIndices();
+        if (!isInvalidIndex(firstDirtyNodeIndices[getIndex()]))
+        {
+            return true;
+        }
 
-	}
-	return false;
+    }
+    return false;
 }
 
 
@@ -746,13 +789,13 @@ Helper function to validate fracture buffer values being meaningful.
 */
 static inline bool isValid(const NvBlastFractureBuffers* buffers)
 {
-	if (buffers->chunkFractureCount != 0 && buffers->chunkFractures == nullptr)
-		return false;
+    if (buffers->chunkFractureCount != 0 && buffers->chunkFractures == nullptr)
+        return false;
 
-	if (buffers->bondFractureCount != 0 && buffers->bondFractures == nullptr)
-		return false;
+    if (buffers->bondFractureCount != 0 && buffers->bondFractures == nullptr)
+        return false;
 
-	return true;
+    return true;
 }
 #endif
 

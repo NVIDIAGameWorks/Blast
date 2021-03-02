@@ -60,6 +60,30 @@ public:
 };
 
 
+class ExtLlSerializerFamily_CPNB : public ExtSerializer
+{
+public:
+	ExtSerializerBoilerplate("LLFamily_CPNB", "Blast low-level family (NvBlastFamily) serialization using Cap'n Proto binary format.", LlObjectTypeID::Family, ExtSerialization::EncodingID::CapnProtoBinary);
+	ExtSerializerDefaultFactoryAndRelease(ExtLlSerializerFamily_CPNB);
+
+	virtual void* deserializeFromBuffer(const void* buffer, uint64_t size) override
+	{
+		return ExtSerializationCAPN<FamilyHeader, Serialization::Family::Reader, Serialization::Family::Builder>::deserializeFromBuffer(reinterpret_cast<const unsigned char*>(buffer), size);
+	}
+
+	virtual uint64_t serializeIntoBuffer(void*& buffer, ExtSerialization::BufferProvider& bufferProvider, const void* object, uint64_t offset = 0) override
+	{
+		uint64_t usedSize;
+		if (!ExtSerializationCAPN<FamilyHeader, Serialization::Family::Reader, Serialization::Family::Builder>::serializeIntoBuffer(reinterpret_cast<const FamilyHeader*>(object),
+			reinterpret_cast<unsigned char*&>(buffer), usedSize, &bufferProvider, offset))
+		{
+			return 0;
+		}
+		return usedSize;
+	}
+};
+
+
 class ExtLlSerializerObject_RAW : public ExtSerializer
 {
 public:
@@ -117,6 +141,7 @@ size_t NvBlastExtLlSerializerLoadSet(Nv::Blast::ExtSerialization& serialization)
 	{
 		Nv::Blast::ExtLlSerializerAsset_CPNB::create,
 		Nv::Blast::ExtLlSerializerAsset_RAW::create,
+		Nv::Blast::ExtLlSerializerFamily_CPNB::create,
 		Nv::Blast::ExtLlSerializerFamily_RAW::create
 	};
 

@@ -30,7 +30,9 @@
 
 #include "NvBlastExtSerializationCAPN.h"
 #include "NvBlastAsset.h"
+#include "NvBlastFamily.h"
 #include "AssetDTO.h"
+#include "FamilyDTO.h"
 
 
 /**
@@ -66,6 +68,32 @@ NV_INLINE Asset* ExtSerializationCAPN<Asset, Serialization::Asset::Reader, Seria
 	Serialization::Asset::Reader reader = message.getRoot<Serialization::Asset>();
 
 	return AssetDTO::deserialize(reader);
+}
+
+//// Nv::Blast::FamilyHeader ////
+
+template<>
+NV_INLINE bool ExtSerializationCAPN<FamilyHeader, Serialization::Family::Reader, Serialization::Family::Builder>::serializeIntoBuilder(Serialization::Family::Builder& familyBuilder, const FamilyHeader* family)
+{
+	return FamilyDTO::serialize(familyBuilder, family);
+}
+
+
+template<>
+NV_INLINE bool ExtSerializationCAPN<FamilyHeader, Serialization::Family::Reader, Serialization::Family::Builder>::serializeIntoMessage(capnp::MallocMessageBuilder& message, const FamilyHeader* family)
+{
+	Serialization::Family::Builder familyBuilder = message.initRoot<Serialization::Family>();
+
+	return serializeIntoBuilder(familyBuilder, family);
+}
+
+
+template<>
+NV_INLINE FamilyHeader* ExtSerializationCAPN<FamilyHeader, Serialization::Family::Reader, Serialization::Family::Builder>::deserializeFromStreamReader(capnp::InputStreamMessageReader &message)
+{
+	Serialization::Family::Reader reader = message.getRoot<Serialization::Family>();
+
+	return FamilyDTO::deserialize(reader);
 }
 
 }	// namespace Blast

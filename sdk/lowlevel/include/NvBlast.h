@@ -39,16 +39,26 @@
 ///@{
 
 /**
-Calculates the memory requirements for an asset based upon its descriptor.  Use this function
-when building an asset with NvBlastCreateAsset.
+Calculates the memory requirements for an asset based upon its descriptor.
+Use this function when building an asset with NvBlastCreateAsset.
 
-\param[in] desc		Asset descriptor (see NvBlastAssetDesc).
-\param[in] logFn	User-supplied message function (see NvBlastLog definition).  May be NULL.
+\param[in] desc		        Asset descriptor (see NvBlastAssetDesc).  Used to calculate node count.
+\param[in] logFn	        User-supplied message function (see NvBlastLog definition).  May be NULL.
 
 \return the memory size (in bytes) required for the asset, or zero if desc is invalid.
 */
 NVBLAST_API size_t NvBlastGetAssetMemorySize(const NvBlastAssetDesc* desc, NvBlastLog logFn);
 
+/**
+Calculates the memory requirements for an asset based upon supplied sized data.
+Used primarily with serialization.
+
+\param[in] sizeData         Alternate form where all size data is already known.
+\param[in] logFn	        User-supplied message function (see NvBlastLog definition).  May be NULL.
+
+\return the memory size (in bytes) required for the asset, or zero if data is invalid.
+*/
+NVBLAST_API size_t NvBlastGetAssetMemorySizeFromSizeData(const NvBlastAssetMemSizeData& sizeData, NvBlastLog logFn);
 
 /**
 Returns the number of bytes of scratch memory that the user must supply to NvBlastCreateAsset,
@@ -90,16 +100,36 @@ NVBLAST_API NvBlastAsset* NvBlastCreateAsset(void* mem, const NvBlastAssetDesc* 
 
 
 /**
-Calculates the memory requirements for a family based upon an asset.  Use this function
-when building a family with NvBlastAssetCreateFamily.
+Calculates the memory requirements for a family based upon an asset.
+Use this function when building a family with NvBlastAssetCreateFamily.
 
-\param[in] asset	Asset used to build the family (see NvBlastAsset).
-\param[in] logFn	User-supplied message function (see NvBlastLog definition).  May be NULL.
+\param[in] asset	    Asset used to build the family (see NvBlastAsset).
+\param[in] logFn	    User-supplied message function (see NvBlastLog definition).  May be NULL.
 
 \return the memory size (in bytes) required for the family, or zero if asset is invalid.
 */
 NVBLAST_API size_t NvBlastAssetGetFamilyMemorySize(const NvBlastAsset* asset, NvBlastLog logFn);
 
+/**
+Calculates the memory requirements for a family based upon supplied sized data.
+Used primarily with serialization.
+
+\param[in] sizeData     Alternate form where all size data is already known.
+\param[in] logFn	    User-supplied message function (see NvBlastLog definition).  May be NULL.
+
+\return the memory size (in bytes) required for the family, or zero if data is invalid.
+*/
+NVBLAST_API size_t NvBlastAssetGetFamilyMemorySizeFromSizeData(const NvBlastAssetMemSizeData& sizeData, NvBlastLog logFn);
+
+
+/**
+Fill out the size data from the provided asset
+
+\param[in] asset	    Asset to pull the size data from (see NvBlastAsset).
+
+\return Filled out size data struct.
+*/
+NVBLAST_API NvBlastAssetMemSizeData NvBlastAssetMemSizeDataFromAsset(const NvBlastAsset* asset);
 
 /**
 Family-building function.
@@ -107,13 +137,27 @@ Family-building function.
 Constructs an NvBlastFamily in-place at the address given by the user.  The address must point to a block
 of memory of at least the size given by NvBlastAssetGetFamilyMemorySize(asset, logFn), and must be 16-byte aligned.
 
-\param[in] mem		Pointer to block of memory of at least the size given by NvBlastAssetGetFamilyMemorySize(asset, logFn).  Must be 16-byte aligned.
-\param[in] asset	Asset to instance.
-\param[in] logFn	User-supplied message function (see NvBlastLog definition).  May be NULL.
+\param[in] mem		    Pointer to block of memory of at least the size given by NvBlastAssetGetFamilyMemorySize(asset, logFn).  Must be 16-byte aligned.
+\param[in] asset	    Asset to instance.
+\param[in] logFn	    User-supplied message function (see NvBlastLog definition).  May be NULL.
 
 \return the family.
 */
 NVBLAST_API NvBlastFamily* NvBlastAssetCreateFamily(void* mem, const NvBlastAsset* asset, NvBlastLog logFn);
+
+/**
+Family-building function.
+
+Constructs an NvBlastFamily in-place at the address given by the user.  The address must point to a block
+of memory of at least the size given by NvBlastAssetGetFamilyMemorySize(sizeData, logFn), and must be 16-byte aligned.
+
+\param[in] mem		    Pointer to block of memory of at least the size given by NvBlastAssetGetFamilyMemorySize(asset, logFn).  Must be 16-byte aligned.
+\param[in] sizeData     Data used to init buffer sizes.
+\param[in] logFn	    User-supplied message function (see NvBlastLog definition).  May be NULL.
+
+\return the family.
+*/
+NVBLAST_API NvBlastFamily* NvBlastAssetCreateFamilyFromSizeData(void* mem, const NvBlastAssetMemSizeData& sizeData, NvBlastLog logFn);
 
 
 /**

@@ -62,7 +62,7 @@ Actor* Actor::deserialize(NvBlastFamily* family, const void* buffer, NvBlastLog 
 	Actor* actor = nullptr;
 	const uint32_t actorIndex = serHeader->m_index;
 
-	if (serHeader->m_index < header->getActorBufferSize())
+	if (serHeader->m_index < header->getActorsArraySize())
 	{
 		if (!header->getActors()[actorIndex].isActive())
 		{

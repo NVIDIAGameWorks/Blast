@@ -136,7 +136,8 @@ protected:
 		uint32_t familyGraphMemorySize = (uint32_t)FamilyGraph::requiredMemorySize(m_graph->m_nodeCount, bondIndex);
 		m_memoryBlock.resize(familyGraphMemorySize);
 		// placement new family graph
-		FamilyGraph* familyGraph = new(m_memoryBlock.data()) FamilyGraph(m_graph);
+		const uint32_t bondCount = m_graph->getAdjacencyPartition()[m_graph->m_nodeCount] / 2;
+		FamilyGraph* familyGraph = new(m_memoryBlock.data()) FamilyGraph(m_graph->m_nodeCount, bondCount);
 
 		return familyGraph;
 	}
