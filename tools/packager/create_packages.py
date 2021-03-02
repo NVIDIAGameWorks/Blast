@@ -126,6 +126,7 @@ ARTIFACTS = [
         'platforms': ['windows-x86_64', 'linux-x86_64'],
         'include':
         [
+            '/sdk/common/*',
             '/sdk/**/include/*.h',
             '/bin/**/*NvBlast*.dll',
             '/bin/**/*NvBlast*.pdb',
