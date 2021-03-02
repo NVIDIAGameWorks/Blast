@@ -549,8 +549,20 @@ public:
         }
     }
 
-    static void compareFamilies(const NvBlastFamily* family1, const NvBlastFamily* family2, size_t size, NvBlastLog logFn)
+    static void compareFamilies(const NvBlastFamily* family1, const NvBlastFamily* family2, NvBlastLog logFn)
     {
+        // first check that the family sizes are the same
+        // still do the byte comparison even if they aren't equal to make it easier to spot where things went wrong
+        const uint32_t size1 = NvBlastFamilyGetSize(family1, logFn);
+        const uint32_t size2 = NvBlastFamilyGetSize(family2, logFn);
+        const uint32_t size = std::min(size1, size2);
+        if (size1 != size2)
+        {
+            std::ostringstream msg;
+            msg << "Family deserialization sizes don't match [" << size1 << ", " << size2 << "].";
+            logFn(NvBlastMessage::Error, msg.str().c_str(), __FILE__, __LINE__);
+        }
+
         const char* block1 = reinterpret_cast<const char*>(family1);
         const char* block2 = reinterpret_cast<const char*>(family2);
 #if 0
@@ -581,7 +593,7 @@ public:
             }
         }
         std::ostringstream msg;
-        msg << "Block deserialization does not match current block in position range [" << startDiff << ", " << endDiff << "].";
+        msg << "Family deserialization does not match in range [" << startDiff << ", " << endDiff << "].";
         logFn(NvBlastMessage::Error, msg.str().c_str(), __FILE__, __LINE__);
 #endif
     }
@@ -616,12 +628,13 @@ public:
         }
     }
 
-    static void testActorDeserializeCommon(const NvBlastFamily* family, std::vector<NvBlastActor*>& actors, NvBlastLog logFn)
+    static void testActorDeserializeCommon(const NvBlastFamily* family, std::vector<NvBlastActor*>& actors, uint32_t size, NvBlastLog logFn)
     {
         EXPECT_LT(s_curr, s_storage.size());
-        const uint32_t size = NvBlastFamilyGetSize(family, logFn);
+        EXPECT_TRUE(size > 0);
         EXPECT_LE(s_curr + size, s_storage.size());
         s_curr += size;
+
         const NvBlastFamily* actorFamily = NvBlastActorGetFamily(actors[0], logFn);
         // Family may contain different assets pointers, copy into new family block and set the same asset before comparing
         Nv::Blast::Actor& a = *static_cast<Nv::Blast::Actor*>(actors[0]);
@@ -635,7 +648,7 @@ public:
             const uint32_t actorCountReturned = NvBlastFamilyGetActors(blockActors.data(), actorCountExpected, storageFamily, logFn);
             EXPECT_EQ(actorCountExpected, actorCountReturned);
         }
-        compareFamilies(storageFamily, actorFamily, size, logFn);
+        compareFamilies(storageFamily, actorFamily, logFn);
     }
 
     static void testActorBlockDeserialize(std::vector<NvBlastActor*>& actors, NvBlastLog logFn)
@@ -643,7 +656,8 @@ public:
         if (actors.size())
         {
             const NvBlastFamily* family = reinterpret_cast<NvBlastFamily*>(&s_storage[s_curr]);
-            testActorDeserializeCommon(family, actors, logFn);
+            const uint32_t size = NvBlastFamilyGetSize(family, logFn);
+            testActorDeserializeCommon(family, actors, size, logFn);
         }
     }
 
@@ -654,15 +668,20 @@ public:
             Nv::Blast::ExtSerialization* ser = NvBlastExtSerializationCreate();
             EXPECT_TRUE(ser->getSerializationEncoding() == Nv::Blast::ExtSerialization::EncodingID::CapnProtoBinary);
 
+            // the serialized size is stored in the stream right before the data itself, pull it out first
             uint32_t objTypeId;
             const uint64_t& size = *reinterpret_cast<const uint64_t*>(&s_storage[s_curr]);
-            EXPECT_TRUE(size > 0);
-            void* object = ser->deserializeFromBuffer(&s_storage[s_curr + sizeof(uint64_t)], size, &objTypeId);
+            s_curr += sizeof(uint64_t);
+            EXPECT_LE(size, UINT32_MAX);
+
+            // now read the buffer itself
+            void* object = ser->deserializeFromBuffer(&s_storage[s_curr], size, &objTypeId);
             EXPECT_TRUE(object != nullptr);
             EXPECT_TRUE(objTypeId == Nv::Blast::LlObjectTypeID::Family);
 
+            // finally compare it with the original family
             const NvBlastFamily* family = reinterpret_cast<NvBlastFamily*>(object);
-            testActorDeserializeCommon(family, actors, logFn);
+            testActorDeserializeCommon(family, actors, (uint32_t)size, logFn);
         }
     }
 
@@ -725,7 +744,7 @@ public:
             }
         }
 
-        compareFamilies(oldFamily, newFamily, NvBlastFamilyGetSize(oldFamily, logFn), logFn);
+        compareFamilies(oldFamily, newFamily, logFn);
 
         free(newFamily);
     }
@@ -778,7 +797,7 @@ public:
             EXPECT_TRUE(newActor != nullptr);
         }
 
-        compareFamilies(oldFamily, familyCopy, size, logFn);
+        compareFamilies(oldFamily, familyCopy, logFn);
     }
 
     void damageLeafSupportActors
