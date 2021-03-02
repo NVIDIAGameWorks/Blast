@@ -128,6 +128,7 @@ ARTIFACTS = [
         [
             '/sdk/**/include/*.h',
             '/bin/**/*NvBlast*.dll',
+            '/bin/**/*NvBlast*.pdb',
             '/bin/**/*NvBlast*.so',
             '/lib/**/*NvBlast*.lib',
             '/lib/**/*NvBlast*.a',
