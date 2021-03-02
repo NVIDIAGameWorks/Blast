@@ -95,6 +95,22 @@ public:
 		data()[index] = 1;
 	}
 
+    void setData(const char* newData, uint32_t newSize)
+    {
+        m_size = newSize;
+        memcpy(data(), newData, m_size);
+    }
+
+    const char* getData() const
+    {
+        return data();
+    }
+
+    uint32_t getSize() const
+    {
+        return m_size;
+    }
+
 	void reset(uint32_t index)
 	{
 		NVBLAST_ASSERT(index < m_size);

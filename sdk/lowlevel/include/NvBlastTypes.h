@@ -358,6 +358,20 @@ struct NvBlastAssetDesc
 	const NvBlastBondDesc*	bondDescs;
 };
 
+/**
+Info used to construct an Asset or Family instance
+*/
+struct NvBlastAssetMemSizeData
+{
+public:
+    uint32_t bondCount;
+    uint32_t chunkCount;
+    uint32_t nodeCount;
+
+    uint32_t lowerSupportChunkCount;
+    uint32_t upperSupportChunkCount;
+};
+
 ///@} End NvBlastAsset related types
 
 
