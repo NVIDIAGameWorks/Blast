@@ -223,17 +223,23 @@ uint32_t upperSupportChunkCount
 			if (!uniform)
 			{
 				newChunkActorIndex = invalidIndex<uint32_t>();
-				for (uint32_t childChunkIndex = parentChunk.firstChildIndex; childChunkIndex < parentChunk.childIndexStop; ++childChunkIndex)
-				{
-					const uint32_t childChunkActorIndex = chunkActorIndices[childChunkIndex];
-					if (childChunkActorIndex != invalidIndex<uint32_t>() && childChunkActorIndex == parentChunkActorIndex)
-					{
-						// The child was invisible.  Add it to its actor's visibility list
-						VisibilityRep& childChunkActor = actors[childChunkActorIndex];
-						IndexDList<uint32_t>().insertListHead(childChunkActor.m_firstVisibleChunkIndex, visibleChunkIndexLinks, childChunkIndex);
-						++childChunkActor.m_visibleChunkCount;
-					}
-				}
+
+                // no need to search if the parent index is invalid
+                // the conditional in the loop could never be true in that case
+                if (parentChunkActorIndex != invalidIndex<uint32_t>())
+                {
+                    for (uint32_t childChunkIndex = parentChunk.firstChildIndex; childChunkIndex < parentChunk.childIndexStop; ++childChunkIndex)
+                    {
+                        const uint32_t childChunkActorIndex = chunkActorIndices[childChunkIndex];
+                        if (childChunkActorIndex != invalidIndex<uint32_t>() && childChunkActorIndex == parentChunkActorIndex)
+                        {
+                            // The child was invisible.  Add it to its actor's visibility list
+                            VisibilityRep& childChunkActor = actors[childChunkActorIndex];
+                            IndexDList<uint32_t>().insertListHead(childChunkActor.m_firstVisibleChunkIndex, visibleChunkIndexLinks, childChunkIndex);
+                            ++childChunkActor.m_visibleChunkCount;
+                        }
+                    }
+                }
 			}
 		}
 
