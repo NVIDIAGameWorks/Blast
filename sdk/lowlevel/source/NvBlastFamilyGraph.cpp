@@ -65,8 +65,8 @@ size_t FamilyGraph::fillMemory(FamilyGraph* familyGraph, uint32_t nodeCount, uin
 		familyGraph->m_isEdgeRemovedOffset			= static_cast<uint32_t>(isEdgeRemovedOffset);
 		familyGraph->m_isNodeInDirtyListOffset		= static_cast<uint32_t>(isNodeInDirtyListOffset);
 
-		new (familyGraph->getIsEdgeRemoved())FixedBoolArray(bondCount);
-		new (familyGraph->getIsNodeInDirtyList())FixedBoolArray(nodeCount);
+		new (familyGraph->getIsEdgeRemoved()) FixedBoolArray(bondCount);
+		new (familyGraph->getIsNodeInDirtyList()) FixedBoolArray(nodeCount);
 	}
 
 	return dataSize;

@@ -639,7 +639,8 @@ public:
         // Family may contain different assets pointers, copy into new family block and set the same asset before comparing
         Nv::Blast::Actor& a = *static_cast<Nv::Blast::Actor*>(actors[0]);
         const Nv::Blast::Asset* solverAsset = a.getAsset();
-        std::vector<char> storageFamilyCopy((char*)family, (char*)family + size);
+        const uint32_t familySize = NvBlastFamilyGetSize(family, logFn);
+        std::vector<char> storageFamilyCopy((char*)family, (char*)family + familySize);
         NvBlastFamily* storageFamily = reinterpret_cast<NvBlastFamily*>(storageFamilyCopy.data());
         NvBlastFamilySetAsset(storageFamily, solverAsset, logFn);
         {

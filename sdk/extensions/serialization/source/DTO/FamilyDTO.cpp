@@ -150,7 +150,7 @@ bool FamilyDTO::deserializeInto(Nv::Blast::Serialization::Family::Reader reader,
     const uint32_t numVisibleChunkIndexLinks = readerVisibleChunkIndexLinks.size();
     for (uint32_t i = 0; i < numVisibleChunkIndexLinks; i += 2)
     {
-        uint32_t vcil = i / 2;
+        const uint32_t vcil = i / 2;
         poco->getVisibleChunkIndexLinks()[vcil].m_adj[0] = readerVisibleChunkIndexLinks[i];
         poco->getVisibleChunkIndexLinks()[vcil].m_adj[1] = readerVisibleChunkIndexLinks[i+1];
     }
