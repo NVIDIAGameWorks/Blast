@@ -1156,12 +1156,14 @@ int32_t BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool
 			{
 				if (chunkId != -1)
 				{
+					area = 0.5f * normal.normalize();
+					centroid /= 3.0f * collected;
 					if (bondDescriptors[i - 1].m_planeIndex > 0)
 					{
 						forwardChunks.push_back(BondInfo());
 						forwardChunks.back().area      = area;
 						forwardChunks.back().normal    = normal;
-						forwardChunks.back().centroid  = centroid * (1.0f / 3.0f / collected);
+						forwardChunks.back().centroid  = centroid;
 						forwardChunks.back().m_chunkId = chunkId;
 						forwardChunks.back().m_bb      = bb;
 					}
@@ -1170,7 +1172,7 @@ int32_t BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool
 						backwardChunks.push_back(BondInfo());
 						backwardChunks.back().area      = area;
 						backwardChunks.back().normal    = normal;
-						backwardChunks.back().centroid  = centroid * (1.0f / 3.0f / collected);
+						backwardChunks.back().centroid  = centroid;
 						backwardChunks.back().m_chunkId = chunkId;
 						backwardChunks.back().m_bb      = bb;
 					}
@@ -1234,9 +1236,7 @@ int32_t BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool
 
 			collected++;
 			auto& trRef = trianglesBuffer[chunkId].get()[bondDescriptors[i].triangleIndex];
-			PxVec3 n    = getNormal(trRef);
-			area += n.magnitude();
-			normal = n.getNormalized();
+			normal += getNormal(trRef);
 			centroid += toPxShared(trRef.a.p);
 			centroid += toPxShared(trRef.b.p);
 			centroid += toPxShared(trRef.c.p);
