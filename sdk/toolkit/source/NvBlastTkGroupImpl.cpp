@@ -296,9 +296,12 @@ bool TkGroupImpl::removeActor(TkActor& actor)
 		if (index < m_jobs.size())
 		{
 			m_jobs.replaceWithLast(index);
-			NVBLAST_ASSERT(m_jobs[index].m_tkActor->m_groupJobIndex == m_jobs.size());
-			NVBLAST_ASSERT(m_jobs[index].m_tkActor->isPending());
-			m_jobs[index].m_tkActor->m_groupJobIndex = index;
+			if (index < m_jobs.size())
+			{
+				NVBLAST_ASSERT(m_jobs[index].m_tkActor->m_groupJobIndex == m_jobs.size());
+				NVBLAST_ASSERT(m_jobs[index].m_tkActor->isPending());
+				m_jobs[index].m_tkActor->m_groupJobIndex = index;
+			}
 		}
 	}
 
