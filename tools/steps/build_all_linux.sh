@@ -4,7 +4,7 @@ set -e
 
 # get number of CPU cores
 if [ -f /proc/cpuinfo ]; then
-    CPUS=`grep processor /proc/cpuinfo | wc -l`
+    CPUS=$(nproc --all)
 else
     CPUS=1
 fi
