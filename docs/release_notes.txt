@@ -8,6 +8,7 @@ Blast(tm) SDK 2.1.3 (05-Apr-2021)
 Bug Fixes
 -------
 * Bond area calculation was producing values twice the correct value.
+* Fixed exception in TkGroupImpl.
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
