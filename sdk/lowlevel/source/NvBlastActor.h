@@ -512,7 +512,7 @@ namespace Blast
 NV_INLINE FamilyHeader* Actor::getFamilyHeader() const
 {
     NVBLAST_ASSERT(isActive());
-    return (FamilyHeader*)((uintptr_t)this - (uintptr_t)m_familyOffset);
+    return isActive() ? (FamilyHeader*)((uintptr_t)this - (uintptr_t)m_familyOffset) : nullptr;
 }
 
 

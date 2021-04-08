@@ -406,15 +406,18 @@ uint32_t Actor::split(NvBlastActorSplitEvent* result, uint32_t newActorsMaxCount
             }
 #endif
 
-            const float* chunkHealths = getLowerSupportChunkHealths();
+            // NOTE: we MUST use header->getLowerSupportChunkHealths() instead of just getLowerSupportChunkHealths() here,
+            // since this actor has been made inactive at this point.  Therefore Actor::getLowerSupportChunkHealths() will return
+            // garbage since it calls getFamilyHeader() which does not return a valid header if the actor is not active.
+            const float* chunkHealths = header->getLowerSupportChunkHealths();
             for (uint32_t i = 0; i < actorsCount; ++i)
             {
                 Actor* newActor = newActors[i];
-                if (newActor->getGraphNodeCount() <= 1)
+                const uint32_t nodeCount = newActor->getGraphNodeCount();
+                if (nodeCount <= 1)
                 {
                     const uint32_t firstVisible = newActor->getFirstVisibleChunkIndex();
                     const uint32_t firstSub = newActor->getFirstSubsupportChunkIndex();
-                    const uint32_t nodeCount = newActor->getGraph()->m_nodeCount;
                     const uint32_t newActorIndex = newActor->getIndex();
                     const uint32_t healthIndex = newActor->isSubSupportChunk() ? firstVisible - firstSub + nodeCount : newActorIndex;
 
