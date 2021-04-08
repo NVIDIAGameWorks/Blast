@@ -413,13 +413,13 @@ uint32_t Actor::split(NvBlastActorSplitEvent* result, uint32_t newActorsMaxCount
             for (uint32_t i = 0; i < actorsCount; ++i)
             {
                 Actor* newActor = newActors[i];
-                const uint32_t nodeCount = newActor->getGraphNodeCount();
-                if (nodeCount <= 1)
+                if (newActor->getGraphNodeCount() <= 1)
                 {
                     const uint32_t firstVisible = newActor->getFirstVisibleChunkIndex();
                     const uint32_t firstSub = newActor->getFirstSubsupportChunkIndex();
+                    const uint32_t assetNodeCount = newActor->getGraph()->m_nodeCount;
                     const uint32_t newActorIndex = newActor->getIndex();
-                    const uint32_t healthIndex = newActor->isSubSupportChunk() ? firstVisible - firstSub + nodeCount : newActorIndex;
+                    const uint32_t healthIndex = newActor->isSubSupportChunk() ? firstVisible - firstSub + assetNodeCount : newActorIndex;
 
                     // this relies on visibility updated, subsupport actors only have m_firstVisibleChunkIndex to identify the chunk
                     if (chunkHealths[healthIndex] <= 0.0f)
