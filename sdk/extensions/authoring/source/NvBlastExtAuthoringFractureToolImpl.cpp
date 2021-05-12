@@ -1677,6 +1677,14 @@ int32_t FractureToolImpl::setChunkMesh(const Mesh* meshInput, int32_t parentId, 
 			mesh->getFacetWritable(i)->userData = 0;  // Mark facet as initial boundary facet
 		}
 	}
+	else	// Setting a child mesh.  Make sure our fracturing surface ID base is greater than any existing ID
+	{
+		for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
+		{
+			const int64_t splitId = mesh->getFacet(i)->userData;
+			mPlaneIndexerOffset = std::max(mPlaneIndexerOffset, splitId + 1);
+		}
+	}
 
 	return chunk.chunkId;
 }
