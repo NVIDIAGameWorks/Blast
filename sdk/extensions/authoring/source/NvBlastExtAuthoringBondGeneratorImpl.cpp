@@ -1189,37 +1189,50 @@ int32_t BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool
 			{
 				for (uint32_t fchunk = 0; fchunk < forwardChunks.size(); ++fchunk)
 				{
-					if (chunkIsSupport[forwardChunks[fchunk].m_chunkId] == false)
+					const BondInfo& fInfo = forwardChunks[fchunk];
+					if (chunkIsSupport[fInfo.m_chunkId] == false)
 					{
 						continue;
 					}
 					for (uint32_t bchunk = 0; bchunk < backwardChunks.size(); ++bchunk)
 					{
-						if (weakBoundingBoxIntersection(forwardChunks[fchunk].m_bb, backwardChunks[bchunk].m_bb) == 0)
+						const BondInfo& bInfo = backwardChunks[bchunk];
+						if (weakBoundingBoxIntersection(fInfo.m_bb, bInfo.m_bb) == 0)
 						{
 							continue;
 						}
-						if (chunkIsSupport[backwardChunks[bchunk].m_chunkId] == false)
+						if (chunkIsSupport[bInfo.m_chunkId] == false)
 						{
 							continue;
 						}
+
 						mResultBondDescs.push_back(NvBlastBondDesc());
-						mResultBondDescs.back().bond.area =
-						    std::min(forwardChunks[fchunk].area, backwardChunks[bchunk].area);
-						mResultBondDescs.back().bond.normal[0] = forwardChunks[fchunk].normal.x;
-						mResultBondDescs.back().bond.normal[1] = forwardChunks[fchunk].normal.y;
-						mResultBondDescs.back().bond.normal[2] = forwardChunks[fchunk].normal.z;
+						NvBlastBondDesc& bondDesc = mResultBondDescs.back();
 
-						mResultBondDescs.back().bond.centroid[0] =
-						    (forwardChunks[fchunk].centroid.x + backwardChunks[bchunk].centroid.x) * 0.5;
-						mResultBondDescs.back().bond.centroid[1] =
-						    (forwardChunks[fchunk].centroid.y + backwardChunks[bchunk].centroid.y) * 0.5;
-						mResultBondDescs.back().bond.centroid[2] =
-						    (forwardChunks[fchunk].centroid.z + backwardChunks[bchunk].centroid.z) * 0.5;
+						// Use the minimum-area patch for the bond area and centroid
+						if (fInfo.area < bInfo.area)
+						{
+							bondDesc.bond.area = fInfo.area;
+							bondDesc.bond.centroid[0] = fInfo.centroid.x;
+							bondDesc.bond.centroid[1] = fInfo.centroid.y;
+							bondDesc.bond.centroid[2] = fInfo.centroid.z;
+							bondDesc.bond.normal[0] = fInfo.normal.x;
+							bondDesc.bond.normal[1] = fInfo.normal.y;
+							bondDesc.bond.normal[2] = fInfo.normal.z;
+						}
+						else
+						{
+							bondDesc.bond.area = bInfo.area;
+							bondDesc.bond.centroid[0] = bInfo.centroid.x;
+							bondDesc.bond.centroid[1] = bInfo.centroid.y;
+							bondDesc.bond.centroid[2] = bInfo.centroid.z;
+							bondDesc.bond.normal[0] = -bInfo.normal.x;
+							bondDesc.bond.normal[1] = -bInfo.normal.y;
+							bondDesc.bond.normal[2] = -bInfo.normal.z;
+						}
 
-
-						mResultBondDescs.back().chunkIndices[0] = forwardChunks[fchunk].m_chunkId;
-						mResultBondDescs.back().chunkIndices[1] = backwardChunks[bchunk].m_chunkId;
+						bondDesc.chunkIndices[0] = fInfo.m_chunkId;
+						bondDesc.chunkIndices[1] = bInfo.m_chunkId;
 					}
 				}
 				forwardChunks.clear();
