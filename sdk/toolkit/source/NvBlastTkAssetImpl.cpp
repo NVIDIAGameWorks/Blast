@@ -239,7 +239,7 @@ bool TkAssetImpl::addJointDesc(uint32_t chunkIndex0, uint32_t chunkIndex1)
 	const uint32_t node0 = chunkToGraphNodeMap[chunkIndex0];
 	const uint32_t node1 = chunkToGraphNodeMap[chunkIndex1];
 	const NvBlastSupportGraph graph = NvBlastAssetGetSupportGraph(m_assetLL, logLL);
-	if (node0 >= graph.nodeCount && node1 >= graph.nodeCount)
+	if (node0 >= graph.nodeCount || node1 >= graph.nodeCount)
 	{
 		return false;
 	}
