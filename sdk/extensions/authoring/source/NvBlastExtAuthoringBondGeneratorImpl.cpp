@@ -282,7 +282,7 @@ float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcesso
 	///////////////////////////////////////////////////////////////////////////////////
 	if (hull1p.size() < 4 || hull2p.size() < 4)
 	{
-		return 0.0;
+		return 0.0f;
 	}
 
 	for (uint32_t i = 0; i < hull1p.size(); ++i)
@@ -298,7 +298,6 @@ float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcesso
 		bBounds.include(hull2p[i]);
 	}
 
-
 	chunk1Centroid *= (1.0f / hull1p.size());
 	chunk2Centroid *= (1.0f / hull2p.size());
 
@@ -309,7 +308,7 @@ float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcesso
 	                                      PxVec3(1, 1, 1), hull2p.size(), hull2p.data(), bBounds,
 	                                      PxTransform(PxIdentity), PxVec3(1, 1, 1), 2.0f * maxSeparation, &separation))
 	{
-		return 0.0;
+		return 0.0f;
 	}
 
 	const bool have_geometry = (mA != nullptr && mB != nullptr) || (hull1 != nullptr && hull2 != nullptr);
@@ -321,7 +320,7 @@ float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcesso
 		PxPlane midplane = separation.plane;
 		if (!midplane.n.isFinite())
 		{
-			return 0.0;
+			return 0.0f;
 		}
 
 		std::vector<PxVec3> interfacePoints;
@@ -352,7 +351,7 @@ float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcesso
 		PxVec3 centroidLocal(0, 0, 0);
 		if (convexHull.size() < 3)
 		{
-			return 0.0;
+			return 0.0f;
 		}
 		for (uint32_t i = 0; i < convexHull.size() - 1; ++i)
 		{
@@ -373,20 +372,8 @@ float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcesso
 	else
 	{
 		float area = 0.0f;
-
 		std::vector<PxVec3> intersectionAnchors;
-
-		if (mA != nullptr && mB != nullptr)  // Use triangles
-		{
-			for (uint32_t i = 0; i < mavc; ++i)
-			{
-				for (uint32_t j = 0; j < mbvc; ++j)
-				{
-					AddTtAnchorPoints(mA + i, mB + j, intersectionAnchors);
-				}
-			}
-		}
-		else  // Use hulls
+		if (hull1 != nullptr && hull2 != nullptr)  // Use hulls
 		{
 			for (uint32_t i1 = 0; i1 < hull1->polygonDataCount; ++i1)
 			{
@@ -401,6 +388,21 @@ float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcesso
 				}
 			}
 		}
+		else if (mA != nullptr && mB != nullptr)  // Use triangles
+		{
+			for (uint32_t i = 0; i < mavc; ++i)
+			{
+				for (uint32_t j = 0; j < mbvc; ++j)
+				{
+					AddTtAnchorPoints(mA + i, mB + j, intersectionAnchors);
+				}
+			}
+		}
+        else
+        {
+            NVBLAST_ASSERT_WITH_MESSAGE(false, "collision hulls and triangle data are both invalid, this shouldn't happen");
+            return 0.0f;
+        }
 
 		PxVec3 lcoid(0, 0, 0);
 		for (uint32_t i = 0; i < intersectionAnchors.size(); ++i)
@@ -412,15 +414,13 @@ float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcesso
 
 		if (intersectionAnchors.size() < 2)
 		{
-			return 0;
+			return 0.0f;
 		}
-
 
 		PxVec3 dir1 = intersectionAnchors[0] - lcoid;
 		PxVec3 dir2(0, 0, 0);
 		float maxMagn = 0.0f;
 		float maxDist = 0.0f;
-
 
 		for (uint32_t j = 0; j < intersectionAnchors.size(); ++j)
 		{
@@ -510,7 +510,7 @@ int32_t BlastBondGeneratorImpl::createFullBondListAveraged(uint32_t meshCount, c
 	std::vector<std::vector<std::vector<PxVec3> > > hullPoints(meshCount);
 	std::vector<BondGenerationCandidate> candidates;
 
-
+    std::vector<CollisionHull*> tempChunkHulls(meshCount, nullptr);
 	for (uint32_t chunk = 0; chunk < meshCount; ++chunk)
 	{
 		if (!supportFlags[chunk])
@@ -518,7 +518,6 @@ int32_t BlastBondGeneratorImpl::createFullBondListAveraged(uint32_t meshCount, c
 			continue;
 		}
 		PxBounds3 bnd(PxBounds3::empty());
-		CollisionHull* tempHullPtr            = nullptr;
 		uint32_t hullCountForMesh             = 0;
 		const CollisionHull** beginChunkHulls = nullptr;
 		if (chunkHulls)
@@ -529,10 +528,10 @@ int32_t BlastBondGeneratorImpl::createFullBondListAveraged(uint32_t meshCount, c
 		else
 		{
 			// build a convex hull and store it in the temp slot
-			tempHullPtr =
+			tempChunkHulls[chunk] =
 			    mConvexMeshBuilder->buildCollisionGeometry(chunksPoints[chunk].size(), chunksPoints[chunk].data());
 			hullCountForMesh = 1;
-			beginChunkHulls  = const_cast<const CollisionHull**>(&tempHullPtr);
+			beginChunkHulls  = const_cast<const CollisionHull**>(&tempChunkHulls[chunk]);
 		}
 
 		hullPoints[chunk].resize(hullCountForMesh);
@@ -548,10 +547,6 @@ int32_t BlastBondGeneratorImpl::createFullBondListAveraged(uint32_t meshCount, c
 			}
 		}
 
-		if (tempHullPtr)
-		{
-			mConvexMeshBuilder->releaseCollisionHull(tempHullPtr);
-		}
 		float minSide = bnd.getDimensions().abs().minElement();
 		if (minSide > 0.f)
 		{
@@ -603,7 +598,6 @@ int32_t BlastBondGeneratorImpl::createFullBondListAveraged(uint32_t meshCount, c
 				continue;  // This chunks should not generate bonds. This is used for mixed generation with bondFrom
 			}
 
-
 			const uint32_t jhullCount = hullPoints[j].size();
 			for (uint32_t ihull = 0; ihull < ihullCount; ++ihull)
 			{
@@ -616,9 +610,9 @@ int32_t BlastBondGeneratorImpl::createFullBondListAveraged(uint32_t meshCount, c
 					    &trProcessor, geometry ? geometry + geometryOffset[i] : nullptr,
 					    geometryOffset[i + 1] - geometryOffset[i], geometry ? geometry + geometryOffset[j] : nullptr,
 					    geometryOffset[j + 1] - geometryOffset[j],
-					    geometry ? nullptr : chunkHulls[geometryOffset[i] + ihull],
-					    geometry ? nullptr : chunkHulls[geometryOffset[j] + jhull], hullPoints[i][ihull],
-					    hullPoints[j][jhull], normal, centroid, conf.maxSeparation);
+					    chunkHulls ? chunkHulls[geometryOffset[i] + ihull] : tempChunkHulls[i],
+					    chunkHulls ? chunkHulls[geometryOffset[j] + jhull] : tempChunkHulls[j],
+                        hullPoints[i][ihull], hullPoints[j][jhull], normal, centroid, conf.maxSeparation);
 
 					if (area > 0)
 					{
@@ -646,6 +640,16 @@ int32_t BlastBondGeneratorImpl::createFullBondListAveraged(uint32_t meshCount, c
 			}
 		}
 	}
+
+    // release any temp hulls allocated
+    for (CollisionHull* tempHullPtr : tempChunkHulls)
+    {
+        if (tempHullPtr)
+        {
+            mConvexMeshBuilder->releaseCollisionHull(tempHullPtr);
+        }
+    }
+
 	resultBondDescs = SAFE_ARRAY_NEW(NvBlastBondDesc, mResultBondDescs.size());
 	memcpy(resultBondDescs, mResultBondDescs.data(), sizeof(NvBlastBondDesc) * mResultBondDescs.size());
 	return mResultBondDescs.size();
@@ -1071,30 +1075,12 @@ int32_t BlastBondGeneratorImpl::buildDescFromInternalFracture(FractureTool* tool
 	{
 		return 0;
 	}
+
 	resultChunkDescriptors = SAFE_ARRAY_NEW(NvBlastChunkDesc, trianglesBuffer.size());
 	std::vector<Bond> bondDescriptors;
-	resultChunkDescriptors[0].parentChunkDescIndex = UINT32_MAX;
-	resultChunkDescriptors[0].userData             = 0;
-	resultChunkDescriptors[0].flags                = NvBlastChunkDesc::NoFlags;
-
-	{
-		PxVec3 chunkCentroid(0, 0, 0);
-		for (uint32_t tr = 0; tr < trianglesCount[0]; ++tr)
-		{
-			chunkCentroid += toPxShared(trianglesBuffer[0].get()[tr].a.p);
-			chunkCentroid += toPxShared(trianglesBuffer[0].get()[tr].b.p);
-			chunkCentroid += toPxShared(trianglesBuffer[0].get()[tr].c.p);
-		}
-		chunkCentroid *= (1.0f / (3 * trianglesCount[0]));
-		resultChunkDescriptors[0].centroid[0] = chunkCentroid[0];
-		resultChunkDescriptors[0].centroid[1] = chunkCentroid[1];
-		resultChunkDescriptors[0].centroid[2] = chunkCentroid[2];
-	}
-
-
 	bool hasApproximateBonding = false;
 
-	for (uint32_t i = 1; i < chunkCount; ++i)
+	for (uint32_t i = 0; i < chunkCount; ++i)
 	{
 		NvBlastChunkDesc& desc = resultChunkDescriptors[i];
 		desc.userData              = tool->getChunkId(i);
