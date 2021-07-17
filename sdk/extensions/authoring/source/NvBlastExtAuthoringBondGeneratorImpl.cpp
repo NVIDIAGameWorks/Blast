@@ -418,7 +418,7 @@ float BlastBondGeneratorImpl::processWithMidplanes(TriangleProcessor* trProcesso
 		}
 
 		PxVec3 dir1 = intersectionAnchors[0] - lcoid;
-		PxVec3 dir2(0, 0, 0);
+		PxVec3 dir2 = chunk2Centroid - chunk1Centroid;	// A more reasonable fallback than (0,0,0)
 		float maxMagn = 0.0f;
 		float maxDist = 0.0f;
 
