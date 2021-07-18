@@ -352,59 +352,62 @@ void NvBlastExtShearGraphShader(NvBlastFractureBuffers* commandBuffers, const Nv
 		, assetBonds, familyBondHealths
 		, assetChunks, supportChunkHealths, chunkIndices);
 
-	uint32_t nodeIndex = closestNode;
-	float maxDist = 0.0f;
-	uint32_t nextNode = invalidIndex<uint32_t>();
-
-	if (chunkFractureCount < chunkFractureCountMax)
+	if (!isInvalidIndex(chunkIndices[closestNode]))
 	{
-		const uint32_t chunkIndex = chunkIndices[nodeIndex];
-		const NvBlastChunk& chunk = assetChunks[chunkIndex];
-		NvBlastChunkFractureData& frac = commandBuffers->chunkFractures[chunkFractureCount++];
-		frac.chunkIndex = chunkIndex;
-		frac.health = pointDistanceDamage<falloffProfile, NvBlastExtShearDamageDesc>(chunk.centroid, programParams->damageDesc);
-	}
+		uint32_t nodeIndex = closestNode;
+		float maxDist = 0.0f;
+		uint32_t nextNode = invalidIndex<uint32_t>();
 
-	do {
-		const uint32_t startIndex = adjacencyPartition[nodeIndex];
-		const uint32_t stopIndex = adjacencyPartition[nodeIndex + 1];
-
-
-		for (uint32_t adjacentNodeIndex = startIndex; adjacentNodeIndex < stopIndex; adjacentNodeIndex++)
+		if (chunkFractureCount < chunkFractureCountMax)
 		{
-			const uint32_t neighbourIndex = adjacentNodeIndices[adjacentNodeIndex];
-			const uint32_t bondIndex = adjacentBondIndices[adjacentNodeIndex];
-			const NvBlastBond& bond = assetBonds[bondIndex];
-
-			if (!canTakeDamage(familyBondHealths[bondIndex]))
-				continue;
-
-			float shear = 1 * std::abs(1 - std::abs(VecMath::dot(desc.normal, bond.normal)));
-
-			float d[3]; VecMath::sub(bond.centroid, desc.position, d);
-			float ahead = VecMath::dot(d, desc.normal);
-			if (ahead > maxDist)
-			{
-				maxDist = ahead;
-				nextNode = neighbourIndex;
-			}
-
-			const float damage = pointDistanceDamage<falloffProfile, NvBlastExtShearDamageDesc>(bond.centroid, programParams->damageDesc);
-			if (damage > 0.0f && bondFractureCount < bondFractureCountMax)
-			{
-				NvBlastBondFractureData& frac = commandBuffers->bondFractures[bondFractureCount++];
-				frac.userdata = bond.userData;
-				frac.nodeIndex0 = nodeIndex;
-				frac.nodeIndex1 = neighbourIndex;
-				frac.health = shear * damage;
-			}
+			const uint32_t chunkIndex = chunkIndices[nodeIndex];
+			const NvBlastChunk& chunk = assetChunks[chunkIndex];
+			NvBlastChunkFractureData& frac = commandBuffers->chunkFractures[chunkFractureCount++];
+			frac.chunkIndex = chunkIndex;
+			frac.health = pointDistanceDamage<falloffProfile, NvBlastExtShearDamageDesc>(chunk.centroid, programParams->damageDesc);
 		}
 
-		if (nodeIndex == nextNode)
-			break;
+		do {
+			const uint32_t startIndex = adjacencyPartition[nodeIndex];
+			const uint32_t stopIndex = adjacencyPartition[nodeIndex + 1];
 
-		nodeIndex = nextNode;
-	} while (!isInvalidIndex(nextNode));
+
+			for (uint32_t adjacentNodeIndex = startIndex; adjacentNodeIndex < stopIndex; adjacentNodeIndex++)
+			{
+				const uint32_t neighbourIndex = adjacentNodeIndices[adjacentNodeIndex];
+				const uint32_t bondIndex = adjacentBondIndices[adjacentNodeIndex];
+				const NvBlastBond& bond = assetBonds[bondIndex];
+
+				if (!canTakeDamage(familyBondHealths[bondIndex]))
+					continue;
+
+				float shear = 1 * std::abs(1 - std::abs(VecMath::dot(desc.normal, bond.normal)));
+
+				float d[3]; VecMath::sub(bond.centroid, desc.position, d);
+				float ahead = VecMath::dot(d, desc.normal);
+				if (ahead > maxDist)
+				{
+					maxDist = ahead;
+					nextNode = neighbourIndex;
+				}
+
+				const float damage = pointDistanceDamage<falloffProfile, NvBlastExtShearDamageDesc>(bond.centroid, programParams->damageDesc);
+				if (damage > 0.0f && bondFractureCount < bondFractureCountMax)
+				{
+					NvBlastBondFractureData& frac = commandBuffers->bondFractures[bondFractureCount++];
+					frac.userdata = bond.userData;
+					frac.nodeIndex0 = nodeIndex;
+					frac.nodeIndex1 = neighbourIndex;
+					frac.health = shear * damage;
+				}
+			}
+
+			if (nodeIndex == nextNode)
+				break;
+
+			nodeIndex = nextNode;
+		} while (!isInvalidIndex(nextNode));
+	}
 
 	commandBuffers->bondFractureCount = bondFractureCount;
 	commandBuffers->chunkFractureCount = chunkFractureCount;
@@ -650,12 +653,10 @@ void NvBlastExtImpactSpreadGraphShader(NvBlastFractureBuffers* commandBuffers, c
 		, assetBonds, familyBondHealths
 		, assetChunks, supportChunkHealths, chunkIndices);
 
-	uint32_t nodeIndex = closestNode;
-
 	// Breadth-first support graph traversal. For radial falloff metric distance is measured along the edges of the graph
 	ExtDamageAcceleratorInternal* damageAccelerator = programParams->accelerator ? static_cast<ExtDamageAcceleratorInternal*>(programParams->accelerator) : nullptr;
 	NVBLAST_ASSERT_WITH_MESSAGE(damageAccelerator, "This shader requires damage accelerator passed");
-	if (damageAccelerator)
+	if (!isInvalidIndex(chunkIndices[closestNode]) && damageAccelerator)
 	{
 		struct NodeData
 		{
@@ -679,7 +680,7 @@ void NvBlastExtImpactSpreadGraphShader(NvBlastFractureBuffers* commandBuffers, c
 		scratch = pointerOffset(scratch, align16(FixedBitmap::requiredMemorySize(bondCount)));
 
 		// initalize traversal
-		nodeQueue->pushBack({ nodeIndex, 0.f });
+		nodeQueue->pushBack({ closestNode, 0.f });
 		visitedBitmap->clear();
 
 		while (!nodeQueue->empty())
