@@ -54,107 +54,107 @@ class ExtPxActor;
 class DamageToolController : public ISampleController
 {
 public:
-	DamageToolController();
-	virtual ~DamageToolController();
+    DamageToolController();
+    virtual ~DamageToolController();
 
-	virtual LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	virtual void Animate(double dt);
-	void drawUI();
+    virtual LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    virtual void Animate(double dt);
+    void drawUI();
 
 
-	virtual void onInitialize();
-	virtual void onSampleStart();
-	virtual void onSampleStop();
+    virtual void onInitialize();
+    virtual void onSampleStart();
+    virtual void onSampleStop();
 
-	bool isDamageMode() const
-	{
-		return m_damageMode;
-	}
+    bool isDamageMode() const
+    {
+        return m_damageMode;
+    }
 
 private:
-	DamageToolController& operator= (DamageToolController&);
+    DamageToolController& operator= (DamageToolController&);
 
 
-	//////// private methods ////////
+    //////// private methods ////////
 
-	void changeDamageRadius(float dr);
+    void changeDamageRadius(float dr);
 
-	void setDamageMode(bool enabled);
-
-
-	//////// used controllers ////////
-
-	Renderer& getRenderer() const
-	{
-		return getManager()->getRenderer();
-	}
-
-	PhysXController& getPhysXController() const
-	{
-		return getManager()->getPhysXController();
-	}
-
-	BlastController& getBlastController() const
-	{
-		return getManager()->getBlastController();
-	}
+    void setDamageMode(bool enabled);
 
 
-	//////// internal data ////////
+    //////// used controllers ////////
 
-	RenderMaterial*   m_toolRenderMaterial;
-	Renderable*       m_sphereToolRenderable;
-	DirectX::XMFLOAT4 m_toolColor;
-	Renderable*       m_lineToolRenderable;
+    Renderer& getRenderer() const
+    {
+        return getManager()->getRenderer();
+    }
 
-	float             m_damage;
-	float             m_explosiveImpulse;
-	float             m_stressForceFactor;
+    PhysXController& getPhysXController() const
+    {
+        return getManager()->getPhysXController();
+    }
 
-	struct Damager
-	{
-		Damager() : damageWhilePressed(false), radius(5.0f), radiusLimit(1000.0f)
-		{
-		}
+    BlastController& getBlastController() const
+    {
+        return getManager()->getBlastController();
+    }
 
-		enum PointerType
-		{
-			Sphere,
-			Line
-		};
 
-		struct DamageData
-		{
-			physx::PxVec3 origin;
-			physx::PxVec3 hitPosition;
-			physx::PxVec3 hitNormal;
-			physx::PxVec3 weaponDir;
-			physx::PxVec3 previousWeaponDir;
-		};
+    //////// internal data ////////
 
-		typedef std::function<void(const Damager* damager, Nv::Blast::ExtPxActor* actor, BlastFamily& family, const DamageData& damageData)> ExecuteFn;
+    RenderMaterial*   m_toolRenderMaterial;
+    Renderable*       m_sphereToolRenderable;
+    DirectX::XMFLOAT4 m_toolColor;
+    Renderable*       m_lineToolRenderable;
 
-		const char*				uiName;
-		NvBlastDamageProgram	program;
-		PointerType				pointerType;
-		DirectX::XMFLOAT4		pointerColor;
-		float					radius;
-		float					radiusLimit;
-		bool					damageWhilePressed;
-		ExecuteFn				executeFunction;
-	};
+    float             m_damage;
+    float             m_explosiveImpulse;
+    float             m_stressForceFactor;
 
-	std::vector<Damager>     m_damagers;
-	std::vector<const char*> m_damagerNames;
-	uint32_t				 m_damagerIndex;
+    struct Damager
+    {
+        Damager() : damageWhilePressed(false), radius(5.0f), radiusLimit(1000.0f)
+        {
+        }
 
-	bool                     m_damageMode;
+        enum PointerType
+        {
+            Sphere,
+            Line
+        };
 
-	physx::PxVec2            m_lastMousePos;
-	bool                     m_isMousePressed;
-	uint32_t                 m_damageCountWhilePressed;
-	physx::PxVec3			 m_previousPickDir;
-	bool					 m_prevWasHit;
+        struct DamageData
+        {
+            physx::PxVec3 origin;
+            physx::PxVec3 hitPosition;
+            physx::PxVec3 hitNormal;
+            physx::PxVec3 weaponDir;
+            physx::PxVec3 previousWeaponDir;
+        };
+
+        typedef std::function<void(const Damager* damager, Nv::Blast::ExtPxActor* actor, BlastFamily& family, const DamageData& damageData)> ExecuteFn;
+
+        const char*             uiName;
+        NvBlastDamageProgram    program;
+        PointerType             pointerType;
+        DirectX::XMFLOAT4       pointerColor;
+        float                   radius;
+        float                   radiusLimit;
+        bool                    damageWhilePressed;
+        ExecuteFn               executeFunction;
+    };
+
+    std::vector<Damager>     m_damagers;
+    std::vector<const char*> m_damagerNames;
+    uint32_t                 m_damagerIndex;
+
+    bool                     m_damageMode;
+
+    physx::PxVec2            m_lastMousePos;
+    bool                     m_isMousePressed;
+    uint32_t                 m_damageCountWhilePressed;
+    physx::PxVec3            m_previousPickDir;
+    bool                     m_prevWasHit;
 };
 
 #endif

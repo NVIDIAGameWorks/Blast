@@ -60,71 +60,71 @@ typedef std::shared_ptr<BlastFamily> BlastFamilyPtr;
 class BlastAsset
 {
 public:
-	//////// ctor ////////
+    //////// ctor ////////
 
-	BlastAsset(Renderer& renderer);
-	virtual ~BlastAsset();
-
-
-	//////// desc ////////
-
-	/**
-	Descriptor with actor initial settings.
-	*/
-	struct ActorDesc
-	{
-		NvBlastID			id;
-		PxTransform			transform;
-		TkGroup*			group;
-	};
+    BlastAsset(Renderer& renderer);
+    virtual ~BlastAsset();
 
 
-	//////// abstract ////////
+    //////// desc ////////
 
-	virtual BlastFamilyPtr createFamily(PhysXController& physXConroller, ExtPxManager& pxManager, const ActorDesc& desc) = 0;
+    /**
+    Descriptor with actor initial settings.
+    */
+    struct ActorDesc
+    {
+        NvBlastID           id;
+        PxTransform         transform;
+        TkGroup*            group;
+    };
 
 
-	//////// data getters  ////////
+    //////// abstract ////////
 
-	ExtPxAsset* getPxAsset() const
-	{ 
-		return m_pxAsset;
-	}
+    virtual BlastFamilyPtr createFamily(PhysXController& physXConroller, ExtPxManager& pxManager, const ActorDesc& desc) = 0;
 
-	size_t getBlastAssetSize() const;
 
-	float getBondHealthMax() const
-	{
-		return m_bondHealthMax;
-	}
+    //////// data getters  ////////
 
-	float getSupportChunkHealthMax() const
-	{
-		return m_supportChunkHealthMax;
-	}
+    ExtPxAsset* getPxAsset() const
+    { 
+        return m_pxAsset;
+    }
 
-	NvBlastExtDamageAccelerator* getAccelerator() const
-	{
-		return m_damageAccelerator;
-	}
+    size_t getBlastAssetSize() const;
+
+    float getBondHealthMax() const
+    {
+        return m_bondHealthMax;
+    }
+
+    float getSupportChunkHealthMax() const
+    {
+        return m_supportChunkHealthMax;
+    }
+
+    NvBlastExtDamageAccelerator* getAccelerator() const
+    {
+        return m_damageAccelerator;
+    }
 
 protected:
-	//////// internal operations ////////
+    //////// internal operations ////////
 
-	void initialize();
-
-
-	//////// input data ////////
-
-	Renderer&			m_renderer;
+    void initialize();
 
 
-	//////// internal data ////////
+    //////// input data ////////
 
-	ExtPxAsset*			         m_pxAsset;
-	float				         m_bondHealthMax;
-	float				         m_supportChunkHealthMax;
-	NvBlastExtDamageAccelerator* m_damageAccelerator;
+    Renderer&           m_renderer;
+
+
+    //////// internal data ////////
+
+    ExtPxAsset*                  m_pxAsset;
+    float                        m_bondHealthMax;
+    float                        m_supportChunkHealthMax;
+    NvBlastExtDamageAccelerator* m_damageAccelerator;
 };
 
 

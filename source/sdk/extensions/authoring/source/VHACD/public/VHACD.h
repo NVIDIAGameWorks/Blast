@@ -65,8 +65,8 @@ public:
         uint32_t* m_triangles;
         uint32_t m_nPoints;
         uint32_t m_nTriangles;
-		double		m_volume;
-		double		m_center[3];
+        double      m_volume;
+        double      m_center[3];
     };
 
     class Parameters {
@@ -89,7 +89,7 @@ public:
             m_convexhullApproximation = true;
             m_oclAcceleration = true;
             m_maxConvexHulls = 1024;
-			m_projectHullVertices = true; // This will project the output convex hull vertices onto the original source mesh to increase the floating point accuracy of the results
+            m_projectHullVertices = true; // This will project the output convex hull vertices onto the original source mesh to increase the floating point accuracy of the results
         }
         double m_concavity;
         double m_alpha;
@@ -105,17 +105,17 @@ public:
         uint32_t m_mode;
         uint32_t m_convexhullApproximation;
         uint32_t m_oclAcceleration;
-        uint32_t	m_maxConvexHulls;
-		bool	m_projectHullVertices;
+        uint32_t    m_maxConvexHulls;
+        bool    m_projectHullVertices;
     };
 
-	class Constraint
-	{
-	public:
-		uint32_t	mHullA;					// Convex Hull A index
-		uint32_t	mHullB;					// Convex Hull B index
-		double		mConstraintPoint[3];	// The point of intersection between the two convex hulls
-	};
+    class Constraint
+    {
+    public:
+        uint32_t    mHullA;                 // Convex Hull A index
+        uint32_t    mHullB;                 // Convex Hull B index
+        double      mConstraintPoint[3];    // The point of intersection between the two convex hulls
+    };
 
     virtual void Cancel() = 0;
     virtual bool Compute(const float* const points,
@@ -139,27 +139,27 @@ public:
         = 0;
     virtual bool OCLRelease(IUserLogger* const logger = 0) = 0;
 
-	// Will compute the center of mass of the convex hull decomposition results and return it
-	// in 'centerOfMass'.  Returns false if the center of mass could not be computed.
-	virtual bool ComputeCenterOfMass(double centerOfMass[3]) const = 0;
+    // Will compute the center of mass of the convex hull decomposition results and return it
+    // in 'centerOfMass'.  Returns false if the center of mass could not be computed.
+    virtual bool ComputeCenterOfMass(double centerOfMass[3]) const = 0;
 
-	// Will analyze the HACD results and compute the constraints solutions.
-	// It will analyze the point at which any two convex hulls touch each other and 
-	// return the total number of constraint pairs found
-	virtual uint32_t ComputeConstraints(void) = 0;
+    // Will analyze the HACD results and compute the constraints solutions.
+    // It will analyze the point at which any two convex hulls touch each other and 
+    // return the total number of constraint pairs found
+    virtual uint32_t ComputeConstraints(void) = 0;
 
-	// Returns a pointer to the constraint index; null if the index is not valid or
-	// the user did not previously call 'ComputeConstraints' 
-	virtual const Constraint *GetConstraint(uint32_t index) const = 0;
+    // Returns a pointer to the constraint index; null if the index is not valid or
+    // the user did not previously call 'ComputeConstraints' 
+    virtual const Constraint *GetConstraint(uint32_t index) const = 0;
 
-	// In synchronous mode (non-multi-threaded) the state is always 'ready'
-	// In asynchronous mode, this returns true if the background thread is not still actively computing
-	// a new solution.  In an asynchronous config the 'IsReady' call will report any update or log
-	// messages in the caller's current thread.
-	virtual bool IsReady(void) const
-	{
-		return true;
-	}
+    // In synchronous mode (non-multi-threaded) the state is always 'ready'
+    // In asynchronous mode, this returns true if the background thread is not still actively computing
+    // a new solution.  In an asynchronous config the 'IsReady' call will report any update or log
+    // messages in the caller's current thread.
+    virtual bool IsReady(void) const
+    {
+        return true;
+    }
 
 protected:
     virtual ~IVHACD(void) {}

@@ -22,77 +22,77 @@ FIND_PACKAGE(GoogleTestNV $ENV{PM_googletest_VERSION} REQUIRED)
 include(${PROJECT_CMAKE_FILES_DIR}/${TARGET_BUILD_PLATFORM}/BlastUnitTests.cmake)
 
 SET(UNITTEST_SOURCE_FILES 
-	${UNITTEST_SOURCE_DIR}/AssetTests.cpp
-	${UNITTEST_SOURCE_DIR}/ActorTests.cpp
-	${UNITTEST_SOURCE_DIR}/APITests.cpp
-	${UNITTEST_SOURCE_DIR}/CoreTests.cpp
-	${UNITTEST_SOURCE_DIR}/FamilyGraphTests.cpp
-	${UNITTEST_SOURCE_DIR}/MultithreadingTests.cpp
-	${UNITTEST_SOURCE_DIR}/SyncTests.cpp
-	${UNITTEST_SOURCE_DIR}/TkCompositeTests.cpp
-	${UNITTEST_SOURCE_DIR}/TkTests.cpp
+    ${UNITTEST_SOURCE_DIR}/AssetTests.cpp
+    ${UNITTEST_SOURCE_DIR}/ActorTests.cpp
+    ${UNITTEST_SOURCE_DIR}/APITests.cpp
+    ${UNITTEST_SOURCE_DIR}/CoreTests.cpp
+    ${UNITTEST_SOURCE_DIR}/FamilyGraphTests.cpp
+    ${UNITTEST_SOURCE_DIR}/MultithreadingTests.cpp
+    ${UNITTEST_SOURCE_DIR}/SyncTests.cpp
+    ${UNITTEST_SOURCE_DIR}/TkCompositeTests.cpp
+    ${UNITTEST_SOURCE_DIR}/TkTests.cpp
 )
 
 SET(COMMON_SOURCE_FILES
-	${BLASTUNITTESTS_PLATFORM_COMMON_FILES}
-	
-	${TEST_SOURCE_DIR}/BlastBaseTest.h
-	${TEST_SOURCE_DIR}/TkBaseTest.h
+    ${BLASTUNITTESTS_PLATFORM_COMMON_FILES}
+    
+    ${TEST_SOURCE_DIR}/BlastBaseTest.h
+    ${TEST_SOURCE_DIR}/TkBaseTest.h
 )
 
 SET(SDK_COMMON_FILES
-	${COMMON_SOURCE_DIR}/NvBlastAssert.cpp
-	${COMMON_SOURCE_DIR}/NvBlastAssert.h
-	${COMMON_SOURCE_DIR}/NvBlastAtomic.cpp
-	${COMMON_SOURCE_DIR}/NvBlastAtomic.h
-	${COMMON_SOURCE_DIR}/NvBlastDLink.h
-	${COMMON_SOURCE_DIR}/NvBlastFixedArray.h
-	${COMMON_SOURCE_DIR}/NvBlastFixedBitmap.h
-	${COMMON_SOURCE_DIR}/NvBlastFixedBoolArray.h
-	${COMMON_SOURCE_DIR}/NvBlastFixedPriorityQueue.h
-	${COMMON_SOURCE_DIR}/NvBlastGeometry.h
-	${COMMON_SOURCE_DIR}/NvBlastIndexFns.h
-	${COMMON_SOURCE_DIR}/NvBlastIteratorBase.h
-	${COMMON_SOURCE_DIR}/NvBlastMath.h
-	${COMMON_SOURCE_DIR}/NvBlastMemory.h
-	${COMMON_SOURCE_DIR}/NvBlastPreprocessorInternal.h
-	${COMMON_SOURCE_DIR}/NvBlastTime.cpp
-	${COMMON_SOURCE_DIR}/NvBlastTime.h
-	${COMMON_SOURCE_DIR}/NvBlastTimers.cpp
+    ${COMMON_SOURCE_DIR}/NvBlastAssert.cpp
+    ${COMMON_SOURCE_DIR}/NvBlastAssert.h
+    ${COMMON_SOURCE_DIR}/NvBlastAtomic.cpp
+    ${COMMON_SOURCE_DIR}/NvBlastAtomic.h
+    ${COMMON_SOURCE_DIR}/NvBlastDLink.h
+    ${COMMON_SOURCE_DIR}/NvBlastFixedArray.h
+    ${COMMON_SOURCE_DIR}/NvBlastFixedBitmap.h
+    ${COMMON_SOURCE_DIR}/NvBlastFixedBoolArray.h
+    ${COMMON_SOURCE_DIR}/NvBlastFixedPriorityQueue.h
+    ${COMMON_SOURCE_DIR}/NvBlastGeometry.h
+    ${COMMON_SOURCE_DIR}/NvBlastIndexFns.h
+    ${COMMON_SOURCE_DIR}/NvBlastIteratorBase.h
+    ${COMMON_SOURCE_DIR}/NvBlastMath.h
+    ${COMMON_SOURCE_DIR}/NvBlastMemory.h
+    ${COMMON_SOURCE_DIR}/NvBlastPreprocessorInternal.h
+    ${COMMON_SOURCE_DIR}/NvBlastTime.cpp
+    ${COMMON_SOURCE_DIR}/NvBlastTime.h
+    ${COMMON_SOURCE_DIR}/NvBlastTimers.cpp
 )
 
 SET(SDK_SOLVER_FILES
-	${SOLVER_SOURCE_DIR}/NvBlastActor.cpp
-	${SOLVER_SOURCE_DIR}/NvBlastActor.h
-	${SOLVER_SOURCE_DIR}/NvBlastFamilyGraph.cpp
-	${SOLVER_SOURCE_DIR}/NvBlastFamilyGraph.h
-	${SOLVER_SOURCE_DIR}/NvBlastActorSerializationBlock.cpp
-	${SOLVER_SOURCE_DIR}/NvBlastActorSerializationBlock.h
-	${SOLVER_SOURCE_DIR}/NvBlastAsset.cpp
-	${SOLVER_SOURCE_DIR}/NvBlastAsset.h
-	${SOLVER_SOURCE_DIR}/NvBlastSupportGraph.h
-	${SOLVER_SOURCE_DIR}/NvBlastChunkHierarchy.h
-	${SOLVER_SOURCE_DIR}/NvBlastFamily.cpp
-	${SOLVER_SOURCE_DIR}/NvBlastFamily.h
+    ${SOLVER_SOURCE_DIR}/NvBlastActor.cpp
+    ${SOLVER_SOURCE_DIR}/NvBlastActor.h
+    ${SOLVER_SOURCE_DIR}/NvBlastFamilyGraph.cpp
+    ${SOLVER_SOURCE_DIR}/NvBlastFamilyGraph.h
+    ${SOLVER_SOURCE_DIR}/NvBlastActorSerializationBlock.cpp
+    ${SOLVER_SOURCE_DIR}/NvBlastActorSerializationBlock.h
+    ${SOLVER_SOURCE_DIR}/NvBlastAsset.cpp
+    ${SOLVER_SOURCE_DIR}/NvBlastAsset.h
+    ${SOLVER_SOURCE_DIR}/NvBlastSupportGraph.h
+    ${SOLVER_SOURCE_DIR}/NvBlastChunkHierarchy.h
+    ${SOLVER_SOURCE_DIR}/NvBlastFamily.cpp
+    ${SOLVER_SOURCE_DIR}/NvBlastFamily.h
 )
 
 SET(UTILS_SOURCE_FILES
-	${SHAREDUTILS_SOURCE_DIR}/AssetGenerator.cpp
-	${SHAREDUTILS_SOURCE_DIR}/AssetGenerator.h
+    ${SHAREDUTILS_SOURCE_DIR}/AssetGenerator.cpp
+    ${SHAREDUTILS_SOURCE_DIR}/AssetGenerator.h
 
-	${UTILS_SOURCE_DIR}/TaskDispatcher.h
-	${UTILS_SOURCE_DIR}/TestAssets.cpp
-	${UTILS_SOURCE_DIR}/TestAssets.h
-	${UTILS_SOURCE_DIR}/TestProfiler.h
+    ${UTILS_SOURCE_DIR}/TaskDispatcher.h
+    ${UTILS_SOURCE_DIR}/TestAssets.cpp
+    ${UTILS_SOURCE_DIR}/TestAssets.h
+    ${UTILS_SOURCE_DIR}/TestProfiler.h
 )
 
 ADD_EXECUTABLE(BlastUnitTests 
-	${COMMON_SOURCE_FILES}
-	${UTILS_SOURCE_FILES}
-	${UNITTEST_SOURCE_FILES}
-	
-	${SDK_COMMON_FILES}
-	${SDK_SOLVER_FILES}
+    ${COMMON_SOURCE_FILES}
+    ${UTILS_SOURCE_FILES}
+    ${UNITTEST_SOURCE_FILES}
+    
+    ${SDK_COMMON_FILES}
+    ${SDK_SOLVER_FILES}
 )
 
 
@@ -106,34 +106,34 @@ SOURCE_GROUP("Sdk\\solver" FILES ${SDK_SOLVER_FILES})
 # Target specific compile options
 
 TARGET_INCLUDE_DIRECTORIES(BlastUnitTests 
-	PRIVATE ${BLASTUNITTESTS_PLATFORM_INCLUDES}
+    PRIVATE ${BLASTUNITTESTS_PLATFORM_INCLUDES}
 
-	PRIVATE ${TEST_SOURCE_DIR}
-	PRIVATE ${UTILS_SOURCE_DIR}
-	
-	PRIVATE ${BLAST_ROOT_DIR}/sdk/common
-	PRIVATE ${BLAST_ROOT_DIR}/sdk/profiler
-	PRIVATE ${BLAST_ROOT_DIR}/sdk/lowlevel/include
-	PRIVATE ${BLAST_ROOT_DIR}/sdk/lowlevel/source
-	PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/assetutils/source
-	PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/assetutils/include
-	PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/serialization/include
-	PRIVATE ${BLAST_ROOT_DIR}/shared/utils
+    PRIVATE ${TEST_SOURCE_DIR}
+    PRIVATE ${UTILS_SOURCE_DIR}
+    
+    PRIVATE ${BLAST_ROOT_DIR}/sdk/common
+    PRIVATE ${BLAST_ROOT_DIR}/sdk/profiler
+    PRIVATE ${BLAST_ROOT_DIR}/sdk/lowlevel/include
+    PRIVATE ${BLAST_ROOT_DIR}/sdk/lowlevel/source
+    PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/assetutils/source
+    PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/assetutils/include
+    PRIVATE ${BLAST_ROOT_DIR}/sdk/extensions/serialization/include
+    PRIVATE ${BLAST_ROOT_DIR}/shared/utils
 
-	PRIVATE ${PXSHAREDSDK_INCLUDE_DIRS}
-	PRIVATE ${GOOGLETEST_INCLUDE_DIRS}
-	
+    PRIVATE ${PXSHAREDSDK_INCLUDE_DIRS}
+    PRIVATE ${GOOGLETEST_INCLUDE_DIRS}
+    
 )
 
 TARGET_COMPILE_DEFINITIONS(BlastUnitTests
-	PRIVATE ${BLASTUNITTESTS_COMPILE_DEFS}
+    PRIVATE ${BLASTUNITTESTS_COMPILE_DEFS}
 )
 
 SET_TARGET_PROPERTIES(BlastUnitTests PROPERTIES 
-	COMPILE_PDB_NAME_DEBUG "BlastUnitTests${CMAKE_DEBUG_POSTFIX}"
-	COMPILE_PDB_NAME_CHECKED "BlastUnitTests${CMAKE_CHECKED_POSTFIX}"
-	COMPILE_PDB_NAME_PROFILE "BlastUnitTests${CMAKE_PROFILE_POSTFIX}"
-	COMPILE_PDB_NAME_RELEASE "BlastUnitTests${CMAKE_RELEASE_POSTFIX}"
+    COMPILE_PDB_NAME_DEBUG "BlastUnitTests${CMAKE_DEBUG_POSTFIX}"
+    COMPILE_PDB_NAME_CHECKED "BlastUnitTests${CMAKE_CHECKED_POSTFIX}"
+    COMPILE_PDB_NAME_PROFILE "BlastUnitTests${CMAKE_PROFILE_POSTFIX}"
+    COMPILE_PDB_NAME_RELEASE "BlastUnitTests${CMAKE_RELEASE_POSTFIX}"
     ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${BL_LIB_OUTPUT_DIR}/debug"
     LIBRARY_OUTPUT_DIRECTORY_DEBUG "${BL_DLL_OUTPUT_DIR}/debug"
     RUNTIME_OUTPUT_DIRECTORY_DEBUG "${BL_EXE_OUTPUT_DIR}/debug"
@@ -149,7 +149,7 @@ SET_TARGET_PROPERTIES(BlastUnitTests PROPERTIES
 )
 
 TARGET_COMPILE_OPTIONS(BlastUnitTests
-	PRIVATE ${BLASTUNITTESTS_PLATFORM_COMPILE_OPTIONS}
+    PRIVATE ${BLASTUNITTESTS_PLATFORM_COMPILE_OPTIONS}
 )
 
 #TARGET_COMPILE_OPTIONS(BlastUnitTests PRIVATE /wd4005 /wd4244)
@@ -159,14 +159,14 @@ MESSAGE("UnitTests LL: ${BLASTUNITTESTS_PLATFORM_LINKED_LIBS}")
 # Do final direct sets after the target has been defined
 TARGET_LINK_LIBRARIES(BlastUnitTests 
 
-	PRIVATE NvBlastExtShaders NvBlastExtPhysX NvBlastTk NvBlastExtSerialization NvBlastExtAssetUtils ${GOOGLETEST_LIBRARIES} 
-	PRIVATE ${BLASTUNITTESTS_PLATFORM_LINKED_LIBS}
+    PRIVATE NvBlastExtShaders NvBlastExtPhysX NvBlastTk NvBlastExtSerialization NvBlastExtAssetUtils ${GOOGLETEST_LIBRARIES} 
+    PRIVATE ${BLASTUNITTESTS_PLATFORM_LINKED_LIBS}
 
-	PUBLIC $<$<CONFIG:debug>:${PXFOUNDATION_LIB_DEBUG}> $<$<CONFIG:debug>:${PXTASK_LIB_DEBUG}>
-	PUBLIC $<$<CONFIG:checked>:${PXFOUNDATION_LIB_CHECKED}> $<$<CONFIG:checked>:${PXTASK_LIB_CHECKED}> 
-	PUBLIC $<$<CONFIG:profile>:${PXFOUNDATION_LIB_PROFILE}> $<$<CONFIG:profile>:${PXTASK_LIB_PROFILE}>
-	PUBLIC $<$<CONFIG:release>:${PXFOUNDATION_LIB}> $<$<CONFIG:release>:${PXTASK_LIB}>
-	
+    PUBLIC $<$<CONFIG:debug>:${PXFOUNDATION_LIB_DEBUG}> $<$<CONFIG:debug>:${PXTASK_LIB_DEBUG}>
+    PUBLIC $<$<CONFIG:checked>:${PXFOUNDATION_LIB_CHECKED}> $<$<CONFIG:checked>:${PXTASK_LIB_CHECKED}> 
+    PUBLIC $<$<CONFIG:profile>:${PXFOUNDATION_LIB_PROFILE}> $<$<CONFIG:profile>:${PXTASK_LIB_PROFILE}>
+    PUBLIC $<$<CONFIG:release>:${PXFOUNDATION_LIB}> $<$<CONFIG:release>:${PXTASK_LIB}>
+    
 )
 
 # This is ugly, but have to include this after the target is defined

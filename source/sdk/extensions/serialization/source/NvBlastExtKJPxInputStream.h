@@ -48,15 +48,15 @@ Since it needs to behave like a stream, it's internally wrapped in a stream.
 class ExtKJPxInputStream : public physx::PxInputStream
 {
 public:
-	ExtKJPxInputStream(capnp::Data::Reader inReader);
-	~ExtKJPxInputStream() = default;
+    ExtKJPxInputStream(capnp::Data::Reader inReader);
+    ~ExtKJPxInputStream() = default;
 
-	virtual uint32_t read(void* dest, uint32_t count) override;
+    virtual uint32_t read(void* dest, uint32_t count) override;
 
 private:
-	capnp::Data::Reader dataReader;
-	std::shared_ptr<kj::ArrayInputStream> inputStream;
+    capnp::Data::Reader dataReader;
+    std::shared_ptr<kj::ArrayInputStream> inputStream;
 };
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

@@ -40,40 +40,40 @@
 class PrimitiveRenderMesh : public CustomRenderMesh
 {
 protected:
-	PrimitiveRenderMesh(const float v[], UINT numVertices);
+    PrimitiveRenderMesh(const float v[], UINT numVertices);
 };
 
 class BoxRenderMesh : public PrimitiveRenderMesh
 {
 public:
-	BoxRenderMesh();
+    BoxRenderMesh();
 };
 
 
 class PlaneRenderMesh : public CustomRenderMesh
 {
 public:
-	PlaneRenderMesh();
+    PlaneRenderMesh();
 };
 
 
 class SphereRenderMesh : public CustomRenderMesh
 {
 public:
-	SphereRenderMesh();
-	virtual ~SphereRenderMesh();
+    SphereRenderMesh();
+    virtual ~SphereRenderMesh();
 };
 
 
 struct PrimitiveRenderMeshType
 {
-	enum Enum
-	{
-		Box,
-		Plane,
-		Sphere,
-		Count
-	};
+    enum Enum
+    {
+        Box,
+        Plane,
+        Sphere,
+        Count
+    };
 };
 
 #endif //PRIMITIVE_RENDER_MESH_H

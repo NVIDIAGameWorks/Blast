@@ -39,21 +39,21 @@
 struct Resource
 {
 private:
-	Resource& operator = (const Resource&);
+    Resource& operator = (const Resource&);
 };
 
 
 struct ShaderFileResource : public Resource
 {
-	ShaderFileResource(const std::string& p) : path(p) {}
-	std::string path;
+    ShaderFileResource(const std::string& p) : path(p) {}
+    std::string path;
 };
 
 
 struct TextureResource : public Resource
 {
-	DirectX::TexMetadata metaData;
-	DirectX::ScratchImage image;
+    DirectX::TexMetadata metaData;
+    DirectX::ScratchImage image;
 };
 
 
@@ -63,49 +63,49 @@ ResourceManager used to look for files in provided dirs (see addSearchDir). Also
 class ResourceManager
 {
 public:
-	//////// ctor ////////
+    //////// ctor ////////
 
-	ResourceManager();
-	~ResourceManager();
+    ResourceManager();
+    ~ResourceManager();
 
-	//////// public API ////////
+    //////// public API ////////
 
-	bool addSearchDir(const char* dir, bool recursive = true);
+    bool addSearchDir(const char* dir, bool recursive = true);
 
-	const ShaderFileResource* requestShaderFile(const char* name);
+    const ShaderFileResource* requestShaderFile(const char* name);
 
-	const TextureResource* requestTexture(const char* name);
+    const TextureResource* requestTexture(const char* name);
 
-	bool findFile(std::string fileName, std::string& foundPath);
+    bool findFile(std::string fileName, std::string& foundPath);
 
-	bool findFile(std::string fileName, const std::vector<const char*>& exts, char* foundPath);
+    bool findFile(std::string fileName, const std::vector<const char*>& exts, char* foundPath);
 
 
 private:
-	//////// internal methods ////////
+    //////// internal methods ////////
 
-	enum ResourceType
-	{
-		eSHADER_FILE,
-		eTEXTURE
-	};
+    enum ResourceType
+    {
+        eSHADER_FILE,
+        eTEXTURE
+    };
 
-	const Resource* requestResource(ResourceType type, const char* name);
+    const Resource* requestResource(ResourceType type, const char* name);
 
-	bool findFileInDir(std::string fileNameFull, const char* path, bool recursive, char* foundPath);
+    bool findFileInDir(std::string fileNameFull, const char* path, bool recursive, char* foundPath);
 
-	struct SearchDir
-	{
-		SearchDir(std::string path_, bool recursive_) : path(path_), recursive(recursive_) {}
+    struct SearchDir
+    {
+        SearchDir(std::string path_, bool recursive_) : path(path_), recursive(recursive_) {}
 
-		std::string path;
-		bool recursive;
-	};
+        std::string path;
+        bool recursive;
+    };
 
 
-	//////// internal data ////////
+    //////// internal data ////////
 
-	std::vector<SearchDir> m_searchDirs;
-	std::map<std::pair<ResourceType, std::string>, std::shared_ptr<Resource>> m_loadedResources;
+    std::vector<SearchDir> m_searchDirs;
+    std::map<std::pair<ResourceType, std::string>, std::shared_ptr<Resource>> m_loadedResources;
 };
 #endif

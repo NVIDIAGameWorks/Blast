@@ -39,31 +39,31 @@ class Renderer;
 class BlastFamilyModelSimple : public BlastFamily
 {
 public:
-	//////// ctor ////////
+    //////// ctor ////////
 
-	BlastFamilyModelSimple(PhysXController& physXController, ExtPxManager& pxManager, Renderer& renderer, const BlastAssetModelSimple& blastAsset, const BlastAsset::ActorDesc& desc);
-	virtual ~BlastFamilyModelSimple();
+    BlastFamilyModelSimple(PhysXController& physXController, ExtPxManager& pxManager, Renderer& renderer, const BlastAssetModelSimple& blastAsset, const BlastAsset::ActorDesc& desc);
+    virtual ~BlastFamilyModelSimple();
 
 protected:
-	//////// abstract implementation ////////
+    //////// abstract implementation ////////
 
-	virtual void onActorCreated(const ExtPxActor& actor);
-	virtual void onActorUpdate(const ExtPxActor& actor);
-	virtual void onActorDestroyed(const ExtPxActor& actor);
-	virtual void onActorHealthUpdate(const ExtPxActor& pxActor);
+    virtual void onActorCreated(const ExtPxActor& actor);
+    virtual void onActorUpdate(const ExtPxActor& actor);
+    virtual void onActorDestroyed(const ExtPxActor& actor);
+    virtual void onActorHealthUpdate(const ExtPxActor& pxActor);
 
 private:
-	//////// internal data ////////
+    //////// internal data ////////
 
-	Renderer& m_renderer;
+    Renderer& m_renderer;
 
-	struct Chunk
-	{
-		std::vector<SimpleRenderMesh*> renderMeshes;
-		std::vector<Renderable*> renderables;
-	};
+    struct Chunk
+    {
+        std::vector<SimpleRenderMesh*> renderMeshes;
+        std::vector<Renderable*> renderables;
+    };
 
-	std::vector<Chunk> m_chunks;
+    std::vector<Chunk> m_chunks;
 };
 
 

@@ -41,31 +41,31 @@ Base class for all objects in Tk.  All TkObjects are releasable.
 class TkObject
 {
 public:
-	/**
-	Constructor clears userData.
-	*/
-	TkObject() : userData(nullptr) {}
+    /**
+    Constructor clears userData.
+    */
+    TkObject() : userData(nullptr) {}
 
-	// Object API
+    // Object API
 
-	/**
-	Release this object and free associated memory.
-	*/
-	virtual void	release() = 0;
+    /**
+    Release this object and free associated memory.
+    */
+    virtual void    release() = 0;
 
 protected:
-	/**
-	Destructor is virtual and not public - use the release() method instead of explicitly deleting a TkObject
-	*/
-	virtual			~TkObject() {}
+    /**
+    Destructor is virtual and not public - use the release() method instead of explicitly deleting a TkObject
+    */
+    virtual         ~TkObject() {}
 
 public:
-	// Data
+    // Data
 
-	/**
-	Pointer field available to the user.
-	*/
-	void*	userData;
+    /**
+    Pointer field available to the user.
+    */
+    void*   userData;
 };
 
 } // namespace Blast

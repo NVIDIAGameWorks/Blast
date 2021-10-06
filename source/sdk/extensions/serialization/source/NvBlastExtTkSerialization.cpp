@@ -43,43 +43,43 @@ TkFramework* sExtTkSerializerFramework = nullptr;
 class ExtTkSerializerAsset_CPNB : public ExtSerializer
 {
 public:
-	ExtSerializerBoilerplate("TkAsset_CPNB", "Blast high-level asset (Nv::Blast::TkAsset) serialization using Cap'n Proto binary format.", TkObjectTypeID::Asset, ExtSerialization::EncodingID::CapnProtoBinary);
-	ExtSerializerDefaultFactoryAndRelease(ExtTkSerializerAsset_CPNB);
+    ExtSerializerBoilerplate("TkAsset_CPNB", "Blast high-level asset (Nv::Blast::TkAsset) serialization using Cap'n Proto binary format.", TkObjectTypeID::Asset, ExtSerialization::EncodingID::CapnProtoBinary);
+    ExtSerializerDefaultFactoryAndRelease(ExtTkSerializerAsset_CPNB);
 
-	virtual void* deserializeFromBuffer(const void* buffer, uint64_t size) override
-	{
-		return ExtSerializationCAPN<TkAsset, Serialization::TkAsset::Reader, Serialization::TkAsset::Builder>::deserializeFromBuffer(reinterpret_cast<const unsigned char*>(buffer), size);
-	}
+    virtual void* deserializeFromBuffer(const void* buffer, uint64_t size) override
+    {
+        return ExtSerializationCAPN<TkAsset, Serialization::TkAsset::Reader, Serialization::TkAsset::Builder>::deserializeFromBuffer(reinterpret_cast<const unsigned char*>(buffer), size);
+    }
 
-	virtual uint64_t serializeIntoBuffer(void*& buffer, ExtSerialization::BufferProvider& bufferProvider, const void* object, uint64_t offset = 0) override
-	{
-		uint64_t usedSize;
-		if (!ExtSerializationCAPN<TkAsset, Serialization::TkAsset::Reader, Serialization::TkAsset::Builder>::serializeIntoBuffer(reinterpret_cast<const TkAsset*>(object),
-			reinterpret_cast<unsigned char*&>(buffer), usedSize, &bufferProvider, offset))
-		{
-			return 0;
-		}
-		return usedSize;
-	}
+    virtual uint64_t serializeIntoBuffer(void*& buffer, ExtSerialization::BufferProvider& bufferProvider, const void* object, uint64_t offset = 0) override
+    {
+        uint64_t usedSize;
+        if (!ExtSerializationCAPN<TkAsset, Serialization::TkAsset::Reader, Serialization::TkAsset::Builder>::serializeIntoBuffer(reinterpret_cast<const TkAsset*>(object),
+            reinterpret_cast<unsigned char*&>(buffer), usedSize, &bufferProvider, offset))
+        {
+            return 0;
+        }
+        return usedSize;
+    }
 };
 
 
 class ExTkSerializerAsset_RAW : public ExtSerializer
 {
 public:
-	ExtSerializerBoilerplate("TkAsset_RAW", "Blast high-level asset (Nv::Blast::TkAsset) serialization using raw memory format.", TkObjectTypeID::Asset, ExtSerialization::EncodingID::RawBinary);
-	ExtSerializerDefaultFactoryAndRelease(ExTkSerializerAsset_RAW);
-	ExtSerializerReadOnly(ExTkSerializerAsset_RAW);
+    ExtSerializerBoilerplate("TkAsset_RAW", "Blast high-level asset (Nv::Blast::TkAsset) serialization using raw memory format.", TkObjectTypeID::Asset, ExtSerialization::EncodingID::RawBinary);
+    ExtSerializerDefaultFactoryAndRelease(ExTkSerializerAsset_RAW);
+    ExtSerializerReadOnly(ExTkSerializerAsset_RAW);
 
-	virtual void* deserializeFromBuffer(const void* buffer, uint64_t size) override
-	{
-		ExtIStream stream(buffer, size);
-		return deserializeTkAsset(stream, *sExtTkSerializerFramework);
-	}
+    virtual void* deserializeFromBuffer(const void* buffer, uint64_t size) override
+    {
+        ExtIStream stream(buffer, size);
+        return deserializeTkAsset(stream, *sExtTkSerializerFramework);
+    }
 };
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv
 
 
 ///////////////////////////////////////
@@ -87,19 +87,19 @@ public:
 
 size_t NvBlastExtTkSerializerLoadSet(Nv::Blast::TkFramework& framework, Nv::Blast::ExtSerialization& serialization)
 {
-	Nv::Blast::sExtTkSerializerFramework = &framework;
+    Nv::Blast::sExtTkSerializerFramework = &framework;
 
-	Nv::Blast::ExtSerializer* (*factories[])() =
-	{
-		Nv::Blast::ExtTkSerializerAsset_CPNB::create,
-		Nv::Blast::ExTkSerializerAsset_RAW::create
-	};
+    Nv::Blast::ExtSerializer* (*factories[])() =
+    {
+        Nv::Blast::ExtTkSerializerAsset_CPNB::create,
+        Nv::Blast::ExTkSerializerAsset_RAW::create
+    };
 
-	return Nv::Blast::ExtSerializationLoadSet(static_cast<Nv::Blast::ExtSerializationInternal&>(serialization), factories);
+    return Nv::Blast::ExtSerializationLoadSet(static_cast<Nv::Blast::ExtSerializationInternal&>(serialization), factories);
 }
 
 
 uint64_t NvBlastExtSerializationSerializeTkAssetIntoBuffer(void*& buffer, Nv::Blast::ExtSerialization& serialization, const Nv::Blast::TkAsset* asset)
 {
-	return serialization.serializeIntoBuffer(buffer, asset, Nv::Blast::TkObjectTypeID::Asset);
+    return serialization.serializeIntoBuffer(buffer, asset, Nv::Blast::TkObjectTypeID::Asset);
 }

@@ -34,42 +34,42 @@
 class Time
 {
 public:
-	Time() : m_lastTickCount(getTimeTicks()) {}
+    Time() : m_lastTickCount(getTimeTicks()) {}
 
-	double Time::getElapsedSeconds()
-	{
-		const int64_t lastTickCount = m_lastTickCount;
-		m_lastTickCount = getTimeTicks();
-		return (m_lastTickCount - lastTickCount) * s_secondsPerTick;
-	}
+    double Time::getElapsedSeconds()
+    {
+        const int64_t lastTickCount = m_lastTickCount;
+        m_lastTickCount = getTimeTicks();
+        return (m_lastTickCount - lastTickCount) * s_secondsPerTick;
+    }
 
-	double Time::peekElapsedSeconds() const
-	{
-		return (getTimeTicks() - m_lastTickCount) * s_secondsPerTick;
-	}
+    double Time::peekElapsedSeconds() const
+    {
+        return (getTimeTicks() - m_lastTickCount) * s_secondsPerTick;
+    }
 
-	double Time::getLastTime() const
-	{
-		return m_lastTickCount * s_secondsPerTick;
-	}
+    double Time::getLastTime() const
+    {
+        return m_lastTickCount * s_secondsPerTick;
+    }
 
 private:
-	static double	getTickDuration()
-	{
-		LARGE_INTEGER a;
-		QueryPerformanceFrequency(&a);
-		return 1.0 / (double)a.QuadPart;
-	}
+    static double   getTickDuration()
+    {
+        LARGE_INTEGER a;
+        QueryPerformanceFrequency(&a);
+        return 1.0 / (double)a.QuadPart;
+    }
 
-	int64_t getTimeTicks() const
-	{
-		LARGE_INTEGER a;
-		QueryPerformanceCounter(&a);
-		return a.QuadPart;
-	}
+    int64_t getTimeTicks() const
+    {
+        LARGE_INTEGER a;
+        QueryPerformanceCounter(&a);
+        return a.QuadPart;
+    }
 
-	int64_t				m_lastTickCount;
-	static const double	s_secondsPerTick;
+    int64_t             m_lastTickCount;
+    static const double s_secondsPerTick;
 };
 
 

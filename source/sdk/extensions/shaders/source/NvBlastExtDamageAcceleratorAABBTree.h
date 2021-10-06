@@ -40,107 +40,107 @@ namespace Blast
 class ExtDamageAcceleratorAABBTree final : public ExtDamageAcceleratorInternal
 {
 public:
-	//////// ctor ////////
+    //////// ctor ////////
 
-	ExtDamageAcceleratorAABBTree() :
-		 m_root(nullptr)
-	{
-	}
+    ExtDamageAcceleratorAABBTree() :
+         m_root(nullptr)
+    {
+    }
 
-	virtual ~ExtDamageAcceleratorAABBTree()
-	{
-	}
+    virtual ~ExtDamageAcceleratorAABBTree()
+    {
+    }
 
-	static ExtDamageAcceleratorAABBTree* create(const NvBlastAsset* asset);
+    static ExtDamageAcceleratorAABBTree* create(const NvBlastAsset* asset);
 
 
-	//////// interface ////////
+    //////// interface ////////
 
-	virtual void release() override;
+    virtual void release() override;
 
-	virtual void findBondCentroidsInBounds(const physx::PxBounds3& bounds, ResultCallback& resultCallback) const override
-	{
-		const_cast<ExtDamageAcceleratorAABBTree*>(this)->findInBounds(bounds, resultCallback, false);
-	}
+    virtual void findBondCentroidsInBounds(const physx::PxBounds3& bounds, ResultCallback& resultCallback) const override
+    {
+        const_cast<ExtDamageAcceleratorAABBTree*>(this)->findInBounds(bounds, resultCallback, false);
+    }
 
-	virtual void findBondSegmentsInBounds(const physx::PxBounds3& bounds, ResultCallback& resultCallback) const override
-	{
-		const_cast<ExtDamageAcceleratorAABBTree*>(this)->findInBounds(bounds, resultCallback, true);
+    virtual void findBondSegmentsInBounds(const physx::PxBounds3& bounds, ResultCallback& resultCallback) const override
+    {
+        const_cast<ExtDamageAcceleratorAABBTree*>(this)->findInBounds(bounds, resultCallback, true);
 
-	}
+    }
 
-	virtual void findBondSegmentsPlaneIntersected(const physx::PxPlane& plane, ResultCallback& resultCallback) const override;
+    virtual void findBondSegmentsPlaneIntersected(const physx::PxPlane& plane, ResultCallback& resultCallback) const override;
 
-	virtual Nv::Blast::DebugBuffer fillDebugRender(int depth, bool segments) override;
+    virtual Nv::Blast::DebugBuffer fillDebugRender(int depth, bool segments) override;
 
-	virtual void* getImmediateScratch(size_t size) override
-	{
-		m_scratch.resizeUninitialized(size);
-		return m_scratch.begin();
-	}
+    virtual void* getImmediateScratch(size_t size) override
+    {
+        m_scratch.resizeUninitialized(size);
+        return m_scratch.begin();
+    }
 
 
 private:
-	// no copy/assignment
-	ExtDamageAcceleratorAABBTree(ExtDamageAcceleratorAABBTree&);
-	ExtDamageAcceleratorAABBTree& operator=(const ExtDamageAcceleratorAABBTree& tree);
+    // no copy/assignment
+    ExtDamageAcceleratorAABBTree(ExtDamageAcceleratorAABBTree&);
+    ExtDamageAcceleratorAABBTree& operator=(const ExtDamageAcceleratorAABBTree& tree);
 
-	// Tree node 
-	struct Node
-	{
-		int child[2];
-		uint32_t first;
-		uint32_t last;
-		physx::PxBounds3 pointsBound;
-		physx::PxBounds3 segmentsBound;
-	};
-
-
-	void build(const NvBlastAsset* asset);
-
-	int createNode(uint32_t startIdx, uint32_t endIdx, uint32_t depth);
-
-	void pushResult(ResultCallback& callback, uint32_t pointIndex) const
-	{
-		callback.push(pointIndex, m_bonds[pointIndex].node0, m_bonds[pointIndex].node1);
-	}
-
-	void findInBounds(const physx::PxBounds3& bounds, ResultCallback& callback, bool segments) const;
-
-	void findPointsInBounds(const Node& node, ResultCallback& callback, const physx::PxBounds3& bounds) const;
-
-	void findSegmentsInBounds(const Node& node, ResultCallback& callback, const physx::PxBounds3& bounds) const;
-
-	void findSegmentsPlaneIntersected(const Node& node, ResultCallback& callback, const physx::PxPlane& plane) const;
-
-	void fillDebugBuffer(const Node& node, int currentDepth, int depth, bool segments);
+    // Tree node 
+    struct Node
+    {
+        int child[2];
+        uint32_t first;
+        uint32_t last;
+        physx::PxBounds3 pointsBound;
+        physx::PxBounds3 segmentsBound;
+    };
 
 
-	//////// data ////////
+    void build(const NvBlastAsset* asset);
 
-	Node*					              m_root;
-	Array<Node>::type		              m_nodes;
-	Array<uint32_t>::type	              m_indices;
+    int createNode(uint32_t startIdx, uint32_t endIdx, uint32_t depth);
 
-	Array<physx::PxVec3>::type		      m_points;
+    void pushResult(ResultCallback& callback, uint32_t pointIndex) const
+    {
+        callback.push(pointIndex, m_bonds[pointIndex].node0, m_bonds[pointIndex].node1);
+    }
 
-	struct Segment
-	{
-		physx::PxVec3	p0;
-		physx::PxVec3	p1;
-	};
-	Array<Segment>::type			      m_segments;
+    void findInBounds(const physx::PxBounds3& bounds, ResultCallback& callback, bool segments) const;
 
-	struct BondData
-	{
-		uint32_t		node0;
-		uint32_t		node1;
-	};
-	Array<BondData>::type		          m_bonds;
+    void findPointsInBounds(const Node& node, ResultCallback& callback, const physx::PxBounds3& bounds) const;
 
-	Array<Nv::Blast::DebugLine>::type     m_debugLineBuffer;
+    void findSegmentsInBounds(const Node& node, ResultCallback& callback, const physx::PxBounds3& bounds) const;
 
-	Array<char>::type					  m_scratch;
+    void findSegmentsPlaneIntersected(const Node& node, ResultCallback& callback, const physx::PxPlane& plane) const;
+
+    void fillDebugBuffer(const Node& node, int currentDepth, int depth, bool segments);
+
+
+    //////// data ////////
+
+    Node*                                 m_root;
+    Array<Node>::type                     m_nodes;
+    Array<uint32_t>::type                 m_indices;
+
+    Array<physx::PxVec3>::type            m_points;
+
+    struct Segment
+    {
+        physx::PxVec3   p0;
+        physx::PxVec3   p1;
+    };
+    Array<Segment>::type                  m_segments;
+
+    struct BondData
+    {
+        uint32_t        node0;
+        uint32_t        node1;
+    };
+    Array<BondData>::type                 m_bonds;
+
+    Array<Nv::Blast::DebugLine>::type     m_debugLineBuffer;
+
+    Array<char>::type                     m_scratch;
 };
 
 

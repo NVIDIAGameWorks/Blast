@@ -37,51 +37,51 @@ namespace Nv
 namespace Blast
 {
 
-TkFramework*		sExtPxSerializerFramework = nullptr;
-physx::PxPhysics*	sExtPxSerializerPhysics = nullptr;
-physx::PxCooking*	sExtPxSerializerCooking = nullptr;
+TkFramework*        sExtPxSerializerFramework = nullptr;
+physx::PxPhysics*   sExtPxSerializerPhysics = nullptr;
+physx::PxCooking*   sExtPxSerializerCooking = nullptr;
 
 
 class ExtPxSerializerAsset_CPNB : public ExtSerializer
 {
 public:
-	ExtSerializerBoilerplate("ExtPxAsset_CPNB", "Blast PhysX extension asset (Nv::Blast::ExtPxAsset) serialization using Cap'n Proto binary format.", ExtPxObjectTypeID::Asset, ExtSerialization::EncodingID::CapnProtoBinary);
-	ExtSerializerDefaultFactoryAndRelease(ExtPxSerializerAsset_CPNB);
+    ExtSerializerBoilerplate("ExtPxAsset_CPNB", "Blast PhysX extension asset (Nv::Blast::ExtPxAsset) serialization using Cap'n Proto binary format.", ExtPxObjectTypeID::Asset, ExtSerialization::EncodingID::CapnProtoBinary);
+    ExtSerializerDefaultFactoryAndRelease(ExtPxSerializerAsset_CPNB);
 
-	virtual void* deserializeFromBuffer(const void* buffer, uint64_t size) override
-	{
-		return ExtSerializationCAPN<ExtPxAsset, Serialization::ExtPxAsset::Reader, Serialization::ExtPxAsset::Builder>::deserializeFromBuffer(reinterpret_cast<const unsigned char*>(buffer), size);
-	}
+    virtual void* deserializeFromBuffer(const void* buffer, uint64_t size) override
+    {
+        return ExtSerializationCAPN<ExtPxAsset, Serialization::ExtPxAsset::Reader, Serialization::ExtPxAsset::Builder>::deserializeFromBuffer(reinterpret_cast<const unsigned char*>(buffer), size);
+    }
 
-	virtual uint64_t serializeIntoBuffer(void*& buffer, ExtSerialization::BufferProvider& bufferProvider, const void* object, uint64_t offset = 0) override
-	{
-		uint64_t usedSize;
-		if (!ExtSerializationCAPN<ExtPxAsset, Serialization::ExtPxAsset::Reader, Serialization::ExtPxAsset::Builder>::serializeIntoBuffer(reinterpret_cast<const ExtPxAsset*>(object),
-			reinterpret_cast<unsigned char*&>(buffer), usedSize, &bufferProvider, offset))
-		{
-			return 0;
-		}
-		return usedSize;
-	}
+    virtual uint64_t serializeIntoBuffer(void*& buffer, ExtSerialization::BufferProvider& bufferProvider, const void* object, uint64_t offset = 0) override
+    {
+        uint64_t usedSize;
+        if (!ExtSerializationCAPN<ExtPxAsset, Serialization::ExtPxAsset::Reader, Serialization::ExtPxAsset::Builder>::serializeIntoBuffer(reinterpret_cast<const ExtPxAsset*>(object),
+            reinterpret_cast<unsigned char*&>(buffer), usedSize, &bufferProvider, offset))
+        {
+            return 0;
+        }
+        return usedSize;
+    }
 };
 
 
 class ExtPxSerializerAsset_RAW : public ExtSerializer
 {
 public:
-	ExtSerializerBoilerplate("ExtPxAsset_RAW", "Blast PhysX extension asset (Nv::Blast::TkAsset) serialization using raw memory format.", ExtPxObjectTypeID::Asset, ExtSerialization::EncodingID::RawBinary);
-	ExtSerializerDefaultFactoryAndRelease(ExtPxSerializerAsset_RAW);
-	ExtSerializerReadOnly(ExtPxSerializerAsset_RAW);
+    ExtSerializerBoilerplate("ExtPxAsset_RAW", "Blast PhysX extension asset (Nv::Blast::TkAsset) serialization using raw memory format.", ExtPxObjectTypeID::Asset, ExtSerialization::EncodingID::RawBinary);
+    ExtSerializerDefaultFactoryAndRelease(ExtPxSerializerAsset_RAW);
+    ExtSerializerReadOnly(ExtPxSerializerAsset_RAW);
 
-	virtual void* deserializeFromBuffer(const void* buffer, uint64_t size) override
-	{
-		ExtIStream stream(buffer, size);
-		return deserializeExtPxAsset(stream, *sExtPxSerializerFramework, *sExtPxSerializerPhysics);
-	}
+    virtual void* deserializeFromBuffer(const void* buffer, uint64_t size) override
+    {
+        ExtIStream stream(buffer, size);
+        return deserializeExtPxAsset(stream, *sExtPxSerializerFramework, *sExtPxSerializerPhysics);
+    }
 };
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv
 
 
 ///////////////////////////////////////
@@ -89,21 +89,21 @@ public:
 
 size_t NvBlastExtPxSerializerLoadSet(Nv::Blast::TkFramework& framework, physx::PxPhysics& physics, physx::PxCooking& cooking, Nv::Blast::ExtSerialization& serialization)
 {
-	Nv::Blast::sExtPxSerializerFramework = &framework;
-	Nv::Blast::sExtPxSerializerPhysics = &physics;
-	Nv::Blast::sExtPxSerializerCooking = &cooking;
+    Nv::Blast::sExtPxSerializerFramework = &framework;
+    Nv::Blast::sExtPxSerializerPhysics = &physics;
+    Nv::Blast::sExtPxSerializerCooking = &cooking;
 
-	Nv::Blast::ExtSerializer* (*factories[])() =
-	{
-		Nv::Blast::ExtPxSerializerAsset_CPNB::create,
-		Nv::Blast::ExtPxSerializerAsset_RAW::create
-	};
+    Nv::Blast::ExtSerializer* (*factories[])() =
+    {
+        Nv::Blast::ExtPxSerializerAsset_CPNB::create,
+        Nv::Blast::ExtPxSerializerAsset_RAW::create
+    };
 
-	return Nv::Blast::ExtSerializationLoadSet(static_cast<Nv::Blast::ExtSerializationInternal&>(serialization), factories);
+    return Nv::Blast::ExtSerializationLoadSet(static_cast<Nv::Blast::ExtSerializationInternal&>(serialization), factories);
 }
 
 
 uint64_t NvBlastExtSerializationSerializeExtPxAssetIntoBuffer(void*& buffer, Nv::Blast::ExtSerialization& serialization, const Nv::Blast::ExtPxAsset* asset)
 {
-	return serialization.serializeIntoBuffer(buffer, asset, Nv::Blast::ExtPxObjectTypeID::Asset);
+    return serialization.serializeIntoBuffer(buffer, asset, Nv::Blast::ExtPxObjectTypeID::Asset);
 }

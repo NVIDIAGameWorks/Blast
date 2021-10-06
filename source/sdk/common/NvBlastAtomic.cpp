@@ -39,7 +39,7 @@ namespace Blast
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//												Windows Implementation
+//                                              Windows Implementation
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #if NV_WINDOWS_FAMILY
@@ -48,34 +48,34 @@ namespace Blast
 
 int32_t atomicIncrement(volatile int32_t* val)
 {
-	return (int32_t)InterlockedIncrement((volatile LONG*)val);
+    return (int32_t)InterlockedIncrement((volatile LONG*)val);
 }
 
 int32_t atomicDecrement(volatile int32_t* val)
 {
-	return (int32_t)InterlockedDecrement((volatile LONG*)val);
+    return (int32_t)InterlockedDecrement((volatile LONG*)val);
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//												Unix Implementation
+//                                              Unix Implementation
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #elif(NV_UNIX_FAMILY)
 
 int32_t atomicIncrement(volatile int32_t* val)
 {
-	return __sync_add_and_fetch(val, 1);
+    return __sync_add_and_fetch(val, 1);
 }
 
 int32_t atomicDecrement(volatile int32_t* val)
 {
-	return __sync_sub_and_fetch(val, 1);
+    return __sync_sub_and_fetch(val, 1);
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//												Unsupported Platforms
+//                                              Unsupported Platforms
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #else

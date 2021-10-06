@@ -44,145 +44,145 @@ template<typename TObject, typename TSerializationReader, typename TSerializatio
 class ExtSerializationCAPN
 {
 public:
-	static TObject*	deserializeFromBuffer(const unsigned char* input, uint64_t size);
-	static TObject*	deserializeFromStream(std::istream& inputStream);
+    static TObject* deserializeFromBuffer(const unsigned char* input, uint64_t size);
+    static TObject* deserializeFromStream(std::istream& inputStream);
 
-	static uint64_t	serializationBufferSize(const TObject* object);
+    static uint64_t serializationBufferSize(const TObject* object);
 
-	static bool		serializeIntoBuffer(const TObject* object, unsigned char* buffer, uint64_t maxSize, uint64_t& usedSize);
-	static bool		serializeIntoBuffer(const TObject *object, unsigned char*& buffer, uint64_t& size, ExtSerialization::BufferProvider* bufferProvider = nullptr, uint64_t offset = 0);
-	static bool		serializeIntoStream(const TObject* object, std::ostream& outputStream);
+    static bool     serializeIntoBuffer(const TObject* object, unsigned char* buffer, uint64_t maxSize, uint64_t& usedSize);
+    static bool     serializeIntoBuffer(const TObject *object, unsigned char*& buffer, uint64_t& size, ExtSerialization::BufferProvider* bufferProvider = nullptr, uint64_t offset = 0);
+    static bool     serializeIntoStream(const TObject* object, std::ostream& outputStream);
 
 private:
-	// Specialized
-	static bool		serializeIntoBuilder(TSerializationBuilder& objectBuilder, const TObject* object);
-	static bool		serializeIntoMessage(capnp::MallocMessageBuilder& message, const TObject* object);
-	static TObject*	deserializeFromStreamReader(capnp::InputStreamMessageReader& message);
+    // Specialized
+    static bool     serializeIntoBuilder(TSerializationBuilder& objectBuilder, const TObject* object);
+    static bool     serializeIntoMessage(capnp::MallocMessageBuilder& message, const TObject* object);
+    static TObject* deserializeFromStreamReader(capnp::InputStreamMessageReader& message);
 };
 
 
 template<typename TObject, typename TSerializationReader, typename TSerializationBuilder>
 TObject* ExtSerializationCAPN<TObject, TSerializationReader, TSerializationBuilder>::deserializeFromBuffer(const unsigned char* input, uint64_t size)
 {
-	kj::ArrayPtr<const unsigned char> source(input, size);
+    kj::ArrayPtr<const unsigned char> source(input, size);
 
-	kj::ArrayInputStream inputStream(source);
+    kj::ArrayInputStream inputStream(source);
 
-	Nv::Blast::Array<uint64_t>::type scratch(static_cast<uint32_t>(size));
-	kj::ArrayPtr<capnp::word> scratchArray((capnp::word*) scratch.begin(), size);
+    Nv::Blast::Array<uint64_t>::type scratch(static_cast<uint32_t>(size));
+    kj::ArrayPtr<capnp::word> scratchArray((capnp::word*) scratch.begin(), size);
 
-	capnp::InputStreamMessageReader message(inputStream, capnp::ReaderOptions(), scratchArray);
+    capnp::InputStreamMessageReader message(inputStream, capnp::ReaderOptions(), scratchArray);
 
-	return deserializeFromStreamReader(message);
+    return deserializeFromStreamReader(message);
 }
 
 
 template<typename TObject, typename TSerializationReader, typename TSerializationBuilder>
 TObject* ExtSerializationCAPN<TObject, TSerializationReader, TSerializationBuilder>::deserializeFromStream(std::istream& inputStream)
 {
-	ExtInputStream readStream(inputStream);
+    ExtInputStream readStream(inputStream);
 
-	capnp::InputStreamMessageReader message(readStream);
+    capnp::InputStreamMessageReader message(readStream);
 
-	return deserializeFromStreamReader(message);
+    return deserializeFromStreamReader(message);
 }
 
 
 template<typename TObject, typename TSerializationReader, typename TSerializationBuilder>
 uint64_t ExtSerializationCAPN<TObject, TSerializationReader, TSerializationBuilder>::serializationBufferSize(const TObject* object)
 {
-	capnp::MallocMessageBuilder message;
+    capnp::MallocMessageBuilder message;
 
-	bool result = serializeIntoMessage(message, object);
+    bool result = serializeIntoMessage(message, object);
 
-	if (result == false)
-	{
-		return 0;
-	}
+    if (result == false)
+    {
+        return 0;
+    }
 
-	return computeSerializedSizeInWords(message) * sizeof(uint64_t);
+    return computeSerializedSizeInWords(message) * sizeof(uint64_t);
 }
 
 
 template<typename TObject, typename TSerializationReader, typename TSerializationBuilder>
 bool ExtSerializationCAPN<TObject, TSerializationReader, TSerializationBuilder>::serializeIntoBuffer(const TObject* object, unsigned char* buffer, uint64_t maxSize, uint64_t& usedSize)
 {
-	capnp::MallocMessageBuilder message;
+    capnp::MallocMessageBuilder message;
 
-	bool result = serializeIntoMessage(message, object);
+    bool result = serializeIntoMessage(message, object);
 
-	if (result == false)
-	{
-		usedSize = 0;
-		return false;
-	}
+    if (result == false)
+    {
+        usedSize = 0;
+        return false;
+    }
 
-	uint64_t messageSize = computeSerializedSizeInWords(message) * sizeof(uint64_t);
+    uint64_t messageSize = computeSerializedSizeInWords(message) * sizeof(uint64_t);
 
-	if (maxSize < messageSize)
-	{
-		NVBLAST_LOG_ERROR("When attempting to serialize into an existing buffer, the provided buffer was too small.");
-		usedSize = 0;
-		return false;
-	}
+    if (maxSize < messageSize)
+    {
+        NVBLAST_LOG_ERROR("When attempting to serialize into an existing buffer, the provided buffer was too small.");
+        usedSize = 0;
+        return false;
+    }
 
-	kj::ArrayPtr<unsigned char> outputBuffer(buffer, maxSize);
-	kj::ArrayOutputStream outputStream(outputBuffer);
+    kj::ArrayPtr<unsigned char> outputBuffer(buffer, maxSize);
+    kj::ArrayOutputStream outputStream(outputBuffer);
 
-	capnp::writeMessage(outputStream, message);
+    capnp::writeMessage(outputStream, message);
 
-	usedSize = messageSize;
-	return true;
+    usedSize = messageSize;
+    return true;
 }
 
 
 template<typename TObject, typename TSerializationReader, typename TSerializationBuilder>
 bool ExtSerializationCAPN<TObject, TSerializationReader, TSerializationBuilder>::serializeIntoBuffer(const TObject *object, unsigned char*& buffer, uint64_t& size, ExtSerialization::BufferProvider* bufferProvider, uint64_t offset)
 {
-	capnp::MallocMessageBuilder message;
+    capnp::MallocMessageBuilder message;
 
-	bool result = serializeIntoMessage(message, object);
+    bool result = serializeIntoMessage(message, object);
 
-	if (result == false)
-	{
-		buffer = nullptr;
-		size = 0;
-		return false;
-	}
+    if (result == false)
+    {
+        buffer = nullptr;
+        size = 0;
+        return false;
+    }
 
-	const uint64_t blockSize = computeSerializedSizeInWords(message) * sizeof(uint64_t);
+    const uint64_t blockSize = computeSerializedSizeInWords(message) * sizeof(uint64_t);
 
-	size = blockSize + offset;
+    size = blockSize + offset;
 
-	buffer = static_cast<unsigned char *>(bufferProvider != nullptr ? bufferProvider->requestBuffer(size) : NVBLAST_ALLOC(size));
+    buffer = static_cast<unsigned char *>(bufferProvider != nullptr ? bufferProvider->requestBuffer(size) : NVBLAST_ALLOC(size));
 
-	kj::ArrayPtr<unsigned char> outputBuffer(buffer + offset, blockSize);
-	kj::ArrayOutputStream outputStream(outputBuffer);
+    kj::ArrayPtr<unsigned char> outputBuffer(buffer + offset, blockSize);
+    kj::ArrayOutputStream outputStream(outputBuffer);
 
-	capnp::writeMessage(outputStream, message);
+    capnp::writeMessage(outputStream, message);
 
-	return true;
+    return true;
 }
 
 
 template<typename TObject, typename TSerializationReader, typename TSerializationBuilder>
 bool ExtSerializationCAPN<TObject, TSerializationReader, TSerializationBuilder>::serializeIntoStream(const TObject* object, std::ostream& outputStream)
 {
-	capnp::MallocMessageBuilder message;
+    capnp::MallocMessageBuilder message;
 
-	bool result = serializeIntoMessage(message, object);
+    bool result = serializeIntoMessage(message, object);
 
-	if (result == false)
-	{
-		return false;
-	}
+    if (result == false)
+    {
+        return false;
+    }
 
-	ExtOutputStream blastOutputStream(outputStream);
+    ExtOutputStream blastOutputStream(outputStream);
 
-	writeMessage(blastOutputStream, message);
+    writeMessage(blastOutputStream, message);
 
-	return true;
+    return true;
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

@@ -43,166 +43,166 @@ namespace Blast
 class Mesh;
 
 /**
-	Boolean tool config, used to perform different operations: UNION, INTERSECTION, DIFFERENCE
+    Boolean tool config, used to perform different operations: UNION, INTERSECTION, DIFFERENCE
 */
 struct BooleanConf
 {
-	int32_t ca, cb, ci;
-	BooleanConf(int32_t a, int32_t b, int32_t c) : ca(a), cb(b), ci(c)
-	{
-	}
+    int32_t ca, cb, ci;
+    BooleanConf(int32_t a, int32_t b, int32_t c) : ca(a), cb(b), ci(c)
+    {
+    }
 };
 
 
 namespace BooleanConfigurations
 {
-	/**
-		Creates boolean tool configuration to perform intersection of meshes A and B.
-	*/
+    /**
+        Creates boolean tool configuration to perform intersection of meshes A and B.
+    */
 inline BooleanConf BOOLEAN_INTERSECION()
 {
-	return BooleanConf(0, 0, 1);
+    return BooleanConf(0, 0, 1);
 }
 
 /**
-	Creates boolean tool configuration to perform union of meshes A and B.
+    Creates boolean tool configuration to perform union of meshes A and B.
 */
 inline BooleanConf BOOLEAN_UNION()
 {
-	return BooleanConf(1, 1, -1);
+    return BooleanConf(1, 1, -1);
 }
 /**
-	Creates boolean tool configuration to perform difference of meshes(A - B).
+    Creates boolean tool configuration to perform difference of meshes(A - B).
 */
 inline BooleanConf BOOLEAN_DIFFERENCE()
 {
-	return BooleanConf(1, 0, -1);
+    return BooleanConf(1, 0, -1);
 }
 }
 
 /**
-	Structure which holds information about intersection facet with edge.
+    Structure which holds information about intersection facet with edge.
 */
 struct EdgeFacetIntersectionData
 {
-	int32_t	edId;
-	int32_t	intersectionType;
-	Vertex	intersectionPoint;
-	EdgeFacetIntersectionData(int32_t edId, int32_t intersType, Vertex& inters) : edId(edId), intersectionType(intersType), intersectionPoint(inters)
-	{	}
-	EdgeFacetIntersectionData(int32_t edId) : edId(edId)
-	{	}
-	bool operator<(const EdgeFacetIntersectionData& b) const
-	{
-		return edId < b.edId;
-	}
+    int32_t edId;
+    int32_t intersectionType;
+    Vertex  intersectionPoint;
+    EdgeFacetIntersectionData(int32_t edId, int32_t intersType, Vertex& inters) : edId(edId), intersectionType(intersType), intersectionPoint(inters)
+    {   }
+    EdgeFacetIntersectionData(int32_t edId) : edId(edId)
+    {   }
+    bool operator<(const EdgeFacetIntersectionData& b) const
+    {
+        return edId < b.edId;
+    }
 };
 
 
 class SpatialAccelerator;
 
 /**
-	Tool for performing boolean operations on polygonal meshes.
-	Tool supports only closed meshes. Performing boolean on meshes with holes can lead to unexpected behavior, e.g. holes in result geometry.
+    Tool for performing boolean operations on polygonal meshes.
+    Tool supports only closed meshes. Performing boolean on meshes with holes can lead to unexpected behavior, e.g. holes in result geometry.
 */
 class BooleanEvaluator
 {
 
 public:
-	BooleanEvaluator();
-	~BooleanEvaluator();
+    BooleanEvaluator();
+    ~BooleanEvaluator();
 
-	/**
-		Perform boolean operation on two polygonal meshes (A and B).
-		\param[in] meshA	Mesh A 
-		\param[in] meshB	Mesh B
-		\param[in] spAccelA Acceleration structure for mesh A
-		\param[in] spAccelB Acceleration structure for mesh B
-		\param[in] mode		Boolean operation type
-	*/
-	void	performBoolean(const Mesh* meshA, const Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode);
+    /**
+        Perform boolean operation on two polygonal meshes (A and B).
+        \param[in] meshA    Mesh A 
+        \param[in] meshB    Mesh B
+        \param[in] spAccelA Acceleration structure for mesh A
+        \param[in] spAccelB Acceleration structure for mesh B
+        \param[in] mode     Boolean operation type
+    */
+    void    performBoolean(const Mesh* meshA, const Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode);
 
-	/**
-		Perform boolean operation on two polygonal meshes (A and B).
-		\param[in] meshA	Mesh A
-		\param[in] meshB	Mesh B
-		\param[in] mode		Boolean operation type
-	*/
-	void	performBoolean(const Mesh* meshA, const Mesh* meshB, BooleanConf mode);
+    /**
+        Perform boolean operation on two polygonal meshes (A and B).
+        \param[in] meshA    Mesh A
+        \param[in] meshB    Mesh B
+        \param[in] mode     Boolean operation type
+    */
+    void    performBoolean(const Mesh* meshA, const Mesh* meshB, BooleanConf mode);
 
-	/**
-		Perform cutting of mesh with some large box, which represents cutting plane. This method skips part of intersetion computations, so
-		should be used ONLY with cutting box, received from getBigBox(...) method from NvBlastExtAuthoringMesh.h. For cutting use only BOOLEAN_INTERSECTION or BOOLEAN_DIFFERENCE mode.
-		\param[in] meshA	Mesh A
-		\param[in] meshB	Cutting box
-		\param[in] spAccelA Acceleration structure for mesh A
-		\param[in] spAccelB Acceleration structure for cutting box
-		\param[in] mode		Boolean operation type
-	*/
-	void	performFastCutting(const Mesh* meshA, const Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode);
+    /**
+        Perform cutting of mesh with some large box, which represents cutting plane. This method skips part of intersetion computations, so
+        should be used ONLY with cutting box, received from getBigBox(...) method from NvBlastExtAuthoringMesh.h. For cutting use only BOOLEAN_INTERSECTION or BOOLEAN_DIFFERENCE mode.
+        \param[in] meshA    Mesh A
+        \param[in] meshB    Cutting box
+        \param[in] spAccelA Acceleration structure for mesh A
+        \param[in] spAccelB Acceleration structure for cutting box
+        \param[in] mode     Boolean operation type
+    */
+    void    performFastCutting(const Mesh* meshA, const Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode);
 
-	/**
-		Perform cutting of mesh with some large box, which represents cutting plane. This method skips part of intersetion computations, so
-		should be used ONLY with cutting box, received from getBigBox(...) method from NvBlastExtAuthoringMesh.h. For cutting use only BOOLEAN_INTERSECTION or BOOLEAN_DIFFERENCE mode.
-		\param[in] meshA	Mesh A
-		\param[in] meshB	Cutting box
-		\param[in] mode		Boolean operation type
-	*/
-	void	performFastCutting(const Mesh* meshA, const Mesh* meshB, BooleanConf mode);
+    /**
+        Perform cutting of mesh with some large box, which represents cutting plane. This method skips part of intersetion computations, so
+        should be used ONLY with cutting box, received from getBigBox(...) method from NvBlastExtAuthoringMesh.h. For cutting use only BOOLEAN_INTERSECTION or BOOLEAN_DIFFERENCE mode.
+        \param[in] meshA    Mesh A
+        \param[in] meshB    Cutting box
+        \param[in] mode     Boolean operation type
+    */
+    void    performFastCutting(const Mesh* meshA, const Mesh* meshB, BooleanConf mode);
 
-	/**
-		Test whether point contained in mesh.
-		\param[in] mesh		Mesh geometry
-		\param[in] point	Point which should be tested
-		\return not 0 if point is inside of mesh
-	*/
-	int32_t	isPointContainedInMesh(const Mesh* mesh, const NvcVec3& point);
-	/**
-		Test whether point contained in mesh.
-		\param[in] mesh		Mesh geometry
-		\param[in] spAccel	Acceleration structure for mesh
-		\param[in] point	Point which should be tested
-		\return not 0 if point is inside of mesh
-	*/
-	int32_t	isPointContainedInMesh(const Mesh* mesh, SpatialAccelerator* spAccel, const NvcVec3& point);
+    /**
+        Test whether point contained in mesh.
+        \param[in] mesh     Mesh geometry
+        \param[in] point    Point which should be tested
+        \return not 0 if point is inside of mesh
+    */
+    int32_t isPointContainedInMesh(const Mesh* mesh, const NvcVec3& point);
+    /**
+        Test whether point contained in mesh.
+        \param[in] mesh     Mesh geometry
+        \param[in] spAccel  Acceleration structure for mesh
+        \param[in] point    Point which should be tested
+        \return not 0 if point is inside of mesh
+    */
+    int32_t isPointContainedInMesh(const Mesh* mesh, SpatialAccelerator* spAccel, const NvcVec3& point);
 
 
-	/**
-		Generates result polygon mesh after performing boolean operation.
-		\return If not nullptr - result mesh geometry.
-	*/
-	Mesh*	createNewMesh();
+    /**
+        Generates result polygon mesh after performing boolean operation.
+        \return If not nullptr - result mesh geometry.
+    */
+    Mesh*   createNewMesh();
 
-	/**
-		Reset tool state.
-	*/
-	void	reset();
+    /**
+        Reset tool state.
+    */
+    void    reset();
 
 private:
 
-	void	buildFaceFaceIntersections(BooleanConf);
-	void	buildFastFaceFaceIntersection(BooleanConf);
-	void	collectRetainedPartsFromA(BooleanConf mode);
-	void	collectRetainedPartsFromB(BooleanConf mode);
+    void    buildFaceFaceIntersections(BooleanConf);
+    void    buildFastFaceFaceIntersection(BooleanConf);
+    void    collectRetainedPartsFromA(BooleanConf mode);
+    void    collectRetainedPartsFromB(BooleanConf mode);
 
-	int32_t	addIfNotExist(Vertex& p);
-	void	addEdgeIfValid(EdgeWithParent& ed);
+    int32_t addIfNotExist(Vertex& p);
+    void    addEdgeIfValid(EdgeWithParent& ed);
 private:
 
-	int32_t	vertexMeshStatus03(const NvcVec3& p, const Mesh* mesh);
-	int32_t	vertexMeshStatus30(const NvcVec3& p, const Mesh* mesh);
+    int32_t vertexMeshStatus03(const NvcVec3& p, const Mesh* mesh);
+    int32_t vertexMeshStatus30(const NvcVec3& p, const Mesh* mesh);
 
-	const Mesh*												mMeshA;
-	const Mesh*												mMeshB;
+    const Mesh*                                             mMeshA;
+    const Mesh*                                             mMeshB;
 
-	SpatialAccelerator*										mAcceleratorA;
-	SpatialAccelerator*										mAcceleratorB;
+    SpatialAccelerator*                                     mAcceleratorA;
+    SpatialAccelerator*                                     mAcceleratorB;
 
-	std::vector<EdgeWithParent>								mEdgeAggregate;
-	std::vector<Vertex>										mVerticesAggregate;
+    std::vector<EdgeWithParent>                             mEdgeAggregate;
+    std::vector<Vertex>                                     mVerticesAggregate;
 
-	std::vector<std::vector<EdgeFacetIntersectionData> >	mEdgeFacetIntersectionData12;
-	std::vector<std::vector<EdgeFacetIntersectionData> >	mEdgeFacetIntersectionData21;
+    std::vector<std::vector<EdgeFacetIntersectionData> >    mEdgeFacetIntersectionData12;
+    std::vector<std::vector<EdgeFacetIntersectionData> >    mEdgeFacetIntersectionData21;
 };
 
 } // namespace Blast

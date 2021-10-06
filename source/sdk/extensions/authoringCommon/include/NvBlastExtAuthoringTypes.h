@@ -56,9 +56,9 @@ Edge representation
 */
 struct Edge
 {
-	Edge(uint32_t s = kNotValidVertexIndex, uint32_t e = kNotValidVertexIndex) : s(s), e(e) {}
-	uint32_t s;
-	uint32_t e;
+    Edge(uint32_t s = kNotValidVertexIndex, uint32_t e = kNotValidVertexIndex) : s(s), e(e) {}
+    uint32_t s;
+    uint32_t e;
 };
 
 /**
@@ -66,11 +66,11 @@ struct Edge
 */
 struct Vertex
 {
-	Vertex() {};
-	Vertex(const NvcVec3& p, const NvcVec3& n, const NvcVec2& _uv) : p(p), n(n) { uv[0] = _uv; }
-	NvcVec3 p;      // Position
-	NvcVec3 n;      // Normal
-	NvcVec2 uv[1];  // UV-coordinates array, currently supported only one UV coordinate.
+    Vertex() {};
+    Vertex(const NvcVec3& p, const NvcVec3& n, const NvcVec2& _uv) : p(p), n(n) { uv[0] = _uv; }
+    NvcVec3 p;      // Position
+    NvcVec3 n;      // Normal
+    NvcVec2 uv[1];  // UV-coordinates array, currently supported only one UV coordinate.
 };
 
 /**
@@ -78,13 +78,13 @@ struct Vertex
 */
 struct Triangle
 {
-	Triangle() {};
-	Triangle(const Vertex& a, const Vertex& b, const Vertex& c, int32_t ud = 0, int32_t mid = 0, int32_t sid = 0) 
-		: a(a), b(b), c(c), userData(ud), materialId(mid), smoothingGroup(sid) {}
-	Vertex a, b, c;
-	int32_t userData;
-	int32_t materialId;
-	int32_t smoothingGroup;
+    Triangle() {};
+    Triangle(const Vertex& a, const Vertex& b, const Vertex& c, int32_t ud = 0, int32_t mid = 0, int32_t sid = 0) 
+        : a(a), b(b), c(c), userData(ud), materialId(mid), smoothingGroup(sid) {}
+    Vertex a, b, c;
+    int32_t userData;
+    int32_t materialId;
+    int32_t smoothingGroup;
 };
 
 /**
@@ -92,12 +92,12 @@ struct Triangle
 */
 struct TriangleIndexed
 {
-	TriangleIndexed(uint32_t ea, uint32_t eb, uint32_t ec, int32_t mid = 0, int32_t sid = 0, int32_t ud = 0)
-	: ea(ea), eb(eb), ec(ec), materialId(mid), smoothingGroup(sid), userData(ud) {}
-	uint32_t ea, eb, ec;
-	int32_t materialId;
-	int32_t smoothingGroup;
-	int32_t userData;
+    TriangleIndexed(uint32_t ea, uint32_t eb, uint32_t ec, int32_t mid = 0, int32_t sid = 0, int32_t ud = 0)
+    : ea(ea), eb(eb), ec(ec), materialId(mid), smoothingGroup(sid), userData(ud) {}
+    uint32_t ea, eb, ec;
+    int32_t materialId;
+    int32_t smoothingGroup;
+    int32_t userData;
 };
 
 /**
@@ -105,13 +105,13 @@ struct TriangleIndexed
 */
 struct Facet
 {
-	Facet(int32_t fen = 0, uint32_t ec = 0, int64_t ud = 0, int32_t mid = 0, int32_t sid = 0) 
-		: firstEdgeNumber(fen), edgesCount(ec), userData(ud), materialId(mid), smoothingGroup(sid) {}
-	int32_t firstEdgeNumber;
-	uint32_t edgesCount;
-	int64_t userData;
-	int32_t materialId;
-	int32_t smoothingGroup;
+    Facet(int32_t fen = 0, uint32_t ec = 0, int64_t ud = 0, int32_t mid = 0, int32_t sid = 0) 
+        : firstEdgeNumber(fen), edgesCount(ec), userData(ud), materialId(mid), smoothingGroup(sid) {}
+    int32_t firstEdgeNumber;
+    uint32_t edgesCount;
+    int64_t userData;
+    int32_t materialId;
+    int32_t smoothingGroup;
 };
 
 /**
@@ -119,12 +119,12 @@ struct Facet
 */
 struct HullPolygon
 {
-	// Polygon base plane
-	float plane[4];
-	// Number vertices in polygon
-	uint16_t vertexCount;
-	// First index in CollisionHull.indices array for this polygon
-	uint16_t indexBase;
+    // Polygon base plane
+    float plane[4];
+    // Number vertices in polygon
+    uint16_t vertexCount;
+    // First index in CollisionHull.indices array for this polygon
+    uint16_t indexBase;
 };
 
 /**
@@ -132,12 +132,12 @@ Collsion hull geometry.
 */
 struct CollisionHull
 {
-	uint32_t pointsCount;
-	uint32_t indicesCount;
-	uint32_t polygonDataCount;
-	NvcVec3* points;
-	uint32_t* indices;
-	HullPolygon* polygonData;
+    uint32_t pointsCount;
+    uint32_t indicesCount;
+    uint32_t polygonDataCount;
+    NvcVec3* points;
+    uint32_t* indices;
+    HullPolygon* polygonData;
 };
 
 /**
@@ -147,60 +147,60 @@ struct CollisionHull
 */
 struct AuthoringResult
 {
-	uint32_t chunkCount;  // Number of chunks in Blast asset
+    uint32_t chunkCount;  // Number of chunks in Blast asset
 
-	uint32_t bondCount;  // Number of bonds in Blast asset
+    uint32_t bondCount;  // Number of bonds in Blast asset
 
-	NvBlastAsset* asset;  // Blast asset
+    NvBlastAsset* asset;  // Blast asset
 
-	/**
-	    assetToFractureChunkIdMap used for getting internal FractureChunkId with FractureTool::getChunkId.
-	    FractureChunkId = FractureTool.getChunkId(aResult.assetToFractureChunkIdMap(AssetChunkId);
-	*/
-	uint32_t* assetToFractureChunkIdMap;
+    /**
+        assetToFractureChunkIdMap used for getting internal FractureChunkId with FractureTool::getChunkId.
+        FractureChunkId = FractureTool.getChunkId(aResult.assetToFractureChunkIdMap(AssetChunkId);
+    */
+    uint32_t* assetToFractureChunkIdMap;
 
-	/**
-	    Offsets for render mesh geometry. Contains chunkCount + 1 element.
-	    First triangle for i-th chunk: aResult.geometry[aResult.geometryOffset[i]]
-	    aResult.geometryOffset[chunkCount+1] is total number of triangles in geometry
-	*/
-	uint32_t* geometryOffset;
+    /**
+        Offsets for render mesh geometry. Contains chunkCount + 1 element.
+        First triangle for i-th chunk: aResult.geometry[aResult.geometryOffset[i]]
+        aResult.geometryOffset[chunkCount+1] is total number of triangles in geometry
+    */
+    uint32_t* geometryOffset;
 
-	Triangle* geometry;  // Raw array of Triangle for all chunks
+    Triangle* geometry;  // Raw array of Triangle for all chunks
 
-	NvBlastChunkDesc* chunkDescs;  // Array of chunk descriptors. Contains chunkCount elements
+    NvBlastChunkDesc* chunkDescs;  // Array of chunk descriptors. Contains chunkCount elements
 
-	NvBlastBondDesc* bondDescs;  // Array of bond descriptors. Contains bondCount elements
+    NvBlastBondDesc* bondDescs;  // Array of bond descriptors. Contains bondCount elements
 
-	/**
-	    Collision hull offsets. Contains chunkCount + 1 element.
-	    First collision hull for i-th chunk: aResult.collisionHull[aResult.collisionHullOffset[i]]
-	    aResult.collisionHullOffset[chunkCount+1] is total number of collision hulls in collisionHull
-	*/
-	uint32_t* collisionHullOffset;
+    /**
+        Collision hull offsets. Contains chunkCount + 1 element.
+        First collision hull for i-th chunk: aResult.collisionHull[aResult.collisionHullOffset[i]]
+        aResult.collisionHullOffset[chunkCount+1] is total number of collision hulls in collisionHull
+    */
+    uint32_t* collisionHullOffset;
 
-	CollisionHull** collisionHull;  // Raw array of pointers to collision hull for all chunks.
+    CollisionHull** collisionHull;  // Raw array of pointers to collision hull for all chunks.
 
-	/**
-	    Array of material names.
-	*/
-	const char** materialNames;
-	/**
-	    Size of array of material names.
-	*/
+    /**
+        Array of material names.
+    */
+    const char** materialNames;
+    /**
+        Size of array of material names.
+    */
 
-	uint32_t materialCount;
+    uint32_t materialCount;
 };
 
 struct ConvexDecompositionParams
 {
-	uint32_t maximumNumberOfHulls = 8;  // Maximum number of convex hull generated for one chunk. If equal to 1 convex
-	                                    // decomposition is disabled.
-	uint32_t maximumNumberOfVerticesPerHull = 64;  // Controls the maximum number of triangles per convex-hull
-	                                               // (default=64, range=4-1024)
-	uint32_t voxelGridResolution = 1000000;        // Voxel grid resolution used for chunk convex decomposition
-	                                               // (default=1,000,000, range=10,000-16,000,000).
-	float concavity = 0.0025f;                     // Value between 0 and 1, controls how accurate hull generation is
+    uint32_t maximumNumberOfHulls = 8;  // Maximum number of convex hull generated for one chunk. If equal to 1 convex
+                                        // decomposition is disabled.
+    uint32_t maximumNumberOfVerticesPerHull = 64;  // Controls the maximum number of triangles per convex-hull
+                                                   // (default=64, range=4-1024)
+    uint32_t voxelGridResolution = 1000000;        // Voxel grid resolution used for chunk convex decomposition
+                                                   // (default=1,000,000, range=10,000-16,000,000).
+    float concavity = 0.0025f;                     // Value between 0 and 1, controls how accurate hull generation is
 };
 
 }  // namespace Blast

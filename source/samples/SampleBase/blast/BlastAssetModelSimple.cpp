@@ -33,36 +33,36 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//												BlastAssetModelSimple
+//                                              BlastAssetModelSimple
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 BlastAssetModelSimple::BlastAssetModelSimple(TkFramework& framework, PxPhysics& physics, PxCooking& cooking, ExtSerialization& serialization, Renderer& renderer, const char* modelName)
-	: BlastAssetModel(framework, physics, cooking, serialization, renderer, modelName)
+    : BlastAssetModel(framework, physics, cooking, serialization, renderer, modelName)
 {
-	// prepare materials
-	for (const BlastModel::Material& material : getModel().materials)
-	{
-		if (material.diffuseTexture.empty())
-			m_renderMaterials.push_back(new RenderMaterial(renderer.getResourceManager(), "model_simple"));
-		else
-			m_renderMaterials.push_back(new RenderMaterial(renderer.getResourceManager(), "model_simple_textured", material.diffuseTexture.c_str()));
-	}
+    // prepare materials
+    for (const BlastModel::Material& material : getModel().materials)
+    {
+        if (material.diffuseTexture.empty())
+            m_renderMaterials.push_back(new RenderMaterial(renderer.getResourceManager(), "model_simple"));
+        else
+            m_renderMaterials.push_back(new RenderMaterial(renderer.getResourceManager(), "model_simple_textured", material.diffuseTexture.c_str()));
+    }
 
-	initialize();
+    initialize();
 }
 
 
 BlastAssetModelSimple::~BlastAssetModelSimple()
 {
-	// release materials
-	for (RenderMaterial* r : m_renderMaterials)
-	{
-		SAFE_DELETE(r);
-	}
+    // release materials
+    for (RenderMaterial* r : m_renderMaterials)
+    {
+        SAFE_DELETE(r);
+    }
 }
 
 
 BlastFamilyPtr BlastAssetModelSimple::createFamily(PhysXController& physXConroller, ExtPxManager& pxManager, const ActorDesc& desc)
 {
-	return BlastFamilyPtr(new BlastFamilyModelSimple(physXConroller, pxManager, m_renderer, *this, desc));
+    return BlastFamilyPtr(new BlastFamilyModelSimple(physXConroller, pxManager, m_renderer, *this, desc));
 }

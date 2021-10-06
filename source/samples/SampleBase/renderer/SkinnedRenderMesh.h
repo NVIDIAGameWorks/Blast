@@ -38,61 +38,61 @@
 
 /**
 SkinnedRenderMesh:
-	bonde indices are passed as vertex input,
-	bone transforms are stored in texture
-	max bone meshes count: SkinnedRenderMesh::MeshesCountMax
+    bonde indices are passed as vertex input,
+    bone transforms are stored in texture
+    max bone meshes count: SkinnedRenderMesh::MeshesCountMax
 */
 class SkinnedRenderMesh : public IRenderMesh
 {
 public:
-	//////// ctor ////////
+    //////// ctor ////////
 
-	SkinnedRenderMesh(const std::vector<const SimpleMesh*>& meshes);
-	~SkinnedRenderMesh();
-
-
-	//////// const ////////
-
-	static const uint32_t MeshesCountMax = D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION;
+    SkinnedRenderMesh(const std::vector<const SimpleMesh*>& meshes);
+    ~SkinnedRenderMesh();
 
 
-	//////// public API ////////
+    //////// const ////////
 
-	void updateVisibleMeshes(const std::vector<uint32_t>& visibleMeshes);
-	void updateVisibleMeshTransforms(std::vector<PxMat44>& transforms);
+    static const uint32_t MeshesCountMax = D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION;
 
 
-	//////// IRenderMesh implementation ////////
+    //////// public API ////////
 
-	virtual const std::vector<D3D11_INPUT_ELEMENT_DESC>& getInputElementDesc() const { return m_inputDesc; }
-	virtual void render(ID3D11DeviceContext& context) const;
+    void updateVisibleMeshes(const std::vector<uint32_t>& visibleMeshes);
+    void updateVisibleMeshTransforms(std::vector<PxMat44>& transforms);
+
+
+    //////// IRenderMesh implementation ////////
+
+    virtual const std::vector<D3D11_INPUT_ELEMENT_DESC>& getInputElementDesc() const { return m_inputDesc; }
+    virtual void render(ID3D11DeviceContext& context) const;
 
 private:
-	//////// internal data ////////
+    //////// internal data ////////
 
-	struct MeshInfo
-	{
-		uint32_t firstIndex;
-		uint32_t indicesCount;
+    struct MeshInfo
+    {
+        uint32_t firstIndex;
+        uint32_t indicesCount;
 
-		uint32_t firstVertex;
-		uint32_t verticesCount;
-	};
+        uint32_t firstVertex;
+        uint32_t verticesCount;
+    };
 
-	std::vector<D3D11_INPUT_ELEMENT_DESC> m_inputDesc;
+    std::vector<D3D11_INPUT_ELEMENT_DESC> m_inputDesc;
 
-	ID3D11Device* m_device;
+    ID3D11Device* m_device;
 
-	ID3D11Buffer* m_vertexBuffer;
-	ID3D11Buffer* m_boneIndexBuffer;
-	ID3D11Buffer* m_indexBuffer;
-	ID3D11Texture2D* m_boneTexture;
-	ID3D11ShaderResourceView* m_boneTextureSRV;
+    ID3D11Buffer* m_vertexBuffer;
+    ID3D11Buffer* m_boneIndexBuffer;
+    ID3D11Buffer* m_indexBuffer;
+    ID3D11Texture2D* m_boneTexture;
+    ID3D11ShaderResourceView* m_boneTextureSRV;
 
-	uint32_t m_indexCount;
+    uint32_t m_indexCount;
 
-	std::vector<MeshInfo> m_meshesInfo;
-	std::vector<uint32_t> m_indices;
+    std::vector<MeshInfo> m_meshesInfo;
+    std::vector<uint32_t> m_indices;
 };
 
 

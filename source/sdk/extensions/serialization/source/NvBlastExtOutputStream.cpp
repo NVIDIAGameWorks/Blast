@@ -30,12 +30,12 @@
 
 
 Nv::Blast::ExtOutputStream::ExtOutputStream(std::ostream &outputStream):
-	m_outputStream(outputStream)
+    m_outputStream(outputStream)
 {
 
 }
 
 void Nv::Blast::ExtOutputStream::write(const void* buffer, size_t size)
 {
-	m_outputStream.write((char *) buffer, size);
+    m_outputStream.write((char *) buffer, size);
 }

@@ -29,7 +29,7 @@
 #ifndef TESTPROFILER_H
 #define TESTPROFILER_H
 
-#define TEST_ZONE_BEGIN(name)	platformZoneStart(name)
-#define TEST_ZONE_END(name)		platformZoneEnd()
+#define TEST_ZONE_BEGIN(name)   platformZoneStart(name)
+#define TEST_ZONE_END(name)     platformZoneEnd()
 
 #endif // TESTPROFILER_H

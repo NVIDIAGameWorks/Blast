@@ -5,23 +5,23 @@
 class SimpleRandomGenerator : public Nv::Blast::RandomGeneratorBase
 {
 public:
-	SimpleRandomGenerator() {
-		remember = false;
-	};
+    SimpleRandomGenerator() {
+        remember = false;
+    };
 
-	virtual float getRandomValue()
-	{
-		float r = (float)rand();
-		r = r / RAND_MAX;
-		return r;
-	}
-	virtual void seed(int32_t seed)
-	{
-		srand(seed);
-	}
+    virtual float getRandomValue()
+    {
+        float r = (float)rand();
+        r = r / RAND_MAX;
+        return r;
+    }
+    virtual void seed(int32_t seed)
+    {
+        srand(seed);
+    }
 
-	virtual ~SimpleRandomGenerator() {};
+    virtual ~SimpleRandomGenerator() {};
 
 private:
-	bool remember;
+    bool remember;
 };

@@ -40,15 +40,15 @@ void SampleProfilerReset();
 
 struct SampleProfilerScoped
 {
-	SampleProfilerScoped(const char* name)
-	{
-		SampleProfilerBegin(name);
-	}
+    SampleProfilerScoped(const char* name)
+    {
+        SampleProfilerBegin(name);
+    }
 
-	~SampleProfilerScoped()
-	{
-		SampleProfilerEnd();
-	}
+    ~SampleProfilerScoped()
+    {
+        SampleProfilerEnd();
+    }
 };
 
 #define PROFILER_INIT() SampleProfilerInit()
@@ -75,21 +75,21 @@ std::chrono::microseconds SampleProfilerGetOverhead();
 
 struct SampleProfilerTreeIterator
 {
-	struct Data
-	{
-		uint64_t					hash;
-		const char*					name;
-		bool						hasChilds;
-		uint32_t					depth;
-		std::chrono::microseconds	time;
-		std::chrono::microseconds	maxTime;
-		uint32_t					calls;
-	};
+    struct Data
+    {
+        uint64_t                    hash;
+        const char*                 name;
+        bool                        hasChilds;
+        uint32_t                    depth;
+        std::chrono::microseconds   time;
+        std::chrono::microseconds   maxTime;
+        uint32_t                    calls;
+    };
 
-	virtual const Data* data() const = 0;
-	virtual bool isDone() const = 0;
-	virtual void next() = 0;
-	virtual void release() = 0;
+    virtual const Data* data() const = 0;
+    virtual bool isDone() const = 0;
+    virtual void next() = 0;
+    virtual void release() = 0;
 };
 
 SampleProfilerTreeIterator* SampleProfilerCreateTreeIterator();

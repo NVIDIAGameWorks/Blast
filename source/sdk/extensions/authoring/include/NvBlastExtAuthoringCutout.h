@@ -36,48 +36,48 @@ the loops are forced to be convex.  Otherwise, a cutout is represented by a sing
 class CutoutSet
 {
 public:
-	/** Returns the number of cutouts in the set. */
-	virtual uint32_t				getCutoutCount() const = 0;
+    /** Returns the number of cutouts in the set. */
+    virtual uint32_t                getCutoutCount() const = 0;
 
-	/**
-	Applies to the cutout indexed by cutoutIndex:
-	Returns the number of vertices in the cutout.
-	*/
-	virtual uint32_t				getCutoutVertexCount(uint32_t cutoutIndex, uint32_t loopIndex) const = 0;
+    /**
+    Applies to the cutout indexed by cutoutIndex:
+    Returns the number of vertices in the cutout.
+    */
+    virtual uint32_t                getCutoutVertexCount(uint32_t cutoutIndex, uint32_t loopIndex) const = 0;
 
-	/**
-	Applies to the cutout indexed by cutoutIndex:
-	Returns the number of loops in this cutout.
-	*/
-	virtual uint32_t				getCutoutLoopCount(uint32_t cutoutIndex) const = 0;
+    /**
+    Applies to the cutout indexed by cutoutIndex:
+    Returns the number of loops in this cutout.
+    */
+    virtual uint32_t                getCutoutLoopCount(uint32_t cutoutIndex) const = 0;
 
-	/**
-	Applies to the cutout indexed by cutoutIndex:
-	Returns the vertex indexed by vertexIndex.  (Only the X and Y coordinates are used.)
-	*/
-	virtual const NvcVec3&			getCutoutVertex(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const = 0;
+    /**
+    Applies to the cutout indexed by cutoutIndex:
+    Returns the vertex indexed by vertexIndex.  (Only the X and Y coordinates are used.)
+    */
+    virtual const NvcVec3&          getCutoutVertex(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const = 0;
 
-	/**
-	If smoothing group should be changed for adjacent to this vertex faces return true
-	*/
-	virtual bool					isCutoutVertexToggleSmoothingGroup(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const = 0;
+    /**
+    If smoothing group should be changed for adjacent to this vertex faces return true
+    */
+    virtual bool                    isCutoutVertexToggleSmoothingGroup(uint32_t cutoutIndex, uint32_t loopIndex, uint32_t vertexIndex) const = 0;
 
-	/**
-	Whether or not this cutout set is to be tiled.
-	*/
-	virtual bool					isPeriodic() const = 0;
+    /**
+    Whether or not this cutout set is to be tiled.
+    */
+    virtual bool                    isPeriodic() const = 0;
 
-	/**
-	The dimensions of the fracture map used to create the cutout set.
-	*/
-	virtual const NvcVec2&			getDimensions() const = 0;
+    /**
+    The dimensions of the fracture map used to create the cutout set.
+    */
+    virtual const NvcVec2&          getDimensions() const = 0;
 
-	/** Releases all memory and deletes itself. */
-	virtual void					release() = 0;
+    /** Releases all memory and deletes itself. */
+    virtual void                    release() = 0;
 
 protected:
-	/** Protected destructor.  Use the release() method. */
-	virtual							~CutoutSet() {}
+    /** Protected destructor.  Use the release() method. */
+    virtual                         ~CutoutSet() {}
 };
 
 } // namespace Blast

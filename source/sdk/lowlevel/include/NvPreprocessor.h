@@ -452,7 +452,7 @@ General defines
 
 #define NV_OFFSETOF_BASE 0x100 // casting the null ptr takes a special-case code path, which we don't want
 #define NV_OFFSET_OF_RT(Class, Member)                                                                                 \
-	(reinterpret_cast<size_t>(&reinterpret_cast<Class*>(NV_OFFSETOF_BASE)->Member) - size_t(NV_OFFSETOF_BASE))
+    (reinterpret_cast<size_t>(&reinterpret_cast<Class*>(NV_OFFSETOF_BASE)->Member) - size_t(NV_OFFSETOF_BASE))
 
 // check that exactly one of NDEBUG and _DEBUG is defined
 #if !defined(NDEBUG) ^ defined(_DEBUG)
@@ -485,20 +485,20 @@ NV_CUDA_CALLABLE NV_INLINE void NV_UNUSED(T const&)
 #if NV_PS4 || NV_APPLE_FAMILY
 struct NvPackValidation
 {
-	char _;
-	long a;
+    char _;
+    long a;
 };
 #elif NV_ANDROID
 struct NvPackValidation
 {
-	char _;
-	double a;
+    char _;
+    double a;
 };
 #else
 struct NvPackValidation
 {
-	char _;
-	long long a;
+    char _;
+    long long a;
 };
 #endif
 #if !NV_APPLE_FAMILY
@@ -508,10 +508,10 @@ NV_COMPILE_TIME_ASSERT(NV_OFFSET_OF(NvPackValidation, a) == 8);
 // use in a cpp file to suppress LNK4221
 #if NV_VC
 #define NV_DUMMY_SYMBOL                                                                                                \
-	namespace                                                                                                          \
-	{                                                                                                                  \
-	char NvDummySymbol;                                                                                                \
-	}
+    namespace                                                                                                          \
+    {                                                                                                                  \
+    char NvDummySymbol;                                                                                                \
+    }
 #else
 #define NV_DUMMY_SYMBOL
 #endif
@@ -525,10 +525,10 @@ NV_COMPILE_TIME_ASSERT(NV_OFFSET_OF(NvPackValidation, a) == 8);
 // Macro for avoiding default assignment and copy, because doing this by inheritance can increase class size on some
 // platforms.
 #define NV_NOCOPY(Class)                                                                                               \
-	\
+    \
 protected:                                                                                                             \
-	Class(const Class&);                                                                                               \
-	Class& operator=(const Class&);
+    Class(const Class&);                                                                                               \
+    Class& operator=(const Class&);
 
 #define NV_STRINGIZE_HELPER(X) #X
 #define NV_STRINGIZE(X) NV_STRINGIZE_HELPER(X)

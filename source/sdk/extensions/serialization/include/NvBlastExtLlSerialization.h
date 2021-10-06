@@ -53,15 +53,15 @@ class ExtSerialization;
 /** Standard Object Type IDs */
 struct LlObjectTypeID
 {
-	enum Enum
-	{
-		Asset =		NVBLAST_FOURCC('L', 'L', 'A', 'S'),
-		Family =	NVBLAST_FOURCC('L', 'L', 'F', 'A'),
-	};
+    enum Enum
+    {
+        Asset =     NVBLAST_FOURCC('L', 'L', 'A', 'S'),
+        Family =    NVBLAST_FOURCC('L', 'L', 'F', 'A'),
+    };
 };
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv
 
 
 /**
@@ -72,11 +72,11 @@ _not_ loaded automatically, and need to be explicitly loaded by the user using t
 
 It does no harm to call this function more than once; serializers already loaded will not be loaded again.
 
-\param[in]	serialization	Serialization manager into which to load serializers.
+\param[in]  serialization   Serialization manager into which to load serializers.
 
 \return the number of serializers loaded.
 */
-NVBLAST_API	size_t		NvBlastExtLlSerializerLoadSet(Nv::Blast::ExtSerialization& serialization);
+NVBLAST_API size_t      NvBlastExtLlSerializerLoadSet(Nv::Blast::ExtSerialization& serialization);
 
 
 /**
@@ -85,15 +85,15 @@ callack set in ExtSerialization::setBufferProvider.
 
 Equivalent to:
 
-	serialization.serializeIntoBuffer(buffer, asset, Nv::Blast::LlObjectTypeID::Asset);
+    serialization.serializeIntoBuffer(buffer, asset, Nv::Blast::LlObjectTypeID::Asset);
 
-\param[out]	buffer			Pointer to the buffer created.
-\param[in]	serialization	Serialization manager.
-\param[in]	asset			Pointer to the NvBlastAsset to serialize.
+\param[out] buffer          Pointer to the buffer created.
+\param[in]  serialization   Serialization manager.
+\param[in]  asset           Pointer to the NvBlastAsset to serialize.
 
 \return the number of bytes serialized into the buffer (zero if unsuccessful).
 */
-NVBLAST_API	uint64_t	NvBlastExtSerializationSerializeAssetIntoBuffer(void*& buffer, Nv::Blast::ExtSerialization& serialization, const NvBlastAsset* asset);
+NVBLAST_API uint64_t    NvBlastExtSerializationSerializeAssetIntoBuffer(void*& buffer, Nv::Blast::ExtSerialization& serialization, const NvBlastAsset* asset);
 
 
 /**
@@ -102,12 +102,12 @@ callack set in ExtSerialization::setBufferProvider.
 
 Equivalent to:
 
-	serialization.serializeIntoBuffer(buffer, family, Nv::Blast::LlObjectTypeID::Family);
+    serialization.serializeIntoBuffer(buffer, family, Nv::Blast::LlObjectTypeID::Family);
 
-\param[out]	buffer			Pointer to the buffer created.
-\param[in]	serialization	Serialization manager.
-\param[in]	family			Pointer to the NvBlastFamily to serialize.
+\param[out] buffer          Pointer to the buffer created.
+\param[in]  serialization   Serialization manager.
+\param[in]  family          Pointer to the NvBlastFamily to serialize.
 
 \return the number of bytes serialized into the buffer (zero if unsuccessful).
 */
-NVBLAST_API	uint64_t	NvBlastExtSerializationSerializeFamilyIntoBuffer(void*& buffer, Nv::Blast::ExtSerialization& serialization, const NvBlastFamily* family);
+NVBLAST_API uint64_t    NvBlastExtSerializationSerializeFamilyIntoBuffer(void*& buffer, Nv::Blast::ExtSerialization& serialization, const NvBlastFamily* family);

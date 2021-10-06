@@ -46,23 +46,23 @@ namespace Nv
 namespace Blast
 {
 
-	
+    
 class ProfileScope
 {
 public:
-	ProfileScope(const char* name, ProfilerDetail::Level level) :m_name(name), m_level(level)
-	{
-		NvBlastProfilerBegin(m_name, m_level);
-	}
+    ProfileScope(const char* name, ProfilerDetail::Level level) :m_name(name), m_level(level)
+    {
+        NvBlastProfilerBegin(m_name, m_level);
+    }
 
-	~ProfileScope()
-	{
-		NvBlastProfilerEnd(m_name, m_level);
-	}
+    ~ProfileScope()
+    {
+        NvBlastProfilerEnd(m_name, m_level);
+    }
 
 private:
-	const char* m_name;
-	ProfilerDetail::Level m_level;
+    const char* m_name;
+    ProfilerDetail::Level m_level;
 };
 
 
@@ -70,17 +70,17 @@ private:
 } // namespace Nv
 
 
-#define BLAST_PROFILE_PREFIX				"Blast: "
-#define BLAST_PROFILE_ZONE_BEGIN(name)		NvBlastProfilerBegin(BLAST_PROFILE_PREFIX name, Nv::Blast::ProfilerDetail::HIGH)
-#define BLAST_PROFILE_ZONE_END(name)		NvBlastProfilerEnd(BLAST_PROFILE_PREFIX name, Nv::Blast::ProfilerDetail::HIGH)
-#define BLAST_PROFILE_SCOPE(name, detail)	Nv::Blast::ProfileScope NV_CONCAT(_scope,__LINE__) (BLAST_PROFILE_PREFIX name, detail)
-#define BLAST_PROFILE_SCOPE_L(name)			BLAST_PROFILE_SCOPE(name, Nv::Blast::ProfilerDetail::LOW)
-#define BLAST_PROFILE_SCOPE_M(name)			BLAST_PROFILE_SCOPE(name, Nv::Blast::ProfilerDetail::MEDIUM)
-#define BLAST_PROFILE_SCOPE_H(name)			BLAST_PROFILE_SCOPE(name, Nv::Blast::ProfilerDetail::HIGH)
+#define BLAST_PROFILE_PREFIX                "Blast: "
+#define BLAST_PROFILE_ZONE_BEGIN(name)      NvBlastProfilerBegin(BLAST_PROFILE_PREFIX name, Nv::Blast::ProfilerDetail::HIGH)
+#define BLAST_PROFILE_ZONE_END(name)        NvBlastProfilerEnd(BLAST_PROFILE_PREFIX name, Nv::Blast::ProfilerDetail::HIGH)
+#define BLAST_PROFILE_SCOPE(name, detail)   Nv::Blast::ProfileScope NV_CONCAT(_scope,__LINE__) (BLAST_PROFILE_PREFIX name, detail)
+#define BLAST_PROFILE_SCOPE_L(name)         BLAST_PROFILE_SCOPE(name, Nv::Blast::ProfilerDetail::LOW)
+#define BLAST_PROFILE_SCOPE_M(name)         BLAST_PROFILE_SCOPE(name, Nv::Blast::ProfilerDetail::MEDIUM)
+#define BLAST_PROFILE_SCOPE_H(name)         BLAST_PROFILE_SCOPE(name, Nv::Blast::ProfilerDetail::HIGH)
 
 #else
 
-#define BLAST_PROFILE_ZONE_BEGIN(name)	
+#define BLAST_PROFILE_ZONE_BEGIN(name)  
 #define BLAST_PROFILE_ZONE_END(name)
 #define BLAST_PROFILE_SCOPE_L(name)
 #define BLAST_PROFILE_SCOPE_M(name)

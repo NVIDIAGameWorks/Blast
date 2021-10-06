@@ -53,41 +53,41 @@ For dynamic actors it applies centrifugal force.
 class NV_DLL_EXPORT ExtPxStressSolver
 {
 public:
-	//////// creation ////////
+    //////// creation ////////
 
-	/**
-	Create a new ExtStressSolver.
+    /**
+    Create a new ExtStressSolver.
 
-	\param[in]	family			The ExtPxFamily instance to calculate stress on.
-	\param[in]	settings		The settings to be set on ExtStressSolver.
+    \param[in]  family          The ExtPxFamily instance to calculate stress on.
+    \param[in]  settings        The settings to be set on ExtStressSolver.
 
-	\return the new ExtStressSolver if successful, NULL otherwise.
-	*/
-	static ExtPxStressSolver*				create(ExtPxFamily& family, ExtStressSolverSettings settings = ExtStressSolverSettings());
+    \return the new ExtStressSolver if successful, NULL otherwise.
+    */
+    static ExtPxStressSolver*               create(ExtPxFamily& family, ExtStressSolverSettings settings = ExtStressSolverSettings());
 
 
-	//////// interface ////////
+    //////// interface ////////
 
-	/**
-	Release this stress solver.
-	*/
-	virtual void							release() = 0;
+    /**
+    Release this stress solver.
+    */
+    virtual void                            release() = 0;
 
-	/**
-	Get actual ExtStressSolver used.
+    /**
+    Get actual ExtStressSolver used.
 
-	\return the pointer to ExtStressSolver used internally.
-	*/
-	virtual ExtStressSolver&				getSolver() const = 0;
+    \return the pointer to ExtStressSolver used internally.
+    */
+    virtual ExtStressSolver&                getSolver() const = 0;
 
-	/**
-	Update stress solver.
+    /**
+    Update stress solver.
 
-	Calculate stress and optionally apply damage.
+    Calculate stress and optionally apply damage.
 
-	\param[in]	doDamage		If 'true' damage will be applied after stress solver.
-	*/
-	virtual void							update(bool doDamage = true) = 0;
+    \param[in]  doDamage        If 'true' damage will be applied after stress solver.
+    */
+    virtual void                            update(bool doDamage = true) = 0;
 };
 
 

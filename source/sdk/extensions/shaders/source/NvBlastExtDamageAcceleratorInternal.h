@@ -40,55 +40,55 @@ namespace Blast
 class ExtDamageAcceleratorInternal : public NvBlastExtDamageAccelerator
 {
 public:
-	struct QueryBondData
-	{
-		uint32_t bond;
-		uint32_t node0;
-		uint32_t node1;
-	};
+    struct QueryBondData
+    {
+        uint32_t bond;
+        uint32_t node0;
+        uint32_t node1;
+    };
 
-	class ResultCallback
-	{
-	public:
-		ResultCallback(QueryBondData* buffer, uint32_t count) :
-			m_bondBuffer(buffer), m_bondMaxCount(count), m_bondCount(0) {}
+    class ResultCallback
+    {
+    public:
+        ResultCallback(QueryBondData* buffer, uint32_t count) :
+            m_bondBuffer(buffer), m_bondMaxCount(count), m_bondCount(0) {}
 
-		virtual void processResults(const QueryBondData* bondBuffer, uint32_t count) = 0;
+        virtual void processResults(const QueryBondData* bondBuffer, uint32_t count) = 0;
 
-		void push(uint32_t bond, uint32_t node0, uint32_t node1)
-		{
-			m_bondBuffer[m_bondCount].bond = bond;
-			m_bondBuffer[m_bondCount].node0 = node0;
-			m_bondBuffer[m_bondCount].node1 = node1;
-			m_bondCount++;
-			if (m_bondCount == m_bondMaxCount)
-			{
-				dispatch();
-			}
-		}
+        void push(uint32_t bond, uint32_t node0, uint32_t node1)
+        {
+            m_bondBuffer[m_bondCount].bond = bond;
+            m_bondBuffer[m_bondCount].node0 = node0;
+            m_bondBuffer[m_bondCount].node1 = node1;
+            m_bondCount++;
+            if (m_bondCount == m_bondMaxCount)
+            {
+                dispatch();
+            }
+        }
 
-		void dispatch()
-		{
-			if (m_bondCount)
-			{
-				processResults(m_bondBuffer, m_bondCount);
-				m_bondCount = 0;
-			}
-		}
-		
-	private:
-		QueryBondData* m_bondBuffer;
-		uint32_t	   m_bondMaxCount;
+        void dispatch()
+        {
+            if (m_bondCount)
+            {
+                processResults(m_bondBuffer, m_bondCount);
+                m_bondCount = 0;
+            }
+        }
+        
+    private:
+        QueryBondData* m_bondBuffer;
+        uint32_t       m_bondMaxCount;
 
-		uint32_t	   m_bondCount;
-	};
+        uint32_t       m_bondCount;
+    };
 
-	virtual void findBondCentroidsInBounds(const physx::PxBounds3& bounds, ResultCallback& resultCallback) const = 0;
-	virtual void findBondSegmentsInBounds(const physx::PxBounds3& bounds, ResultCallback& resultCallback) const = 0;
-	virtual void findBondSegmentsPlaneIntersected(const physx::PxPlane& plane, ResultCallback& resultCallback) const = 0;
+    virtual void findBondCentroidsInBounds(const physx::PxBounds3& bounds, ResultCallback& resultCallback) const = 0;
+    virtual void findBondSegmentsInBounds(const physx::PxBounds3& bounds, ResultCallback& resultCallback) const = 0;
+    virtual void findBondSegmentsPlaneIntersected(const physx::PxPlane& plane, ResultCallback& resultCallback) const = 0;
 
-	// Non-thread safe! Multiple calls return the same memory.
-	virtual void* getImmediateScratch(size_t size) = 0;
+    // Non-thread safe! Multiple calls return the same memory.
+    virtual void* getImmediateScratch(size_t size) = 0;
 };
 
 

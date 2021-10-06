@@ -61,37 +61,37 @@ class ExtSerialization;
 
 
 /**
-	Tool for Blast asset creation and exporting
+    Tool for Blast asset creation and exporting
 */
 class BlastDataExporter
 {
 public:
-	BlastDataExporter(TkFramework* framework, physx::PxPhysics* physics, physx::PxCooking* cooking);
-	~BlastDataExporter();
+    BlastDataExporter(TkFramework* framework, physx::PxPhysics* physics, physx::PxCooking* cooking);
+    ~BlastDataExporter();
 
-	/**
-		Creates ExtPxAsset
-	*/
-	ExtPxAsset*		createExtBlastAsset(std::vector<NvBlastBondDesc>& bondDescs, const std::vector<NvBlastChunkDesc>& chunkDescs,
-		std::vector<ExtPxAssetDesc::ChunkDesc>& physicsChunks);
-	/**
-		Creates Low Level Blast asset 
-	*/
-	NvBlastAsset*	createLlBlastAsset(std::vector<NvBlastBondDesc>& bondDescs, const std::vector<NvBlastChunkDesc>& chunkDescs);
+    /**
+        Creates ExtPxAsset
+    */
+    ExtPxAsset*     createExtBlastAsset(std::vector<NvBlastBondDesc>& bondDescs, const std::vector<NvBlastChunkDesc>& chunkDescs,
+        std::vector<ExtPxAssetDesc::ChunkDesc>& physicsChunks);
+    /**
+        Creates Low Level Blast asset 
+    */
+    NvBlastAsset*   createLlBlastAsset(std::vector<NvBlastBondDesc>& bondDescs, const std::vector<NvBlastChunkDesc>& chunkDescs);
 
-	/**
-		Creates Blast Toolkit Asset asset 
-	*/
-	TkAsset*		createTkBlastAsset(const std::vector<NvBlastBondDesc>& bondDescs, const std::vector<NvBlastChunkDesc>& chunkDescs);
+    /**
+        Creates Blast Toolkit Asset asset 
+    */
+    TkAsset*        createTkBlastAsset(const std::vector<NvBlastBondDesc>& bondDescs, const std::vector<NvBlastChunkDesc>& chunkDescs);
 
-	/*
-	Saves a Blast object to given path
-	*/
-	bool			saveBlastObject(const std::string& outputDir, const std::string& objectName, const void* object, uint32_t objectTypeID);
+    /*
+    Saves a Blast object to given path
+    */
+    bool            saveBlastObject(const std::string& outputDir, const std::string& objectName, const void* object, uint32_t objectTypeID);
 
 private:
-	TkFramework*		mFramework;
-	ExtSerialization*	mSerialization;
+    TkFramework*        mFramework;
+    ExtSerialization*   mSerialization;
 };
 
 

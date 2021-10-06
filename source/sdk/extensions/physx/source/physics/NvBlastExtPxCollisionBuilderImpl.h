@@ -34,40 +34,40 @@
 
 namespace physx
 {
-	class PxCooking;
-	class PxPhysicsInsertionCallback;
+    class PxCooking;
+    class PxPhysicsInsertionCallback;
 }
 namespace Nv
 {
-	namespace Blast
-	{
+    namespace Blast
+    {
 
-		struct CollisionHullImpl : public CollisionHull
-		{
-			CollisionHullImpl() {};
-			CollisionHullImpl(const CollisionHull& hullToCopy);
-			~CollisionHullImpl();
-		};
+        struct CollisionHullImpl : public CollisionHull
+        {
+            CollisionHullImpl() {};
+            CollisionHullImpl(const CollisionHull& hullToCopy);
+            ~CollisionHullImpl();
+        };
 
-		class ExtPxCollisionBuilderImpl : public ExtPxCollisionBuilder
-		{
-		public:
-			ExtPxCollisionBuilderImpl(physx::PxCooking* cooking,
-				physx::PxPhysicsInsertionCallback* insertionCallback) : mCooking(cooking), mInsertionCallback(insertionCallback) {}
-	        virtual ~ExtPxCollisionBuilderImpl() {};
-			void release() override;
-			CollisionHull* buildCollisionGeometry(uint32_t verticesCount, const NvcVec3* vertexData) override;
-			void releaseCollisionHull(CollisionHull* hull) const override;
+        class ExtPxCollisionBuilderImpl : public ExtPxCollisionBuilder
+        {
+        public:
+            ExtPxCollisionBuilderImpl(physx::PxCooking* cooking,
+                physx::PxPhysicsInsertionCallback* insertionCallback) : mCooking(cooking), mInsertionCallback(insertionCallback) {}
+            virtual ~ExtPxCollisionBuilderImpl() {};
+            void release() override;
+            CollisionHull* buildCollisionGeometry(uint32_t verticesCount, const NvcVec3* vertexData) override;
+            void releaseCollisionHull(CollisionHull* hull) const override;
 
-			physx::PxConvexMesh* buildConvexMesh(const CollisionHull& hull) override;
-			void buildPhysicsChunks(uint32_t chunkCount, uint32_t* hullOffsets, CollisionHull** hulls,
-				ExtPxChunk* physicsChunks, ExtPxSubchunk* physicsSubchunks) override;
-		private:
-			physx::PxCooking* mCooking;
-			physx::PxPhysicsInsertionCallback* mInsertionCallback;
-		};
+            physx::PxConvexMesh* buildConvexMesh(const CollisionHull& hull) override;
+            void buildPhysicsChunks(uint32_t chunkCount, uint32_t* hullOffsets, CollisionHull** hulls,
+                ExtPxChunk* physicsChunks, ExtPxSubchunk* physicsSubchunks) override;
+        private:
+            physx::PxCooking* mCooking;
+            physx::PxPhysicsInsertionCallback* mInsertionCallback;
+        };
 
-	}  // namespace Blast
+    }  // namespace Blast
 }  // namespace Nv
 
 

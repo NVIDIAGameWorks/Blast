@@ -44,8 +44,8 @@ PxConvexMesh render mesh
 class ConvexRenderMesh : public CustomRenderMesh
 {
 public:
-	ConvexRenderMesh(const PxConvexMesh* mesh);
-	virtual ~ConvexRenderMesh();
+    ConvexRenderMesh(const PxConvexMesh* mesh);
+    virtual ~ConvexRenderMesh();
 };
 
 

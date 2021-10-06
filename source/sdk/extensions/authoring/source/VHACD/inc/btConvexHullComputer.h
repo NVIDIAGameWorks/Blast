@@ -71,17 +71,17 @@ public:
     btAlignedObjectArray<int32_t> faces;
 
     /*
-		Compute convex hull of "count" vertices stored in "coords". "stride" is the difference in bytes
-		between the addresses of consecutive vertices. If "shrink" is positive, the convex hull is shrunken
-		by that amount (each face is moved by "shrink" length units towards the center along its normal).
-		If "shrinkClamp" is positive, "shrink" is clamped to not exceed "shrinkClamp * innerRadius", where "innerRadius"
-		is the minimum distance of a face to the center of the convex hull.
+        Compute convex hull of "count" vertices stored in "coords". "stride" is the difference in bytes
+        between the addresses of consecutive vertices. If "shrink" is positive, the convex hull is shrunken
+        by that amount (each face is moved by "shrink" length units towards the center along its normal).
+        If "shrinkClamp" is positive, "shrink" is clamped to not exceed "shrinkClamp * innerRadius", where "innerRadius"
+        is the minimum distance of a face to the center of the convex hull.
 
-		The returned value is the amount by which the hull has been shrunken. If it is negative, the amount was so large
-		that the resulting convex hull is empty.
+        The returned value is the amount by which the hull has been shrunken. If it is negative, the amount was so large
+        that the resulting convex hull is empty.
 
-		The output convex hull can be found in the member variables "vertices", "edges", "faces".
-		*/
+        The output convex hull can be found in the member variables "vertices", "edges", "faces".
+        */
     btScalar compute(const float* coords, int32_t stride, int32_t count, btScalar shrink, btScalar shrinkClamp)
     {
         return compute(coords, false, stride, count, shrink, shrinkClamp);

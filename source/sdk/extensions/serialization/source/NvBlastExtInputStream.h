@@ -39,14 +39,14 @@ namespace Blast
 class ExtInputStream : public kj::InputStream
 {
 public:
-	ExtInputStream() = delete;
-	ExtInputStream(std::istream &inputStream);
+    ExtInputStream() = delete;
+    ExtInputStream(std::istream &inputStream);
 
-	// Returns a read of maxBytes. This is supposed to be happy doing partial reads, but currently isn't. 
-	virtual size_t tryRead(void* buffer, size_t minBytes, size_t maxBytes) override;
+    // Returns a read of maxBytes. This is supposed to be happy doing partial reads, but currently isn't. 
+    virtual size_t tryRead(void* buffer, size_t minBytes, size_t maxBytes) override;
 
 private:
-	std::istream &m_inputStream;
+    std::istream &m_inputStream;
 };
 
 } // namespace Blast

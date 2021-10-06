@@ -49,30 +49,30 @@ namespace Blast
 
 NV_INLINE NvBlastID TkGenerateGUID(void* ptr)
 {
-	NV_UNUSED(ptr);
+    NV_UNUSED(ptr);
 
-	NV_COMPILE_TIME_ASSERT(sizeof(UUID) == sizeof(NvBlastID));
+    NV_COMPILE_TIME_ASSERT(sizeof(UUID) == sizeof(NvBlastID));
 
-	NvBlastID guid;
-	UuidCreate(reinterpret_cast<UUID*>(&guid));
+    NvBlastID guid;
+    UuidCreate(reinterpret_cast<UUID*>(&guid));
 
-	return guid;
+    return guid;
 }
 
 #else
 
 NV_INLINE NvBlastID TkGenerateGUID(void* ptr)
 {
-//	NV_COMPILE_TIME_ASSERT(sizeof(uuid_t) == sizeof(NvBlastID));
-	Time time;
+//  NV_COMPILE_TIME_ASSERT(sizeof(uuid_t) == sizeof(NvBlastID));
+    Time time;
 
-	NvBlastID guid;
-	//	uuid_generate_random(reinterpret_cast<uuid_t&>(guid));
+    NvBlastID guid;
+    //  uuid_generate_random(reinterpret_cast<uuid_t&>(guid));
 
-	*reinterpret_cast<uint64_t*>(guid.data) = reinterpret_cast<uintptr_t>(ptr);
-	*reinterpret_cast<int64_t*>(guid.data + 8) = time.getLastTickCount();
+    *reinterpret_cast<uint64_t*>(guid.data) = reinterpret_cast<uintptr_t>(ptr);
+    *reinterpret_cast<int64_t*>(guid.data + 8) = time.getLastTickCount();
 
-	return guid;
+    return guid;
 }
 
 #endif
@@ -81,25 +81,25 @@ NV_INLINE NvBlastID TkGenerateGUID(void* ptr)
 /**
 Compares two NvBlastIDs.
 
-\param[in]	id1	A pointer to the first id to compare.
-\param[in]	id2	A pointer to the second id to compare.
+\param[in]  id1 A pointer to the first id to compare.
+\param[in]  id2 A pointer to the second id to compare.
 
-\return	true iff ids are equal.
+\return true iff ids are equal.
 */
 NV_INLINE bool TkGUIDsEqual(const NvBlastID* id1, const NvBlastID* id2)
 {
-	return !memcmp(id1, id2, sizeof(NvBlastID));
+    return !memcmp(id1, id2, sizeof(NvBlastID));
 }
 
 
 /**
 Clears an NvBlastID (sets all of its fields to zero).
 
-\param[out]	id	A pointer to the ID to clear.
+\param[out] id  A pointer to the ID to clear.
 */
 NV_INLINE void TkGUIDReset(NvBlastID* id)
 {
-	memset(id, 0, sizeof(NvBlastID));
+    memset(id, 0, sizeof(NvBlastID));
 }
 
 
@@ -107,11 +107,11 @@ NV_INLINE void TkGUIDReset(NvBlastID* id)
 Tests an NvBlastID to determine if it's zeroed.  After calling TkGUIDReset
 on an ID, passing it to this function will return a value of true.
 
-\param[in]	id	A pointer to the ID to test.
+\param[in]  id  A pointer to the ID to test.
 */
 NV_INLINE bool TkGUIDIsZero(const NvBlastID* id)
 {
-	return *reinterpret_cast<const uint64_t*>(&id->data[0]) == 0 && *reinterpret_cast<const uint64_t*>(&id->data[8]) == 0;
+    return *reinterpret_cast<const uint64_t*>(&id->data[0]) == 0 && *reinterpret_cast<const uint64_t*>(&id->data[8]) == 0;
 }
 
 } // namespace Blast
@@ -127,18 +127,18 @@ namespace shdfnd
 template <>
 struct Hash<NvBlastID>
 {
-	uint32_t operator()(const NvBlastID& k) const
-	{
-		// "DJB" string hash
-		uint32_t h = 5381;
-		for (uint32_t i = 0; i < sizeof(k.data) / sizeof(k.data[0]); ++i)
-			h = ((h << 5) + h) ^ uint32_t(k.data[i]);
-		return h;
-	}
-	bool equal(const NvBlastID& k0, const NvBlastID& k1) const
-	{
-		return Nv::Blast::TkGUIDsEqual(&k0, &k1);
-	}
+    uint32_t operator()(const NvBlastID& k) const
+    {
+        // "DJB" string hash
+        uint32_t h = 5381;
+        for (uint32_t i = 0; i < sizeof(k.data) / sizeof(k.data[0]); ++i)
+            h = ((h << 5) + h) ^ uint32_t(k.data[i]);
+        return h;
+    }
+    bool equal(const NvBlastID& k0, const NvBlastID& k1) const
+    {
+        return Nv::Blast::TkGUIDsEqual(&k0, &k1);
+    }
 };
 
 } // namespace shdfnd

@@ -35,7 +35,7 @@
 // Forward declarations
 namespace physx
 {
-	class PxRigidDynamic;
+    class PxRigidDynamic;
 }
 
 
@@ -57,40 +57,40 @@ Corresponds one to one to PxRigidDynamic and ExtActor.
 class ExtPxActor
 {
 public:
-	/**
-	Get the number of visible chunks for this actor.  May be used in conjunction with getChunkIndices().
+    /**
+    Get the number of visible chunks for this actor.  May be used in conjunction with getChunkIndices().
 
-	\return	the number of visible chunk indices for the actor.
-	*/
-	virtual uint32_t				getChunkCount() const = 0;
+    \return the number of visible chunk indices for the actor.
+    */
+    virtual uint32_t                getChunkCount() const = 0;
 
-	/**
-	Access actor's array of chunk indices. Use getChunkCount() to get a size of this array.
+    /**
+    Access actor's array of chunk indices. Use getChunkCount() to get a size of this array.
 
-	\return	a pointer to an array of chunk indices of an actor.
-	*/
-	virtual const uint32_t*			getChunkIndices() const = 0;
+    \return a pointer to an array of chunk indices of an actor.
+    */
+    virtual const uint32_t*         getChunkIndices() const = 0;
 
-	/**
-	Every actor has corresponding PxActor.
+    /**
+    Every actor has corresponding PxActor.
 
-	/return a pointer to PxRigidDynamic actor.
-	*/
-	virtual physx::PxRigidDynamic&	getPhysXActor() const = 0;
+    /return a pointer to PxRigidDynamic actor.
+    */
+    virtual physx::PxRigidDynamic&  getPhysXActor() const = 0;
 
-	/**
-	Every actor has corresponding TkActor.
+    /**
+    Every actor has corresponding TkActor.
 
-	/return a pointer to TkActor actor.
-	*/
-	virtual TkActor&				getTkActor() const = 0;
+    /return a pointer to TkActor actor.
+    */
+    virtual TkActor&                getTkActor() const = 0;
 
-	/**
-	Every actor has corresponding ExtPxFamily.
+    /**
+    Every actor has corresponding ExtPxFamily.
 
-	/return a pointer to ExtPxFamily family.
-	*/
-	virtual ExtPxFamily&			getFamily() const = 0;
+    /return a pointer to ExtPxFamily family.
+    */
+    virtual ExtPxFamily&            getFamily() const = 0;
 };
 
 

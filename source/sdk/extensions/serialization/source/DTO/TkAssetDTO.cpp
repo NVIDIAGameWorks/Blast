@@ -44,51 +44,51 @@ extern TkFramework* sExtTkSerializerFramework;
 
 bool TkAssetDTO::serialize(Nv::Blast::Serialization::TkAsset::Builder builder, const Nv::Blast::TkAsset * poco)
 {
-	const Asset* assetLL = reinterpret_cast<const Nv::Blast::Asset*>(poco->getAssetLL());
+    const Asset* assetLL = reinterpret_cast<const Nv::Blast::Asset*>(poco->getAssetLL());
 
-	Nv::Blast::AssetDTO::serialize(builder.getAssetLL(), assetLL);
+    Nv::Blast::AssetDTO::serialize(builder.getAssetLL(), assetLL);
 
-	uint32_t jointDescCount = poco->getJointDescCount();
+    uint32_t jointDescCount = poco->getJointDescCount();
 
-	capnp::List<Nv::Blast::Serialization::TkAssetJointDesc>::Builder jointDescs = builder.initJointDescs(jointDescCount);
+    capnp::List<Nv::Blast::Serialization::TkAssetJointDesc>::Builder jointDescs = builder.initJointDescs(jointDescCount);
 
-	for (uint32_t i = 0; i < jointDescCount; i++)
-	{
-		TkAssetJointDescDTO::serialize(jointDescs[i], &poco->getJointDescs()[i]);
-	}
+    for (uint32_t i = 0; i < jointDescCount; i++)
+    {
+        TkAssetJointDescDTO::serialize(jointDescs[i], &poco->getJointDescs()[i]);
+    }
 
-	return true;
+    return true;
 }
 
 
 Nv::Blast::TkAsset* TkAssetDTO::deserialize(Nv::Blast::Serialization::TkAsset::Reader reader)
 {
-	const NvBlastAsset* assetLL = reinterpret_cast<const NvBlastAsset*>(AssetDTO::deserialize(reader.getAssetLL()));
+    const NvBlastAsset* assetLL = reinterpret_cast<const NvBlastAsset*>(AssetDTO::deserialize(reader.getAssetLL()));
 
-	std::vector<Nv::Blast::TkAssetJointDesc> jointDescs;
+    std::vector<Nv::Blast::TkAssetJointDesc> jointDescs;
 
-	const uint32_t jointDescCount = reader.getJointDescs().size();
-	jointDescs.resize(jointDescCount);
-	auto readerJointDescs = reader.getJointDescs();
-	for (uint32_t i = 0; i < jointDescCount; i++)
-	{
-		TkAssetJointDescDTO::deserializeInto(readerJointDescs[i], &jointDescs[i]);
-	}
+    const uint32_t jointDescCount = reader.getJointDescs().size();
+    jointDescs.resize(jointDescCount);
+    auto readerJointDescs = reader.getJointDescs();
+    for (uint32_t i = 0; i < jointDescCount; i++)
+    {
+        TkAssetJointDescDTO::deserializeInto(readerJointDescs[i], &jointDescs[i]);
+    }
 
-	// Make sure to set ownsAsset to true - this is serialization and no one else owns it.
-	Nv::Blast::TkAsset* asset = NvBlastTkFrameworkGet()->createAsset(assetLL, jointDescs.data(), jointDescCount, true);
+    // Make sure to set ownsAsset to true - this is serialization and no one else owns it.
+    Nv::Blast::TkAsset* asset = NvBlastTkFrameworkGet()->createAsset(assetLL, jointDescs.data(), jointDescCount, true);
 
-	return asset;
+    return asset;
 }
 
 
 bool TkAssetDTO::deserializeInto(Nv::Blast::Serialization::TkAsset::Reader reader, Nv::Blast::TkAsset * poco)
 {
-	NV_UNUSED(reader);
-	poco = nullptr;
-	// NOTE: Because of the way TkAsset is currently structured, this won't work.
-	return false;
+    NV_UNUSED(reader);
+    poco = nullptr;
+    // NOTE: Because of the way TkAsset is currently structured, this won't work.
+    return false;
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

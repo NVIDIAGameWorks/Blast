@@ -37,17 +37,17 @@ ExtKJPxInputStream::ExtKJPxInputStream(capnp::Data::Reader inReader) :
 dataReader(inReader),
 inputStream(nullptr)
 {
-	kj::ArrayPtr<const unsigned char> buffer(inReader.begin(), inReader.size());
+    kj::ArrayPtr<const unsigned char> buffer(inReader.begin(), inReader.size());
 
-	inputStream = std::make_shared<kj::ArrayInputStream>(buffer);
+    inputStream = std::make_shared<kj::ArrayInputStream>(buffer);
 }
 
 
 uint32_t ExtKJPxInputStream::read(void* dest, uint32_t count)
 {
-	return inputStream->tryRead(dest, count, count);
+    return inputStream->tryRead(dest, count, count);
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv
 

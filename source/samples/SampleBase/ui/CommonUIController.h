@@ -45,79 +45,79 @@ class BlastController;
 class CommonUIController : public ISampleController
 {
   public:
-	CommonUIController();
-	virtual ~CommonUIController() {};
+    CommonUIController();
+    virtual ~CommonUIController() {};
 
-	virtual HRESULT DeviceCreated(ID3D11Device* pDevice);
-	virtual void DeviceDestroyed();
-	virtual LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	virtual void Animate(double fElapsedTimeSeconds);
-	virtual void Render(ID3D11Device*, ID3D11DeviceContext*, ID3D11RenderTargetView*, ID3D11DepthStencilView*);
+    virtual HRESULT DeviceCreated(ID3D11Device* pDevice);
+    virtual void DeviceDestroyed();
+    virtual LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    virtual void Animate(double fElapsedTimeSeconds);
+    virtual void Render(ID3D11Device*, ID3D11DeviceContext*, ID3D11RenderTargetView*, ID3D11DepthStencilView*);
 
-	void addDelayedCall(std::function<void()> func, const char* message)
-	{
-		addDelayedCall("PLEASE WAIT...", message, func);
-	}
+    void addDelayedCall(std::function<void()> func, const char* message)
+    {
+        addDelayedCall("PLEASE WAIT...", message, func);
+    }
 
-	void addPopupMessage(const char* title, const char* message, float duration = 2.f)
-	{
-		addDelayedCall(title, message, [] {}, duration);
-	}
+    void addPopupMessage(const char* title, const char* message, float duration = 2.f)
+    {
+        addDelayedCall(title, message, [] {}, duration);
+    }
 
   private:
-	void addDelayedCall(const char* title, const char* message, std::function<void()> func, float delay = 0.1f);
+    void addDelayedCall(const char* title, const char* message, std::function<void()> func, float delay = 0.1f);
 
-	void drawUI();
-	void drawCodeProfiler(bool*);
-
-
-	//////// used controllers ////////
-
-	Renderer& getRenderer() const
-	{
-		return getManager()->getRenderer();
-	}
-
-	PhysXController& getPhysXController() const
-	{
-		return getManager()->getPhysXController();
-	}
-
-	BlastController&getBlastController() const
-	{
-		return getManager()->getBlastController();
-	}
-
-	DamageToolController& getDamageToolController() const
-	{
-		return getManager()->getDamageToolController();
-	}
-
-	SceneController& getSceneController() const
-	{
-		return getManager()->getSceneController();
-	}
-
-	SampleController& getSampleController() const
-	{
-		return getManager()->getSampleController();
-	}
+    void drawUI();
+    void drawCodeProfiler(bool*);
 
 
-	//////// internal data ////////
+    //////// used controllers ////////
 
-	struct DelayedCall
-	{
-		std::function<void()>	func;
-		const char*				title;
-		const char*				message;
-		float					delay;
-		float					delayTotal;
-	};
+    Renderer& getRenderer() const
+    {
+        return getManager()->getRenderer();
+    }
 
-	std::queue<DelayedCall>		m_delayedCalls;
+    PhysXController& getPhysXController() const
+    {
+        return getManager()->getPhysXController();
+    }
 
-	float m_dt;
+    BlastController&getBlastController() const
+    {
+        return getManager()->getBlastController();
+    }
+
+    DamageToolController& getDamageToolController() const
+    {
+        return getManager()->getDamageToolController();
+    }
+
+    SceneController& getSceneController() const
+    {
+        return getManager()->getSceneController();
+    }
+
+    SampleController& getSampleController() const
+    {
+        return getManager()->getSampleController();
+    }
+
+
+    //////// internal data ////////
+
+    struct DelayedCall
+    {
+        std::function<void()>   func;
+        const char*             title;
+        const char*             message;
+        float                   delay;
+        float                   delayTotal;
+    };
+
+    std::queue<DelayedCall>     m_delayedCalls;
+
+    float m_dt;
 
 };
 

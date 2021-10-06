@@ -74,11 +74,11 @@ public:
         ch.m_nTriangles = (uint32_t)mesh->GetNTriangles();
         ch.m_points = mesh->GetPoints();
         ch.m_triangles = (uint32_t *)mesh->GetTriangles();
-		ch.m_volume = mesh->ComputeVolume();
-		Vec3<double> &center = mesh->ComputeCenter();
-		ch.m_center[0] = center.X();
-		ch.m_center[1] = center.Y();
-		ch.m_center[2] = center.Z();
+        ch.m_volume = mesh->ComputeVolume();
+        Vec3<double> &center = mesh->ComputeCenter();
+        ch.m_center[0] = center.X();
+        ch.m_center[1] = center.Y();
+        ch.m_center[2] = center.Z();
     }
     void Clean(void)
     {
@@ -114,16 +114,16 @@ public:
         IUserLogger* const logger = 0);
     bool OCLRelease(IUserLogger* const logger = 0);
 
-	virtual bool ComputeCenterOfMass(double centerOfMass[3]) const;
+    virtual bool ComputeCenterOfMass(double centerOfMass[3]) const;
 
-	// Will analyze the HACD results and compute the constraints solutions.
-	// It will analyze the point at which any two convex hulls touch each other and 
-	// return the total number of constraint pairs found
-	virtual uint32_t ComputeConstraints(void);
+    // Will analyze the HACD results and compute the constraints solutions.
+    // It will analyze the point at which any two convex hulls touch each other and 
+    // return the total number of constraint pairs found
+    virtual uint32_t ComputeConstraints(void);
 
-	// Returns a pointer to the constraint index; null if the index is not valid or
-	// the user did not previously call 'ComputeConstraints' 
-	virtual const Constraint *GetConstraint(uint32_t index) const;
+    // Returns a pointer to the constraint index; null if the index is not valid or
+    // the user did not previously call 'ComputeConstraints' 
+    virtual const Constraint *GetConstraint(uint32_t index) const;
 
 private:
     void SetCancel(bool cancel)
@@ -156,11 +156,11 @@ private:
     }
     void Init()
     {
-		if (mRaycastMesh)
-		{
-			mRaycastMesh->release();
-			mRaycastMesh = nullptr;
-		}
+        if (mRaycastMesh)
+        {
+            mRaycastMesh->release();
+            mRaycastMesh = nullptr;
+        }
         memset(m_rot, 0, sizeof(double) * 9);
         m_dim = 64;
         m_volume = 0;
@@ -351,7 +351,7 @@ private:
     }
 
 private:
-	RaycastMesh		*mRaycastMesh{ nullptr };
+    RaycastMesh     *mRaycastMesh{ nullptr };
     SArray<Mesh*> m_convexHulls;
     std::string m_stage;
     std::string m_operation;
@@ -377,7 +377,7 @@ private:
     cl_kernel* m_oclKernelComputeSum;
     size_t m_oclWorkGroupSize;
 #endif //CL_VERSION_1_1
-	ConstraintVector		mConstraints;
+    ConstraintVector        mConstraints;
 };
 }
 #endif // VHACD_VHACD_H

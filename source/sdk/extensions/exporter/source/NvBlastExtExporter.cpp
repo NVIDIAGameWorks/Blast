@@ -36,23 +36,23 @@ using namespace Nv::Blast;
 
 IMeshFileReader* NvBlastExtExporterCreateObjFileReader()
 {
-	return new ObjFileReader;
+    return new ObjFileReader;
 }
 
 IFbxFileReader* NvBlastExtExporterCreateFbxFileReader()
 {
-	return new FbxFileReader;
+    return new FbxFileReader;
 }
 
 IMeshFileWriter* NvBlastExtExporterCreateObjFileWriter()
 {
-	return new ObjFileWriter;
+    return new ObjFileWriter;
 }
 
 IMeshFileWriter* NvBlastExtExporterCreateFbxFileWriter(bool outputFBXAscii)
 {
-	auto ret = new FbxFileWriter;
-	ret->bOutputFBXAscii = outputFBXAscii;
-	return ret;
+    auto ret = new FbxFileWriter;
+    ret->bOutputFBXAscii = outputFBXAscii;
+    return ret;
 }
 

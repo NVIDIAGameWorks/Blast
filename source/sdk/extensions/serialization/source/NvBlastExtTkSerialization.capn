@@ -36,20 +36,20 @@ $Cxx.namespace("Nv::Blast::Serialization");
 
 struct TkAsset
 {
-	assetLL @0 :LL.Asset;
-	
-	jointDescs @1 :List(TkAssetJointDesc);
+    assetLL @0 :LL.Asset;
+    
+    jointDescs @1 :List(TkAssetJointDesc);
 }
 
 struct TkAssetJointDesc
 {
-	nodeIndices @0 :List(UInt32);
-	attachPositions @1 :List(PxVec3);
+    nodeIndices @0 :List(UInt32);
+    attachPositions @1 :List(PxVec3);
 }
 
 struct PxVec3
 {
-	x @0 :Float32;
-	y @1 :Float32;
-	z @2 :Float32;
+    x @0 :Float32;
+    y @1 :Float32;
+    z @2 :Float32;
 }

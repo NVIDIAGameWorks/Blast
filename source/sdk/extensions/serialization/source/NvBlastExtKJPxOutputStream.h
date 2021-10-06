@@ -41,21 +41,21 @@ namespace Blast
 class ExtKJPxOutputStream : public physx::PxOutputStream
 {
 public:
-	ExtKJPxOutputStream(kj::ArrayPtr<unsigned char> inBuffer);
-	~ExtKJPxOutputStream() = default;
+    ExtKJPxOutputStream(kj::ArrayPtr<unsigned char> inBuffer);
+    ~ExtKJPxOutputStream() = default;
 
-	virtual uint32_t write(const void* src, uint32_t count) override;
+    virtual uint32_t write(const void* src, uint32_t count) override;
 
-	uint32_t getWrittenBytes() { return writtenBytes; }
+    uint32_t getWrittenBytes() { return writtenBytes; }
 
-	kj::ArrayPtr<unsigned char> getBuffer() { return Buffer; }
+    kj::ArrayPtr<unsigned char> getBuffer() { return Buffer; }
 
 private:
-	uint32_t writtenBytes;
+    uint32_t writtenBytes;
 
-	kj::ArrayPtr<unsigned char> Buffer;
-	std::shared_ptr<kj::ArrayOutputStream> outputStream;
+    kj::ArrayPtr<unsigned char> Buffer;
+    std::shared_ptr<kj::ArrayOutputStream> outputStream;
 };
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

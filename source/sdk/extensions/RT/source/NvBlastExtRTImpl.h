@@ -37,110 +37,110 @@
 
 namespace physx
 {
-	class PxCooking;
+    class PxCooking;
 };
 
 namespace Nv
 {
-	namespace Blast
-	{
+    namespace Blast
+    {
 
-		class BooleanToolV2;
-		class TriangulatorV2;
+        class BooleanToolV2;
+        class TriangulatorV2;
 
-		struct BooleanToolOutputDataImpl : public BooleanToolOutputData
-		{
-			BooleanToolOutputDataImpl(bool createOnlyEdgeBuffer = false);
+        struct BooleanToolOutputDataImpl : public BooleanToolOutputData
+        {
+            BooleanToolOutputDataImpl(bool createOnlyEdgeBuffer = false);
 
-			void release() override;
+            void release() override;
 
-			void reset() override;
-			void resetEdges() override;
+            void reset() override;
+            void resetEdges() override;
 
-			void copyVerticesAndResults(const BooleanToolOutputData* other) override;
+            void copyVerticesAndResults(const BooleanToolOutputData* other) override;
 
-			uint32_t edgesCount() const override
-			{
-				return *mEdgesCount;
-			}
-			uint32_t verticesCount() const override
-			{
-				return *mVerticesCount;
-			}
-			uint32_t ffResultCount() const override
-			{
-				return *mFfResultCount;
-			}
+            uint32_t edgesCount() const override
+            {
+                return *mEdgesCount;
+            }
+            uint32_t verticesCount() const override
+            {
+                return *mVerticesCount;
+            }
+            uint32_t ffResultCount() const override
+            {
+                return *mFfResultCount;
+            }
 
-			uint32_t addEdge(const BooleanResultEdge&) override;
-			uint32_t addVertex(const Vertex&) override;
-			uint32_t addFfResult(const FacetFacetResult&) override;
+            uint32_t addEdge(const BooleanResultEdge&) override;
+            uint32_t addVertex(const Vertex&) override;
+            uint32_t addFfResult(const FacetFacetResult&) override;
 
-			BooleanResultEdge& getNewEdge() override;
-			Vertex& getNewVertex() override;
-			FacetFacetResult& getNewFfResult() override;
+            BooleanResultEdge& getNewEdge() override;
+            Vertex& getNewVertex() override;
+            FacetFacetResult& getNewFfResult() override;
 
-			std::atomic<uint32_t>* mEdgesCount;
-			std::atomic<uint32_t>* mVerticesCount;
-			std::atomic<uint32_t>* mFfResultCount;
+            std::atomic<uint32_t>* mEdgesCount;
+            std::atomic<uint32_t>* mVerticesCount;
+            std::atomic<uint32_t>* mFfResultCount;
 
-			bool isVerticesAndResultsAllocated;
-		};
+            bool isVerticesAndResultsAllocated;
+        };
 
-		class FractureRTImpl : public FractureRT
-		{
-		public:
-			
-			FractureRTImpl();
+        class FractureRTImpl : public FractureRT
+        {
+        public:
+            
+            FractureRTImpl();
 
-			virtual void release() override;
-			virtual void processMesh(DamagePattern* pattern, const Mesh* msh) override;
+            virtual void release() override;
+            virtual void processMesh(DamagePattern* pattern, const Mesh* msh) override;
 
-			virtual uint32_t getResultChunkCount() override 
-			{
-				return resultChunkCount;
-			};
-			virtual Vertex* getVertexBuffer() override
-			{
-				return verticesBuffer;
-			};
-			virtual uint32_t* getVertexOffset() override
-			{
-				return vertexOffset;
-			};
-			virtual uint32_t* getIndexBuffer() override
-			{
-				return indexBuffer;
-			};
-			virtual uint32_t* getIndexOffset() override 
-			{
-				return indexOffset;
-			};
-			PerTriangleAdditionalData* getPerTriangleData() override
-			{
-				return adata;
-			};
+            virtual uint32_t getResultChunkCount() override 
+            {
+                return resultChunkCount;
+            };
+            virtual Vertex* getVertexBuffer() override
+            {
+                return verticesBuffer;
+            };
+            virtual uint32_t* getVertexOffset() override
+            {
+                return vertexOffset;
+            };
+            virtual uint32_t* getIndexBuffer() override
+            {
+                return indexBuffer;
+            };
+            virtual uint32_t* getIndexOffset() override 
+            {
+                return indexOffset;
+            };
+            PerTriangleAdditionalData* getPerTriangleData() override
+            {
+                return adata;
+            };
 
-			void dumpChunksToObj(const char* path) override;
+            void dumpChunksToObj(const char* path) override;
 
-		private:
+        private:
 
-			BooleanToolV2* btool;
-			TriangulatorV2* triangulator;
-			Vertex* verticesBuffer;
-			uint32_t* indexBuffer;
-			PerTriangleAdditionalData* adata;
+            BooleanToolV2* btool;
+            TriangulatorV2* triangulator;
+            Vertex* verticesBuffer;
+            uint32_t* indexBuffer;
+            PerTriangleAdditionalData* adata;
 
-			uint32_t triangleCount;
-			uint32_t vertexCount;
+            uint32_t triangleCount;
+            uint32_t vertexCount;
 
-			uint32_t* indexOffset;
-			uint32_t* vertexOffset;
-			uint32_t resultChunkCount;
+            uint32_t* indexOffset;
+            uint32_t* vertexOffset;
+            uint32_t resultChunkCount;
 
-			BooleanToolOutputDataImpl* outputData;
-		};
-	}
+            BooleanToolOutputDataImpl* outputData;
+        };
+    }
 }
 
 Nv::Blast::BooleanToolOutputData* CreateBooleanToolOutputData(bool isMergedMesh = false);

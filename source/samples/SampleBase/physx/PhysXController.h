@@ -68,245 +68,245 @@ class PhysXController : public ISampleController
 {
   public:
 
-	//////// Actor ////////
+    //////// Actor ////////
 
-	class Actor
-	{
-	public:
+    class Actor
+    {
+    public:
 
-		Actor(PhysXController* controller, PxRigidActor* actor, bool ownPxActor = true);
-		~Actor();
+        Actor(PhysXController* controller, PxRigidActor* actor, bool ownPxActor = true);
+        ~Actor();
 
-		void setColor(DirectX::XMFLOAT4 color);
-		DirectX::XMFLOAT4 getColor() const { return m_color; }
+        void setColor(DirectX::XMFLOAT4 color);
+        DirectX::XMFLOAT4 getColor() const { return m_color; }
 
-		bool isHidden() { return m_hidden; }
-		void setHidden(bool hidden);
+        bool isHidden() { return m_hidden; }
+        void setHidden(bool hidden);
 
-		void update();
-		PxRigidActor* getActor() const { return m_actor; }
+        void update();
+        PxRigidActor* getActor() const { return m_actor; }
 
-		bool ownsPxActor() const { return m_ownPxActor; }
+        bool ownsPxActor() const { return m_ownPxActor; }
 
-	private:
-		PhysXController*      m_controller;
-		PxRigidActor*         m_actor;
-		std::vector<PxShape*> m_shapes;
+    private:
+        PhysXController*      m_controller;
+        PxRigidActor*         m_actor;
+        std::vector<PxShape*> m_shapes;
 
-		std::vector<Renderable*>   m_renderables;
-		DirectX::XMFLOAT4     m_color;
+        std::vector<Renderable*>   m_renderables;
+        DirectX::XMFLOAT4     m_color;
 
-		bool                  m_hidden;
-		bool                  m_ownPxActor;
-	};
-
-
-	//////// ctor ////////
-
-	PhysXController(PxSimulationFilterShader filterShader);
-	virtual ~PhysXController();
+        bool                  m_hidden;
+        bool                  m_ownPxActor;
+    };
 
 
-	//////// virtual callbacks ////////
+    //////// ctor ////////
 
-	virtual void onInitialize() override;
-	virtual void onTerminate() override;
-
-	virtual LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    PhysXController(PxSimulationFilterShader filterShader);
+    virtual ~PhysXController();
 
 
-	//////// public API ////////
+    //////// virtual callbacks ////////
 
-	void simulationBegin(float dt);
-	void simualtionSyncEnd();
+    virtual void onInitialize() override;
+    virtual void onTerminate() override;
 
-	void getEyePoseAndPickDir(float mouseX, float mouseY, PxVec3& eyePos, PxVec3& pickDir);
+    virtual LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-	// wrappers to physx calls
-	PxRigidDynamic* createRigidDynamic(const PxTransform& transform);
-	void			releaseRigidDynamic(PxRigidDynamic*);
 
-	Actor*	spawnPhysXPrimitiveBox(const PxTransform& position, PxVec3 extents = PxVec3(1, 1, 1), float density = 2000.0f);
-	Actor*	spawnPhysXPrimitivePlane(const PxPlane& plane);
-	Actor*	spawnPhysXPrimitive(PxRigidActor* actor, bool addToScene = true, bool ownPxActor = true);
-	void	removePhysXPrimitive(Actor*);
+    //////// public API ////////
 
-	IRenderMesh* getConvexRenderMesh(const PxConvexMesh* mesh);
-	IRenderMesh* getRenderMeshForShape(const PxShape* shape);
-	PxVec3		 getMeshScaleForShape(const PxShape* shape);
+    void simulationBegin(float dt);
+    void simualtionSyncEnd();
 
-	void removeUnownedPhysXActors();
+    void getEyePoseAndPickDir(float mouseX, float mouseY, PxVec3& eyePos, PxVec3& pickDir);
 
-	bool isPaused() const
-	{
-		return m_paused;
-	}
+    // wrappers to physx calls
+    PxRigidDynamic* createRigidDynamic(const PxTransform& transform);
+    void            releaseRigidDynamic(PxRigidDynamic*);
 
-	void setPaused(bool paused)
-	{
-		m_paused = paused;
-	}
+    Actor*  spawnPhysXPrimitiveBox(const PxTransform& position, PxVec3 extents = PxVec3(1, 1, 1), float density = 2000.0f);
+    Actor*  spawnPhysXPrimitivePlane(const PxPlane& plane);
+    Actor*  spawnPhysXPrimitive(PxRigidActor* actor, bool addToScene = true, bool ownPxActor = true);
+    void    removePhysXPrimitive(Actor*);
 
-	void setDraggingEnabled(bool enabled);
-	bool getDraggingEnabled() const { return m_draggingEnabled; }
-	void resetDragging();
+    IRenderMesh* getConvexRenderMesh(const PxConvexMesh* mesh);
+    IRenderMesh* getRenderMeshForShape(const PxShape* shape);
+    PxVec3       getMeshScaleForShape(const PxShape* shape);
 
-	void notifyRigidDynamicDestroyed(PxRigidDynamic*);
+    void removeUnownedPhysXActors();
 
-	void explode(PxVec3 worldPos, float damageRadius, float explosiveImpulse);
-	void explodeDelayed(PxVec3 worldPos, float damageRadius, float explosiveImpulse);
+    bool isPaused() const
+    {
+        return m_paused;
+    }
 
-	void drawUI();
+    void setPaused(bool paused)
+    {
+        m_paused = paused;
+    }
 
-	//////// public getters ////////
+    void setDraggingEnabled(bool enabled);
+    bool getDraggingEnabled() const { return m_draggingEnabled; }
+    void resetDragging();
 
-	double getLastSimulationTime() const
-	{
-		return m_lastSimulationTime;
-	}
+    void notifyRigidDynamicDestroyed(PxRigidDynamic*);
 
-	RenderMaterial* getPrimitiveRenderMaterial() 
-	{ 
-		return m_physXPrimitiveRenderMaterial; 
-	}
+    void explode(PxVec3 worldPos, float damageRadius, float explosiveImpulse);
+    void explodeDelayed(PxVec3 worldPos, float damageRadius, float explosiveImpulse);
 
-	PxPhysics& getPhysics() const
-	{
-		return *m_physics;
-	}
+    void drawUI();
 
-	PxScene& getPhysXScene() const
-	{
-		return *m_physicsScene;
-	}
+    //////// public getters ////////
 
-	PxMaterial* getDefaultMaterial() const
-	{
-		return m_defaultMaterial;
-	}
+    double getLastSimulationTime() const
+    {
+        return m_lastSimulationTime;
+    }
 
-	PxCooking& getCooking() const
-	{
-		return *m_cooking;
-	}
+    RenderMaterial* getPrimitiveRenderMaterial() 
+    { 
+        return m_physXPrimitiveRenderMaterial; 
+    }
 
-	PxDefaultCpuDispatcher* getCPUDispatcher() const
-	{
-		return m_dispatcher;
-	}
+    PxPhysics& getPhysics() const
+    {
+        return *m_physics;
+    }
 
-	void setPerformanceWriter(PerformanceDataWriter* perfWriter)
-	{
-		m_perfWriter = perfWriter;
-	}
+    PxScene& getPhysXScene() const
+    {
+        return *m_physicsScene;
+    }
 
-	bool getGPUPhysicsAvailable() const
-	{
-		return m_gpuPhysicsAvailable;
-	}
+    PxMaterial* getDefaultMaterial() const
+    {
+        return m_defaultMaterial;
+    }
 
-	void setUseGPUPhysics(bool useGPUPhysics);
+    PxCooking& getCooking() const
+    {
+        return *m_cooking;
+    }
 
-	bool getUseGPUPhysics() const
-	{
-		return m_useGPUPhysics;
-	}
+    PxDefaultCpuDispatcher* getCPUDispatcher() const
+    {
+        return m_dispatcher;
+    }
 
-	const PxVec3& getDragActorHookLocalPoint() const
-	{
-		return m_draggingActorHookLocalPoint;
-	}
+    void setPerformanceWriter(PerformanceDataWriter* perfWriter)
+    {
+        m_perfWriter = perfWriter;
+    }
 
-	const PxVec3& getDragVector() const
-	{
-		return m_dragVector;
-	}
+    bool getGPUPhysicsAvailable() const
+    {
+        return m_gpuPhysicsAvailable;
+    }
 
-	PxRigidDynamic* getDraggingActor() const
-	{
-		return m_draggingActor;
-	}
+    void setUseGPUPhysics(bool useGPUPhysics);
+
+    bool getUseGPUPhysics() const
+    {
+        return m_useGPUPhysics;
+    }
+
+    const PxVec3& getDragActorHookLocalPoint() const
+    {
+        return m_draggingActorHookLocalPoint;
+    }
+
+    const PxVec3& getDragVector() const
+    {
+        return m_dragVector;
+    }
+
+    PxRigidDynamic* getDraggingActor() const
+    {
+        return m_draggingActor;
+    }
 
   private:
-	//////// internal methods ////////
+    //////// internal methods ////////
 
-	void initPhysX();
-	void releasePhysX();
+    void initPhysX();
+    void releasePhysX();
 
-	void initPhysXPrimitives();
-	void releasePhysXPrimitives();
-	void updateActorTransforms();
-	void updateDragging(double dt);
-	void processExplosionQueue();
+    void initPhysXPrimitives();
+    void releasePhysXPrimitives();
+    void updateActorTransforms();
+    void updateDragging(double dt);
+    void processExplosionQueue();
 
-	
-	//////// used controllers ////////
+    
+    //////// used controllers ////////
 
-	Renderer& getRenderer() const
-	{
-		return getManager()->getRenderer();
-	}
+    Renderer& getRenderer() const
+    {
+        return getManager()->getRenderer();
+    }
 
 
-	//////// internal data ////////
+    //////// internal data ////////
 
-	// PhysX 
-	PxFoundation*                               m_foundation;
-	PxPhysics*                                  m_physics;
-	PxCooking*                                  m_cooking;
-	PxPvd*                                      m_pvd;
-	PxCudaContextManager*                       m_cudaContext;
-	PxDefaultCpuDispatcher*                     m_dispatcher;
-	PxMaterial*                                 m_defaultMaterial;
-	PxSimulationFilterShader                    m_filterShader;
-	PxScene*                                    m_physicsScene;
+    // PhysX 
+    PxFoundation*                               m_foundation;
+    PxPhysics*                                  m_physics;
+    PxCooking*                                  m_cooking;
+    PxPvd*                                      m_pvd;
+    PxCudaContextManager*                       m_cudaContext;
+    PxDefaultCpuDispatcher*                     m_dispatcher;
+    PxMaterial*                                 m_defaultMaterial;
+    PxSimulationFilterShader                    m_filterShader;
+    PxScene*                                    m_physicsScene;
 
-	// PhysX API related
-	std::vector<PxActor*>                       m_physXActorsToRemove;
+    // PhysX API related
+    std::vector<PxActor*>                       m_physXActorsToRemove;
 
-	// primitives/actors
-	std::set<Actor*>                            m_actors;
-	std::map<const PxConvexMesh*, IRenderMesh*> m_convexRenderMeshes;
-	RenderMaterial*                             m_physXPrimitiveRenderMaterial;
-	RenderMaterial*                             m_physXPlaneRenderMaterial;
-	RenderMaterial*                             m_physXPrimitiveTransparentRenderMaterial;
+    // primitives/actors
+    std::set<Actor*>                            m_actors;
+    std::map<const PxConvexMesh*, IRenderMesh*> m_convexRenderMeshes;
+    RenderMaterial*                             m_physXPrimitiveRenderMaterial;
+    RenderMaterial*                             m_physXPlaneRenderMaterial;
+    RenderMaterial*                             m_physXPrimitiveTransparentRenderMaterial;
 
-	// simulation
-	bool										m_isSimulating;
-	bool										m_gpuPhysicsAvailable;
-	bool										m_useGPUPhysics;
-	double                                      m_lastSimulationTime;
-	LARGE_INTEGER                               m_performanceFreq;
-	bool                                        m_paused;
-	bool										m_useFixedTimeStep;
-	float										m_fixedTimeStep;
-	float										m_timeAccumulator;
-	uint32_t									m_substepCount;
-	int32_t										m_maxSubstepCount;
+    // simulation
+    bool                                        m_isSimulating;
+    bool                                        m_gpuPhysicsAvailable;
+    bool                                        m_useGPUPhysics;
+    double                                      m_lastSimulationTime;
+    LARGE_INTEGER                               m_performanceFreq;
+    bool                                        m_paused;
+    bool                                        m_useFixedTimeStep;
+    float                                       m_fixedTimeStep;
+    float                                       m_timeAccumulator;
+    uint32_t                                    m_substepCount;
+    int32_t                                     m_maxSubstepCount;
 
-	// dragging
-	bool                                        m_draggingEnabled;
-	PxRigidDynamic*                             m_draggingActor;
-	PxVec3                                      m_draggingActorHookLocalPoint;
-	PxVec3                                      m_dragAttractionPoint;
-	PxVec3                                      m_dragVector;
-	float                                       m_dragDistance;
-	DebugRenderBuffer                           m_dragDebugRenderBuffer;
-	PxVec3										m_draggingActorLastHookWorldPoint;
-	bool										m_draggingTryReconnect;
+    // dragging
+    bool                                        m_draggingEnabled;
+    PxRigidDynamic*                             m_draggingActor;
+    PxVec3                                      m_draggingActorHookLocalPoint;
+    PxVec3                                      m_dragAttractionPoint;
+    PxVec3                                      m_dragVector;
+    float                                       m_dragDistance;
+    DebugRenderBuffer                           m_dragDebugRenderBuffer;
+    PxVec3                                      m_draggingActorLastHookWorldPoint;
+    bool                                        m_draggingTryReconnect;
 
-	// Performance writer
-	PerformanceDataWriter*						m_perfWriter;
+    // Performance writer
+    PerformanceDataWriter*                      m_perfWriter;
 
-	// explosion
-	struct ExplosionData
-	{
-		PxVec3 worldPos;
-		float damageRadius;
-		float explosiveImpulse;
-	};
+    // explosion
+    struct ExplosionData
+    {
+        PxVec3 worldPos;
+        float damageRadius;
+        float explosiveImpulse;
+    };
 
-	std::vector<ExplosionData>					m_explosionQueue;
+    std::vector<ExplosionData>                  m_explosionQueue;
 
 };
 

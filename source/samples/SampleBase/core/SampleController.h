@@ -34,47 +34,47 @@
 class SampleController : public ISampleController
 {
 public:
-	SampleController();
-	virtual ~SampleController();
+    SampleController();
+    virtual ~SampleController();
 
-	virtual void onSampleStart();
-	void drawPhysXGpuUI();
+    virtual void onSampleStart();
+    void drawPhysXGpuUI();
 
 private:
-	SampleController& operator= (SampleController&);
+    SampleController& operator= (SampleController&);
 
 
-	//////// used controllers ////////
+    //////// used controllers ////////
 
-	PhysXController& getPhysXController() const
-	{
-		return getManager()->getPhysXController();
-	}
+    PhysXController& getPhysXController() const
+    {
+        return getManager()->getPhysXController();
+    }
 
-	BlastController& getBlastController() const
-	{
-		return getManager()->getBlastController();
-	}
+    BlastController& getBlastController() const
+    {
+        return getManager()->getBlastController();
+    }
 
-	SceneController& getSceneController() const
-	{
-		return getManager()->getSceneController();
-	}
+    SceneController& getSceneController() const
+    {
+        return getManager()->getSceneController();
+    }
 
-	CommonUIController& getCommonUIController() const
-	{
-		return getManager()->getCommonUIController();
-	}
+    CommonUIController& getCommonUIController() const
+    {
+        return getManager()->getCommonUIController();
+    }
 
-	Renderer& getRenderer() const
-	{
-		return getManager()->getRenderer();
-	}
+    Renderer& getRenderer() const
+    {
+        return getManager()->getRenderer();
+    }
 
 
-	//////// private methods ////////
+    //////// private methods ////////
 
-	void setUseGPUPhysics(bool useGPUPhysics);
+    void setUseGPUPhysics(bool useGPUPhysics);
 };
 
 #endif

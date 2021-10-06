@@ -36,29 +36,29 @@ class RenderMaterial;
 class BlastAssetModelSkinned : public BlastAssetModel
 {
 public:
-	//////// ctor ////////
+    //////// ctor ////////
 
-	BlastAssetModelSkinned(TkFramework& framework, PxPhysics& physics, PxCooking& cooking, ExtSerialization& serialization, Renderer& renderer, const char* modelName);
-	virtual ~BlastAssetModelSkinned();
-
-
-	//////// interface implementation ////////
-
-	BlastFamilyPtr createFamily(PhysXController& physXConroller, ExtPxManager& pxManager, const ActorDesc& desc);
+    BlastAssetModelSkinned(TkFramework& framework, PxPhysics& physics, PxCooking& cooking, ExtSerialization& serialization, Renderer& renderer, const char* modelName);
+    virtual ~BlastAssetModelSkinned();
 
 
-	//////// public getter ////////
+    //////// interface implementation ////////
 
-	const std::vector<RenderMaterial*>& getRenderMaterials() const
-	{
-		return m_renderMaterials;
-	}
+    BlastFamilyPtr createFamily(PhysXController& physXConroller, ExtPxManager& pxManager, const ActorDesc& desc);
+
+
+    //////// public getter ////////
+
+    const std::vector<RenderMaterial*>& getRenderMaterials() const
+    {
+        return m_renderMaterials;
+    }
 
 
 private:
-	//////// internal data ////////
+    //////// internal data ////////
 
-	std::vector<RenderMaterial*>	m_renderMaterials;
+    std::vector<RenderMaterial*>    m_renderMaterials;
 };
 
 #endif //BLAST_ASSET_MODEL_SKINNED_H

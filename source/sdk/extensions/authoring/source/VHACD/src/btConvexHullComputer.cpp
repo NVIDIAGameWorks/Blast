@@ -39,7 +39,7 @@ typedef unsigned long long int32_t uint64_t;
 
 //The definition of USE_X86_64_ASM is moved into the build system. You can enable it manually by commenting out the following lines
 //#if (defined(__GNUC__) && defined(__x86_64__) && !defined(__ICL))  // || (defined(__ICL) && defined(_M_X64))   bug in Intel compiler, disable inline assembly
-//	#define USE_X86_64_ASM
+//  #define USE_X86_64_ASM
 //#endif
 
 //#define DEBUG_CONVEX_HULL
@@ -885,7 +885,7 @@ int32_t btConvexHullInternal::Rational64::compare(const Rational64& b) const
         return 0;
     }
 
-//	return (numerator * b.denominator > b.numerator * denominator) ? sign : (numerator * b.denominator < b.numerator * denominator) ? -sign : 0;
+//  return (numerator * b.denominator > b.numerator * denominator) ? sign : (numerator * b.denominator < b.numerator * denominator) ? -sign : 0;
 
 #ifdef USE_X86_64_ASM
 

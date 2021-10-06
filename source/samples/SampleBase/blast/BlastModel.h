@@ -46,29 +46,29 @@ Every chunk can have multiple meshes (1 for every material)
 class BlastModel
 {
 public:
-	struct Material
-	{
-		std::string diffuseTexture;
-	};
+    struct Material
+    {
+        std::string diffuseTexture;
+    };
 
-	struct Chunk
-	{
-		struct Mesh
-		{
-			uint32_t materialIndex;
-			SimpleMesh mesh;
-		};
+    struct Chunk
+    {
+        struct Mesh
+        {
+            uint32_t materialIndex;
+            SimpleMesh mesh;
+        };
 
-		std::vector<Mesh> meshes;
-	};
+        std::vector<Mesh> meshes;
+    };
 
-	std::vector<Material> materials;
-	std::vector<Chunk> chunks;
+    std::vector<Material> materials;
+    std::vector<Chunk> chunks;
 
-	static BlastModelPtr loadFromFileTinyLoader(const char* path);
-	static BlastModelPtr loadFromFbxFile(const char* path);
+    static BlastModelPtr loadFromFileTinyLoader(const char* path);
+    static BlastModelPtr loadFromFbxFile(const char* path);
 private:
-	BlastModel() {}
+    BlastModel() {}
 };
 
 #endif // ifndef BLAST_MODEL_H

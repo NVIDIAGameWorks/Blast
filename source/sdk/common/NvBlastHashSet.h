@@ -44,7 +44,7 @@ Wrapped PxShared HashSet that uses NvBlastGlobals AllocatorCalllback.
 template <class Key, class HashFn = physx::shdfnd::Hash<Key>>
 struct HashSet
 {
-	typedef physx::shdfnd::HashSet<Key, HashFn, Allocator> type;
+    typedef physx::shdfnd::HashSet<Key, HashFn, Allocator> type;
 };
 
 } // namespace Blast

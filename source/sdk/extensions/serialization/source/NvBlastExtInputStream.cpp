@@ -30,7 +30,7 @@
 
 
 Nv::Blast::ExtInputStream::ExtInputStream(std::istream &inputStream) :
-	m_inputStream(inputStream)
+    m_inputStream(inputStream)
 {
 
 }
@@ -38,19 +38,19 @@ Nv::Blast::ExtInputStream::ExtInputStream(std::istream &inputStream) :
 
 size_t Nv::Blast::ExtInputStream::tryRead(void* buffer, size_t /*minBytes*/, size_t maxBytes)
 {
-	m_inputStream.read((char *) buffer, maxBytes);
+    m_inputStream.read((char *) buffer, maxBytes);
 
-	if (m_inputStream.fail())
-	{
-		// Throw exception, log error
-//		NVBLAST_LOG_ERROR("Failure when reading from stream");
-	}
+    if (m_inputStream.fail())
+    {
+        // Throw exception, log error
+//      NVBLAST_LOG_ERROR("Failure when reading from stream");
+    }
 
-	// Since we're using a blocking read above, if we don't have maxBytes we're probably done
-	if ((size_t) m_inputStream.gcount() < maxBytes)
-	{
-//		NVBLAST_LOG_ERROR("Failed to read requested number of bytes during blocking read.");
-	}
+    // Since we're using a blocking read above, if we don't have maxBytes we're probably done
+    if ((size_t) m_inputStream.gcount() < maxBytes)
+    {
+//      NVBLAST_LOG_ERROR("Failed to read requested number of bytes during blocking read.");
+    }
 
-	return m_inputStream.gcount();
+    return m_inputStream.gcount();
 }

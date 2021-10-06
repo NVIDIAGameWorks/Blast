@@ -42,82 +42,82 @@
 /**  C type for 2-float vectors */
 typedef struct
 {
-	float x, y;
+    float x, y;
 } NvcVec2;
 
 /**  C type for 3-float vectors */
 typedef struct
 {
-	float x, y, z;
+    float x, y, z;
 } NvcVec3;
 
 /**  C type for 4-float vectors */
 typedef struct
 {
-	float x, y, z, w;
+    float x, y, z, w;
 } NvcVec4;
 
 /**  C type for quaternions */
 typedef struct
 {
-	float x, y, z, w;
+    float x, y, z, w;
 } NvcQuat;
 
 /**  C type for transforms */
 typedef struct
 {
-	NvcQuat q;
-	NvcVec3 p;
+    NvcQuat q;
+    NvcVec3 p;
 } NvcTransform;
 
 /**  C type for 3x3 matrices */
 typedef struct
 {
-	NvcVec3 column0, column1, column2, column3;
+    NvcVec3 column0, column1, column2, column3;
 } NvcMat34;
 
 /**  C type for 3x3 matrices */
 typedef struct
 {
-	NvcVec3 column0, column1, column2;
+    NvcVec3 column0, column1, column2;
 } NvcMat33;
 
 /**  C type for 4x4 matrices */
 typedef struct
 {
-	NvcVec4 column0, column1, column2, column3;
+    NvcVec4 column0, column1, column2, column3;
 } NvcMat44;
 
 /** C type for 3d bounding box */
 typedef struct
 {
-	NvcVec3 minimum;
-	NvcVec3 maximum;
+    NvcVec3 minimum;
+    NvcVec3 maximum;
 } NvcBounds3;
 
 /** C type for a plane */
 typedef struct
 {
-	NvcVec3 n;
-	float d;
+    NvcVec3 n;
+    float d;
 } NvcPlane;
 
 /**  C type for 2-integer vectors */
 typedef struct
 {
-	int32_t x, y;
+    int32_t x, y;
 } NvcVec2i;
 
 /**  C type for 3-integer vectors */
 typedef struct
 {
-	int32_t x, y, z;
+    int32_t x, y, z;
 } NvcVec3i;
 
 /**  C type for 4-integer vectors */
 typedef struct
 {
-	int32_t x, y, z, w;
+    int32_t x, y, z, w;
 } NvcVec4i;
 
 /** @} */

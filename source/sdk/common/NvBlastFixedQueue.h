@@ -55,84 +55,84 @@ template <class T>
 class FixedQueue
 {
 public:
-	explicit FixedQueue(uint32_t maxEntries) : m_num(0), m_head(0), m_tail(0), m_maxEntries(maxEntries)
-	{
-	}
+    explicit FixedQueue(uint32_t maxEntries) : m_num(0), m_head(0), m_tail(0), m_maxEntries(maxEntries)
+    {
+    }
 
-	static size_t requiredMemorySize(uint32_t capacity)
-	{
-		return align16(sizeof(FixedQueue<T>)) + align16(capacity * sizeof(T));
-	}
+    static size_t requiredMemorySize(uint32_t capacity)
+    {
+        return align16(sizeof(FixedQueue<T>)) + align16(capacity * sizeof(T));
+    }
 
-	T popFront()
-	{
-		NVBLAST_ASSERT(m_num>0);
+    T popFront()
+    {
+        NVBLAST_ASSERT(m_num>0);
 
-		m_num--;
-		T& element = data()[m_tail];
-		m_tail = (m_tail+1) % (m_maxEntries);
-		return element;
-	}
+        m_num--;
+        T& element = data()[m_tail];
+        m_tail = (m_tail+1) % (m_maxEntries);
+        return element;
+    }
 
-	T front()
-	{
-		NVBLAST_ASSERT(m_num>0);
+    T front()
+    {
+        NVBLAST_ASSERT(m_num>0);
 
-		return data()[m_tail];
-	}
+        return data()[m_tail];
+    }
 
-	T popBack()
-	{
-		NVBLAST_ASSERT(m_num>0);
+    T popBack()
+    {
+        NVBLAST_ASSERT(m_num>0);
 
-		m_num--;
-		m_head = (m_head-1) % (m_maxEntries);
-		return data()[m_head];
-	}
+        m_num--;
+        m_head = (m_head-1) % (m_maxEntries);
+        return data()[m_head];
+    }
 
-	T back()
-	{
-		NVBLAST_ASSERT(m_num>0);
+    T back()
+    {
+        NVBLAST_ASSERT(m_num>0);
 
-		uint32_t headAccess = (m_head-1) % (m_maxEntries);
-		return data()[headAccess];
-	}
+        uint32_t headAccess = (m_head-1) % (m_maxEntries);
+        return data()[headAccess];
+    }
 
-	bool pushBack(const T& element)
-	{
-		if (m_num == m_maxEntries) return false;
-		data()[m_head] = element;
+    bool pushBack(const T& element)
+    {
+        if (m_num == m_maxEntries) return false;
+        data()[m_head] = element;
 
-		m_num++;
-		m_head = (m_head+1) % (m_maxEntries);
+        m_num++;
+        m_head = (m_head+1) % (m_maxEntries);
 
-		return true;
-	}
+        return true;
+    }
 
-	bool empty() const
-	{
-		return m_num == 0;
-	}
+    bool empty() const
+    {
+        return m_num == 0;
+    }
 
-	uint32_t size() const
-	{
-		return m_num;
-	}	
+    uint32_t size() const
+    {
+        return m_num;
+    }   
 
-
-private:
-	uint32_t		m_num;
-	uint32_t		m_head;
-	uint32_t		m_tail;
-	uint32_t		m_maxEntries;
-
-	T* data()
-	{
-		return (T*)((char*)this + sizeof(FixedQueue<T>));
-	}
 
 private:
-	FixedQueue(const FixedQueue& that);
+    uint32_t        m_num;
+    uint32_t        m_head;
+    uint32_t        m_tail;
+    uint32_t        m_maxEntries;
+
+    T* data()
+    {
+        return (T*)((char*)this + sizeof(FixedQueue<T>));
+    }
+
+private:
+    FixedQueue(const FixedQueue& that);
 };
 
 } // namespace Blast

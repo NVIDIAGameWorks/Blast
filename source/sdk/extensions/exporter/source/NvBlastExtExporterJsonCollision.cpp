@@ -41,43 +41,43 @@ using namespace Nv::Blast;
 
 void serializaHullPolygon(std::ofstream& stream, const HullPolygon& p, uint32_t indent)
 {
-	std::string sindent(indent, '\t');
-	std::string bindent(indent + 1, '\t');
-	stream << sindent << "{\n" <<
-		bindent << JS_NAME("mIndexBase") << p.indexBase << ",\n" <<
-		bindent << JS_NAME("mPlane") << "[" << p.plane[0] << ", " << p.plane[1] << ", " << p.plane[2] << ", " << p.plane[3] << "],\n" <<
-		bindent << JS_NAME("mNbVerts") << p.vertexCount << "\n" <<
-		sindent << "}";
+    std::string sindent(indent, '\t');
+    std::string bindent(indent + 1, '\t');
+    stream << sindent << "{\n" <<
+        bindent << JS_NAME("mIndexBase") << p.indexBase << ",\n" <<
+        bindent << JS_NAME("mPlane") << "[" << p.plane[0] << ", " << p.plane[1] << ", " << p.plane[2] << ", " << p.plane[3] << "],\n" <<
+        bindent << JS_NAME("mNbVerts") << p.vertexCount << "\n" <<
+        sindent << "}";
 }
 void serializeCollisionHull(std::ofstream& stream, const CollisionHull& hl, uint32_t indent)
 {
-	std::string sindent(indent, '\t');
-	std::string bindent(indent + 1, '\t');
+    std::string sindent(indent, '\t');
+    std::string bindent(indent + 1, '\t');
 
-	stream << sindent << "{\n" << bindent << JS_NAME("indices") << "[";
-	for (uint32_t i = 0; i < hl.indicesCount; ++i)
-	{
-		stream << hl.indices[i];
-		if (i < hl.indicesCount - 1) stream << ", ";
-	}
-	stream << "],\n";
-	stream << bindent << JS_NAME("points") << "[";
-	for (uint32_t i = 0; i < hl.pointsCount; ++i)
-	{
-		auto& p = hl.points[i];
-		stream << p.x << ", " << p.y << ", " << p.z;
-		if (i < hl.pointsCount - 1) stream << ", ";
-	}
-	stream << "],\n";
-	stream << bindent << JS_NAME("polygonData") << "[\n";
-	for (uint32_t i = 0; i < hl.polygonDataCount; ++i)
-	{
-		serializaHullPolygon(stream, hl.polygonData[i], indent + 1);
-		if (i < hl.polygonDataCount - 1) stream << ", ";
-		stream << "\n";
-	}
-	stream << bindent << "]\n";
-	stream << sindent << "}";
+    stream << sindent << "{\n" << bindent << JS_NAME("indices") << "[";
+    for (uint32_t i = 0; i < hl.indicesCount; ++i)
+    {
+        stream << hl.indices[i];
+        if (i < hl.indicesCount - 1) stream << ", ";
+    }
+    stream << "],\n";
+    stream << bindent << JS_NAME("points") << "[";
+    for (uint32_t i = 0; i < hl.pointsCount; ++i)
+    {
+        auto& p = hl.points[i];
+        stream << p.x << ", " << p.y << ", " << p.z;
+        if (i < hl.pointsCount - 1) stream << ", ";
+    }
+    stream << "],\n";
+    stream << bindent << JS_NAME("polygonData") << "[\n";
+    for (uint32_t i = 0; i < hl.polygonDataCount; ++i)
+    {
+        serializaHullPolygon(stream, hl.polygonData[i], indent + 1);
+        if (i < hl.polygonDataCount - 1) stream << ", ";
+        stream << "\n";
+    }
+    stream << bindent << "]\n";
+    stream << sindent << "}";
 }
 
 
@@ -87,51 +87,51 @@ Implementation of object which serializes collision geometry to JSON format.
 class JsonCollisionExporter : public IJsonCollisionExporter
 {
 public:
-	JsonCollisionExporter() {}
-	~JsonCollisionExporter() = default;
+    JsonCollisionExporter() {}
+    ~JsonCollisionExporter() = default;
 
-	virtual void	release() override;
+    virtual void    release() override;
 
-	virtual bool	writeCollision(const char* path, uint32_t chunkCount, const uint32_t* hullOffsets, const CollisionHull* const * hulls) override;
+    virtual bool    writeCollision(const char* path, uint32_t chunkCount, const uint32_t* hullOffsets, const CollisionHull* const * hulls) override;
 };
 
 
 void
 JsonCollisionExporter::release()
 {
-	delete this;
+    delete this;
 }
 
 
 bool
 JsonCollisionExporter::JsonCollisionExporter::writeCollision(const char* path, uint32_t chunkCount, const uint32_t* hullOffsets, const CollisionHull* const * hulls)
 {
-	std::ofstream stream(path, std::ios::out);
-	stream << std::fixed << std::setprecision(8);
-	if (!stream.is_open())
-	{
-		std::cout << "Can't open output stream" << std::endl;
-		return false;
-	}
+    std::ofstream stream(path, std::ios::out);
+    stream << std::fixed << std::setprecision(8);
+    if (!stream.is_open())
+    {
+        std::cout << "Can't open output stream" << std::endl;
+        return false;
+    }
 
-	stream << "{\n" << "\t" << JS_NAME("CollisionData") << "[\n";
-	for (uint32_t i = 0; i < chunkCount; ++i)
-	{
-		stream << "\t\t" << "[\n";
-		for (uint32_t j = hullOffsets[i]; j < hullOffsets[i + 1]; ++j)
-		{
-			serializeCollisionHull(stream, *hulls[j], 3);
-			stream << ((j < hullOffsets[i + 1] - 1) ? ",\n" : "\n");
-		}
-		stream << "\t\t" << ((i < chunkCount - 1) ? "], \n" : "]\n");
-	}
-	stream << "\t]\n}";
-	stream.close();
-	return true;
+    stream << "{\n" << "\t" << JS_NAME("CollisionData") << "[\n";
+    for (uint32_t i = 0; i < chunkCount; ++i)
+    {
+        stream << "\t\t" << "[\n";
+        for (uint32_t j = hullOffsets[i]; j < hullOffsets[i + 1]; ++j)
+        {
+            serializeCollisionHull(stream, *hulls[j], 3);
+            stream << ((j < hullOffsets[i + 1] - 1) ? ",\n" : "\n");
+        }
+        stream << "\t\t" << ((i < chunkCount - 1) ? "], \n" : "]\n");
+    }
+    stream << "\t]\n}";
+    stream.close();
+    return true;
 };
 
 
 IJsonCollisionExporter* NvBlastExtExporterCreateJsonCollisionExporter()
 {
-	return new JsonCollisionExporter;
+    return new JsonCollisionExporter;
 }

@@ -33,7 +33,7 @@
 
 namespace physx
 {
-	class PxConvexMesh;
+    class PxConvexMesh;
 }
 namespace Nv
 {
@@ -52,18 +52,18 @@ PhysX implementation can be found in NvBlastExtPx.
 class ExtPxCollisionBuilder : public ConvexMeshBuilder
 {
   public:
-	/**
-	Method creates user defined collision mesh from provided array of vertices.
-	ConvexMeshBuilder from ExtPhysX returns PxConvexMesh pointer.
-	\param[in]  hull	Collision hull.
-	*/
-	virtual physx::PxConvexMesh* buildConvexMesh(const CollisionHull& hull) = 0;
+    /**
+    Method creates user defined collision mesh from provided array of vertices.
+    ConvexMeshBuilder from ExtPhysX returns PxConvexMesh pointer.
+    \param[in]  hull    Collision hull.
+    */
+    virtual physx::PxConvexMesh* buildConvexMesh(const CollisionHull& hull) = 0;
 
-	/**
-	Build physics chunks and subchunks from collision hulls
-	*/
-	virtual void buildPhysicsChunks(uint32_t chunkCount, uint32_t* hullOffsets, CollisionHull** hulls,
-	                                ExtPxChunk* physicsChunks, ExtPxSubchunk* physicsSubchunks) = 0;
+    /**
+    Build physics chunks and subchunks from collision hulls
+    */
+    virtual void buildPhysicsChunks(uint32_t chunkCount, uint32_t* hullOffsets, CollisionHull** hulls,
+                                    ExtPxChunk* physicsChunks, ExtPxSubchunk* physicsSubchunks) = 0;
 };
 
 }  // namespace Blast

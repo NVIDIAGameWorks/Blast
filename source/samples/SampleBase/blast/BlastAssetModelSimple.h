@@ -37,29 +37,29 @@ class RenderMaterial;
 class BlastAssetModelSimple : public BlastAssetModel
 {
 public:
-	//////// ctor ////////
+    //////// ctor ////////
 
-	BlastAssetModelSimple(TkFramework& framework, PxPhysics& physics, PxCooking& cooking, ExtSerialization& serialization, Renderer& renderer, const char* modelName);
-	virtual ~BlastAssetModelSimple();
-
-
-	//////// interface implementation ////////
-
-	virtual BlastFamilyPtr createFamily(PhysXController& physXConroller, ExtPxManager& pxManager, const ActorDesc& desc);
+    BlastAssetModelSimple(TkFramework& framework, PxPhysics& physics, PxCooking& cooking, ExtSerialization& serialization, Renderer& renderer, const char* modelName);
+    virtual ~BlastAssetModelSimple();
 
 
-	//////// data getters  ////////
+    //////// interface implementation ////////
 
-	const std::vector<RenderMaterial*>& getRenderMaterials() const
-	{
-		return m_renderMaterials;
-	}
+    virtual BlastFamilyPtr createFamily(PhysXController& physXConroller, ExtPxManager& pxManager, const ActorDesc& desc);
+
+
+    //////// data getters  ////////
+
+    const std::vector<RenderMaterial*>& getRenderMaterials() const
+    {
+        return m_renderMaterials;
+    }
 
 
 private:
-	//////// private internal data ////////
+    //////// private internal data ////////
 
-	std::vector<RenderMaterial*>	m_renderMaterials;
+    std::vector<RenderMaterial*>    m_renderMaterials;
 };
 
 #endif //BLAST_ASSET_MODEL_SIMPLE_H

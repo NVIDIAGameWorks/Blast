@@ -45,9 +45,9 @@ RenderMesh interface, used by Renderable
 class IRenderMesh
 {
 public:
-	virtual ~IRenderMesh() {}
-	virtual const std::vector<D3D11_INPUT_ELEMENT_DESC>& getInputElementDesc() const = 0;
-	virtual void render(ID3D11DeviceContext& context) const = 0;
+    virtual ~IRenderMesh() {}
+    virtual const std::vector<D3D11_INPUT_ELEMENT_DESC>& getInputElementDesc() const = 0;
+    virtual void render(ID3D11DeviceContext& context) const = 0;
 };
 
 /**
@@ -57,90 +57,90 @@ Basically Renderable = RenderMaterial + RenderMesh
 class Renderable
 {
 public:
-	//////// public API ////////
+    //////// public API ////////
 
-	void setMaterial(RenderMaterial& material);
+    void setMaterial(RenderMaterial& material);
 
-	PxMat44 getModelMatrix() const
-	{
-		return PxMat44(m_transform) * PxMat44(PxVec4(m_scale, 1));
-	}
+    PxMat44 getModelMatrix() const
+    {
+        return PxMat44(m_transform) * PxMat44(PxVec4(m_scale, 1));
+    }
 
-	void setTransform(PxTransform& transform)
-	{
-		m_transform = transform;
-	}
+    void setTransform(PxTransform& transform)
+    {
+        m_transform = transform;
+    }
 
-	const PxTransform& getTransform() const
-	{
-		return m_transform;
-	}
+    const PxTransform& getTransform() const
+    {
+        return m_transform;
+    }
 
-	void setScale(PxVec3 scale)
-	{
-		m_scale = scale;
-	}
+    void setScale(PxVec3 scale)
+    {
+        m_scale = scale;
+    }
 
-	const PxVec3& getScale() const
-	{
-		return m_scale;
-	}
+    const PxVec3& getScale() const
+    {
+        return m_scale;
+    }
 
-	void setColor(DirectX::XMFLOAT4 color)
-	{
-		m_color = color;
-	}
-	DirectX::XMFLOAT4 getColor() const
-	{
-		return m_color;
-	}
+    void setColor(DirectX::XMFLOAT4 color)
+    {
+        m_color = color;
+    }
+    DirectX::XMFLOAT4 getColor() const
+    {
+        return m_color;
+    }
 
-	void setHidden(bool hidden)
-	{
-		m_hidden = hidden;
-	}
+    void setHidden(bool hidden)
+    {
+        m_hidden = hidden;
+    }
 
-	bool isHidden() const 
-	{ 
-		return m_hidden;
-	}
+    bool isHidden() const 
+    { 
+        return m_hidden;
+    }
 
-	bool isTransparent() const
-	{
-		return !(m_materialInstance->getMaterial().getBlending() == RenderMaterial::BLEND_NONE);
-	}
+    bool isTransparent() const
+    {
+        return !(m_materialInstance->getMaterial().getBlending() == RenderMaterial::BLEND_NONE);
+    }
 
-	RenderMaterial& getMaterial() const { return m_materialInstance->getMaterial(); }
+    RenderMaterial& getMaterial() const { return m_materialInstance->getMaterial(); }
 
 private:
-	//////// methods used by Renderer ////////
+    //////// methods used by Renderer ////////
 
-	friend class Renderer;
+    friend class Renderer;
 
-	void render(Renderer& renderer) const
-	{
-		render(renderer, false);
-	}
+    void render(Renderer& renderer) const
+    {
+        render(renderer, false);
+    }
 
-	void renderDepthStencilOnly(Renderer& renderer) const
-	{
-		render(renderer, true);
-	}
+    void renderDepthStencilOnly(Renderer& renderer) const
+    {
+        render(renderer, true);
+    }
 
-	Renderable(IRenderMesh& mesh, RenderMaterial& material);
+    Renderable(IRenderMesh& mesh, RenderMaterial& material);
 
-	void render(Renderer& renderer, bool depthStencilOnly) const;
+    void render(Renderer& renderer, bool depthStencilOnly) const;
 
 
-	//////// internal data ////////
+    //////// internal data ////////
 
-	DirectX::XMFLOAT4           m_color;
-	PxTransform                 m_transform;
-	PxVec3                      m_scale;
+    DirectX::XMFLOAT4           m_color;
+    PxTransform                 m_transform;
+    PxVec3                      m_scale;
 
-	RenderMaterial::InstancePtr m_materialInstance;
-	IRenderMesh&                m_mesh;
-	bool                        m_hidden;
+    RenderMaterial::InstancePtr m_materialInstance;
+    IRenderMesh&                m_mesh;
+    bool                        m_hidden;
 };
 
 #endif //RENDERABLE_H

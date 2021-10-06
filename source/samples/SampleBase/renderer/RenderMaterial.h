@@ -48,89 +48,89 @@ class RenderMaterial
 {
   public:
 
-	enum BlendMode
-	{
-		BLEND_NONE,
-		BLEND_ALPHA_BLENDING,
-		BLEND_ADDITIVE
-	};
+    enum BlendMode
+    {
+        BLEND_NONE,
+        BLEND_ALPHA_BLENDING,
+        BLEND_ADDITIVE
+    };
 
-	RenderMaterial(ResourceManager& resourceProvider, const char* shaderFileName, const char* textureFileName = "", BlendMode blendMode = BLEND_NONE);
-	~RenderMaterial();
+    RenderMaterial(ResourceManager& resourceProvider, const char* shaderFileName, const char* textureFileName = "", BlendMode blendMode = BLEND_NONE);
+    ~RenderMaterial();
 
-	void setBlending(BlendMode blendMode);
-	BlendMode getBlending() const { return mBlendMode; }
+    void setBlending(BlendMode blendMode);
+    BlendMode getBlending() const { return mBlendMode; }
 
-	void reload();
+    void reload();
 
-	class Instance
-	{
-	public:
-		Instance(RenderMaterial& material, ID3D11InputLayout* inputLayout, uint32_t shaderNum = 0) : mMaterial(material), mInputLayout(inputLayout), mShaderNum(shaderNum) {}
-		~Instance() { SAFE_RELEASE(mInputLayout); }
+    class Instance
+    {
+    public:
+        Instance(RenderMaterial& material, ID3D11InputLayout* inputLayout, uint32_t shaderNum = 0) : mMaterial(material), mInputLayout(inputLayout), mShaderNum(shaderNum) {}
+        ~Instance() { SAFE_RELEASE(mInputLayout); }
 
-		bool isValid();
-		void bind(ID3D11DeviceContext& context, uint32_t slot, bool depthStencilOnly = false);
-		RenderMaterial& getMaterial() const { return mMaterial; }
-	private:
-		RenderMaterial& mMaterial;
-		ID3D11InputLayout* mInputLayout;
-		uint32_t mShaderNum;
-	};
+        bool isValid();
+        void bind(ID3D11DeviceContext& context, uint32_t slot, bool depthStencilOnly = false);
+        RenderMaterial& getMaterial() const { return mMaterial; }
+    private:
+        RenderMaterial& mMaterial;
+        ID3D11InputLayout* mInputLayout;
+        uint32_t mShaderNum;
+    };
 
-	typedef std::shared_ptr<Instance> InstancePtr;
+    typedef std::shared_ptr<Instance> InstancePtr;
 
-	InstancePtr getMaterialInstance(const IRenderMesh* mesh);
-	InstancePtr getMaterialInstance(const D3D11_INPUT_ELEMENT_DESC* elementDescs, uint32_t numElements);
+    InstancePtr getMaterialInstance(const IRenderMesh* mesh);
+    InstancePtr getMaterialInstance(const D3D11_INPUT_ELEMENT_DESC* elementDescs, uint32_t numElements);
 
   private:
-	void initialize(ResourceManager& resourceCallback, const char* shaderFileName, const char* textureFileName, BlendMode blendMode);
-	void initialize(ResourceManager&resourceProvider, std::vector<std::string> shaderFileNames, const char* textureFileName, BlendMode blendMode);
+    void initialize(ResourceManager& resourceCallback, const char* shaderFileName, const char* textureFileName, BlendMode blendMode);
+    void initialize(ResourceManager&resourceProvider, std::vector<std::string> shaderFileNames, const char* textureFileName, BlendMode blendMode);
 
-	void releaseReloadableResources();
+    void releaseReloadableResources();
 
-	std::string mShaderFileName;
-	std::string mTextureFileName;
+    std::string mShaderFileName;
+    std::string mTextureFileName;
 
-	struct ShaderGroup
-	{
-		ShaderGroup() : vs(nullptr), gs(nullptr), ps(nullptr), buffer(nullptr)
-		{
-		}
-		~ShaderGroup()
-		{
-			Release();
-		}
-		void Release()
-		{
-			SAFE_RELEASE(vs);
-			SAFE_RELEASE(gs);
-			SAFE_RELEASE(ps);
-			SAFE_RELEASE(buffer);
-		}
-		void Set(ID3D11DeviceContext* c, bool setPixelShader = true)
-		{
-			c->VSSetShader(vs, nullptr, 0);
-			c->GSSetShader(gs, nullptr, 0);
-			c->PSSetShader(setPixelShader  ? ps : nullptr, nullptr, 0);
-		}
-		bool IsValid()
-		{
-			return vs != nullptr;
-		}
-		ID3D11VertexShader* vs;
-		ID3D11GeometryShader* gs;
-		ID3D11PixelShader* ps;
-		ID3DBlob* buffer;
-	};
+    struct ShaderGroup
+    {
+        ShaderGroup() : vs(nullptr), gs(nullptr), ps(nullptr), buffer(nullptr)
+        {
+        }
+        ~ShaderGroup()
+        {
+            Release();
+        }
+        void Release()
+        {
+            SAFE_RELEASE(vs);
+            SAFE_RELEASE(gs);
+            SAFE_RELEASE(ps);
+            SAFE_RELEASE(buffer);
+        }
+        void Set(ID3D11DeviceContext* c, bool setPixelShader = true)
+        {
+            c->VSSetShader(vs, nullptr, 0);
+            c->GSSetShader(gs, nullptr, 0);
+            c->PSSetShader(setPixelShader  ? ps : nullptr, nullptr, 0);
+        }
+        bool IsValid()
+        {
+            return vs != nullptr;
+        }
+        ID3D11VertexShader* vs;
+        ID3D11GeometryShader* gs;
+        ID3D11PixelShader* ps;
+        ID3DBlob* buffer;
+    };
 
-	std::map<const IRenderMesh*, std::weak_ptr<Instance>> mRenderMeshToInstanceMap;
-	const TextureResource*					mTexture;
-	ID3D11ShaderResourceView*               mTextureSRV;
-	std::vector<std::string>                mShaderFilePathes;
-	std::vector<ShaderGroup*>               mShaderGroups;
-	ID3D11BlendState*                       mBlendState;
-	BlendMode                               mBlendMode;
+    std::map<const IRenderMesh*, std::weak_ptr<Instance>> mRenderMeshToInstanceMap;
+    const TextureResource*                  mTexture;
+    ID3D11ShaderResourceView*               mTextureSRV;
+    std::vector<std::string>                mShaderFilePathes;
+    std::vector<ShaderGroup*>               mShaderGroups;
+    ID3D11BlendState*                       mBlendState;
+    BlendMode                               mBlendMode;
 };
 
 #endif

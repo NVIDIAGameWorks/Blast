@@ -38,29 +38,29 @@ namespace Blast
 
 bool ExtPxSubchunkDTO::serialize(Nv::Blast::Serialization::ExtPxSubchunk::Builder builder, const Nv::Blast::ExtPxSubchunk * poco)
 {
-	PxTransformDTO::serialize(builder.getTransform(), &poco->transform);
-	PxConvexMeshGeometryDTO::serialize(builder.getGeometry(), &poco->geometry);
+    PxTransformDTO::serialize(builder.getTransform(), &poco->transform);
+    PxConvexMeshGeometryDTO::serialize(builder.getGeometry(), &poco->geometry);
 
-	return true;
+    return true;
 }
 
 
 Nv::Blast::ExtPxSubchunk* ExtPxSubchunkDTO::deserialize(Nv::Blast::Serialization::ExtPxSubchunk::Reader reader)
 {
-	NV_UNUSED(reader);
-	// TODO: Allocate with ExtContext and return
+    NV_UNUSED(reader);
+    // TODO: Allocate with ExtContext and return
 
-	return nullptr;
+    return nullptr;
 }
 
 
 bool ExtPxSubchunkDTO::deserializeInto(Nv::Blast::Serialization::ExtPxSubchunk::Reader reader, Nv::Blast::ExtPxSubchunk * poco)
 {
-	PxTransformDTO::deserializeInto(reader.getTransform(), &poco->transform);
-	PxConvexMeshGeometryDTO::deserializeInto(reader.getGeometry(), &poco->geometry);
+    PxTransformDTO::deserializeInto(reader.getTransform(), &poco->transform);
+    PxConvexMeshGeometryDTO::deserializeInto(reader.getGeometry(), &poco->geometry);
 
-	return true;
+    return true;
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

@@ -36,10 +36,10 @@
 /**
 Macros for more convenient logging
 */
-#define NVBLASTLL_LOG_ERROR(_logFn, _msg)		if (_logFn != nullptr) { _logFn(NvBlastMessage::Error, _msg, __FILE__, __LINE__); } ((void)0)
-#define NVBLASTLL_LOG_WARNING(_logFn, _msg)		if (_logFn != nullptr) { _logFn(NvBlastMessage::Warning, _msg, __FILE__, __LINE__); } ((void)0)
-#define NVBLASTLL_LOG_INFO(_logFn, _msg)		if (_logFn != nullptr) { _logFn(NvBlastMessage::Info, _msg, __FILE__, __LINE__); } ((void)0)
-#define NVBLASTLL_LOG_DEBUG(_logFn, _msg)		if (_logFn != nullptr) { _logFn(NvBlastMessage::Debug, _msg, __FILE__, __LINE__); } ((void)0)
+#define NVBLASTLL_LOG_ERROR(_logFn, _msg)       if (_logFn != nullptr) { _logFn(NvBlastMessage::Error, _msg, __FILE__, __LINE__); } ((void)0)
+#define NVBLASTLL_LOG_WARNING(_logFn, _msg)     if (_logFn != nullptr) { _logFn(NvBlastMessage::Warning, _msg, __FILE__, __LINE__); } ((void)0)
+#define NVBLASTLL_LOG_INFO(_logFn, _msg)        if (_logFn != nullptr) { _logFn(NvBlastMessage::Info, _msg, __FILE__, __LINE__); } ((void)0)
+#define NVBLASTLL_LOG_DEBUG(_logFn, _msg)       if (_logFn != nullptr) { _logFn(NvBlastMessage::Debug, _msg, __FILE__, __LINE__); } ((void)0)
 
 
 /** Blast will check function parameters for debug and checked builds. */
@@ -47,14 +47,14 @@ Macros for more convenient logging
 
 
 #if NVBLASTLL_CHECK_PARAMS
-#define NVBLASTLL_CHECK(_expr, _logFn, _msg, _onFail)																		\
-	{																													\
-		if(!(_expr))																									\
-		{																												\
-			if (_logFn) { _logFn(NvBlastMessage::Error, _msg, __FILE__, __LINE__); }									\
-			{ _onFail; };																								\
-		}																												\
-	}																													
+#define NVBLASTLL_CHECK(_expr, _logFn, _msg, _onFail)                                                                       \
+    {                                                                                                                   \
+        if(!(_expr))                                                                                                    \
+        {                                                                                                               \
+            if (_logFn) { _logFn(NvBlastMessage::Error, _msg, __FILE__, __LINE__); }                                    \
+            { _onFail; };                                                                                               \
+        }                                                                                                               \
+    }                                                                                                                   
 #else
 #define NVBLASTLL_CHECK(_expr, _logFn, _msg, _onFail) NV_UNUSED(_logFn)
 #endif
@@ -65,7 +65,7 @@ Convenience macro to replace deprecated UINT32_MAX
 */
 #ifndef UINT32_MAX
 #include <limits>
-#define UINT32_MAX	(std::numeric_limits<uint32_t>::max())
+#define UINT32_MAX  (std::numeric_limits<uint32_t>::max())
 #endif
 
 

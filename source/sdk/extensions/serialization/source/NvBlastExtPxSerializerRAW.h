@@ -55,7 +55,7 @@ class ExtIStream;
 
 //// Nv::Blast::TkAsset ////
 
-ExtPxAsset*	deserializeExtPxAsset(ExtIStream& stream, TkFramework& framework, physx::PxPhysics& physics);
+ExtPxAsset* deserializeExtPxAsset(ExtIStream& stream, TkFramework& framework, physx::PxPhysics& physics);
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

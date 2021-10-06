@@ -234,7 +234,7 @@ public:
         m_floats[1] = s * v0.m_floats[1] + rt * v1.m_floats[1];
         m_floats[2] = s * v0.m_floats[2] + rt * v1.m_floats[2];
         //don't do the unused w component
-        //		m_co[3] = s * v0[3] + rt * v1[3];
+        //      m_co[3] = s * v0[3] + rt * v1[3];
     }
 
     /**@brief Return the linear interpolation between this and another vector 
@@ -280,7 +280,7 @@ public:
     /**@brief Return the w value */
     SIMD_FORCE_INLINE const btScalar& w() const { return m_floats[3]; }
 
-    //SIMD_FORCE_INLINE btScalar&       operator[](int32_t i)       { return (&m_floats[0])[i];	}
+    //SIMD_FORCE_INLINE btScalar&       operator[](int32_t i)       { return (&m_floats[0])[i]; }
     //SIMD_FORCE_INLINE const btScalar& operator[](int32_t i) const { return (&m_floats[0])[i]; }
     ///operator btScalar*() replaces operator[], using implicit conversion. We added operator != and operator == to avoid pointer comparisons.
     SIMD_FORCE_INLINE operator btScalar*() { return &m_floats[0]; }
@@ -572,12 +572,12 @@ public:
    * @param z Value of z
    */
 
-    /*		void getValue(btScalar *m) const 
-		{
-			m[0] = m_floats[0];
-			m[1] = m_floats[1];
-			m[2] =m_floats[2];
-		}
+    /*      void getValue(btScalar *m) const 
+        {
+            m[0] = m_floats[0];
+            m[1] = m_floats[1];
+            m[2] =m_floats[2];
+        }
 */
     /**@brief Set the values 
    * @param x Value of x

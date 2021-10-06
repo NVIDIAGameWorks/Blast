@@ -55,12 +55,12 @@ struct NvBlastExtAssetUtilsBondDesc;
 Constructs mesh object from array of triangles.
 User should call release() after usage.
 
-\param[in] positions		Array for vertex positions, 3 * verticesCount floats will be read
-\param[in] normals			Array for vertex normals, 3 * verticesCount floats will be read
-\param[in] uv				Array for vertex uv coordinates, 2 * verticesCount floats will be read
-\param[in] verticesCount	Number of vertices in mesh
-\param[in] indices			Array of vertex indices. Indices contain vertex index triplets which form a mesh triangle.
-\param[in] indicesCount		Indices count (should be equal to numberOfTriangles * 3)
+\param[in] positions        Array for vertex positions, 3 * verticesCount floats will be read
+\param[in] normals          Array for vertex normals, 3 * verticesCount floats will be read
+\param[in] uv               Array for vertex uv coordinates, 2 * verticesCount floats will be read
+\param[in] verticesCount    Number of vertices in mesh
+\param[in] indices          Array of vertex indices. Indices contain vertex index triplets which form a mesh triangle.
+\param[in] indicesCount     Indices count (should be equal to numberOfTriangles * 3)
 
 \return pointer to Nv::Blast::Mesh if it was created succefully otherwise return nullptr
 */
@@ -72,12 +72,12 @@ NvBlastExtAuthoringCreateMesh(const NvcVec3* positions, const NvcVec3* normals, 
 Constructs mesh object from triangles represented as arrays of vertices, indices and per facet material.
 User should call Mesh::release() after usage.
 
-\param[in] vertices			Array for vertex positions, 3 * verticesCount floats will be read
-\param[in] verticesCount	Number of vertices in mesh
-\param[in] indices			Array of vertex indices. Indices contain vertex index triplets which form a mesh triangle.
-\param[in] indicesCount		Indices count (should be equal to numberOfTriangles * 3)
-\param[in] materials		Array of material indices per triangle. If not set default material (0) will be assigned.
-\param[in] materialStride	Stride for material indices
+\param[in] vertices         Array for vertex positions, 3 * verticesCount floats will be read
+\param[in] verticesCount    Number of vertices in mesh
+\param[in] indices          Array of vertex indices. Indices contain vertex index triplets which form a mesh triangle.
+\param[in] indicesCount     Indices count (should be equal to numberOfTriangles * 3)
+\param[in] materials        Array of material indices per triangle. If not set default material (0) will be assigned.
+\param[in] materialStride   Stride for material indices
 
 \return pointer to Nv::Blast::Mesh if it was created succefully otherwise return nullptr
 */
@@ -89,12 +89,12 @@ NvBlastExtAuthoringCreateMeshOnlyTriangles(const void* vertices, uint32_t vertic
 Constructs mesh object from array of vertices, edges and facets.
 User should call release() after usage.
 
-\param[in] vertices			Array for Nv::Blast::Vertex
-\param[in] edges			Array for Nv::Blast::Edge
-\param[in] facets			Array for Nv::Blast::Facet
-\param[in] verticesCount	Number of vertices in mesh
-\param[in] edgesCount		Number of edges in mesh
-\param[in] facetsCount		Number of facets in mesh
+\param[in] vertices         Array for Nv::Blast::Vertex
+\param[in] edges            Array for Nv::Blast::Edge
+\param[in] facets           Array for Nv::Blast::Facet
+\param[in] verticesCount    Number of vertices in mesh
+\param[in] edgesCount       Number of edges in mesh
+\param[in] facetsCount      Number of facets in mesh
 
 \return pointer to Nv::Blast::Mesh if it was created succefully otherwise return nullptr
 */
@@ -105,9 +105,9 @@ NvBlastExtAuthoringCreateMeshFromFacets(const void* vertices, const void* edges,
 /**
 Voronoi sites should not be generated outside of the fractured mesh, so VoronoiSitesGenerator
 should be supplied with fracture mesh.
-\param[in] mesh			Fracture mesh
-\param[in] rnd			User supplied random value generator.
-\return					Pointer to VoronoiSitesGenerator. User's code should release it after usage.
+\param[in] mesh         Fracture mesh
+\param[in] rnd          User supplied random value generator.
+\return                 Pointer to VoronoiSitesGenerator. User's code should release it after usage.
 */
 NVBLAST_API Nv::Blast::VoronoiSitesGenerator*
 NvBlastExtAuthoringCreateVoronoiSitesGenerator(Nv::Blast::Mesh* mesh, Nv::Blast::RandomGeneratorBase* rng);
@@ -120,15 +120,15 @@ Builds a cutout set (which must have been initially created by createCutoutSet()
 Uses a bitmap described by pixelBuffer, bufferWidth, and bufferHeight.  Each pixel is represented
 by one byte in the buffer.
 
-\param cutoutSet		the CutoutSet to build
-\param pixelBuffer		pointer to be beginning of the pixel buffer
-\param bufferWidth		the width of the buffer in pixels
-\param bufferHeight		the height of the buffer in pixels
-\param segmentationErrorThreshold	Reduce the number of vertices on curve untill segmentation error is smaller then
-specified. By default set it to 0.001. \param snapThreshold	the pixel distance at which neighboring cutout vertices and
+\param cutoutSet        the CutoutSet to build
+\param pixelBuffer      pointer to be beginning of the pixel buffer
+\param bufferWidth      the width of the buffer in pixels
+\param bufferHeight     the height of the buffer in pixels
+\param segmentationErrorThreshold   Reduce the number of vertices on curve untill segmentation error is smaller then
+specified. By default set it to 0.001. \param snapThreshold the pixel distance at which neighboring cutout vertices and
 segments may be fudged into alignment. By default set it to 1.
-\param periodic			whether or not to use periodic boundary conditions when creating cutouts from the map
-\param expandGaps		expand cutout regions to gaps or keep it as is
+\param periodic         whether or not to use periodic boundary conditions when creating cutouts from the map
+\param expandGaps       expand cutout regions to gaps or keep it as is
 
 */
 NVBLAST_API void
@@ -150,10 +150,10 @@ NVBLAST_API Nv::Blast::BlastBondGenerator* NvBlastExtAuthoringCreateBondGenerato
 
 /**
 Build convex mesh decomposition.
-\param[in] mesh				Triangle mesh to decompose.
-\param[in] triangleCount	Number of triangles in mesh.
-\param[in] params			Parameters for convex mesh decomposition builder.
-\param[out] convexes		The resulting convex hulls.
+\param[in] mesh             Triangle mesh to decompose.
+\param[in] triangleCount    Number of triangles in mesh.
+\param[in] params           Parameters for convex mesh decomposition builder.
+\param[out] convexes        The resulting convex hulls.
 
 \return Number of created convex hulls.
 */
@@ -171,9 +171,9 @@ NVBLAST_API int32_t NvBlastExtAuthoringBuildMeshConvexDecomposition(Nv::Blast::C
     This method trims all intersecting parts of collision geometry.
     As a drawback, trimming collision geometry can lead to penetrating render meshes during simulation.
 
-    \param[in]		chunksCount	Number of chunks
-    \param[in,out]	in			ConvexHull geometry which should be clipped.
-    \param[in]		chunkDepth	Array of depth levels of convex hulls corresponding chunks.
+    \param[in]      chunksCount Number of chunks
+    \param[in,out]  in          ConvexHull geometry which should be clipped.
+    \param[in]      chunkDepth  Array of depth levels of convex hulls corresponding chunks.
 
 */
 NVBLAST_API void NvBlastExtAuthoringTrimCollisionGeometry(Nv::Blast::ConvexMeshBuilder* cmb, uint32_t chunksCount,
@@ -182,20 +182,20 @@ NVBLAST_API void NvBlastExtAuthoringTrimCollisionGeometry(Nv::Blast::ConvexMeshB
 
 /**
 Transforms collision hull in place using scale, rotation, transform.
-\param[in, out]	hull		Pointer to the hull to be transformed (modified).
-\param[in]		scale		Pointer to scale to be applied. Can be nullptr.
-\param[in]		rotation	Pointer to rotation to be applied. Can be nullptr.
-\param[in]		translation	Pointer to translation to be applied. Can be nullptr.
+\param[in, out] hull        Pointer to the hull to be transformed (modified).
+\param[in]      scale       Pointer to scale to be applied. Can be nullptr.
+\param[in]      rotation    Pointer to rotation to be applied. Can be nullptr.
+\param[in]      translation Pointer to translation to be applied. Can be nullptr.
 */
 NVBLAST_API void NvBlastExtAuthoringTransformCollisionHullInPlace(Nv::Blast::CollisionHull* hull, const NvcVec3* scaling,
                                                                   const NvcQuat* rotation, const NvcVec3* translation);
 
 /**
 Transforms collision hull in place using scale, rotation, transform.
-\param[in]	hull		Pointer to the hull to be transformed (modified).
-\param[in]		scale		Pointer to scale to be applied. Can be nullptr.
-\param[in]		rotation	Pointer to rotation to be applied. Can be nullptr.
-\param[in]		translation	Pointer to translation to be applied. Can be nullptr.
+\param[in]  hull        Pointer to the hull to be transformed (modified).
+\param[in]      scale       Pointer to scale to be applied. Can be nullptr.
+\param[in]      rotation    Pointer to rotation to be applied. Can be nullptr.
+\param[in]      translation Pointer to translation to be applied. Can be nullptr.
 */
 NVBLAST_API Nv::Blast::CollisionHull*
 NvBlastExtAuthoringTransformCollisionHull(const Nv::Blast::CollisionHull* hull, const NvcVec3* scaling,
@@ -204,13 +204,13 @@ NvBlastExtAuthoringTransformCollisionHull(const Nv::Blast::CollisionHull* hull, 
 /**
 Performs pending fractures and generates fractured asset, render and collision geometry
 
-\param[in]  fTool				Fracture tool created by NvBlastExtAuthoringCreateFractureTool
-\param[in]  bondGenerator		Bond generator created by NvBlastExtAuthoringCreateBondGenerator
-\param[in]  collisionBuilder	Collision builder created by NvBlastExtAuthoringCreateConvexMeshBuilder
+\param[in]  fTool               Fracture tool created by NvBlastExtAuthoringCreateFractureTool
+\param[in]  bondGenerator       Bond generator created by NvBlastExtAuthoringCreateBondGenerator
+\param[in]  collisionBuilder    Collision builder created by NvBlastExtAuthoringCreateConvexMeshBuilder
 \param[in]  defaultSupportDepth All new chunks will be marked as support if its depth equal to defaultSupportDepth.
                                 By default leaves (chunks without children) marked as support.
-\param[in]  collisionParam		Parameters of collision hulls generation.
-\return		Authoring result
+\param[in]  collisionParam      Parameters of collision hulls generation.
+\return     Authoring result
 */
 NVBLAST_API Nv::Blast::AuthoringResult*
 NvBlastExtAuthoringProcessFracture(Nv::Blast::FractureTool& fTool, Nv::Blast::BlastBondGenerator& bondGenerator,
@@ -233,8 +233,8 @@ NVBLAST_API void NvBlastExtAuthoringReleaseAuthoringResult(Nv::Blast::ConvexMesh
 /**
 Updates graphics mesh only
 
-\param[in]  fTool				Fracture tool created by NvBlastExtAuthoringCreateFractureTool
-\param[out] ares				AuthoringResult object which contains chunks, for which rendermeshes will be updated
+\param[in]  fTool               Fracture tool created by NvBlastExtAuthoringCreateFractureTool
+\param[out] ares                AuthoringResult object which contains chunks, for which rendermeshes will be updated
 (e.g. to tweak UVs). Initially should be created by NvBlastExtAuthoringProcessFracture.
 */
 NVBLAST_API void NvBlastExtAuthoringUpdateGraphicsMesh(Nv::Blast::FractureTool& fTool, Nv::Blast::AuthoringResult& ares);
@@ -242,11 +242,11 @@ NVBLAST_API void NvBlastExtAuthoringUpdateGraphicsMesh(Nv::Blast::FractureTool& 
 /**
 Build collision meshes
 
-\param[in,out]	ares				AuthoringResult object which contains chunks, for which collision meshes will be
-built. \param[in]		collisionBuilder	Reference to ConvexMeshBuilder instance. \param[in]		collisionParam
+\param[in,out]  ares                AuthoringResult object which contains chunks, for which collision meshes will be
+built. \param[in]       collisionBuilder    Reference to ConvexMeshBuilder instance. \param[in]     collisionParam
 Parameters of collision hulls generation.
-\param[in]		chunksToProcessCount Number of chunk indices in chunksToProcess memory buffer.
-\param[in]		chunksToProcess		Chunk indices for which collision mesh should be built.
+\param[in]      chunksToProcessCount Number of chunk indices in chunksToProcess memory buffer.
+\param[in]      chunksToProcess     Chunk indices for which collision mesh should be built.
 */
 NVBLAST_API void NvBlastExtAuthoringBuildCollisionMeshes(Nv::Blast::AuthoringResult& ares,
                                                          Nv::Blast::ConvexMeshBuilder& collisionBuilder,
@@ -269,19 +269,19 @@ An NvBlastAsset may appear more than once in the components array.
 NOTE: This function allocates memory using the allocator in NvBlastGlobals, to create the new bond
 descriptor arrays returned. The user must free this memory after use with NVBLAST_FREE
 
-\param[in]	components			An array of assets to merge, of size componentCount.
-\param[in]	scales				If not NULL, an array of size componentCount of scales to apply to the geometric data in
-the chunks and bonds. If NULL, no scaling is applied. \param[in]	rotations			If not NULL, an array of size
+\param[in]  components          An array of assets to merge, of size componentCount.
+\param[in]  scales              If not NULL, an array of size componentCount of scales to apply to the geometric data in
+the chunks and bonds. If NULL, no scaling is applied. \param[in]    rotations           If not NULL, an array of size
 componentCount of rotations to apply to the geometric data in the chunks and bonds.  The quaternions MUST be normalized.
                                 If NULL, no rotations are applied.
-\param[in]	translations		If not NULL, an array of of size componentCount of translations to apply to the
-geometric data in the chunks and bonds.  If NULL, no translations are applied. \param[in]	convexHullOffsets	For each
+\param[in]  translations        If not NULL, an array of of size componentCount of translations to apply to the
+geometric data in the chunks and bonds.  If NULL, no translations are applied. \param[in]   convexHullOffsets   For each
 component, an array of chunkSize+1 specifying the start of the convex hulls for that chunk inside the chunkHulls array
-for that component. \param[in]	chunkHulls			For each component, an array of CollisionHull* specifying the
-collision geometry for the chunks in that component. \param[in]	componentCount		The size of the components and
+for that component. \param[in]  chunkHulls          For each component, an array of CollisionHull* specifying the
+collision geometry for the chunks in that component. \param[in] componentCount      The size of the components and
 relativeTransforms arrays.
-\param[out]	newBondDescs		Descriptors of type NvBlastExtAssetUtilsBondDesc for new bonds between components.
-\param[in]	maxSeparation		Maximal distance between chunks which can be connected by bond.
+\param[out] newBondDescs        Descriptors of type NvBlastExtAssetUtilsBondDesc for new bonds between components.
+\param[in]  maxSeparation       Maximal distance between chunks which can be connected by bond.
 \return the number of bonds in newBondDescs
 */
 NVBLAST_API uint32_t NvBlastExtAuthoringFindAssetConnectingBonds(

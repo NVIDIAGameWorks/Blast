@@ -39,10 +39,10 @@ ISampleController adds more onstart and onstop callbacks to IVisualController
 class IApplicationController : public IVisualController
 {
   public:
-	virtual void onInitialize() {}
-	virtual void onSampleStart() {}
-	virtual void onSampleStop() {}
-	virtual void onTerminate() {}
+    virtual void onInitialize() {}
+    virtual void onSampleStart() {}
+    virtual void onSampleStop() {}
+    virtual void onTerminate() {}
 };
 
 
@@ -53,20 +53,20 @@ You have to add controllers to it which will receive all the start, animate, ren
 class Application
 {
 public:
-	Application(std::wstring sampleName);
-	void addControllerToFront(IApplicationController* controller);
+    Application(std::wstring sampleName);
+    void addControllerToFront(IApplicationController* controller);
 
-	const std::vector<IApplicationController*>& getControllers() const 
-	{ 
-		return m_controllers; 
-	}
+    const std::vector<IApplicationController*>& getControllers() const 
+    { 
+        return m_controllers; 
+    }
 
-	int run();
+    int run();
 
 private:
-	DeviceManager* m_deviceManager;
-	std::vector<IApplicationController*> m_controllers;
-	std::wstring m_sampleName;
+    DeviceManager* m_deviceManager;
+    std::vector<IApplicationController*> m_controllers;
+    std::wstring m_sampleName;
 };
 
 

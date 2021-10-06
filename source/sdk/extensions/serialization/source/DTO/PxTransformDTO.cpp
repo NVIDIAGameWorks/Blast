@@ -35,30 +35,30 @@ namespace Nv
 {
 namespace Blast
 {
-		
+        
 bool PxTransformDTO::serialize(Nv::Blast::Serialization::PxTransform::Builder builder, const physx::PxTransform * poco)
 {
-	PxQuatDTO::serialize(builder.getQ(), &poco->q);
-	PxVec3DTO::serialize(builder.getP(), &poco->p);
+    PxQuatDTO::serialize(builder.getQ(), &poco->q);
+    PxVec3DTO::serialize(builder.getP(), &poco->p);
 
-	return true;
+    return true;
 }
 
 
 physx::PxTransform* PxTransformDTO::deserialize(Nv::Blast::Serialization::PxTransform::Reader reader)
 {
-	NV_UNUSED(reader);
-	return nullptr;
+    NV_UNUSED(reader);
+    return nullptr;
 }
 
 
 bool PxTransformDTO::deserializeInto(Nv::Blast::Serialization::PxTransform::Reader reader, physx::PxTransform * poco)
 {
-	PxQuatDTO::deserializeInto(reader.getQ(), &poco->q);
-	PxVec3DTO::deserializeInto(reader.getP(), &poco->p);
+    PxQuatDTO::deserializeInto(reader.getQ(), &poco->q);
+    PxVec3DTO::deserializeInto(reader.getP(), &poco->p);
 
-	return true;
+    return true;
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

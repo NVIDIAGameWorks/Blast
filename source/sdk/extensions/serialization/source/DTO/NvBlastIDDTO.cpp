@@ -37,34 +37,34 @@ namespace Nv
 namespace Blast
 {
 
-	
+    
 bool NvBlastIDDTO::serialize(Nv::Blast::Serialization::UUID::Builder builder, const NvBlastID * poco)
 {
-	capnp::Data::Reader idArrayReader((unsigned char *)poco->data, 16);
-	builder.setValue(idArrayReader);
+    capnp::Data::Reader idArrayReader((unsigned char *)poco->data, 16);
+    builder.setValue(idArrayReader);
 
-	return true;
+    return true;
 }
 
 
 NvBlastID* NvBlastIDDTO::deserialize(Nv::Blast::Serialization::UUID::Reader reader)
 {
-	//FIXME
-	NV_UNUSED(reader);
-	//TODO: Allocate with ExtContext and return
+    //FIXME
+    NV_UNUSED(reader);
+    //TODO: Allocate with ExtContext and return
 
-	return nullptr;
+    return nullptr;
 }
 
 
 bool NvBlastIDDTO::deserializeInto(Nv::Blast::Serialization::UUID::Reader reader, NvBlastID * poco)
 {
-	NVBLAST_ASSERT_WITH_MESSAGE(reader.getValue().size() == 16, "BlastID must be 16 bytes");
+    NVBLAST_ASSERT_WITH_MESSAGE(reader.getValue().size() == 16, "BlastID must be 16 bytes");
 
-	memcpy(poco, reader.getValue().begin(), 16);
+    memcpy(poco, reader.getValue().begin(), 16);
 
-	return true;
+    return true;
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

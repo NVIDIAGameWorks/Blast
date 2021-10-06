@@ -32,12 +32,12 @@
 
 NvBlastExtDamageAccelerator* NvBlastExtDamageAcceleratorCreate(const NvBlastAsset* asset, int type)
 {
-	switch (type)
-	{
-		case 0:
-			return nullptr;
-		default:
-			return Nv::Blast::ExtDamageAcceleratorAABBTree::create(asset);
-			break;
-	}
+    switch (type)
+    {
+        case 0:
+            return nullptr;
+        default:
+            return Nv::Blast::ExtDamageAcceleratorAABBTree::create(asset);
+            break;
+    }
 }

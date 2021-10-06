@@ -42,81 +42,81 @@ class Mesh;
 class ObjFileReader : public IMeshFileReader
 {
 public:
-	ObjFileReader();
-	~ObjFileReader() = default;
+    ObjFileReader();
+    ~ObjFileReader() = default;
 
-	virtual void release() override;
+    virtual void release() override;
 
-	/*
-	Load from the specified file path, returning a mesh or nullptr if failed
-	*/
-	virtual void loadFromFile(const char* filename) override;
-	
-	virtual uint32_t getVerticesCount() const override
-	{
-		return mVertexPositions.size();
-	}
+    /*
+    Load from the specified file path, returning a mesh or nullptr if failed
+    */
+    virtual void loadFromFile(const char* filename) override;
+    
+    virtual uint32_t getVerticesCount() const override
+    {
+        return mVertexPositions.size();
+    }
 
-	virtual uint32_t getIndicesCount() const override
-	{
-		return mIndices.size();
-	}
+    virtual uint32_t getIndicesCount() const override
+    {
+        return mIndices.size();
+    }
 
-	/**
-	Check whether file contained an collision geometry
-	*/
-	virtual bool isCollisionLoaded() override;
+    /**
+    Check whether file contained an collision geometry
+    */
+    virtual bool isCollisionLoaded() override;
 
-	/**
-	Retrieve collision geometry if it exist
-	*/
-	virtual uint32_t getCollision(uint32_t*& hullsOffset, Nv::Blast::CollisionHull**& hulls) override;
+    /**
+    Retrieve collision geometry if it exist
+    */
+    virtual uint32_t getCollision(uint32_t*& hullsOffset, Nv::Blast::CollisionHull**& hulls) override;
 
-	/**
-		Get loaded vertex positions
-	*/
-	virtual NvcVec3* getPositionArray() override;
-	/**
-		Get loaded vertex normals
-	*/
-	virtual NvcVec3* getNormalsArray() override;
-	/**
-		Get loaded vertex uv-coordinates
-	*/
-	virtual NvcVec2* getUvArray() override;
-	/**
-		Get loaded triangle indices
-	*/
-	virtual uint32_t* getIndexArray() override;
+    /**
+        Get loaded vertex positions
+    */
+    virtual NvcVec3* getPositionArray() override;
+    /**
+        Get loaded vertex normals
+    */
+    virtual NvcVec3* getNormalsArray() override;
+    /**
+        Get loaded vertex uv-coordinates
+    */
+    virtual NvcVec2* getUvArray() override;
+    /**
+        Get loaded triangle indices
+    */
+    virtual uint32_t* getIndexArray() override;
 
-	/**
-		Get loaded per triangle material ids.
-	*/
-	int32_t*		getMaterialIds() override { return mPerFaceMatId.data(); };
+    /**
+        Get loaded per triangle material ids.
+    */
+    int32_t*        getMaterialIds() override { return mPerFaceMatId.data(); };
 
-	/**
-		Get loaded per triangle smoothing groups. Currently not supported by OBJ.
-	*/ 
-	int32_t*		getSmoothingGroups() override { return nullptr; };
+    /**
+        Get loaded per triangle smoothing groups. Currently not supported by OBJ.
+    */ 
+    int32_t*        getSmoothingGroups() override { return nullptr; };
 
-	/**
-		Get material name.
-	*/
-	const char*			getMaterialName(int32_t id) override { return mMaterialNames[id].c_str(); }
+    /**
+        Get material name.
+    */
+    const char*         getMaterialName(int32_t id) override { return mMaterialNames[id].c_str(); }
 
-	/**
-		Get material count.
-	*/
-	int32_t		getMaterialCount() { return mMaterialNames.size(); };
+    /**
+        Get material count.
+    */
+    int32_t     getMaterialCount() { return mMaterialNames.size(); };
 
 private:
-	std::vector<NvcVec3>	mVertexPositions;
-	std::vector<NvcVec3>	mVertexNormals;
-	std::vector<NvcVec2>	mVertexUv;
-	std::vector<uint32_t>		mIndices;
+    std::vector<NvcVec3>    mVertexPositions;
+    std::vector<NvcVec3>    mVertexNormals;
+    std::vector<NvcVec2>    mVertexUv;
+    std::vector<uint32_t>       mIndices;
 
-	std::vector<std::string>	mMaterialNames;
-	std::vector<int32_t>		mPerFaceMatId;
+    std::vector<std::string>    mMaterialNames;
+    std::vector<int32_t>        mPerFaceMatId;
 
 };
 

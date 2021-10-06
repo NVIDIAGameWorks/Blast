@@ -38,18 +38,18 @@ writtenBytes(0),
 Buffer(inBuffer),
 outputStream(nullptr)
 {
-	outputStream = std::make_shared<kj::ArrayOutputStream>(inBuffer);
+    outputStream = std::make_shared<kj::ArrayOutputStream>(inBuffer);
 }
 
 
 uint32_t ExtKJPxOutputStream::write(const void* src, uint32_t count)
 {
-	outputStream->write(src, count);
+    outputStream->write(src, count);
 
-	writtenBytes += count;
+    writtenBytes += count;
 
-	return count;
+    return count;
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

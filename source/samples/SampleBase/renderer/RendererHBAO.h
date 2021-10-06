@@ -38,20 +38,20 @@ class Renderer;
 class RendererHBAO
 {
 public:
-	RendererHBAO();
-	~RendererHBAO();
+    RendererHBAO();
+    ~RendererHBAO();
 
-	void createResources(ID3D11Device *pd3dDevice);
-	void renderAO(ID3D11DeviceContext *pd3dDeviceContext, ID3D11RenderTargetView* pRTV, ID3D11ShaderResourceView* pDepthSRV, DirectX::XMMATRIX& projMatrix);
+    void createResources(ID3D11Device *pd3dDevice);
+    void renderAO(ID3D11DeviceContext *pd3dDeviceContext, ID3D11RenderTargetView* pRTV, ID3D11ShaderResourceView* pDepthSRV, DirectX::XMMATRIX& projMatrix);
 
-	void drawUI();
+    void drawUI();
 
 private:
-	void releaseResources();
+    void releaseResources();
 
-	GFSDK_SSAO_Parameters m_SSAOParameters;
+    GFSDK_SSAO_Parameters m_SSAOParameters;
 
-	GFSDK_SSAO_Context_D3D11* m_SSAOContext;
+    GFSDK_SSAO_Context_D3D11* m_SSAOContext;
 };
 
 

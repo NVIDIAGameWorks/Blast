@@ -42,117 +42,117 @@ namespace Blast
 
 bool ExtPxAssetDTO::serialize(Nv::Blast::Serialization::ExtPxAsset::Builder builder, const Nv::Blast::ExtPxAsset * poco)
 {
-	TkAssetDTO::serialize(builder.getAsset(), &poco->getTkAsset());
+    TkAssetDTO::serialize(builder.getAsset(), &poco->getTkAsset());
 
-	auto chunks = builder.initChunks(poco->getChunkCount());
+    auto chunks = builder.initChunks(poco->getChunkCount());
 
-	for (uint32_t i = 0; i <poco->getChunkCount(); i++)
-	{
-		ExtPxChunkDTO::serialize(chunks[i], &poco->getChunks()[i]);
-	}
+    for (uint32_t i = 0; i <poco->getChunkCount(); i++)
+    {
+        ExtPxChunkDTO::serialize(chunks[i], &poco->getChunks()[i]);
+    }
 
-	auto subchunks = builder.initSubchunks(poco->getSubchunkCount());
+    auto subchunks = builder.initSubchunks(poco->getSubchunkCount());
 
-	for (uint32_t i = 0; i < poco->getSubchunkCount(); i++)
-	{
-		ExtPxSubchunkDTO::serialize(subchunks[i], &poco->getSubchunks()[i]);
-	}
+    for (uint32_t i = 0; i < poco->getSubchunkCount(); i++)
+    {
+        ExtPxSubchunkDTO::serialize(subchunks[i], &poco->getSubchunks()[i]);
+    }
 
-	const NvBlastActorDesc& actorDesc = poco->getDefaultActorDesc();
+    const NvBlastActorDesc& actorDesc = poco->getDefaultActorDesc();
 
-	builder.setUniformInitialBondHealth(actorDesc.uniformInitialBondHealth);
+    builder.setUniformInitialBondHealth(actorDesc.uniformInitialBondHealth);
 
-	if (actorDesc.initialBondHealths != nullptr)
-	{
-		const uint32_t bondCount = poco->getTkAsset().getBondCount();
-		kj::ArrayPtr<const float> bondHealthArray(actorDesc.initialBondHealths, bondCount);
-		builder.initBondHealths(bondCount);
-		builder.setBondHealths(bondHealthArray);
-	}
+    if (actorDesc.initialBondHealths != nullptr)
+    {
+        const uint32_t bondCount = poco->getTkAsset().getBondCount();
+        kj::ArrayPtr<const float> bondHealthArray(actorDesc.initialBondHealths, bondCount);
+        builder.initBondHealths(bondCount);
+        builder.setBondHealths(bondHealthArray);
+    }
 
-	builder.setUniformInitialLowerSupportChunkHealth(actorDesc.uniformInitialLowerSupportChunkHealth);
+    builder.setUniformInitialLowerSupportChunkHealth(actorDesc.uniformInitialLowerSupportChunkHealth);
 
-	if (actorDesc.initialSupportChunkHealths != nullptr)
-	{
-		const uint32_t supportChunkCount = NvBlastAssetGetSupportChunkCount(poco->getTkAsset().getAssetLL(), logLL);
-		kj::ArrayPtr<const float> supportChunkHealthArray(actorDesc.initialSupportChunkHealths, supportChunkCount);
-		builder.initSupportChunkHealths(supportChunkCount);
-		builder.setSupportChunkHealths(supportChunkHealthArray);
-	}
+    if (actorDesc.initialSupportChunkHealths != nullptr)
+    {
+        const uint32_t supportChunkCount = NvBlastAssetGetSupportChunkCount(poco->getTkAsset().getAssetLL(), logLL);
+        kj::ArrayPtr<const float> supportChunkHealthArray(actorDesc.initialSupportChunkHealths, supportChunkCount);
+        builder.initSupportChunkHealths(supportChunkCount);
+        builder.setSupportChunkHealths(supportChunkHealthArray);
+    }
 
-	return true;
+    return true;
 }
 
 
 Nv::Blast::ExtPxAsset* ExtPxAssetDTO::deserialize(Nv::Blast::Serialization::ExtPxAsset::Reader reader)
 {
-	auto tkAsset = TkAssetDTO::deserialize(reader.getAsset());
+    auto tkAsset = TkAssetDTO::deserialize(reader.getAsset());
 
-	Nv::Blast::ExtPxAssetImpl* asset = reinterpret_cast<Nv::Blast::ExtPxAssetImpl*>(Nv::Blast::ExtPxAsset::create(tkAsset));
+    Nv::Blast::ExtPxAssetImpl* asset = reinterpret_cast<Nv::Blast::ExtPxAssetImpl*>(Nv::Blast::ExtPxAsset::create(tkAsset));
 
-	NVBLAST_ASSERT(asset != nullptr);
+    NVBLAST_ASSERT(asset != nullptr);
 
-	auto& chunks = asset->getChunksArray();
-	const uint32_t chunkCount = reader.getChunks().size();
-	chunks.resize(chunkCount);
-	auto readerChunks = reader.getChunks();
-	for (uint32_t i = 0; i < chunkCount; i++)
-	{
-		ExtPxChunkDTO::deserializeInto(readerChunks[i], &chunks[i]);
-	}
+    auto& chunks = asset->getChunksArray();
+    const uint32_t chunkCount = reader.getChunks().size();
+    chunks.resize(chunkCount);
+    auto readerChunks = reader.getChunks();
+    for (uint32_t i = 0; i < chunkCount; i++)
+    {
+        ExtPxChunkDTO::deserializeInto(readerChunks[i], &chunks[i]);
+    }
 
-	auto& subchunks = asset->getSubchunksArray();
-	const uint32_t subChunkCount = reader.getSubchunks().size();
-	subchunks.resize(subChunkCount);
-	auto readerSubchunks = reader.getSubchunks();
-	for (uint32_t i = 0; i < subChunkCount; i++)
-	{
-		ExtPxSubchunkDTO::deserializeInto(readerSubchunks[i], &subchunks[i]);
-	}
+    auto& subchunks = asset->getSubchunksArray();
+    const uint32_t subChunkCount = reader.getSubchunks().size();
+    subchunks.resize(subChunkCount);
+    auto readerSubchunks = reader.getSubchunks();
+    for (uint32_t i = 0; i < subChunkCount; i++)
+    {
+        ExtPxSubchunkDTO::deserializeInto(readerSubchunks[i], &subchunks[i]);
+    }
 
-	NvBlastActorDesc& actorDesc = asset->getDefaultActorDesc();
+    NvBlastActorDesc& actorDesc = asset->getDefaultActorDesc();
 
-	actorDesc.uniformInitialBondHealth = reader.getUniformInitialBondHealth();
+    actorDesc.uniformInitialBondHealth = reader.getUniformInitialBondHealth();
 
-	actorDesc.initialBondHealths = nullptr;
-	if (reader.hasBondHealths())
-	{
-		const uint32_t bondCount = asset->getTkAsset().getBondCount();
-		Nv::Blast::Array<float>::type& bondHealths = asset->getBondHealthsArray();
-		bondHealths.resize(bondCount);
-		auto readerBondHealths = reader.getBondHealths();
-		for (uint32_t i = 0; i < bondCount; ++i)
-		{
-			bondHealths[i] = readerBondHealths[i];
-		}
-	}
+    actorDesc.initialBondHealths = nullptr;
+    if (reader.hasBondHealths())
+    {
+        const uint32_t bondCount = asset->getTkAsset().getBondCount();
+        Nv::Blast::Array<float>::type& bondHealths = asset->getBondHealthsArray();
+        bondHealths.resize(bondCount);
+        auto readerBondHealths = reader.getBondHealths();
+        for (uint32_t i = 0; i < bondCount; ++i)
+        {
+            bondHealths[i] = readerBondHealths[i];
+        }
+    }
 
-	actorDesc.uniformInitialLowerSupportChunkHealth = reader.getUniformInitialLowerSupportChunkHealth();
+    actorDesc.uniformInitialLowerSupportChunkHealth = reader.getUniformInitialLowerSupportChunkHealth();
 
-	actorDesc.initialSupportChunkHealths = nullptr;
-	if (reader.hasSupportChunkHealths())
-	{
-		const uint32_t supportChunkCount = NvBlastAssetGetSupportChunkCount(asset->getTkAsset().getAssetLL(), logLL);
-		Nv::Blast::Array<float>::type& supportChunkHealths = asset->getSupportChunkHealthsArray();
-		supportChunkHealths.resize(supportChunkCount);
-		auto readerSupportChunkHealths = reader.getSupportChunkHealths();
-		for (uint32_t i = 0; i < supportChunkCount; ++i)
-		{
-			supportChunkHealths[i] = readerSupportChunkHealths[i];
-		}
-	}
+    actorDesc.initialSupportChunkHealths = nullptr;
+    if (reader.hasSupportChunkHealths())
+    {
+        const uint32_t supportChunkCount = NvBlastAssetGetSupportChunkCount(asset->getTkAsset().getAssetLL(), logLL);
+        Nv::Blast::Array<float>::type& supportChunkHealths = asset->getSupportChunkHealthsArray();
+        supportChunkHealths.resize(supportChunkCount);
+        auto readerSupportChunkHealths = reader.getSupportChunkHealths();
+        for (uint32_t i = 0; i < supportChunkCount; ++i)
+        {
+            supportChunkHealths[i] = readerSupportChunkHealths[i];
+        }
+    }
 
-	return asset;
+    return asset;
 }
 
 
 bool ExtPxAssetDTO::deserializeInto(Nv::Blast::Serialization::ExtPxAsset::Reader reader, Nv::Blast::ExtPxAsset * poco)
 {
-	NV_UNUSED(reader);
-	poco = nullptr;
-	//NOTE: Because of the way this is structured, can't do this.
-	return false;
+    NV_UNUSED(reader);
+    poco = nullptr;
+    //NOTE: Because of the way this is structured, can't do this.
+    return false;
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

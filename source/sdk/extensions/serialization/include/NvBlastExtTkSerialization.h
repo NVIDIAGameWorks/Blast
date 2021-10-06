@@ -50,14 +50,14 @@ class TkAsset;
 /** Standard Object Type IDs */
 struct TkObjectTypeID
 {
-	enum Enum
-	{
-		Asset =	NVBLAST_FOURCC('T', 'K', 'A', 'S'),
-	};
+    enum Enum
+    {
+        Asset = NVBLAST_FOURCC('T', 'K', 'A', 'S'),
+    };
 };
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv
 
 
 /**
@@ -65,11 +65,11 @@ Load all high-level serializers into the ExtSerialization manager.
 
 It does no harm to call this function more than once; serializers already loaded will not be loaded again.
 
-\param[in]	serialization	Serialization manager into which to load serializers.
+\param[in]  serialization   Serialization manager into which to load serializers.
 
 \return the number of serializers loaded.
 */
-NVBLAST_API	size_t		NvBlastExtTkSerializerLoadSet(Nv::Blast::TkFramework& framework, Nv::Blast::ExtSerialization& serialization);
+NVBLAST_API size_t      NvBlastExtTkSerializerLoadSet(Nv::Blast::TkFramework& framework, Nv::Blast::ExtSerialization& serialization);
 
 
 /**
@@ -78,12 +78,12 @@ callack set in ExtSerialization::setBufferProvider.
 
 Equivalent to:
 
-	serialization.serializeIntoBuffer(buffer, asset, Nv::Blast::TkObjectTypeID::Asset);
+    serialization.serializeIntoBuffer(buffer, asset, Nv::Blast::TkObjectTypeID::Asset);
 
-\param[out]	buffer			Pointer to the buffer created.
-\param[in]	serialization	Serialization manager.
-\param[in]	asset			Pointer to the TkAsset to serialize.
+\param[out] buffer          Pointer to the buffer created.
+\param[in]  serialization   Serialization manager.
+\param[in]  asset           Pointer to the TkAsset to serialize.
 
 \return the number of bytes serialized into the buffer (zero if unsuccessful).
 */
-NVBLAST_API	uint64_t	NvBlastExtSerializationSerializeTkAssetIntoBuffer(void*& buffer, Nv::Blast::ExtSerialization& serialization, const Nv::Blast::TkAsset* asset);
+NVBLAST_API uint64_t    NvBlastExtSerializationSerializeTkAssetIntoBuffer(void*& buffer, Nv::Blast::ExtSerialization& serialization, const Nv::Blast::TkAsset* asset);

@@ -47,7 +47,7 @@ Descriptor for a TkGroup.  TkGroup uses a number of TkGroupWorker to process its
 */
 struct TkGroupDesc
 {
-	uint32_t		workerCount;			//!< The number of expected TkWorkers to process the TkGroup concurrently.
+    uint32_t        workerCount;            //!< The number of expected TkWorkers to process the TkGroup concurrently.
 };
 
 
@@ -57,9 +57,9 @@ Used to collect internal counters using TkGroup::getStats (for profile builds on
 */
 struct TkGroupStats
 {
-	NvBlastTimers	timers;					//!< Accumulated time spent in blast low-level functions, see NvBlastTimers
-	uint32_t		processedActorsCount;	//!< Accumulated number of processed actors in all TkWorker
-	int64_t			workerTime;				//!< Accumulated time spent executing TkWorker::run. Unit is ticks, see NvBlastTimers.
+    NvBlastTimers   timers;                 //!< Accumulated time spent in blast low-level functions, see NvBlastTimers
+    uint32_t        processedActorsCount;   //!< Accumulated number of processed actors in all TkWorker
+    int64_t         workerTime;             //!< Accumulated time spent executing TkWorker::run. Unit is ticks, see NvBlastTimers.
 };
 
 
@@ -74,12 +74,12 @@ will be fractured and split by this function.
 class TkGroupWorker
 {
 public:
-	/**
-	Process a job of this worker's TkGroup.
+    /**
+    Process a job of this worker's TkGroup.
 
-	/param[in]	jobId	a job id in the range (0, TkGroup::startProcess()]
-	*/
-	virtual void	process(uint32_t jobId) = 0;
+    /param[in]  jobId   a job id in the range (0, TkGroup::startProcess()]
+    */
+    virtual void    process(uint32_t jobId) = 0;
 };
 
 
@@ -101,90 +101,90 @@ After processing every job and returning all the workers to the group, endProces
 class TkGroup : public TkIdentifiable
 {
 public:
-	/**
-	Add the actor to this group, if the actor does not currently belong to a group.
+    /**
+    Add the actor to this group, if the actor does not currently belong to a group.
 
-	\param[in]	actor	The actor to add.
+    \param[in]  actor   The actor to add.
 
-	\return true if successful, false otherwise.
-	*/
-	virtual bool			addActor(TkActor& actor) = 0;
+    \return true if successful, false otherwise.
+    */
+    virtual bool            addActor(TkActor& actor) = 0;
 
-	/**
-	The number of actors currently in this group.
+    /**
+    The number of actors currently in this group.
 
-	\return the number of TkActors that currently exist in this group.
-	*/
-	virtual uint32_t		getActorCount() const = 0;
+    \return the number of TkActors that currently exist in this group.
+    */
+    virtual uint32_t        getActorCount() const = 0;
 
-	/**
-	Retrieve an array of pointers (into the user-supplied buffer) to actors.
+    /**
+    Retrieve an array of pointers (into the user-supplied buffer) to actors.
 
-	\param[out]	buffer		A user-supplied array of TkActor pointers.
-	\param[in]	bufferSize	The number of elements available to write into buffer.
-	\param[in]	indexStart	The starting index of the actor.
+    \param[out] buffer      A user-supplied array of TkActor pointers.
+    \param[in]  bufferSize  The number of elements available to write into buffer.
+    \param[in]  indexStart  The starting index of the actor.
 
-	\return the number of TkActor pointers written to the buffer.
-	*/
-	virtual uint32_t		getActors(TkActor** buffer, uint32_t bufferSize, uint32_t indexStart = 0) const = 0;
+    \return the number of TkActor pointers written to the buffer.
+    */
+    virtual uint32_t        getActors(TkActor** buffer, uint32_t bufferSize, uint32_t indexStart = 0) const = 0;
 
-	/**
-	Lock this group for processing concurrently with TkGroupWorker.  The group is unlocked again with the endProcess() function.
+    /**
+    Lock this group for processing concurrently with TkGroupWorker.  The group is unlocked again with the endProcess() function.
 
-	\return The number of jobs to process. TkGroupWorker::process must be called once for each jobID from 0 to this number-1.
-			See TkGroup::process for a single threaded example.
-	*/
-	virtual uint32_t		startProcess() = 0;
+    \return The number of jobs to process. TkGroupWorker::process must be called once for each jobID from 0 to this number-1.
+            See TkGroup::process for a single threaded example.
+    */
+    virtual uint32_t        startProcess() = 0;
 
-	/**
-	Unlock this group after all jobs were processed with TkGroupWorker.  All workers must have been returned with returnWorker().
-	This function gathers the results of the split operations on the actors in this group.  Events will be dispatched
-	to notify listeners of new and deleted actors.
+    /**
+    Unlock this group after all jobs were processed with TkGroupWorker.  All workers must have been returned with returnWorker().
+    This function gathers the results of the split operations on the actors in this group.  Events will be dispatched
+    to notify listeners of new and deleted actors.
 
-	Note that groups concurrently dispatching events for the same TkFamily require synchronization in the TkFamily's Listener.
-	However, concurrent use of endProcess is not recommended in this version. It should be called from the main thread.
+    Note that groups concurrently dispatching events for the same TkFamily require synchronization in the TkFamily's Listener.
+    However, concurrent use of endProcess is not recommended in this version. It should be called from the main thread.
 
-	\return		true	if the group was processing
-	*/
-	virtual bool			endProcess() = 0;
+    \return     true    if the group was processing
+    */
+    virtual bool            endProcess() = 0;
 
-	/**
-	Set the expected number of concurrent worker threads that will process this group concurrently.
-	*/
-	virtual void			setWorkerCount(uint32_t workerCount) = 0;
+    /**
+    Set the expected number of concurrent worker threads that will process this group concurrently.
+    */
+    virtual void            setWorkerCount(uint32_t workerCount) = 0;
 
-	/**
-	\return The total amount of workers allocated for this group.
-	*/
-	virtual uint32_t		getWorkerCount() const = 0;
+    /**
+    \return The total amount of workers allocated for this group.
+    */
+    virtual uint32_t        getWorkerCount() const = 0;
 
-	/**
-	Acquire one worker to process the group concurrently on a thread.
-	The worker must be returned with returnWorker() before endProcess() is called on its group.
+    /**
+    Acquire one worker to process the group concurrently on a thread.
+    The worker must be returned with returnWorker() before endProcess() is called on its group.
 
-	\return A worker for this group (at most getWorkerCount) or nullptr if none is available.
-	*/
-	virtual TkGroupWorker*	acquireWorker() = 0;
+    \return A worker for this group (at most getWorkerCount) or nullptr if none is available.
+    */
+    virtual TkGroupWorker*  acquireWorker() = 0;
 
-	/**
-	Return a worker previously acquired with acquireWorker() to this TkGroup.
+    /**
+    Return a worker previously acquired with acquireWorker() to this TkGroup.
 
-	\param[in] The TkGroupWorker previously acquired from this TkGroup.
-	*/
-	virtual void			returnWorker(TkGroupWorker*) = 0;
+    \param[in] The TkGroupWorker previously acquired from this TkGroup.
+    */
+    virtual void            returnWorker(TkGroupWorker*) = 0;
 
-	/**
-	Helper function to process the group synchronously on a single thread.
-	*/
-            void			process();
+    /**
+    Helper function to process the group synchronously on a single thread.
+    */
+            void            process();
 
-	/**
-	For profile builds only, request stats of the last successful processing. Inactive in other builds.
-	The times and counters reported account for all the TkWorker (accumulated) taking part in the processing.
+    /**
+    For profile builds only, request stats of the last successful processing. Inactive in other builds.
+    The times and counters reported account for all the TkWorker (accumulated) taking part in the processing.
 
-	\param[in]	stats	The struct to be filled in.
-	*/
-	virtual void			getStats(TkGroupStats& stats) const = 0;
+    \param[in]  stats   The struct to be filled in.
+    */
+    virtual void            getStats(TkGroupStats& stats) const = 0;
 };
 
 } // namespace Blast
@@ -193,17 +193,17 @@ public:
 
 NV_INLINE void Nv::Blast::TkGroup::process()
 {
-	uint32_t jobCount = startProcess();
-	if (jobCount > 0)
-	{
-		TkGroupWorker* worker = acquireWorker();
-		for (uint32_t i = 0; i < jobCount; i++)
-		{
-			worker->process(i);
-		}
-		returnWorker(worker);
-	}
-	endProcess();
+    uint32_t jobCount = startProcess();
+    if (jobCount > 0)
+    {
+        TkGroupWorker* worker = acquireWorker();
+        for (uint32_t i = 0; i < jobCount; i++)
+        {
+            worker->process(i);
+        }
+        returnWorker(worker);
+    }
+    endProcess();
 }
 
 

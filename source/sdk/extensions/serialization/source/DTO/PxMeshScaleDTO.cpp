@@ -39,27 +39,27 @@ namespace Blast
 
 bool PxMeshScaleDTO::serialize(Nv::Blast::Serialization::PxMeshScale::Builder builder, const physx::PxMeshScale * poco)
 {
-	PxVec3DTO::serialize(builder.getScale(), &poco->scale);
-	PxQuatDTO::serialize(builder.getRotation(), &poco->rotation);
+    PxVec3DTO::serialize(builder.getScale(), &poco->scale);
+    PxQuatDTO::serialize(builder.getRotation(), &poco->rotation);
 
-	return true;
+    return true;
 }
 
 
 physx::PxMeshScale* PxMeshScaleDTO::deserialize(Nv::Blast::Serialization::PxMeshScale::Reader reader)
 {
-	NV_UNUSED(reader);
-	return nullptr;
+    NV_UNUSED(reader);
+    return nullptr;
 }
 
 
 bool PxMeshScaleDTO::deserializeInto(Nv::Blast::Serialization::PxMeshScale::Reader reader, physx::PxMeshScale * poco)
 {
-	PxVec3DTO::deserializeInto(reader.getScale(), &poco->scale);
-	PxQuatDTO::deserializeInto(reader.getRotation(), &poco->rotation);
+    PxVec3DTO::deserializeInto(reader.getScale(), &poco->scale);
+    PxQuatDTO::deserializeInto(reader.getRotation(), &poco->rotation);
 
-	return true;
+    return true;
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

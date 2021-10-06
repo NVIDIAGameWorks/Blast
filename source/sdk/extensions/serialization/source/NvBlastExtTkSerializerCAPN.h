@@ -47,24 +47,24 @@ namespace Blast
 template<>
 NV_INLINE bool ExtSerializationCAPN<TkAsset, Serialization::TkAsset::Reader, Serialization::TkAsset::Builder>::serializeIntoBuilder(Serialization::TkAsset::Builder& assetBuilder, const TkAsset* asset)
 {
-	return TkAssetDTO::serialize(assetBuilder, asset);
+    return TkAssetDTO::serialize(assetBuilder, asset);
 }
 
 template<>
 NV_INLINE TkAsset* ExtSerializationCAPN<TkAsset, Serialization::TkAsset::Reader, Serialization::TkAsset::Builder>::deserializeFromStreamReader(capnp::InputStreamMessageReader &message)
 {
-	Serialization::TkAsset::Reader reader = message.getRoot<Serialization::TkAsset>();
+    Serialization::TkAsset::Reader reader = message.getRoot<Serialization::TkAsset>();
 
-	return TkAssetDTO::deserialize(reader);
+    return TkAssetDTO::deserialize(reader);
 }
 
 template<>
 NV_INLINE bool ExtSerializationCAPN<TkAsset, Serialization::TkAsset::Reader, Serialization::TkAsset::Builder>::serializeIntoMessage(capnp::MallocMessageBuilder& message, const TkAsset* asset)
 {
-	Serialization::TkAsset::Builder assetBuilder = message.initRoot<Serialization::TkAsset>();
+    Serialization::TkAsset::Builder assetBuilder = message.initRoot<Serialization::TkAsset>();
 
-	return serializeIntoBuilder(assetBuilder, asset);
+    return serializeIntoBuilder(assetBuilder, asset);
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

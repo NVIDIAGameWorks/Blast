@@ -44,97 +44,97 @@ using namespace Nv::Blast;
 
 BlastDataExporter::BlastDataExporter(TkFramework* framework, physx::PxPhysics* physics, physx::PxCooking* cooking) : mFramework(framework)
 {
-	mSerialization = NvBlastExtSerializationCreate();
-	if (mSerialization != nullptr && physics != nullptr && cooking != nullptr && framework != nullptr)
-	{
-		NvBlastExtTkSerializerLoadSet(*framework, *mSerialization);
-		NvBlastExtPxSerializerLoadSet(*framework, *physics, *cooking, *mSerialization);
-		mSerialization->setSerializationEncoding(NVBLAST_FOURCC('C', 'P', 'N', 'B'));
-	}
+    mSerialization = NvBlastExtSerializationCreate();
+    if (mSerialization != nullptr && physics != nullptr && cooking != nullptr && framework != nullptr)
+    {
+        NvBlastExtTkSerializerLoadSet(*framework, *mSerialization);
+        NvBlastExtPxSerializerLoadSet(*framework, *physics, *cooking, *mSerialization);
+        mSerialization->setSerializationEncoding(NVBLAST_FOURCC('C', 'P', 'N', 'B'));
+    }
 }
 
 
 BlastDataExporter::~BlastDataExporter()
 {
-	if (mSerialization != nullptr)
-	{
-		mSerialization->release();
-	}
+    if (mSerialization != nullptr)
+    {
+        mSerialization->release();
+    }
 }
 
 
 ExtPxAsset* BlastDataExporter::createExtBlastAsset(std::vector<NvBlastBondDesc>& bondDescs, const std::vector<NvBlastChunkDesc>& chunkDescs,
-	std::vector<ExtPxAssetDesc::ChunkDesc>& physicsChunks)
+    std::vector<ExtPxAssetDesc::ChunkDesc>& physicsChunks)
 {
-	ExtPxAssetDesc	descriptor;
-	descriptor.bondCount = static_cast<uint32_t>(bondDescs.size());
-	descriptor.bondDescs = bondDescs.data();
-	descriptor.chunkCount = static_cast<uint32_t>(chunkDescs.size());
-	descriptor.chunkDescs = chunkDescs.data();
-	descriptor.bondFlags = nullptr;
-	descriptor.pxChunks = physicsChunks.data();
-	ExtPxAsset* asset = ExtPxAsset::create(descriptor, *mFramework);
-	return asset;
+    ExtPxAssetDesc  descriptor;
+    descriptor.bondCount = static_cast<uint32_t>(bondDescs.size());
+    descriptor.bondDescs = bondDescs.data();
+    descriptor.chunkCount = static_cast<uint32_t>(chunkDescs.size());
+    descriptor.chunkDescs = chunkDescs.data();
+    descriptor.bondFlags = nullptr;
+    descriptor.pxChunks = physicsChunks.data();
+    ExtPxAsset* asset = ExtPxAsset::create(descriptor, *mFramework);
+    return asset;
 }
 
 
 NvBlastAsset* BlastDataExporter::createLlBlastAsset(std::vector<NvBlastBondDesc>& bondDescs, const std::vector<NvBlastChunkDesc>& chunkDescs)
 {
-	NvBlastAssetDesc assetDesc;
-	assetDesc.bondCount = static_cast<uint32_t>(bondDescs.size());
-	assetDesc.bondDescs = bondDescs.data();
+    NvBlastAssetDesc assetDesc;
+    assetDesc.bondCount = static_cast<uint32_t>(bondDescs.size());
+    assetDesc.bondDescs = bondDescs.data();
 
-	assetDesc.chunkCount = static_cast<uint32_t>(chunkDescs.size());
-	assetDesc.chunkDescs = chunkDescs.data();
+    assetDesc.chunkCount = static_cast<uint32_t>(chunkDescs.size());
+    assetDesc.chunkDescs = chunkDescs.data();
 
-	std::vector<uint8_t> scratch(static_cast<unsigned int>(NvBlastGetRequiredScratchForCreateAsset(&assetDesc, logLL)));
-	void* mem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&assetDesc, logLL));
-	NvBlastAsset* asset = NvBlastCreateAsset(mem, &assetDesc, scratch.data(), logLL);
-	return asset;
+    std::vector<uint8_t> scratch(static_cast<unsigned int>(NvBlastGetRequiredScratchForCreateAsset(&assetDesc, logLL)));
+    void* mem = NVBLAST_ALLOC(NvBlastGetAssetMemorySize(&assetDesc, logLL));
+    NvBlastAsset* asset = NvBlastCreateAsset(mem, &assetDesc, scratch.data(), logLL);
+    return asset;
 }
 
 
 TkAsset* BlastDataExporter::createTkBlastAsset(const std::vector<NvBlastBondDesc>& bondDescs, const std::vector<NvBlastChunkDesc>& chunkDescs)
 {
-	TkAssetDesc desc;
-	desc.bondCount = static_cast<uint32_t>(bondDescs.size());
-	desc.bondDescs = bondDescs.data();
-	desc.chunkCount = static_cast<uint32_t>(chunkDescs.size());
-	desc.chunkDescs = chunkDescs.data();
-	desc.bondFlags = nullptr;
-	TkAsset* asset = mFramework->createAsset(desc);
-	return asset;
+    TkAssetDesc desc;
+    desc.bondCount = static_cast<uint32_t>(bondDescs.size());
+    desc.bondDescs = bondDescs.data();
+    desc.chunkCount = static_cast<uint32_t>(chunkDescs.size());
+    desc.chunkDescs = chunkDescs.data();
+    desc.bondFlags = nullptr;
+    TkAsset* asset = mFramework->createAsset(desc);
+    return asset;
 };
 
 
 bool BlastDataExporter::saveBlastObject(const std::string& outputDir, const std::string& objectName, const void* object, uint32_t objectTypeID)
 {
-	void* buffer;
-	const uint64_t bufferSize = mSerialization->serializeIntoBuffer(buffer, object, objectTypeID);
-	if (bufferSize == 0)
-	{
-		std::cerr << "saveBlastObject: Serialization failed.\n";
-		return false;
-	}
+    void* buffer;
+    const uint64_t bufferSize = mSerialization->serializeIntoBuffer(buffer, object, objectTypeID);
+    if (bufferSize == 0)
+    {
+        std::cerr << "saveBlastObject: Serialization failed.\n";
+        return false;
+    }
 
-	physx::PsFileBuffer fileBuf((outputDir + "/" + objectName + ".blast").c_str(), physx::PxFileBuf::OPEN_WRITE_ONLY);
-	bool result = fileBuf.isOpen();
+    physx::PsFileBuffer fileBuf((outputDir + "/" + objectName + ".blast").c_str(), physx::PxFileBuf::OPEN_WRITE_ONLY);
+    bool result = fileBuf.isOpen();
 
-	if (!result)
-	{
-		std::cerr << "Can't open output buffer.\n";
-	}
-	else
-	{
-		result = (bufferSize == (size_t)fileBuf.write(buffer, (uint32_t)bufferSize));
-		if (!result)
-		{
-			std::cerr << "Buffer write failed.\n";
-		}
-		fileBuf.close();
-	}
+    if (!result)
+    {
+        std::cerr << "Can't open output buffer.\n";
+    }
+    else
+    {
+        result = (bufferSize == (size_t)fileBuf.write(buffer, (uint32_t)bufferSize));
+        if (!result)
+        {
+            std::cerr << "Buffer write failed.\n";
+        }
+        fileBuf.close();
+    }
 
-	NVBLAST_FREE(buffer);
+    NVBLAST_FREE(buffer);
 
-	return result;
+    return result;
 };

@@ -46,19 +46,19 @@ Allocator uses global AllocatorCallback.
 class Allocator
 {
 public:
-	Allocator(const char* = 0)
-	{
-	}
+    Allocator(const char* = 0)
+    {
+    }
 
-	void* allocate(size_t size, const char* filename, int line)
-	{
-		return NvBlastGlobalGetAllocatorCallback()->allocate(size, nullptr, filename, line);
-	}
+    void* allocate(size_t size, const char* filename, int line)
+    {
+        return NvBlastGlobalGetAllocatorCallback()->allocate(size, nullptr, filename, line);
+    }
 
-	void deallocate(void* ptr)
-	{
-		NvBlastGlobalGetAllocatorCallback()->deallocate(ptr);
-	}
+    void deallocate(void* ptr)
+    {
+        NvBlastGlobalGetAllocatorCallback()->deallocate(ptr);
+    }
 };
 
 

@@ -44,60 +44,60 @@ class SceneController : public ISampleController
 {
 public:
 
-	SceneController();
-	virtual ~SceneController();
+    SceneController();
+    virtual ~SceneController();
 
-	virtual LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	virtual void Animate(double dt);
-	void drawUI();
-	void drawStatsUI();
+    virtual LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    virtual void Animate(double dt);
+    void drawUI();
+    void drawStatsUI();
 
-	virtual void onInitialize();
-	virtual void onSampleStart();
-	virtual void onSampleStop();
-	virtual void onTerminate();
+    virtual void onInitialize();
+    virtual void onSampleStart();
+    virtual void onSampleStop();
+    virtual void onTerminate();
 
-	// commands
-	int releaseAll();
-	void spawnAsset(int32_t);
+    // commands
+    int releaseAll();
+    void spawnAsset(int32_t);
 
 
 private:
-	void addAssets(const AssetList& assetList, bool loadModels = true);
-	void throwCube();
-	float getCubeSpeed();
+    void addAssets(const AssetList& assetList, bool loadModels = true);
+    void throwCube();
+    float getCubeSpeed();
 
-	SceneController& operator= (SceneController&);
+    SceneController& operator= (SceneController&);
 
-	//////// used controllers ////////
+    //////// used controllers ////////
 
-	Renderer& getRenderer() const
-	{
-		return getManager()->getRenderer();
-	}
+    Renderer& getRenderer() const
+    {
+        return getManager()->getRenderer();
+    }
 
-	PhysXController& getPhysXController() const
-	{
-		return getManager()->getPhysXController();
-	}
+    PhysXController& getPhysXController() const
+    {
+        return getManager()->getPhysXController();
+    }
 
-	BlastController& getBlastController() const
-	{
-		return getManager()->getBlastController();
-	}
+    BlastController& getBlastController() const
+    {
+        return getManager()->getBlastController();
+    }
 
-	CommonUIController& getCommonUIController() const
-	{
-		return getManager()->getCommonUIController();
-	}
+    CommonUIController& getCommonUIController() const
+    {
+        return getManager()->getCommonUIController();
+    }
 
 
-	//////// internal data ////////
+    //////// internal data ////////
 
-	Scene* m_scene;
+    Scene* m_scene;
 
-	float m_cubeScale;
-	float m_cubeThrowDownTime;
+    float m_cubeScale;
+    float m_cubeThrowDownTime;
 };
 
 #endif

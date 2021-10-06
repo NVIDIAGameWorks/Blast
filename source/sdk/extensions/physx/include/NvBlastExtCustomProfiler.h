@@ -52,8 +52,8 @@ namespace Blast
 
 struct ExtProfileData
 {
-	const char* name;
-	void* data;
+    const char* name;
+    void* data;
 };
 
 #if SUPPORTS_THREAD_LOCAL
@@ -70,82 +70,82 @@ for PhysX Visual Debugger support and platform specific profilers like NVIDIA(R)
 class ExtCustomProfiler : public ProfilerCallback
 {
 public:
-	/**
-	Construct an ExtCustomProfiler with platform specific profiler signals disabled.
-	*/
-	ExtCustomProfiler() : m_platformEnabled(false) {}
+    /**
+    Construct an ExtCustomProfiler with platform specific profiler signals disabled.
+    */
+    ExtCustomProfiler() : m_platformEnabled(false) {}
 
 
-	////// ProfilerCallback interface //////
+    ////// ProfilerCallback interface //////
 
-	virtual void zoneStart(const char* name) override
-	{
-
-#if SUPPORTS_THREAD_LOCAL
-		if (PxGetProfilerCallback())
-		{
-			void* data = PxGetProfilerCallback()->zoneStart(name, false, 0xb1a57);
-
-			if (th_depth < PROFILER_MAX_NESTED_DEPTH && th_depth >= 0)
-			{
-				th_ProfileData[th_depth].name = name;
-				th_ProfileData[th_depth].data = data;
-				th_depth++;
-			}
-			else
-			{
-				assert(th_depth < PROFILER_MAX_NESTED_DEPTH && th_depth >= 0);
-			}
-		}
-#endif
-
-		if (m_platformEnabled)
-		{
-			platformZoneStart(name);
-		}
-	}
-
-	virtual void zoneEnd() override
-	{
+    virtual void zoneStart(const char* name) override
+    {
 
 #if SUPPORTS_THREAD_LOCAL
-		if (PxGetProfilerCallback())
-		{
-			th_depth--;
+        if (PxGetProfilerCallback())
+        {
+            void* data = PxGetProfilerCallback()->zoneStart(name, false, 0xb1a57);
 
-			if (th_depth >= 0)
-			{
-				ExtProfileData& pd = th_ProfileData[th_depth];
-				PxGetProfilerCallback()->zoneEnd(pd.data, pd.name, false, 0xb1a57);
-			}
-			else
-			{
-				assert(th_depth >= 0);
-			}
-		}
+            if (th_depth < PROFILER_MAX_NESTED_DEPTH && th_depth >= 0)
+            {
+                th_ProfileData[th_depth].name = name;
+                th_ProfileData[th_depth].data = data;
+                th_depth++;
+            }
+            else
+            {
+                assert(th_depth < PROFILER_MAX_NESTED_DEPTH && th_depth >= 0);
+            }
+        }
 #endif
 
-		if (m_platformEnabled)
-		{
-			platformZoneEnd();
-		}
-	}
+        if (m_platformEnabled)
+        {
+            platformZoneStart(name);
+        }
+    }
+
+    virtual void zoneEnd() override
+    {
+
+#if SUPPORTS_THREAD_LOCAL
+        if (PxGetProfilerCallback())
+        {
+            th_depth--;
+
+            if (th_depth >= 0)
+            {
+                ExtProfileData& pd = th_ProfileData[th_depth];
+                PxGetProfilerCallback()->zoneEnd(pd.data, pd.name, false, 0xb1a57);
+            }
+            else
+            {
+                assert(th_depth >= 0);
+            }
+        }
+#endif
+
+        if (m_platformEnabled)
+        {
+            platformZoneEnd();
+        }
+    }
 
 
-	////// local interface //////
+    ////// local interface //////
 
-	/**
-	Enable or disable platform specific profiler signals. Disabled by default.
+    /**
+    Enable or disable platform specific profiler signals. Disabled by default.
 
-	\param[in]	enabled		true enables, false disables platform profiler calls.
-	*/
-	void setPlatformEnabled(bool enabled)
-	{
-		m_platformEnabled = enabled;
-	}
+    \param[in]  enabled     true enables, false disables platform profiler calls.
+    */
+    void setPlatformEnabled(bool enabled)
+    {
+        m_platformEnabled = enabled;
+    }
 
 private:
-	bool m_platformEnabled;
+    bool m_platformEnabled;
 };
 
 } // namespace Blast

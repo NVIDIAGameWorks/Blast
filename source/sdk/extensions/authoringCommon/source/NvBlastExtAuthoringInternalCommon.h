@@ -48,10 +48,10 @@ Edge representation with index of parent facet
 */
 struct EdgeWithParent
 {
-	uint32_t s, e; // Starting and ending vertices
-	uint32_t parent; // Parent facet index
-	EdgeWithParent() : s(0), e(0), parent(0) {}
-	EdgeWithParent(uint32_t s, uint32_t e, uint32_t p) : s(s), e(e), parent(p) {}
+    uint32_t s, e; // Starting and ending vertices
+    uint32_t parent; // Parent facet index
+    EdgeWithParent() : s(0), e(0), parent(0) {}
+    EdgeWithParent(uint32_t s, uint32_t e, uint32_t p) : s(s), e(e), parent(p) {}
 };
 
 
@@ -60,32 +60,32 @@ Comparator for sorting edges according to parent facet number.
 */
 struct EdgeComparator
 {
-	bool operator()(const EdgeWithParent& a, const EdgeWithParent& b) const
-	{
-		if (a.parent == b.parent)
-		{
-			if (a.s == b.s)
-			{
-				return a.e < b.e;
-			}
-			else
-			{
-				return a.s < b.s;
-			}
-		}
-		else
-		{
-			return a.parent < b.parent;
-		}
-	}
+    bool operator()(const EdgeWithParent& a, const EdgeWithParent& b) const
+    {
+        if (a.parent == b.parent)
+        {
+            if (a.s == b.s)
+            {
+                return a.e < b.e;
+            }
+            else
+            {
+                return a.s < b.s;
+            }
+        }
+        else
+        {
+            return a.parent < b.parent;
+        }
+    }
 };
 
 inline bool operator<(const Edge& a, const Edge& b)
 {
-	if (a.s == b.s)
-		return a.e < b.e;
-	else
-		return a.s < b.s;
+    if (a.s == b.s)
+        return a.e < b.e;
+    else
+        return a.s < b.s;
 }
 
 /**
@@ -93,11 +93,11 @@ Vertex projection direction flag.
 */
 enum ProjectionDirections
 {
-	YZ_PLANE = 1 << 1,
-	XY_PLANE = 1 << 2,
-	ZX_PLANE = 1 << 3,
+    YZ_PLANE = 1 << 1,
+    XY_PLANE = 1 << 2,
+    ZX_PLANE = 1 << 3,
 
-	OPPOSITE_WINDING = 1 << 4
+    OPPOSITE_WINDING = 1 << 4
 };
 
 /**
@@ -105,23 +105,23 @@ Computes best direction to project points.
 */
 NV_FORCE_INLINE ProjectionDirections getProjectionDirection(const physx::PxVec3& normal)
 {
-	float maxv = std::max(std::abs(normal.x), std::max(std::abs(normal.y), std::abs(normal.z)));
-	ProjectionDirections retVal;
-	if (maxv == std::abs(normal.x))
-	{
-		retVal = YZ_PLANE;
-		if (normal.x < 0) retVal = (ProjectionDirections)((int)retVal | (int)OPPOSITE_WINDING);
-		return retVal;
-	}
-	if (maxv == std::abs(normal.y))
-	{
-		retVal = ZX_PLANE;
-		if (normal.y > 0) retVal = (ProjectionDirections)((int)retVal | (int)OPPOSITE_WINDING);
-		return retVal;
-	}
-	retVal = XY_PLANE;
-	if (normal.z < 0) retVal = (ProjectionDirections)((int)retVal | (int)OPPOSITE_WINDING);
-	return retVal;
+    float maxv = std::max(std::abs(normal.x), std::max(std::abs(normal.y), std::abs(normal.z)));
+    ProjectionDirections retVal;
+    if (maxv == std::abs(normal.x))
+    {
+        retVal = YZ_PLANE;
+        if (normal.x < 0) retVal = (ProjectionDirections)((int)retVal | (int)OPPOSITE_WINDING);
+        return retVal;
+    }
+    if (maxv == std::abs(normal.y))
+    {
+        retVal = ZX_PLANE;
+        if (normal.y > 0) retVal = (ProjectionDirections)((int)retVal | (int)OPPOSITE_WINDING);
+        return retVal;
+    }
+    retVal = XY_PLANE;
+    if (normal.z < 0) retVal = (ProjectionDirections)((int)retVal | (int)OPPOSITE_WINDING);
+    return retVal;
 }
 
 
@@ -130,20 +130,20 @@ Computes point projected on given axis aligned plane.
 */
 NV_FORCE_INLINE physx::PxVec2 getProjectedPoint(const physx::PxVec3& point, ProjectionDirections dir)
 {
-	if (dir & YZ_PLANE)
-	{
-		return physx::PxVec2(point.y, point.z);
-	}
-	if (dir & ZX_PLANE)
-	{
-		return physx::PxVec2(point.x, point.z);
-	}
-	return physx::PxVec2(point.x, point.y);
+    if (dir & YZ_PLANE)
+    {
+        return physx::PxVec2(point.y, point.z);
+    }
+    if (dir & ZX_PLANE)
+    {
+        return physx::PxVec2(point.x, point.z);
+    }
+    return physx::PxVec2(point.x, point.y);
 }
 
 NV_FORCE_INLINE physx::PxVec2 getProjectedPoint(const NvcVec3& point, ProjectionDirections dir)
 {
-	return getProjectedPoint((const physx::PxVec3&)point, dir);
+    return getProjectedPoint((const physx::PxVec3&)point, dir);
 }
 
 /**
@@ -151,28 +151,28 @@ Computes point projected on given axis aligned plane, this method is polygon-win
 */
 NV_FORCE_INLINE physx::PxVec2 getProjectedPointWithWinding(const physx::PxVec3& point, ProjectionDirections dir)
 {
-	if (dir & YZ_PLANE)
-	{
-		if (dir & OPPOSITE_WINDING)
-		{
-			return physx::PxVec2(point.z, point.y);
-		}
-		else
-		return physx::PxVec2(point.y, point.z);
-	}
-	if (dir & ZX_PLANE)
-	{
-		if (dir & OPPOSITE_WINDING)
-		{
-			return physx::PxVec2(point.z, point.x);
-		}
-		return physx::PxVec2(point.x, point.z);
-	}
-	if (dir & OPPOSITE_WINDING)
-	{
-		return physx::PxVec2(point.y, point.x);
-	}
-	return physx::PxVec2(point.x, point.y);
+    if (dir & YZ_PLANE)
+    {
+        if (dir & OPPOSITE_WINDING)
+        {
+            return physx::PxVec2(point.z, point.y);
+        }
+        else
+        return physx::PxVec2(point.y, point.z);
+    }
+    if (dir & ZX_PLANE)
+    {
+        if (dir & OPPOSITE_WINDING)
+        {
+            return physx::PxVec2(point.z, point.x);
+        }
+        return physx::PxVec2(point.x, point.z);
+    }
+    if (dir & OPPOSITE_WINDING)
+    {
+        return physx::PxVec2(point.y, point.x);
+    }
+    return physx::PxVec2(point.x, point.y);
 }
 
 
@@ -185,13 +185,13 @@ Test fattened bounding box intersetion.
 */
 NV_INLINE bool  weakBoundingBoxIntersection(const physx::PxBounds3& aBox, const physx::PxBounds3& bBox)
 {
-	if (std::max(aBox.minimum.x, bBox.minimum.x) > std::min(aBox.maximum.x, bBox.maximum.x) + BBOX_TEST_EPS)
-		return false;
-	if (std::max(aBox.minimum.y, bBox.minimum.y) > std::min(aBox.maximum.y, bBox.maximum.y) + BBOX_TEST_EPS)
-		return false;
-	if (std::max(aBox.minimum.z, bBox.minimum.z) > std::min(aBox.maximum.z, bBox.maximum.z) + BBOX_TEST_EPS)
-		return false;
-	return true;
+    if (std::max(aBox.minimum.x, bBox.minimum.x) > std::min(aBox.maximum.x, bBox.maximum.x) + BBOX_TEST_EPS)
+        return false;
+    if (std::max(aBox.minimum.y, bBox.minimum.y) > std::min(aBox.maximum.y, bBox.maximum.y) + BBOX_TEST_EPS)
+        return false;
+    if (std::max(aBox.minimum.z, bBox.minimum.z) > std::min(aBox.maximum.z, bBox.maximum.z) + BBOX_TEST_EPS)
+        return false;
+    return true;
 }
 
 
@@ -202,26 +202,26 @@ Test segment vs plane intersection. If segment intersects the plane true is retu
 NV_INLINE bool getPlaneSegmentIntersection(const physx::PxPlane& pl, const physx::PxVec3& a, const physx::PxVec3& b,
                                            physx::PxVec3& result)
 {
-	float div = (b - a).dot(pl.n);
-	if (physx::PxAbs(div) < 0.0001f)
-	{
-		if (pl.contains(a))
-		{
-			result = a;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	float t = (-a.dot(pl.n) - pl.d) / div;
-	if (t < 0.0f || t > 1.0f)
-	{
-		return false;
-	}
-	result = (b - a) * t + a;
-	return true;
+    float div = (b - a).dot(pl.n);
+    if (physx::PxAbs(div) < 0.0001f)
+    {
+        if (pl.contains(a))
+        {
+            result = a;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    float t = (-a.dot(pl.n) - pl.d) / div;
+    if (t < 0.0f || t > 1.0f)
+    {
+        return false;
+    }
+    result = (b - a) * t + a;
+    return true;
 }
 
 
@@ -233,33 +233,33 @@ Vertex comparator for vertex welding.
 template<bool splitUVs>
 struct VrtCompare
 {
-	// This implements a "less than" function for vertices.
-	// Vertices a and b are considered equivalent if !(a < b) && !(b < a)
-	bool operator()(const Vertex& a, const Vertex& b) const
-	{
-		if (a.p.x + POS_COMPARISON_OFFSET < b.p.x) return true;
-		if (a.p.x - POS_COMPARISON_OFFSET > b.p.x) return false;
-		if (a.p.y + POS_COMPARISON_OFFSET < b.p.y) return true;
-		if (a.p.y - POS_COMPARISON_OFFSET > b.p.y) return false;
-		if (a.p.z + POS_COMPARISON_OFFSET < b.p.z) return true;
-		if (a.p.z - POS_COMPARISON_OFFSET > b.p.z) return false;
+    // This implements a "less than" function for vertices.
+    // Vertices a and b are considered equivalent if !(a < b) && !(b < a)
+    bool operator()(const Vertex& a, const Vertex& b) const
+    {
+        if (a.p.x + POS_COMPARISON_OFFSET < b.p.x) return true;
+        if (a.p.x - POS_COMPARISON_OFFSET > b.p.x) return false;
+        if (a.p.y + POS_COMPARISON_OFFSET < b.p.y) return true;
+        if (a.p.y - POS_COMPARISON_OFFSET > b.p.y) return false;
+        if (a.p.z + POS_COMPARISON_OFFSET < b.p.z) return true;
+        if (a.p.z - POS_COMPARISON_OFFSET > b.p.z) return false;
 
-		if (a.n.x + NORM_COMPARISON_OFFSET < b.n.x) return true;
-		if (a.n.x - NORM_COMPARISON_OFFSET > b.n.x) return false;
-		if (a.n.y + NORM_COMPARISON_OFFSET < b.n.y) return true;
-		if (a.n.y - NORM_COMPARISON_OFFSET > b.n.y) return false;
-		if (a.n.z + NORM_COMPARISON_OFFSET < b.n.z) return true;
-		if (a.n.z - NORM_COMPARISON_OFFSET > b.n.z) return false;	// This is not actually needed if (!splitUVs)
+        if (a.n.x + NORM_COMPARISON_OFFSET < b.n.x) return true;
+        if (a.n.x - NORM_COMPARISON_OFFSET > b.n.x) return false;
+        if (a.n.y + NORM_COMPARISON_OFFSET < b.n.y) return true;
+        if (a.n.y - NORM_COMPARISON_OFFSET > b.n.y) return false;
+        if (a.n.z + NORM_COMPARISON_OFFSET < b.n.z) return true;
+        if (a.n.z - NORM_COMPARISON_OFFSET > b.n.z) return false;   // This is not actually needed if (!splitUVs)
 
-		if (!splitUVs) return false;
+        if (!splitUVs) return false;
 
-		if (a.uv[0].x + NORM_COMPARISON_OFFSET < b.uv[0].x) return true;
-		if (a.uv[0].x - NORM_COMPARISON_OFFSET > b.uv[0].x) return false;
-		if (a.uv[0].y + NORM_COMPARISON_OFFSET < b.uv[0].y) return true;
-		if (a.uv[0].y - NORM_COMPARISON_OFFSET > b.uv[0].y) return false;	// This is not actually needed
+        if (a.uv[0].x + NORM_COMPARISON_OFFSET < b.uv[0].x) return true;
+        if (a.uv[0].x - NORM_COMPARISON_OFFSET > b.uv[0].x) return false;
+        if (a.uv[0].y + NORM_COMPARISON_OFFSET < b.uv[0].y) return true;
+        if (a.uv[0].y - NORM_COMPARISON_OFFSET > b.uv[0].y) return false;   // This is not actually needed
 
-		return false;
-	};
+        return false;
+    };
 };
 
 typedef VrtCompare<true> VrtComp;
@@ -270,47 +270,47 @@ Vertex comparator for vertex welding (not accounts normal and uv parameters of v
 */
 struct VrtPositionComparator
 {
-	bool operator()(const NvcVec3& a, const NvcVec3& b) const
-	{
-		if (a.x + POS_COMPARISON_OFFSET < b.x) return true;
-		if (a.x - POS_COMPARISON_OFFSET > b.x) return false;
-		if (a.y + POS_COMPARISON_OFFSET < b.y) return true;
-		if (a.y - POS_COMPARISON_OFFSET > b.y) return false;
-		if (a.z + POS_COMPARISON_OFFSET < b.z) return true;
-		if (a.z - POS_COMPARISON_OFFSET > b.z) return false;
-		return false;
-	};
-	bool operator()(const Vertex& a, const Vertex& b) const
-	{
-		return operator()(a.p, b.p);
-	};
+    bool operator()(const NvcVec3& a, const NvcVec3& b) const
+    {
+        if (a.x + POS_COMPARISON_OFFSET < b.x) return true;
+        if (a.x - POS_COMPARISON_OFFSET > b.x) return false;
+        if (a.y + POS_COMPARISON_OFFSET < b.y) return true;
+        if (a.y - POS_COMPARISON_OFFSET > b.y) return false;
+        if (a.z + POS_COMPARISON_OFFSET < b.z) return true;
+        if (a.z - POS_COMPARISON_OFFSET > b.z) return false;
+        return false;
+    };
+    bool operator()(const Vertex& a, const Vertex& b) const
+    {
+        return operator()(a.p, b.p);
+    };
 };
 
 
 NV_INLINE float calculateCollisionHullVolumeAndCentroid(NvcVec3& centroid, const CollisionHull& hull)
 {
-	class CollisionHullQuery
-	{
-	public:
-		CollisionHullQuery(const CollisionHull& hull) : m_hull(hull) {}
+    class CollisionHullQuery
+    {
+    public:
+        CollisionHullQuery(const CollisionHull& hull) : m_hull(hull) {}
 
-		size_t faceCount() const { return (size_t)m_hull.polygonDataCount; }
+        size_t faceCount() const { return (size_t)m_hull.polygonDataCount; }
 
-		size_t vertexCount(size_t faceIndex) const { return (size_t)m_hull.polygonData[faceIndex].vertexCount; }
+        size_t vertexCount(size_t faceIndex) const { return (size_t)m_hull.polygonData[faceIndex].vertexCount; }
 
-		NvcVec3 vertex(size_t faceIndex, size_t vertexIndex) const
-		{
-			return m_hull.points[m_hull.indices[m_hull.polygonData[faceIndex].indexBase + vertexIndex]];
-		}
+        NvcVec3 vertex(size_t faceIndex, size_t vertexIndex) const
+        {
+            return m_hull.points[m_hull.indices[m_hull.polygonData[faceIndex].indexBase + vertexIndex]];
+        }
 
-	private:
-		const CollisionHull& m_hull;		
-	};
+    private:
+        const CollisionHull& m_hull;        
+    };
 
     return calculateMeshVolumeAndCentroid<CollisionHullQuery>(centroid, hull);
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv
 
 #endif

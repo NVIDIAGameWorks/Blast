@@ -48,21 +48,21 @@ Actor create/destroy events listener.
 class ExtPxListener
 {
 public:
-	/**
-	Interface to be implemented by the user. Will be called when ExtPxFamily creates new actor.
+    /**
+    Interface to be implemented by the user. Will be called when ExtPxFamily creates new actor.
 
-	\param[in]	family	Corresponding ExtPxFamily with new actor.
-	\param[in]	actor	The new actor.
-	*/
-	virtual void	onActorCreated(ExtPxFamily& family, ExtPxActor& actor) = 0;
+    \param[in]  family  Corresponding ExtPxFamily with new actor.
+    \param[in]  actor   The new actor.
+    */
+    virtual void    onActorCreated(ExtPxFamily& family, ExtPxActor& actor) = 0;
 
-	/**
-	Interface to be implemented by the user. Will be called when ExtPxFamily destroy an actor.
+    /**
+    Interface to be implemented by the user. Will be called when ExtPxFamily destroy an actor.
 
-	\param[in]	family	Corresponding ExtPxFamily.
-	\param[in]	actor	The actor to be destroyed.
-	*/
-	virtual void	onActorDestroyed(ExtPxFamily& family, ExtPxActor& actor) = 0;
+    \param[in]  family  Corresponding ExtPxFamily.
+    \param[in]  actor   The actor to be destroyed.
+    */
+    virtual void    onActorDestroyed(ExtPxFamily& family, ExtPxActor& actor) = 0;
 };
 
 

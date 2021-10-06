@@ -43,38 +43,38 @@
 #define RCast(type, name) reinterpret_cast<const type>(name)
 
 #define CONVERT(BlastType, PxSharedType)                                                                                  \
-	static inline PxSharedType& toPxShared(BlastType& v)                                                                     \
-	{                                                                                                                  \
-		return WCast(PxSharedType&, v);                                                                                   \
-	}                                                                                                                  \
-	static inline const PxSharedType& toPxShared(const BlastType& v)                                                         \
-	{                                                                                                                  \
-		return RCast(PxSharedType&, v);                                                                                   \
-	}                                                                                                                  \
-	static inline const BlastType& fromPxShared(const PxSharedType& v)                                                       \
-	{                                                                                                                  \
-		return RCast(BlastType&, v);                                                                                   \
-	}                                                                                                                  \
-	static inline BlastType& fromPxShared(PxSharedType& v)                                                                   \
-	{                                                                                                                  \
-		return WCast(BlastType&, v);                                                                                   \
-	}                                                                                                                  \
-	static inline PxSharedType* toPxShared(BlastType* v)                                                                     \
-	{                                                                                                                  \
-		return WCast(PxSharedType*, v);                                                                                   \
-	}                                                                                                                  \
-	static inline const PxSharedType* toPxShared(const BlastType* v)                                                         \
-	{                                                                                                                  \
-		return RCast(PxSharedType*, v);                                                                                   \
-	}                                                                                                                  \
-	static inline const BlastType* fromPxShared(const PxSharedType* v)                                                       \
-	{                                                                                                                  \
-		return RCast(BlastType*, v);                                                                                   \
-	}                                                                                                                  \
-	static inline BlastType* fromPxShared(PxSharedType* v)                                                                   \
-	{                                                                                                                  \
-		return WCast(BlastType*, v);                                                                                   \
-	}
+    static inline PxSharedType& toPxShared(BlastType& v)                                                                     \
+    {                                                                                                                  \
+        return WCast(PxSharedType&, v);                                                                                   \
+    }                                                                                                                  \
+    static inline const PxSharedType& toPxShared(const BlastType& v)                                                         \
+    {                                                                                                                  \
+        return RCast(PxSharedType&, v);                                                                                   \
+    }                                                                                                                  \
+    static inline const BlastType& fromPxShared(const PxSharedType& v)                                                       \
+    {                                                                                                                  \
+        return RCast(BlastType&, v);                                                                                   \
+    }                                                                                                                  \
+    static inline BlastType& fromPxShared(PxSharedType& v)                                                                   \
+    {                                                                                                                  \
+        return WCast(BlastType&, v);                                                                                   \
+    }                                                                                                                  \
+    static inline PxSharedType* toPxShared(BlastType* v)                                                                     \
+    {                                                                                                                  \
+        return WCast(PxSharedType*, v);                                                                                   \
+    }                                                                                                                  \
+    static inline const PxSharedType* toPxShared(const BlastType* v)                                                         \
+    {                                                                                                                  \
+        return RCast(PxSharedType*, v);                                                                                   \
+    }                                                                                                                  \
+    static inline const BlastType* fromPxShared(const PxSharedType* v)                                                       \
+    {                                                                                                                  \
+        return RCast(BlastType*, v);                                                                                   \
+    }                                                                                                                  \
+    static inline BlastType* fromPxShared(PxSharedType* v)                                                                   \
+    {                                                                                                                  \
+        return WCast(BlastType*, v);                                                                                   \
+    }
 
 
 CONVERT(NvcVec2, physx::PxVec2)
@@ -128,84 +128,84 @@ NV_COMPILE_TIME_ASSERT(NV_OFFSET_OF(NvcBounds3, maximum) == NV_OFFSET_OF(physx::
 // Some basic operators
 inline NvcVec2 operator+(const NvcVec2& v1, const NvcVec2& v2)
 {
-	return{ v1.x + v2.x, v1.y + v2.y };
+    return{ v1.x + v2.x, v1.y + v2.y };
 }
 inline NvcVec2 operator-(const NvcVec2& v1, const NvcVec2& v2)
 {
-	return{ v1.x - v2.x, v1.y - v2.y };
+    return{ v1.x - v2.x, v1.y - v2.y };
 }
 inline NvcVec2 operator+(const NvcVec2& v, float f)
 {
-	return{ v.x + f, v.y + f };
+    return{ v.x + f, v.y + f };
 }
 inline NvcVec2 operator+(float f, const NvcVec2& v)
 {
-	return{ v.x + f, v.y + f };
+    return{ v.x + f, v.y + f };
 }
 inline NvcVec2 operator*(const NvcVec2& v, float f)
 {
-	return{ v.x * f, v.y * f };
+    return{ v.x * f, v.y * f };
 }
 inline NvcVec2 operator*(float f, const NvcVec2& v)
 {
-	return{ v.x * f, v.y * f };
+    return{ v.x * f, v.y * f };
 }
 inline NvcVec2 operator/(const NvcVec2& v, float f)
 {
-	return{ v.x / f, v.y / f };
+    return{ v.x / f, v.y / f };
 }
 inline float dot(const NvcVec2& v1, const NvcVec2& v2)
 {
-	return v1.x * v2.x + v1.y * v2.y;
+    return v1.x * v2.x + v1.y * v2.y;
 }
 inline NvcVec2 neg(const NvcVec2& v)
 {
-	return{ -v.x, -v.y };
+    return{ -v.x, -v.y };
 }
 
 inline NvcVec3 operator+(const NvcVec3& v1, const NvcVec3& v2)
 {
-	return{ v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
+    return{ v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
 }
 inline NvcVec3 operator-(const NvcVec3& v1, const NvcVec3& v2)
 {
-	return{ v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
+    return{ v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
 }
 inline NvcVec3 operator*(const NvcVec3& v1, const NvcVec3& v2)
 {
-	return{ v1.x * v2.x, v1.y * v2.y, v1.z * v2.z };
+    return{ v1.x * v2.x, v1.y * v2.y, v1.z * v2.z };
 }
 inline NvcVec3 operator/(const NvcVec3& v1, const NvcVec3& v2)
 {
-	return{ v1.x / v2.x, v1.y / v2.y, v1.z / v2.z };
+    return{ v1.x / v2.x, v1.y / v2.y, v1.z / v2.z };
 }
 inline NvcVec3 operator+(const NvcVec3& v, float f)
 {
-	return{ v.x + f, v.y + f, v.z + f };
+    return{ v.x + f, v.y + f, v.z + f };
 }
 inline NvcVec3 operator+(float f, const NvcVec3& v)
 {
-	return{ v.x + f, v.y + f, v.z + f };
+    return{ v.x + f, v.y + f, v.z + f };
 }
 inline NvcVec3 operator*(const NvcVec3& v, float f)
 {
-	return{ v.x * f, v.y * f, v.z * f };
+    return{ v.x * f, v.y * f, v.z * f };
 }
 inline NvcVec3 operator*(float f, const NvcVec3& v)
 {
-	return{ v.x * f, v.y * f, v.z * f };
+    return{ v.x * f, v.y * f, v.z * f };
 }
 inline NvcVec3 operator/(const NvcVec3& v, float f)
 {
-	return{ v.x / f, v.y / f, v.z / f };
+    return{ v.x / f, v.y / f, v.z / f };
 }
 inline float dot(const NvcVec3& v1, const NvcVec3& v2)
 {
-	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 inline NvcVec3 neg(const NvcVec3& v)
 {
-	return{ -v.x, -v.y, -v.z };
+    return{ -v.x, -v.y, -v.z };
 }
 
 #endif  // #ifndef NVBLASTPHYSXTYPESHELPERS_H

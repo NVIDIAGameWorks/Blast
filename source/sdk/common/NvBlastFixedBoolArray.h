@@ -63,37 +63,37 @@ buf:
 class FixedBoolArray
 {
 public:
-	explicit FixedBoolArray(uint32_t size)
-	{
-		m_size = size;
-	}
+    explicit FixedBoolArray(uint32_t size)
+    {
+        m_size = size;
+    }
 
-	static size_t requiredMemorySize(uint32_t size)
-	{
-		return align16(sizeof(FixedBoolArray)) + align16(size);
-	}
+    static size_t requiredMemorySize(uint32_t size)
+    {
+        return align16(sizeof(FixedBoolArray)) + align16(size);
+    }
 
-	void clear()
-	{
-		memset(data(), 0, m_size);
-	}
+    void clear()
+    {
+        memset(data(), 0, m_size);
+    }
 
-	void fill()
-	{
-		memset(data(), 1, m_size);
-	}
+    void fill()
+    {
+        memset(data(), 1, m_size);
+    }
 
-	int test(uint32_t index) const
-	{
-		NVBLAST_ASSERT(index < m_size);
-		return data()[index];
-	}
+    int test(uint32_t index) const
+    {
+        NVBLAST_ASSERT(index < m_size);
+        return data()[index];
+    }
 
-	void set(uint32_t index)
-	{
-		NVBLAST_ASSERT(index < m_size);
-		data()[index] = 1;
-	}
+    void set(uint32_t index)
+    {
+        NVBLAST_ASSERT(index < m_size);
+        data()[index] = 1;
+    }
 
     void setData(const char* newData, uint32_t newSize)
     {
@@ -111,27 +111,27 @@ public:
         return m_size;
     }
 
-	void reset(uint32_t index)
-	{
-		NVBLAST_ASSERT(index < m_size);
-		data()[index] = 0;
-	}
+    void reset(uint32_t index)
+    {
+        NVBLAST_ASSERT(index < m_size);
+        data()[index] = 0;
+    }
 
 private:
-	uint32_t m_size;
+    uint32_t m_size;
 
-	NV_FORCE_INLINE char* data()
-	{
-		return ((char*)this + sizeof(FixedBoolArray));
-	}
+    NV_FORCE_INLINE char* data()
+    {
+        return ((char*)this + sizeof(FixedBoolArray));
+    }
 
-	NV_FORCE_INLINE const char* data() const
-	{
-		return ((char*)this + sizeof(FixedBoolArray));
-	}
+    NV_FORCE_INLINE const char* data() const
+    {
+        return ((char*)this + sizeof(FixedBoolArray));
+    }
 
 private:
-	FixedBoolArray(const FixedBoolArray& that);
+    FixedBoolArray(const FixedBoolArray& that);
 };
 
 } // namespace Blast

@@ -36,30 +36,30 @@ namespace Blast
 
 bool PxVec3DTO::serialize(Nv::Blast::Serialization::PxVec3::Builder builder, const physx::PxVec3 * poco)
 {
-	NVBLAST_ASSERT(poco != nullptr);
+    NVBLAST_ASSERT(poco != nullptr);
 
-	builder.setX(poco->x);
-	builder.setY(poco->y);
-	builder.setZ(poco->z);
+    builder.setX(poco->x);
+    builder.setY(poco->y);
+    builder.setZ(poco->z);
 
-	return true;
+    return true;
 }
 
 physx::PxVec3* PxVec3DTO::deserialize(Nv::Blast::Serialization::PxVec3::Reader reader)
 {
-	//TODO: Allocate using ExtContext and return
-	NV_UNUSED(reader);
-	return nullptr;
+    //TODO: Allocate using ExtContext and return
+    NV_UNUSED(reader);
+    return nullptr;
 }
 
 bool PxVec3DTO::deserializeInto(Nv::Blast::Serialization::PxVec3::Reader reader, physx::PxVec3* target)
 {
-	target->x = reader.getX();
-	target->y = reader.getY();
-	target->z = reader.getZ();
+    target->x = reader.getX();
+    target->y = reader.getY();
+    target->z = reader.getZ();
 
-	return true;
+    return true;
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

@@ -45,7 +45,7 @@ Returns the aligned value.
 template<typename T>
 NV_INLINE T align16(T value)
 {
-	return (value + 0xF)&~(T)0xF;
+    return (value + 0xF)&~(T)0xF;
 }
 
 
@@ -54,23 +54,23 @@ NV_INLINE T align16(T value)
 template <typename T>
 NV_INLINE T pointerOffset(void* p, ptrdiff_t offset)
 {
-	return reinterpret_cast<T>(reinterpret_cast<char*>(p)+offset);
+    return reinterpret_cast<T>(reinterpret_cast<char*>(p)+offset);
 }
 
 template <typename T>
 NV_INLINE T pointerOffset(const void* p, ptrdiff_t offset)
 {
-	return reinterpret_cast<T>(reinterpret_cast<const char*>(p)+offset);
+    return reinterpret_cast<T>(reinterpret_cast<const char*>(p)+offset);
 }
 
 NV_INLINE const void* pointerOffset(const void* p, ptrdiff_t offset)
 {
-	return pointerOffset<const void*>(p, offset);
+    return pointerOffset<const void*>(p, offset);
 }
 
 NV_INLINE void* pointerOffset(void* p, ptrdiff_t offset)
 {
-	return pointerOffset<void*>(p, offset);
+    return pointerOffset<void*>(p, offset);
 }
 
 } // namespace Blast
@@ -81,7 +81,7 @@ NV_INLINE void* pointerOffset(void* p, ptrdiff_t offset)
 #define NvBlastBlockData(_dataType, _name, _accessor) \
 _dataType* _accessor() const \
 { \
-	return (_dataType*)((uintptr_t)this + _name); \
+    return (_dataType*)((uintptr_t)this + _name); \
 } \
 uint32_t _name
 
@@ -90,11 +90,11 @@ uint32_t _name
 #define NvBlastBlockArrayData(_dataType, _name, _accessor, _sizeExpr) \
 _dataType* _accessor() const \
 { \
-	return (_dataType*)((uintptr_t)this + _name); \
+    return (_dataType*)((uintptr_t)this + _name); \
 } \
 uint32_t _accessor##ArraySize() const \
 { \
-	return _sizeExpr; \
+    return _sizeExpr; \
 } \
 uint32_t _name
 

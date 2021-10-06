@@ -35,24 +35,24 @@
 class CustomRenderMesh : public IRenderMesh
 {
 public:
-	const std::vector<D3D11_INPUT_ELEMENT_DESC>& getInputElementDesc() const { return m_inputDesc; }
-	void render(ID3D11DeviceContext& context) const;
+    const std::vector<D3D11_INPUT_ELEMENT_DESC>& getInputElementDesc() const { return m_inputDesc; }
+    void render(ID3D11DeviceContext& context) const;
 
-	CustomRenderMesh(const void* vertices, uint32_t numVertices, uint32_t vertexSize, std::vector<D3D11_INPUT_ELEMENT_DESC>& inputDesc, const uint16_t* faces = nullptr, uint32_t numFaces = 0);
-	virtual ~CustomRenderMesh();
+    CustomRenderMesh(const void* vertices, uint32_t numVertices, uint32_t vertexSize, std::vector<D3D11_INPUT_ELEMENT_DESC>& inputDesc, const uint16_t* faces = nullptr, uint32_t numFaces = 0);
+    virtual ~CustomRenderMesh();
 
 protected:
-	CustomRenderMesh();
-	void initialize(const void* vertices, uint32_t numVertices, uint32_t vertexSize, std::vector<D3D11_INPUT_ELEMENT_DESC>& inputDesc, const uint16_t* faces, uint32_t numFaces);
+    CustomRenderMesh();
+    void initialize(const void* vertices, uint32_t numVertices, uint32_t vertexSize, std::vector<D3D11_INPUT_ELEMENT_DESC>& inputDesc, const uint16_t* faces, uint32_t numFaces);
 
 private:
-	ID3D11Buffer* m_vertexBuffer;
-	ID3D11Buffer* m_indexBuffer;
-	uint32_t      m_numFaces;
-	uint32_t      m_numVertices;
-	uint32_t      m_vertexSize;
+    ID3D11Buffer* m_vertexBuffer;
+    ID3D11Buffer* m_indexBuffer;
+    uint32_t      m_numFaces;
+    uint32_t      m_numVertices;
+    uint32_t      m_vertexSize;
 
-	std::vector<D3D11_INPUT_ELEMENT_DESC> m_inputDesc;
+    std::vector<D3D11_INPUT_ELEMENT_DESC> m_inputDesc;
 };
 
 

@@ -50,14 +50,14 @@ class ExtPxAsset;
 /** Standard Object Type IDs */
 struct ExtPxObjectTypeID
 {
-	enum Enum
-	{
-		Asset =	NVBLAST_FOURCC('P', 'X', 'A', 'S'),
-	};
+    enum Enum
+    {
+        Asset = NVBLAST_FOURCC('P', 'X', 'A', 'S'),
+    };
 };
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv
 
 
 namespace physx
@@ -67,7 +67,7 @@ namespace physx
 class PxPhysics;
 class PxCooking;
 
-}	// namespace physx
+}   // namespace physx
 
 
 /**
@@ -75,11 +75,11 @@ Load all ExtPhysX extension serializers into the ExtSerialization manager.
 
 It does no harm to call this function more than once; serializers already loaded will not be loaded again.
 
-\param[in]	serialization	Serialization manager into which to load serializers.
+\param[in]  serialization   Serialization manager into which to load serializers.
 
 \return the number of serializers loaded.
 */
-NVBLAST_API	size_t		NvBlastExtPxSerializerLoadSet(Nv::Blast::TkFramework& framework, physx::PxPhysics& physics, physx::PxCooking& cooking, Nv::Blast::ExtSerialization& serialization);
+NVBLAST_API size_t      NvBlastExtPxSerializerLoadSet(Nv::Blast::TkFramework& framework, physx::PxPhysics& physics, physx::PxCooking& cooking, Nv::Blast::ExtSerialization& serialization);
 
 
 /**
@@ -88,12 +88,12 @@ callack set in ExtSerialization::setBufferProvider.
 
 Equivalent to:
 
-	serialization.serializeIntoBuffer(buffer, asset, Nv::Blast::ExtPxObjectTypeID::Asset);
+    serialization.serializeIntoBuffer(buffer, asset, Nv::Blast::ExtPxObjectTypeID::Asset);
 
-\param[out]	buffer			Pointer to the buffer created.
-\param[in]	serialization	Serialization manager.
-\param[in]	asset			Pointer to the ExtPxAsset to serialize.
+\param[out] buffer          Pointer to the buffer created.
+\param[in]  serialization   Serialization manager.
+\param[in]  asset           Pointer to the ExtPxAsset to serialize.
 
 \return the number of bytes serialized into the buffer (zero if unsuccessful).
 */
-NVBLAST_API	uint64_t	NvBlastExtSerializationSerializeExtPxAssetIntoBuffer(void*& buffer, Nv::Blast::ExtSerialization& serialization, const Nv::Blast::ExtPxAsset* asset);
+NVBLAST_API uint64_t    NvBlastExtSerializationSerializeExtPxAssetIntoBuffer(void*& buffer, Nv::Blast::ExtSerialization& serialization, const Nv::Blast::ExtPxAsset* asset);

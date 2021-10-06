@@ -40,52 +40,52 @@ namespace Blast
 class ExtSerializationImpl : public ExtSerializationInternal
 {
 public:
-	// Default buffer provider
-	class AllocBufferProvider : public ExtSerialization::BufferProvider
-	{
-	public:
-		virtual void*	requestBuffer(size_t size) override;
-	};
+    // Default buffer provider
+    class AllocBufferProvider : public ExtSerialization::BufferProvider
+    {
+    public:
+        virtual void*   requestBuffer(size_t size) override;
+    };
 
 
-	ExtSerializationImpl();
-	~ExtSerializationImpl();
+    ExtSerializationImpl();
+    ~ExtSerializationImpl();
 
-	// ExtSerialization interface begin
-	virtual bool			setSerializationEncoding(uint32_t encodingID) override;
-	virtual uint32_t		getSerializationEncoding() const override;
+    // ExtSerialization interface begin
+    virtual bool            setSerializationEncoding(uint32_t encodingID) override;
+    virtual uint32_t        getSerializationEncoding() const override;
 
-	virtual void			setBufferProvider(BufferProvider* bufferProvider) override;
+    virtual void            setBufferProvider(BufferProvider* bufferProvider) override;
 
-	virtual bool			peekHeader(uint32_t* objectTypeID, uint32_t* encodingID, uint64_t* dataSize, const void* buffer, uint64_t bufferSize) override;
-	virtual const void*		skipObject(uint64_t& bufferSize, const void* buffer) override;
+    virtual bool            peekHeader(uint32_t* objectTypeID, uint32_t* encodingID, uint64_t* dataSize, const void* buffer, uint64_t bufferSize) override;
+    virtual const void*     skipObject(uint64_t& bufferSize, const void* buffer) override;
 
-	virtual void*			deserializeFromBuffer(const void* buffer, uint64_t size, uint32_t* objectTypeIDPtr = nullptr) override;
-	virtual uint64_t		serializeIntoBuffer(void*& buffer, const void* object, uint32_t objectTypeID) override;
+    virtual void*           deserializeFromBuffer(const void* buffer, uint64_t size, uint32_t* objectTypeIDPtr = nullptr) override;
+    virtual uint64_t        serializeIntoBuffer(void*& buffer, const void* object, uint32_t objectTypeID) override;
 
-	virtual void			release() override;
-	// ExtSerialization interface end
+    virtual void            release() override;
+    // ExtSerialization interface end
 
-	// ExtSerializationInternal interface begin
-	virtual bool			registerSerializer(ExtSerializer& serializer) override;
-	virtual bool			unregisterSerializer(ExtSerializer& serializer) override;
+    // ExtSerializationInternal interface begin
+    virtual bool            registerSerializer(ExtSerializer& serializer) override;
+    virtual bool            unregisterSerializer(ExtSerializer& serializer) override;
 
-	virtual ExtSerializer*	findSerializer(uint32_t objectTypeID, uint32_t encodingID) override;
-	// ExtSerializationInternal interface end
+    virtual ExtSerializer*  findSerializer(uint32_t objectTypeID, uint32_t encodingID) override;
+    // ExtSerializationInternal interface end
 
 private:
-	char*					writeHeaderIntoBuffer(char* buffer, uint64_t bufferSize, uint32_t objectTypeID, uint32_t encodingID, uint64_t dataSize) const;
-	const char*				readHeaderFromBuffer(uint32_t* objectTypeID, uint32_t* encodingID, uint64_t* dataSize, const char* buffer, uint64_t bufferSize) const;
+    char*                   writeHeaderIntoBuffer(char* buffer, uint64_t bufferSize, uint32_t objectTypeID, uint32_t encodingID, uint64_t dataSize) const;
+    const char*             readHeaderFromBuffer(uint32_t* objectTypeID, uint32_t* encodingID, uint64_t* dataSize, const char* buffer, uint64_t bufferSize) const;
 
-	//// Static data ////
-	static const char*						s_identifier;
-	static const char*						s_version;
-	static AllocBufferProvider				s_defaultBufferProvider;
+    //// Static data ////
+    static const char*                      s_identifier;
+    static const char*                      s_version;
+    static AllocBufferProvider              s_defaultBufferProvider;
 
-	//// Member data ////
-	HashMap<uint64_t, ExtSerializer*>::type	m_serializers;
-	uint32_t								m_serializationEncoding;
-	BufferProvider*							m_bufferProvider;
+    //// Member data ////
+    HashMap<uint64_t, ExtSerializer*>::type m_serializers;
+    uint32_t                                m_serializationEncoding;
+    BufferProvider*                         m_bufferProvider;
 };
 
 
@@ -96,63 +96,63 @@ const char* ExtSerializationImpl::s_identifier = "NVidia(r) GameWorks Blast(tm) 
 
 const char* ExtSerializationImpl::s_version = "1";
 
-ExtSerializationImpl::AllocBufferProvider	ExtSerializationImpl::s_defaultBufferProvider;
+ExtSerializationImpl::AllocBufferProvider   ExtSerializationImpl::s_defaultBufferProvider;
 
 
 //////// Local utility functions ////////
 
 static NV_INLINE uint64_t generateKey(uint32_t objectTypeID, uint32_t encodingID)
 {
-	return static_cast<uint64_t>(encodingID) << 32 | static_cast<uint64_t>(objectTypeID);
+    return static_cast<uint64_t>(encodingID) << 32 | static_cast<uint64_t>(objectTypeID);
 }
 
 
 static NV_INLINE uint64_t generateKey(const ExtSerializer& serializer)
 {
-	return generateKey(serializer.getObjectTypeID(), serializer.getEncodingID());
+    return generateKey(serializer.getObjectTypeID(), serializer.getEncodingID());
 }
 
 
 static NV_INLINE void writeIDToBuffer(char* buffer, uint32_t id)
 {
-	for (int i = 0; i < 4; ++i, id >>= 8)
-	{
-		*buffer++ = static_cast<char>(id & 0xFF);
-	}
+    for (int i = 0; i < 4; ++i, id >>= 8)
+    {
+        *buffer++ = static_cast<char>(id & 0xFF);
+    }
 }
 
 
 static NV_INLINE uint32_t readIDFromBuffer(const char* buffer)
 {
-	return NVBLAST_FOURCC(buffer[0], buffer[1], buffer[2], buffer[3]);
+    return NVBLAST_FOURCC(buffer[0], buffer[1], buffer[2], buffer[3]);
 }
 
 
 static NV_INLINE void writeU64InHexToBuffer(char* buffer, uint64_t val)
 {
-	for (char* curr = buffer + 16; curr-- > buffer; val >>= 4)
-	{
-		*curr = "0123456789ABCDEF"[val & 0xF];
-	}
+    for (char* curr = buffer + 16; curr-- > buffer; val >>= 4)
+    {
+        *curr = "0123456789ABCDEF"[val & 0xF];
+    }
 }
 
 
 static NV_INLINE uint64_t readU64InHexFromBuffer(const char* buffer)
 {
-	uint64_t val = 0;
-	for (const char* curr = buffer; curr < buffer + 16; ++curr)
-	{
-		const char c = *curr;
-		const char msn = c >> 4;
-		const char mask = ((88 >> msn) & 1) - 1;
-		const unsigned char digit = "\x0\x1\x2\x3\x4\x5\x6\x7\x8\x9\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xA\xB\xC\xD\xE\xF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"[((msn - 3) & 1) << 4 | (c & 0xF)] | mask;
-		if (digit == 0xFF)
-		{
-			return 0;	//	Not a hexidecimal digit
-		}
-		val = val << 4 | digit;
-	}
-	return val;
+    uint64_t val = 0;
+    for (const char* curr = buffer; curr < buffer + 16; ++curr)
+    {
+        const char c = *curr;
+        const char msn = c >> 4;
+        const char mask = ((88 >> msn) & 1) - 1;
+        const unsigned char digit = "\x0\x1\x2\x3\x4\x5\x6\x7\x8\x9\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xA\xB\xC\xD\xE\xF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"[((msn - 3) & 1) << 4 | (c & 0xF)] | mask;
+        if (digit == 0xFF)
+        {
+            return 0;   //  Not a hexidecimal digit
+        }
+        val = val << 4 | digit;
+    }
+    return val;
 }
 
 
@@ -165,217 +165,217 @@ ExtSerializationImpl::ExtSerializationImpl() : m_serializationEncoding(EncodingI
 
 ExtSerializationImpl::~ExtSerializationImpl()
 {
-	// Release and remove all registered serializers
-	auto it = m_serializers.getEraseIterator();
-	while (auto entry = it.eraseCurrentGetNext(true))
-	{
-		entry->second->release();
-	}
+    // Release and remove all registered serializers
+    auto it = m_serializers.getEraseIterator();
+    while (auto entry = it.eraseCurrentGetNext(true))
+    {
+        entry->second->release();
+    }
 }
 
 
 char* ExtSerializationImpl::writeHeaderIntoBuffer(char* buffer, uint64_t bufferSize, uint32_t objectTypeID, uint32_t encodingID, uint64_t dataSize) const
 {
-	if (bufferSize < HeaderSize)
-	{
-		return nullptr;
-	}
+    if (bufferSize < HeaderSize)
+    {
+        return nullptr;
+    }
 
-	char* stop = buffer + HeaderSize;
+    char* stop = buffer + HeaderSize;
 
-	size_t versionLen = strlen(s_version);
-	if (versionLen > 63)
-	{
-		versionLen = 63;
-	}
+    size_t versionLen = strlen(s_version);
+    if (versionLen > 63)
+    {
+        versionLen = 63;
+    }
 
-	memset(buffer, ' ', HeaderSize);
-	memcpy(buffer, s_identifier, 32);			buffer += 32;
-	memcpy(buffer, s_version, versionLen);		buffer += 64;
-	writeIDToBuffer(buffer, objectTypeID);		buffer += 5;
-	writeIDToBuffer(buffer, encodingID);		buffer += 5;
-	writeU64InHexToBuffer(buffer, dataSize);	buffer += 16;
-	*(stop - 1) = '\n';
+    memset(buffer, ' ', HeaderSize);
+    memcpy(buffer, s_identifier, 32);           buffer += 32;
+    memcpy(buffer, s_version, versionLen);      buffer += 64;
+    writeIDToBuffer(buffer, objectTypeID);      buffer += 5;
+    writeIDToBuffer(buffer, encodingID);        buffer += 5;
+    writeU64InHexToBuffer(buffer, dataSize);    buffer += 16;
+    *(stop - 1) = '\n';
 
-	return stop;
+    return stop;
 }
 
 
 const char* ExtSerializationImpl::readHeaderFromBuffer(uint32_t* objectTypeID, uint32_t* encodingID, uint64_t* dataSize, const char* buffer, uint64_t bufferSize) const
 {
-	if (bufferSize < HeaderSize)
-	{
-		NVBLAST_LOG_ERROR("ExtSerializationImpl::readHeaderFromBuffer: header terminator not found.");
-		return nullptr;
-	}
+    if (bufferSize < HeaderSize)
+    {
+        NVBLAST_LOG_ERROR("ExtSerializationImpl::readHeaderFromBuffer: header terminator not found.");
+        return nullptr;
+    }
 
-	const char* stop = buffer + HeaderSize;
+    const char* stop = buffer + HeaderSize;
 
-	if (memcmp(buffer, s_identifier, 32))
-	{
-		NVBLAST_LOG_ERROR("ExtSerializationImpl::readHeaderFromBuffer: file identifier does not match expected value.");
-		return nullptr;
-	}
-	buffer += 32;
+    if (memcmp(buffer, s_identifier, 32))
+    {
+        NVBLAST_LOG_ERROR("ExtSerializationImpl::readHeaderFromBuffer: file identifier does not match expected value.");
+        return nullptr;
+    }
+    buffer += 32;
 
-	const char* s = strchr(buffer, ' ');
-	if (s == nullptr)
-	{
-		NVBLAST_LOG_ERROR("ExtSerializationImpl::readHeaderFromBuffer: file format error reading serializer library version.");
-	}
-	if (memcmp(buffer, s_version, s - buffer))
-	{
-		NVBLAST_LOG_ERROR("ExtSerializationImpl::readHeaderFromBuffer: file version does not match serializer library version.");
-		return nullptr;
-	}
-	buffer += 64;
+    const char* s = strchr(buffer, ' ');
+    if (s == nullptr)
+    {
+        NVBLAST_LOG_ERROR("ExtSerializationImpl::readHeaderFromBuffer: file format error reading serializer library version.");
+    }
+    if (memcmp(buffer, s_version, s - buffer))
+    {
+        NVBLAST_LOG_ERROR("ExtSerializationImpl::readHeaderFromBuffer: file version does not match serializer library version.");
+        return nullptr;
+    }
+    buffer += 64;
 
-	if (objectTypeID != nullptr)
-	{
-		*objectTypeID = readIDFromBuffer(buffer);
-	}
-	buffer += 5;
+    if (objectTypeID != nullptr)
+    {
+        *objectTypeID = readIDFromBuffer(buffer);
+    }
+    buffer += 5;
 
-	if (encodingID != nullptr)
-	{
-		*encodingID = readIDFromBuffer(buffer);
-	}
-	buffer += 5;
+    if (encodingID != nullptr)
+    {
+        *encodingID = readIDFromBuffer(buffer);
+    }
+    buffer += 5;
 
-	if (dataSize != nullptr)
-	{
-		*dataSize = readU64InHexFromBuffer(buffer);
-	}
-	buffer += 16;
+    if (dataSize != nullptr)
+    {
+        *dataSize = readU64InHexFromBuffer(buffer);
+    }
+    buffer += 16;
 
-	return stop;
+    return stop;
 }
 
 
 bool ExtSerializationImpl::registerSerializer(ExtSerializer& serializer)
 {
-	return m_serializers.insert(generateKey(serializer), &serializer);
+    return m_serializers.insert(generateKey(serializer), &serializer);
 }
 
 
 bool ExtSerializationImpl::unregisterSerializer(ExtSerializer& serializer)
 {
-	const uint64_t key = generateKey(serializer);
-	const auto entry = m_serializers.find(key);
-	if (entry == nullptr)
-	{
-		return false;
-	}
-	entry->second->release();
-	return m_serializers.erase(key);
+    const uint64_t key = generateKey(serializer);
+    const auto entry = m_serializers.find(key);
+    if (entry == nullptr)
+    {
+        return false;
+    }
+    entry->second->release();
+    return m_serializers.erase(key);
 }
 
 
 ExtSerializer* ExtSerializationImpl::findSerializer(uint32_t objectTypeID, uint32_t encodingID)
 {
-	auto entry = m_serializers.find(generateKey(objectTypeID, encodingID));
-	return entry != nullptr ? entry->second : nullptr;
+    auto entry = m_serializers.find(generateKey(objectTypeID, encodingID));
+    return entry != nullptr ? entry->second : nullptr;
 }
 
 
 bool ExtSerializationImpl::setSerializationEncoding(uint32_t encodingID)
 {
-	m_serializationEncoding = encodingID;
+    m_serializationEncoding = encodingID;
 
-	return true;
+    return true;
 }
 
 
 uint32_t ExtSerializationImpl::getSerializationEncoding() const
 {
-	return m_serializationEncoding;
+    return m_serializationEncoding;
 }
 
 
 void ExtSerializationImpl::setBufferProvider(BufferProvider* bufferProvider)
 {
-	m_bufferProvider = bufferProvider != nullptr ? bufferProvider : &s_defaultBufferProvider;
+    m_bufferProvider = bufferProvider != nullptr ? bufferProvider : &s_defaultBufferProvider;
 }
 
 
 bool ExtSerializationImpl::peekHeader(uint32_t* objectTypeID, uint32_t* encodingID, uint64_t* dataSize, const void* buffer, uint64_t bufferSize)
 {
-	return nullptr != readHeaderFromBuffer(objectTypeID, encodingID, dataSize, reinterpret_cast<const char*>(buffer), bufferSize);
+    return nullptr != readHeaderFromBuffer(objectTypeID, encodingID, dataSize, reinterpret_cast<const char*>(buffer), bufferSize);
 }
 
 
 const void* ExtSerializationImpl::skipObject(uint64_t& bufferSize, const void* buffer)
 {
-	uint64_t dataSize;
-	const char* next = readHeaderFromBuffer(nullptr, nullptr, &dataSize, static_cast<const char*>(buffer), bufferSize);
-	if (next == nullptr)
-	{
-		return nullptr;
-	}
-	next += dataSize;
-	const uint64_t skipSize = next - static_cast<const char*>(buffer);
-	NVBLAST_CHECK_ERROR(skipSize <= bufferSize, "Object size in buffer is too large for given buffer size.", return nullptr);
-	bufferSize -= skipSize;
-	return next;
+    uint64_t dataSize;
+    const char* next = readHeaderFromBuffer(nullptr, nullptr, &dataSize, static_cast<const char*>(buffer), bufferSize);
+    if (next == nullptr)
+    {
+        return nullptr;
+    }
+    next += dataSize;
+    const uint64_t skipSize = next - static_cast<const char*>(buffer);
+    NVBLAST_CHECK_ERROR(skipSize <= bufferSize, "Object size in buffer is too large for given buffer size.", return nullptr);
+    bufferSize -= skipSize;
+    return next;
 }
 
 
 void* ExtSerializationImpl::deserializeFromBuffer(const void* buffer, uint64_t bufferSize, uint32_t* objectTypeIDPtr)
 {
-	uint32_t objectTypeID;
-	uint32_t encodingID;
-	uint64_t dataSize;
-	void* result = nullptr;
+    uint32_t objectTypeID;
+    uint32_t encodingID;
+    uint64_t dataSize;
+    void* result = nullptr;
 
-	buffer = readHeaderFromBuffer(&objectTypeID, &encodingID, &dataSize, reinterpret_cast<const char*>(buffer), bufferSize);
-	if (buffer != nullptr)
-	{
-		auto entry = m_serializers.find(generateKey(objectTypeID, encodingID));
-		if (entry != nullptr && entry->second != nullptr)
-		{
-			result = entry->second->deserializeFromBuffer(buffer, dataSize);
-		}
-	}
+    buffer = readHeaderFromBuffer(&objectTypeID, &encodingID, &dataSize, reinterpret_cast<const char*>(buffer), bufferSize);
+    if (buffer != nullptr)
+    {
+        auto entry = m_serializers.find(generateKey(objectTypeID, encodingID));
+        if (entry != nullptr && entry->second != nullptr)
+        {
+            result = entry->second->deserializeFromBuffer(buffer, dataSize);
+        }
+    }
 
-	if (objectTypeIDPtr != nullptr)
-	{
-		*objectTypeIDPtr = result != nullptr ? objectTypeID : 0;
-	}
+    if (objectTypeIDPtr != nullptr)
+    {
+        *objectTypeIDPtr = result != nullptr ? objectTypeID : 0;
+    }
 
-	return result;
+    return result;
 }
 
 
 uint64_t ExtSerializationImpl::serializeIntoBuffer(void*& buffer, const void* object, uint32_t objectTypeID)
 {
-	if (!m_serializationEncoding)
-	{
-		NVBLAST_LOG_ERROR("ExtSerializationImpl::serializeIntoBuffer: no serialization encoding has been set.");
-		return false;	// No encoding available
-	}
+    if (!m_serializationEncoding)
+    {
+        NVBLAST_LOG_ERROR("ExtSerializationImpl::serializeIntoBuffer: no serialization encoding has been set.");
+        return false;   // No encoding available
+    }
 
-	auto entry = m_serializers.find(generateKey(objectTypeID, m_serializationEncoding));
-	if (entry == nullptr || entry->second == nullptr)
-	{
-		return false;
-	}
+    auto entry = m_serializers.find(generateKey(objectTypeID, m_serializationEncoding));
+    if (entry == nullptr || entry->second == nullptr)
+    {
+        return false;
+    }
 
-	const uint64_t size = entry->second->serializeIntoBuffer(buffer, *m_bufferProvider, object, HeaderSize);
-	if (size < HeaderSize)
-	{
-		NVBLAST_LOG_ERROR("ExtSerializationImpl::serializeIntoBuffer: failed to write data to buffer.");
-		return 0;
-	}
+    const uint64_t size = entry->second->serializeIntoBuffer(buffer, *m_bufferProvider, object, HeaderSize);
+    if (size < HeaderSize)
+    {
+        NVBLAST_LOG_ERROR("ExtSerializationImpl::serializeIntoBuffer: failed to write data to buffer.");
+        return 0;
+    }
 
-	writeHeaderIntoBuffer(reinterpret_cast<char*>(buffer), HeaderSize, objectTypeID, m_serializationEncoding, size - HeaderSize);
+    writeHeaderIntoBuffer(reinterpret_cast<char*>(buffer), HeaderSize, objectTypeID, m_serializationEncoding, size - HeaderSize);
 
-	return size;
+    return size;
 }
 
 
 void ExtSerializationImpl::release()
 {
-	NVBLAST_DELETE(this, ExtSerializationImpl);
+    NVBLAST_DELETE(this, ExtSerializationImpl);
 }
 
 
@@ -383,19 +383,19 @@ void ExtSerializationImpl::release()
 
 void* ExtSerializationImpl::AllocBufferProvider::requestBuffer(size_t size)
 {
-	return NVBLAST_ALLOC(size);
+    return NVBLAST_ALLOC(size);
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv
 
 
 Nv::Blast::ExtSerialization* NvBlastExtSerializationCreate()
 {
-	Nv::Blast::ExtSerializationImpl* serialization = NVBLAST_NEW(Nv::Blast::ExtSerializationImpl) ();
+    Nv::Blast::ExtSerializationImpl* serialization = NVBLAST_NEW(Nv::Blast::ExtSerializationImpl) ();
 
-	// Automatically load LL serializers
-	NvBlastExtLlSerializerLoadSet(*serialization);
+    // Automatically load LL serializers
+    NvBlastExtLlSerializerLoadSet(*serialization);
 
-	return serialization;
+    return serialization;
 }

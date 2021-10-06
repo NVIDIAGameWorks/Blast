@@ -40,13 +40,13 @@ Used to store a single line and colour for debug rendering.
 */
 struct DebugLine
 {
-	DebugLine(const NvcVec3& p0, const NvcVec3& p1, uint32_t c)
-		: pos0(p0), color0(c), pos1(p1), color1(c) {}
+    DebugLine(const NvcVec3& p0, const NvcVec3& p1, uint32_t c)
+        : pos0(p0), color0(c), pos1(p1), color1(c) {}
 
-	NvcVec3			pos0;
-	uint32_t		color0;
-	NvcVec3			pos1;
-	uint32_t		color1;
+    NvcVec3         pos0;
+    uint32_t        color0;
+    NvcVec3         pos1;
+    uint32_t        color1;
 };
 
 
@@ -55,8 +55,8 @@ Debug Buffer
 */
 struct DebugBuffer
 {
-	const DebugLine* lines;
-	uint32_t		 lineCount;
+    const DebugLine* lines;
+    uint32_t         lineCount;
 };
 
 

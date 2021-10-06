@@ -39,83 +39,83 @@
 
 namespace Nv
 {
-	namespace Blast
-	{
-		class FractureRTMultithreadedImpl : public FractureRT
-		{
-		public:
-			FractureRTMultithreadedImpl(uint32_t threadCount);
+    namespace Blast
+    {
+        class FractureRTMultithreadedImpl : public FractureRT
+        {
+        public:
+            FractureRTMultithreadedImpl(uint32_t threadCount);
 
-			void release() override;
-			void processMesh(DamagePattern* pattern, const Mesh* msh) override;
-			uint32_t getResultChunkCount() override;
-			Vertex* getVertexBuffer() override;
-			uint32_t* getIndexBuffer() override;
-			uint32_t* getVertexOffset() override;
-			uint32_t* getIndexOffset() override;
-			PerTriangleAdditionalData* getPerTriangleData() override;
-			void dumpChunksToObj(const char* path) override;
+            void release() override;
+            void processMesh(DamagePattern* pattern, const Mesh* msh) override;
+            uint32_t getResultChunkCount() override;
+            Vertex* getVertexBuffer() override;
+            uint32_t* getIndexBuffer() override;
+            uint32_t* getVertexOffset() override;
+            uint32_t* getIndexOffset() override;
+            PerTriangleAdditionalData* getPerTriangleData() override;
+            void dumpChunksToObj(const char* path) override;
 
-		private:
-			Vertex* vertexBuffer = nullptr;
-			uint32_t* indexBuffer = nullptr;
+        private:
+            Vertex* vertexBuffer = nullptr;
+            uint32_t* indexBuffer = nullptr;
 
-			uint32_t* vertexOffsets = nullptr;
-			uint32_t* indexOffsets = nullptr;
+            uint32_t* vertexOffsets = nullptr;
+            uint32_t* indexOffsets = nullptr;
 
-			PerTriangleAdditionalData* adata = nullptr;
+            PerTriangleAdditionalData* adata = nullptr;
 
-			uint32_t chunkCount;
+            uint32_t chunkCount;
 
 #ifdef USE_MERGED_MESH
-			BooleanToolOutputData* outputData;
+            BooleanToolOutputData* outputData;
 #endif
 
-			struct PerThreadToolsAndData
-			{
-				PerThreadToolsAndData();
-				~PerThreadToolsAndData();
+            struct PerThreadToolsAndData
+            {
+                PerThreadToolsAndData();
+                ~PerThreadToolsAndData();
 
-				Fracturer*			f = nullptr;
-				MeshGenerator*		mgen = nullptr;
-				Vertex*				vertexBuffer = nullptr;
-				uint32_t*			indexBuffer = nullptr;
-				uint32_t*			indexOffsets = nullptr;
-				uint32_t*			vertexOffsets = nullptr;
-				uint32_t*			perChunkIds = nullptr;
-				uint32_t			chunkCount;
-				PerTriangleAdditionalData* adata = nullptr;
+                Fracturer*          f = nullptr;
+                MeshGenerator*      mgen = nullptr;
+                Vertex*             vertexBuffer = nullptr;
+                uint32_t*           indexBuffer = nullptr;
+                uint32_t*           indexOffsets = nullptr;
+                uint32_t*           vertexOffsets = nullptr;
+                uint32_t*           perChunkIds = nullptr;
+                uint32_t            chunkCount;
+                PerTriangleAdditionalData* adata = nullptr;
 
-				SpatialAccelerator* accel = nullptr;
-				BooleanToolOutputData* outputData = nullptr;
-			};
+                SpatialAccelerator* accel = nullptr;
+                BooleanToolOutputData* outputData = nullptr;
+            };
 
-			struct FractureJob
-			{
-				FractureJob() {};
-				FractureJob(uint32_t chunkId, const Mesh* mesh, Mesh* cell,
-					int32_t stage = FractureRT::Stage::ALL, DamagePattern* pattern = nullptr)
-					: chunkId(chunkId), mesh(mesh), cell(cell), stage(stage), pattern(pattern) {}
+            struct FractureJob
+            {
+                FractureJob() {};
+                FractureJob(uint32_t chunkId, const Mesh* mesh, Mesh* cell,
+                    int32_t stage = FractureRT::Stage::ALL, DamagePattern* pattern = nullptr)
+                    : chunkId(chunkId), mesh(mesh), cell(cell), stage(stage), pattern(pattern) {}
 
-				uint32_t chunkId;
-				const Nv::Blast::Mesh* mesh;
-				Nv::Blast::Mesh* cell;
-				int32_t stage = FractureRT::Stage::ALL;
-				DamagePattern* pattern = nullptr;
-			};
+                uint32_t chunkId;
+                const Nv::Blast::Mesh* mesh;
+                Nv::Blast::Mesh* cell;
+                int32_t stage = FractureRT::Stage::ALL;
+                DamagePattern* pattern = nullptr;
+            };
 
-			std::mutex work_mtx;
-			std::condition_variable hasAJob;
-			std::vector<FractureJob> fractureJobList;
-			std::vector<PerThreadToolsAndData> perThreadTd;
-			std::vector<std::thread> threadPool;
-			std::atomic<int32_t> jobCounter;
+            std::mutex work_mtx;
+            std::condition_variable hasAJob;
+            std::vector<FractureJob> fractureJobList;
+            std::vector<PerThreadToolsAndData> perThreadTd;
+            std::vector<std::thread> threadPool;
+            std::atomic<int32_t> jobCounter;
 
-			void waitForJob(int32_t threadId);
-			bool terminateThreads;
-			void pushJob(FractureJob& j);
-		};
-	}
+            void waitForJob(int32_t threadId);
+            bool terminateThreads;
+            void pushJob(FractureJob& j);
+        };
+    }
 }
 
 #endif // ifndef NVBLASTAUTHORINGRTMULTITHREADEDIMPL_H

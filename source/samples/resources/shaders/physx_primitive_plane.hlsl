@@ -3,17 +3,17 @@
 
 struct VS_INPUT
 {
-	float3 position : POSITION0;
-	float3 normal : NORMAL0;
-	float2 uv : TEXCOORD0;
+    float3 position : POSITION0;
+    float3 normal : NORMAL0;
+    float2 uv : TEXCOORD0;
 };
 
 struct VS_OUTPUT
 {
-	float4 position : SV_POSITION;
-	float4 worldPos : POSITION0;
-	float2 uv : TEXCOORD0;
-	float3 normal : NORMAL0;
+    float4 position : SV_POSITION;
+    float4 worldPos : POSITION0;
+    float2 uv : TEXCOORD0;
+    float3 normal : NORMAL0;
 };
 
 float filterwidth(float2 v)
@@ -24,7 +24,7 @@ float filterwidth(float2 v)
 
 float2 bump(float2 x) 
 {
-	return (floor(x/2) + 2.f * max((x/2) - floor(x/2) - .5f, 0.f)); 
+    return (floor(x/2) + 2.f * max((x/2) - floor(x/2) - .5f, 0.f)); 
 }
 
 float checker(float2 uv)
@@ -39,26 +39,26 @@ float checker(float2 uv)
 
 VS_OUTPUT VS(VS_INPUT iV)
 {
-	VS_OUTPUT oV;
+    VS_OUTPUT oV;
 
-	float4 worldSpacePos = mul(float4(iV.position, 1.0f), model);
-	oV.position = mul(worldSpacePos, viewProjection);
+    float4 worldSpacePos = mul(float4(iV.position, 1.0f), model);
+    oV.position = mul(worldSpacePos, viewProjection);
 
-	oV.uv = iV.uv;
+    oV.uv = iV.uv;
 
-	oV.worldPos = worldSpacePos;
+    oV.worldPos = worldSpacePos;
 
-	// normals
-	float3 worldNormal = mul(iV.normal,  (float3x3)model);
-	oV.normal = worldNormal;
+    // normals
+    float3 worldNormal = mul(iV.normal,  (float3x3)model);
+    oV.normal = worldNormal;
 
-	return oV;
+    return oV;
 }
 
 float4 PS(VS_OUTPUT iV) : SV_Target0
 {
-	float4 color = defaultColor;
-	color *= 1.0 - 0.25 * checker(iV.uv);
-	float3 lightColor = CalcPixelLight(color.xyz, iV.worldPos.xyz, iV.normal);	
-	return float4(lightColor, 1);
+    float4 color = defaultColor;
+    color *= 1.0 - 0.25 * checker(iV.uv);
+    float3 lightColor = CalcPixelLight(color.xyz, iV.worldPos.xyz, iV.normal);  
+    return float4(lightColor, 1);
 }

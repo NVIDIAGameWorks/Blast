@@ -38,102 +38,102 @@ DeviceManager* GetDeviceManager()
 
 namespace
 {
-	bool IsNvDeviceID(UINT id)
-	{
-		return id == 0x10DE;
-	}
+    bool IsNvDeviceID(UINT id)
+    {
+        return id == 0x10DE;
+    }
 
-	// Find an adapter whose name contains the given string.
-	IDXGIAdapter* FindAdapter(const WCHAR* targetName, bool& isNv)
-	{
-		IDXGIAdapter* targetAdapter = NULL;
-		IDXGIFactory* IDXGIFactory_0001 = NULL;
-		HRESULT hres = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&IDXGIFactory_0001);
-		if (hres != S_OK) 
-		{
-			printf("ERROR in CreateDXGIFactory, %s@%d.\nFor more info, get log from debug D3D runtime: (1) Install DX SDK, and enable Debug D3D from DX Control Panel Utility. (2) Install and start DbgView. (3) Try running the program again.\n",__FILE__,__LINE__); 
-			return targetAdapter;
-		}
+    // Find an adapter whose name contains the given string.
+    IDXGIAdapter* FindAdapter(const WCHAR* targetName, bool& isNv)
+    {
+        IDXGIAdapter* targetAdapter = NULL;
+        IDXGIFactory* IDXGIFactory_0001 = NULL;
+        HRESULT hres = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&IDXGIFactory_0001);
+        if (hres != S_OK) 
+        {
+            printf("ERROR in CreateDXGIFactory, %s@%d.\nFor more info, get log from debug D3D runtime: (1) Install DX SDK, and enable Debug D3D from DX Control Panel Utility. (2) Install and start DbgView. (3) Try running the program again.\n",__FILE__,__LINE__); 
+            return targetAdapter;
+        }
 
-		unsigned int adapterNo = 0;
-		while (SUCCEEDED(hres))
-		{
-			IDXGIAdapter* pAdapter = NULL;
-			hres = IDXGIFactory_0001->EnumAdapters(adapterNo, (IDXGIAdapter**)&pAdapter);
+        unsigned int adapterNo = 0;
+        while (SUCCEEDED(hres))
+        {
+            IDXGIAdapter* pAdapter = NULL;
+            hres = IDXGIFactory_0001->EnumAdapters(adapterNo, (IDXGIAdapter**)&pAdapter);
 
-			if (SUCCEEDED(hres))
-			{
-				DXGI_ADAPTER_DESC aDesc;
-				pAdapter->GetDesc(&aDesc);
+            if (SUCCEEDED(hres))
+            {
+                DXGI_ADAPTER_DESC aDesc;
+                pAdapter->GetDesc(&aDesc);
 
-				// If no name is specified, return the first adapater.  This is the same behaviour as the 
-				// default specified for D3D11CreateDevice when no adapter is specified.
-				if (wcslen(targetName) == 0)
-				{
-					targetAdapter = pAdapter;
-					isNv = IsNvDeviceID(aDesc.VendorId);
-					break;
-				}
+                // If no name is specified, return the first adapater.  This is the same behaviour as the 
+                // default specified for D3D11CreateDevice when no adapter is specified.
+                if (wcslen(targetName) == 0)
+                {
+                    targetAdapter = pAdapter;
+                    isNv = IsNvDeviceID(aDesc.VendorId);
+                    break;
+                }
 
-				std::wstring aName = aDesc.Description;
-				if (aName.find(targetName) != std::string::npos)
-				{
-					targetAdapter = pAdapter;
-					isNv = IsNvDeviceID(aDesc.VendorId);
-				}
-				else
-				{
-					pAdapter->Release();
-				}
-			}
+                std::wstring aName = aDesc.Description;
+                if (aName.find(targetName) != std::string::npos)
+                {
+                    targetAdapter = pAdapter;
+                    isNv = IsNvDeviceID(aDesc.VendorId);
+                }
+                else
+                {
+                    pAdapter->Release();
+                }
+            }
 
-			adapterNo++;
-		}
+            adapterNo++;
+        }
 
-		if (IDXGIFactory_0001)
-			IDXGIFactory_0001->Release();
+        if (IDXGIFactory_0001)
+            IDXGIFactory_0001->Release();
 
-		return targetAdapter;
-	}
+        return targetAdapter;
+    }
 
-	// Adjust window rect so that it is centred on the given adapter.  Clamps to fit if it's too big.
-	RECT MoveWindowOntoAdapter(IDXGIAdapter* targetAdapter, const RECT& rect)
-	{
-		assert(targetAdapter != NULL);
+    // Adjust window rect so that it is centred on the given adapter.  Clamps to fit if it's too big.
+    RECT MoveWindowOntoAdapter(IDXGIAdapter* targetAdapter, const RECT& rect)
+    {
+        assert(targetAdapter != NULL);
 
-		RECT result = rect;
-		HRESULT hres = S_OK;
-		unsigned int outputNo = 0;
-		while (SUCCEEDED(hres))
-		{
-			IDXGIOutput* pOutput = NULL;
-			hres = targetAdapter->EnumOutputs(outputNo++, &pOutput);
+        RECT result = rect;
+        HRESULT hres = S_OK;
+        unsigned int outputNo = 0;
+        while (SUCCEEDED(hres))
+        {
+            IDXGIOutput* pOutput = NULL;
+            hres = targetAdapter->EnumOutputs(outputNo++, &pOutput);
 
-			if (SUCCEEDED(hres) && pOutput)
-			{
-				DXGI_OUTPUT_DESC OutputDesc;
-				pOutput->GetDesc( &OutputDesc );
-				const RECT desktop = OutputDesc.DesktopCoordinates;
-				const int centreX = (int) desktop.left + (int)(desktop.right - desktop.left) / 2;
-				const int centreY = (int) desktop.top + (int)(desktop.bottom - desktop.top) / 2;
-				const int winW = rect.right - rect.left;
-				const int winH = rect.bottom - rect.top;
-				int left = centreX - winW/2;
-				int right = left + winW;
-				int top = centreY - winH/2;
-				int bottom = top + winH;
-				result.left = std::max(left, (int) desktop.left);
-				result.right = std::min(right, (int) desktop.right);
-				result.bottom = std::min(bottom, (int) desktop.bottom);
-				result.top = std::max(top, (int) desktop.top);
+            if (SUCCEEDED(hres) && pOutput)
+            {
+                DXGI_OUTPUT_DESC OutputDesc;
+                pOutput->GetDesc( &OutputDesc );
+                const RECT desktop = OutputDesc.DesktopCoordinates;
+                const int centreX = (int) desktop.left + (int)(desktop.right - desktop.left) / 2;
+                const int centreY = (int) desktop.top + (int)(desktop.bottom - desktop.top) / 2;
+                const int winW = rect.right - rect.left;
+                const int winH = rect.bottom - rect.top;
+                int left = centreX - winW/2;
+                int right = left + winW;
+                int top = centreY - winH/2;
+                int bottom = top + winH;
+                result.left = std::max(left, (int) desktop.left);
+                result.right = std::min(right, (int) desktop.right);
+                result.bottom = std::min(bottom, (int) desktop.bottom);
+                result.top = std::max(top, (int) desktop.top);
                 pOutput->Release();
 
-				// If there is more than one output, go with the first found.  Multi-monitor support could go here.
-				break;
-			}
-		}
-		return result;
-	}
+                // If there is more than one output, go with the first found.  Multi-monitor support could go here.
+                break;
+            }
+        }
+        return result;
+    }
 }
 
 HRESULT
@@ -159,17 +159,17 @@ DeviceManager::CreateWindowDeviceAndSwapChain(const DeviceCreationParameters& pa
     RECT rect = { 0, 0, params.backBufferWidth, params.backBufferHeight };
     AdjustWindowRect(&rect, windowStyle, FALSE);
 
-	IDXGIAdapter* targetAdapter = FindAdapter(params.adapterNameSubstring, m_IsNvidia);
-	if (targetAdapter)
-	{
-		rect = MoveWindowOntoAdapter(targetAdapter, rect);
-	}
-	else
-	{
-		// We could silently use a default adapter in this case.  I think it's better to choke.
-		std::wostringstream ostr;
-		ostr << L"Could not find an adapter matching \"" << params.adapterNameSubstring << "\"" << std::ends;
-		MessageBox(NULL, ostr.str().c_str(), m_WindowTitle.c_str(), MB_OK | MB_ICONERROR);
+    IDXGIAdapter* targetAdapter = FindAdapter(params.adapterNameSubstring, m_IsNvidia);
+    if (targetAdapter)
+    {
+        rect = MoveWindowOntoAdapter(targetAdapter, rect);
+    }
+    else
+    {
+        // We could silently use a default adapter in this case.  I think it's better to choke.
+        std::wostringstream ostr;
+        ostr << L"Could not find an adapter matching \"" << params.adapterNameSubstring << "\"" << std::ends;
+        MessageBox(NULL, ostr.str().c_str(), m_WindowTitle.c_str(), MB_OK | MB_ICONERROR);
         return E_FAIL;
     }
 
@@ -222,13 +222,13 @@ DeviceManager::CreateWindowDeviceAndSwapChain(const DeviceCreationParameters& pa
     m_SwapChainDesc.Windowed = !params.startFullscreen;
     m_SwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	// The D3D documentation says that if adapter is non-null, driver type must be unknown.  Why not put
-	// this logic in the CreateDevice fns then?!?
-	const D3D_DRIVER_TYPE dType = (targetAdapter)? D3D_DRIVER_TYPE_UNKNOWN: params.driverType;
+    // The D3D documentation says that if adapter is non-null, driver type must be unknown.  Why not put
+    // this logic in the CreateDevice fns then?!?
+    const D3D_DRIVER_TYPE dType = (targetAdapter)? D3D_DRIVER_TYPE_UNKNOWN: params.driverType;
 
     hr = D3D11CreateDeviceAndSwapChain(
         targetAdapter,          // pAdapter
-        dType,					// DriverType
+        dType,                  // DriverType
         NULL,                   // Software
         params.createDeviceFlags, // Flags
         &params.featureLevel,   // pFeatureLevels
@@ -241,8 +241,8 @@ DeviceManager::CreateWindowDeviceAndSwapChain(const DeviceCreationParameters& pa
         &m_ImmediateContext     // ppImmediateContext
     );
 
-	if (targetAdapter)
-		targetAdapter->Release();
+    if (targetAdapter)
+        targetAdapter->Release();
     
     if(FAILED(hr))
         return hr;
@@ -356,7 +356,7 @@ DeviceManager::MessageLoop()
         }
         else
         {
-			PROFILER_BEGIN("Main Loop");
+            PROFILER_BEGIN("Main Loop");
 
             LARGE_INTEGER newTime;
             QueryPerformanceCounter(&newTime);
@@ -393,8 +393,8 @@ DeviceManager::MessageLoop()
 
             previousTime = newTime;
 
-			PROFILER_END();
-			PROFILER_RESET();
+            PROFILER_END();
+            PROFILER_RESET();
         }
 
     }
@@ -496,7 +496,7 @@ DeviceManager::ResizeSwapChain()
 void
 DeviceManager::Render()
 {
-	PROFILER_SCOPED_FUNCTION();
+    PROFILER_SCOPED_FUNCTION();
 
     D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (float)m_SwapChainDesc.BufferDesc.Width, (float)m_SwapChainDesc.BufferDesc.Height, 0.0f, 1.0f };
 
@@ -518,7 +518,7 @@ DeviceManager::Render()
 void
 DeviceManager::Animate(double fElapsedTimeSeconds)
 {
-	PROFILER_SCOPED_FUNCTION();
+    PROFILER_SCOPED_FUNCTION();
 
     // front-to-back, but the order shouldn't matter
     for(auto it = m_vControllers.begin(); it != m_vControllers.end(); it++)

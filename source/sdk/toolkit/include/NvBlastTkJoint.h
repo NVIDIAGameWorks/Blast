@@ -44,9 +44,9 @@ The data contained in a TkJoint.
 */
 struct TkJointData
 {
-	TkActor*		actors[2];			//!< The TkActor objects joined by the joint
-	uint32_t		chunkIndices[2];	//!< The chunk indices within the corresponding TkActor objects joined by the joint.  The indexed chunks will be support chunks.
-	physx::PxVec3	attachPositions[2];	//!< The position of the joint relative to each TkActor
+    TkActor*        actors[2];          //!< The TkActor objects joined by the joint
+    uint32_t        chunkIndices[2];    //!< The chunk indices within the corresponding TkActor objects joined by the joint.  The indexed chunks will be support chunks.
+    physx::PxVec3   attachPositions[2]; //!< The position of the joint relative to each TkActor
 };
 
 
@@ -63,12 +63,12 @@ a TkJointUpdateEvent payload is dispatched to TkEventListener objects registered
 class TkJoint : public TkObject
 {
 public:
-	/**
-	Retrieve data in this joint.
+    /**
+    Retrieve data in this joint.
 
-	\return a TkJointData containing this joint's data.
-	*/
-	virtual const TkJointData	getData() const = 0;
+    \return a TkJointData containing this joint's data.
+    */
+    virtual const TkJointData   getData() const = 0;
 };
 
 } // namespace Blast

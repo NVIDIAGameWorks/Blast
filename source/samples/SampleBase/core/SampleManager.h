@@ -39,19 +39,19 @@ class ISampleController : public IApplicationController
 {
 public:
 
-	void setManager(SampleManager* manager)
-	{
-		m_manager = manager;
-	}
+    void setManager(SampleManager* manager)
+    {
+        m_manager = manager;
+    }
 protected:
 
-	SampleManager* getManager() const
-	{
-		return m_manager;
-	}
+    SampleManager* getManager() const
+    {
+        return m_manager;
+    }
 
 private:
-	SampleManager* m_manager;
+    SampleManager* m_manager;
 };
 
 
@@ -69,60 +69,60 @@ class CommonUIController;
 class SampleManager
 {
   public:
-	SampleManager(const SampleConfig& config);
-	int run();
+    SampleManager(const SampleConfig& config);
+    int run();
 
-	Renderer& getRenderer()
-	{
-		return *m_renderer;
-	}
+    Renderer& getRenderer()
+    {
+        return *m_renderer;
+    }
 
-	PhysXController& getPhysXController() const
-	{
-		return *m_physXController;
-	}
+    PhysXController& getPhysXController() const
+    {
+        return *m_physXController;
+    }
 
-	BlastController& getBlastController() const
-	{
-		return *m_blastController;
-	}
+    BlastController& getBlastController() const
+    {
+        return *m_blastController;
+    }
 
-	SceneController& getSceneController() const
-	{
-		return *m_sceneController;
-	}
+    SceneController& getSceneController() const
+    {
+        return *m_sceneController;
+    }
 
-	DamageToolController& getDamageToolController() const
-	{
-		return *m_damageToolController;
-	}
+    DamageToolController& getDamageToolController() const
+    {
+        return *m_damageToolController;
+    }
 
-	SampleController& getSampleController() const
-	{
-		return *m_sampleController;
-	}
+    SampleController& getSampleController() const
+    {
+        return *m_sampleController;
+    }
 
-	CommonUIController& getCommonUIController() const
-	{
-		return *m_commonUIController;
-	}
+    CommonUIController& getCommonUIController() const
+    {
+        return *m_commonUIController;
+    }
 
-	const SampleConfig&	getConfig() const
-	{
-		return m_config;
-	}
+    const SampleConfig& getConfig() const
+    {
+        return m_config;
+    }
 
 
   private:
-	  Renderer*             m_renderer;
-	  PhysXController*      m_physXController;
-	  BlastController*      m_blastController;
-	  SceneController*      m_sceneController;
-	  DamageToolController* m_damageToolController;
-	  SampleController*     m_sampleController;
-	  CommonUIController*   m_commonUIController;
+      Renderer*             m_renderer;
+      PhysXController*      m_physXController;
+      BlastController*      m_blastController;
+      SceneController*      m_sceneController;
+      DamageToolController* m_damageToolController;
+      SampleController*     m_sampleController;
+      CommonUIController*   m_commonUIController;
 
-	  const SampleConfig&	m_config;
+      const SampleConfig&   m_config;
 };
 
 

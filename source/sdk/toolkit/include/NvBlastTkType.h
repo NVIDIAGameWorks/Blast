@@ -46,34 +46,34 @@ use TkType data.
 class TkType
 {
 public:
-	/**
-	The class name.
+    /**
+    The class name.
 
-	\return the class name.
-	*/
-	virtual const char*	getName() const = 0;
+    \return the class name.
+    */
+    virtual const char* getName() const = 0;
 
-	/**
-	The data format version for this class.  When deserializing, this version must match the
-	current version.  If not, the user may convert the data format using the format conversion
-	extension.
+    /**
+    The data format version for this class.  When deserializing, this version must match the
+    current version.  If not, the user may convert the data format using the format conversion
+    extension.
 
-	\return the version number.
-	*/
-	virtual uint32_t	getVersion() const = 0;
+    \return the version number.
+    */
+    virtual uint32_t    getVersion() const = 0;
 
-	/**
-	Test for equality.  This type is used in static (per-class) data, so types are equal exactly
-	when their addresses are equal.
+    /**
+    Test for equality.  This type is used in static (per-class) data, so types are equal exactly
+    when their addresses are equal.
 
-	\param[in]	type	The TkType to compare with this TkType.
+    \param[in]  type    The TkType to compare with this TkType.
 
-	\return true if this type equals the input type, false otherwise.
-	*/
-	bool				operator == (const TkType& type) const
-	{
-		return &type == this;
-	}
+    \return true if this type equals the input type, false otherwise.
+    */
+    bool                operator == (const TkType& type) const
+    {
+        return &type == this;
+    }
 };
 
 } // namespace Blast

@@ -38,8 +38,8 @@ namespace Blast
 
 class EmptyProfilerCallback : public ProfilerCallback
 {
-	void zoneStart(const char*) {}
-	void zoneEnd() {}
+    void zoneStart(const char*) {}
+    void zoneEnd() {}
 };
 EmptyProfilerCallback g_EmptyCallback;
 
@@ -52,40 +52,40 @@ ProfilerDetail::Level g_ProfilerDetail = ProfilerDetail::LOW;
 
 void NvBlastProfilerSetCallback(Nv::Blast::ProfilerCallback* pcb)
 {
-	Nv::Blast::g_ProfilerCallback = pcb != nullptr ? pcb : &Nv::Blast::g_EmptyCallback;
+    Nv::Blast::g_ProfilerCallback = pcb != nullptr ? pcb : &Nv::Blast::g_EmptyCallback;
 }
 
 Nv::Blast::ProfilerCallback* NvBlastProfilerGetCallback()
 {
-	return Nv::Blast::g_ProfilerCallback;
+    return Nv::Blast::g_ProfilerCallback;
 }
 
 
 void NvBlastProfilerSetDetail(Nv::Blast::ProfilerDetail::Level level)
 {
-	Nv::Blast::g_ProfilerDetail = level;
+    Nv::Blast::g_ProfilerDetail = level;
 }
 
 Nv::Blast::ProfilerDetail::Level NvBlastProfilerGetDetail()
 {
-	return Nv::Blast::g_ProfilerDetail;
+    return Nv::Blast::g_ProfilerDetail;
 }
 
 
 void NvBlastProfilerBegin(const char* name, Nv::Blast::ProfilerDetail::Level level)
 {
-	if (level <= NvBlastProfilerGetDetail())
-	{
-		NvBlastProfilerGetCallback()->zoneStart(name);
-	}
+    if (level <= NvBlastProfilerGetDetail())
+    {
+        NvBlastProfilerGetCallback()->zoneStart(name);
+    }
 }
 
 void NvBlastProfilerEnd(const void* /*name*/, Nv::Blast::ProfilerDetail::Level level)
 {
-	if (level <= NvBlastProfilerGetDetail())
-	{
-		NvBlastProfilerGetCallback()->zoneEnd();
-	}
+    if (level <= NvBlastProfilerGetDetail())
+    {
+        NvBlastProfilerGetCallback()->zoneEnd();
+    }
 }
 
 #else

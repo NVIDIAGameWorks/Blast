@@ -55,48 +55,48 @@ Uses a physx::PxTaskManager to process a TkGroup concurrently.
 class NV_DLL_EXPORT ExtGroupTaskManager
 {
 protected:
-	virtual ~ExtGroupTaskManager() {}
+    virtual ~ExtGroupTaskManager() {}
 
 public:
-	/**
-	Construct using existing physx::PxTaskManager and TkGroup. The TkGroup can be set later with setGroup().
-	*/
-	static ExtGroupTaskManager* create(physx::PxTaskManager&, TkGroup* = nullptr);
+    /**
+    Construct using existing physx::PxTaskManager and TkGroup. The TkGroup can be set later with setGroup().
+    */
+    static ExtGroupTaskManager* create(physx::PxTaskManager&, TkGroup* = nullptr);
 
-	/**
-	Set the group to process. Cannot be changed while a group being processed.
-	*/
-	virtual void setGroup(TkGroup*) = 0;
+    /**
+    Set the group to process. Cannot be changed while a group being processed.
+    */
+    virtual void setGroup(TkGroup*) = 0;
 
-	/**
-	Start processing the group.
-	The parallelizing strategy is to have all worker tasks running concurrently.
-	The number of started tasks may be smaller than the requested value,
-	when the task manager's dispatcher thread count or the number of group jobs are
-	smaller.
+    /**
+    Start processing the group.
+    The parallelizing strategy is to have all worker tasks running concurrently.
+    The number of started tasks may be smaller than the requested value,
+    when the task manager's dispatcher thread count or the number of group jobs are
+    smaller.
 
-	\param[in]	workerCount		The number of worker tasks to start, 
-								0 uses the dispatcher's worker thread count.
+    \param[in]  workerCount     The number of worker tasks to start, 
+                                0 uses the dispatcher's worker thread count.
 
-	\return						The number of worker tasks started.
-								If 0, processing did not start and wait() will never return true.
-	*/
-	virtual uint32_t process(uint32_t workerCount = 0) = 0;
+    \return                     The number of worker tasks started.
+                                If 0, processing did not start and wait() will never return true.
+    */
+    virtual uint32_t process(uint32_t workerCount = 0) = 0;
 
-	/**
-	Wait for the group to end processing. When processing has finished, TkGroup::endProcess is executed.
+    /**
+    Wait for the group to end processing. When processing has finished, TkGroup::endProcess is executed.
 
-	\param[in]	block			true:	does not return until the group has been processed.
-								false:	return immediately if workers are still processing the group.
+    \param[in]  block           true:   does not return until the group has been processed.
+                                false:  return immediately if workers are still processing the group.
 
-	\return						true if group processing was completed (and the group was actually processing)
-	*/
-	virtual bool wait(bool block = true) = 0;
+    \return                     true if group processing was completed (and the group was actually processing)
+    */
+    virtual bool wait(bool block = true) = 0;
 
-	/**
-	Release this object.
-	*/
-	virtual void release() = 0;
+    /**
+    Release this object.
+    */
+    virtual void release() = 0;
 };
 
 

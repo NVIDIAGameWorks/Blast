@@ -61,210 +61,210 @@ class PxRenderBuffer;
 */
 class Renderer : public ISampleController
 {
-	friend class Renderable;
+    friend class Renderable;
 
   public:
-	//////// ctor ////////
+    //////// ctor ////////
 
-	Renderer();
-	~Renderer();
-
-
-	//////// public API ////////
-
-	void reloadShaders();
-
-	bool getWireframeMode()
-	{
-		return m_wireframeMode;
-	}
-
-	void setWireframeMode(bool enabled)
-	{
-		if(m_wireframeMode != enabled)
-		{
-			m_wireframeMode = enabled;
-			initializeDefaultRSState();
-		}
-	}
-
-	IRenderMesh* getPrimitiveRenderMesh(PrimitiveRenderMeshType::Enum type);
-
-	Renderable* createRenderable(IRenderMesh& mesh, RenderMaterial& material);
-	void removeRenderable(Renderable* r);
-
-	void drawUI();
+    Renderer();
+    ~Renderer();
 
 
-	//////// public getters ////////
+    //////// public API ////////
 
-	float getScreenWidth() const
-	{
-		return m_screenWidth;
-	}
+    void reloadShaders();
 
-	float getScreenHeight() const
-	{
-		return m_screenHeight;
-	}
+    bool getWireframeMode()
+    {
+        return m_wireframeMode;
+    }
 
-	void queueRenderBuffer(const PxRenderBuffer* buffer)
-	{
-		m_queuedRenderBuffers.push_back(buffer);
-	}
+    void setWireframeMode(bool enabled)
+    {
+        if(m_wireframeMode != enabled)
+        {
+            m_wireframeMode = enabled;
+            initializeDefaultRSState();
+        }
+    }
 
-	void clearQueue()
-	{
-		m_queuedRenderBuffers.clear();
-	}
+    IRenderMesh* getPrimitiveRenderMesh(PrimitiveRenderMeshType::Enum type);
 
-	ResourceManager& getResourceManager()
-	{ 
-		return m_resourceManager; 
-	}
+    Renderable* createRenderable(IRenderMesh& mesh, RenderMaterial& material);
+    void removeRenderable(Renderable* r);
 
-	uint32_t getVisibleOpaqueRenderablesCount()
-	{
-		return m_visibleOpaqueRenderablesCount;
-	}
-
-	uint32_t getVisibleTransparentRenderablesCount()
-	{
-		return m_visibleTransparentRenderablesCount;
-	}
-
-	CFirstPersonCamera& getCamera()
-	{
-		return m_camera;
-	}
+    void drawUI();
 
 
-	//////// public 'internal' methods ////////
+    //////// public getters ////////
 
-	// for internal usage (used by RenderShadows)
-	void renderDepthOnly(DirectX::XMMATRIX* viewProjectionSubstitute);
+    float getScreenWidth() const
+    {
+        return m_screenWidth;
+    }
+
+    float getScreenHeight() const
+    {
+        return m_screenHeight;
+    }
+
+    void queueRenderBuffer(const PxRenderBuffer* buffer)
+    {
+        m_queuedRenderBuffers.push_back(buffer);
+    }
+
+    void clearQueue()
+    {
+        m_queuedRenderBuffers.clear();
+    }
+
+    ResourceManager& getResourceManager()
+    { 
+        return m_resourceManager; 
+    }
+
+    uint32_t getVisibleOpaqueRenderablesCount()
+    {
+        return m_visibleOpaqueRenderablesCount;
+    }
+
+    uint32_t getVisibleTransparentRenderablesCount()
+    {
+        return m_visibleTransparentRenderablesCount;
+    }
+
+    CFirstPersonCamera& getCamera()
+    {
+        return m_camera;
+    }
+
+
+    //////// public 'internal' methods ////////
+
+    // for internal usage (used by RenderShadows)
+    void renderDepthOnly(DirectX::XMMATRIX* viewProjectionSubstitute);
 
   protected:
 
-	//////// controller callbacks ////////
+    //////// controller callbacks ////////
 
-	virtual HRESULT DeviceCreated(ID3D11Device* pDevice);
-	virtual void DeviceDestroyed();
-	virtual LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	virtual void Animate(double fElapsedTimeSeconds);
-	virtual void onInitialize();
-	virtual void onTerminate();
-	virtual void BackBufferResized(ID3D11Device* pDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc);
-	virtual void Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11RenderTargetView* pRTV,
-	                    ID3D11DepthStencilView* pDSV);
+    virtual HRESULT DeviceCreated(ID3D11Device* pDevice);
+    virtual void DeviceDestroyed();
+    virtual LRESULT MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    virtual void Animate(double fElapsedTimeSeconds);
+    virtual void onInitialize();
+    virtual void onTerminate();
+    virtual void BackBufferResized(ID3D11Device* pDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc);
+    virtual void Render(ID3D11Device* /*device*/, ID3D11DeviceContext* ctx, ID3D11RenderTargetView* pRTV,
+                        ID3D11DepthStencilView* pDSV);
 
   private:
 
-	//////// internal methods ////////
+    //////// internal methods ////////
 
-	struct RenderDebugVertex
-	{
-		PxVec3 mPos;
-		uint32_t mColor;
-	};
+    struct RenderDebugVertex
+    {
+        PxVec3 mPos;
+        uint32_t mColor;
+    };
 
-	void render(const PxRenderBuffer* renderBuffer);
-	void render(Renderable* renderable);
-	void renderDebugPrimitive(const RenderDebugVertex *vertices, uint32_t verticesCount, D3D11_PRIMITIVE_TOPOLOGY topology);
-	void initializeDefaultRSState();
-	void setAllConstantBuffers(ID3D11DeviceContext* ctx);
-	void toggleCameraSpeed(bool overspeed);
-
-
-	//////// constant buffers ////////
-
-	struct CBCamera
-	{
-		DirectX::XMMATRIX viewProjection;
-		DirectX::XMMATRIX projectionInv;
-		DirectX::XMFLOAT3 viewPos;
-		float unusedPad;
-	};
-	struct CBWorld
-	{
-		DirectX::XMFLOAT3 ambientColor;
-		float unusedPad1;
-		DirectX::XMFLOAT3 pointLightPos;
-		float unusedPad2;
-		DirectX::XMFLOAT3 pointLightColor;
-		float unusedPad3;
-		DirectX::XMFLOAT3 dirLightDir;
-		float specularPower;
-		DirectX::XMFLOAT3 dirLightColor;
-		float specularIntensity; // TODO: actually it's per object property
-	};
-	struct CBObject
-	{
-		DirectX::XMMATRIX world;
-		DirectX::XMFLOAT4 color;
-	};
+    void render(const PxRenderBuffer* renderBuffer);
+    void render(Renderable* renderable);
+    void renderDebugPrimitive(const RenderDebugVertex *vertices, uint32_t verticesCount, D3D11_PRIMITIVE_TOPOLOGY topology);
+    void initializeDefaultRSState();
+    void setAllConstantBuffers(ID3D11DeviceContext* ctx);
+    void toggleCameraSpeed(bool overspeed);
 
 
-	//////// internal data ////////
+    //////// constant buffers ////////
 
-	// camera
-	CFirstPersonCamera	               m_camera;
-	float							   m_screenWidth;
-	float							   m_screenHeight;
+    struct CBCamera
+    {
+        DirectX::XMMATRIX viewProjection;
+        DirectX::XMMATRIX projectionInv;
+        DirectX::XMFLOAT3 viewPos;
+        float unusedPad;
+    };
+    struct CBWorld
+    {
+        DirectX::XMFLOAT3 ambientColor;
+        float unusedPad1;
+        DirectX::XMFLOAT3 pointLightPos;
+        float unusedPad2;
+        DirectX::XMFLOAT3 pointLightColor;
+        float unusedPad3;
+        DirectX::XMFLOAT3 dirLightDir;
+        float specularPower;
+        DirectX::XMFLOAT3 dirLightColor;
+        float specularIntensity; // TODO: actually it's per object property
+    };
+    struct CBObject
+    {
+        DirectX::XMMATRIX world;
+        DirectX::XMFLOAT4 color;
+    };
 
-	// resources
-	ResourceManager                    m_resourceManager;
 
-	// additional render modules(libs)
-	RendererShadow                     m_shadow;
-	bool                               m_shadowEnabled;
-	RendererHBAO                       m_HBAO;
-	bool                               m_HBAOEnabled;
+    //////// internal data ////////
 
-	// DX11 common
-	ID3D11Device*                      m_device;
-	ID3D11DeviceContext*               m_context;
-	D3D11_VIEWPORT                     m_viewport;
+    // camera
+    CFirstPersonCamera                 m_camera;
+    float                              m_screenWidth;
+    float                              m_screenHeight;
 
-	// DX11 states
-	ID3D11RasterizerState*             m_RSState;
-	ID3D11DepthStencilState*           m_opaqueRenderDSState;
-	ID3D11DepthStencilState*           m_transparencyRenderDSState;
+    // resources
+    ResourceManager                    m_resourceManager;
 
-	// DX11 samplers
-	ID3D11SamplerState*                m_pointSampler;
-	ID3D11SamplerState*                m_linearSampler;
+    // additional render modules(libs)
+    RendererShadow                     m_shadow;
+    bool                               m_shadowEnabled;
+    RendererHBAO                       m_HBAO;
+    bool                               m_HBAOEnabled;
 
-	// Depth Buffer
-	ID3D11Texture2D*                   m_DSTexture;
-	ID3D11DepthStencilView*	           m_DSView;
-	ID3D11ShaderResourceView*          m_DSTextureSRV;
+    // DX11 common
+    ID3D11Device*                      m_device;
+    ID3D11DeviceContext*               m_context;
+    D3D11_VIEWPORT                     m_viewport;
 
-	// Constant Buffers
-	ID3D11Buffer*                      m_cameraCB;
-	ID3D11Buffer*                      m_worldCB;
-	CBWorld                            m_worldCBData;
-	ID3D11Buffer*                      m_objectCB;
+    // DX11 states
+    ID3D11RasterizerState*             m_RSState;
+    ID3D11DepthStencilState*           m_opaqueRenderDSState;
+    ID3D11DepthStencilState*           m_transparencyRenderDSState;
 
-	// toggles (options)
-	bool                               m_wireframeMode;
+    // DX11 samplers
+    ID3D11SamplerState*                m_pointSampler;
+    ID3D11SamplerState*                m_linearSampler;
 
-	// renderables
-	std::unordered_set<Renderable*>    m_renderables;
+    // Depth Buffer
+    ID3D11Texture2D*                   m_DSTexture;
+    ID3D11DepthStencilView*            m_DSView;
+    ID3D11ShaderResourceView*          m_DSTextureSRV;
 
-	// primitive meshes cache
-	IRenderMesh*                       m_primitiveRenderMeshes[PrimitiveRenderMeshType::Count];
+    // Constant Buffers
+    ID3D11Buffer*                      m_cameraCB;
+    ID3D11Buffer*                      m_worldCB;
+    CBWorld                            m_worldCBData;
+    ID3D11Buffer*                      m_objectCB;
 
-	// stats
-	uint32_t						  m_visibleOpaqueRenderablesCount;
-	uint32_t						  m_visibleTransparentRenderablesCount;
+    // toggles (options)
+    bool                               m_wireframeMode;
 
-	// Debug Render
-	RenderMaterial*                    m_debugPrimitiveRenderMaterial;
-	RenderMaterial::InstancePtr        m_debugPrimitiveRenderMaterialInstance;
-	ID3D11Buffer*                      m_debugPrimitiveVB;
-	uint32_t                           m_debugPrimitiveVBVerticesCount;
-	std::vector<const PxRenderBuffer*> m_queuedRenderBuffers;
+    // renderables
+    std::unordered_set<Renderable*>    m_renderables;
+
+    // primitive meshes cache
+    IRenderMesh*                       m_primitiveRenderMeshes[PrimitiveRenderMeshType::Count];
+
+    // stats
+    uint32_t                          m_visibleOpaqueRenderablesCount;
+    uint32_t                          m_visibleTransparentRenderablesCount;
+
+    // Debug Render
+    RenderMaterial*                    m_debugPrimitiveRenderMaterial;
+    RenderMaterial::InstancePtr        m_debugPrimitiveRenderMaterialInstance;
+    ID3D11Buffer*                      m_debugPrimitiveVB;
+    uint32_t                           m_debugPrimitiveVBVerticesCount;
+    std::vector<const PxRenderBuffer*> m_queuedRenderBuffers;
 };
 
 

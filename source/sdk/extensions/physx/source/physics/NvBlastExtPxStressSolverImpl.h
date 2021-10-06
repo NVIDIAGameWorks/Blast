@@ -42,40 +42,40 @@ namespace Blast
 
 class ExtPxStressSolverImpl final : public ExtPxStressSolver, ExtPxListener
 {
-	NV_NOCOPY(ExtPxStressSolverImpl)
+    NV_NOCOPY(ExtPxStressSolverImpl)
 
 public:
-	ExtPxStressSolverImpl(ExtPxFamily& family, ExtStressSolverSettings settings);
+    ExtPxStressSolverImpl(ExtPxFamily& family, ExtStressSolverSettings settings);
 
 
-	//////// ExtPxStressSolver interface ////////
+    //////// ExtPxStressSolver interface ////////
 
-	virtual void							release() override;
+    virtual void                            release() override;
 
-	virtual ExtStressSolver&				getSolver() const override
-	{
-		return *m_solver;
-	}
+    virtual ExtStressSolver&                getSolver() const override
+    {
+        return *m_solver;
+    }
 
-	virtual void							update(bool doDamage) override;
+    virtual void                            update(bool doDamage) override;
 
 
-	//////// ExtPxListener interface ////////
+    //////// ExtPxListener interface ////////
 
-	virtual void							onActorCreated(ExtPxFamily& family, ExtPxActor& actor) final;
+    virtual void                            onActorCreated(ExtPxFamily& family, ExtPxActor& actor) final;
 
-	virtual void							onActorDestroyed(ExtPxFamily& family, ExtPxActor& actor) final;
+    virtual void                            onActorDestroyed(ExtPxFamily& family, ExtPxActor& actor) final;
 
 
 private:
-	~ExtPxStressSolverImpl();
+    ~ExtPxStressSolverImpl();
 
 
-	//////// data ////////
+    //////// data ////////
 
-	ExtPxFamily&				m_family;
-	ExtStressSolver*			m_solver;
-	HashSet<ExtPxActor*>::type  m_actors;
+    ExtPxFamily&                m_family;
+    ExtStressSolver*            m_solver;
+    HashSet<ExtPxActor*>::type  m_actors;
 };
 
 

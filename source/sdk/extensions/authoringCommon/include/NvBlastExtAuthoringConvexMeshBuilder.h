@@ -39,32 +39,32 @@ namespace Blast
 struct CollisionHull;
 
 /**
-	ConvexMeshBuilder provides routine to build collision hulls from array of vertices.
-	Collision hull is built as convex hull of provided point set.
-	If due to some reason building of convex hull is failed, collision hull is built as bounding box of vertex set.
-	PhysX implementation can be found in NvBlastExtPx.
+    ConvexMeshBuilder provides routine to build collision hulls from array of vertices.
+    Collision hull is built as convex hull of provided point set.
+    If due to some reason building of convex hull is failed, collision hull is built as bounding box of vertex set.
+    PhysX implementation can be found in NvBlastExtPx.
 */
 class ConvexMeshBuilder
 {
 public:
-	
-	/**
-	Release ConvexMeshBuilder memory
-	*/
-	virtual void					release() = 0;
+    
+    /**
+    Release ConvexMeshBuilder memory
+    */
+    virtual void                    release() = 0;
 
-	/**
-		Method creates CollisionHull from provided array of vertices.
-		\param[in]  verticesCount	Number of vertices
-		\param[in]	vertexData		Vertex array of some object, for which collision geometry should be built
-		\param[out] output			Reference on CollisionHull object in which generated geometry should be saved
-	*/
-	virtual CollisionHull* buildCollisionGeometry(uint32_t verticesCount, const NvcVec3* vertexData) = 0;
+    /**
+        Method creates CollisionHull from provided array of vertices.
+        \param[in]  verticesCount   Number of vertices
+        \param[in]  vertexData      Vertex array of some object, for which collision geometry should be built
+        \param[out] output          Reference on CollisionHull object in which generated geometry should be saved
+    */
+    virtual CollisionHull* buildCollisionGeometry(uint32_t verticesCount, const NvcVec3* vertexData) = 0;
 
-	/**
-		Release CollisionHull memory.
-	*/
-	virtual void releaseCollisionHull(CollisionHull* hull) const = 0;
+    /**
+        Release CollisionHull memory.
+    */
+    virtual void releaseCollisionHull(CollisionHull* hull) const = 0;
 };
 
 } // namespace Blast

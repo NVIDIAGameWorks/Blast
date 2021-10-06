@@ -39,18 +39,18 @@ class Renderable;
 class BlastFamilyBoxes : public BlastFamily
 {
   public:
-	BlastFamilyBoxes(PhysXController& physXController, ExtPxManager& pxManager, Renderer& renderer,
-	                 const BlastAssetBoxes& blastAsset, const BlastAsset::ActorDesc& desc);
-	virtual ~BlastFamilyBoxes();
+    BlastFamilyBoxes(PhysXController& physXController, ExtPxManager& pxManager, Renderer& renderer,
+                     const BlastAssetBoxes& blastAsset, const BlastAsset::ActorDesc& desc);
+    virtual ~BlastFamilyBoxes();
 
   protected:
-	virtual void onActorCreated(const ExtPxActor& actor);
-	virtual void onActorUpdate(const ExtPxActor& actor);
-	virtual void onActorDestroyed(const ExtPxActor& actor);
+    virtual void onActorCreated(const ExtPxActor& actor);
+    virtual void onActorUpdate(const ExtPxActor& actor);
+    virtual void onActorDestroyed(const ExtPxActor& actor);
 
   private:
-	Renderer& m_renderer;
-	std::vector<Renderable*> m_chunkRenderables;
+    Renderer& m_renderer;
+    std::vector<Renderable*> m_chunkRenderables;
 };
 
 

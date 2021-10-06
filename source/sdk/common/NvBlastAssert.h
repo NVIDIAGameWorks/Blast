@@ -40,30 +40,30 @@
 #else
 #if NV_VC
 #define NVBLAST_CODE_ANALYSIS_ASSUME(exp)                                                                     \
-	__analysis_assume(!!(exp)) // This macro will be used to get rid of analysis warning messages if a NVBLAST_ASSERT is used
+    __analysis_assume(!!(exp)) // This macro will be used to get rid of analysis warning messages if a NVBLAST_ASSERT is used
 // to "guard" illegal mem access, for example.
 #else
 #define NVBLAST_CODE_ANALYSIS_ASSUME(exp)
 #endif
 #define NVBLAST_ASSERT(exp)                                                                                   \
 {                                                                                                             \
-	static bool _ignore = false;                                                                              \
-	if (!(exp) && !_ignore) NvBlastAssertHandler(#exp, __FILE__, __LINE__, _ignore);                          \
-	NVBLAST_CODE_ANALYSIS_ASSUME(exp);                                                                        \
+    static bool _ignore = false;                                                                              \
+    if (!(exp) && !_ignore) NvBlastAssertHandler(#exp, __FILE__, __LINE__, _ignore);                          \
+    NVBLAST_CODE_ANALYSIS_ASSUME(exp);                                                                        \
 } ((void)0)
 #define NVBLAST_ALWAYS_ASSERT_MESSAGE(message)                                                                    \
 {                                                                                                             \
-	static bool _ignore = false;                                                                              \
-	if(!_ignore)                                                                                              \
-	{                                                                                                         \
-		NvBlastAssertHandler(message, __FILE__, __LINE__, _ignore);                                               \
-	}                                                                                                         \
+    static bool _ignore = false;                                                                              \
+    if(!_ignore)                                                                                              \
+    {                                                                                                         \
+        NvBlastAssertHandler(message, __FILE__, __LINE__, _ignore);                                               \
+    }                                                                                                         \
 } ((void)0)
 #define NVBLAST_ASSERT_WITH_MESSAGE(exp, message)                                                             \
 {                                                                                                             \
-	static bool _ignore = false;                                                                              \
-	if (!(exp) && !_ignore) NvBlastAssertHandler(message, __FILE__, __LINE__, _ignore);                       \
-	NVBLAST_CODE_ANALYSIS_ASSUME(exp);                                                                        \
+    static bool _ignore = false;                                                                              \
+    if (!(exp) && !_ignore) NvBlastAssertHandler(message, __FILE__, __LINE__, _ignore);                       \
+    NVBLAST_CODE_ANALYSIS_ASSUME(exp);                                                                        \
 } ((void)0)
 #endif
 

@@ -51,299 +51,299 @@
 const float RIGIDBODY_DENSITY = 2000.0f;
 
 BlastFamily::BlastFamily(PhysXController& physXController, ExtPxManager& pxManager, const BlastAsset& blastAsset) 
-	: m_physXController(physXController)
-	, m_pxManager(pxManager)
-	, m_blastAsset(blastAsset)
-	, m_listener(this)
-	, m_totalVisibleChunkCount(0)
-	, m_stressSolver(nullptr)
-	, m_spawned(false)
-	, m_debugRenderDepth(-1)
+    : m_physXController(physXController)
+    , m_pxManager(pxManager)
+    , m_blastAsset(blastAsset)
+    , m_listener(this)
+    , m_totalVisibleChunkCount(0)
+    , m_stressSolver(nullptr)
+    , m_spawned(false)
+    , m_debugRenderDepth(-1)
 {
-	m_settings.stressSolverEnabled = false;
-	m_settings.stressDamageEnabled = false;
-	m_settings.damageAcceleratorEnabled = true;
+    m_settings.stressSolverEnabled = false;
+    m_settings.stressDamageEnabled = false;
+    m_settings.damageAcceleratorEnabled = true;
 }
 
 BlastFamily::~BlastFamily()
 {
-	if (m_stressSolver)
-	{
-		m_stressSolver->release();
-	}
-	if (m_pxFamily)
-	{
-		m_pxFamily->unsubscribe(m_listener);
-		m_pxFamily->release();
-	}
-	//Self released
-	//if (m_tkFamily)
-	//{
-	//	m_tkFamily->release();
-	//}
+    if (m_stressSolver)
+    {
+        m_stressSolver->release();
+    }
+    if (m_pxFamily)
+    {
+        m_pxFamily->unsubscribe(m_listener);
+        m_pxFamily->release();
+    }
+    //Self released
+    //if (m_tkFamily)
+    //{
+    //  m_tkFamily->release();
+    //}
 }
 
 void BlastFamily::initialize(const BlastAsset::ActorDesc& desc)
 {
-	ExtPxFamilyDesc familyDesc;
-	familyDesc.actorDesc = nullptr; // if you use it one day, consider changing code which needs getBondHealthMax() from BlastAsset.
-	familyDesc.group = desc.group;
-	familyDesc.pxAsset = m_blastAsset.getPxAsset();
-	m_pxFamily = m_pxManager.createFamily(familyDesc);
-	m_pxFamily->setMaterial(&m_settings.material);
+    ExtPxFamilyDesc familyDesc;
+    familyDesc.actorDesc = nullptr; // if you use it one day, consider changing code which needs getBondHealthMax() from BlastAsset.
+    familyDesc.group = desc.group;
+    familyDesc.pxAsset = m_blastAsset.getPxAsset();
+    m_pxFamily = m_pxManager.createFamily(familyDesc);
+    m_pxFamily->setMaterial(&m_settings.material);
 
 
-	m_tkFamily = &m_pxFamily->getTkFamily();
-	m_tkFamily->setID(desc.id);
+    m_tkFamily = &m_pxFamily->getTkFamily();
+    m_tkFamily->setID(desc.id);
 
-	refreshDamageAcceleratorSettings();
-	
-	m_familySize = NvBlastFamilyGetSize(m_tkFamily->getFamilyLL(), nullptr);
+    refreshDamageAcceleratorSettings();
+    
+    m_familySize = NvBlastFamilyGetSize(m_tkFamily->getFamilyLL(), nullptr);
 
-	m_pxFamily->subscribe(m_listener);
+    m_pxFamily->subscribe(m_listener);
 
-	m_initialTransform = desc.transform;
+    m_initialTransform = desc.transform;
 }
 
 void BlastFamily::updatePreSplit(float dt)
 {
-	if (!m_spawned)
-	{
-		ExtPxSpawnSettings spawnSettings = {
-			&m_physXController.getPhysXScene(),
-			m_physXController.getDefaultMaterial(),
-			RIGIDBODY_DENSITY
-		};
+    if (!m_spawned)
+    {
+        ExtPxSpawnSettings spawnSettings = {
+            &m_physXController.getPhysXScene(),
+            m_physXController.getDefaultMaterial(),
+            RIGIDBODY_DENSITY
+        };
 
-		m_pxFamily->spawn(m_initialTransform, PxVec3(1.0f), spawnSettings);
-		reloadStressSolver();
+        m_pxFamily->spawn(m_initialTransform, PxVec3(1.0f), spawnSettings);
+        reloadStressSolver();
 
-		m_spawned = true;
-	}
+        m_spawned = true;
+    }
 
-	// collect potential actors to health update
-	m_actorsToUpdateHealth.clear();
-	for (const ExtPxActor* actor : m_actors)
-	{
-		if (actor->getTkActor().isPending())
-		{
-			m_actorsToUpdateHealth.emplace(actor);
-		}
-	}
+    // collect potential actors to health update
+    m_actorsToUpdateHealth.clear();
+    for (const ExtPxActor* actor : m_actors)
+    {
+        if (actor->getTkActor().isPending())
+        {
+            m_actorsToUpdateHealth.emplace(actor);
+        }
+    }
 }
 
 void BlastFamily::updateAfterSplit(float dt)
 {
-	PROFILER_BEGIN("Actor Health Update");
-	for (const ExtPxActor* actor : m_actors)
-	{
-		onActorUpdate(*actor);
+    PROFILER_BEGIN("Actor Health Update");
+    for (const ExtPxActor* actor : m_actors)
+    {
+        onActorUpdate(*actor);
 
-		// update health if neccessary
-		if (m_actorsToUpdateHealth.find(actor) != m_actorsToUpdateHealth.end())
-		{
-			onActorHealthUpdate(*actor);
-		}
-	}
-	PROFILER_END();
+        // update health if neccessary
+        if (m_actorsToUpdateHealth.find(actor) != m_actorsToUpdateHealth.end())
+        {
+            onActorHealthUpdate(*actor);
+        }
+    }
+    PROFILER_END();
 
-	PROFILER_BEGIN("Stress Solver");
-	// update stress
-	m_stressSolveTime = 0;
-	if (m_stressSolver)
-	{
-		Time t;
-		m_stressSolver->update(m_settings.stressDamageEnabled);
-		m_stressSolveTime += t.getElapsedSeconds();
-	}
-	PROFILER_END();
+    PROFILER_BEGIN("Stress Solver");
+    // update stress
+    m_stressSolveTime = 0;
+    if (m_stressSolver)
+    {
+        Time t;
+        m_stressSolver->update(m_settings.stressDamageEnabled);
+        m_stressSolveTime += t.getElapsedSeconds();
+    }
+    PROFILER_END();
 
-	PROFILER_BEGIN("Actor Misc Update");
-	onUpdate();
-	PROFILER_END();
+    PROFILER_BEGIN("Actor Misc Update");
+    onUpdate();
+    PROFILER_END();
 
-	m_pxFamily->postSplitUpdate();
+    m_pxFamily->postSplitUpdate();
 }
 
 void BlastFamily::processActorCreated(ExtPxFamily&, ExtPxActor& actor)
 {
-	m_totalVisibleChunkCount += actor.getChunkCount();
-	m_actors.emplace(&actor);
+    m_totalVisibleChunkCount += actor.getChunkCount();
+    m_actors.emplace(&actor);
 
-	onActorCreated(actor);
-	onActorHealthUpdate(actor);
+    onActorCreated(actor);
+    onActorHealthUpdate(actor);
 }
 
 void BlastFamily::processActorDestroyed(ExtPxFamily&, ExtPxActor& actor)
 {
-	m_totalVisibleChunkCount -= actor.getChunkCount();
-	m_physXController.notifyRigidDynamicDestroyed(&actor.getPhysXActor());
+    m_totalVisibleChunkCount -= actor.getChunkCount();
+    m_physXController.notifyRigidDynamicDestroyed(&actor.getPhysXActor());
 
-	onActorDestroyed(actor);
+    onActorDestroyed(actor);
 
-	m_actors.erase(m_actors.find(&actor));
+    m_actors.erase(m_actors.find(&actor));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//													Data Helpers
+//                                                  Data Helpers
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint32_t BlastFamily::getActorCount() const
 {
-	return (uint32_t)m_tkFamily->getActorCount();
+    return (uint32_t)m_tkFamily->getActorCount();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//													  UI
+//                                                    UI
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void BlastFamily::drawUI()
 {
-	// Blast Material
-	ImGui::Spacing();
-	ImGui::Text("Blast Material:");
-	ImGui::DragFloat("Health", &m_settings.material.health);
-	ImGui::DragFloat("Min Damage Threshold", &m_settings.material.minDamageThreshold, 0.01f, 0.f, m_settings.material.maxDamageThreshold);
-	ImGui::DragFloat("Max Damage Threshold", &m_settings.material.maxDamageThreshold, 0.01f, m_settings.material.minDamageThreshold, 1.f);
+    // Blast Material
+    ImGui::Spacing();
+    ImGui::Text("Blast Material:");
+    ImGui::DragFloat("Health", &m_settings.material.health);
+    ImGui::DragFloat("Min Damage Threshold", &m_settings.material.minDamageThreshold, 0.01f, 0.f, m_settings.material.maxDamageThreshold);
+    ImGui::DragFloat("Max Damage Threshold", &m_settings.material.maxDamageThreshold, 0.01f, m_settings.material.minDamageThreshold, 1.f);
 
-	if (ImGui::Checkbox("AABB Tree (Damage Accelerator)", &m_settings.damageAcceleratorEnabled))
-	{
-		refreshDamageAcceleratorSettings();
-	}
-	if (m_settings.damageAcceleratorEnabled)
-	{
-		ImGui::DragInt("AABB Tree debug depth", &m_debugRenderDepth);
-	}
+    if (ImGui::Checkbox("AABB Tree (Damage Accelerator)", &m_settings.damageAcceleratorEnabled))
+    {
+        refreshDamageAcceleratorSettings();
+    }
+    if (m_settings.damageAcceleratorEnabled)
+    {
+        ImGui::DragInt("AABB Tree debug depth", &m_debugRenderDepth);
+    }
 
 
-	ImGui::Spacing();
+    ImGui::Spacing();
 
-	// Stress Solver Settings
-	if (ImGui::Checkbox("Stress Solver Enabled", &m_settings.stressSolverEnabled))
-	{
-		reloadStressSolver();
-	}
+    // Stress Solver Settings
+    if (ImGui::Checkbox("Stress Solver Enabled", &m_settings.stressSolverEnabled))
+    {
+        reloadStressSolver();
+    }
 
-	if (m_settings.stressSolverEnabled)
-	{
-		// Settings
-		bool changed = false;
-		
-		changed |= ImGui::DragInt("Bond Iterations Per Frame", (int*)&m_settings.stressSolverSettings.bondIterationsPerFrame, 100, 0, 500000);
-		changed |= ImGui::DragFloat("Material Hardness", &m_settings.stressSolverSettings.hardness, 10.0f, 0.01f, 100000.0f, "%.2f");
-		changed |= ImGui::DragFloat("Stress Linear Factor", &m_settings.stressSolverSettings.stressLinearFactor, 0.01f, 0.0f, 100.0f, "%.2f");
-		changed |= ImGui::DragFloat("Stress Angular Factor", &m_settings.stressSolverSettings.stressAngularFactor, 0.01f, 0.0f, 100.0f, "%.2f");
-		changed |= ImGui::SliderInt("Graph Reduction Level", (int*)&m_settings.stressSolverSettings.graphReductionLevel, 0, 32);
-		if (changed)
-		{
-			refreshStressSolverSettings();
-		}
+    if (m_settings.stressSolverEnabled)
+    {
+        // Settings
+        bool changed = false;
+        
+        changed |= ImGui::DragInt("Bond Iterations Per Frame", (int*)&m_settings.stressSolverSettings.bondIterationsPerFrame, 100, 0, 500000);
+        changed |= ImGui::DragFloat("Material Hardness", &m_settings.stressSolverSettings.hardness, 10.0f, 0.01f, 100000.0f, "%.2f");
+        changed |= ImGui::DragFloat("Stress Linear Factor", &m_settings.stressSolverSettings.stressLinearFactor, 0.01f, 0.0f, 100.0f, "%.2f");
+        changed |= ImGui::DragFloat("Stress Angular Factor", &m_settings.stressSolverSettings.stressAngularFactor, 0.01f, 0.0f, 100.0f, "%.2f");
+        changed |= ImGui::SliderInt("Graph Reduction Level", (int*)&m_settings.stressSolverSettings.graphReductionLevel, 0, 32);
+        if (changed)
+        {
+            refreshStressSolverSettings();
+        }
 
-		ImGui::Checkbox("Stress Damage Enabled", &m_settings.stressDamageEnabled);
+        ImGui::Checkbox("Stress Damage Enabled", &m_settings.stressDamageEnabled);
 
-		if (ImGui::Button("Recalculate Stress"))
-		{
-			resetStress();
-		}
-	}
+        if (ImGui::Button("Recalculate Stress"))
+        {
+            resetStress();
+        }
+    }
 }
 
 void BlastFamily::drawStatsUI()
 {
-	ImGui::PushStyleColor(ImGuiCol_Text, ImColor(10, 255, 10, 255));
-	if (m_stressSolver)
-	{
-		const ExtStressSolver& stressSolver = m_stressSolver->getSolver();
-		const float errorLinear = stressSolver.getStressErrorLinear();
-		const float errorAngular = stressSolver.getStressErrorAngular();
+    ImGui::PushStyleColor(ImGuiCol_Text, ImColor(10, 255, 10, 255));
+    if (m_stressSolver)
+    {
+        const ExtStressSolver& stressSolver = m_stressSolver->getSolver();
+        const float errorLinear = stressSolver.getStressErrorLinear();
+        const float errorAngular = stressSolver.getStressErrorAngular();
 
-		ImGui::Text("Stress Bond Count:               %d", stressSolver.getBondCount());
-		ImGui::Text("Stress Frame Iter:               %d", stressSolver.getIterationsPerFrame());
-		ImGui::Text("Stress Frames:                   %d", stressSolver.getFrameCount());
-		ImGui::Text("Stress Error Lin / Ang:          %.4f / %.4f", errorLinear, errorAngular);
-		ImGui::Text("Stress Solve Time:               %.3f ms", m_stressSolveTime * 1000);
+        ImGui::Text("Stress Bond Count:               %d", stressSolver.getBondCount());
+        ImGui::Text("Stress Frame Iter:               %d", stressSolver.getIterationsPerFrame());
+        ImGui::Text("Stress Frames:                   %d", stressSolver.getFrameCount());
+        ImGui::Text("Stress Error Lin / Ang:          %.4f / %.4f", errorLinear, errorAngular);
+        ImGui::Text("Stress Solve Time:               %.3f ms", m_stressSolveTime * 1000);
 
-		// plot errors
-		{
-			static float scale = 1.0f;
-			scale = stressSolver.getFrameCount() <= 1 ? 1.0f : scale;
-			scale = std::max<float>(scale, errorLinear);
-			scale = std::max<float>(scale, errorAngular);
+        // plot errors
+        {
+            static float scale = 1.0f;
+            scale = stressSolver.getFrameCount() <= 1 ? 1.0f : scale;
+            scale = std::max<float>(scale, errorLinear);
+            scale = std::max<float>(scale, errorAngular);
 
-			static PlotLinesInstance<> linearErrorPlot;
-			linearErrorPlot.plot("Stress Linear Error", errorLinear, "error/frame", 0.0f, 1.0f * scale);
-			static PlotLinesInstance<> angularErrorPlot;
-			angularErrorPlot.plot("Stress Angular Error", errorAngular, "error/frame", 0.0f, 1.0f * scale);
-		}
-	}
-	else
-	{
-		ImGui::Text("No Stress Solver");
-	}
-	ImGui::PopStyleColor();
+            static PlotLinesInstance<> linearErrorPlot;
+            linearErrorPlot.plot("Stress Linear Error", errorLinear, "error/frame", 0.0f, 1.0f * scale);
+            static PlotLinesInstance<> angularErrorPlot;
+            angularErrorPlot.plot("Stress Angular Error", errorAngular, "error/frame", 0.0f, 1.0f * scale);
+        }
+    }
+    else
+    {
+        ImGui::Text("No Stress Solver");
+    }
+    ImGui::PopStyleColor();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//												  Stress Solver
+//                                                Stress Solver
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void BlastFamily::setSettings(const Settings& settings)
 {
-	bool reloadStressSolverNeeded = (m_settings.stressSolverEnabled != settings.stressSolverEnabled);
+    bool reloadStressSolverNeeded = (m_settings.stressSolverEnabled != settings.stressSolverEnabled);
 
-	m_settings = settings;
-	refreshStressSolverSettings();
-	refreshDamageAcceleratorSettings();
+    m_settings = settings;
+    refreshStressSolverSettings();
+    refreshDamageAcceleratorSettings();
 
-	if (reloadStressSolverNeeded)
-	{
-		reloadStressSolver();
-	}
+    if (reloadStressSolverNeeded)
+    {
+        reloadStressSolver();
+    }
 
-	m_pxFamily->setMaterial(&m_settings.material);
+    m_pxFamily->setMaterial(&m_settings.material);
 }
 
 void BlastFamily::refreshDamageAcceleratorSettings()
 {
-	m_pxFamily->getPxAsset().setAccelerator(m_settings.damageAcceleratorEnabled ? m_blastAsset.getAccelerator() : nullptr);
+    m_pxFamily->getPxAsset().setAccelerator(m_settings.damageAcceleratorEnabled ? m_blastAsset.getAccelerator() : nullptr);
 }
 
 void BlastFamily::refreshStressSolverSettings()
 {
-	if (m_stressSolver)
-	{
-		m_stressSolver->getSolver().setSettings(m_settings.stressSolverSettings);
-	}
+    if (m_stressSolver)
+    {
+        m_stressSolver->getSolver().setSettings(m_settings.stressSolverSettings);
+    }
 }
 
 void BlastFamily::resetStress()
 {
-	if (m_stressSolver)
-	{
-		m_stressSolver->getSolver().reset();
-	}
+    if (m_stressSolver)
+    {
+        m_stressSolver->getSolver().reset();
+    }
 }
 
 void BlastFamily::reloadStressSolver()
 {
-	if (m_stressSolver)
-	{
-		m_stressSolver->release();
-		m_stressSolver = nullptr;
-	}
+    if (m_stressSolver)
+    {
+        m_stressSolver->release();
+        m_stressSolver = nullptr;
+    }
 
-	if (m_settings.stressSolverEnabled)
-	{
-		m_stressSolver = ExtPxStressSolver::create(*m_pxFamily, m_settings.stressSolverSettings);
-		m_pxFamily->userData = m_stressSolver;
-	}
+    if (m_settings.stressSolverEnabled)
+    {
+        m_stressSolver = ExtPxStressSolver::create(*m_pxFamily, m_settings.stressSolverSettings);
+        m_pxFamily->userData = m_stressSolver;
+    }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//												  debug render
+//                                                debug render
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const DirectX::XMFLOAT4 BOND_NORMAL_COLOR(0.0f, 0.8f, 1.0f, 1.0f);
@@ -355,235 +355,235 @@ const DirectX::XMFLOAT4 JOINT_COLOR(0.5f, 0.6f, 7.0f, 1.0f);
 
 inline void pushCentroid(std::vector<PxDebugLine>& lines, PxVec3 pos, PxU32 color, const float& area, const PxVec3& normal)
 {
-	// draw square of area 'area' rotated by normal
-	{
-		// build world rotation
-		PxVec3 n0(0, 0, 1);
-		PxVec3 n1 = normal;
-		PxVec3 axis = n0.cross(n1);
-		float d = n0.dot(n1);
-		PxQuat q(axis.x, axis.y, axis.z, 1.f + d);
-		q.normalize();
-		float e = PxSqrt(1.0f / 2.0f);
-		float r = PxSqrt(area);
+    // draw square of area 'area' rotated by normal
+    {
+        // build world rotation
+        PxVec3 n0(0, 0, 1);
+        PxVec3 n1 = normal;
+        PxVec3 axis = n0.cross(n1);
+        float d = n0.dot(n1);
+        PxQuat q(axis.x, axis.y, axis.z, 1.f + d);
+        q.normalize();
+        float e = PxSqrt(1.0f / 2.0f);
+        float r = PxSqrt(area);
 
-		// transform all 4 square points
-		PxTransform t(pos, q);
-		PxVec3 p0 = t.transform(PxVec3(-e,  e, 0) * r);
-		PxVec3 p1 = t.transform(PxVec3( e,  e, 0) * r);
-		PxVec3 p2 = t.transform(PxVec3( e, -e, 0) * r);
-		PxVec3 p3 = t.transform(PxVec3(-e, -e, 0) * r);
+        // transform all 4 square points
+        PxTransform t(pos, q);
+        PxVec3 p0 = t.transform(PxVec3(-e,  e, 0) * r);
+        PxVec3 p1 = t.transform(PxVec3( e,  e, 0) * r);
+        PxVec3 p2 = t.transform(PxVec3( e, -e, 0) * r);
+        PxVec3 p3 = t.transform(PxVec3(-e, -e, 0) * r);
 
-		// push square edges
-		lines.push_back(PxDebugLine(p0, p1, color));
-		lines.push_back(PxDebugLine(p3, p2, color));
-		lines.push_back(PxDebugLine(p1, p2, color));
-		lines.push_back(PxDebugLine(p0, p3, color));
-	}
+        // push square edges
+        lines.push_back(PxDebugLine(p0, p1, color));
+        lines.push_back(PxDebugLine(p3, p2, color));
+        lines.push_back(PxDebugLine(p1, p2, color));
+        lines.push_back(PxDebugLine(p0, p3, color));
+    }
 
-	// draw normal
-	lines.push_back(PxDebugLine(pos, pos + normal * 0.5f, XMFLOAT4ToU32Color(BOND_NORMAL_COLOR)));
+    // draw normal
+    lines.push_back(PxDebugLine(pos, pos + normal * 0.5f, XMFLOAT4ToU32Color(BOND_NORMAL_COLOR)));
 }
 
 inline DirectX::XMFLOAT4 bondHealthColor(float healthFraction)
 {
-	const DirectX::XMFLOAT4 BOND_HEALTHY_COLOR(0.0f, 1.0f, 0.0f, 1.0f);
-	const DirectX::XMFLOAT4 BOND_MID_COLOR(1.0f, 1.0f, 0.0f, 1.0f);
-	const DirectX::XMFLOAT4 BOND_BROKEN_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
+    const DirectX::XMFLOAT4 BOND_HEALTHY_COLOR(0.0f, 1.0f, 0.0f, 1.0f);
+    const DirectX::XMFLOAT4 BOND_MID_COLOR(1.0f, 1.0f, 0.0f, 1.0f);
+    const DirectX::XMFLOAT4 BOND_BROKEN_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
 
-	return healthFraction < 0.5 ? XMFLOAT4Lerp(BOND_BROKEN_COLOR, BOND_MID_COLOR, 2.0f * healthFraction) : XMFLOAT4Lerp(BOND_MID_COLOR, BOND_HEALTHY_COLOR, 2.0f * healthFraction - 1.0f);
+    return healthFraction < 0.5 ? XMFLOAT4Lerp(BOND_BROKEN_COLOR, BOND_MID_COLOR, 2.0f * healthFraction) : XMFLOAT4Lerp(BOND_MID_COLOR, BOND_HEALTHY_COLOR, 2.0f * healthFraction - 1.0f);
 }
 
 void BlastFamily::fillDebugRender(DebugRenderBuffer& debugRenderBuffer, DebugRenderMode mode, float renderScale)
 {
-	const NvBlastChunk* chunks = m_tkFamily->getAsset()->getChunks();
-	const NvBlastBond* bonds = m_tkFamily->getAsset()->getBonds();
-	const NvBlastSupportGraph graph = m_tkFamily->getAsset()->getGraph();
-	const float bondHealthMax = m_blastAsset.getBondHealthMax();
-	const uint32_t chunkCount = m_tkFamily->getAsset()->getChunkCount();
+    const NvBlastChunk* chunks = m_tkFamily->getAsset()->getChunks();
+    const NvBlastBond* bonds = m_tkFamily->getAsset()->getBonds();
+    const NvBlastSupportGraph graph = m_tkFamily->getAsset()->getGraph();
+    const float bondHealthMax = m_blastAsset.getBondHealthMax();
+    const uint32_t chunkCount = m_tkFamily->getAsset()->getChunkCount();
 
-	for (const ExtPxActor* pxActor : m_actors)
-	{
-		TkActor& actor = pxActor->getTkActor();
-		uint32_t lineStartIndex = (uint32_t)debugRenderBuffer.m_lines.size();
+    for (const ExtPxActor* pxActor : m_actors)
+    {
+        TkActor& actor = pxActor->getTkActor();
+        uint32_t lineStartIndex = (uint32_t)debugRenderBuffer.m_lines.size();
 
-		uint32_t nodeCount = actor.getGraphNodeCount();
-		if (nodeCount == 0) // subsupport chunks don't have graph nodes
-			continue;
+        uint32_t nodeCount = actor.getGraphNodeCount();
+        if (nodeCount == 0) // subsupport chunks don't have graph nodes
+            continue;
 
-		std::vector<uint32_t> nodes(nodeCount);
-		actor.getGraphNodeIndices(nodes.data(), static_cast<uint32_t>(nodes.size()));
+        std::vector<uint32_t> nodes(nodeCount);
+        actor.getGraphNodeIndices(nodes.data(), static_cast<uint32_t>(nodes.size()));
 
-		if (DEBUG_RENDER_HEALTH_GRAPH <= mode && mode <= DEBUG_RENDER_HEALTH_GRAPH_CENTROIDS)
-		{
-			const float* bondHealths = actor.getBondHealths();
+        if (DEBUG_RENDER_HEALTH_GRAPH <= mode && mode <= DEBUG_RENDER_HEALTH_GRAPH_CENTROIDS)
+        {
+            const float* bondHealths = actor.getBondHealths();
 
-			const ExtPxChunk* pxChunks = m_blastAsset.getPxAsset()->getChunks();
+            const ExtPxChunk* pxChunks = m_blastAsset.getPxAsset()->getChunks();
 
-			for (uint32_t node0 : nodes)
-			{
-				const uint32_t chunkIndex0 = graph.chunkIndices[node0];
-				const NvBlastChunk& blastChunk0 = chunks[chunkIndex0];
-				const ExtPxChunk& assetChunk0 = pxChunks[chunkIndex0];
+            for (uint32_t node0 : nodes)
+            {
+                const uint32_t chunkIndex0 = graph.chunkIndices[node0];
+                const NvBlastChunk& blastChunk0 = chunks[chunkIndex0];
+                const ExtPxChunk& assetChunk0 = pxChunks[chunkIndex0];
 
-				for (uint32_t adjacencyIndex = graph.adjacencyPartition[node0]; adjacencyIndex < graph.adjacencyPartition[node0 + 1]; adjacencyIndex++)
-				{
-					uint32_t node1 = graph.adjacentNodeIndices[adjacencyIndex];
-					const uint32_t chunkIndex1 = graph.chunkIndices[node1];
-					const NvBlastChunk& blastChunk1 = chunks[chunkIndex1];
-					const ExtPxChunk& assetChunk1 = pxChunks[chunkIndex1];
-					if (node0 > node1)
-						continue;
+                for (uint32_t adjacencyIndex = graph.adjacencyPartition[node0]; adjacencyIndex < graph.adjacencyPartition[node0 + 1]; adjacencyIndex++)
+                {
+                    uint32_t node1 = graph.adjacentNodeIndices[adjacencyIndex];
+                    const uint32_t chunkIndex1 = graph.chunkIndices[node1];
+                    const NvBlastChunk& blastChunk1 = chunks[chunkIndex1];
+                    const ExtPxChunk& assetChunk1 = pxChunks[chunkIndex1];
+                    if (node0 > node1)
+                        continue;
 
-					bool invisibleBond = chunkIndex0 >= chunkCount || chunkIndex1 >= chunkCount || assetChunk0.subchunkCount == 0 || assetChunk1.subchunkCount == 0;
+                    bool invisibleBond = chunkIndex0 >= chunkCount || chunkIndex1 >= chunkCount || assetChunk0.subchunkCount == 0 || assetChunk1.subchunkCount == 0;
 
-					// health
-					uint32_t bondIndex = graph.adjacentBondIndices[adjacencyIndex];
-					float healthVal = PxClamp(bondHealths[bondIndex] / bondHealthMax, 0.0f, 1.0f);
+                    // health
+                    uint32_t bondIndex = graph.adjacentBondIndices[adjacencyIndex];
+                    float healthVal = PxClamp(bondHealths[bondIndex] / bondHealthMax, 0.0f, 1.0f);
 
-					DirectX::XMFLOAT4 color = bondHealthColor(healthVal);
+                    DirectX::XMFLOAT4 color = bondHealthColor(healthVal);
 
-					const NvBlastBond& solverBond = bonds[bondIndex];
-					const PxVec3& centroid = reinterpret_cast<const PxVec3&>(solverBond.centroid);
+                    const NvBlastBond& solverBond = bonds[bondIndex];
+                    const PxVec3& centroid = reinterpret_cast<const PxVec3&>(solverBond.centroid);
 
-					// centroid
-					if (mode == DEBUG_RENDER_HEALTH_GRAPH_CENTROIDS || mode == DEBUG_RENDER_CENTROIDS)
-					{
-						const PxVec3& normal = reinterpret_cast<const PxVec3&>(solverBond.normal);
-						pushCentroid(debugRenderBuffer.m_lines, centroid, XMFLOAT4ToU32Color(invisibleBond ? BOND_INVISIBLE_COLOR : color), solverBond.area, normal.getNormalized());
-					}
+                    // centroid
+                    if (mode == DEBUG_RENDER_HEALTH_GRAPH_CENTROIDS || mode == DEBUG_RENDER_CENTROIDS)
+                    {
+                        const PxVec3& normal = reinterpret_cast<const PxVec3&>(solverBond.normal);
+                        pushCentroid(debugRenderBuffer.m_lines, centroid, XMFLOAT4ToU32Color(invisibleBond ? BOND_INVISIBLE_COLOR : color), solverBond.area, normal.getNormalized());
+                    }
 
-					// chunk connection (bond)
-					if ((mode == DEBUG_RENDER_HEALTH_GRAPH || mode == DEBUG_RENDER_HEALTH_GRAPH_CENTROIDS) && !invisibleBond)
-					{
-						const PxVec3& c0 = reinterpret_cast<const PxVec3&>(blastChunk0.centroid);
-						const PxVec3& c1 = reinterpret_cast<const PxVec3&>(blastChunk1.centroid);
-						debugRenderBuffer.m_lines.push_back(PxDebugLine(c0, c1, XMFLOAT4ToU32Color(color)));
-					}
-				}
-			}
-		}
+                    // chunk connection (bond)
+                    if ((mode == DEBUG_RENDER_HEALTH_GRAPH || mode == DEBUG_RENDER_HEALTH_GRAPH_CENTROIDS) && !invisibleBond)
+                    {
+                        const PxVec3& c0 = reinterpret_cast<const PxVec3&>(blastChunk0.centroid);
+                        const PxVec3& c1 = reinterpret_cast<const PxVec3&>(blastChunk1.centroid);
+                        debugRenderBuffer.m_lines.push_back(PxDebugLine(c0, c1, XMFLOAT4ToU32Color(color)));
+                    }
+                }
+            }
+        }
 
-		// stress
-		if (DEBUG_RENDER_STRESS_GRAPH <= mode && mode <= DEBUG_RENDER_STRESS_GRAPH_BONDS_IMPULSES)
-		{
-			if (m_stressSolver)
-			{
-				const auto buffer = m_stressSolver->getSolver().fillDebugRender(nodes.data(), (uint32_t)nodes.size(), (ExtStressSolver::DebugRenderMode)(mode - DEBUG_RENDER_STRESS_GRAPH), renderScale);
-				if (buffer.lineCount)
-				{
-					const auto lines = reinterpret_cast<const PxDebugLine*>(buffer.lines);
-					debugRenderBuffer.m_lines.insert(debugRenderBuffer.m_lines.end(), lines, lines + buffer.lineCount);
-				}
-			}
-		}
+        // stress
+        if (DEBUG_RENDER_STRESS_GRAPH <= mode && mode <= DEBUG_RENDER_STRESS_GRAPH_BONDS_IMPULSES)
+        {
+            if (m_stressSolver)
+            {
+                const auto buffer = m_stressSolver->getSolver().fillDebugRender(nodes.data(), (uint32_t)nodes.size(), (ExtStressSolver::DebugRenderMode)(mode - DEBUG_RENDER_STRESS_GRAPH), renderScale);
+                if (buffer.lineCount)
+                {
+                    const auto lines = reinterpret_cast<const PxDebugLine*>(buffer.lines);
+                    debugRenderBuffer.m_lines.insert(debugRenderBuffer.m_lines.end(), lines, lines + buffer.lineCount);
+                }
+            }
+        }
 
-		// AABB tree
-		if (mode == DEBUG_RENDER_AABB_TREE_CENTROIDS || mode == DEBUG_RENDER_AABB_TREE_SEGMENTS)
-		{
-			if (m_settings.damageAcceleratorEnabled && m_blastAsset.getAccelerator() && nodeCount > graph.nodeCount / 2)
-			{
-				const auto buffer = m_blastAsset.getAccelerator()->fillDebugRender(m_debugRenderDepth, mode == DEBUG_RENDER_AABB_TREE_SEGMENTS);
-				if (buffer.lineCount)
-				{
-					const auto lines = reinterpret_cast<const PxDebugLine*>(buffer.lines);
-					debugRenderBuffer.m_lines.insert(debugRenderBuffer.m_lines.end(), lines, lines + buffer.lineCount);
-				}
-			}
-		}
+        // AABB tree
+        if (mode == DEBUG_RENDER_AABB_TREE_CENTROIDS || mode == DEBUG_RENDER_AABB_TREE_SEGMENTS)
+        {
+            if (m_settings.damageAcceleratorEnabled && m_blastAsset.getAccelerator() && nodeCount > graph.nodeCount / 2)
+            {
+                const auto buffer = m_blastAsset.getAccelerator()->fillDebugRender(m_debugRenderDepth, mode == DEBUG_RENDER_AABB_TREE_SEGMENTS);
+                if (buffer.lineCount)
+                {
+                    const auto lines = reinterpret_cast<const PxDebugLine*>(buffer.lines);
+                    debugRenderBuffer.m_lines.insert(debugRenderBuffer.m_lines.end(), lines, lines + buffer.lineCount);
+                }
+            }
+        }
 
-		// transform all added lines from local to global
-		PxTransform localToGlobal = pxActor->getPhysXActor().getGlobalPose();
-		for (uint32_t i = lineStartIndex; i < debugRenderBuffer.m_lines.size(); i++)
-		{
-			PxDebugLine& line = debugRenderBuffer.m_lines[i];
-			line.pos0 = localToGlobal.transform(line.pos0);
-			line.pos1 = localToGlobal.transform(line.pos1);
-		}
-	}
+        // transform all added lines from local to global
+        PxTransform localToGlobal = pxActor->getPhysXActor().getGlobalPose();
+        for (uint32_t i = lineStartIndex; i < debugRenderBuffer.m_lines.size(); i++)
+        {
+            PxDebugLine& line = debugRenderBuffer.m_lines[i];
+            line.pos0 = localToGlobal.transform(line.pos0);
+            line.pos1 = localToGlobal.transform(line.pos1);
+        }
+    }
 
-	// joints debug render
-	if (mode == DEBUG_RENDER_JOINTS)
-	{
-		for (const ExtPxActor* pxActor : m_actors)
-		{
-			TkActor& actor = pxActor->getTkActor();
-			const uint32_t jointCount = actor.getJointCount();
-			if (jointCount > 0)
-			{
-				std::vector<TkJoint*> joints(jointCount);
-				actor.getJoints(joints.data(), jointCount);
-				for (auto joint : joints)
-				{
-					PxJoint* pxJoint = reinterpret_cast<PxJoint*>(joint->userData);
-					if (pxJoint)
-					{
-						PxRigidActor *actor0, *actor1;
-						pxJoint->getActors(actor0, actor1);
-						auto lp0 = pxJoint->getLocalPose(PxJointActorIndex::eACTOR0);
-						auto lp1 = pxJoint->getLocalPose(PxJointActorIndex::eACTOR1);
-						PxVec3 p0 = actor0 ? actor0->getGlobalPose().transform(lp0).p : lp0.p;
-						PxVec3 p1 = actor1 ? actor1->getGlobalPose().transform(lp1).p : lp1.p;
-						debugRenderBuffer.m_lines.push_back(PxDebugLine(p0, p1, XMFLOAT4ToU32Color(JOINT_COLOR)));
-					}
-				}
-			}
-		}
-	}
+    // joints debug render
+    if (mode == DEBUG_RENDER_JOINTS)
+    {
+        for (const ExtPxActor* pxActor : m_actors)
+        {
+            TkActor& actor = pxActor->getTkActor();
+            const uint32_t jointCount = actor.getJointCount();
+            if (jointCount > 0)
+            {
+                std::vector<TkJoint*> joints(jointCount);
+                actor.getJoints(joints.data(), jointCount);
+                for (auto joint : joints)
+                {
+                    PxJoint* pxJoint = reinterpret_cast<PxJoint*>(joint->userData);
+                    if (pxJoint)
+                    {
+                        PxRigidActor *actor0, *actor1;
+                        pxJoint->getActors(actor0, actor1);
+                        auto lp0 = pxJoint->getLocalPose(PxJointActorIndex::eACTOR0);
+                        auto lp1 = pxJoint->getLocalPose(PxJointActorIndex::eACTOR1);
+                        PxVec3 p0 = actor0 ? actor0->getGlobalPose().transform(lp0).p : lp0.p;
+                        PxVec3 p1 = actor1 ? actor1->getGlobalPose().transform(lp1).p : lp1.p;
+                        debugRenderBuffer.m_lines.push_back(PxDebugLine(p0, p1, XMFLOAT4ToU32Color(JOINT_COLOR)));
+                    }
+                }
+            }
+        }
+    }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//														action!!!
+//                                                      action!!!
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class BlastOverlapCallback : public PxOverlapCallback
 {
 public:
-	BlastOverlapCallback(ExtPxManager& pxManager, std::set<ExtPxActor*>& actorBuffer)
-		: m_pxManager(pxManager), m_actorBuffer(actorBuffer), PxOverlapCallback(m_hitBuffer, sizeof(m_hitBuffer) / sizeof(m_hitBuffer[0])) {}
+    BlastOverlapCallback(ExtPxManager& pxManager, std::set<ExtPxActor*>& actorBuffer)
+        : m_pxManager(pxManager), m_actorBuffer(actorBuffer), PxOverlapCallback(m_hitBuffer, sizeof(m_hitBuffer) / sizeof(m_hitBuffer[0])) {}
 
-	PxAgain processTouches(const PxOverlapHit* buffer, PxU32 nbHits)
-	{
-		for (PxU32 i = 0; i < nbHits; ++i)
-		{
-			PxRigidDynamic* rigidDynamic = buffer[i].actor->is<PxRigidDynamic>();
-			if (rigidDynamic)
-			{
-				ExtPxActor* actor = m_pxManager.getActorFromPhysXActor(*rigidDynamic);
-				if (actor != nullptr)
-				{
-					m_actorBuffer.insert(actor);
-				}
-			}
-		}
-		return true;
-	}
+    PxAgain processTouches(const PxOverlapHit* buffer, PxU32 nbHits)
+    {
+        for (PxU32 i = 0; i < nbHits; ++i)
+        {
+            PxRigidDynamic* rigidDynamic = buffer[i].actor->is<PxRigidDynamic>();
+            if (rigidDynamic)
+            {
+                ExtPxActor* actor = m_pxManager.getActorFromPhysXActor(*rigidDynamic);
+                if (actor != nullptr)
+                {
+                    m_actorBuffer.insert(actor);
+                }
+            }
+        }
+        return true;
+    }
 
 private:
-	ExtPxManager&						m_pxManager;
-	std::set<ExtPxActor*>&				m_actorBuffer;
-	PxOverlapHit						m_hitBuffer[1000];
+    ExtPxManager&                       m_pxManager;
+    std::set<ExtPxActor*>&              m_actorBuffer;
+    PxOverlapHit                        m_hitBuffer[1000];
 };
 
 bool BlastFamily::overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*, BlastFamily&)> hitCall)
 {
-	std::set<ExtPxActor*> actorsToDamage;
+    std::set<ExtPxActor*> actorsToDamage;
 #if 1
-	BlastOverlapCallback overlapCallback(m_pxManager, actorsToDamage);
-	m_physXController.getPhysXScene().overlap(geometry, pose, overlapCallback);
+    BlastOverlapCallback overlapCallback(m_pxManager, actorsToDamage);
+    m_physXController.getPhysXScene().overlap(geometry, pose, overlapCallback);
 #else
-	for (std::map<NvBlastActor*, PhysXController::Actor*>::iterator it = m_actorsMap.begin(); it != m_actorsMap.end(); it++)
-	{
-		actorsToDamage.insert(it->first);
-	}
+    for (std::map<NvBlastActor*, PhysXController::Actor*>::iterator it = m_actorsMap.begin(); it != m_actorsMap.end(); it++)
+    {
+        actorsToDamage.insert(it->first);
+    }
 #endif
 
-	for (auto actor : actorsToDamage)
-	{
-		hitCall(actor, *this);
-	}
+    for (auto actor : actorsToDamage)
+    {
+        hitCall(actor, *this);
+    }
 
-	return !actorsToDamage.empty();
+    return !actorsToDamage.empty();
 }
 

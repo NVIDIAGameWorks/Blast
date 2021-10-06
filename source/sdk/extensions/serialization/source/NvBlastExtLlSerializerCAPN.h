@@ -49,25 +49,25 @@ namespace Blast
 template<>
 NV_INLINE bool ExtSerializationCAPN<Asset, Serialization::Asset::Reader, Serialization::Asset::Builder>::serializeIntoBuilder(Serialization::Asset::Builder& assetBuilder, const Asset* asset)
 {
-	return AssetDTO::serialize(assetBuilder, asset);
+    return AssetDTO::serialize(assetBuilder, asset);
 }
 
 
 template<>
 NV_INLINE bool ExtSerializationCAPN<Asset, Serialization::Asset::Reader, Serialization::Asset::Builder>::serializeIntoMessage(capnp::MallocMessageBuilder& message, const Asset* asset)
 {
-	Serialization::Asset::Builder assetBuilder = message.initRoot<Serialization::Asset>();
+    Serialization::Asset::Builder assetBuilder = message.initRoot<Serialization::Asset>();
 
-	return serializeIntoBuilder(assetBuilder, asset);
+    return serializeIntoBuilder(assetBuilder, asset);
 }
 
 
 template<>
 NV_INLINE Asset* ExtSerializationCAPN<Asset, Serialization::Asset::Reader, Serialization::Asset::Builder>::deserializeFromStreamReader(capnp::InputStreamMessageReader &message)
 {
-	Serialization::Asset::Reader reader = message.getRoot<Serialization::Asset>();
+    Serialization::Asset::Reader reader = message.getRoot<Serialization::Asset>();
 
-	return AssetDTO::deserialize(reader);
+    return AssetDTO::deserialize(reader);
 }
 
 //// Nv::Blast::FamilyHeader ////
@@ -75,26 +75,26 @@ NV_INLINE Asset* ExtSerializationCAPN<Asset, Serialization::Asset::Reader, Seria
 template<>
 NV_INLINE bool ExtSerializationCAPN<FamilyHeader, Serialization::Family::Reader, Serialization::Family::Builder>::serializeIntoBuilder(Serialization::Family::Builder& familyBuilder, const FamilyHeader* family)
 {
-	return FamilyDTO::serialize(familyBuilder, family);
+    return FamilyDTO::serialize(familyBuilder, family);
 }
 
 
 template<>
 NV_INLINE bool ExtSerializationCAPN<FamilyHeader, Serialization::Family::Reader, Serialization::Family::Builder>::serializeIntoMessage(capnp::MallocMessageBuilder& message, const FamilyHeader* family)
 {
-	Serialization::Family::Builder familyBuilder = message.initRoot<Serialization::Family>();
+    Serialization::Family::Builder familyBuilder = message.initRoot<Serialization::Family>();
 
-	return serializeIntoBuilder(familyBuilder, family);
+    return serializeIntoBuilder(familyBuilder, family);
 }
 
 
 template<>
 NV_INLINE FamilyHeader* ExtSerializationCAPN<FamilyHeader, Serialization::Family::Reader, Serialization::Family::Builder>::deserializeFromStreamReader(capnp::InputStreamMessageReader &message)
 {
-	Serialization::Family::Reader reader = message.getRoot<Serialization::Family>();
+    Serialization::Family::Reader reader = message.getRoot<Serialization::Family>();
 
-	return FamilyDTO::deserialize(reader);
+    return FamilyDTO::deserialize(reader);
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

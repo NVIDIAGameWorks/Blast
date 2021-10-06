@@ -36,7 +36,7 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//	NvBlast common types
+//  NvBlast common types
 ///////////////////////////////////////////////////////////////////////////////
 ///@{
 
@@ -45,13 +45,13 @@ Types of log messages.
 */
 struct NvBlastMessage
 {
-	enum Type
-	{
-		Error,		//!< Error messages
-		Warning,	//!< Warning messages
-		Info,		//!< Information messages
-		Debug		//!< Used only in debug version of dll
-	};
+    enum Type
+    {
+        Error,      //!< Error messages
+        Warning,    //!< Warning messages
+        Info,       //!< Information messages
+        Debug       //!< Used only in debug version of dll
+    };
 };
 
 
@@ -69,7 +69,7 @@ ID used to identify assets.
 */
 struct NvBlastID
 {
-	char data[16];
+    char data[16];
 };
 
 
@@ -85,11 +85,11 @@ with NvBlastTimersReset to initialize or reset.
 */
 struct NvBlastTimers
 {
-	int64_t  material;		//!< Time spent in material function
-	int64_t  fracture;		//!< Time spent applying damage
-	int64_t  island;		//!< Time spent discovering islands
-	int64_t  partition;		//!< Time spent partitioning the graph
-	int64_t  visibility;	//!< Time spent updating visibility
+    int64_t  material;      //!< Time spent in material function
+    int64_t  fracture;      //!< Time spent applying damage
+    int64_t  island;        //!< Time spent discovering islands
+    int64_t  partition;     //!< Time spent partitioning the graph
+    int64_t  visibility;    //!< Time spent updating visibility
 };
 
 
@@ -98,47 +98,47 @@ Generic data block header for all data blocks.
 */
 struct NvBlastDataBlock
 {
-	/**
-	Enum of data block types
-	*/
-	enum Type
-	{
-		AssetDataBlock,
-		FamilyDataBlock,
+    /**
+    Enum of data block types
+    */
+    enum Type
+    {
+        AssetDataBlock,
+        FamilyDataBlock,
 
-		Count
-	};
+        Count
+    };
 
 
-	/**
-	A data type keeps value from Type enum
-	*/
-	uint32_t	dataType;
+    /**
+    A data type keeps value from Type enum
+    */
+    uint32_t    dataType;
 
-	/**
-	A number which is incremented every time the data layout changes. Depending on dataType corresponding	data 
-	format is kept. See NvBlastAssetDataFormat, NvBlastFamilyDataFormat enum.
-	*/
-	uint32_t	formatVersion;
+    /**
+    A number which is incremented every time the data layout changes. Depending on dataType corresponding   data 
+    format is kept. See NvBlastAssetDataFormat, NvBlastFamilyDataFormat enum.
+    */
+    uint32_t    formatVersion;
 
-	/**
-	The size of the family, including this header.
+    /**
+    The size of the family, including this header.
 
-	Memory sizes are restricted to 32-bit representable values.
-	*/
-	uint32_t	size;
+    Memory sizes are restricted to 32-bit representable values.
+    */
+    uint32_t    size;
 
-	/**
-	Reserved to be possibly used in future versions
-	*/
-	uint32_t	reserved;
+    /**
+    Reserved to be possibly used in future versions
+    */
+    uint32_t    reserved;
 };
 
 ///@} End NvBlast common types
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//	NvBlastAsset related types
+//  NvBlastAsset related types
 ///////////////////////////////////////////////////////////////////////////////
 ///@{
 
@@ -152,35 +152,35 @@ Child chunk indices are contiguous, starting at firstChildIndex and ending with 
 */
 struct NvBlastChunk
 {
-	/**
-	Central position for the chunk's volume
-	*/
-	float		centroid[3];
+    /**
+    Central position for the chunk's volume
+    */
+    float       centroid[3];
 
-	/**
-	Volume of the chunk
-	*/
-	float		volume;
+    /**
+    Volume of the chunk
+    */
+    float       volume;
 
-	/**
-	Index of parent (UINT32_MAX denotes no parent)
-	*/
-	uint32_t	parentChunkIndex;
+    /**
+    Index of parent (UINT32_MAX denotes no parent)
+    */
+    uint32_t    parentChunkIndex;
 
-	/**
-	Index of first child
-	*/
-	uint32_t	firstChildIndex;
+    /**
+    Index of first child
+    */
+    uint32_t    firstChildIndex;
 
-	/**
-	Stop for child indices
-	*/
-	uint32_t	childIndexStop;
+    /**
+    Stop for child indices
+    */
+    uint32_t    childIndexStop;
 
-	/**
-	Field for user to associate with external data
-	*/
-	uint32_t	userData;
+    /**
+    Field for user to associate with external data
+    */
+    uint32_t    userData;
 };
 
 
@@ -189,25 +189,25 @@ Represents the interface between two chunks.  At most one bond is created for a 
 */
 struct NvBlastBond
 {
-	/**
-	Interface average normal
-	*/
-	float		normal[3];
+    /**
+    Interface average normal
+    */
+    float       normal[3];
 
-	/**
-	Area of interface
-	*/
-	float		area;
+    /**
+    Area of interface
+    */
+    float       area;
 
-	/**
-	Central position on the interface between chunks
-	*/
-	float		centroid[3];
+    /**
+    Central position on the interface between chunks
+    */
+    float       centroid[3];
 
-	/**
-	Extra data associated with bond, e.g. whether or not to create a joint
-	*/
-	uint32_t	userData;
+    /**
+    Extra data associated with bond, e.g. whether or not to create a joint
+    */
+    uint32_t    userData;
 };
 
 
@@ -225,53 +225,53 @@ arrays are twice the number of bonds stored in the corresponding NvBlastAsset.
 The graph is used as follows.  Given a NvBlastSupportGraph "graph" and node index i, (0 <= i < graph.nodeCount), one may find all
 adjacent bonds and nodes using:
 
-	// adj is the lookup value in graph.adjacentNodeIndices and graph.adjacentBondIndices
-	for (uint32_t adj = graph.adjacencyPartition[i]; adj < graph.adjacencyPartition[i+1]; ++adj)
-	{
-		// An adjacent node:
-		uint32_t adjacentNodeIndex = graph.adjacentNodeIndices[adj];
-	
-		// The corresponding bond (that connects node index i with node indexed adjacentNodeIndex:
-		uint32_t adjacentBondIndex = graph.adjacentBondIndices[adj];
-	}
+    // adj is the lookup value in graph.adjacentNodeIndices and graph.adjacentBondIndices
+    for (uint32_t adj = graph.adjacencyPartition[i]; adj < graph.adjacencyPartition[i+1]; ++adj)
+    {
+        // An adjacent node:
+        uint32_t adjacentNodeIndex = graph.adjacentNodeIndices[adj];
+    
+        // The corresponding bond (that connects node index i with node indexed adjacentNodeIndex:
+        uint32_t adjacentBondIndex = graph.adjacentBondIndices[adj];
+    }
 
 For a graph node with index i, the corresponding asset chunk index is found using graph.chunkIndices[i].  The reverse mapping
 (obtaining a graph node index from an asset chunk index) can be done using the
 
-	NvBlastAssetGetChunkToGraphNodeMap(asset, logFn)
+    NvBlastAssetGetChunkToGraphNodeMap(asset, logFn)
 
 function.  See the documentation for its use.  The returned "node index" for a non-support chunk is the invalid value 0xFFFFFFFF.
 */
 struct NvBlastSupportGraph
 {
-	/**
-	Total number of nodes in the support graph.
-	*/
-	uint32_t	nodeCount;
+    /**
+    Total number of nodes in the support graph.
+    */
+    uint32_t    nodeCount;
 
-	/**
-	Indices of chunks represented by the nodes, an array of size nodeCount.
-	*/
-	uint32_t*	chunkIndices;
+    /**
+    Indices of chunks represented by the nodes, an array of size nodeCount.
+    */
+    uint32_t*   chunkIndices;
 
-	/**
-	Partitions both the adjacentNodeIndices and the adjacentBondIndices arrays into subsets corresponding to each node.
-	The size of this array is nodeCount+1.
-	For 0 <= i < nodeCount, adjacencyPartition[i] is the index of the first element in adjacentNodeIndices (or adjacentBondIndices) for nodes adjacent to the node with index i.
-	adjacencyPartition[nodeCount] is the size of the adjacentNodeIndices and adjacentBondIndices arrays.
-	This allows one to easily count the number of nodes adjacent to a node with index i, using adjacencyPartition[i+1] - adjacencyPartition[i].
-	*/
-	uint32_t*	adjacencyPartition;
+    /**
+    Partitions both the adjacentNodeIndices and the adjacentBondIndices arrays into subsets corresponding to each node.
+    The size of this array is nodeCount+1.
+    For 0 <= i < nodeCount, adjacencyPartition[i] is the index of the first element in adjacentNodeIndices (or adjacentBondIndices) for nodes adjacent to the node with index i.
+    adjacencyPartition[nodeCount] is the size of the adjacentNodeIndices and adjacentBondIndices arrays.
+    This allows one to easily count the number of nodes adjacent to a node with index i, using adjacencyPartition[i+1] - adjacencyPartition[i].
+    */
+    uint32_t*   adjacencyPartition;
 
-	/**
-	Array composed of subarrays holding the indices of nodes adjacent to a given node.  The subarrays may be accessed through the adjacencyPartition array.
-	*/
-	uint32_t*	adjacentNodeIndices;
+    /**
+    Array composed of subarrays holding the indices of nodes adjacent to a given node.  The subarrays may be accessed through the adjacencyPartition array.
+    */
+    uint32_t*   adjacentNodeIndices;
 
-	/**
-	Array composed of subarrays holding the indices of bonds (NvBlastBond) for a given node.  The subarrays may be accessed through the adjacencyPartition array.
-	*/
-	uint32_t*	adjacentBondIndices;
+    /**
+    Array composed of subarrays holding the indices of bonds (NvBlastBond) for a given node.  The subarrays may be accessed through the adjacencyPartition array.
+    */
+    uint32_t*   adjacentBondIndices;
 };
 
 
@@ -292,28 +292,28 @@ Chunk descriptor used to build an asset.  See NvBlastAssetDesc.
 */
 struct NvBlastChunkDesc
 {
-	enum Flags
-	{
-		NoFlags = 0,
+    enum Flags
+    {
+        NoFlags = 0,
 
-		/** If this flag is set then the chunk will become a support chunk, unless an ancestor chunk is also marked as support. */
-		SupportFlag = (1 << 0)
-	};
+        /** If this flag is set then the chunk will become a support chunk, unless an ancestor chunk is also marked as support. */
+        SupportFlag = (1 << 0)
+    };
 
-	/** Central position in chunk. */
-	float		centroid[3];
+    /** Central position in chunk. */
+    float       centroid[3];
 
-	/** Volume of chunk. */
-	float		volume;
+    /** Volume of chunk. */
+    float       volume;
 
-	/** Index of this chunk's parent.  If this is a root chunk, then this value must be UINT32_MAX. */
-	uint32_t	parentChunkDescIndex;
+    /** Index of this chunk's parent.  If this is a root chunk, then this value must be UINT32_MAX. */
+    uint32_t    parentChunkDescIndex;
 
-	/** See Flags enum for possible flags. */
-	uint32_t	flags;
+    /** See Flags enum for possible flags. */
+    uint32_t    flags;
 
-	/** User-supplied data which will be accessible to the user in chunk fracture events. */
-	uint32_t	userData;
+    /** User-supplied data which will be accessible to the user in chunk fracture events. */
+    uint32_t    userData;
 };
 
 
@@ -322,16 +322,16 @@ Chunk bond descriptor used to build an asset.  See NvBlastAssetDesc.
 */
 struct NvBlastBondDesc
 {
-	/** Bond data (see NvBlastBond). */
-	NvBlastBond	bond;
+    /** Bond data (see NvBlastBond). */
+    NvBlastBond bond;
 
-	/**
-	The indices of the chunks linked by this bond.  They must be different support chunk indices.
-	If one of the chunk indices is the invalid index (UINT32_MAX), then this will create a bond between
-	the chunk indexed by the other index (which must be valid) and something external.  Any actor containing
-	this bond will cause the function NvBlastActorHasExternalBonds to return true.
-	*/
-	uint32_t	chunkIndices[2];
+    /**
+    The indices of the chunks linked by this bond.  They must be different support chunk indices.
+    If one of the chunk indices is the invalid index (UINT32_MAX), then this will create a bond between
+    the chunk indexed by the other index (which must be valid) and something external.  Any actor containing
+    this bond will cause the function NvBlastActorHasExternalBonds to return true.
+    */
+    uint32_t    chunkIndices[2];
 };
 
 
@@ -345,17 +345,17 @@ zero and bondDescs is ignored.
 */
 struct NvBlastAssetDesc
 {
-	/** The number of chunk descriptors. */
-	uint32_t				chunkCount;
+    /** The number of chunk descriptors. */
+    uint32_t                chunkCount;
 
-	/** Array of chunk descriptors of size chunkCount. */
-	const NvBlastChunkDesc*	chunkDescs;
+    /** Array of chunk descriptors of size chunkCount. */
+    const NvBlastChunkDesc* chunkDescs;
 
-	/** The number of bond descriptors. */
-	uint32_t				bondCount;
+    /** The number of bond descriptors. */
+    uint32_t                bondCount;
 
-	/** Array of bond descriptors of size bondCount. */
-	const NvBlastBondDesc*	bondDescs;
+    /** Array of bond descriptors of size bondCount. */
+    const NvBlastBondDesc*  bondDescs;
 };
 
 /**
@@ -376,7 +376,7 @@ public:
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//	NvBlastActor related types
+//  NvBlastActor related types
 ///////////////////////////////////////////////////////////////////////////////
 ///@{
 
@@ -416,40 +416,40 @@ See NvBlastFamilyCreateFirstActor.
 */
 struct NvBlastActorDesc
 {
-	/**
-	Initial health of all bonds, if initialBondHealths is NULL (see initialBondHealths).
-	*/
-	float			uniformInitialBondHealth;
+    /**
+    Initial health of all bonds, if initialBondHealths is NULL (see initialBondHealths).
+    */
+    float           uniformInitialBondHealth;
 
-	/**
-	Initial bond healths.  If not NULL, this array must be of length NvBlastAssetGetBondCount(asset, logFn).
-	Setting it above Nv::Blast::kUnbreakableLimit will make the bond unbreakable.
-	If NULL, uniformInitialBondHealth must be set.
-	*/
-	const float*	initialBondHealths;
+    /**
+    Initial bond healths.  If not NULL, this array must be of length NvBlastAssetGetBondCount(asset, logFn).
+    Setting it above Nv::Blast::kUnbreakableLimit will make the bond unbreakable.
+    If NULL, uniformInitialBondHealth must be set.
+    */
+    const float*    initialBondHealths;
 
-	/**
-	Initial health of all lower-support chunks, if initialSupportChunkHealths is NULL (see initialSupportChunkHealths).
-	*/
-	float			uniformInitialLowerSupportChunkHealth;
+    /**
+    Initial health of all lower-support chunks, if initialSupportChunkHealths is NULL (see initialSupportChunkHealths).
+    */
+    float           uniformInitialLowerSupportChunkHealth;
 
-	/**
-	Initial health of all support chunks.  If not NULL, this must be of length
-	NvBlastAssetGetSupportChunkCount(asset, logFn).nodeCount. The elements in the initialSupportChunkHealth
-	array will correspond to the chunk indices in the NvBlastAssetGetSupportGraph(asset, logFn).chunkIndices
-	array.  Every descendent of a support chunk will have its health initialized to its ancestor support
-	chunk's health, so this initializes all lower-support chunk healths.
-	Setting it above Nv::Blast::kUnbreakableLimit will make the chunk unbreakable.
-	If NULL, uniformInitialLowerSupportChunkHealth must be set.
-	*/
-	const float*	initialSupportChunkHealths;
+    /**
+    Initial health of all support chunks.  If not NULL, this must be of length
+    NvBlastAssetGetSupportChunkCount(asset, logFn).nodeCount. The elements in the initialSupportChunkHealth
+    array will correspond to the chunk indices in the NvBlastAssetGetSupportGraph(asset, logFn).chunkIndices
+    array.  Every descendent of a support chunk will have its health initialized to its ancestor support
+    chunk's health, so this initializes all lower-support chunk healths.
+    Setting it above Nv::Blast::kUnbreakableLimit will make the chunk unbreakable.
+    If NULL, uniformInitialLowerSupportChunkHealth must be set.
+    */
+    const float*    initialSupportChunkHealths;
 };
 
 ///@} End NvBlastActor related types
 
 
 ///////////////////////////////////////////////////////////////////////////////
-//	Types used for damage and fracturing
+//  Types used for damage and fracturing
 ///////////////////////////////////////////////////////////////////////////////
 ///@{
 
@@ -462,9 +462,9 @@ Data interpretation varies depending on the function used.
 */
 struct NvBlastChunkFractureData
 {
-	uint32_t	userdata;	//!<	chunk's user data
-	uint32_t	chunkIndex;	//!<	asset chunk index
-	float		health;		//!<	health value (damage or remains)
+    uint32_t    userdata;   //!<    chunk's user data
+    uint32_t    chunkIndex; //!<    asset chunk index
+    float       health;     //!<    health value (damage or remains)
 };
 
 
@@ -476,10 +476,10 @@ Data interpretation varies depending on the function used.
 */
 struct NvBlastBondFractureData
 {
-	uint32_t	userdata;	//!<	bond's user data
-	uint32_t	nodeIndex0;	//!<	graph node index of bond
-	uint32_t	nodeIndex1;	//!<	pair graph node index of bond
-	float		health;		//!<	health value (damage or remains)
+    uint32_t    userdata;   //!<    bond's user data
+    uint32_t    nodeIndex0; //!<    graph node index of bond
+    uint32_t    nodeIndex1; //!<    pair graph node index of bond
+    float       health;     //!<    health value (damage or remains)
 };
 
 
@@ -491,10 +491,10 @@ Used as input and output target.
 */
 struct NvBlastFractureBuffers
 {
-	uint32_t					bondFractureCount;		//!<	available elements in bondFractures
-	uint32_t					chunkFractureCount;		//!<	available elements in chunkFractures
-	NvBlastBondFractureData*	bondFractures;			//!<	memory to be filled by fracture functions
-	NvBlastChunkFractureData*	chunkFractures;			//!<	memory to be filled by fracture functions
+    uint32_t                    bondFractureCount;      //!<    available elements in bondFractures
+    uint32_t                    chunkFractureCount;     //!<    available elements in chunkFractures
+    NvBlastBondFractureData*    bondFractures;          //!<    memory to be filled by fracture functions
+    NvBlastChunkFractureData*   chunkFractures;         //!<    memory to be filled by fracture functions
 };
 
 
@@ -504,8 +504,8 @@ This tells the user about changes in the actor, or creation of children.
 */
 struct NvBlastActorSplitEvent
 {
-	NvBlastActor*	deletedActor;	//!<	deleted actor or nullptr if actor has not changed
-	NvBlastActor**	newActors;		//!<	list of created actors
+    NvBlastActor*   deletedActor;   //!<    deleted actor or nullptr if actor has not changed
+    NvBlastActor**  newActors;      //!<    list of created actors
 };
 
 
@@ -514,20 +514,20 @@ A single actor's representation used by NvBlastGraphShaderFunction.
 */
 struct NvBlastGraphShaderActor
 {
-	uint32_t			actorIndex;				//!<	Actor's index.
-	uint32_t			graphNodeCount;			//!<	Actor's graph node count.
-	uint32_t			assetNodeCount;			//!<	Asset node count.
-	uint32_t			firstGraphNodeIndex;	//!<	Entry index for graphNodeIndexLinks
-	const uint32_t*		graphNodeIndexLinks;	//!<	Linked index list of connected nodes.  Traversable with nextIndex = graphNodeIndexLinks[currentIndex], terminates with 0xFFFFFFFF.
-	const uint32_t*		chunkIndices;			//!<	Graph's map from node index to support chunk index.
-	const uint32_t*		adjacencyPartition;		//!<	See NvBlastSupportGraph::adjacencyPartition.
-	const uint32_t*		adjacentNodeIndices;	//!<	See NvBlastSupportGraph::adjacentNodeIndices.
-	const uint32_t*		adjacentBondIndices;	//!<	See NvBlastSupportGraph::adjacentBondIndices.
-	const NvBlastBond*	assetBonds;				//!<	NvBlastBonds geometry in the NvBlastAsset.
-	const NvBlastChunk*	assetChunks;			//!<	NvBlastChunks geometry in the NvBlastAsset.
-	const float*		familyBondHealths;		//!<	Actual bond health values for broken bond detection.
-	const float*		supportChunkHealths;	//!<	Actual chunk health values for dead chunk detection.
-	const uint32_t*		nodeActorIndices;		//!<	Family's map from node index to actor index.
+    uint32_t            actorIndex;             //!<    Actor's index.
+    uint32_t            graphNodeCount;         //!<    Actor's graph node count.
+    uint32_t            assetNodeCount;         //!<    Asset node count.
+    uint32_t            firstGraphNodeIndex;    //!<    Entry index for graphNodeIndexLinks
+    const uint32_t*     graphNodeIndexLinks;    //!<    Linked index list of connected nodes.  Traversable with nextIndex = graphNodeIndexLinks[currentIndex], terminates with 0xFFFFFFFF.
+    const uint32_t*     chunkIndices;           //!<    Graph's map from node index to support chunk index.
+    const uint32_t*     adjacencyPartition;     //!<    See NvBlastSupportGraph::adjacencyPartition.
+    const uint32_t*     adjacentNodeIndices;    //!<    See NvBlastSupportGraph::adjacentNodeIndices.
+    const uint32_t*     adjacentBondIndices;    //!<    See NvBlastSupportGraph::adjacentBondIndices.
+    const NvBlastBond*  assetBonds;             //!<    NvBlastBonds geometry in the NvBlastAsset.
+    const NvBlastChunk* assetChunks;            //!<    NvBlastChunks geometry in the NvBlastAsset.
+    const float*        familyBondHealths;      //!<    Actual bond health values for broken bond detection.
+    const float*        supportChunkHealths;    //!<    Actual chunk health values for dead chunk detection.
+    const uint32_t*     nodeActorIndices;       //!<    Family's map from node index to actor index.
 };
 
 
@@ -536,8 +536,8 @@ A single actor's representation used by NvBlastSubgraphShaderFunction.
 */
 struct NvBlastSubgraphShaderActor
 {
-	uint32_t			chunkIndex;		//!<	Index of chunk represented by this actor.
-	const NvBlastChunk*	assetChunks;	//!<	NvBlastChunks geometry in the NvBlastAsset.
+    uint32_t            chunkIndex;     //!<    Index of chunk represented by this actor.
+    const NvBlastChunk* assetChunks;    //!<    NvBlastChunks geometry in the NvBlastAsset.
 };
 
 
@@ -547,11 +547,11 @@ Damage shader for actors with more then one node in support graph.
 From a an input actor data (NvBlastGraphShaderActor) and user custom data (params),
 creates a list of NvBlastFractureCommand to be applied to the respective NvBlastActor.
 
-\param[in,out]	commandBuffers			The resulting health damage to apply.
-										Typically requires an array of size (number of support chunks) + (number of bonds) of the processed asset
-										but may depend on the actual implementation.
-\param[in]		actor					The actor representation used for creating commands.
-\param[in]		programParams			A set of parameters defined by the damage shader implementer.
+\param[in,out]  commandBuffers          The resulting health damage to apply.
+                                        Typically requires an array of size (number of support chunks) + (number of bonds) of the processed asset
+                                        but may depend on the actual implementation.
+\param[in]      actor                   The actor representation used for creating commands.
+\param[in]      programParams           A set of parameters defined by the damage shader implementer.
 
 Interpretation of NvBlastFractureBuffers:
 As input:
@@ -575,11 +575,11 @@ Damage shader for actors with single chunk.
 From a an input actor data (NvBlastSubgraphShaderActor) and user custom data (params),
 creates a list of NvBlastFractureCommand to be applied to the respective NvBlastActor.
 
-\param[in,out]	commandBuffers			The resulting health damage to apply.
-										Typically requires an array of size (number of support chunks) + (number of bonds) of the processed asset
-										but may depend on the actual implementation.
-\param[in]		actor					The actor representation used for creating commands.
-\param[in]		programParams			A set of parameters defined by the damage shader implementer.
+\param[in,out]  commandBuffers          The resulting health damage to apply.
+                                        Typically requires an array of size (number of support chunks) + (number of bonds) of the processed asset
+                                        but may depend on the actual implementation.
+\param[in]      actor                   The actor representation used for creating commands.
+\param[in]      programParams           A set of parameters defined by the damage shader implementer.
 
 Interpretation of NvBlastFractureBuffers:
 As input:
@@ -607,8 +607,8 @@ Any shader can be nullptr to be skipped.
 */
 struct NvBlastDamageProgram
 {
-	NvBlastGraphShaderFunction		graphShaderFunction;
-	NvBlastSubgraphShaderFunction	subgraphShaderFunction;
+    NvBlastGraphShaderFunction      graphShaderFunction;
+    NvBlastSubgraphShaderFunction   subgraphShaderFunction;
 };
 
 

@@ -46,45 +46,45 @@ SampleManager::SampleManager(const SampleConfig& config)
 
 int SampleManager::run()
 {
-	Application app(getConfig().sampleName);
+    Application app(getConfig().sampleName);
 
-	m_renderer = new Renderer();
-	m_physXController = new PhysXController(ExtImpactDamageManager::FilterShader);
-	m_blastController = new BlastController();
-	m_sceneController = new SceneController();
-	m_damageToolController = new DamageToolController();
-	m_sampleController = new SampleController();
-	m_commonUIController = new CommonUIController();
+    m_renderer = new Renderer();
+    m_physXController = new PhysXController(ExtImpactDamageManager::FilterShader);
+    m_blastController = new BlastController();
+    m_sceneController = new SceneController();
+    m_damageToolController = new DamageToolController();
+    m_sampleController = new SampleController();
+    m_commonUIController = new CommonUIController();
 
-	app.addControllerToFront(m_renderer);
-	app.addControllerToFront(m_physXController);
-	app.addControllerToFront(m_blastController);
-	app.addControllerToFront(m_sceneController);
-	app.addControllerToFront(m_damageToolController);
-	app.addControllerToFront(m_sampleController);
-	app.addControllerToFront(m_commonUIController);
+    app.addControllerToFront(m_renderer);
+    app.addControllerToFront(m_physXController);
+    app.addControllerToFront(m_blastController);
+    app.addControllerToFront(m_sceneController);
+    app.addControllerToFront(m_damageToolController);
+    app.addControllerToFront(m_sampleController);
+    app.addControllerToFront(m_commonUIController);
 
-	for (IApplicationController* c : app.getControllers())
-	{
-		(static_cast<ISampleController*>(c))->setManager(this);
-	}
+    for (IApplicationController* c : app.getControllers())
+    {
+        (static_cast<ISampleController*>(c))->setManager(this);
+    }
 
-	int result = app.run();
+    int result = app.run();
 
-	delete m_renderer;
-	delete m_physXController;
-	delete m_blastController;
-	delete m_sceneController;
-	delete m_damageToolController;
-	delete m_sampleController;
-	delete m_commonUIController;
+    delete m_renderer;
+    delete m_physXController;
+    delete m_blastController;
+    delete m_sceneController;
+    delete m_damageToolController;
+    delete m_sampleController;
+    delete m_commonUIController;
 
-	return result;
+    return result;
 }
 
 
 int runSample(const SampleConfig& config)
 {
-	SampleManager sampleManager(config);
-	return sampleManager.run();
+    SampleManager sampleManager(config);
+    return sampleManager.run();
 }

@@ -52,23 +52,23 @@ class ExtSerialization;
 class BlastAssetModel : public BlastAsset
 {
 public:
-	//////// ctor ////////
+    //////// ctor ////////
 
-	BlastAssetModel(TkFramework& framework, PxPhysics& physics, PxCooking& cooking, ExtSerialization& serialization, Renderer& renderer, const char* modelName);
-	virtual ~BlastAssetModel();
+    BlastAssetModel(TkFramework& framework, PxPhysics& physics, PxCooking& cooking, ExtSerialization& serialization, Renderer& renderer, const char* modelName);
+    virtual ~BlastAssetModel();
 
 
-	//////// data getters  ////////
+    //////// data getters  ////////
 
-	const BlastModel& getModel() const
-	{
-		return *m_model.get();
-	}
+    const BlastModel& getModel() const
+    {
+        return *m_model.get();
+    }
 
 private:
-	//////// private internal data ////////
+    //////// private internal data ////////
 
-	BlastModelPtr m_model;
+    BlastModelPtr m_model;
 };
 
 #endif //BLAST_ASSET_MODEL_H

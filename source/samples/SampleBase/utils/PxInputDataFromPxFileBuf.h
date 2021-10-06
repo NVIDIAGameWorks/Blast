@@ -36,33 +36,33 @@
 class PxInputDataFromPxFileBuf : public physx::PxInputData
 {
 public:
-	PxInputDataFromPxFileBuf(physx::PxFileBuf& fileBuf) : mFileBuf(fileBuf) {}
+    PxInputDataFromPxFileBuf(physx::PxFileBuf& fileBuf) : mFileBuf(fileBuf) {}
 
-	// physx::PxInputData interface
-	virtual uint32_t	getLength() const
-	{
-		return mFileBuf.getFileLength();
-	}
+    // physx::PxInputData interface
+    virtual uint32_t    getLength() const
+    {
+        return mFileBuf.getFileLength();
+    }
 
-	virtual void	seek(uint32_t offset)
-	{
-		mFileBuf.seekRead(offset);
-	}
+    virtual void    seek(uint32_t offset)
+    {
+        mFileBuf.seekRead(offset);
+    }
 
-	virtual uint32_t	tell() const
-	{
-		return mFileBuf.tellRead();
-	}
+    virtual uint32_t    tell() const
+    {
+        return mFileBuf.tellRead();
+    }
 
-	// physx::PxInputStream interface
-	virtual uint32_t read(void* dest, uint32_t count)
-	{
-		return mFileBuf.read(dest, count);
-	}
+    // physx::PxInputStream interface
+    virtual uint32_t read(void* dest, uint32_t count)
+    {
+        return mFileBuf.read(dest, count);
+    }
 
-	PX_NOCOPY(PxInputDataFromPxFileBuf)
+    PX_NOCOPY(PxInputDataFromPxFileBuf)
 private:
-	physx::PxFileBuf& mFileBuf;
+    physx::PxFileBuf& mFileBuf;
 };
 
 

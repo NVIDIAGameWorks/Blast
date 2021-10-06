@@ -64,80 +64,80 @@ template <class T>
 class FixedArray
 {
 public:
-	explicit FixedArray() : m_size(0)
-	{
-	}
+    explicit FixedArray() : m_size(0)
+    {
+    }
 
-	static size_t requiredMemorySize(uint32_t capacity)
-	{
-		return align16(sizeof(FixedArray<T>)) + align16(capacity * sizeof(T));
-	}
+    static size_t requiredMemorySize(uint32_t capacity)
+    {
+        return align16(sizeof(FixedArray<T>)) + align16(capacity * sizeof(T));
+    }
 
-	NV_FORCE_INLINE T& pushBack(T& t)
-	{
-		new (data() + m_size) T(t);
-		return data()[m_size++];
-	}
+    NV_FORCE_INLINE T& pushBack(T& t)
+    {
+        new (data() + m_size) T(t);
+        return data()[m_size++];
+    }
 
-	T popBack()
-	{
-		NVBLAST_ASSERT(m_size);
-		T t = data()[m_size - 1];
-		data()[--m_size].~T();
-		return t;
-	}
+    T popBack()
+    {
+        NVBLAST_ASSERT(m_size);
+        T t = data()[m_size - 1];
+        data()[--m_size].~T();
+        return t;
+    }
 
-	void clear()
-	{
-		for(T* first = data(); first < data() + m_size; ++first)
-			first->~T();
-		m_size = 0;
-	}
+    void clear()
+    {
+        for(T* first = data(); first < data() + m_size; ++first)
+            first->~T();
+        m_size = 0;
+    }
 
-	NV_FORCE_INLINE void forceSize_Unsafe(uint32_t s)
-	{
-		m_size = s;
-	}
+    NV_FORCE_INLINE void forceSize_Unsafe(uint32_t s)
+    {
+        m_size = s;
+    }
 
-	NV_FORCE_INLINE T& operator[](uint32_t idx)
-	{
-		NVBLAST_ASSERT(idx < m_size);
-		return data()[idx];
-	}
+    NV_FORCE_INLINE T& operator[](uint32_t idx)
+    {
+        NVBLAST_ASSERT(idx < m_size);
+        return data()[idx];
+    }
 
-	NV_FORCE_INLINE const T& operator[](uint32_t idx) const
-	{
-		NVBLAST_ASSERT(idx < m_size);
-		return data()[idx];
-	}
+    NV_FORCE_INLINE const T& operator[](uint32_t idx) const
+    {
+        NVBLAST_ASSERT(idx < m_size);
+        return data()[idx];
+    }
 
-	NV_FORCE_INLINE T& at(uint32_t idx)
-	{
-		NVBLAST_ASSERT(idx < m_size);
-		return data()[idx];
-	}
+    NV_FORCE_INLINE T& at(uint32_t idx)
+    {
+        NVBLAST_ASSERT(idx < m_size);
+        return data()[idx];
+    }
 
-	NV_FORCE_INLINE const T& at(uint32_t idx) const
-	{
-		NVBLAST_ASSERT(idx < m_size);
-		return data()[idx];
-	}
+    NV_FORCE_INLINE const T& at(uint32_t idx) const
+    {
+        NVBLAST_ASSERT(idx < m_size);
+        return data()[idx];
+    }
 
-	NV_FORCE_INLINE uint32_t size() const
-	{
-		return m_size;
-	}
-
-private:
-	uint32_t m_size;
-
-	NV_FORCE_INLINE T* data()
-	{
-		return (T*)((char*)this + sizeof(FixedArray<T>));
-	}
+    NV_FORCE_INLINE uint32_t size() const
+    {
+        return m_size;
+    }
 
 private:
-	FixedArray(const FixedArray& that);
+    uint32_t m_size;
+
+    NV_FORCE_INLINE T* data()
+    {
+        return (T*)((char*)this + sizeof(FixedArray<T>));
+    }
+
+private:
+    FixedArray(const FixedArray& that);
 };
 
 } // namespace Blast

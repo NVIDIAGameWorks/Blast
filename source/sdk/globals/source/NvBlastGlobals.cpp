@@ -50,100 +50,100 @@ namespace Blast
 // on win32 we only have 8-byte alignment guaranteed, but the CRT provides special aligned allocation fns
 NV_FORCE_INLINE void* platformAlignedAlloc(size_t size)
 {
-	return _aligned_malloc(size, 16);
+    return _aligned_malloc(size, 16);
 }
 
 NV_FORCE_INLINE void platformAlignedFree(void* ptr)
 {
-	_aligned_free(ptr);
+    _aligned_free(ptr);
 }
 #elif NV_LINUX_FAMILY
 NV_FORCE_INLINE void* platformAlignedAlloc(size_t size)
 {
-	return ::memalign(16, size);
+    return ::memalign(16, size);
 }
 
 NV_FORCE_INLINE void platformAlignedFree(void* ptr)
 {
-	::free(ptr);
+    ::free(ptr);
 }
 #else
 NV_FORCE_INLINE void* platformAlignedAlloc(size_t size)
 {
-	const int A = 16;
-	unsigned char* mem = (unsigned char*)malloc(size + A);
-	const unsigned char offset = (unsigned char)((uintptr_t)A - (uintptr_t)mem % A - 1);
-	mem += offset;
-	*mem++ = offset;
-	return mem;
+    const int A = 16;
+    unsigned char* mem = (unsigned char*)malloc(size + A);
+    const unsigned char offset = (unsigned char)((uintptr_t)A - (uintptr_t)mem % A - 1);
+    mem += offset;
+    *mem++ = offset;
+    return mem;
 }
 
 NV_FORCE_INLINE void platformAlignedFree(void* ptr)
 {
-	if (ptr != nullptr)
-	{
-		unsigned char* mem = (unsigned char*)ptr;
-		const unsigned char offset = *--mem;
-		::free(mem - offset);
-	}
+    if (ptr != nullptr)
+    {
+        unsigned char* mem = (unsigned char*)ptr;
+        const unsigned char offset = *--mem;
+        ::free(mem - offset);
+    }
 }
 #endif
 
 class DefaultAllocatorCallback : public AllocatorCallback
 {
 public:
-	virtual void* allocate(size_t size, const char* typeName, const char* filename, int line) override
-	{
-		NV_UNUSED(typeName);
-		NV_UNUSED(filename);
-		NV_UNUSED(line);
-		return platformAlignedAlloc(size);
-	}
+    virtual void* allocate(size_t size, const char* typeName, const char* filename, int line) override
+    {
+        NV_UNUSED(typeName);
+        NV_UNUSED(filename);
+        NV_UNUSED(line);
+        return platformAlignedAlloc(size);
+    }
 
-	virtual void deallocate(void* ptr) override
-	{
-		platformAlignedFree(ptr);
-	}
+    virtual void deallocate(void* ptr) override
+    {
+        platformAlignedFree(ptr);
+    }
 };
 DefaultAllocatorCallback g_defaultAllocatorCallback;
 
 
 class DefaultErrorCallback : public ErrorCallback
 {
-	virtual void reportError(ErrorCode::Enum code, const char* msg, const char* file, int line) override
-	{
+    virtual void reportError(ErrorCode::Enum code, const char* msg, const char* file, int line) override
+    {
 #if NV_DEBUG || NV_CHECKED
-		std::stringstream str;
-		str << "NvBlast ";
-		bool critical = false;
-		switch (code)
-		{
-		case ErrorCode::eNO_ERROR:			str << "[Info]";				critical = false; break;
-		case ErrorCode::eDEBUG_INFO:		str << "[Debug Info]";			critical = false; break;
-		case ErrorCode::eDEBUG_WARNING:		str << "[Debug Warning]";		critical = false; break;
-		case ErrorCode::eINVALID_PARAMETER:	str << "[Invalid Parameter]";	critical = true;  break;
-		case ErrorCode::eINVALID_OPERATION:	str << "[Invalid Operation]";	critical = true;  break;
-		case ErrorCode::eOUT_OF_MEMORY:		str << "[Out of] Memory";		critical = true;  break;
-		case ErrorCode::eINTERNAL_ERROR:	str << "[Internal Error]";		critical = true;  break;
-		case ErrorCode::eABORT:				str << "[Abort]";				critical = true;  break;
-		case ErrorCode::ePERF_WARNING:		str << "[Perf Warning]";		critical = false; break;
-		default:							NVBLAST_ASSERT(false);
-		}
-		str << file << "(" << line << "): " << msg << "\n";
+        std::stringstream str;
+        str << "NvBlast ";
+        bool critical = false;
+        switch (code)
+        {
+        case ErrorCode::eNO_ERROR:          str << "[Info]";                critical = false; break;
+        case ErrorCode::eDEBUG_INFO:        str << "[Debug Info]";          critical = false; break;
+        case ErrorCode::eDEBUG_WARNING:     str << "[Debug Warning]";       critical = false; break;
+        case ErrorCode::eINVALID_PARAMETER: str << "[Invalid Parameter]";   critical = true;  break;
+        case ErrorCode::eINVALID_OPERATION: str << "[Invalid Operation]";   critical = true;  break;
+        case ErrorCode::eOUT_OF_MEMORY:     str << "[Out of] Memory";       critical = true;  break;
+        case ErrorCode::eINTERNAL_ERROR:    str << "[Internal Error]";      critical = true;  break;
+        case ErrorCode::eABORT:             str << "[Abort]";               critical = true;  break;
+        case ErrorCode::ePERF_WARNING:      str << "[Perf Warning]";        critical = false; break;
+        default:                            NVBLAST_ASSERT(false);
+        }
+        str << file << "(" << line << "): " << msg << "\n";
 
-		std::string message = str.str();
-		std::cout << message;
+        std::string message = str.str();
+        std::cout << message;
 #if NV_WINDOWS_FAMILY
-		OutputDebugStringA(message.c_str());
+        OutputDebugStringA(message.c_str());
 #endif 
-		NVBLAST_ASSERT_WITH_MESSAGE(!critical, message.c_str());
+        NVBLAST_ASSERT_WITH_MESSAGE(!critical, message.c_str());
 #else
-		NV_UNUSED(code);
-		NV_UNUSED(msg);
-		NV_UNUSED(file);
-		NV_UNUSED(line);
+        NV_UNUSED(code);
+        NV_UNUSED(msg);
+        NV_UNUSED(file);
+        NV_UNUSED(line);
 #endif
-	}
+    }
 };
 DefaultErrorCallback g_defaultErrorCallback;
 
@@ -160,20 +160,20 @@ ErrorCallback* g_errorCallback = &g_defaultErrorCallback;
 
 Nv::Blast::AllocatorCallback* NvBlastGlobalGetAllocatorCallback()
 {
-	return Nv::Blast::g_allocatorCallback;
+    return Nv::Blast::g_allocatorCallback;
 }
 
 void NvBlastGlobalSetAllocatorCallback(Nv::Blast::AllocatorCallback* allocator)
 {
-	Nv::Blast::g_allocatorCallback = allocator ? allocator : &Nv::Blast::g_defaultAllocatorCallback;
+    Nv::Blast::g_allocatorCallback = allocator ? allocator : &Nv::Blast::g_defaultAllocatorCallback;
 }
 
 Nv::Blast::ErrorCallback* NvBlastGlobalGetErrorCallback()
 {
-	return Nv::Blast::g_errorCallback;
+    return Nv::Blast::g_errorCallback;
 }
 
 void NvBlastGlobalSetErrorCallback(Nv::Blast::ErrorCallback* errorCallback)
 {
-	Nv::Blast::g_errorCallback = errorCallback ? errorCallback : &Nv::Blast::g_defaultErrorCallback;
+    Nv::Blast::g_errorCallback = errorCallback ? errorCallback : &Nv::Blast::g_defaultErrorCallback;
 }

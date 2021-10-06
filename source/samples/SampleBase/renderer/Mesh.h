@@ -36,8 +36,8 @@
 
 class Mesh
 {
-	virtual uint32_t getVertexStride() = 0;
-	// ... TBD
+    virtual uint32_t getVertexStride() = 0;
+    // ... TBD
 };
 
 /**
@@ -48,21 +48,21 @@ class SimpleMesh : public Mesh
 {
 public:
 
-	class Vertex
-	{
-	public:
-		physx::PxVec3 position;
-		physx::PxVec3 normal;
-		physx::PxVec2 uv;
-	};
+    class Vertex
+    {
+    public:
+        physx::PxVec3 position;
+        physx::PxVec3 normal;
+        physx::PxVec2 uv;
+    };
 
-	virtual uint32_t getVertexStride() { return sizeof(Vertex); }
+    virtual uint32_t getVertexStride() { return sizeof(Vertex); }
 
-	std::vector<Vertex> vertices;
-	std::vector<uint32_t> indices;
+    std::vector<Vertex> vertices;
+    std::vector<uint32_t> indices;
 
-	physx::PxVec3 extents;
-	physx::PxVec3 center;
+    physx::PxVec3 extents;
+    physx::PxVec3 center;
 };
 
 

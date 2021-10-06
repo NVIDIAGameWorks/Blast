@@ -33,93 +33,93 @@
 
 namespace Nv
 {
-	namespace Blast
-	{
-		typedef float (*RNG_CALLBACK)(void);
+    namespace Blast
+    {
+        typedef float (*RNG_CALLBACK)(void);
 
-		struct PatternDescriptor
-		{
-			RNG_CALLBACK RNG = nullptr;
+        struct PatternDescriptor
+        {
+            RNG_CALLBACK RNG = nullptr;
 
-			uint32_t interiorMaterialId = 1000;
-		};
+            uint32_t interiorMaterialId = 1000;
+        };
 
-		struct UniformPatternDesc : public PatternDescriptor
-		{
-			uint32_t cellsCount	= 2;
+        struct UniformPatternDesc : public PatternDescriptor
+        {
+            uint32_t cellsCount = 2;
 
-			float radiusMin		= 0.0f;
-			float radiusMax		= 1.0f;
-			float radiusDistr	= 1.0f;
+            float radiusMin     = 0.0f;
+            float radiusMax     = 1.0f;
+            float radiusDistr   = 1.0f;
 
-			float debrisRadiusMult = 1.0f;
-		};
+            float debrisRadiusMult = 1.0f;
+        };
 
-		struct BeamPatternDesc : public PatternDescriptor
-		{
-			uint32_t cellsCount;
+        struct BeamPatternDesc : public PatternDescriptor
+        {
+            uint32_t cellsCount;
 
-			float radiusMin;
-			float radiusMax;
-		};
+            float radiusMin;
+            float radiusMax;
+        };
 
-		struct RegularRadialPatternDesc : public PatternDescriptor
-		{
-			float radiusMin = 0.0f;
-			float radiusMax = 1.0f;
-			
-			uint32_t radialSteps = 3;
-			uint32_t angularSteps = 8;
+        struct RegularRadialPatternDesc : public PatternDescriptor
+        {
+            float radiusMin = 0.0f;
+            float radiusMax = 1.0f;
+            
+            uint32_t radialSteps = 3;
+            uint32_t angularSteps = 8;
 
-			float aperture = .0f;
+            float aperture = .0f;
 
-			float angularNoiseAmplitude = 0.0f;
-			
-			float radialNoiseAmplitude = 0.0f;
-			float radialNoiseFrequency = 0.0f;
+            float angularNoiseAmplitude = 0.0f;
+            
+            float radialNoiseAmplitude = 0.0f;
+            float radialNoiseFrequency = 0.0f;
 
-			float debrisRadiusMult = 1.0f;
-		};
-
-
-		struct DamagePattern
-		{
-			/**
-			Used to compute activated chunks.
-			*/
-			float activationRadius;
-			float angle; // For cone shape activation
-			enum ActivationDistanceType
-			{
-				Point = 0,
-				Line,
-				Cone
-			};
-			ActivationDistanceType activationType = Point;
-			// ----------------------------------------------
+            float debrisRadiusMult = 1.0f;
+        };
 
 
-			uint32_t cellsCount;
-			class Mesh** cellsMeshes = nullptr;
+        struct DamagePattern
+        {
+            /**
+            Used to compute activated chunks.
+            */
+            float activationRadius;
+            float angle; // For cone shape activation
+            enum ActivationDistanceType
+            {
+                Point = 0,
+                Line,
+                Cone
+            };
+            ActivationDistanceType activationType = Point;
+            // ----------------------------------------------
 
-			virtual void release() = 0;
-		};
 
-		class PatternGenerator
-		{
-		public:
-			virtual DamagePattern* generateUniformPattern(const UniformPatternDesc* desc) = 0;
-			virtual DamagePattern* generateBeamPattern(const BeamPatternDesc* desc) = 0;
-			virtual DamagePattern* generateRegularRadialPattern(const RegularRadialPatternDesc* desc) = 0;
+            uint32_t cellsCount;
+            class Mesh** cellsMeshes = nullptr;
+
+            virtual void release() = 0;
+        };
+
+        class PatternGenerator
+        {
+        public:
+            virtual DamagePattern* generateUniformPattern(const UniformPatternDesc* desc) = 0;
+            virtual DamagePattern* generateBeamPattern(const BeamPatternDesc* desc) = 0;
+            virtual DamagePattern* generateRegularRadialPattern(const RegularRadialPatternDesc* desc) = 0;
 
 
-			virtual DamagePattern* generateVoronoiPattern(uint32_t pointCount, const NvcVec3* points, int32_t interiorMaterialId) = 0;
-			virtual void release() = 0;
-		};
+            virtual DamagePattern* generateVoronoiPattern(uint32_t pointCount, const NvcVec3* points, int32_t interiorMaterialId) = 0;
+            virtual void release() = 0;
+        };
 
-		NVBLAST_API void savePatternToObj(DamagePattern* pattern);
-		
-	} // namespace Blast
+        NVBLAST_API void savePatternToObj(DamagePattern* pattern);
+        
+    } // namespace Blast
 } // namespace Nv
 
 

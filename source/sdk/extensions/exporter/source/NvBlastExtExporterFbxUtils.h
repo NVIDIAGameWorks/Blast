@@ -35,34 +35,34 @@
 
 namespace Nv
 {
-	namespace Blast
-	{
-		struct Vertex;
-	}
+    namespace Blast
+    {
+        struct Vertex;
+    }
 }
 
 class FbxUtils
 {
 public:
-	static void VertexToFbx(const Nv::Blast::Vertex& vert, FbxVector4& outVertex, FbxVector4& outNormal, FbxVector2& outUV);
+    static void VertexToFbx(const Nv::Blast::Vertex& vert, FbxVector4& outVertex, FbxVector4& outNormal, FbxVector2& outUV);
 
-	static void NvcVec3ToFbx(const NvcVec3& inVector, FbxVector4& outVector);
-	static void NvcVec2ToFbx(const NvcVec2& inVector, FbxVector2& outVector);
+    static void NvcVec3ToFbx(const NvcVec3& inVector, FbxVector4& outVector);
+    static void NvcVec2ToFbx(const NvcVec2& inVector, FbxVector2& outVector);
 
-	static FbxAxisSystem getBlastFBXAxisSystem();
-	static FbxSystemUnit getBlastFBXUnit();
+    static FbxAxisSystem getBlastFBXAxisSystem();
+    static FbxSystemUnit getBlastFBXUnit();
 
-	static std::string FbxAxisSystemToString(const FbxAxisSystem& axisSystem);
-	static std::string FbxSystemUnitToString(const FbxSystemUnit& systemUnit);
+    static std::string FbxAxisSystemToString(const FbxAxisSystem& axisSystem);
+    static std::string FbxSystemUnitToString(const FbxSystemUnit& systemUnit);
 
-	//returns UINT32_MAX if not a chunk
-	static uint32_t getChunkIndexForNode(FbxNode* node, uint32_t* outParentChunkIndex = nullptr);
-	//Search using the old naming 
-	static uint32_t getChunkIndexForNodeBackwardsCompatible(FbxNode* node, uint32_t* outParentChunkIndex = nullptr);
-	static std::string getChunkNodeName(uint32_t chunkIndex);
+    //returns UINT32_MAX if not a chunk
+    static uint32_t getChunkIndexForNode(FbxNode* node, uint32_t* outParentChunkIndex = nullptr);
+    //Search using the old naming 
+    static uint32_t getChunkIndexForNodeBackwardsCompatible(FbxNode* node, uint32_t* outParentChunkIndex = nullptr);
+    static std::string getChunkNodeName(uint32_t chunkIndex);
 
-	static std::string getCollisionGeometryLayerName();
-	static std::string getRenderGeometryLayerName();
+    static std::string getCollisionGeometryLayerName();
+    static std::string getRenderGeometryLayerName();
 };
 
 #endif //NVBLASTEXTEXPORTERFBXUTILS_H

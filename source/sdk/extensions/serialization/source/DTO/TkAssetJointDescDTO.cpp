@@ -37,41 +37,41 @@ namespace Blast
 
 bool TkAssetJointDescDTO::serialize(Nv::Blast::Serialization::TkAssetJointDesc::Builder builder, const Nv::Blast::TkAssetJointDesc * poco)
 {
-	kj::ArrayPtr<const uint32_t> nodeIndices(poco->nodeIndices, 2);
-	builder.setNodeIndices(nodeIndices);
-	builder.initAttachPositions(2);
-	
-	for (int i = 0; i < 2; i++)
-	{
-		PxVec3DTO::serialize(builder.getAttachPositions()[i], &poco->attachPositions[i]);
-	}
+    kj::ArrayPtr<const uint32_t> nodeIndices(poco->nodeIndices, 2);
+    builder.setNodeIndices(nodeIndices);
+    builder.initAttachPositions(2);
+    
+    for (int i = 0; i < 2; i++)
+    {
+        PxVec3DTO::serialize(builder.getAttachPositions()[i], &poco->attachPositions[i]);
+    }
 
-	return true;
+    return true;
 }
 
 
 Nv::Blast::TkAssetJointDesc* TkAssetJointDescDTO::deserialize(Nv::Blast::Serialization::TkAssetJointDesc::Reader reader)
 {
-	//TODO: Allocate with ExtContent and return
+    //TODO: Allocate with ExtContent and return
 
-	NV_UNUSED(reader);
+    NV_UNUSED(reader);
 
-	return nullptr;
+    return nullptr;
 }
 
 
 bool TkAssetJointDescDTO::deserializeInto(Nv::Blast::Serialization::TkAssetJointDesc::Reader reader, Nv::Blast::TkAssetJointDesc * poco)
 {
-	auto readerAttachPositions = reader.getAttachPositions();
-	PxVec3DTO::deserializeInto(readerAttachPositions[0], &poco->attachPositions[0]);
-	PxVec3DTO::deserializeInto(readerAttachPositions[1], &poco->attachPositions[1]);
+    auto readerAttachPositions = reader.getAttachPositions();
+    PxVec3DTO::deserializeInto(readerAttachPositions[0], &poco->attachPositions[0]);
+    PxVec3DTO::deserializeInto(readerAttachPositions[1], &poco->attachPositions[1]);
 
-	auto readerNodeIndices = reader.getNodeIndices();
-	poco->nodeIndices[0] = readerNodeIndices[0];
-	poco->nodeIndices[1] = readerNodeIndices[1];
+    auto readerNodeIndices = reader.getNodeIndices();
+    poco->nodeIndices[0] = readerNodeIndices[0];
+    poco->nodeIndices[1] = readerNodeIndices[1];
 
-	return true;
+    return true;
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

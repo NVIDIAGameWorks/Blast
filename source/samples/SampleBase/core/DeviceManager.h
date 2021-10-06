@@ -24,10 +24,10 @@ struct DeviceCreationParameters
     D3D_DRIVER_TYPE driverType;
     D3D_FEATURE_LEVEL featureLevel;
 
-	// For use in the case of multiple adapters.  If this is non-null, device creation will try to match
-	// the given string against an adapter name.  If the specified string exists as a sub-string of the 
-	// adapter name, the device and window will be created on that adapter.  Case sensitive.
-	const WCHAR* adapterNameSubstring;
+    // For use in the case of multiple adapters.  If this is non-null, device creation will try to match
+    // the given string against an adapter name.  If the specified string exists as a sub-string of the 
+    // adapter name, the device and window will be created on that adapter.  Case sensitive.
+    const WCHAR* adapterNameSubstring;
 
     DeviceCreationParameters() 
         : startMaximized(false)
@@ -44,7 +44,7 @@ struct DeviceCreationParameters
         , createDeviceFlags(0)
         , driverType(D3D_DRIVER_TYPE_HARDWARE)
         , featureLevel(D3D_FEATURE_LEVEL_11_0)
-		, adapterNameSubstring(L"")
+        , adapterNameSubstring(L"")
     { }
 };
 
@@ -91,7 +91,7 @@ protected:
     ID3D11DepthStencilView* m_DepthStencilDSV;
     DXGI_SWAP_CHAIN_DESC    m_SwapChainDesc;
     D3D11_TEXTURE2D_DESC    m_DepthStencilDesc;
-	bool					m_IsNvidia;
+    bool                    m_IsNvidia;
     HWND                    m_hWnd;
     std::list<IVisualController*> m_vControllers;
     std::wstring            m_WindowTitle;
@@ -114,7 +114,7 @@ public:
         , m_BackBufferRTV(NULL)
         , m_DepthStencilBuffer(NULL)
         , m_DepthStencilDSV(NULL)
-		, m_IsNvidia(false)
+        , m_IsNvidia(false)
         , m_hWnd(NULL)
         , m_WindowTitle(L"")
         , m_FixedFrameInterval(-1)
@@ -150,7 +150,7 @@ public:
     void            SetFixedFrameInterval(double seconds) { m_FixedFrameInterval = seconds; }
     void            DisableFixedFrameInterval() { m_FixedFrameInterval = -1; }
 
-	bool			IsNvidia() const { return m_IsNvidia; }
+    bool            IsNvidia() const { return m_IsNvidia; }
     HWND            GetHWND() { return m_hWnd; }
     ID3D11Device*   GetDevice() { return m_Device; }
     WindowState     GetWindowState();

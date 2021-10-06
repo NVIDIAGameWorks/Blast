@@ -38,42 +38,42 @@ class Renderable;
 class BlastFamilyModelSkinned : public BlastFamily
 {
 public:
-	//////// ctor ////////
+    //////// ctor ////////
 
-	BlastFamilyModelSkinned(PhysXController& physXController, ExtPxManager& pxManager, Renderer& renderer, const BlastAssetModelSkinned& blastAsset, const BlastAsset::ActorDesc& desc);
-	virtual ~BlastFamilyModelSkinned();
+    BlastFamilyModelSkinned(PhysXController& physXController, ExtPxManager& pxManager, Renderer& renderer, const BlastAssetModelSkinned& blastAsset, const BlastAsset::ActorDesc& desc);
+    virtual ~BlastFamilyModelSkinned();
 
 protected:
-	//////// abstract implementation ////////
+    //////// abstract implementation ////////
 
-	virtual void onActorCreated(const ExtPxActor& actor);
-	virtual void onActorUpdate(const ExtPxActor& actor);
-	virtual void onActorDestroyed(const ExtPxActor& actor);
+    virtual void onActorCreated(const ExtPxActor& actor);
+    virtual void onActorUpdate(const ExtPxActor& actor);
+    virtual void onActorDestroyed(const ExtPxActor& actor);
 
-	virtual void onUpdate();
+    virtual void onUpdate();
 
 private:
-	//////// internal data ////////
+    //////// internal data ////////
 
-	Renderer& m_renderer;
+    Renderer& m_renderer;
 
-	struct SubModel
-	{
-		static const uint32_t INVALID_BONE_ID = ~(uint32_t)0;
+    struct SubModel
+    {
+        static const uint32_t INVALID_BONE_ID = ~(uint32_t)0;
 
-		Renderable*	renderable = nullptr;
-		SkinnedRenderMesh* skinnedRenderMesh = nullptr;
-		std::vector<uint32_t> chunkIdToBoneMap;
-	};
-	std::vector<SubModel> m_subModels;
+        Renderable* renderable = nullptr;
+        SkinnedRenderMesh* skinnedRenderMesh = nullptr;
+        std::vector<uint32_t> chunkIdToBoneMap;
+    };
+    std::vector<SubModel> m_subModels;
 
-	std::set<const ExtPxActor*> m_visibleActors;
-	bool m_visibleActorsDirty;
+    std::set<const ExtPxActor*> m_visibleActors;
+    bool m_visibleActorsDirty;
 
-	//////// scratch buffers ////////
+    //////// scratch buffers ////////
 
-	std::vector<uint32_t> m_visibleBones;
-	std::vector<PxMat44>  m_visibleBoneTransforms;
+    std::vector<uint32_t> m_visibleBones;
+    std::vector<PxMat44>  m_visibleBoneTransforms;
 
 };
 

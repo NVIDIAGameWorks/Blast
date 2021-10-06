@@ -36,31 +36,31 @@ namespace Blast
 
 bool PxQuatDTO::serialize(Nv::Blast::Serialization::PxQuat::Builder builder, const physx::PxQuat * poco)
 {
-	builder.setX(poco->x);
-	builder.setY(poco->y);
-	builder.setZ(poco->z);
-	builder.setW(poco->w);
+    builder.setX(poco->x);
+    builder.setY(poco->y);
+    builder.setZ(poco->z);
+    builder.setW(poco->w);
 
-	return true;
+    return true;
 }
 
 
 physx::PxQuat* PxQuatDTO::deserialize(Nv::Blast::Serialization::PxQuat::Reader reader)
 {
-	NV_UNUSED(reader);
-	return nullptr;
+    NV_UNUSED(reader);
+    return nullptr;
 }
 
 
 bool PxQuatDTO::deserializeInto(Nv::Blast::Serialization::PxQuat::Reader reader, physx::PxQuat * poco)
 {
-	poco->x = reader.getX();
-	poco->y = reader.getY();
-	poco->z = reader.getZ();
-	poco->w = reader.getW();
+    poco->x = reader.getX();
+    poco->y = reader.getY();
+    poco->z = reader.getZ();
+    poco->w = reader.getW();
 
-	return true;
+    return true;
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

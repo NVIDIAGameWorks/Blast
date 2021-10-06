@@ -50,31 +50,31 @@ TkIdentifiable objects have getID and setID methods for individual objects.  The
 class TkIdentifiable : public TkObject
 {
 public:
-	// Identifiable API
+    // Identifiable API
 
-	/**
-	Return the ID associated with this object.
+    /**
+    Return the ID associated with this object.
 
-	\return the ID for this object.
-	*/
-	virtual const NvBlastID&	getID() const = 0;
+    \return the ID for this object.
+    */
+    virtual const NvBlastID&    getID() const = 0;
 
-	/**
-	Set the ID for this object.
-	*/
-	virtual void				setID(const NvBlastID& id) = 0;
+    /**
+    Set the ID for this object.
+    */
+    virtual void                setID(const NvBlastID& id) = 0;
 
-	/**
-	Access to the static (class) type data for this object.
+    /**
+    Access to the static (class) type data for this object.
 
-	\return the static type data for this object type.
-	*/
-	virtual const TkType&		getType() const = 0;
+    \return the static type data for this object type.
+    */
+    virtual const TkType&       getType() const = 0;
 
-	/**
-	Integer field available to the user which may be serialized.
-	*/
-	uint64_t	userIntData;
+    /**
+    Integer field available to the user which may be serialized.
+    */
+    uint64_t    userIntData;
 };
 
 } // namespace Blast

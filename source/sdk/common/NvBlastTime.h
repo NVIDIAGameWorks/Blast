@@ -40,36 +40,36 @@ namespace Blast
 class Time
 {
 public:
-	Time() : m_lastTickCount(getTimeTicks()) {}
+    Time() : m_lastTickCount(getTimeTicks()) {}
 
-	int64_t			getElapsedTicks()
-	{
-		const int64_t lastTickCount = m_lastTickCount;
-		m_lastTickCount = getTimeTicks();
-		return m_lastTickCount - lastTickCount;
-	}
+    int64_t         getElapsedTicks()
+    {
+        const int64_t lastTickCount = m_lastTickCount;
+        m_lastTickCount = getTimeTicks();
+        return m_lastTickCount - lastTickCount;
+    }
 
-	int64_t			peekElapsedTicks() const
-	{
-		return getTimeTicks() - m_lastTickCount;
-	}
+    int64_t         peekElapsedTicks() const
+    {
+        return getTimeTicks() - m_lastTickCount;
+    }
 
-	int64_t			getLastTickCount() const
-	{
-		return m_lastTickCount;
-	}
+    int64_t         getLastTickCount() const
+    {
+        return m_lastTickCount;
+    }
 
-	static double	seconds(int64_t ticks)
-	{
-		return s_secondsPerTick * ticks;
-	}
+    static double   seconds(int64_t ticks)
+    {
+        return s_secondsPerTick * ticks;
+    }
 
 private:
-	int64_t			getTimeTicks() const;
-	static double	getTickDuration();
+    int64_t         getTimeTicks() const;
+    static double   getTickDuration();
 
-	int64_t				m_lastTickCount;
-	static const double	s_secondsPerTick;
+    int64_t             m_lastTickCount;
+    static const double s_secondsPerTick;
 };
 
 } // namespace Blast
@@ -84,16 +84,16 @@ private:
 
 NV_INLINE int64_t Nv::Blast::Time::getTimeTicks() const
 {
-	LARGE_INTEGER a;
-	QueryPerformanceCounter(&a);
-	return a.QuadPart;
+    LARGE_INTEGER a;
+    QueryPerformanceCounter(&a);
+    return a.QuadPart;
 }
 
 NV_INLINE double Nv::Blast::Time::getTickDuration()
 {
-	LARGE_INTEGER a;
-	QueryPerformanceFrequency(&a);
-	return 1.0 / (double)a.QuadPart;
+    LARGE_INTEGER a;
+    QueryPerformanceFrequency(&a);
+    return 1.0 / (double)a.QuadPart;
 }
 
 #elif NV_UNIX_FAMILY
@@ -102,14 +102,14 @@ NV_INLINE double Nv::Blast::Time::getTickDuration()
 
 NV_INLINE int64_t Nv::Blast::Time::getTimeTicks() const
 {
-	struct timespec mCurrTimeInt;
-	clock_gettime(CLOCK_REALTIME, &mCurrTimeInt);
-	return (static_cast<int64_t>(mCurrTimeInt.tv_sec) * 1000000000) + (static_cast<int64_t>(mCurrTimeInt.tv_nsec));
+    struct timespec mCurrTimeInt;
+    clock_gettime(CLOCK_REALTIME, &mCurrTimeInt);
+    return (static_cast<int64_t>(mCurrTimeInt.tv_sec) * 1000000000) + (static_cast<int64_t>(mCurrTimeInt.tv_nsec));
 }
 
 NV_INLINE double Nv::Blast::Time::getTickDuration()
 {
-	return 1.e-9;
+    return 1.e-9;
 }
 
 #endif

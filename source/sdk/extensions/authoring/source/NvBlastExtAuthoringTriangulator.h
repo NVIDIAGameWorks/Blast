@@ -43,106 +43,106 @@ namespace Blast
 
 
 /**
-	Tool for doing all post processing steps of authoring.
+    Tool for doing all post processing steps of authoring.
 */
 class Triangulator
 {
 public:
-	/**
-		Triangulates provided mesh and saves result internally. Uses Ear-clipping algorithm.
-		\param[in] mesh Mesh for triangulation
-	*/
-	void							triangulate(const Mesh* mesh);
+    /**
+        Triangulates provided mesh and saves result internally. Uses Ear-clipping algorithm.
+        \param[in] mesh Mesh for triangulation
+    */
+    void                            triangulate(const Mesh* mesh);
 
-	/**
-		\return Return array of triangles of base mesh.
-	*/
-	std::vector<Triangle>&			getBaseMesh()
-	{
-		return mBaseMeshUVFittedTriangles;
-	}
+    /**
+        \return Return array of triangles of base mesh.
+    */
+    std::vector<Triangle>&          getBaseMesh()
+    {
+        return mBaseMeshUVFittedTriangles;
+    }
 
-	std::vector<Triangle>&			getBaseMeshNotFitted()
-	{
-		return mBaseMeshResultTriangles;
-	}
+    std::vector<Triangle>&          getBaseMeshNotFitted()
+    {
+        return mBaseMeshResultTriangles;
+    }
 
 
-	/**
-		\return Return array of TriangleIndexed of base mesh. Each TriangleIndexed contains index of corresponding vertex in internal vertex buffer.
-	*/
-	std::vector<TriangleIndexed>&	getBaseMeshIndexed()
-	{
-		return mBaseMeshTriangles;
-	}
-	/**
-		\return Return mapping from vertices of input Mesh to internal vertices buffer. Used for island detection.
-	*/
-	std::vector<uint32_t>&			getBaseMapping()
-	{
-		return mBaseMapping;
-	};
-	/**
-		\return Return mapping from vertices of input Mesh to internal vertices buffer, only positions are accounted. Used for island detection. 
-	*/
-	std::vector<int32_t>&			getPositionedMapping()
-	{
-		return mPositionMappedVrt;
-	};
-	/**
-		\return Return internal vertex buffer size. Vertices internally are welded with some threshold.
-	*/
-	uint32_t						getWeldedVerticesCount()
-	{
-		return static_cast<uint32_t>(mVertices.size());
-	}	
+    /**
+        \return Return array of TriangleIndexed of base mesh. Each TriangleIndexed contains index of corresponding vertex in internal vertex buffer.
+    */
+    std::vector<TriangleIndexed>&   getBaseMeshIndexed()
+    {
+        return mBaseMeshTriangles;
+    }
+    /**
+        \return Return mapping from vertices of input Mesh to internal vertices buffer. Used for island detection.
+    */
+    std::vector<uint32_t>&          getBaseMapping()
+    {
+        return mBaseMapping;
+    };
+    /**
+        \return Return mapping from vertices of input Mesh to internal vertices buffer, only positions are accounted. Used for island detection. 
+    */
+    std::vector<int32_t>&           getPositionedMapping()
+    {
+        return mPositionMappedVrt;
+    };
+    /**
+        \return Return internal vertex buffer size. Vertices internally are welded with some threshold.
+    */
+    uint32_t                        getWeldedVerticesCount()
+    {
+        return static_cast<uint32_t>(mVertices.size());
+    }   
 
-	/**
-		Removes all information about mesh triangulation.
-	*/
-	void							reset();
+    /**
+        Removes all information about mesh triangulation.
+    */
+    void                            reset();
 
-	int32_t&						getParentChunkId() { return parentChunkId; };
+    int32_t&                        getParentChunkId() { return parentChunkId; };
 
 private:
 
-	int32_t							parentChunkId;
+    int32_t                         parentChunkId;
 
-	int32_t							addVerticeIfNotExist(const Vertex& p);
-	void							addEdgeIfValid(EdgeWithParent& ed);
-	
-	/* Data used before triangulation to build polygon loops*/
+    int32_t                         addVerticeIfNotExist(const Vertex& p);
+    void                            addEdgeIfValid(EdgeWithParent& ed);
+    
+    /* Data used before triangulation to build polygon loops*/
 
-	std::vector<Vertex>									mVertices;
-	std::vector<EdgeWithParent>							mBaseMeshEdges;
-	std::map<Vertex, int32_t, VrtComp>					mVertMap;
-	std::map<EdgeWithParent, int32_t, EdgeComparator>	mEdgeMap;
-	std::vector<uint32_t>								mBaseMapping;
-	std::vector<int32_t>								mPositionMappedVrt;
-	/* ------------------------------------------------------------ */
+    std::vector<Vertex>                                 mVertices;
+    std::vector<EdgeWithParent>                         mBaseMeshEdges;
+    std::map<Vertex, int32_t, VrtComp>                  mVertMap;
+    std::map<EdgeWithParent, int32_t, EdgeComparator>   mEdgeMap;
+    std::vector<uint32_t>                               mBaseMapping;
+    std::vector<int32_t>                                mPositionMappedVrt;
+    /* ------------------------------------------------------------ */
 
 
-	/**
-		Unite all almost similar vertices, update edges according to this changes
-	*/
-	void							prepare(const Mesh* mesh);
+    /**
+        Unite all almost similar vertices, update edges according to this changes
+    */
+    void                            prepare(const Mesh* mesh);
 
-		
-			
-	void							triangulatePolygonWithEarClipping(std::vector<uint32_t>& inputPolygon, Vertex* vert, ProjectionDirections dir);
-	void							buildPolygonAndTriangulate(std::vector<Edge>& edges, Vertex* vertices, int32_t userData, int32_t materialId, int32_t smoothingGroup);
-	void							computePositionedMapping();
-	
-	std::vector<TriangleIndexed>						mBaseMeshTriangles;	
-	/**
-		Final triangles
-	*/
-	std::vector<Triangle>								mBaseMeshResultTriangles;
-	std::vector<Triangle>								mBaseMeshUVFittedTriangles;
+        
+            
+    void                            triangulatePolygonWithEarClipping(std::vector<uint32_t>& inputPolygon, Vertex* vert, ProjectionDirections dir);
+    void                            buildPolygonAndTriangulate(std::vector<Edge>& edges, Vertex* vertices, int32_t userData, int32_t materialId, int32_t smoothingGroup);
+    void                            computePositionedMapping();
+    
+    std::vector<TriangleIndexed>                        mBaseMeshTriangles; 
+    /**
+        Final triangles
+    */
+    std::vector<Triangle>                               mBaseMeshResultTriangles;
+    std::vector<Triangle>                               mBaseMeshUVFittedTriangles;
 };
 
 } // namespace Blast
 } // namespace Nv
 
 
-#endif	// ifndef NVBLASTEXTAUTHORINGTRIANGULATOR_H
+#endif  // ifndef NVBLASTEXTAUTHORINGTRIANGULATOR_H

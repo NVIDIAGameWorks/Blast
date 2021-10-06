@@ -39,13 +39,13 @@ namespace Blast
 class ExtOutputStream : public kj::OutputStream
 {
 public:
-	ExtOutputStream() = delete;
-	ExtOutputStream(std::ostream &outputStream);
+    ExtOutputStream() = delete;
+    ExtOutputStream(std::ostream &outputStream);
 
-	virtual void write(const void* buffer, size_t size) override;
+    virtual void write(const void* buffer, size_t size) override;
 
 private:
-	std::ostream &m_outputStream;
+    std::ostream &m_outputStream;
 };
 
 } // namespace Blast

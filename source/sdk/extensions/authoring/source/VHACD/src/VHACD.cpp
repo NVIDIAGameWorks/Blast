@@ -1003,27 +1003,27 @@ void VHACD::ComputeACD(const Parameters& params)
     bool firstIteration = true;
     m_volumeCH0 = 1.0;
 
-	// Compute the decomposition depth based on the number of convex hulls being requested..
-	uint32_t hullCount = 2;
-	uint32_t depth = 1;
-	while (params.m_maxConvexHulls > hullCount)
-	{
-		depth++;
-		hullCount *= 2;
-	}
-	// We must always increment the decomposition depth one higher than the maximum number of hulls requested.
-	// The reason for this is as follows.
-	// Say, for example, the user requests 32 convex hulls exactly.  This would be a decomposition depth of 5.
-	// However, when we do that, we do *not* necessarily get 32 hulls as a result.  This is because, during
-	// the recursive descent of the binary tree, one or more of the leaf nodes may have no concavity and
-	// will not be split.  So, in this way, even with a decomposition depth of 5, you can produce fewer than
-	// 32 hulls.  So, in this case, we would set the decomposition depth to 6 (producing up to as high as 64 convex hulls).
-	// Then, the merge step which combines over-described hulls down to the user requested amount, we will end up
-	// getting exactly 32 convex hulls as a result.
-	// We could just allow the artist to directly control the decomposition depth directly, but this would be a bit
-	// too complex and the preference is simply to let them specify how many hulls they want and derive the solution
-	// from that.
-	depth++;
+    // Compute the decomposition depth based on the number of convex hulls being requested..
+    uint32_t hullCount = 2;
+    uint32_t depth = 1;
+    while (params.m_maxConvexHulls > hullCount)
+    {
+        depth++;
+        hullCount *= 2;
+    }
+    // We must always increment the decomposition depth one higher than the maximum number of hulls requested.
+    // The reason for this is as follows.
+    // Say, for example, the user requests 32 convex hulls exactly.  This would be a decomposition depth of 5.
+    // However, when we do that, we do *not* necessarily get 32 hulls as a result.  This is because, during
+    // the recursive descent of the binary tree, one or more of the leaf nodes may have no concavity and
+    // will not be split.  So, in this way, even with a decomposition depth of 5, you can produce fewer than
+    // 32 hulls.  So, in this case, we would set the decomposition depth to 6 (producing up to as high as 64 convex hulls).
+    // Then, the merge step which combines over-described hulls down to the user requested amount, we will end up
+    // getting exactly 32 convex hulls as a result.
+    // We could just allow the artist to directly control the decomposition depth directly, but this would be a bit
+    // too complex and the preference is simply to let them specify how many hulls they want and derive the solution
+    // from that.
+    depth++;
 
 
     while (sub++ < depth && inputParts.Size() > 0 && !m_cancel) {
@@ -1306,14 +1306,14 @@ void VHACD::MergeConvexHulls(const Parameters& params)
         params.m_logger->Log(msg.str().c_str());
     }
 
-	// Get the current number of convex hulls
+    // Get the current number of convex hulls
     size_t nConvexHulls = m_convexHulls.Size();
-	// Iteration counter
+    // Iteration counter
     int32_t iteration = 0;
-	// While we have more than at least one convex hull and the user has not asked us to cancel the operation
+    // While we have more than at least one convex hull and the user has not asked us to cancel the operation
     if (nConvexHulls > 1 && !m_cancel) 
-	{
-		// Get the gamma error threshold for when to exit
+    {
+        // Get the gamma error threshold for when to exit
         SArray<Vec3<double> > pts;
         Mesh combinedCH;
 
@@ -1322,10 +1322,10 @@ void VHACD::MergeConvexHulls(const Parameters& params)
         SArray<float> costMatrix;
         costMatrix.Resize(((nConvexHulls * nConvexHulls) - nConvexHulls) >> 1);
         for (size_t p1 = 1; p1 < nConvexHulls; ++p1) 
-		{
+        {
             const float volume1 = m_convexHulls[p1]->ComputeVolume();
             for (size_t p2 = 0; p2 < p1; ++p2) 
-			{
+            {
                 ComputeConvexHull(m_convexHulls[p1], m_convexHulls[p2], pts, &combinedCH);
                 costMatrix[idx++] = ComputeConcavity(volume1 + m_convexHulls[p2]->ComputeVolume(), combinedCH.ComputeVolume(), m_volumeCH0);
             }
@@ -1334,7 +1334,7 @@ void VHACD::MergeConvexHulls(const Parameters& params)
         // Until we cant merge below the maximum cost
         size_t costSize = m_convexHulls.Size();
         while (!m_cancel) 
-		{
+        {
             msg.str("");
             msg << "Iteration " << iteration++;
             m_operation = msg.str();
@@ -1342,10 +1342,10 @@ void VHACD::MergeConvexHulls(const Parameters& params)
             // Search for lowest cost
             float bestCost = (std::numeric_limits<float>::max)();
             const size_t addr = FindMinimumElement(costMatrix.Data(), &bestCost, 0, costMatrix.Size());
-			if ( (costSize-1) < params.m_maxConvexHulls)
-			{
-				break;
-			}
+            if ( (costSize-1) < params.m_maxConvexHulls)
+            {
+                break;
+            }
             const size_t addrI = (static_cast<int32_t>(sqrt(1 + (8 * addr))) - 1) >> 1;
             const size_t p1 = addrI + 1;
             const size_t p2 = addr - ((addrI * (addrI + 1)) >> 1);
@@ -1355,7 +1355,7 @@ void VHACD::MergeConvexHulls(const Parameters& params)
             assert(p2 < costSize);
 
             if (params.m_logger) 
-			{
+            {
                 msg.str("");
                 msg << "\t\t Merging (" << p1 << ", " << p2 << ") " << bestCost << std::endl
                     << std::endl;
@@ -1378,14 +1378,14 @@ void VHACD::MergeConvexHulls(const Parameters& params)
             size_t rowIdx = ((p2 - 1) * p2) >> 1;
             const float volume1 = m_convexHulls[p2]->ComputeVolume();
             for (size_t i = 0; (i < p2) && (!m_cancel); ++i) 
-			{
+            {
                 ComputeConvexHull(m_convexHulls[p2], m_convexHulls[i], pts, &combinedCH);
                 costMatrix[rowIdx++] = ComputeConcavity(volume1 + m_convexHulls[i]->ComputeVolume(), combinedCH.ComputeVolume(), m_volumeCH0);
             }
 
             rowIdx += p2;
             for (size_t i = p2 + 1; (i < costSize) && (!m_cancel); ++i) 
-			{
+            {
                 ComputeConvexHull(m_convexHulls[p2], m_convexHulls[i], pts, &combinedCH);
                 costMatrix[rowIdx] = ComputeConcavity(volume1 + m_convexHulls[i]->ComputeVolume(), combinedCH.ComputeVolume(), m_volumeCH0);
                 rowIdx += i;
@@ -1555,42 +1555,42 @@ void VHACD::SimplifyConvexHulls(const Parameters& params)
 
 bool VHACD::ComputeCenterOfMass(double centerOfMass[3]) const
 {
-	bool ret = false;
+    bool ret = false;
 
-	centerOfMass[0] = 0;
-	centerOfMass[1] = 0;
-	centerOfMass[2] = 0;
-	// Get number of convex hulls in the result
-	uint32_t hullCount = GetNConvexHulls();
-	if (hullCount) // if we have results
-	{
-		ret = true;
-		double totalVolume = 0;
-		// Initialize the center of mass to zero
-		centerOfMass[0] = 0;
-		centerOfMass[1] = 0;
-		centerOfMass[2] = 0;
-		// Compute the total volume of all convex hulls
-		for (uint32_t i = 0; i < hullCount; i++)
-		{
-			ConvexHull ch;
-			GetConvexHull(i, ch);
-			totalVolume += ch.m_volume;
-		}
-		// compute the reciprocal of the total volume
-		double recipVolume = 1.0 / totalVolume;
-		// Add in the weighted by volume average of the center point of each convex hull
-		for (uint32_t i = 0; i < hullCount; i++)
-		{
-			ConvexHull ch;
-			GetConvexHull(i, ch);
-			double ratio = ch.m_volume*recipVolume;
-			centerOfMass[0] += ch.m_center[0] * ratio;
-			centerOfMass[1] += ch.m_center[1] * ratio;
-			centerOfMass[2] += ch.m_center[2] * ratio;
-		}
-	}
-	return ret;
+    centerOfMass[0] = 0;
+    centerOfMass[1] = 0;
+    centerOfMass[2] = 0;
+    // Get number of convex hulls in the result
+    uint32_t hullCount = GetNConvexHulls();
+    if (hullCount) // if we have results
+    {
+        ret = true;
+        double totalVolume = 0;
+        // Initialize the center of mass to zero
+        centerOfMass[0] = 0;
+        centerOfMass[1] = 0;
+        centerOfMass[2] = 0;
+        // Compute the total volume of all convex hulls
+        for (uint32_t i = 0; i < hullCount; i++)
+        {
+            ConvexHull ch;
+            GetConvexHull(i, ch);
+            totalVolume += ch.m_volume;
+        }
+        // compute the reciprocal of the total volume
+        double recipVolume = 1.0 / totalVolume;
+        // Add in the weighted by volume average of the center point of each convex hull
+        for (uint32_t i = 0; i < hullCount; i++)
+        {
+            ConvexHull ch;
+            GetConvexHull(i, ch);
+            double ratio = ch.m_volume*recipVolume;
+            centerOfMass[0] += ch.m_center[0] * ratio;
+            centerOfMass[1] += ch.m_center[1] * ratio;
+            centerOfMass[2] += ch.m_center[2] * ratio;
+        }
+    }
+    return ret;
 }
 
 #pragma warning(disable:4189 4101)
@@ -1600,184 +1600,184 @@ bool VHACD::ComputeCenterOfMass(double centerOfMass[3]) const
 // return the total number of constraint pairs found
 uint32_t VHACD::ComputeConstraints(void)
 {
-	mConstraints.clear(); // erase any previous constraint results
-	uint32_t hullCount = GetNConvexHulls(); // get the number of convex hulls in the results
-	if (hullCount == 0)
-		return 0;
+    mConstraints.clear(); // erase any previous constraint results
+    uint32_t hullCount = GetNConvexHulls(); // get the number of convex hulls in the results
+    if (hullCount == 0)
+        return 0;
 #if DEBUG_VISUALIZE_CONSTRAINTS
-	gRenderDebug->pushRenderState();
-	gRenderDebug->setCurrentDisplayTime(10);
+    gRenderDebug->pushRenderState();
+    gRenderDebug->setCurrentDisplayTime(10);
 #endif
 
-	// We voxelize the convex hull
-	class HullData
-	{
-	public:
-		HullData(void)
-		{
-			FLOAT_MATH::fm_initMinMax(mBmin, mBmax);
-		}
+    // We voxelize the convex hull
+    class HullData
+    {
+    public:
+        HullData(void)
+        {
+            FLOAT_MATH::fm_initMinMax(mBmin, mBmax);
+        }
 
-		~HullData(void)
-		{
-			FLOAT_MATH::fm_releaseVertexIndex(mVertexIndex);
-			FLOAT_MATH::fm_releaseTesselate(mTesselate);
-			delete[]mIndices;
-		}
+        ~HullData(void)
+        {
+            FLOAT_MATH::fm_releaseVertexIndex(mVertexIndex);
+            FLOAT_MATH::fm_releaseTesselate(mTesselate);
+            delete[]mIndices;
+        }
 
-		void computeResolution(void)
-		{
-			mDiagonalDistance = FLOAT_MATH::fm_distance(mBmin, mBmax);
-			mTessellateDistance = mDiagonalDistance / 20;
-			mNearestPointDistance = mDiagonalDistance / 20.0f;
-			mPointResolution = mDiagonalDistance / 100;
-			mVertexIndex = FLOAT_MATH::fm_createVertexIndex(mPointResolution, false);
-			mTesselate = FLOAT_MATH::fm_createTesselate();
-		}
+        void computeResolution(void)
+        {
+            mDiagonalDistance = FLOAT_MATH::fm_distance(mBmin, mBmax);
+            mTessellateDistance = mDiagonalDistance / 20;
+            mNearestPointDistance = mDiagonalDistance / 20.0f;
+            mPointResolution = mDiagonalDistance / 100;
+            mVertexIndex = FLOAT_MATH::fm_createVertexIndex(mPointResolution, false);
+            mTesselate = FLOAT_MATH::fm_createTesselate();
+        }
 
-		void computeTesselation(void)
-		{
-			mTesselationIndices = mTesselate->tesselate(mVertexIndex, mSourceTriangleCount, mIndices, mTessellateDistance, 6, mTessellateTriangleCount);
-			uint32_t vcount = mVertexIndex->getVcount();
-		}
+        void computeTesselation(void)
+        {
+            mTesselationIndices = mTesselate->tesselate(mVertexIndex, mSourceTriangleCount, mIndices, mTessellateDistance, 6, mTessellateTriangleCount);
+            uint32_t vcount = mVertexIndex->getVcount();
+        }
 
-		bool getNearestVert(const double sourcePoint[3],
-							double nearest[3],
-							const HullData &other,
-							double nearestThreshold)
-		{
-			bool ret = false;
+        bool getNearestVert(const double sourcePoint[3],
+                            double nearest[3],
+                            const HullData &other,
+                            double nearestThreshold)
+        {
+            bool ret = false;
 
-			double nt2 = nearestThreshold*nearestThreshold;
-			uint32_t vcount = other.mVertexIndex->getVcount();
-			for (uint32_t i = 0; i < vcount; i++)
-			{
-				const double *p = other.mVertexIndex->getVertexDouble(i);
-				double d2 = FLOAT_MATH::fm_distanceSquared(sourcePoint, p);
-				if (d2 < nt2)
-				{
-					nearest[0] = p[0];
-					nearest[1] = p[1];
-					nearest[2] = p[2];
-					nt2 = d2;
-					ret = true;
-				}
-			}
+            double nt2 = nearestThreshold*nearestThreshold;
+            uint32_t vcount = other.mVertexIndex->getVcount();
+            for (uint32_t i = 0; i < vcount; i++)
+            {
+                const double *p = other.mVertexIndex->getVertexDouble(i);
+                double d2 = FLOAT_MATH::fm_distanceSquared(sourcePoint, p);
+                if (d2 < nt2)
+                {
+                    nearest[0] = p[0];
+                    nearest[1] = p[1];
+                    nearest[2] = p[2];
+                    nt2 = d2;
+                    ret = true;
+                }
+            }
 
-			return ret;
-		}
+            return ret;
+        }
 
-		void findMatchingPoints(const HullData &other)
-		{
-			uint32_t vcount = mVertexIndex->getVcount();
-			for (uint32_t i = 0; i < vcount; i++)
-			{
-				const double *sourcePoint = mVertexIndex->getVertexDouble(i);
-				double nearestPoint[3];
-				if (getNearestVert(sourcePoint, nearestPoint, other, mNearestPointDistance))
-				{
+        void findMatchingPoints(const HullData &other)
+        {
+            uint32_t vcount = mVertexIndex->getVcount();
+            for (uint32_t i = 0; i < vcount; i++)
+            {
+                const double *sourcePoint = mVertexIndex->getVertexDouble(i);
+                double nearestPoint[3];
+                if (getNearestVert(sourcePoint, nearestPoint, other, mNearestPointDistance))
+                {
 #if DEBUG_VISUALIZE_CONSTRAINTS
-					float fp1[3];
-					float fp2[3];
-					FLOAT_MATH::fm_doubleToFloat3(sourcePoint, fp1);
-					FLOAT_MATH::fm_doubleToFloat3(nearestPoint, fp2);
-					gRenderDebug->debugRay(fp1, fp2);
+                    float fp1[3];
+                    float fp2[3];
+                    FLOAT_MATH::fm_doubleToFloat3(sourcePoint, fp1);
+                    FLOAT_MATH::fm_doubleToFloat3(nearestPoint, fp2);
+                    gRenderDebug->debugRay(fp1, fp2);
 #endif
-				}
-			}
+                }
+            }
 
-		}
+        }
 
-		double						mBmin[3];
-		double						mBmax[3];
-		double						mDiagonalDistance;
-		double						mTessellateDistance;
-		double						mPointResolution;
-		double						mNearestPointDistance;
-		uint32_t					mSourceTriangleCount{ 0 };
-		uint32_t					mTessellateTriangleCount{ 0 };
-		uint32_t					*mIndices{ nullptr };
-		FLOAT_MATH::fm_VertexIndex	*mVertexIndex{ nullptr };
-		FLOAT_MATH::fm_Tesselate	*mTesselate{ nullptr };
-		const uint32_t				*mTesselationIndices{ nullptr };
-	};
+        double                      mBmin[3];
+        double                      mBmax[3];
+        double                      mDiagonalDistance;
+        double                      mTessellateDistance;
+        double                      mPointResolution;
+        double                      mNearestPointDistance;
+        uint32_t                    mSourceTriangleCount{ 0 };
+        uint32_t                    mTessellateTriangleCount{ 0 };
+        uint32_t                    *mIndices{ nullptr };
+        FLOAT_MATH::fm_VertexIndex  *mVertexIndex{ nullptr };
+        FLOAT_MATH::fm_Tesselate    *mTesselate{ nullptr };
+        const uint32_t              *mTesselationIndices{ nullptr };
+    };
 
-	HullData *hullData = new HullData[hullCount];
-	for (uint32_t i = 0; i < hullCount; i++)
-	{
-		HullData &hd = hullData[i];
-		ConvexHull ch;
-		GetConvexHull(i, ch);
-		// Compute the bounding volume of this convex hull
-		for (uint32_t j = 0; j < ch.m_nPoints; j++)
-		{
-			const double *p = &ch.m_points[j * 3];
-			FLOAT_MATH::fm_minmax(p, hd.mBmin, hd.mBmax);
-		}
-		hd.computeResolution();	// Compute the tessellation resolution
-		uint32_t tcount = ch.m_nTriangles;
-		hd.mSourceTriangleCount = tcount;
-		hd.mIndices = new uint32_t[tcount * 3];
-		for (uint32_t j = 0; j < tcount; j++)
-		{
-			uint32_t i1 = ch.m_triangles[j * 3 + 0];
-			uint32_t i2 = ch.m_triangles[j * 3 + 1];
-			uint32_t i3 = ch.m_triangles[j * 3 + 2];
-			const double *p1 = &ch.m_points[i1 * 3];
-			const double *p2 = &ch.m_points[i2 * 3];
-			const double *p3 = &ch.m_points[i3 * 3];
-			bool newPos;
-			hd.mIndices[j * 3 + 0] = hd.mVertexIndex->getIndex(p1, newPos);
-			hd.mIndices[j * 3 + 1] = hd.mVertexIndex->getIndex(p2, newPos);
-			hd.mIndices[j * 3 + 2] = hd.mVertexIndex->getIndex(p3, newPos);
-		}
-		hd.computeTesselation();
-	}
+    HullData *hullData = new HullData[hullCount];
+    for (uint32_t i = 0; i < hullCount; i++)
+    {
+        HullData &hd = hullData[i];
+        ConvexHull ch;
+        GetConvexHull(i, ch);
+        // Compute the bounding volume of this convex hull
+        for (uint32_t j = 0; j < ch.m_nPoints; j++)
+        {
+            const double *p = &ch.m_points[j * 3];
+            FLOAT_MATH::fm_minmax(p, hd.mBmin, hd.mBmax);
+        }
+        hd.computeResolution(); // Compute the tessellation resolution
+        uint32_t tcount = ch.m_nTriangles;
+        hd.mSourceTriangleCount = tcount;
+        hd.mIndices = new uint32_t[tcount * 3];
+        for (uint32_t j = 0; j < tcount; j++)
+        {
+            uint32_t i1 = ch.m_triangles[j * 3 + 0];
+            uint32_t i2 = ch.m_triangles[j * 3 + 1];
+            uint32_t i3 = ch.m_triangles[j * 3 + 2];
+            const double *p1 = &ch.m_points[i1 * 3];
+            const double *p2 = &ch.m_points[i2 * 3];
+            const double *p3 = &ch.m_points[i3 * 3];
+            bool newPos;
+            hd.mIndices[j * 3 + 0] = hd.mVertexIndex->getIndex(p1, newPos);
+            hd.mIndices[j * 3 + 1] = hd.mVertexIndex->getIndex(p2, newPos);
+            hd.mIndices[j * 3 + 2] = hd.mVertexIndex->getIndex(p3, newPos);
+        }
+        hd.computeTesselation();
+    }
 
-	for (uint32_t i = 0; i < hullCount; i++)
-	{
-		HullData &hd = hullData[i];
-		// Slightly inflate the bounding box around each convex hull for intersection tests
-		// during the constraint building phase
-		FLOAT_MATH::fm_inflateMinMax(hd.mBmin, hd.mBmax, 0.05f);
-	}
+    for (uint32_t i = 0; i < hullCount; i++)
+    {
+        HullData &hd = hullData[i];
+        // Slightly inflate the bounding box around each convex hull for intersection tests
+        // during the constraint building phase
+        FLOAT_MATH::fm_inflateMinMax(hd.mBmin, hd.mBmax, 0.05f);
+    }
 
-	// Look for every possible pair of convex hulls as possible constraints
-	for (uint32_t i = 0; i < hullCount; i++)
-	{
-		HullData &hd1 = hullData[i];
-		for (uint32_t j = i + 1; j < hullCount; j++)
-		{
-			HullData &hd2 = hullData[j];
-			if (FLOAT_MATH::fm_intersectAABB(hd1.mBmin, hd1.mBmax, hd2.mBmin, hd2.mBmax))
-			{
-				// ok. if two convex hulls intersect, we are going to find the <n> number of nearest
-				// matching points between them.
-				hd1.findMatchingPoints(hd2);
-			}
-		}
-	}
+    // Look for every possible pair of convex hulls as possible constraints
+    for (uint32_t i = 0; i < hullCount; i++)
+    {
+        HullData &hd1 = hullData[i];
+        for (uint32_t j = i + 1; j < hullCount; j++)
+        {
+            HullData &hd2 = hullData[j];
+            if (FLOAT_MATH::fm_intersectAABB(hd1.mBmin, hd1.mBmax, hd2.mBmin, hd2.mBmax))
+            {
+                // ok. if two convex hulls intersect, we are going to find the <n> number of nearest
+                // matching points between them.
+                hd1.findMatchingPoints(hd2);
+            }
+        }
+    }
 
 
 #if DEBUG_VISUALIZE_CONSTRAINTS
-	gRenderDebug->popRenderState();
+    gRenderDebug->popRenderState();
 #endif
 
-	return uint32_t(mConstraints.size());
+    return uint32_t(mConstraints.size());
 }
 
 // Returns a pointer to the constraint index; null if the index is not valid or
 // the user did not previously call 'ComputeConstraints' 
 const VHACD::IVHACD::Constraint *VHACD::GetConstraint(uint32_t index) const
 {
-	const Constraint *ret = nullptr;
+    const Constraint *ret = nullptr;
 
-	if (index < mConstraints.size())
-	{
-		ret = &mConstraints[index];
-	}
+    if (index < mConstraints.size())
+    {
+        ret = &mConstraints[index];
+    }
 
-	return ret;
+    return ret;
 }
 
 

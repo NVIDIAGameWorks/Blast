@@ -56,7 +56,7 @@ PX_INLINE bool isNull(const ScopedResource<Releasable,Releaser>& p) { return !p;
 
 PX_INLINE bool isNullString(const char* pString)
 {
-	return (nullptr == pString || pString[0] == '\0' || physx::shdfnd::strcmp(pString, "null") == 0);
+    return (nullptr == pString || pString[0] == '\0' || physx::shdfnd::strcmp(pString, "null") == 0);
 }
 
 template<class T>
@@ -70,67 +70,67 @@ PX_INLINE bool isValidString(const char* pString) { return !isNullString(pString
 template <class T>
 class Singleton
 {
-	// The fact that I cannot declare T a friend directly is rather absurd...
-	typedef T Type;
-	friend typename Singleton<T>::Type;
+    // The fact that I cannot declare T a friend directly is rather absurd...
+    typedef T Type;
+    friend typename Singleton<T>::Type;
 
-	//////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
 
 public:
-	static T& instance()
-	{
-		static T _instance;
-		return _instance;
-	}
+    static T& instance()
+    {
+        static T _instance;
+        return _instance;
+    }
 
-	//////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
 
 private:
-	Singleton() { }
-	~Singleton() { };
-	Singleton(const Singleton&);
-	Singleton& operator=(const Singleton&);
+    Singleton() { }
+    ~Singleton() { };
+    Singleton(const Singleton&);
+    Singleton& operator=(const Singleton&);
 };
 
 //////////////////////////////////////////////////////////////////////////////
 
 class FileUtils : public Singleton<FileUtils>
 {
-	friend class Singleton<FileUtils>;
+    friend class Singleton<FileUtils>;
 
 public:
-	void        addAbsolutePath(const std::string&);
-	void        addRelativePath(const std::string&);
-	void        clearPaths();
+    void        addAbsolutePath(const std::string&);
+    void        addRelativePath(const std::string&);
+    void        clearPaths();
 
-	//////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
 
-	FILE*       findFile(const std::string&, bool bVerbose = true);
-	std::string findPath(const std::string&, bool bVerbose = true);
-	bool        find(const std::string&, FILE**, std::string*, bool bVerbose = true);
+    FILE*       findFile(const std::string&, bool bVerbose = true);
+    std::string findPath(const std::string&, bool bVerbose = true);
+    bool        find(const std::string&, FILE**, std::string*, bool bVerbose = true);
 
-	//////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
 
-	const std::string& getCurrentPath() const
-	{
-		return mCurrentPath;
-	}
+    const std::string& getCurrentPath() const
+    {
+        return mCurrentPath;
+    }
 
-	//////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
 
-	static std::string getDirectory(const std::string&);
-	static std::string getFilename(const std::string&, bool bWithExtension = true);
-	static std::string getFileExtension(const std::string&);
+    static std::string getDirectory(const std::string&);
+    static std::string getFilename(const std::string&, bool bWithExtension = true);
+    static std::string getFileExtension(const std::string&);
 
-	//////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
 
 protected:
-	FileUtils();
+    FileUtils();
 
-	//////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
 
-	std::string              mCurrentPath;
-	std::vector<std::string> mSearchPaths;
+    std::string              mCurrentPath;
+    std::vector<std::string> mSearchPaths;
 };
 
 

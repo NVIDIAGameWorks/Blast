@@ -38,18 +38,18 @@ namespace Nv
 namespace Blast
 {
 
-	class PatternGeneratorImpl : public PatternGenerator
-	{
-	public:
-		virtual DamagePattern* generateUniformPattern(const UniformPatternDesc* desc) override;
-		virtual DamagePattern* generateBeamPattern(const BeamPatternDesc* desc) override;
-		virtual DamagePattern* generateRegularRadialPattern(const RegularRadialPatternDesc* desc) override;
-		virtual void release() override;
+    class PatternGeneratorImpl : public PatternGenerator
+    {
+    public:
+        virtual DamagePattern* generateUniformPattern(const UniformPatternDesc* desc) override;
+        virtual DamagePattern* generateBeamPattern(const BeamPatternDesc* desc) override;
+        virtual DamagePattern* generateRegularRadialPattern(const RegularRadialPatternDesc* desc) override;
+        virtual void release() override;
 
-		virtual DamagePattern* generateVoronoiPattern(uint32_t pointCount, const NvcVec3* points, int32_t interiorMaterialId) override;
-	private:
-		DamagePattern* generateVoronoiPatternInternal(uint32_t pointCount, const NvcVec3* points, int32_t interiorMaterialId, float angle = 0.0f);
-	};
+        virtual DamagePattern* generateVoronoiPattern(uint32_t pointCount, const NvcVec3* points, int32_t interiorMaterialId) override;
+    private:
+        DamagePattern* generateVoronoiPatternInternal(uint32_t pointCount, const NvcVec3* points, int32_t interiorMaterialId, float angle = 0.0f);
+    };
 
 
 } // namespace Blast

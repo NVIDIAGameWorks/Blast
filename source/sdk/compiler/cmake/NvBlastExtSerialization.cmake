@@ -28,83 +28,83 @@ SET(CAPNPC_SRC_PREFIX ${SERIAL_EXT_SOURCE_DIR})
 CAPNP_GENERATE_CPP(CAPNP_SRCS CAPNP_HDRS ${SERIAL_EXT_SOURCE_DIR}/NvBlastExtLlSerialization.capn)
 
 SET(COMMON_FILES
-	${BLASTEXTSERIALIZATION_PLATFORM_COMMON_FILES}
-	
-	${COMMON_SOURCE_DIR}/NvBlastAssert.cpp
-	${COMMON_SOURCE_DIR}/NvBlastAssert.h
-	${COMMON_SOURCE_DIR}/NvBlastAtomic.cpp
-	${COMMON_SOURCE_DIR}/NvBlastAtomic.h
-	${COMMON_SOURCE_DIR}/NvBlastDLink.h
-	${COMMON_SOURCE_DIR}/NvBlastFixedArray.h
-	${COMMON_SOURCE_DIR}/NvBlastFixedBitmap.h
-	${COMMON_SOURCE_DIR}/NvBlastFixedBoolArray.h
-	${COMMON_SOURCE_DIR}/NvBlastFixedPriorityQueue.h
-	${COMMON_SOURCE_DIR}/NvBlastGeometry.h
-	${COMMON_SOURCE_DIR}/NvBlastIndexFns.h
-	${COMMON_SOURCE_DIR}/NvBlastIteratorBase.h
-	${COMMON_SOURCE_DIR}/NvBlastMath.h
-	${COMMON_SOURCE_DIR}/NvBlastMemory.h
-	${COMMON_SOURCE_DIR}/NvBlastPreprocessorInternal.h
-	${COMMON_SOURCE_DIR}/NvBlastTime.cpp
-	${COMMON_SOURCE_DIR}/NvBlastTime.h
-	${COMMON_SOURCE_DIR}/NvBlastTimers.cpp
+    ${BLASTEXTSERIALIZATION_PLATFORM_COMMON_FILES}
+    
+    ${COMMON_SOURCE_DIR}/NvBlastAssert.cpp
+    ${COMMON_SOURCE_DIR}/NvBlastAssert.h
+    ${COMMON_SOURCE_DIR}/NvBlastAtomic.cpp
+    ${COMMON_SOURCE_DIR}/NvBlastAtomic.h
+    ${COMMON_SOURCE_DIR}/NvBlastDLink.h
+    ${COMMON_SOURCE_DIR}/NvBlastFixedArray.h
+    ${COMMON_SOURCE_DIR}/NvBlastFixedBitmap.h
+    ${COMMON_SOURCE_DIR}/NvBlastFixedBoolArray.h
+    ${COMMON_SOURCE_DIR}/NvBlastFixedPriorityQueue.h
+    ${COMMON_SOURCE_DIR}/NvBlastGeometry.h
+    ${COMMON_SOURCE_DIR}/NvBlastIndexFns.h
+    ${COMMON_SOURCE_DIR}/NvBlastIteratorBase.h
+    ${COMMON_SOURCE_DIR}/NvBlastMath.h
+    ${COMMON_SOURCE_DIR}/NvBlastMemory.h
+    ${COMMON_SOURCE_DIR}/NvBlastPreprocessorInternal.h
+    ${COMMON_SOURCE_DIR}/NvBlastTime.cpp
+    ${COMMON_SOURCE_DIR}/NvBlastTime.h
+    ${COMMON_SOURCE_DIR}/NvBlastTimers.cpp
 )
   
 
 SET(EXT_SERIALIZATION_FILES
-	${SERIAL_EXT_SOURCE_DIR}/NvBlastExtLlSerialization.capn
+    ${SERIAL_EXT_SOURCE_DIR}/NvBlastExtLlSerialization.capn
 
-	${SERIAL_EXT_SOURCE_DIR}/NvBlastExtSerialization.cpp
-	${SERIAL_EXT_SOURCE_DIR}/NvBlastExtLlSerialization.cpp
+    ${SERIAL_EXT_SOURCE_DIR}/NvBlastExtSerialization.cpp
+    ${SERIAL_EXT_SOURCE_DIR}/NvBlastExtLlSerialization.cpp
 
-	${SERIAL_EXT_SOURCE_DIR}/NvBlastExtSerializationCAPN.h
+    ${SERIAL_EXT_SOURCE_DIR}/NvBlastExtSerializationCAPN.h
 
-	${SERIAL_EXT_SOURCE_DIR}/NvBlastExtSerializationInternal.h
-	${SERIAL_EXT_SOURCE_DIR}/NvBlastExtLlSerializerCAPN.h
-	
-	${SERIAL_EXT_SOURCE_DIR}/NvBlastExtOutputStream.h
-	${SERIAL_EXT_SOURCE_DIR}/NvBlastExtOutputStream.cpp
-	${SERIAL_EXT_SOURCE_DIR}/NvBlastExtInputStream.h
-	${SERIAL_EXT_SOURCE_DIR}/NvBlastExtInputStream.cpp
+    ${SERIAL_EXT_SOURCE_DIR}/NvBlastExtSerializationInternal.h
+    ${SERIAL_EXT_SOURCE_DIR}/NvBlastExtLlSerializerCAPN.h
+    
+    ${SERIAL_EXT_SOURCE_DIR}/NvBlastExtOutputStream.h
+    ${SERIAL_EXT_SOURCE_DIR}/NvBlastExtOutputStream.cpp
+    ${SERIAL_EXT_SOURCE_DIR}/NvBlastExtInputStream.h
+    ${SERIAL_EXT_SOURCE_DIR}/NvBlastExtInputStream.cpp
 )
 
 SET(DTO_SOURCE_FILES
-	${DTO_SOURCE_DIR}/DTOMacros.h
-	${DTO_SOURCE_DIR}/ActorDTO.h
-	${DTO_SOURCE_DIR}/ActorDTO.cpp
-	${DTO_SOURCE_DIR}/AssetDTO.h
-	${DTO_SOURCE_DIR}/AssetDTO.cpp
-	${DTO_SOURCE_DIR}/FamilyDTO.h
-	${DTO_SOURCE_DIR}/FamilyDTO.cpp
-	${DTO_SOURCE_DIR}/FamilyGraphDTO.h
-	${DTO_SOURCE_DIR}/FamilyGraphDTO.cpp
-	${DTO_SOURCE_DIR}/NvBlastChunkDTO.h
-	${DTO_SOURCE_DIR}/NvBlastChunkDTO.cpp
-	${DTO_SOURCE_DIR}/NvBlastBondDTO.h
-	${DTO_SOURCE_DIR}/NvBlastBondDTO.cpp
-	${DTO_SOURCE_DIR}/NvBlastIDDTO.h
-	${DTO_SOURCE_DIR}/NvBlastIDDTO.cpp
+    ${DTO_SOURCE_DIR}/DTOMacros.h
+    ${DTO_SOURCE_DIR}/ActorDTO.h
+    ${DTO_SOURCE_DIR}/ActorDTO.cpp
+    ${DTO_SOURCE_DIR}/AssetDTO.h
+    ${DTO_SOURCE_DIR}/AssetDTO.cpp
+    ${DTO_SOURCE_DIR}/FamilyDTO.h
+    ${DTO_SOURCE_DIR}/FamilyDTO.cpp
+    ${DTO_SOURCE_DIR}/FamilyGraphDTO.h
+    ${DTO_SOURCE_DIR}/FamilyGraphDTO.cpp
+    ${DTO_SOURCE_DIR}/NvBlastChunkDTO.h
+    ${DTO_SOURCE_DIR}/NvBlastChunkDTO.cpp
+    ${DTO_SOURCE_DIR}/NvBlastBondDTO.h
+    ${DTO_SOURCE_DIR}/NvBlastBondDTO.cpp
+    ${DTO_SOURCE_DIR}/NvBlastIDDTO.h
+    ${DTO_SOURCE_DIR}/NvBlastIDDTO.cpp
 )
 
 SET(EXT_SERIALIZATION_INCLUDES
-	${SERIAL_EXT_INCLUDE_DIR}/NvBlastExtSerialization.h
-	${SERIAL_EXT_INCLUDE_DIR}/NvBlastExtLlSerialization.h
+    ${SERIAL_EXT_INCLUDE_DIR}/NvBlastExtSerialization.h
+    ${SERIAL_EXT_INCLUDE_DIR}/NvBlastExtLlSerialization.h
 )
 
 ADD_LIBRARY(NvBlastExtSerialization ${BLASTEXTSERIALIZATION_LIB_TYPE} 
-	${COMMON_FILES}
+    ${COMMON_FILES}
 
-	${DTO_SOURCE_FILES}
-	
-	${EXT_SERIALIZATION_INCLUDES}
-	${EXT_SERIALIZATION_FILES}
-	
-	${CAPNP_SRCS}
-	${CAPNP_HDRS}
-	
-	${MD5_FILES}
+    ${DTO_SOURCE_FILES}
+    
+    ${EXT_SERIALIZATION_INCLUDES}
+    ${EXT_SERIALIZATION_FILES}
+    
+    ${CAPNP_SRCS}
+    ${CAPNP_HDRS}
+    
+    ${MD5_FILES}
 
-	${CAPNPROTOSDK_SOURCE_FILES}
+    ${CAPNPROTOSDK_SOURCE_FILES}
 )
 
 SOURCE_GROUP("common" FILES ${COMMON_FILES})
@@ -118,40 +118,40 @@ SOURCE_GROUP("src\\serialization\\CapnProtoSDK" FILES ${CAPNPROTOSDK_SOURCE_FILE
 # Target specific compile options
 
 TARGET_INCLUDE_DIRECTORIES(NvBlastExtSerialization 
-	PRIVATE ${BLASTEXTSERIALIZATION_PLATFORM_INCLUDES}
+    PRIVATE ${BLASTEXTSERIALIZATION_PLATFORM_INCLUDES}
 
-	PRIVATE ${PROJECT_SOURCE_DIR}/common
-	PRIVATE ${PROJECT_SOURCE_DIR}/lowlevel/include
-	PRIVATE ${PROJECT_SOURCE_DIR}/lowlevel/source
+    PRIVATE ${PROJECT_SOURCE_DIR}/common
+    PRIVATE ${PROJECT_SOURCE_DIR}/lowlevel/include
+    PRIVATE ${PROJECT_SOURCE_DIR}/lowlevel/source
 
-	PRIVATE ${TK_INCLUDE_DIR}
-	
-	PUBLIC ${SERIAL_EXT_INCLUDE_DIR}
-	PUBLIC ${SERIAL_EXT_SOURCE_DIR}
-	PUBLIC ${DTO_SOURCE_DIR}
-	
-	PUBLIC ${CAPNPROTOSDK_INCLUDE_DIRS}
-	
-	PRIVATE ${COMMON_SOURCE_DIR}
+    PRIVATE ${TK_INCLUDE_DIR}
+    
+    PUBLIC ${SERIAL_EXT_INCLUDE_DIR}
+    PUBLIC ${SERIAL_EXT_SOURCE_DIR}
+    PUBLIC ${DTO_SOURCE_DIR}
+    
+    PUBLIC ${CAPNPROTOSDK_INCLUDE_DIRS}
+    
+    PRIVATE ${COMMON_SOURCE_DIR}
 
-	PRIVATE ${PXSHAREDSDK_INCLUDE_DIRS}
+    PRIVATE ${PXSHAREDSDK_INCLUDE_DIRS}
 )
 
 TARGET_COMPILE_DEFINITIONS(NvBlastExtSerialization
-	PUBLIC CAPNP_LITE=1;BLAST_LL_ALLOC=1
-	PRIVATE ${BLASTEXTSERIALIZATION_COMPILE_DEFS}
+    PUBLIC CAPNP_LITE=1;BLAST_LL_ALLOC=1
+    PRIVATE ${BLASTEXTSERIALIZATION_COMPILE_DEFS}
 )
 
 # Warning disables for Capn Proto
 TARGET_COMPILE_OPTIONS(NvBlastExtSerialization
-	PRIVATE ${BLASTEXTSERIALIZATION_COMPILE_OPTIONS}
+    PRIVATE ${BLASTEXTSERIALIZATION_COMPILE_OPTIONS}
 )
 
 SET_TARGET_PROPERTIES(NvBlastExtSerialization PROPERTIES 
-	PDB_NAME_DEBUG "NvBlastExtSerialization${CMAKE_DEBUG_POSTFIX}"
-	PDB_NAME_CHECKED "NvBlastExtSerialization${CMAKE_CHECKED_POSTFIX}"
-	PDB_NAME_PROFILE "NvBlastExtSerialization${CMAKE_PROFILE_POSTFIX}"
-	PDB_NAME_RELEASE "NvBlastExtSerialization${CMAKE_RELEASE_POSTFIX}"
+    PDB_NAME_DEBUG "NvBlastExtSerialization${CMAKE_DEBUG_POSTFIX}"
+    PDB_NAME_CHECKED "NvBlastExtSerialization${CMAKE_CHECKED_POSTFIX}"
+    PDB_NAME_PROFILE "NvBlastExtSerialization${CMAKE_PROFILE_POSTFIX}"
+    PDB_NAME_RELEASE "NvBlastExtSerialization${CMAKE_RELEASE_POSTFIX}"
     ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${BL_LIB_OUTPUT_DIR}/debug"
     LIBRARY_OUTPUT_DIRECTORY_DEBUG "${BL_DLL_OUTPUT_DIR}/debug"
     RUNTIME_OUTPUT_DIRECTORY_DEBUG "${BL_EXE_OUTPUT_DIR}/debug"
@@ -168,5 +168,5 @@ SET_TARGET_PROPERTIES(NvBlastExtSerialization PROPERTIES
 
 # Do final direct sets after the target has been defined
 TARGET_LINK_LIBRARIES(NvBlastExtSerialization 
-	PRIVATE NvBlast NvBlastGlobals ${CAPNPROTOSDK_LIBRARIES}
+    PRIVATE NvBlast NvBlastGlobals ${CAPNPROTOSDK_LIBRARIES}
 )

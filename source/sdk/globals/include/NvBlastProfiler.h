@@ -44,18 +44,18 @@ Custom Blast profiler interface.
 class ProfilerCallback
 {
 protected:
-	virtual ~ProfilerCallback() {}
+    virtual ~ProfilerCallback() {}
 
 public:
-	/**
-	Called when a nested profile zone starts.
-	*/
-	virtual void zoneStart(const char* name) = 0;
+    /**
+    Called when a nested profile zone starts.
+    */
+    virtual void zoneStart(const char* name) = 0;
 
-	/**
-	Called when the current profile zone ends.
-	*/
-	virtual void zoneEnd() = 0;
+    /**
+    Called when the current profile zone ends.
+    */
+    virtual void zoneEnd() = 0;
 };
 
 
@@ -64,12 +64,12 @@ Profiler detail to be reported. The higher setting is used, the more details are
 */
 struct ProfilerDetail
 {
-	enum Level
-	{
-		LOW,
-		MEDIUM,
-		HIGH
-	};
+    enum Level
+    {
+        LOW,
+        MEDIUM,
+        HIGH
+    };
 };
 
 

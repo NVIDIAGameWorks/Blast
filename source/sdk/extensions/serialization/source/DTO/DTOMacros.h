@@ -28,16 +28,16 @@
 
 #pragma once
 
-#define DTO_CLASS(_NAME, _POCO, _SERIALIZER)											\
-namespace Nv {																			\
-namespace Blast {																		\
-class _NAME ## DTO																		\
-{																						\
-public:																					\
-																						\
-	static bool serialize(_SERIALIZER::Builder builder, const _POCO * poco);			\
- 	static _POCO* deserialize(_SERIALIZER::Reader reader);								\
- 	static bool deserializeInto(_SERIALIZER::Reader reader, _POCO * poco);				\
-};																						\
-}																						\
+#define DTO_CLASS(_NAME, _POCO, _SERIALIZER)                                            \
+namespace Nv {                                                                          \
+namespace Blast {                                                                       \
+class _NAME ## DTO                                                                      \
+{                                                                                       \
+public:                                                                                 \
+                                                                                        \
+    static bool serialize(_SERIALIZER::Builder builder, const _POCO * poco);            \
+    static _POCO* deserialize(_SERIALIZER::Reader reader);                              \
+    static bool deserializeInto(_SERIALIZER::Reader reader, _POCO * poco);              \
+};                                                                                      \
+}                                                                                       \
 }

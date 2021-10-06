@@ -48,7 +48,7 @@ class ExtIStream;
 
 //// Nv::Blast::TkAsset ////
 
-TkAsset*	deserializeTkAsset(ExtIStream& stream, TkFramework& framework);
+TkAsset*    deserializeTkAsset(ExtIStream& stream, TkFramework& framework);
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

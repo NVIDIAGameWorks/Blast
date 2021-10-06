@@ -36,77 +36,77 @@
 
 struct AssetList
 {
-	struct BoxAsset
-	{
-		BoxAsset() : staticHeight(-std::numeric_limits<float>().infinity()), 
-			jointAllBonds(false), extents(20, 20, 20), bondFlags(7)
-		{}
+    struct BoxAsset
+    {
+        BoxAsset() : staticHeight(-std::numeric_limits<float>().infinity()), 
+            jointAllBonds(false), extents(20, 20, 20), bondFlags(7)
+        {}
 
-		struct Level
-		{
-			Level() :x(0), y(0), z(0), isSupport(0) {};
+        struct Level
+        {
+            Level() :x(0), y(0), z(0), isSupport(0) {};
 
-			int				x, y, z;
-			bool			isSupport;
-		};
+            int             x, y, z;
+            bool            isSupport;
+        };
 
-		std::string			id;
-		std::string			name;
-		physx::PxVec3		extents;
-		float				staticHeight;
-		bool				jointAllBonds;
-		std::vector<Level>	levels;
-		uint32_t			bondFlags;
-	};
+        std::string         id;
+        std::string         name;
+        physx::PxVec3       extents;
+        float               staticHeight;
+        bool                jointAllBonds;
+        std::vector<Level>  levels;
+        uint32_t            bondFlags;
+    };
 
-	struct ModelAsset
-	{
-		ModelAsset() : isSkinned(false), transform(physx::PxIdentity) 
-		{}
+    struct ModelAsset
+    {
+        ModelAsset() : isSkinned(false), transform(physx::PxIdentity) 
+        {}
 
-		std::string			id;
-		std::string			file;
-		std::string			name;
-		physx::PxTransform	transform;
-		bool				isSkinned;
-	};
+        std::string         id;
+        std::string         file;
+        std::string         name;
+        physx::PxTransform  transform;
+        bool                isSkinned;
+    };
 
-	struct CompositeAsset
-	{
-		CompositeAsset() : transform(physx::PxIdentity)
-		{}
+    struct CompositeAsset
+    {
+        CompositeAsset() : transform(physx::PxIdentity)
+        {}
 
-		struct AssetRef
-		{
-			std::string			id;
-			physx::PxTransform	transform;
-		};
+        struct AssetRef
+        {
+            std::string         id;
+            physx::PxTransform  transform;
+        };
 
-		struct Joint
-		{
-			int32_t				assetIndices[2];
-			uint32_t			chunkIndices[2];
-			physx::PxVec3		attachPositions[2];
-		};
+        struct Joint
+        {
+            int32_t             assetIndices[2];
+            uint32_t            chunkIndices[2];
+            physx::PxVec3       attachPositions[2];
+        };
 
-		std::string				id;
-		std::string				name;
-		physx::PxTransform		transform;
-		std::vector<AssetRef>	assetRefs;
-		std::vector<Joint>		joints;
-	};
+        std::string             id;
+        std::string             name;
+        physx::PxTransform      transform;
+        std::vector<AssetRef>   assetRefs;
+        std::vector<Joint>      joints;
+    };
 
-	std::vector<ModelAsset>		models;
-	std::vector<CompositeAsset>	composites;
-	std::vector<BoxAsset>		boxes;
+    std::vector<ModelAsset>     models;
+    std::vector<CompositeAsset> composites;
+    std::vector<BoxAsset>       boxes;
 };
 
 struct SampleConfig
 {
-	std::wstring			sampleName;
-	std::string				assetsFile;
-	std::vector<std::string> additionalResourcesDir;
-	AssetList				additionalAssetList;
+    std::wstring            sampleName;
+    std::string             assetsFile;
+    std::vector<std::string> additionalResourcesDir;
+    AssetList               additionalAssetList;
 };
 
 int runSample(const SampleConfig& config);

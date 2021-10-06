@@ -6,38 +6,38 @@ Texture2D diffuseTexture : register(t0);
 
 struct VS_INPUT
 {
-	float3 position : POSITION0;
-	float3 normal : NORMAL0;
-	float2 uv : TEXCOORD0;
-	float health : TEXCOORD1;
+    float3 position : POSITION0;
+    float3 normal : NORMAL0;
+    float2 uv : TEXCOORD0;
+    float health : TEXCOORD1;
 };
 
 struct VS_OUTPUT
 {
-	float4 position : SV_POSITION;
-	float4 worldPos : POSITION0;
-	float2 uv : TEXCOORD0;
-	float3 normal : NORMAL0;
-	float health : TEXCOORD1;
+    float4 position : SV_POSITION;
+    float4 worldPos : POSITION0;
+    float2 uv : TEXCOORD0;
+    float3 normal : NORMAL0;
+    float health : TEXCOORD1;
 };
 
 VS_OUTPUT VS(VS_INPUT iV)
 {
-	VS_OUTPUT oV;
+    VS_OUTPUT oV;
 
-	float4 worldSpacePos = mul(float4(iV.position, 1.0f), model);
-	oV.position = mul(worldSpacePos, viewProjection);
+    float4 worldSpacePos = mul(float4(iV.position, 1.0f), model);
+    oV.position = mul(worldSpacePos, viewProjection);
 
-	oV.worldPos = worldSpacePos;
+    oV.worldPos = worldSpacePos;
 
-	// normals
-	float3 worldNormal = mul(float4(iV.normal, 0.0f), model);
-	oV.normal = worldNormal;
+    // normals
+    float3 worldNormal = mul(float4(iV.normal, 0.0f), model);
+    oV.normal = worldNormal;
 
-	oV.uv = iV.uv;
-	oV.health = iV.health;
+    oV.uv = iV.uv;
+    oV.health = iV.health;
 
-	return oV;
+    return oV;
 }
 
 float noise2(float2 co)
@@ -65,12 +65,12 @@ float voronoi( float2 x )
 
 float4 PS(VS_OUTPUT iV) : SV_Target0
 {
-	float4 textureColor = diffuseTexture.Sample(defaultSampler, iV.uv);
+    float4 textureColor = diffuseTexture.Sample(defaultSampler, iV.uv);
 
-	// health cracks hack
-	float crack = 1.0f - voronoi(iV.uv * 50.0f);
-	crack = smoothstep(0.0f, 0.5f, crack);
-	textureColor = textureColor * lerp(1.0f, crack, (1.0f - iV.health) * 0.7f);
+    // health cracks hack
+    float crack = 1.0f - voronoi(iV.uv * 50.0f);
+    crack = smoothstep(0.0f, 0.5f, crack);
+    textureColor = textureColor * lerp(1.0f, crack, (1.0f - iV.health) * 0.7f);
 
-	return float4(CalcPixelLight(textureColor, iV.worldPos, iV.normal), 1);
+    return float4(CalcPixelLight(textureColor, iV.worldPos, iV.normal), 1);
 }

@@ -42,67 +42,67 @@ namespace Blast
 {
 
 /**
-	Tool for gathering bond information from provided mesh geometry
+    Tool for gathering bond information from provided mesh geometry
 */
 
 class BlastBondGeneratorImpl : public BlastBondGenerator
 {
-public:	
-				
-	BlastBondGeneratorImpl(ConvexMeshBuilder* builder) 
-		: mConvexMeshBuilder(builder) {};
+public: 
+                
+    BlastBondGeneratorImpl(ConvexMeshBuilder* builder) 
+        : mConvexMeshBuilder(builder) {};
 
-	virtual void release() override;
+    virtual void release() override;
 
-	virtual int32_t	buildDescFromInternalFracture(FractureTool* tool, const bool* chunkIsSupport,
-		NvBlastBondDesc*& resultBondDescs, NvBlastChunkDesc*& resultChunkDescriptors)  override;
+    virtual int32_t buildDescFromInternalFracture(FractureTool* tool, const bool* chunkIsSupport,
+        NvBlastBondDesc*& resultBondDescs, NvBlastChunkDesc*& resultChunkDescriptors)  override;
 
-	virtual int32_t	createBondBetweenMeshes(uint32_t meshACount, const Triangle* meshA, uint32_t meshBCount, const Triangle* meshB,
-		NvBlastBond& resultBond, BondGenerationConfig conf) override;
+    virtual int32_t createBondBetweenMeshes(uint32_t meshACount, const Triangle* meshA, uint32_t meshBCount, const Triangle* meshB,
+        NvBlastBond& resultBond, BondGenerationConfig conf) override;
 
-	virtual int32_t	createBondBetweenMeshes(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
-		uint32_t overlapsCount, const uint32_t* overlapsA, const uint32_t* overlapsB,
-		NvBlastBondDesc*& resultBond, BondGenerationConfig cfg) override;
+    virtual int32_t createBondBetweenMeshes(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
+        uint32_t overlapsCount, const uint32_t* overlapsA, const uint32_t* overlapsB,
+        NvBlastBondDesc*& resultBond, BondGenerationConfig cfg) override;
 
-	virtual int32_t	bondsFromPrefractured(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
-		const bool* chunkIsSupport, NvBlastBondDesc*& resultBondDescs,
-		BondGenerationConfig conf) override;
+    virtual int32_t bondsFromPrefractured(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
+        const bool* chunkIsSupport, NvBlastBondDesc*& resultBondDescs,
+        BondGenerationConfig conf) override;
 
-	virtual int32_t	bondsFromPrefractured(uint32_t meshCount, const uint32_t* convexHullOffset, const CollisionHull** chunkHulls,
-		const bool* chunkIsSupport, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, float maxSeparation) override;
+    virtual int32_t bondsFromPrefractured(uint32_t meshCount, const uint32_t* convexHullOffset, const CollisionHull** chunkHulls,
+        const bool* chunkIsSupport, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, float maxSeparation) override;
 
 
-				
+                
 private:
-	float	processWithMidplanes(TriangleProcessor* trProcessor, const Triangle* mA, uint32_t mavc, const Triangle* mB, uint32_t mbvc, const CollisionHull* hull1, const CollisionHull* hull2,
-	                         const std::vector<physx::PxVec3>& hull1p, const std::vector<physx::PxVec3>& hull2p,
-	                         physx::PxVec3& normal, physx::PxVec3& centroid, float maxRelSeparation);
+    float   processWithMidplanes(TriangleProcessor* trProcessor, const Triangle* mA, uint32_t mavc, const Triangle* mB, uint32_t mbvc, const CollisionHull* hull1, const CollisionHull* hull2,
+                             const std::vector<physx::PxVec3>& hull1p, const std::vector<physx::PxVec3>& hull2p,
+                             physx::PxVec3& normal, physx::PxVec3& centroid, float maxRelSeparation);
 
-	int32_t	createFullBondListAveraged(	uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry, const CollisionHull** chunkHulls,
-										const bool* supportFlags, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf, std::set<std::pair<uint32_t, uint32_t> >* pairNotToTest = nullptr);
-	int32_t	createFullBondListExact(	uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
-										const bool* supportFlags, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf);
-	int32_t	createFullBondListExactInternal(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
-											std::vector<PlaneChunkIndexer>& planeTriangleMapping , NvBlastBondDesc*& resultBondDescs);
-	int32_t	createBondForcedInternal(	const std::vector<physx::PxVec3>& hull0, const std::vector<physx::PxVec3>& hull1,const CollisionHull& cHull0, 
-										const CollisionHull& cHull1, physx::PxBounds3 bound0, physx::PxBounds3 bound1, NvBlastBond& resultBond, float overlapping);
+    int32_t createFullBondListAveraged( uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry, const CollisionHull** chunkHulls,
+                                        const bool* supportFlags, const uint32_t* meshGroups, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf, std::set<std::pair<uint32_t, uint32_t> >* pairNotToTest = nullptr);
+    int32_t createFullBondListExact(    uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
+                                        const bool* supportFlags, NvBlastBondDesc*& resultBondDescs, BondGenerationConfig conf);
+    int32_t createFullBondListExactInternal(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry,
+                                            std::vector<PlaneChunkIndexer>& planeTriangleMapping , NvBlastBondDesc*& resultBondDescs);
+    int32_t createBondForcedInternal(   const std::vector<physx::PxVec3>& hull0, const std::vector<physx::PxVec3>& hull1,const CollisionHull& cHull0, 
+                                        const CollisionHull& cHull1, physx::PxBounds3 bound0, physx::PxBounds3 bound1, NvBlastBond& resultBond, float overlapping);
 
-	void	buildGeometryCache(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry);
-	void	resetGeometryCache();
+    void    buildGeometryCache(uint32_t meshCount, const uint32_t* geometryOffset, const Triangle* geometry);
+    void    resetGeometryCache();
 
-	ConvexMeshBuilder*							mConvexMeshBuilder;
+    ConvexMeshBuilder*                          mConvexMeshBuilder;
 
-	std::vector<std::vector<Triangle> >			mGeometryCache;
+    std::vector<std::vector<Triangle> >         mGeometryCache;
 
-	std::vector<PlaneChunkIndexer>				mPlaneCache;
-	std::vector<CollisionHull*>					mCHullCache;
-	std::vector<std::vector<physx::PxVec3> >	mHullsPointsCache;
-	std::vector<physx::PxBounds3 >				mBoundsCache;
+    std::vector<PlaneChunkIndexer>              mPlaneCache;
+    std::vector<CollisionHull*>                 mCHullCache;
+    std::vector<std::vector<physx::PxVec3> >    mHullsPointsCache;
+    std::vector<physx::PxBounds3 >              mBoundsCache;
 
 
 };
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv
 
 #endif // NVBLASTEXTAUTHORINGBONDGENERATORIMPL_H

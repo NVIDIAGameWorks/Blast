@@ -45,7 +45,7 @@ Wrapped PxShared HashMap that uses NvBlastGlobals AllocatorCalllback.
 template <class Key, class Value, class HashFn = physx::shdfnd::Hash<Key>>
 struct HashMap
 {
-	typedef physx::shdfnd::HashMap<Key, Value, HashFn, Allocator> type;
+    typedef physx::shdfnd::HashMap<Key, Value, HashFn, Allocator> type;
 };
 
 } // namespace Blast

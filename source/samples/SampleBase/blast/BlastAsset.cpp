@@ -34,54 +34,54 @@
 
 
 BlastAsset::BlastAsset(Renderer& renderer)
-	: m_renderer(renderer), m_bondHealthMax(1.0f), m_supportChunkHealthMax(1.0f), m_damageAccelerator(nullptr)
+    : m_renderer(renderer), m_bondHealthMax(1.0f), m_supportChunkHealthMax(1.0f), m_damageAccelerator(nullptr)
 {
 }
 
 BlastAsset::~BlastAsset()
 {
-	if (m_damageAccelerator)
-	{
-		m_damageAccelerator->release();
-	}
+    if (m_damageAccelerator)
+    {
+        m_damageAccelerator->release();
+    }
 }
 
 void BlastAsset::initialize()
 {
-	// calc max healths
-	const auto& actorDesc = m_pxAsset->getDefaultActorDesc();
-	if (actorDesc.initialBondHealths)
-	{
-		m_bondHealthMax = FLT_MIN;
-		const uint32_t bondCount = m_pxAsset->getTkAsset().getBondCount();
-		for (uint32_t i = 0; i < bondCount; ++i)
-		{
-			m_bondHealthMax = std::max<float>(m_bondHealthMax, actorDesc.initialBondHealths[i]);
-		}
-	}
-	else
-	{
-		m_bondHealthMax = actorDesc.uniformInitialBondHealth;
-	}
+    // calc max healths
+    const auto& actorDesc = m_pxAsset->getDefaultActorDesc();
+    if (actorDesc.initialBondHealths)
+    {
+        m_bondHealthMax = FLT_MIN;
+        const uint32_t bondCount = m_pxAsset->getTkAsset().getBondCount();
+        for (uint32_t i = 0; i < bondCount; ++i)
+        {
+            m_bondHealthMax = std::max<float>(m_bondHealthMax, actorDesc.initialBondHealths[i]);
+        }
+    }
+    else
+    {
+        m_bondHealthMax = actorDesc.uniformInitialBondHealth;
+    }
 
-	if(actorDesc.initialSupportChunkHealths)
-	{
-		m_supportChunkHealthMax = FLT_MIN;
-		const uint32_t nodeCount = m_pxAsset->getTkAsset().getGraph().nodeCount;
-		for (uint32_t i = 0; i < nodeCount; ++i)
-		{
-			m_supportChunkHealthMax = std::max<float>(m_supportChunkHealthMax, actorDesc.initialSupportChunkHealths[i]);
-		}
-	}
-	else
-	{
-		m_supportChunkHealthMax = actorDesc.uniformInitialLowerSupportChunkHealth;
-	}
+    if(actorDesc.initialSupportChunkHealths)
+    {
+        m_supportChunkHealthMax = FLT_MIN;
+        const uint32_t nodeCount = m_pxAsset->getTkAsset().getGraph().nodeCount;
+        for (uint32_t i = 0; i < nodeCount; ++i)
+        {
+            m_supportChunkHealthMax = std::max<float>(m_supportChunkHealthMax, actorDesc.initialSupportChunkHealths[i]);
+        }
+    }
+    else
+    {
+        m_supportChunkHealthMax = actorDesc.uniformInitialLowerSupportChunkHealth;
+    }
 
-	m_damageAccelerator = NvBlastExtDamageAcceleratorCreate(m_pxAsset->getTkAsset().getAssetLL(), 3);
+    m_damageAccelerator = NvBlastExtDamageAcceleratorCreate(m_pxAsset->getTkAsset().getAssetLL(), 3);
 }
 
 size_t BlastAsset::getBlastAssetSize() const
 {
-	return m_pxAsset->getTkAsset().getDataSize();
+    return m_pxAsset->getTkAsset().getDataSize();
 }

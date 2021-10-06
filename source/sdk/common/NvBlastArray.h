@@ -45,7 +45,7 @@ Wrapped PxShared Array that uses NvBlastGlobals AllocatorCalllback.
 template <class T>
 struct Array
 {
-	typedef physx::shdfnd::Array<T, Allocator> type;
+    typedef physx::shdfnd::Array<T, Allocator> type;
 };
 
 
@@ -57,7 +57,7 @@ InlineArraya is array that pre-allocates for N elements.
 template <class T, uint32_t N>
 struct InlineArray
 {
-	typedef physx::shdfnd::InlineArray<T, N, Allocator> type;
+    typedef physx::shdfnd::InlineArray<T, N, Allocator> type;
 };
 
 } // namespace Blast

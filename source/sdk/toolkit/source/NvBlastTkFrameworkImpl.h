@@ -54,91 +54,91 @@ Implementation of TkFramework
 class TkFrameworkImpl : public TkFramework
 {
 public:
-										TkFrameworkImpl();
-										~TkFrameworkImpl();
+                                        TkFrameworkImpl();
+                                        ~TkFrameworkImpl();
 
-	// Begin TkFramework
-	virtual void						release() override;
+    // Begin TkFramework
+    virtual void                        release() override;
 
-	virtual const TkType*				getType(TkTypeIndex::Enum typeIndex) const override;
+    virtual const TkType*               getType(TkTypeIndex::Enum typeIndex) const override;
 
-	virtual TkIdentifiable*				findObjectByID(const NvBlastID& id) const override;
+    virtual TkIdentifiable*             findObjectByID(const NvBlastID& id) const override;
 
-	virtual uint32_t					getObjectCount(const TkType& type) const override;
+    virtual uint32_t                    getObjectCount(const TkType& type) const override;
 
-	virtual uint32_t					getObjects(TkIdentifiable** buffer, uint32_t bufferSize, const TkType& type, uint32_t indexStart = 0) const override;
+    virtual uint32_t                    getObjects(TkIdentifiable** buffer, uint32_t bufferSize, const TkType& type, uint32_t indexStart = 0) const override;
 
-	virtual bool						reorderAssetDescChunks(NvBlastChunkDesc* chunkDescs, uint32_t chunkCount, NvBlastBondDesc* bondDescs, uint32_t bondCount, uint32_t* chunkReorderMap = nullptr, bool keepBondNormalChunkOrder = false) const override;
+    virtual bool                        reorderAssetDescChunks(NvBlastChunkDesc* chunkDescs, uint32_t chunkCount, NvBlastBondDesc* bondDescs, uint32_t bondCount, uint32_t* chunkReorderMap = nullptr, bool keepBondNormalChunkOrder = false) const override;
 
-	virtual bool						ensureAssetExactSupportCoverage(NvBlastChunkDesc* chunkDescs, uint32_t chunkCount) const override;
+    virtual bool                        ensureAssetExactSupportCoverage(NvBlastChunkDesc* chunkDescs, uint32_t chunkCount) const override;
 
-	virtual TkAsset*					createAsset(const TkAssetDesc& desc) override;
+    virtual TkAsset*                    createAsset(const TkAssetDesc& desc) override;
 
-	virtual TkAsset*					createAsset(const NvBlastAsset* assetLL, Nv::Blast::TkAssetJointDesc* jointDescs = nullptr, uint32_t jointDescCount = 0, bool ownsAsset = false) override;
+    virtual TkAsset*                    createAsset(const NvBlastAsset* assetLL, Nv::Blast::TkAssetJointDesc* jointDescs = nullptr, uint32_t jointDescCount = 0, bool ownsAsset = false) override;
 
-	virtual TkGroup*					createGroup(const TkGroupDesc& desc) override;
+    virtual TkGroup*                    createGroup(const TkGroupDesc& desc) override;
 
-	virtual TkActor*					createActor(const TkActorDesc& desc) override;
+    virtual TkActor*                    createActor(const TkActorDesc& desc) override;
 
-	virtual TkJoint*					createJoint(const TkJointDesc& desc) override;
-	// End TkFramework
+    virtual TkJoint*                    createJoint(const TkJointDesc& desc) override;
+    // End TkFramework
 
-	// Public methods
-	/**
-	To be called by any TkIdentifiable object when it is created, so the framework can track it.
-	*/
-	void								onCreate(TkIdentifiable& object);
+    // Public methods
+    /**
+    To be called by any TkIdentifiable object when it is created, so the framework can track it.
+    */
+    void                                onCreate(TkIdentifiable& object);
 
-	/**
-	To be called by any TkIdentifiable object when it is deleted, so the framework can stop tracking it.
-	*/
-	void								onDestroy(TkIdentifiable& object);
+    /**
+    To be called by any TkIdentifiable object when it is deleted, so the framework can stop tracking it.
+    */
+    void                                onDestroy(TkIdentifiable& object);
 
-	/**
-	Special onCreate method for joints, since they are not TkIdentifiable.
-	*/
-	void								onCreate(TkJointImpl& joint);
+    /**
+    Special onCreate method for joints, since they are not TkIdentifiable.
+    */
+    void                                onCreate(TkJointImpl& joint);
 
-	/**
-	Special onDestroy method for joints, since they are not TkIdentifiable.
-	*/
-	void								onDestroy(TkJointImpl& joint);
+    /**
+    Special onDestroy method for joints, since they are not TkIdentifiable.
+    */
+    void                                onDestroy(TkJointImpl& joint);
 
-	/**
-	Must be called whenever a TkIdentifiable object's ID is changed, so that the framework can associate the new ID with it.
-	*/
-	void								onIDChange(TkIdentifiable& object, const NvBlastID& IDPrev, const NvBlastID& IDCurr);
+    /**
+    Must be called whenever a TkIdentifiable object's ID is changed, so that the framework can associate the new ID with it.
+    */
+    void                                onIDChange(TkIdentifiable& object, const NvBlastID& IDPrev, const NvBlastID& IDCurr);
 
-	/**
-	Internal (non-virtual) method to find a TkIdentifiable object based upon its NvBlastID.
-	*/
-	TkIdentifiable*						findObjectByIDInternal(const NvBlastID& id) const;
+    /**
+    Internal (non-virtual) method to find a TkIdentifiable object based upon its NvBlastID.
+    */
+    TkIdentifiable*                     findObjectByIDInternal(const NvBlastID& id) const;
 
-	// Access to singleton
+    // Access to singleton
 
-	/** Retrieve the global singleton. */
-	static TkFrameworkImpl*				get();
+    /** Retrieve the global singleton. */
+    static TkFrameworkImpl*             get();
 
-	/** Set the global singleton, if it's not already set, or set it to NULL.  Returns true iff successful. */
-	static bool							set(TkFrameworkImpl* framework);
+    /** Set the global singleton, if it's not already set, or set it to NULL.  Returns true iff successful. */
+    static bool                         set(TkFrameworkImpl* framework);
 
 private:
-	// Enums
-	enum { ClassID = NVBLAST_FOURCC('T', 'K', 'F', 'W') };	//!< TkFramework identifier token, used in serialization
+    // Enums
+    enum { ClassID = NVBLAST_FOURCC('T', 'K', 'F', 'W') };  //!< TkFramework identifier token, used in serialization
 
-	// Static data
-	static TkFrameworkImpl*														s_framework;			//!< Global (singleton) object pointer
+    // Static data
+    static TkFrameworkImpl*                                                     s_framework;            //!< Global (singleton) object pointer
 
-	// Types
-	InlineArray<const TkTypeImpl*, TkTypeIndex::TypeCount>::type				m_types;				//!< TkIdentifiable static type data
-	HashMap<uint32_t, uint32_t>::type											m_typeIDToIndex;		//!< Map to type data keyed by ClassID
+    // Types
+    InlineArray<const TkTypeImpl*, TkTypeIndex::TypeCount>::type                m_types;                //!< TkIdentifiable static type data
+    HashMap<uint32_t, uint32_t>::type                                           m_typeIDToIndex;        //!< Map to type data keyed by ClassID
 
-	// Objects and object names
-	HashMap<NvBlastID, TkIdentifiable*>::type									m_IDToObject;			//!< Map to all TkIdentifiable objects, keyed by NvBlastID
-	InlineArray<Array<TkIdentifiable*>::type, TkTypeIndex::TypeCount>::type		m_objects;				//!< Catalog of all TkIdentifiable objects, grouped by type.  (Revisit implementation.)
+    // Objects and object names
+    HashMap<NvBlastID, TkIdentifiable*>::type                                   m_IDToObject;           //!< Map to all TkIdentifiable objects, keyed by NvBlastID
+    InlineArray<Array<TkIdentifiable*>::type, TkTypeIndex::TypeCount>::type     m_objects;              //!< Catalog of all TkIdentifiable objects, grouped by type.  (Revisit implementation.)
 
-	// Track external joints (to do: make this a pool)
-	HashSet<TkJointImpl*>::type													m_joints;				//!< All internal joints
+    // Track external joints (to do: make this a pool)
+    HashSet<TkJointImpl*>::type                                                 m_joints;               //!< All internal joints
 };
 
 
@@ -146,13 +146,13 @@ private:
 
 NV_INLINE TkIdentifiable* TkFrameworkImpl::findObjectByIDInternal(const NvBlastID& id) const
 {
-	const auto entry = m_IDToObject.find(id);
-	if (entry == nullptr)
-	{
-		return nullptr;
-	}
+    const auto entry = m_IDToObject.find(id);
+    if (entry == nullptr)
+    {
+        return nullptr;
+    }
 
-	return entry->second;
+    return entry->second;
 }
 
 } // namespace Blast

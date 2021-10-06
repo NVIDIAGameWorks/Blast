@@ -45,41 +45,41 @@ SampleController::~SampleController()
 
 void SampleController::onSampleStart()
 {
-	// start with GPU physics by default
-	setUseGPUPhysics(true);
+    // start with GPU physics by default
+    setUseGPUPhysics(true);
 }
 
 
 void SampleController::setUseGPUPhysics(bool useGPUPhysics)
 {
-	if (!getPhysXController().getGPUPhysicsAvailable())
-	{
-		useGPUPhysics = false;
-	}
+    if (!getPhysXController().getGPUPhysicsAvailable())
+    {
+        useGPUPhysics = false;
+    }
 
-	if (getPhysXController().getUseGPUPhysics() == useGPUPhysics)
-	{
-		return;
-	}
+    if (getPhysXController().getUseGPUPhysics() == useGPUPhysics)
+    {
+        return;
+    }
 
-	int assetNum = getSceneController().releaseAll();
+    int assetNum = getSceneController().releaseAll();
 
-	getBlastController().notifyPhysXControllerRelease();
-	getPhysXController().setUseGPUPhysics(useGPUPhysics);
-	getBlastController().reinitialize();
+    getBlastController().notifyPhysXControllerRelease();
+    getPhysXController().setUseGPUPhysics(useGPUPhysics);
+    getBlastController().reinitialize();
 
-	getRenderer().clearQueue();
+    getRenderer().clearQueue();
 
-	getSceneController().spawnAsset(assetNum);
+    getSceneController().spawnAsset(assetNum);
 }
 
 
 void SampleController::drawPhysXGpuUI()
 {
-	// GPU Physics
-	bool useGPU = getPhysXController().getUseGPUPhysics();
-	if (ImGui::Checkbox("Use GPU Physics", &useGPU))
-	{
-		getCommonUIController().addDelayedCall([=]() { setUseGPUPhysics(useGPU); }, "Loading...");
-	}
+    // GPU Physics
+    bool useGPU = getPhysXController().getUseGPUPhysics();
+    if (ImGui::Checkbox("Use GPU Physics", &useGPU))
+    {
+        getCommonUIController().addDelayedCall([=]() { setUseGPUPhysics(useGPU); }, "Loading...");
+    }
 }

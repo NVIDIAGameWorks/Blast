@@ -33,28 +33,28 @@
 
 
 BlastAssetModelSkinned::BlastAssetModelSkinned(TkFramework& framework, PxPhysics& physics, PxCooking& cooking, ExtSerialization& serialization, Renderer& renderer, const char* modelName)
-	: BlastAssetModel(framework, physics, cooking, serialization, renderer, modelName)
+    : BlastAssetModel(framework, physics, cooking, serialization, renderer, modelName)
 {
-	for (const BlastModel::Material& material : getModel().materials)
-	{
-		if (material.diffuseTexture.empty())
-			m_renderMaterials.push_back(new RenderMaterial(renderer.getResourceManager(), "model_skinned"));
-		else 
-			m_renderMaterials.push_back(new RenderMaterial(renderer.getResourceManager(), "model_skinned_textured", material.diffuseTexture.c_str()));
-	}
+    for (const BlastModel::Material& material : getModel().materials)
+    {
+        if (material.diffuseTexture.empty())
+            m_renderMaterials.push_back(new RenderMaterial(renderer.getResourceManager(), "model_skinned"));
+        else 
+            m_renderMaterials.push_back(new RenderMaterial(renderer.getResourceManager(), "model_skinned_textured", material.diffuseTexture.c_str()));
+    }
 
-	initialize();
+    initialize();
 }
 
 BlastAssetModelSkinned::~BlastAssetModelSkinned()
 {
-	for (RenderMaterial* r : m_renderMaterials)
-	{
-		SAFE_DELETE(r);
-	}
+    for (RenderMaterial* r : m_renderMaterials)
+    {
+        SAFE_DELETE(r);
+    }
 }
 
 BlastFamilyPtr BlastAssetModelSkinned::createFamily(PhysXController& physXConroller, ExtPxManager& pxManager, const ActorDesc& desc)
 {
-	return BlastFamilyPtr(new BlastFamilyModelSkinned(physXConroller, pxManager, m_renderer, *this, desc));
+    return BlastFamilyPtr(new BlastFamilyModelSkinned(physXConroller, pxManager, m_renderer, *this, desc));
 }

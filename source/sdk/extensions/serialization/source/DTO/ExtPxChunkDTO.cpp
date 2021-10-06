@@ -35,31 +35,31 @@ namespace Blast
 
 bool ExtPxChunkDTO::serialize(Nv::Blast::Serialization::ExtPxChunk::Builder builder, const Nv::Blast::ExtPxChunk * poco)
 {
-	builder.setFirstSubchunkIndex(poco->firstSubchunkIndex);
-	builder.setSubchunkCount(poco->subchunkCount);
-	builder.setIsStatic(poco->isStatic);
+    builder.setFirstSubchunkIndex(poco->firstSubchunkIndex);
+    builder.setSubchunkCount(poco->subchunkCount);
+    builder.setIsStatic(poco->isStatic);
 
-	return true;
+    return true;
 }
 
 
 Nv::Blast::ExtPxChunk* ExtPxChunkDTO::deserialize(Nv::Blast::Serialization::ExtPxChunk::Reader reader)
 {
-	NV_UNUSED(reader);
-	// TODO: Allocate with ExtContext and return
+    NV_UNUSED(reader);
+    // TODO: Allocate with ExtContext and return
 
-	return nullptr;
+    return nullptr;
 }
 
 
 bool ExtPxChunkDTO::deserializeInto(Nv::Blast::Serialization::ExtPxChunk::Reader reader, Nv::Blast::ExtPxChunk * poco)
 {
-	poco->firstSubchunkIndex = reader.getFirstSubchunkIndex();
-	poco->subchunkCount = reader.getSubchunkCount();
-	poco->isStatic = reader.getIsStatic();
+    poco->firstSubchunkIndex = reader.getFirstSubchunkIndex();
+    poco->subchunkCount = reader.getSubchunkCount();
+    poco->isStatic = reader.getIsStatic();
 
-	return true;
+    return true;
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

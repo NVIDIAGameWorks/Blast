@@ -63,71 +63,71 @@ buf:
 class FixedBitmap
 {
 public:
-	explicit FixedBitmap(uint32_t bitsCount)
-	{
-		m_bitsCount = bitsCount;
-	}
+    explicit FixedBitmap(uint32_t bitsCount)
+    {
+        m_bitsCount = bitsCount;
+    }
 
-	static uint32_t getWordsCount(uint32_t bitsCount)
-	{
-		return (bitsCount + 31) >> 5;
-	}
+    static uint32_t getWordsCount(uint32_t bitsCount)
+    {
+        return (bitsCount + 31) >> 5;
+    }
 
-	static size_t requiredMemorySize(uint32_t bitsCount)
-	{
-		return align16(sizeof(FixedBitmap)) + align16(getWordsCount(bitsCount) * sizeof(uint32_t));
-	}
+    static size_t requiredMemorySize(uint32_t bitsCount)
+    {
+        return align16(sizeof(FixedBitmap)) + align16(getWordsCount(bitsCount) * sizeof(uint32_t));
+    }
 
-	void clear()
-	{
-		memset(data(), 0, getWordsCount(m_bitsCount) * sizeof(uint32_t));
-	}
+    void clear()
+    {
+        memset(data(), 0, getWordsCount(m_bitsCount) * sizeof(uint32_t));
+    }
 
-	void fill()
-	{
-		const uint32_t wordCount = getWordsCount(m_bitsCount);
-		uint32_t* mem = data();
-		memset(mem, 0xFF, wordCount * sizeof(uint32_t));
-		const uint32_t bitsRemainder = m_bitsCount & 31;
-		if (bitsRemainder > 0)
-		{
-			mem[wordCount - 1] &= ~(0xFFFFFFFF << bitsRemainder);
-		}
-	}
+    void fill()
+    {
+        const uint32_t wordCount = getWordsCount(m_bitsCount);
+        uint32_t* mem = data();
+        memset(mem, 0xFF, wordCount * sizeof(uint32_t));
+        const uint32_t bitsRemainder = m_bitsCount & 31;
+        if (bitsRemainder > 0)
+        {
+            mem[wordCount - 1] &= ~(0xFFFFFFFF << bitsRemainder);
+        }
+    }
 
-	int test(uint32_t index) const
-	{
-		NVBLAST_ASSERT(index < m_bitsCount);
-		return data()[index >> 5] & (1 << (index & 31));
-	}
+    int test(uint32_t index) const
+    {
+        NVBLAST_ASSERT(index < m_bitsCount);
+        return data()[index >> 5] & (1 << (index & 31));
+    }
 
-	void set(uint32_t index)
-	{
-		NVBLAST_ASSERT(index < m_bitsCount);
-		data()[index >> 5] |= 1 << (index & 31);
-	}
+    void set(uint32_t index)
+    {
+        NVBLAST_ASSERT(index < m_bitsCount);
+        data()[index >> 5] |= 1 << (index & 31);
+    }
 
-	void reset(uint32_t index)
-	{
-		NVBLAST_ASSERT(index < m_bitsCount);
-		data()[index >> 5] &= ~(1 << (index & 31));
-	}
-
-private:
-	uint32_t m_bitsCount;
-
-	NV_FORCE_INLINE uint32_t* data()
-	{
-		return (uint32_t*)((char*)this + sizeof(FixedBitmap));
-	}
-
-	NV_FORCE_INLINE const uint32_t* data() const
-	{
-		return (uint32_t*)((char*)this + sizeof(FixedBitmap));
-	}
+    void reset(uint32_t index)
+    {
+        NVBLAST_ASSERT(index < m_bitsCount);
+        data()[index >> 5] &= ~(1 << (index & 31));
+    }
 
 private:
-	FixedBitmap(const FixedBitmap& that);
+    uint32_t m_bitsCount;
+
+    NV_FORCE_INLINE uint32_t* data()
+    {
+        return (uint32_t*)((char*)this + sizeof(FixedBitmap));
+    }
+
+    NV_FORCE_INLINE const uint32_t* data() const
+    {
+        return (uint32_t*)((char*)this + sizeof(FixedBitmap));
+    }
+
+private:
+    FixedBitmap(const FixedBitmap& that);
 };
 
 } // namespace Blast

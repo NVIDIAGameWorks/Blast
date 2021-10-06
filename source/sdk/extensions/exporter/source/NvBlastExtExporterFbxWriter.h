@@ -36,13 +36,13 @@
 
 namespace fbxsdk
 {
-	class FbxScene;
-	class FbxNode;
-	class FbxMesh;
-	class FbxSkin;
-	class FbxManager;
-	class FbxSurfaceMaterial;
-	class FbxDisplayLayer;
+    class FbxScene;
+    class FbxNode;
+    class FbxMesh;
+    class FbxSkin;
+    class FbxManager;
+    class FbxSurfaceMaterial;
+    class FbxDisplayLayer;
 }
 
 struct NvBlastAsset;
@@ -59,83 +59,83 @@ class FbxFileWriter : public IMeshFileWriter
 {
 public:
 
-	/**
-		Initialize FBX sdk and create scene.
-	*/
-	FbxFileWriter();
-	//~FbxFileWriter() = default;
+    /**
+        Initialize FBX sdk and create scene.
+    */
+    FbxFileWriter();
+    //~FbxFileWriter() = default;
 
-	virtual void release() override;
+    virtual void release() override;
 
-	/**
-		Get current scene;
-	*/
-	fbxsdk::FbxScene* getScene();
+    /**
+        Get current scene;
+    */
+    fbxsdk::FbxScene* getScene();
 
-	/**
-		Append rendermesh to scene. Meshes constructed from arrays of triangles.
-	*/
-	virtual bool appendMesh(const AuthoringResult& aResult, const char* assetName, bool nonSkinned) override;
+    /**
+        Append rendermesh to scene. Meshes constructed from arrays of triangles.
+    */
+    virtual bool appendMesh(const AuthoringResult& aResult, const char* assetName, bool nonSkinned) override;
 
-	/**
-		Append rendermesh to scene. Meshes constructed from arrays of vertex data (position, normal, uvs) and indices.
-		Position, normal and uv has separate index arrays.
-	*/
-	virtual bool appendMesh(const ExporterMeshData& meshData, const char* assetName, bool nonSkinned) override;
+    /**
+        Append rendermesh to scene. Meshes constructed from arrays of vertex data (position, normal, uvs) and indices.
+        Position, normal and uv has separate index arrays.
+    */
+    virtual bool appendMesh(const ExporterMeshData& meshData, const char* assetName, bool nonSkinned) override;
 
-	/**
-		Save scene to file.
-	*/
-	virtual bool saveToFile(const char* assetName, const char* outputPath) override;
+    /**
+        Save scene to file.
+    */
+    virtual bool saveToFile(const char* assetName, const char* outputPath) override;
 
-	/**
-		Set interior material index.
-	*/
-	virtual void setInteriorIndex(int32_t index) override;
+    /**
+        Set interior material index.
+    */
+    virtual void setInteriorIndex(int32_t index) override;
 
-	/**
-		Set true if FBX should be saved in ASCII mode.
-	*/
-	bool bOutputFBXAscii;
+    /**
+        Set true if FBX should be saved in ASCII mode.
+    */
+    bool bOutputFBXAscii;
 
 private:
-	std::vector<fbxsdk::FbxSurfaceMaterial*> mMaterials;
-	fbxsdk::FbxScene* mScene;
-	fbxsdk::FbxDisplayLayer* mRenderLayer;
+    std::vector<fbxsdk::FbxSurfaceMaterial*> mMaterials;
+    fbxsdk::FbxScene* mScene;
+    fbxsdk::FbxDisplayLayer* mRenderLayer;
 
-	//TODO we should track for every memory allocation and deallocate it not only for sdkManager
-	std::shared_ptr<fbxsdk::FbxManager> sdkManager;
-	std::map<uint32_t, fbxsdk::FbxNode*> chunkNodes;
-	std::map<uint32_t, NvcVec3> worldChunkPivots;
+    //TODO we should track for every memory allocation and deallocate it not only for sdkManager
+    std::shared_ptr<fbxsdk::FbxManager> sdkManager;
+    std::map<uint32_t, fbxsdk::FbxNode*> chunkNodes;
+    std::map<uint32_t, NvcVec3> worldChunkPivots;
 
-	bool appendNonSkinnedMesh(const AuthoringResult& aResult, const char* assetName);
-	bool appendNonSkinnedMesh(const ExporterMeshData& meshData, const char* assetName);
-	void createMaterials(const ExporterMeshData& meshData);
-	void createMaterials(const AuthoringResult& aResult);
+    bool appendNonSkinnedMesh(const AuthoringResult& aResult, const char* assetName);
+    bool appendNonSkinnedMesh(const ExporterMeshData& meshData, const char* assetName);
+    void createMaterials(const ExporterMeshData& meshData);
+    void createMaterials(const AuthoringResult& aResult);
 
-	/**
-	Append collision geometry to scene. Each node with collision geometry has "ParentalChunkIndex" property, which contain index of chunk
-	which this collision geometry belongs to.
-	*/
-	bool appendCollisionMesh(uint32_t meshCount, uint32_t* offsets, CollisionHull** hulls, const char* assetName);
+    /**
+    Append collision geometry to scene. Each node with collision geometry has "ParentalChunkIndex" property, which contain index of chunk
+    which this collision geometry belongs to.
+    */
+    bool appendCollisionMesh(uint32_t meshCount, uint32_t* offsets, CollisionHull** hulls, const char* assetName);
 
-	uint32_t addCollisionHulls(uint32_t chunkIndex, fbxsdk::FbxDisplayLayer* displayLayer, fbxsdk::FbxNode* parentNode, uint32_t hullsCount, CollisionHull** hulls);
-	uint32_t createChunkRecursive(uint32_t currentCpIdx, uint32_t chunkIndex, fbxsdk::FbxNode *meshNode, fbxsdk::FbxNode* parentNode, fbxsdk::FbxSkin* skin, const AuthoringResult& aResult);
-	uint32_t createChunkRecursive(uint32_t currentCpIdx, uint32_t chunkIndex, fbxsdk::FbxNode *meshNode, fbxsdk::FbxNode* parentNode, fbxsdk::FbxSkin* skin, const ExporterMeshData& meshData);
+    uint32_t addCollisionHulls(uint32_t chunkIndex, fbxsdk::FbxDisplayLayer* displayLayer, fbxsdk::FbxNode* parentNode, uint32_t hullsCount, CollisionHull** hulls);
+    uint32_t createChunkRecursive(uint32_t currentCpIdx, uint32_t chunkIndex, fbxsdk::FbxNode *meshNode, fbxsdk::FbxNode* parentNode, fbxsdk::FbxSkin* skin, const AuthoringResult& aResult);
+    uint32_t createChunkRecursive(uint32_t currentCpIdx, uint32_t chunkIndex, fbxsdk::FbxNode *meshNode, fbxsdk::FbxNode* parentNode, fbxsdk::FbxSkin* skin, const ExporterMeshData& meshData);
 
-	void createChunkRecursiveNonSkinned(const std::string& meshName, uint32_t chunkIndex, fbxsdk::FbxNode* parentNode,
-		const std::vector<fbxsdk::FbxSurfaceMaterial*>& materials, const AuthoringResult& aResult);
+    void createChunkRecursiveNonSkinned(const std::string& meshName, uint32_t chunkIndex, fbxsdk::FbxNode* parentNode,
+        const std::vector<fbxsdk::FbxSurfaceMaterial*>& materials, const AuthoringResult& aResult);
 
-	void createChunkRecursiveNonSkinned(const std::string& meshName, uint32_t chunkIndex, fbxsdk::FbxNode* parentNode,
-		const std::vector<fbxsdk::FbxSurfaceMaterial*>& materials, const ExporterMeshData& meshData);
+    void createChunkRecursiveNonSkinned(const std::string& meshName, uint32_t chunkIndex, fbxsdk::FbxNode* parentNode,
+        const std::vector<fbxsdk::FbxSurfaceMaterial*>& materials, const ExporterMeshData& meshData);
 
-	void addControlPoints(fbxsdk::FbxMesh* mesh, const ExporterMeshData& meshData);
-	void addBindPose();
+    void addControlPoints(fbxsdk::FbxMesh* mesh, const ExporterMeshData& meshData);
+    void addBindPose();
 
-	void generateSmoothingGroups(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
-	void removeDuplicateControlPoints(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
+    void generateSmoothingGroups(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
+    void removeDuplicateControlPoints(fbxsdk::FbxMesh* mesh, FbxSkin* skin);
 
-	int32_t mInteriorIndex;
+    int32_t mInteriorIndex;
 };
 
 }

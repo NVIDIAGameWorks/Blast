@@ -47,24 +47,24 @@ namespace Blast
 template<>
 NV_INLINE bool ExtSerializationCAPN<ExtPxAsset, Serialization::ExtPxAsset::Reader, Serialization::ExtPxAsset::Builder>::serializeIntoBuilder(Serialization::ExtPxAsset::Builder& assetBuilder, const ExtPxAsset* asset)
 {
-	return ExtPxAssetDTO::serialize(assetBuilder, asset);
+    return ExtPxAssetDTO::serialize(assetBuilder, asset);
 }
 
 template<>
 NV_INLINE ExtPxAsset* ExtSerializationCAPN<ExtPxAsset, Serialization::ExtPxAsset::Reader, Serialization::ExtPxAsset::Builder>::deserializeFromStreamReader(capnp::InputStreamMessageReader &message)
 {
-	Serialization::ExtPxAsset::Reader reader = message.getRoot<Serialization::ExtPxAsset>();
+    Serialization::ExtPxAsset::Reader reader = message.getRoot<Serialization::ExtPxAsset>();
 
-	return ExtPxAssetDTO::deserialize(reader);
+    return ExtPxAssetDTO::deserialize(reader);
 }
 
 template<>
 NV_INLINE bool ExtSerializationCAPN<ExtPxAsset, Serialization::ExtPxAsset::Reader, Serialization::ExtPxAsset::Builder>::serializeIntoMessage(capnp::MallocMessageBuilder& message, const ExtPxAsset* asset)
 {
-	Serialization::ExtPxAsset::Builder assetBuilder = message.initRoot<Serialization::ExtPxAsset>();
+    Serialization::ExtPxAsset::Builder assetBuilder = message.initRoot<Serialization::ExtPxAsset>();
 
-	return serializeIntoBuilder(assetBuilder, asset);
+    return serializeIntoBuilder(assetBuilder, asset);
 }
 
-}	// namespace Blast
-}	// namespace Nv
+}   // namespace Blast
+}   // namespace Nv

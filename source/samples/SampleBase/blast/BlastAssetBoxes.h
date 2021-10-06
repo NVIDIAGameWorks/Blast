@@ -52,21 +52,21 @@ class TkFramework;
 class BlastAssetBoxes : public BlastAsset
 {
 public:
-	struct Desc
-	{
-		CubeAssetGenerator::Settings generatorSettings;
-		float staticHeight;
-		bool jointAllBonds;
-	};
+    struct Desc
+    {
+        CubeAssetGenerator::Settings generatorSettings;
+        float staticHeight;
+        bool jointAllBonds;
+    };
 
-	BlastAssetBoxes(TkFramework& framework, PxPhysics& physics, PxCooking& cooking, Renderer& renderer, const Desc& desc);
-	virtual ~BlastAssetBoxes();
+    BlastAssetBoxes(TkFramework& framework, PxPhysics& physics, PxCooking& cooking, Renderer& renderer, const Desc& desc);
+    virtual ~BlastAssetBoxes();
 
-	BlastFamilyPtr createFamily(PhysXController& physXConroller, ExtPxManager& pxManager, const ActorDesc& desc);
+    BlastFamilyPtr createFamily(PhysXController& physXConroller, ExtPxManager& pxManager, const ActorDesc& desc);
 
 private:
-	PxConvexMesh*	m_boxMesh;
-	GeneratorAsset	m_generatorAsset;
+    PxConvexMesh*   m_boxMesh;
+    GeneratorAsset  m_generatorAsset;
 };
 
 

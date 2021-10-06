@@ -15,9 +15,9 @@ SET(BLAST_SLN_PROFILE_COMPILE_DEFS NDEBUG;NV_PROFILE=1;)
 SET(BLAST_SLN_RELEASE_COMPILE_DEFS NDEBUG;)
 
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	SET(LIBPATH_SUFFIX "x64")
+    SET(LIBPATH_SUFFIX "x64")
 ELSE(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	SET(LIBPATH_SUFFIX "x86")
+    SET(LIBPATH_SUFFIX "x86")
 ENDIF(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
 SET(CMAKE_DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}_${LIBPATH_SUFFIX}")
@@ -35,22 +35,22 @@ INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtPhysX.cmake)
 INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtAuthoring.cmake)
 
 IF(${UE4_LINUX_CROSSCOMPILE})
-	#This uses the Windows CapnProto exe so it works
-	INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtAssetUtils.cmake)
-	INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtSerialization.cmake)
-	INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtTkSerialization.cmake)
-	INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtPxSerialization.cmake)
+    #This uses the Windows CapnProto exe so it works
+    INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtAssetUtils.cmake)
+    INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtSerialization.cmake)
+    INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtTkSerialization.cmake)
+    INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtPxSerialization.cmake)
 
-	#The UE4 Linux cross tools don't include libc++, it's in the UE4 source, however UE4 uses libc++
-	#and not libstdc++ so link this statically to avoid a dependency
-	SET(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
-	SET(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+    #The UE4 Linux cross tools don't include libc++, it's in the UE4 source, however UE4 uses libc++
+    #and not libstdc++ so link this statically to avoid a dependency
+    SET(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+    SET(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 ELSE()
-	#TODO Update Linux CapnProto build to generate correct version code
-	
-	INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtAssetUtils.cmake)
+    #TODO Update Linux CapnProto build to generate correct version code
+    
+    INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtAssetUtils.cmake)
 
-	INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtSerialization.cmake)
-	INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtTkSerialization.cmake)
-	INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtPxSerialization.cmake)
+    INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtSerialization.cmake)
+    INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtTkSerialization.cmake)
+    INCLUDE(${PROJECT_CMAKE_FILES_DIR}/NvBlastExtPxSerialization.cmake)
 ENDIF()

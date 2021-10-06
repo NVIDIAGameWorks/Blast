@@ -40,33 +40,33 @@ This file contains helper functions to get PxShared compatible versions of globa
 
 NV_INLINE physx::PxErrorCallback& NvBlastGetPxErrorCallback()
 {
-	class PxErrorCallbackWrapper : public physx::PxErrorCallback
-	{
-		virtual void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line) override
-		{
-			NvBlastGlobalGetErrorCallback()->reportError((Nv::Blast::ErrorCode::Enum)code, message, file, line);
-		}
-	};
-	static PxErrorCallbackWrapper wrapper;
-	return wrapper;
+    class PxErrorCallbackWrapper : public physx::PxErrorCallback
+    {
+        virtual void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line) override
+        {
+            NvBlastGlobalGetErrorCallback()->reportError((Nv::Blast::ErrorCode::Enum)code, message, file, line);
+        }
+    };
+    static PxErrorCallbackWrapper wrapper;
+    return wrapper;
 }
 
 NV_INLINE physx::PxAllocatorCallback& NvBlastGetPxAllocatorCallback()
 {
-	class PxAllocatorCallbackWrapper : public physx::PxAllocatorCallback
-	{
-		virtual void* allocate(size_t size, const char* typeName, const char* filename, int line) override
-		{
-			return NvBlastGlobalGetAllocatorCallback()->allocate(size, typeName, filename, line);
-		}
+    class PxAllocatorCallbackWrapper : public physx::PxAllocatorCallback
+    {
+        virtual void* allocate(size_t size, const char* typeName, const char* filename, int line) override
+        {
+            return NvBlastGlobalGetAllocatorCallback()->allocate(size, typeName, filename, line);
+        }
 
-		virtual void deallocate(void* ptr) override
-		{
-			NvBlastGlobalGetAllocatorCallback()->deallocate(ptr);
-		}
-	};
-	static PxAllocatorCallbackWrapper wrapper;
-	return wrapper;
+        virtual void deallocate(void* ptr) override
+        {
+            NvBlastGlobalGetAllocatorCallback()->deallocate(ptr);
+        }
+    };
+    static PxAllocatorCallbackWrapper wrapper;
+    return wrapper;
 }
 
 

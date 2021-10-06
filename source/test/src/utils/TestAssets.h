@@ -34,11 +34,11 @@
 
 struct ExpectedAssetValues
 {
-	uint32_t	totalChunkCount;
-	uint32_t	graphNodeCount;
-	uint32_t	leafChunkCount;
-	uint32_t	bondCount;
-	uint32_t	subsupportChunkCount;
+    uint32_t    totalChunkCount;
+    uint32_t    graphNodeCount;
+    uint32_t    leafChunkCount;
+    uint32_t    bondCount;
+    uint32_t    subsupportChunkCount;
 };
 
 
@@ -53,17 +53,17 @@ extern const ExpectedAssetValues g_assetsFromMissingCoverageExpectedValues[6];
 
 inline uint32_t getAssetDescCount()
 {
-	return sizeof(g_assetDescs) / sizeof(g_assetDescs[0]);
+    return sizeof(g_assetDescs) / sizeof(g_assetDescs[0]);
 }
 
 inline uint32_t getAssetDescMissingCoverageCount()
 {
-	return sizeof(g_assetDescsMissingCoverage) / sizeof(g_assetDescsMissingCoverage[0]);
+    return sizeof(g_assetDescsMissingCoverage) / sizeof(g_assetDescsMissingCoverage[0]);
 }
 
 
 void generateCube(GeneratorAsset& cubeAsset, NvBlastAssetDesc& assetDesc, size_t maxDepth, size_t width, 
-	int32_t supportDepth = -1, CubeAssetGenerator::BondFlags bondFlags = CubeAssetGenerator::ALL_INTERNAL_BONDS);
+    int32_t supportDepth = -1, CubeAssetGenerator::BondFlags bondFlags = CubeAssetGenerator::ALL_INTERNAL_BONDS);
 
 void generateRandomCube(GeneratorAsset& cubeAsset, NvBlastAssetDesc& assetDesc, uint32_t minChunkCount, uint32_t maxChunkCount);
 

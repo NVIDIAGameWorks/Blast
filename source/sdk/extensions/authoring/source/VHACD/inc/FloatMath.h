@@ -243,14 +243,14 @@ bool  fm_computeBestFitPlane(uint32_t vcount,     // number of input data points
                      double plane[4]);
 
 bool  fm_computeCentroid(uint32_t vcount,     // number of input data points
-						 const float *points,     // starting address of points array.
-						 uint32_t vstride,    // stride between input points.
-						 float *center);
+                         const float *points,     // starting address of points array.
+                         uint32_t vstride,    // stride between input points.
+                         float *center);
 
 bool  fm_computeCentroid(uint32_t vcount,     // number of input data points
-						 const double *points,     // starting address of points array.
-						 uint32_t vstride,    // stride between input points.
-						 double *center);
+                         const double *points,     // starting address of points array.
+                         uint32_t vstride,    // stride between input points.
+                         double *center);
 
 
 float  fm_computeBestFitAABB(uint32_t vcount,const float *points,uint32_t pstride,float bmin[3],float bmax[3]); // returns the diagonal distance

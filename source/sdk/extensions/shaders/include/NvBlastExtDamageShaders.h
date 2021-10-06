@@ -45,9 +45,9 @@ A few example damage shader implementations.
 class NvBlastExtDamageAccelerator
 {
 public:
-	virtual void release() = 0;
+    virtual void release() = 0;
 
-	virtual Nv::Blast::DebugBuffer fillDebugRender(int depth = -1, bool segments = false) = 0;
+    virtual Nv::Blast::DebugBuffer fillDebugRender(int depth = -1, bool segments = false) = 0;
 };
 
 NVBLAST_API NvBlastExtDamageAccelerator* NvBlastExtDamageAcceleratorCreate(const NvBlastAsset* asset, int type);
@@ -72,12 +72,12 @@ So different damage descriptions can be stacked and passed in one shader call (w
 */
 struct NvBlastExtProgramParams
 {
-	NvBlastExtProgramParams(const void*	desc, const void* material_ = nullptr, NvBlastExtDamageAccelerator* accelerator_ = nullptr)
-		: damageDesc(desc), material(material_), accelerator(accelerator_) {}
+    NvBlastExtProgramParams(const void* desc, const void* material_ = nullptr, NvBlastExtDamageAccelerator* accelerator_ = nullptr)
+        : damageDesc(desc), material(material_), accelerator(accelerator_) {}
 
-	const void*	damageDesc;			//!<	array of damage descriptions
-	const void*	material;			//!<	pointer to material
-	NvBlastExtDamageAccelerator*	accelerator;
+    const void* damageDesc;         //!<    array of damage descriptions
+    const void* material;           //!<    pointer to material
+    NvBlastExtDamageAccelerator*    accelerator;
 };
 
 
@@ -93,27 +93,27 @@ Material function implementers may choose their own set.
 */
 struct NvBlastExtMaterial
 {
-	NvBlastExtMaterial() : health(100.f), minDamageThreshold(0.0f), maxDamageThreshold(1.0f) {}
+    NvBlastExtMaterial() : health(100.f), minDamageThreshold(0.0f), maxDamageThreshold(1.0f) {}
 
-	float	health;					//!<	health
-	float	minDamageThreshold;		//!<	min damage fraction threshold to be applied. Range [0, 1]. For example 0.1 filters all damage below 10% of health.
-	float	maxDamageThreshold;		//!<	max damage fraction threshold to be applied. Range [0, 1]. For example 0.8 won't allow more then 80% of health damage to be applied.
+    float   health;                 //!<    health
+    float   minDamageThreshold;     //!<    min damage fraction threshold to be applied. Range [0, 1]. For example 0.1 filters all damage below 10% of health.
+    float   maxDamageThreshold;     //!<    max damage fraction threshold to be applied. Range [0, 1]. For example 0.8 won't allow more then 80% of health damage to be applied.
 
-	/**
-	Helper to normalize damage.
-	
-	Pass damage defined in health, damage in range [0, 1] is returned, where 0 basically 
-	indicates that the threshold wasn't reached and there is no point in applying it.
+    /**
+    Helper to normalize damage.
+    
+    Pass damage defined in health, damage in range [0, 1] is returned, where 0 basically 
+    indicates that the threshold wasn't reached and there is no point in applying it.
 
-	\param[in]		damageInHealth			Damage defined in terms of health amount to be reduced.
+    \param[in]      damageInHealth          Damage defined in terms of health amount to be reduced.
 
-	\return normalized damage
-	*/
-	float getNormalizedDamage(float damageInHealth) const
-	{
-		const float damage = health > 0.f ? damageInHealth / health : 1.0f;
-		return damage > minDamageThreshold ? (damage < maxDamageThreshold ? damage : maxDamageThreshold) : 0.f;
-	}
+    \return normalized damage
+    */
+    float getNormalizedDamage(float damageInHealth) const
+    {
+        const float damage = health > 0.f ? damageInHealth / health : 1.0f;
+        return damage > minDamageThreshold ? (damage < maxDamageThreshold ? damage : maxDamageThreshold) : 0.f;
+    }
 };
 
 
@@ -126,10 +126,10 @@ Radial Damage Desc
 */
 struct NvBlastExtRadialDamageDesc
 {
-	float	damage;			//!<	normalized damage amount, range: [0, 1] (maximum health value to be reduced)
-	float	position[3];	//!<	origin of damage action
-	float	minRadius;		//!<	inner radius of damage action
-	float	maxRadius;		//!<	outer radius of damage action
+    float   damage;         //!<    normalized damage amount, range: [0, 1] (maximum health value to be reduced)
+    float   position[3];    //!<    origin of damage action
+    float   minRadius;      //!<    inner radius of damage action
+    float   maxRadius;      //!<    outer radius of damage action
 };
 
 /**
@@ -154,11 +154,11 @@ Capsule Radial Damage Desc
 */
 struct NvBlastExtCapsuleRadialDamageDesc
 {
-	float	damage;			//!<	normalized damage amount, range: [0, 1] (maximum health value to be reduced)
-	float	position0[3];	//!<	damage segment point A position
-	float	position1[3];	//!<	damage segment point B position
-	float	minRadius;		//!<	inner radius of damage action
-	float	maxRadius;		//!<	outer radius of damage action
+    float   damage;         //!<    normalized damage amount, range: [0, 1] (maximum health value to be reduced)
+    float   position0[3];   //!<    damage segment point A position
+    float   position1[3];   //!<    damage segment point B position
+    float   minRadius;      //!<    inner radius of damage action
+    float   maxRadius;      //!<    outer radius of damage action
 };
 
 /**
@@ -184,13 +184,13 @@ Shear Damage Desc
 */
 struct NvBlastExtShearDamageDesc
 {
-	float	damage;			//!<	normalized damage amount, range: [0, 1] (maximum health value to be reduced)
+    float   damage;         //!<    normalized damage amount, range: [0, 1] (maximum health value to be reduced)
 
-	float	normal[3];		//!<	directional damage component
-	float	position[3];	//!<	origin of damage action
+    float   normal[3];      //!<    directional damage component
+    float   position[3];    //!<    origin of damage action
 
-	float	minRadius;		//!<	inner radius of damage action
-	float	maxRadius;		//!<	outer radius of damage action
+    float   minRadius;      //!<    inner radius of damage action
+    float   maxRadius;      //!<    outer radius of damage action
 };
 
 /**
@@ -213,10 +213,10 @@ Triangle Intersection Damage Desc
 */
 struct NvBlastExtTriangleIntersectionDamageDesc
 {
-	float	damage;			//!<	normalized damage amount, range: [0, 1] (maximum health value to be reduced)
-	NvcVec3	position0;		//!<	triangle point A position
-	NvcVec3	position1;		//!<	triangle point B position
-	NvcVec3	position2;		//!<	triangle point C position
+    float   damage;         //!<    normalized damage amount, range: [0, 1] (maximum health value to be reduced)
+    NvcVec3 position0;      //!<    triangle point A position
+    NvcVec3 position1;      //!<    triangle point B position
+    NvcVec3 position2;      //!<    triangle point C position
 };
 
 /**
@@ -246,11 +246,11 @@ Impact Spread Damage Desc
 */
 struct NvBlastExtImpactSpreadDamageDesc
 {
-	float	damage;			//!<	normalized damage amount, range: [0, 1] (maximum health value to be reduced)
-	float	position[3];	//!<	origin of damage action
+    float   damage;         //!<    normalized damage amount, range: [0, 1] (maximum health value to be reduced)
+    float   position[3];    //!<    origin of damage action
 
-	float	minRadius;		//!<	inner radius of damage action
-	float	maxRadius;		//!<	outer radius of damage action
+    float   minRadius;      //!<    inner radius of damage action
+    float   maxRadius;      //!<    outer radius of damage action
 };
 
 /**

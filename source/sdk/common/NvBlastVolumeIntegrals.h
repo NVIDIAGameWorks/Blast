@@ -39,8 +39,8 @@ namespace Blast{
 
 /**
 Calculate the volume and centroid of a closed mesh with outward-pointing normals.
-\param[out]	centroid	the calculated centroid of the given mesh
-\param[in] 	mesh		a class of templated type MeshQuery
+\param[out] centroid    the calculated centroid of the given mesh
+\param[in]  mesh        a class of templated type MeshQuery
 
 MeshQuery must support the following functions:
 
@@ -56,34 +56,34 @@ NV_INLINE float calculateMeshVolumeAndCentroid(NvcVec3& centroid, const MeshQuer
     centroid = { 0.0f, 0.0f, 0.0f };
 
     // First find an approximate centroid for a more accurate calculation
-	size_t N = 0;
+    size_t N = 0;
     NvcVec3 disp = { 0.0f, 0.0f, 0.0f };
     for (size_t i = 0; i < mesh.faceCount(); ++i)
     {
-		const size_t faceVertexCount = mesh.vertexCount(i);
-		for (size_t j = 0; j < faceVertexCount; ++j)
-		{
-	        disp = disp + mesh.vertex(i, j);
-		}
-		N += faceVertexCount;
+        const size_t faceVertexCount = mesh.vertexCount(i);
+        for (size_t j = 0; j < faceVertexCount; ++j)
+        {
+            disp = disp + mesh.vertex(i, j);
+        }
+        N += faceVertexCount;
     }
 
-	if (N == 0)
-	{
-		return 0.0f;
-	}
+    if (N == 0)
+    {
+        return 0.0f;
+    }
 
     disp = disp / (float)N;
 
     float sixV = 0.0f;
     for (size_t i = 0; i < mesh.faceCount(); ++i)
     {
-		const size_t faceVertexCount = mesh.vertexCount(i);
+        const size_t faceVertexCount = mesh.vertexCount(i);
         if (faceVertexCount < 3)
         {
             continue;
         }
-		const NvcVec3 a = mesh.vertex(i, 0) - disp;
+        const NvcVec3 a = mesh.vertex(i, 0) - disp;
         NvcVec3 b = mesh.vertex(i, 1) - disp;
         for (size_t j = 2; j < faceVertexCount; ++j)
         {
@@ -91,18 +91,18 @@ NV_INLINE float calculateMeshVolumeAndCentroid(NvcVec3& centroid, const MeshQuer
 
             const float sixTetV =
                 a.x * b.y * c.z - a.x * b.z * c.y - a.y * b.x * c.z +
-				a.y * b.z * c.x + a.z * b.x * c.y - a.z * b.y * c.x;
+                a.y * b.z * c.x + a.z * b.x * c.y - a.z * b.y * c.x;
 
-			sixV += sixTetV;
+            sixV += sixTetV;
 
-			centroid = centroid + sixTetV*(a + b + c);
+            centroid = centroid + sixTetV*(a + b + c);
 
-			b = c;
+            b = c;
         }
     }
 
-	// Extra factor of four to average tet vertices
-	centroid = centroid / (4.0f * sixV) + disp;
+    // Extra factor of four to average tet vertices
+    centroid = centroid / (4.0f * sixV) + disp;
 
     return std::abs(sixV) / 6.0f;
 }

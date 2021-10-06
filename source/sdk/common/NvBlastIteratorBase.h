@@ -45,17 +45,17 @@ template<typename T>
 class IteratorBase
 {
 public:
-	/** Constructor sets m_curr value */
-	IteratorBase(T curr);
+    /** Constructor sets m_curr value */
+    IteratorBase(T curr);
 
-	/** Validity of current value. */
-	operator	bool() const;
+    /** Validity of current value. */
+    operator    bool() const;
 
-	/** Current value. */
-	operator	T() const;
+    /** Current value. */
+    operator    T() const;
 
 protected:
-	T	m_curr;
+    T   m_curr;
 };
 
 
@@ -70,14 +70,14 @@ NV_INLINE IteratorBase<T>::IteratorBase(T curr) : m_curr(curr)
 template<typename T>
 NV_INLINE IteratorBase<T>::operator bool() const
 {
-	return !isInvalidIndex<T>(m_curr);
+    return !isInvalidIndex<T>(m_curr);
 }
 
 
 template<typename T>
 NV_INLINE IteratorBase<T>::operator T() const
 {
-	return m_curr;
+    return m_curr;
 }
 
 
@@ -88,13 +88,13 @@ template<typename IndexType>
 class LListIt : public IteratorBase<IndexType>
 {
 public:
-	LListIt(IndexType curr, IndexType* links);
+    LListIt(IndexType curr, IndexType* links);
 
-	/** Pre-increment.  Only use if valid() == true. */
-	uint32_t	operator ++ ();
+    /** Pre-increment.  Only use if valid() == true. */
+    uint32_t    operator ++ ();
 
 protected:
-	IndexType*	m_links;
+    IndexType*  m_links;
 };
 
 
@@ -109,8 +109,8 @@ NV_INLINE LListIt<IndexType>::LListIt(IndexType curr, IndexType* links) : Iterat
 template<typename IndexType>
 NV_INLINE uint32_t LListIt<IndexType>::operator ++ ()
 {
-	NVBLAST_ASSERT((bool)(*this));
-	return (this->m_curr = m_links[this->m_curr]);
+    NVBLAST_ASSERT((bool)(*this));
+    return (this->m_curr = m_links[this->m_curr]);
 }
 
 
@@ -121,13 +121,13 @@ template<typename IndexType>
 class DListIt : public IteratorBase<IndexType>
 {
 public:
-	DListIt(IndexType curr, IndexDLink<IndexType>* links);
+    DListIt(IndexType curr, IndexDLink<IndexType>* links);
 
-	/** Pre-increment.  Only use if valid() == true. */
-	uint32_t	operator ++ ();
+    /** Pre-increment.  Only use if valid() == true. */
+    uint32_t    operator ++ ();
 
 protected:
-	IndexDLink<IndexType>*	m_links;
+    IndexDLink<IndexType>*  m_links;
 };
 
 
@@ -142,8 +142,8 @@ NV_INLINE DListIt<IndexType>::DListIt(IndexType curr, IndexDLink<IndexType>* lin
 template<typename IndexType>
 NV_INLINE uint32_t DListIt<IndexType>::operator ++ ()
 {
-	NVBLAST_ASSERT((bool)(*this));
-	return (this->m_curr = m_links[this->m_curr].m_adj[1]);
+    NVBLAST_ASSERT((bool)(*this));
+    return (this->m_curr = m_links[this->m_curr].m_adj[1]);
 }
 
 } // end namespace Blast

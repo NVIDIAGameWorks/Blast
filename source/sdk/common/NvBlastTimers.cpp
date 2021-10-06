@@ -36,12 +36,12 @@ extern "C"
 
 void NvBlastTimersReset(NvBlastTimers* timers)
 {
-	memset(timers, 0, sizeof(NvBlastTimers));
+    memset(timers, 0, sizeof(NvBlastTimers));
 }
 
 double NvBlastTicksToSeconds(int64_t ticks)
 {
-	return Nv::Blast::Time::seconds(ticks);
+    return Nv::Blast::Time::seconds(ticks);
 }
 
 } // extern "C"

@@ -57,11 +57,11 @@ class ExtSerialization;
 
 struct BlastTimers
 {
-	double blastDamageMaterial;
-	double blastDamageFracture;
-	double blastSplitIsland;
-	double blastSplitPartition;
-	double blastSplitVisibility;
+    double blastDamageMaterial;
+    double blastDamageFracture;
+    double blastSplitIsland;
+    double blastSplitPartition;
+    double blastSplitVisibility;
 };
 
 /**
@@ -70,239 +70,239 @@ Blast Controller. Entry point for all blast related code, keeps blast actors and
 class BlastController : public ISampleController
 {
 public:
-	//////// ctor ////////
+    //////// ctor ////////
 
-	BlastController();
-	virtual ~BlastController();
+    BlastController();
+    virtual ~BlastController();
 
-	void reinitialize();
+    void reinitialize();
 
-	//////// controller callbacks ////////
+    //////// controller callbacks ////////
 
-	virtual void onSampleStart();
-	virtual void onSampleStop();
+    virtual void onSampleStart();
+    virtual void onSampleStop();
 
-	virtual void Animate(double dt);
-	void drawUI();
-
-
-	//////// public API ////////
-
-	bool overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*, BlastFamily&)> hitCall);
-
-	bool stressDamage(ExtPxActor *actor, PxVec3 position, PxVec3 force);
-
-	void deferDamage(ExtPxActor *actor, BlastFamily& family, const NvBlastDamageProgram& program, const void* damageDesc, uint32_t damageDescSize);
-	void immediateDamage(ExtPxActor *actor, BlastFamily& family, const NvBlastDamageProgram& program, const void* damageDesc);
-	NvBlastFractureBuffers& getFractureBuffers(ExtPxActor* actor);
-
-	BlastFamilyPtr spawnFamily(BlastAsset* blastAsset, const BlastAsset::ActorDesc& desc);
-	void removeFamily(BlastFamilyPtr actor);
-	void removeAllFamilies();
+    virtual void Animate(double dt);
+    void drawUI();
 
 
-	//////// public getters/setters ////////
+    //////// public API ////////
 
-	TkFramework& getTkFramework() const
-	{
-		return *m_tkFramework;
-	}
+    bool overlap(const PxGeometry& geometry, const PxTransform& pose, std::function<void(ExtPxActor*, BlastFamily&)> hitCall);
 
-	TkGroup* getTkGroup() const
-	{
-		return m_tkGroup;
-	}
+    bool stressDamage(ExtPxActor *actor, PxVec3 position, PxVec3 force);
 
-	ExtPxManager& getExtPxManager() const
-	{
-		return *m_extPxManager;
-	}
+    void deferDamage(ExtPxActor *actor, BlastFamily& family, const NvBlastDamageProgram& program, const void* damageDesc, uint32_t damageDescSize);
+    void immediateDamage(ExtPxActor *actor, BlastFamily& family, const NvBlastDamageProgram& program, const void* damageDesc);
+    NvBlastFractureBuffers& getFractureBuffers(ExtPxActor* actor);
 
-	ExtImpactDamageManager*	getExtImpactDamageManager() const
-	{
-		return m_extImpactDamageManager;
-	}
-
-	BlastReplay* getReplay() const
-	{
-		return m_replay;
-	}
-
-	uint32_t getActorCount() const;
-
-	uint32_t getTotalVisibleChunkCount() const;
-
-	size_t getFamilySize() const;
-
-	size_t getBlastAssetsSize() const
-	{
-		return m_blastAssetsSize;
-	}
-
-	const BlastTimers& getLastBlastTimers() const
-	{
-		return m_lastBlastTimers;
-	}
-
-	bool getImpactDamageEnabled() const
-	{
-		return m_impactDamageEnabled;
-	}
-
-	void setImpactDamageEnabled(bool enabled, bool forceUpdate = false);
-
-	ExtStressSolverSettings& getStressSolverSettings()
-	{
-		return m_extStressSolverSettings;
-	}
-
-	float getLastStressDelta() const;
-
-	void notifyPhysXControllerRelease();
-
-	ExtSerialization*	getExtSerialization() const
-	{
-		return m_extSerialization;
-	}
-
-	//////// public variables for UI ////////
-
-	BlastFamily::DebugRenderMode debugRenderMode;
-	float debugRenderScale;
+    BlastFamilyPtr spawnFamily(BlastAsset* blastAsset, const BlastAsset::ActorDesc& desc);
+    void removeFamily(BlastFamilyPtr actor);
+    void removeAllFamilies();
 
 
-	//////// Filter shader enum ////////
+    //////// public getters/setters ////////
 
-	enum FilterDataAttributes
-	{
-		SUPPRESS_CONTACT_NOTIFY = 1,
-	};
+    TkFramework& getTkFramework() const
+    {
+        return *m_tkFramework;
+    }
+
+    TkGroup* getTkGroup() const
+    {
+        return m_tkGroup;
+    }
+
+    ExtPxManager& getExtPxManager() const
+    {
+        return *m_extPxManager;
+    }
+
+    ExtImpactDamageManager* getExtImpactDamageManager() const
+    {
+        return m_extImpactDamageManager;
+    }
+
+    BlastReplay* getReplay() const
+    {
+        return m_replay;
+    }
+
+    uint32_t getActorCount() const;
+
+    uint32_t getTotalVisibleChunkCount() const;
+
+    size_t getFamilySize() const;
+
+    size_t getBlastAssetsSize() const
+    {
+        return m_blastAssetsSize;
+    }
+
+    const BlastTimers& getLastBlastTimers() const
+    {
+        return m_lastBlastTimers;
+    }
+
+    bool getImpactDamageEnabled() const
+    {
+        return m_impactDamageEnabled;
+    }
+
+    void setImpactDamageEnabled(bool enabled, bool forceUpdate = false);
+
+    ExtStressSolverSettings& getStressSolverSettings()
+    {
+        return m_extStressSolverSettings;
+    }
+
+    float getLastStressDelta() const;
+
+    void notifyPhysXControllerRelease();
+
+    ExtSerialization*   getExtSerialization() const
+    {
+        return m_extSerialization;
+    }
+
+    //////// public variables for UI ////////
+
+    BlastFamily::DebugRenderMode debugRenderMode;
+    float debugRenderScale;
+
+
+    //////// Filter shader enum ////////
+
+    enum FilterDataAttributes
+    {
+        SUPPRESS_CONTACT_NOTIFY = 1,
+    };
 
 private:
-	//////// impact damage event callback ////////
+    //////// impact damage event callback ////////
 
-	class EventCallback : public PxSimulationEventCallback
-	{
-	public:
-		EventCallback(ExtImpactDamageManager* manager) : m_manager(manager) {}
+    class EventCallback : public PxSimulationEventCallback
+    {
+    public:
+        EventCallback(ExtImpactDamageManager* manager) : m_manager(manager) {}
 
-		// implemented
-		virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, uint32_t nbPairs)
-		{
-			m_manager->onContact(pairHeader, pairs, nbPairs);
-		}
+        // implemented
+        virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, uint32_t nbPairs)
+        {
+            m_manager->onContact(pairHeader, pairs, nbPairs);
+        }
 
-	private:
-		// unused
-		void onConstraintBreak(PxConstraintInfo*, PxU32) {}
-		void onWake(PxActor**, PxU32) {}
-		void onSleep(PxActor**, PxU32) {}
-		void onTrigger(PxTriggerPair*, PxU32) {}
-		void onAdvance(const PxRigidBody*const*, const PxTransform*, const PxU32) {}
+    private:
+        // unused
+        void onConstraintBreak(PxConstraintInfo*, PxU32) {}
+        void onWake(PxActor**, PxU32) {}
+        void onSleep(PxActor**, PxU32) {}
+        void onTrigger(PxTriggerPair*, PxU32) {}
+        void onAdvance(const PxRigidBody*const*, const PxTransform*, const PxU32) {}
 
-		// data
-		ExtImpactDamageManager*		m_manager;
-	};
-
-
-	//////// private methods ////////
-
-	void updateDraggingStress();
-
-	void updateImpactDamage();
-
-	void refreshImpactDamageSettings();
-
-	void fillDebugRender();
-
-	void recalculateAssetsSize();
-
-	static bool customImpactDamageFunction(void* data, ExtPxActor* actor, PxShape* shape, PxVec3 position, PxVec3 force);
+        // data
+        ExtImpactDamageManager*     m_manager;
+    };
 
 
-	//////// used controllers ////////
+    //////// private methods ////////
 
-	Renderer& getRenderer() const
-	{
-		return getManager()->getRenderer();
-	}
+    void updateDraggingStress();
 
-	PhysXController& getPhysXController() const
-	{
-		return getManager()->getPhysXController();
-	}
+    void updateImpactDamage();
 
+    void refreshImpactDamageSettings();
 
-	//////// buffer for damage ////////
+    void fillDebugRender();
 
-	class FixedBuffer
-	{
-	public:
-		FixedBuffer(const uint32_t size)
-		{
-			m_buffer.resize(size);
-			m_index = 0;
-		}
+    void recalculateAssetsSize();
 
-		void* push(const void* data, uint32_t size)
-		{
-			if (m_index + size > m_buffer.size())
-				return nullptr;
-
-			void* dst = &m_buffer[m_index];
-			memcpy(dst, data, size);
-			m_index += size;
-			return dst;
-		}
-
-		void clear()
-		{
-			m_index = 0;
-		}
-
-	private:
-		std::vector<char> m_buffer;
-		uint32_t		  m_index;
-	};
+    static bool customImpactDamageFunction(void* data, ExtPxActor* actor, PxShape* shape, PxVec3 position, PxVec3 force);
 
 
-	//////// internal data ////////
+    //////// used controllers ////////
 
-	PxTaskManager*					     m_taskManager;
-	TkFramework*					     m_tkFramework;
-	TkGroup*						     m_tkGroup;
-	ExtPxManager*					     m_extPxManager;
-	ExtImpactDamageManager*	             m_extImpactDamageManager;
-	ExtImpactSettings				     m_extImpactDamageManagerSettings;
-	EventCallback*					     m_eventCallback;
-	ExtStressSolverSettings			     m_extStressSolverSettings;
-	ExtGroupTaskManager*			     m_extGroupTaskManager;
-	ExtSerialization*				     m_extSerialization;
+    Renderer& getRenderer() const
+    {
+        return getManager()->getRenderer();
+    }
 
-	std::vector<BlastFamilyPtr>		     m_families;
-	DebugRenderBuffer                    m_debugRenderBuffer;
+    PhysXController& getPhysXController() const
+    {
+        return getManager()->getPhysXController();
+    }
 
-	FixedBuffer							 m_damageDescBuffer;
-	FixedBuffer		                     m_damageParamsBuffer;
 
-	NvBlastFractureBuffers				 m_fractureBuffers;
-	std::vector<char>					 m_fractureData;
+    //////// buffer for damage ////////
 
-	bool                                 m_impactDamageEnabled;
-	bool                                 m_impactDamageUpdatePending;
-	bool							     m_impactDamageToStressEnabled;
+    class FixedBuffer
+    {
+    public:
+        FixedBuffer(const uint32_t size)
+        {
+            m_buffer.resize(size);
+            m_index = 0;
+        }
 
-	float							     m_impactDamageToStressFactor;
-	float							     m_draggingToStressFactor;
+        void* push(const void* data, uint32_t size)
+        {
+            if (m_index + size > m_buffer.size())
+                return nullptr;
 
-	bool							     m_rigidBodyLimitEnabled;
-	uint32_t						     m_rigidBodyLimit;
+            void* dst = &m_buffer[m_index];
+            memcpy(dst, data, size);
+            m_index += size;
+            return dst;
+        }
 
-	BlastReplay*					     m_replay;
+        void clear()
+        {
+            m_index = 0;
+        }
 
-	BlastTimers				             m_lastBlastTimers;
+    private:
+        std::vector<char> m_buffer;
+        uint32_t          m_index;
+    };
 
-	size_t					             m_blastAssetsSize;
+
+    //////// internal data ////////
+
+    PxTaskManager*                       m_taskManager;
+    TkFramework*                         m_tkFramework;
+    TkGroup*                             m_tkGroup;
+    ExtPxManager*                        m_extPxManager;
+    ExtImpactDamageManager*              m_extImpactDamageManager;
+    ExtImpactSettings                    m_extImpactDamageManagerSettings;
+    EventCallback*                       m_eventCallback;
+    ExtStressSolverSettings              m_extStressSolverSettings;
+    ExtGroupTaskManager*                 m_extGroupTaskManager;
+    ExtSerialization*                    m_extSerialization;
+
+    std::vector<BlastFamilyPtr>          m_families;
+    DebugRenderBuffer                    m_debugRenderBuffer;
+
+    FixedBuffer                          m_damageDescBuffer;
+    FixedBuffer                          m_damageParamsBuffer;
+
+    NvBlastFractureBuffers               m_fractureBuffers;
+    std::vector<char>                    m_fractureData;
+
+    bool                                 m_impactDamageEnabled;
+    bool                                 m_impactDamageUpdatePending;
+    bool                                 m_impactDamageToStressEnabled;
+
+    float                                m_impactDamageToStressFactor;
+    float                                m_draggingToStressFactor;
+
+    bool                                 m_rigidBodyLimitEnabled;
+    uint32_t                             m_rigidBodyLimit;
+
+    BlastReplay*                         m_replay;
+
+    BlastTimers                          m_lastBlastTimers;
+
+    size_t                               m_blastAssetsSize;
 };
 
 

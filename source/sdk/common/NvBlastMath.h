@@ -42,61 +42,61 @@ namespace VecMath
 
 NV_INLINE void div(float a[3], float divisor)
 {
-	for (int i = 0; i < 3; i++)
-		a[i] /= divisor;
+    for (int i = 0; i < 3; i++)
+        a[i] /= divisor;
 }
 
 NV_INLINE void mul(float a[3], float multiplier)
 {
-	for (int i = 0; i < 3; i++)
-		a[i] *= multiplier;
+    for (int i = 0; i < 3; i++)
+        a[i] *= multiplier;
 }
 
 NV_INLINE void add(const float a[3], float b[3])
 {
-	for (int i = 0; i < 3; i++)
-		b[i] = a[i] + b[i];
+    for (int i = 0; i < 3; i++)
+        b[i] = a[i] + b[i];
 }
-	
+    
 NV_INLINE void add(const float a[3], const float b[3], float r[3])
 {
-	for (int i = 0; i < 3; i++)
-		r[i] = a[i] + b[i];
+    for (int i = 0; i < 3; i++)
+        r[i] = a[i] + b[i];
 }
 
 NV_INLINE void sub(const float a[3], const float b[3], float r[3])
 {
-	for (int i = 0; i < 3; i++)
-		r[i] = a[i] - b[i];
+    for (int i = 0; i < 3; i++)
+        r[i] = a[i] - b[i];
 }
 
 NV_INLINE float dot(const float a[3], const float b[3])
 {
-	float r = 0;
-	for (int i = 0; i < 3; i++)
-		r += a[i] * b[i];
-	return r;
+    float r = 0;
+    for (int i = 0; i < 3; i++)
+        r += a[i] * b[i];
+    return r;
 }
 
 NV_INLINE float length(const float a[3])
 {
-	return sqrtf(dot(a, a));
+    return sqrtf(dot(a, a));
 }
 
 NV_INLINE float dist(const float a[3], const float b[3])
 {
-	float v[3];
-	sub(a, b, v);
-	return length(v);
+    float v[3];
+    sub(a, b, v);
+    return length(v);
 }
 
 NV_INLINE float normal(const float a[3], float r[3])
 {
-	float d = length(a);
-	for (int i = 0; i < 3; i++)
-		r[i] = a[i] / d;
+    float d = length(a);
+    for (int i = 0; i < 3; i++)
+        r[i] = a[i] / d;
 
-	return d;
+    return d;
 }
 
 
