@@ -1,0 +1,20 @@
+<project toolsVersion="6.11">
+  <dependency name="python36" linkPath="_dependencies/python36">
+    <package name="python" version="3.6.7-windows-x86_64" platforms="win64" />
+    <package name="python" version="3.6.8-11-linux-x86_64" platforms="linux-x86_64" />
+    <!-- <package name="python" version="3.6.8-34.a6e9b99d-linux-aarch64" platforms="linux-aarch64" /> -->
+  </dependency>
+  <dependency name="python37" linkPath="_dependencies/python37">
+    <package name="python" version="3.7.9-windows-x86_64" platforms="win64" />
+    <package name="python" version="3.7.9-170.ba232412-linux-x86_64" platforms="linux-x86_64" />
+    <!-- <package name="python" version="3.7.9-170.ba232412-linux-aarch64" platforms="linux-aarch64" /> -->
+  </dependency>
+
+  <dependency name="doxygen" linkPath="_dependencies/doxygen">
+    <package name="doxygen" version="1.8.5-windows-x86_64" platforms="win64" />
+  </dependency>
+
+  <dependency name="BoostMultiprecision">
+    <package name="BoostMultiprecision" version="1.64.0.1" platforms="win.* linux"/>
+  </dependency>
+</project>

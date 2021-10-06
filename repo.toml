@@ -1,0 +1,169 @@
+########################################################################################################################
+# Repo tool base settings
+########################################################################################################################
+
+[repo]
+logging = "debug"
+
+# Use Kit Template repo configuration as a base. Only override things specific to the repo.
+import_configs = ["${root}/_repo/deps/repo_kit_tools/kit-template/repo.toml"]
+
+# Repository Name. It is used for solution name and final package name
+name = "omni_blast"
+
+# Begin Blast customizations #
+[repo_build]
+
+# This has to be copied from "repo_kit_tools/kit-template/repo.toml" so we can add Blast deps
+# TOML doesn't support appending to lists
+fetch.packman_target_files_to_pull = [
+    "${root}/deps/kit-sdk.packman.xml",
+    "${root}/deps/rtx-plugins.packman.xml",
+    "${root}/deps/target-deps.packman.xml",
+    "${root}/deps/assets.packman.xml",
+
+    # blast dependencies
+    "${root}/source/extensions/omni.blast/deps/kit-sdk-target-deps-import.packman.xml",
+    "${root}/source/extensions/omni.blast/deps/omni-physics-target-deps.packman.xml",
+    "${root}/source/extensions/omni.blast/deps/target-deps.packman.xml",
+
+    # destruction schema dependencies
+    "${root}/source/extensions/omni.usd.schema.destruction/deps/target-deps.packman.xml",
+]
+# End Blast customizations #
+
+########################################################################################################################
+# Packaging
+########################################################################################################################
+
+# package content
+[repo_package.packages.main_package]
+files = [
+    ["**"],
+]
+files_exclude = [
+    ["kit/**"]
+]
+
+[repo_package.packages."platform:windows-x86_64".docs]
+omniverse_flow_version_scheme = true
+files = [
+    ["_build/docs"]
+]
+
+
+########################################################################################################################
+# Extensions publisher
+########################################################################################################################
+
+[repo_publish_exts]
+
+# Extensions to publish, include and exclude among those discovered by kit. Wildcards are supported.
+exts.include = [
+    "omni.blast",
+    "omni.usd.schema.destruction",
+]
+exts.exclude = []
+
+# verify before publishing
+publish_verification = true
+
+
+########################################################################################################################
+# Extensions precacher
+########################################################################################################################
+
+[repo_precache_exts]
+# Apps to run and precache
+apps = [
+    "${root}/_build/$platform/$config/apps/omni.app.precache_exts.kit"
+]
+
+
+
+########################################################################################################################
+# Documentation building
+########################################################################################################################
+
+[repo_docs]
+enabled = true
+
+config = "release"
+
+doxygen_aliases = [
+]
+
+extra_sys_paths = [
+    "${root}/_build/${platform_target}/release/kit/exts/*/bin",
+    "${root}/_build/${platform_target}/release/kit/exts/*",
+    "${root}/_build/${platform_target}/release/kit/extscore/*",
+    "${root}/_build/${platform_target}/release/kit",
+    "${root}/_build/${platform_target}/release/kit/plugins",
+    "${root}/_build/${platform_target}/release/kit/plugins/bindings-python",
+]
+
+sphinx_exclude_patterns = [
+    "VERSION.md",
+]
+
+repo_url = "https://gitlab-master.nvidia.com/omniverse/kit-extensions/blast-extensions/-/blob/develop"
+
+project_build_order = [ "omni_blast", "omni_usd_schema_destruction" ]
+
+
+[repo_docs.projects.omni_blast]
+
+project = "${conf:repo.name}"
+version = "${file:${root}/VERSION.md}"
+name = "omni.blast"
+api_title = "omni.blast-${file:${root}/VERSION.md} API"
+copyright_start = 2020
+
+sphinx_exclude_patterns = [
+    "_build",
+    "bindings",
+    "config",
+    "data",
+    "deps",
+    "docs/CHANGELOG.md",
+    "docs/index.rst",
+    "icons",
+    "PACKAGE-LICENSES",
+    "plugins",
+    "python",
+    "tools",
+    "VERSION.md",
+]
+
+docs_root = "source/extensions/omni.blast"
+
+doxygen_input = [
+    "include/Blast.h",
+]
+
+
+[repo_docs.projects.omni_usd_schema_destruction]
+
+project = "omni_usd_schema_destruction"
+version = "${file:${root}/source/extensions/omni.usd.schema.destruction/VERSION.md}"
+name = "omni.usd.schema.destruction"
+api_title = "omni.usd.schema.destruction-${file:${root}/source/extensions/omni.usd.schema.destruction/VERSION.md} API"
+copyright_start = 2020
+
+docs_root = "source/extensions/omni.usd.schema.destruction"
+
+sphinx_conf_py_extra = """
+    html_extra_path = [ "${root}/_build/target-deps/usd_ext_destruction/release/doc/doxy_html" ]
+"""
+
+sphinx_exclude_patterns = [
+    "PACKAGE-LICENSES",
+    "docs/README.md", # mdinclude'd
+    "VERSION.md",
+]
+
+
+[repo_docs.editions.s3web]
+protocol = "s3"
+bucket_name = "omniverse-docs"
+bucket_dir = "${project}/${version}"
