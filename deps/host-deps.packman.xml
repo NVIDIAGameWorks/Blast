@@ -1,6 +1,0 @@
-<project toolsVersion="5.2">
-    <dependency name="linbuild" linkPath="../_build/host-deps/linbuild">
-        <package name="linbuild" version="1.10.112-044606b-x86_64" platforms="linux-x86_64" />
-    </dependency>
-</project>
-
