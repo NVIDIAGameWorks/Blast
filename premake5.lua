@@ -23,6 +23,9 @@ local pylibs = {
 -- Include omni.repo.build premake tools
 local repo_build = require('omni/repo/build')
 
+-- Path defines
+local target_deps = "%{root}/_build/target-deps"
+
 -- Enable /sourcelink flag for VS
 repo_build.enable_vstudio_sourcelink()
 
@@ -85,61 +88,9 @@ premake.override(premake.vstudio.vc2010, "projectReferences", function(base, prj
    end
 end)
 
-local pyver = _OPTIONS["python-version"]
-
 local hostDepsDir = "_build/host-deps"
 local targetDepsDir = "_build/target-deps"
 local currentAbsPath = repo_build.get_abs_path(".");
-local usdDir = currentAbsPath.."/"..targetDepsDir.."/usd/py"..pyver.."_%{cfg.buildcfg}"
-
-function link_openssl()
-    -- openssl
-    filter { "system:linux" }
-        libdirs { targetDepsDir.."/openssl/lib" }
-        links { "ssl:static", "crypto:static" }
-        linkoptions {
-            "-Wl,-Bstatic -Wl,--whole-archive -lssl -lcrypto -Wl,--no-whole-archive -Wl,-Bdynamic",
-            "-Wl,--exclude-libs,libssl.a -Wl,--exclude-libs,libcrypto.a"
-        }
-        links { "dl" }
-    filter { "system:windows" }
-        libdirs { targetDepsDir.."/openssl/lib/%{cfg.buildcfg}/rt_static" }
-        links { "libssl.lib", "libcrypto.lib" }
-    filter {}
-end
-
-function link_curl()
-    filter { "system:linux" }
-        libdirs { targetDepsDir.."/libcurl/lib/%{cfg.buildcfg}" }
-        links { "curl:static" }
-        linkoptions {
-            "-Wl,-Bstatic -Wl,--whole-archive -lcurl -Wl,--no-whole-archive -Wl,-Bdynamic",
-            "-Wl,--exclude-libs,libcurl.a"
-        }
-    filter { "system:windows" }
-        libdirs { targetDepsDir.."/libcurl/lib/rt_static" }
-    filter { "system:windows", "configurations:debug" }
-        links { "libcurl_a_debug" }
-    filter { "system:windows", "configurations:release" }
-        links { "libcurl_a" }
-    filter {}
-
-    link_openssl()
-
-    filter { "system:linux" }
-        libdirs { targetDepsDir.."/brotli/lib/%{cfg.buildcfg}" }
-        links { "brotlienc-static:static", "brotlidec-static:static", "brotlicommon-static:static" }
-        linkoptions {
-            "-Wl,-Bstatic -Wl,--whole-archive -lbrotlienc-static -lbrotlidec-static -lbrotlicommon-static -Wl,--no-whole-archive -Wl,-Bdynamic",
-            "-Wl,--exclude-libs,libbrotlienc-static.a",
-            "-Wl,--exclude-libs,libbrotlidec-static.a",
-            "-Wl,--exclude-libs,libbrotlicommon-static.a",
-        }
-    filter { "system:windows" }
-        libdirs { targetDepsDir.."/brotli/lib/rt_static/%{cfg.buildcfg}" }
-        links { "brotlienc-static", "brotlidec-static", "brotlicommon-static" }
-    filter {}
-end
 
 -- premake5.lua
 workspace "blast-sdk"
@@ -270,55 +221,83 @@ workspace "blast-sdk"
         optimize "On"
     filter {}
 
-function include_python()
-    if pyver == "27" then
-        filter { "system:windows" }
-            sysincludedirs { targetDepsDir.."/python27/include" }
-        filter { "system:linux" }
-            sysincludedirs { "/usr/include/python2.7" }
-        filter {}
-    else
-        filter { "system:windows" }
-            sysincludedirs { targetDepsDir.."/python"..pyver.."/include" }
-        filter { "system:linux" }
-            sysincludedirs { targetDepsDir.."/python"..pyver.."/include/"..pylibs[pyver] }
-        filter {}
-    end
+function standard_blast_lib_setup(path)
+    kind "SharedLib"
+    location (workspaceDir.."/%{prj.name}")
+    files {
+        "%{root}/source/sdk/common/*.*",
+        "%{root}/"..path.."/include/*.*",
+        "%{root}/"..path.."/source/*.*",
+    }
+
+    filter { "system:windows" }
+        -- defines { "ISOLATION_AWARE_ENABLED=1" }
+    filter { "system:linux" }
+        buildoptions { "-fPIC" }
+        links { "rt" }
+    filter{}
+
+    includedirs {
+        "%{root}/source/sdk/common",
+        "%{root}/"..path.."/include",
+        "%{root}/"..path.."/source",
+    }
+
+    vpaths {
+        ["common/*"] = "%{root}/source/sdk/common",
+        ["include/*"] = "%{root}/"..path.."/include/",
+        ["source/*"] = "%{root}/"..path.."/source/",
+    }
 end
 
 group "sdk"
     project "NvBlast"
-        kind "SharedLib"
-        -- dependson { "authentication", "provider_nucleus", "provider_file", "provider_http", "usd_plugin", "common" }
-        location (workspaceDir.."/%{prj.name}")
-        files {
-            "source/sdk/common/*.*",
-            "source/sdk/lowlevel/include/*.*",
-            "source/sdk/lowlevel/source/*.*",
-        }
+        standard_blast_lib_setup("source/sdk/lowlevel")
 
-        filter { "system:windows" }
-            -- defines { "ISOLATION_AWARE_ENABLED=1" }
-        filter { "system:linux" }
-            buildoptions { "-fPIC" }
-            links { "rt" }
-        filter{}
-
+    project "NvBlastGlobals"
+        standard_blast_lib_setup("source/sdk/globals")
         includedirs {
-            "source/sdk/common",
-            "source/sdk/lowlevel/include",
-            "source/sdk/lowlevel/source",
+            "%{root}/source/sdk/lowlevel/include",
         }
 
-        vpaths {
-            ["common/*"] = "source/sdk/common",
-            ["include/*"] = "source/sdk/lowlevel/include/",
-            ["source/*"] = "source/sdk/lowlevel/source/",
+    project "NvBlastTk"
+        dependson { "NvBlast", "NvBlastGlobals" }
+        standard_blast_lib_setup("source/sdk/toolkit")
+        includedirs {
+            "%{root}/source/sdk/lowlevel/include",
+            "%{root}/source/sdk/globals/include",
+            "%{root}/source/sdk/globals/source",
+            target_deps.."/physxsdk/include",
+            target_deps.."/physxsdk/source/foundation/include",
+            target_deps.."/pxshared/include",
+        }
+        libdirs { targetDir }
+        links { "NvBlast.lib", "NvBlastGlobals.lib" }
+
+    project "NvBlastExtAssetUtils"
+        dependson { "NvBlast", "NvBlastGlobals" }
+        standard_blast_lib_setup("source/sdk/extensions/assetutils")
+        includedirs {
+            "%{root}/source/sdk/lowlevel/include",
+            "%{root}/source/sdk/globals/include",
+        }
+        libdirs { targetDir }
+        links { "NvBlast.lib", "NvBlastGlobals.lib" }
+
+    project "NvBlastExtAuthoring"
+        standard_blast_lib_setup("source/sdk/extensions/authoring")
+        includedirs {
+            "%{root}/source/sdk/lowlevel/include",
+            "%{root}/source/sdk/globals/include",
+            "%{root}/source/sdk/extensions/authoringCommon/include",
+            "%{root}/source/sdk/extensions/authoringCommon/source",
+            target_deps.."/pxshared/include",
         }
 
-        -- Copy Omniverse connection library
-        -- filter { "system:linux" }
-        --     copy_to_file(targetDepsDir.."/omniverse_connection/%{cfg.buildcfg}/bin/*.so", "%{cfg.targetdir}/")
-        -- filter { "system:windows" }
-        --     copy_to_file(targetDepsDir.."/omniverse_connection/%{cfg.buildcfg}/bin/*.dll", "%{cfg.targetdir}/")
-        -- filter {}
+    -- project "NvBlastExtExporter"
+    -- project "NvBlastExtPhysX"
+    -- project "NvBlastExtPxSerialization"
+    -- project "NvBlastExtSerialization"
+    -- project "NvBlastExtShaders"
+    -- project "NvBlastExtStress"
+    -- project "NvBlastExtTkSerialization"
