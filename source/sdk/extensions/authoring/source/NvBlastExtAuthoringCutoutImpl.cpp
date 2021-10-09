@@ -30,6 +30,7 @@
 #include <NvBlastAssert.h>
 #include <foundation/PxBounds3.h>
 #include <foundation/PxMath.h>
+#include <foundation/PxAssert.h>
 #include <NvBlastPxSharedHelpers.h>
 #include "NvBlastExtAuthoringCutoutImpl.h"
 #include <algorithm>

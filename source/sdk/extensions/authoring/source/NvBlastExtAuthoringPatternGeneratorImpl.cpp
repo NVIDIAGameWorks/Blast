@@ -25,6 +25,8 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "NvBlastGlobals.h"
 #include "NvBlastAssert.h"
 #include "NvBlastExtAuthoringTypes.h"

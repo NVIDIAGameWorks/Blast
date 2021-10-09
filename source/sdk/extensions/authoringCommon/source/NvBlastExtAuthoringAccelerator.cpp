@@ -558,7 +558,7 @@ void SweepingAccelerator::setState(const NvcBounds3* facetBounds)
     
     physx::PxBounds3 bnd = *toPxShared(facetBounds);
 
-    bnd.scaleFast(1.1);
+    bnd.scaleFast(1.1f);
     uint32_t start = (std::max(0.0f, bnd.minimum.x - m_minimal.x)) * m_rescale.x;
     uint32_t end   = (std::max(0.0f, bnd.maximum.x - m_minimal.x)) * m_rescale.x;
     for (uint32_t i = start; i <= end && i < SWEEP_RESOLUTION; ++i)

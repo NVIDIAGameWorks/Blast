@@ -64,7 +64,7 @@
 
 #include "imgui.h"
 
-#include <foundation/PxFoundation.h>
+#include <PxFoundation.h>
 
 #define SAFE_RELEASE_(p)                                                                                               \
     {                                                                                                                  \

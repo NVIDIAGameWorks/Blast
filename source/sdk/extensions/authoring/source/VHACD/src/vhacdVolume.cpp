@@ -29,8 +29,8 @@
 namespace VHACD {
 /********************************************************/
 /* AABB-triangle overlap test code                      */
-/* by Tomas Akenine-Möller                              */
-/* Function: int32_t triBoxOverlap(float boxcenter[3],      */
+/* by Tomas Akenine-Meuller                             */
+/* Function: int32_t triBoxOverlap(float boxcenter[3],  */
 /*          float boxhalfsize[3],float triverts[3][3]); */
 /* History:                                             */
 /*   2001-03-05: released the code in its first version */

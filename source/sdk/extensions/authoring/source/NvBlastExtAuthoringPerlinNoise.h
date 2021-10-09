@@ -374,7 +374,7 @@ public:
         for (int32_t i = 1; i <= mOctaves; ++i)
         {
             result += eval4D(p.x * i, p.y * i, p.z * i, i * 5.0f, mSeed).w * alpha;
-            alpha *= 0.45;
+            alpha *= 0.45f;
         }
         return result * mAmplitude;
     }

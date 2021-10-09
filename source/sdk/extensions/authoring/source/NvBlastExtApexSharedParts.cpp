@@ -33,7 +33,7 @@
 
 #include "foundation/PxMat44.h"
 #include "foundation/PxBounds3.h"
-#include "foundation/PxFoundation.h"
+#include "PxFoundation.h"
 #include "PsVecMath.h"
 #include <vector>
 
@@ -54,7 +54,7 @@ PX_NOALIAS PX_FORCE_INLINE BoolV PointOutsideOfPlane4(const Vec3VArg _a, const V
     // plane cumputed by A, B, C, the distance to the plane might not be 0 for the mentioned
     // scenario but a small positive or negative value. This can lead to the wrong boolean
     // results. Using a small negative value as threshold is more conservative but safer.
-    const Vec4V zero = V4Load(-1e-6);
+    const Vec4V zero = V4Load(-1e-6f);
 
     const Vec3V ab = V3Sub(_b, _a);
     const Vec3V ac = V3Sub(_c, _a);

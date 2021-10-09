@@ -45,8 +45,9 @@
 
 #include "task/PxCpuDispatcher.h"
 #include "task/PxTask.h"
-#include "foundation/PxFoundation.h"
-#include "foundation/PxFoundationVersion.h"
+#include "PxFoundation.h"
+
+#include <PxPhysicsVersion.h>
 
 #include <thread>
 #include <algorithm>

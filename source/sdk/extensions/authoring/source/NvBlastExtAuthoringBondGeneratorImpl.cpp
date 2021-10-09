@@ -1350,7 +1350,7 @@ int32_t BlastBondGeneratorImpl::createBondBetweenMeshes(uint32_t meshACount, con
                                                         const Triangle* meshB, NvBlastBond& resultBond,
                                                         BondGenerationConfig conf)
 {
-    float overlapping = 0.3;
+    float overlapping = 0.3f;
     if (conf.bondMode == BondGenerationConfig::EXACT)
     {
         std::vector<uint32_t> chunksOffsets = { 0, meshACount, meshACount + meshBCount };

@@ -147,12 +147,12 @@ workspace "blast-sdk"
         disablewarnings {
             "4100", -- unreferenced formal parameter
             "4127", -- conditional expression is constant
-            "4189", -- 'x': local variable is initialized but not referenced
+            -- "4189", -- 'x': local variable is initialized but not referenced
             "4201", -- nonstandard extension used: nameless struct/union
-            "4456", -- declaration of 'x' hides previous local declaration (this happens a lot with OMNI_TRACE_SCOPE)
-            "4506", -- no definition for inline function (this happens with Pixar headers)
+            -- "4456", -- declaration of 'x' hides previous local declaration (this happens a lot with OMNI_TRACE_SCOPE)
+            -- "4506", -- no definition for inline function (this happens with Pixar headers)
         }
-        defines { "_CRT_SECURE_NO_WARNINGS" }
+        -- defines { "_CRT_SECURE_NO_WARNINGS" }
         defines { "_CRT_NONSTDC_NO_DEPRECATE" }
         defines { "BOOST_USE_WINDOWS_H=1" }
 
@@ -285,14 +285,37 @@ group "sdk"
         links { "NvBlast.lib", "NvBlastGlobals.lib" }
 
     project "NvBlastExtAuthoring"
+        dependson { "NvBlast", "NvBlastGlobals" }
         standard_blast_lib_setup("source/sdk/extensions/authoring")
+        files {
+            "%{root}/source/sdk/extensions/authoringCommon/include/*.*",
+            "%{root}/source/sdk/extensions/authoringCommon/source/*.*",
+            "%{root}/source/sdk/extensions/authoring/source/VHACD/inc/*.*",
+            "%{root}/source/sdk/extensions/authoring/source/VHACD/src/*.*",
+        }
         includedirs {
             "%{root}/source/sdk/lowlevel/include",
             "%{root}/source/sdk/globals/include",
+            "%{root}/source/sdk/extensions/assetutils/include",
             "%{root}/source/sdk/extensions/authoringCommon/include",
             "%{root}/source/sdk/extensions/authoringCommon/source",
+            "%{root}/source/sdk/extensions/authoring/source/VHACD/inc",
+            "%{root}/source/sdk/extensions/authoring/source/VHACD/public",
+            target_deps.."/physxsdk/include",
+            target_deps.."/physxsdk/source/foundation/include",
             target_deps.."/pxshared/include",
+            target_deps.."/BoostMultiprecision",
         }
+        vpaths {
+            ["VHACD/*"] = "%{root}/source/sdk/extensions/authoring/source/VHACD/",
+            ["authoringCommon/*"] = "%{root}/source/sdk/extensions/authoringCommon/",
+        }
+        disablewarnings {
+            "4244", -- conversion from 'type1' to 'type2', possible loss of data
+            "4267", -- conversion from 'size_t' to 'type', possible loss of data
+        }
+        libdirs { targetDir }
+        links { "NvBlast.lib", "NvBlastGlobals.lib" }
 
     -- project "NvBlastExtExporter"
     -- project "NvBlastExtPhysX"
