@@ -757,6 +757,9 @@ Mesh* getNoisyCuttingCone(const std::vector<physx::PxVec3>& points, const std::s
                           float conicityMultiplierBot, float conicityMultiplierTop, physx::PxVec3 samplingInterval,
                           int32_t interiorMaterialId, const SharedFacesMap& sharedFacesMap, bool inverseNormals)
 {
+    NV_UNUSED(conicityMultiplierTop);
+    NV_UNUSED(conicityMultiplierBot);
+    
     uint32_t pointCount = points.size();
     uint32_t resP       = pointCount;
     for (uint32_t i = 0; i < pointCount; i++)
@@ -891,6 +894,8 @@ Mesh* getCuttingCone(const CutoutConfiguration& conf, const std::vector<physx::P
                      float conicityTop, int64_t& id, int32_t seed, int32_t interiorMaterialId,
                      const SharedFacesMap& sharedFacesMap, bool inverseNormals)
 {
+    NV_UNUSED(seed);
+
     uint32_t pointCount = points.size();
     if (conf.noise.amplitude > FLT_EPSILON)
     {

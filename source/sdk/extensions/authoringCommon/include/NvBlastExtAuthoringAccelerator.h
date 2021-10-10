@@ -78,7 +78,7 @@ namespace Nv
             virtual void setPointCmpDirection(int32_t dir) = 0;
             
             
-            virtual ~SpatialAccelerator() {};
+            virtual ~SpatialAccelerator() {}
         };
 
 
@@ -97,7 +97,7 @@ namespace Nv
             virtual void setState(const NvcVec3& point) override;
             virtual int32_t getNextFacet() override;
 
-            virtual void setPointCmpDirection(int32_t dir) override {};
+            virtual void setPointCmpDirection(int32_t dir) override { NV_UNUSED(dir); }
         private:
             int32_t m_count;
             int32_t m_current;
@@ -109,7 +109,7 @@ namespace Nv
             uint32_t index;
             bool end;
 
-            SegmentToIndex(float c, uint32_t i, bool end) : coord(c), index(i), end(end) {};
+            SegmentToIndex(float c, uint32_t i, bool end) : coord(c), index(i), end(end) {}
 
             bool operator<(const SegmentToIndex& in) const
             {
@@ -175,7 +175,7 @@ namespace Nv
             virtual void    setState(const NvcBounds3* bounds) override;
             virtual void setState(const NvcVec3& point) override;
             virtual int32_t getNextFacet() override;
-            virtual void setPointCmpDirection(int32_t dir) override {};
+            virtual void setPointCmpDirection(int32_t dir) override { NV_UNUSED(dir); }
         private:
 
 
@@ -220,7 +220,7 @@ namespace Nv
             void setState(const Vertex* pos, const Edge* ed, const Facet& fc) override;
             void setState(const NvcBounds3* bounds) override;
             void setState(const NvcVec3& p) override;
-            void setPointCmpDirection(int32_t dir) override {};
+            void setPointCmpDirection(int32_t dir) override { NV_UNUSED(dir); }
         private:
 
             void buildAccelStructure(const Vertex* pos, const Edge* edges, const Facet* fc, int32_t facetCount);

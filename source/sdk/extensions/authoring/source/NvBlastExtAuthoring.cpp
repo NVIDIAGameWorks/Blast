@@ -294,7 +294,7 @@ static float getGeometryVolumeAndCentroid(NvcVec3& centroid, const Nv::Blast::Tr
 
         size_t faceCount() const { return m_triCount; }
 
-        size_t vertexCount(size_t faceIndex) const { return 3; }
+        size_t vertexCount(size_t faceIndex) const { NV_UNUSED(faceIndex); return 3; }
 
         NvcVec3 vertex(size_t faceIndex, size_t vertexIndex) const
         {

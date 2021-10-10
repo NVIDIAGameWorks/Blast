@@ -123,10 +123,6 @@ workspace "blast-sdk"
     defines { "LOG_COMPONENT=\"%{prj.name}\"" }
 
     sysincludedirs { targetDepsDir }
-    -- sysincludedirs { targetDepsDir.."/omni-trace/include" }
-    -- sysincludedirs { targetDepsDir.."/omni-config-cpp/include" }
-
-    -- link_curl()
 
     filter { "system:windows" }
         platforms { "x86_64" }
@@ -144,15 +140,6 @@ workspace "blast-sdk"
         buildoptions {"/permissive-"}
         buildoptions { "/WX" } -- warnings as errors
         warnings "Extra"
-        disablewarnings {
-            "4100", -- unreferenced formal parameter
-            "4127", -- conditional expression is constant
-            -- "4189", -- 'x': local variable is initialized but not referenced
-            "4201", -- nonstandard extension used: nameless struct/union
-            -- "4456", -- declaration of 'x' hides previous local declaration (this happens a lot with OMNI_TRACE_SCOPE)
-            -- "4506", -- no definition for inline function (this happens with Pixar headers)
-        }
-        -- defines { "_CRT_SECURE_NO_WARNINGS" }
         defines { "_CRT_NONSTDC_NO_DEPRECATE" }
         defines { "BOOST_USE_WINDOWS_H=1" }
 
@@ -221,14 +208,9 @@ workspace "blast-sdk"
         optimize "On"
     filter {}
 
-function standard_blast_lib_setup(path)
+function blast_lib_bare_setup(path)
     kind "SharedLib"
     location (workspaceDir.."/%{prj.name}")
-    files {
-        "%{root}/source/sdk/common/*.*",
-        "%{root}/"..path.."/include/*.*",
-        "%{root}/"..path.."/source/*.*",
-    }
 
     filter { "system:windows" }
         -- defines { "ISOLATION_AWARE_ENABLED=1" }
@@ -242,6 +224,16 @@ function standard_blast_lib_setup(path)
         "%{root}/"..path.."/include",
         "%{root}/"..path.."/source",
     }
+end
+
+function blast_lib_standard_setup(path)
+    blast_lib_bare_setup(path)
+
+    files {
+        "%{root}/source/sdk/common/*.*",
+        "%{root}/"..path.."/include/*.*",
+        "%{root}/"..path.."/source/*.*",
+    }
 
     vpaths {
         ["common/*"] = "%{root}/source/sdk/common",
@@ -250,19 +242,62 @@ function standard_blast_lib_setup(path)
     }
 end
 
+function link_dependents(...)
+    libdirs { targetDir }
+    for i = 1, select('#', ...) do
+        local project_name = select(i, ...)
+        dependson(project_name)
+        filter { "system:windows" }
+            links(project_name..".lib")
+        filter { "system:linux" }
+            links("lib"..project_name)
+        filter {}
+    end
+end
+
 group "sdk"
     project "NvBlast"
-        standard_blast_lib_setup("source/sdk/lowlevel")
+        blast_lib_standard_setup("source/sdk/lowlevel")
 
     project "NvBlastGlobals"
-        standard_blast_lib_setup("source/sdk/globals")
+        blast_lib_standard_setup("source/sdk/globals")
         includedirs {
             "%{root}/source/sdk/lowlevel/include",
         }
 
+    project "NvBlastExtShaders"
+        link_dependents("NvBlast", "NvBlastGlobals")
+        blast_lib_standard_setup("source/sdk/extensions/shaders")
+        includedirs {
+            "%{root}/source/sdk/lowlevel/include",
+            "%{root}/source/sdk/globals/include",
+            target_deps.."/physxsdk/include",
+            target_deps.."/physxsdk/source/foundation/include",
+            target_deps.."/pxshared/include",
+        }
+        disablewarnings {
+            "4267", -- conversion from 'size_t' to 'type', possible loss of data
+        }
+
+    project "NvBlastExtAssetUtils"
+        link_dependents("NvBlast", "NvBlastGlobals")
+        blast_lib_standard_setup("source/sdk/extensions/assetutils")
+        includedirs {
+            "%{root}/source/sdk/lowlevel/include",
+            "%{root}/source/sdk/globals/include",
+        }
+
+    -- project "NvBlastExtSerialization"
+    --     link_dependents("NvBlast", "NvBlastGlobals")
+    --     blast_lib_standard_setup("source/sdk/extensions/serialization")
+    --     includedirs {
+    --         "%{root}/source/sdk/lowlevel/include",
+    --         "%{root}/source/sdk/globals/include",
+    --     }
+
     project "NvBlastTk"
-        dependson { "NvBlast", "NvBlastGlobals" }
-        standard_blast_lib_setup("source/sdk/toolkit")
+        link_dependents("NvBlast", "NvBlastGlobals")
+        blast_lib_standard_setup("source/sdk/toolkit")
         includedirs {
             "%{root}/source/sdk/lowlevel/include",
             "%{root}/source/sdk/globals/include",
@@ -271,22 +306,10 @@ group "sdk"
             target_deps.."/physxsdk/source/foundation/include",
             target_deps.."/pxshared/include",
         }
-        libdirs { targetDir }
-        links { "NvBlast.lib", "NvBlastGlobals.lib" }
-
-    project "NvBlastExtAssetUtils"
-        dependson { "NvBlast", "NvBlastGlobals" }
-        standard_blast_lib_setup("source/sdk/extensions/assetutils")
-        includedirs {
-            "%{root}/source/sdk/lowlevel/include",
-            "%{root}/source/sdk/globals/include",
-        }
-        libdirs { targetDir }
-        links { "NvBlast.lib", "NvBlastGlobals.lib" }
 
     project "NvBlastExtAuthoring"
-        dependson { "NvBlast", "NvBlastGlobals" }
-        standard_blast_lib_setup("source/sdk/extensions/authoring")
+        link_dependents("NvBlast", "NvBlastGlobals")
+        blast_lib_standard_setup("source/sdk/extensions/authoring")
         files {
             "%{root}/source/sdk/extensions/authoringCommon/include/*.*",
             "%{root}/source/sdk/extensions/authoringCommon/source/*.*",
@@ -314,13 +337,9 @@ group "sdk"
             "4244", -- conversion from 'type1' to 'type2', possible loss of data
             "4267", -- conversion from 'size_t' to 'type', possible loss of data
         }
-        libdirs { targetDir }
-        links { "NvBlast.lib", "NvBlastGlobals.lib" }
 
     -- project "NvBlastExtExporter"
-    -- project "NvBlastExtPhysX"
-    -- project "NvBlastExtPxSerialization"
-    -- project "NvBlastExtSerialization"
-    -- project "NvBlastExtShaders"
     -- project "NvBlastExtStress"
     -- project "NvBlastExtTkSerialization"
+    -- project "NvBlastExtPhysX"
+    -- project "NvBlastExtPxSerialization"
