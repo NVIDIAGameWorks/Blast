@@ -29,7 +29,7 @@
 #include "NvBlastIDDTO.h"
 #include "NvBlastTypes.h"
 #include "NvBlastAssert.h"
-#include "generated/NvBlastExtLlSerialization.capn.h"
+#include "NvBlastExtLlSerialization.capn.h"
 
 
 namespace Nv

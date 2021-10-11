@@ -120,6 +120,8 @@ workspace "blast-sdk"
     cppdialect "C++14"
     includedirs { "include" }
 
+    characterset( "ASCII" )
+
     defines { "LOG_COMPONENT=\"%{prj.name}\"" }
 
     sysincludedirs { targetDepsDir }
@@ -305,31 +307,89 @@ group "sdk"
     project "NvBlastExtSerialization"
         link_dependents("NvBlast", "NvBlastGlobals")
         blast_lib_bare_setup("source/sdk/extensions/serialization")
-        blast_lib_common_files()
+        local capnp_gen_path = "_build/generated_capnp"
+        local capnp_gen_fullpath = "%{root}"..capnp_gen_path
         includedirs {
+            "%{root}/source/sdk/extensions/serialization/source/DTO",
             "%{root}/source/sdk/lowlevel/include",
+            "%{root}/source/sdk/lowlevel/source",
             "%{root}/source/sdk/globals/include",
             "%{root}/_build/host-deps/CapnProto/src",
+            "%{root}/_build/host-deps/CapnProto/src",
+            capnp_gen_fullpath,
+            target_deps.."/physxsdk/include",
+            target_deps.."/physxsdk/source/foundation/include",
+            target_deps.."/pxshared/include",
         }
-        add_files(source/sdk/extensions/serialization/source,
+        blast_lib_common_files()
+        add_files("_build/host-deps/CapnProto/src/capnp",
+            "arena.c++",
+            "blob.c++",
+            "layout.c++",
+            "message.c++",
+            "serialize.c++"
+        )
+        add_files("_build/host-deps/CapnProto/src/kj",
+            "array.c++",
+            "common.c++",
+            "debug.c++",
+            "exception.c++",
+            "io.c++",
+            "mutex.c++",
+            "string.c++",
+            "units.c++"
+        )
+        add_files("source/sdk/extensions/serialization/source",
             "NvBlastExtSerialization.cpp",
             "NvBlastExtLlSerialization.cpp",
             "NvBlastExtOutputStream.cpp",
-            "NvBlastExtInputStream.cpp",
+            "NvBlastExtInputStream.cpp"
         )
-        add_files(source/sdk/extensions/serialization/source/DTO,
+        add_files("source/sdk/extensions/serialization/source/DTO",
             "ActorDTO.cpp",
             "AssetDTO.cpp",
             "FamilyDTO.cpp",
             "FamilyGraphDTO.cpp",
             "NvBlastChunkDTO.cpp",
             "NvBlastBondDTO.cpp",
-            "NvBlastIDDTO.cpp",
+            "NvBlastIDDTO.cpp"
+        )
+        add_files(capnp_gen_path,
+            "NvBlastExtLlSerialization.capn.c++"
         )
         vpaths {
             ["include/*"] = "%{root}/source/sdk/extensions/serialization/include/",
             ["source/*"] = "%{root}/source/sdk/extensions/serialization/source/",
         }
+
+        -- cap'n proto precompile step
+        local capnp_bin = get_abs_path("%{root}_build/host-deps/CapnProto/tools/win32")
+        local capnp_gen = get_abs_path(capnp_gen_fullpath)
+        filter { "system:windows" }
+            capnp_bin = capnp_bin:gsub('/', '\\')
+            capnp_gen = capnp_gen:gsub('/', '\\')
+            prebuildcommands { "set PATH="..capnp_bin..";%PATH%" } -- set cap'n proto executable path
+            prebuildcommands { "if not exist "..capnp_gen.."\\ mkdir "..capnp_gen } -- make the generated source folder under _build
+            prebuildcommands { "pushd "..capnp_gen } -- push current path and go into the generated source folder
+            prebuildcommands { "del /S *" } -- clear the generated source folder
+            -- capnp compile
+            prebuildcommands { "capnp compile -oc++ -I ../host-deps/CapnProto/src --src-prefix=../../source/sdk/extensions/serialization/source ../../source/sdk/extensions/serialization/source/NvBlastExtLlSerialization.capn" }
+            prebuildcommands { "popd" } -- return to previous folder
+
+            -- cap'n proto source produces a lot of warnings
+            disablewarnings {
+                "4018", -- 'token' : signed/unsigned mismatch
+                "4100", -- unreferenced formal parameter
+                "4189", -- 'identifier' : local variable is initialized but not referenced
+                "4244", -- conversion from 'type1' to 'type2', possible loss of data
+                "4245", -- conversion from 'type1' to 'type2', signed/unsigned mismatch
+                "4267", -- conversion from 'size_t' to 'type', possible loss of data
+                "4456", -- declaration of 'identifier' hides previous local declaration
+                "4541", -- 'identifier' used on polymorphic type 'type' with /GR-; unpredictable behavior may result
+                "4702", -- unreachable code
+                "4714", -- function 'function' marked as __forceinline not inlined
+            }
+        filter {}
 
     project "NvBlastTk"
         link_dependents("NvBlast", "NvBlastGlobals")
@@ -346,10 +406,6 @@ group "sdk"
     project "NvBlastExtAuthoring"
         link_dependents("NvBlast", "NvBlastGlobals")
         blast_lib_standard_setup("source/sdk/extensions/authoring")
-        files {
-            "%{root}/source/sdk/extensions/authoringCommon/source/*.cpp",
-            "%{root}/source/sdk/extensions/authoring/source/VHACD/src/*.cpp",
-        }
         includedirs {
             "%{root}/source/sdk/lowlevel/include",
             "%{root}/source/sdk/globals/include",
@@ -362,6 +418,10 @@ group "sdk"
             target_deps.."/physxsdk/source/foundation/include",
             target_deps.."/pxshared/include",
             target_deps.."/BoostMultiprecision",
+        }
+        files {
+            "%{root}/source/sdk/extensions/authoringCommon/source/*.cpp",
+            "%{root}/source/sdk/extensions/authoring/source/VHACD/src/*.cpp",
         }
         vpaths {
             ["VHACD/*"] = "%{root}/source/sdk/extensions/authoring/source/VHACD/",

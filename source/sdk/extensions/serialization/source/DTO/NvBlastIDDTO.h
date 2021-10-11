@@ -28,7 +28,7 @@
 
 #pragma once
 #include "NvBlastTypes.h"
-#include "generated/NvBlastExtLlSerialization.capn.h"
+#include "NvBlastExtLlSerialization.capn.h"
 #include "DTOMacros.h"
 
 DTO_CLASS(NvBlastID, NvBlastID, ::Nv::Blast::Serialization::UUID)
