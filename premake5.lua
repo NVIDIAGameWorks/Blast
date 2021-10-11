@@ -226,17 +226,25 @@ function blast_lib_bare_setup(path)
     }
 end
 
-function blast_lib_standard_setup(path)
-    blast_lib_bare_setup(path)
-
+function blast_lib_common_files()
     files {
-        "%{root}/source/sdk/common/*.*",
-        "%{root}/"..path.."/include/*.*",
-        "%{root}/"..path.."/source/*.*",
+        "%{root}/source/sdk/common/*.cpp",
     }
 
     vpaths {
         ["common/*"] = "%{root}/source/sdk/common",
+    }
+end
+
+function blast_lib_standard_setup(path)
+    blast_lib_bare_setup(path)
+    blast_lib_common_files()
+
+    files {
+        "%{root}/"..path.."/source/*.cpp",
+    }
+
+    vpaths {
         ["include/*"] = "%{root}/"..path.."/include/",
         ["source/*"] = "%{root}/"..path.."/source/",
     }
@@ -252,6 +260,13 @@ function link_dependents(...)
         filter { "system:linux" }
             links("lib"..project_name)
         filter {}
+    end
+end
+
+function add_files(base_path, ...)
+    for i = 1, select('#', ...) do
+        local filename = select(i, ...)
+        files { "%{root}/"..base_path.."/"..filename }
     end
 end
 
@@ -287,13 +302,34 @@ group "sdk"
             "%{root}/source/sdk/globals/include",
         }
 
-    -- project "NvBlastExtSerialization"
-    --     link_dependents("NvBlast", "NvBlastGlobals")
-    --     blast_lib_standard_setup("source/sdk/extensions/serialization")
-    --     includedirs {
-    --         "%{root}/source/sdk/lowlevel/include",
-    --         "%{root}/source/sdk/globals/include",
-    --     }
+    project "NvBlastExtSerialization"
+        link_dependents("NvBlast", "NvBlastGlobals")
+        blast_lib_bare_setup("source/sdk/extensions/serialization")
+        blast_lib_common_files()
+        includedirs {
+            "%{root}/source/sdk/lowlevel/include",
+            "%{root}/source/sdk/globals/include",
+            "%{root}/_build/host-deps/CapnProto/src",
+        }
+        add_files(source/sdk/extensions/serialization/source,
+            "NvBlastExtSerialization.cpp",
+            "NvBlastExtLlSerialization.cpp",
+            "NvBlastExtOutputStream.cpp",
+            "NvBlastExtInputStream.cpp",
+        )
+        add_files(source/sdk/extensions/serialization/source/DTO,
+            "ActorDTO.cpp",
+            "AssetDTO.cpp",
+            "FamilyDTO.cpp",
+            "FamilyGraphDTO.cpp",
+            "NvBlastChunkDTO.cpp",
+            "NvBlastBondDTO.cpp",
+            "NvBlastIDDTO.cpp",
+        )
+        vpaths {
+            ["include/*"] = "%{root}/source/sdk/extensions/serialization/include/",
+            ["source/*"] = "%{root}/source/sdk/extensions/serialization/source/",
+        }
 
     project "NvBlastTk"
         link_dependents("NvBlast", "NvBlastGlobals")
@@ -311,10 +347,8 @@ group "sdk"
         link_dependents("NvBlast", "NvBlastGlobals")
         blast_lib_standard_setup("source/sdk/extensions/authoring")
         files {
-            "%{root}/source/sdk/extensions/authoringCommon/include/*.*",
-            "%{root}/source/sdk/extensions/authoringCommon/source/*.*",
-            "%{root}/source/sdk/extensions/authoring/source/VHACD/inc/*.*",
-            "%{root}/source/sdk/extensions/authoring/source/VHACD/src/*.*",
+            "%{root}/source/sdk/extensions/authoringCommon/source/*.cpp",
+            "%{root}/source/sdk/extensions/authoring/source/VHACD/src/*.cpp",
         }
         includedirs {
             "%{root}/source/sdk/lowlevel/include",
