@@ -210,7 +210,7 @@ workspace "blast-sdk"
         optimize "On"
     filter {}
 
-function blast_lib_bare_setup(path)
+function blast_sdklib_bare_setup(name)
     kind "SharedLib"
     location (workspaceDir.."/%{prj.name}")
 
@@ -223,12 +223,12 @@ function blast_lib_bare_setup(path)
 
     includedirs {
         "%{root}/source/sdk/common",
-        "%{root}/"..path.."/include",
-        "%{root}/"..path.."/source",
+        "%{root}/include/"..name,
+        "%{root}/source/sdk"..name,
     }
 end
 
-function blast_lib_common_files()
+function blast_sdklib_common_files()
     files {
         "%{root}/source/sdk/common/*.cpp",
     }
@@ -238,17 +238,17 @@ function blast_lib_common_files()
     }
 end
 
-function blast_lib_standard_setup(path)
-    blast_lib_bare_setup(path)
-    blast_lib_common_files()
+function blast_sdklib_standard_setup(name)
+    blast_sdklib_bare_setup(name)
+    blast_sdklib_common_files()
 
     files {
-        "%{root}/"..path.."/source/*.cpp",
+        "%{root}/source/sdk/"..name.."/*.cpp",
     }
 
     vpaths {
-        ["include/*"] = "%{root}/"..path.."/include/",
-        ["source/*"] = "%{root}/"..path.."/source/",
+        ["include/*"] = "%{root}/include/"..name,
+        ["source/*"] = "%{root}/source/sdk/"..name.."/",
     }
 end
 
@@ -265,29 +265,29 @@ function link_dependents(...)
     end
 end
 
-function add_files(base_path, ...)
+function add_files(rootpath, ...)
     for i = 1, select('#', ...) do
         local filename = select(i, ...)
-        files { "%{root}/"..base_path.."/"..filename }
+        files { "%{root}/"..rootpath.."/"..filename }
     end
 end
 
 group "sdk"
     project "NvBlast"
-        blast_lib_standard_setup("source/sdk/lowlevel")
+        blast_sdklib_standard_setup("lowlevel")
 
     project "NvBlastGlobals"
-        blast_lib_standard_setup("source/sdk/globals")
+        blast_sdklib_standard_setup("globals")
         includedirs {
-            "%{root}/source/sdk/lowlevel/include",
+            "%{root}/include/lowlevel",
         }
 
     project "NvBlastExtShaders"
         link_dependents("NvBlast", "NvBlastGlobals")
-        blast_lib_standard_setup("source/sdk/extensions/shaders")
+        blast_sdklib_standard_setup("extensions/shaders")
         includedirs {
-            "%{root}/source/sdk/lowlevel/include",
-            "%{root}/source/sdk/globals/include",
+            "%{root}/include/lowlevel",
+            "%{root}/include/globals",
             target_deps.."/physxsdk/include",
             target_deps.."/physxsdk/source/foundation/include",
             target_deps.."/pxshared/include",
@@ -298,30 +298,29 @@ group "sdk"
 
     project "NvBlastExtAssetUtils"
         link_dependents("NvBlast", "NvBlastGlobals")
-        blast_lib_standard_setup("source/sdk/extensions/assetutils")
+        blast_sdklib_standard_setup("extensions/assetutils")
         includedirs {
-            "%{root}/source/sdk/lowlevel/include",
-            "%{root}/source/sdk/globals/include",
+            "%{root}/include/lowlevel",
+            "%{root}/include/globals",
         }
 
     project "NvBlastExtSerialization"
         link_dependents("NvBlast", "NvBlastGlobals")
-        blast_lib_bare_setup("source/sdk/extensions/serialization")
+        blast_sdklib_bare_setup("extensions/serialization")
         local capnp_gen_path = "_build/generated_capnp"
         local capnp_gen_fullpath = "%{root}"..capnp_gen_path
         includedirs {
-            "%{root}/source/sdk/extensions/serialization/source/DTO",
-            "%{root}/source/sdk/lowlevel/include",
-            "%{root}/source/sdk/lowlevel/source",
-            "%{root}/source/sdk/globals/include",
-            "%{root}/_build/host-deps/CapnProto/src",
+            "%{root}/source/sdk/extensions/serialization/DTO",
+            "%{root}/include/lowlevel",
+            "%{root}/source/sdk/lowlevel",
+            "%{root}/include/globals",
             "%{root}/_build/host-deps/CapnProto/src",
             capnp_gen_fullpath,
             target_deps.."/physxsdk/include",
             target_deps.."/physxsdk/source/foundation/include",
             target_deps.."/pxshared/include",
         }
-        blast_lib_common_files()
+        blast_sdklib_common_files()
         add_files("_build/host-deps/CapnProto/src/capnp",
             "arena.c++",
             "blob.c++",
@@ -339,13 +338,13 @@ group "sdk"
             "string.c++",
             "units.c++"
         )
-        add_files("source/sdk/extensions/serialization/source",
+        add_files("source/sdk/extensions/serialization",
             "NvBlastExtSerialization.cpp",
             "NvBlastExtLlSerialization.cpp",
             "NvBlastExtOutputStream.cpp",
             "NvBlastExtInputStream.cpp"
         )
-        add_files("source/sdk/extensions/serialization/source/DTO",
+        add_files("source/sdk/extensions/serialization/DTO",
             "ActorDTO.cpp",
             "AssetDTO.cpp",
             "FamilyDTO.cpp",
@@ -358,8 +357,8 @@ group "sdk"
             "NvBlastExtLlSerialization.capn.c++"
         )
         vpaths {
-            ["include/*"] = "%{root}/source/sdk/extensions/serialization/include/",
-            ["source/*"] = "%{root}/source/sdk/extensions/serialization/source/",
+            ["include/*"] = "%{root}/include/extensions/serialization/",
+            ["source/*"] = "%{root}/source/sdk/extensions/serialization/",
         }
 
         -- cap'n proto precompile step
@@ -373,7 +372,7 @@ group "sdk"
             prebuildcommands { "pushd "..capnp_gen } -- push current path and go into the generated source folder
             prebuildcommands { "del /S *" } -- clear the generated source folder
             -- capnp compile
-            prebuildcommands { "capnp compile -oc++ -I ../host-deps/CapnProto/src --src-prefix=../../source/sdk/extensions/serialization/source ../../source/sdk/extensions/serialization/source/NvBlastExtLlSerialization.capn" }
+            prebuildcommands { "capnp compile -oc++ -I ../host-deps/CapnProto/src --src-prefix=../../source/sdk/extensions/serialization/ ../../source/sdk/extensions/serialization/NvBlastExtLlSerialization.capn" }
             prebuildcommands { "popd" } -- return to previous folder
 
             -- cap'n proto source produces a lot of warnings
@@ -393,11 +392,11 @@ group "sdk"
 
     project "NvBlastTk"
         link_dependents("NvBlast", "NvBlastGlobals")
-        blast_lib_standard_setup("source/sdk/toolkit")
+        blast_sdklib_standard_setup("toolkit")
         includedirs {
-            "%{root}/source/sdk/lowlevel/include",
-            "%{root}/source/sdk/globals/include",
-            "%{root}/source/sdk/globals/source",
+            "%{root}/include/lowlevel",
+            "%{root}/include/globals",
+            "%{root}/source/sdk/globals",
             target_deps.."/physxsdk/include",
             target_deps.."/physxsdk/source/foundation/include",
             target_deps.."/pxshared/include",
@@ -405,27 +404,29 @@ group "sdk"
 
     project "NvBlastExtAuthoring"
         link_dependents("NvBlast", "NvBlastGlobals")
-        blast_lib_standard_setup("source/sdk/extensions/authoring")
+        blast_sdklib_standard_setup("extensions/authoring")
         includedirs {
-            "%{root}/source/sdk/lowlevel/include",
-            "%{root}/source/sdk/globals/include",
-            "%{root}/source/sdk/extensions/assetutils/include",
-            "%{root}/source/sdk/extensions/authoringCommon/include",
-            "%{root}/source/sdk/extensions/authoringCommon/source",
-            "%{root}/source/sdk/extensions/authoring/source/VHACD/inc",
-            "%{root}/source/sdk/extensions/authoring/source/VHACD/public",
+            "%{root}/include/lowlevel",
+            "%{root}/include/globals",
+            "%{root}/include/extensions/assetutils",
+            "%{root}/include/extensions/authoringCommon",
+            "%{root}/source/sdk/extensions/authoring",
+            "%{root}/source/sdk/extensions/authoringCommon",
+            "%{root}/source/sdk/extensions/authoring/VHACD/inc",
+            "%{root}/source/sdk/extensions/authoring/VHACD/public",
             target_deps.."/physxsdk/include",
             target_deps.."/physxsdk/source/foundation/include",
             target_deps.."/pxshared/include",
             target_deps.."/BoostMultiprecision",
         }
         files {
-            "%{root}/source/sdk/extensions/authoringCommon/source/*.cpp",
-            "%{root}/source/sdk/extensions/authoring/source/VHACD/src/*.cpp",
+            "%{root}/source/sdk/extensions/authoringCommon/*.cpp",
+            "%{root}/source/sdk/extensions/authoring/VHACD/src/*.cpp",
         }
         vpaths {
-            ["VHACD/*"] = "%{root}/source/sdk/extensions/authoring/source/VHACD/",
-            ["authoringCommon/*"] = "%{root}/source/sdk/extensions/authoringCommon/",
+            ["VHACD/*"] = "%{root}/source/sdk/extensions/authoring/VHACD/",
+            ["authoringCommon/include/*"] = "%{root}/include/extensions/authoringCommon/",
+            ["authoringCommon/source/*"] = "%{root}/source/sdk/extensions/authoringCommon/",
         }
         disablewarnings {
             "4244", -- conversion from 'type1' to 'type2', possible loss of data
