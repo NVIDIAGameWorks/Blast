@@ -1,7 +1,7 @@
 Blast SDK
 =========
 
-![Alt text](/data/readme_images/blast.png?raw=true "Blast Intro")
+![Alt text](/docs/images/blast.png?raw=true "Blast Intro")
 
 Introduction
 ------------
@@ -87,18 +87,18 @@ Gallery
 -------
 
 ### Tower explosion
-![Alt text](/data/readme_images/tower_explode.png?raw=true "Blast Sample: tower explode")
+![Alt text](/docs/images/tower_explode.png?raw=true "Blast Sample: tower explode")
 ### Bunny impact damage
-![Alt text](/data/readme_images/bunny_impact.png?raw=true "Blast Sample: bunny impact")
+![Alt text](/docs/images/bunny_impact.png?raw=true "Blast Sample: bunny impact")
 ### Layered cube explosion
-![Alt text](/data/readme_images/cube_explode.png?raw=true "Blast Sample: cube explode")
+![Alt text](/docs/images/cube_explode.png?raw=true "Blast Sample: cube explode")
 ### Table impact damage
-![Alt text](/data/readme_images/table_impact_wireframe.png?raw=true "Blast Sample: table impact")
+![Alt text](/docs/images/table_impact_wireframe.png?raw=true "Blast Sample: table impact")
 ### Tower slice
-![Alt text](/data/readme_images/tower_slice.png?raw=true "Blast Sample: tower slice")
+![Alt text](/docs/images/tower_slice.png?raw=true "Blast Sample: tower slice")
 ### Wall impact damage
-![Alt text](/data/readme_images/wall_impact.png?raw=true "Blast Sample: wall impact")
+![Alt text](/docs/images/wall_impact.png?raw=true "Blast Sample: wall impact")
 ### Stress solver
-![Alt text](/data/readme_images/stress.png?raw=true "Blast Sample: stress solver")
+![Alt text](/docs/images/stress.png?raw=true "Blast Sample: stress solver")
 ### Joints
-![Alt text](/data/readme_images/joints.png?raw=true "Blast Sample: joints")
+![Alt text](/docs/images/joints.png?raw=true "Blast Sample: joints")

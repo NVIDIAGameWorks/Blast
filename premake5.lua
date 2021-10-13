@@ -90,19 +90,30 @@ end)
 
 local hostDepsDir = "_build/host-deps"
 local targetDepsDir = "_build/target-deps"
-local currentAbsPath = repo_build.get_abs_path(".");
+local root = repo_build.get_abs_path(".");
+
+-- Would be nice to be able to use this to define the actual workspace name
+local workspace_name = "blast-sdk"
+
+-- Copy headers and licenses
+repo_build.prebuild_copy {
+    { "%{root}/include", "%{root}/_build/%{platform}/%{config}/"..workspace_name.."/include" },
+    { "%{root}/source/sdk/common", "%{root}/_build/%{platform}/%{config}/"..workspace_name.."/source/sdk/common" },
+    { "%{root}/PACKAGE-LICENSES", "%{root}/_build/%{platform}/%{config}/"..workspace_name.."/PACKAGE-LICENSES" }
+}
 
 -- premake5.lua
 workspace "blast-sdk"
     configurations { "debug", "release" }
-    startproject "test.unit"
+    startproject "NvBlast"
     local targetName = _ACTION
     local workspaceDir = "_compiler/"..targetName
     -- common dir name to store platform specific files
     local platform = "%{cfg.system}-%{cfg.platform}"
     local targetDependencyPlatform = "%{cfg.system}-%{cfg.platform}";
     local hostDependencyPlatform = _OPTIONS["platform-host"] or targetDependencyPlatform;
-    local targetDir = "_build/"..platform.."/%{cfg.buildcfg}"
+    local sdkTargetDir = "_build/"..platform.."/%{cfg.buildcfg}/%{wks.name}"
+    local targetDir = sdkTargetDir.."/bin"
     -- defining anything related to the VS or SDK version here because they will most likely be changed in the future..
     local msvcInclude = hostDepsDir.."/msvc/VC/Tools/MSVC/14.16.27023/include"
     local msvcLibs = hostDepsDir.."/msvc/VC/Tools/MSVC/14.16.27023/lib/onecore/x64"
