@@ -2,23 +2,6 @@ newoption {
     trigger     = "platform-host",
     description = "(Optional) Specify host platform for cross-compilation"
 }
-newoption {
-    trigger     = "python-version",
-    description = "(Optional) Specify the python version to link against",
-    allowed = {
-        { "0",  "No Python" },
-        { "27", "Python 2.7" },
-        { "36", "Python 3.6" },
-        { "37", "Python 3.7" }
-    },
-    default = "37"
-}
-local pylibs = {
-    ["0"] = "",
-    ["27"] = "python2.7",
-    ["36"] = "python3.6m",
-    ["37"] = "python3.7m",
-}
 
 -- Include omni.repo.build premake tools
 local repo_build = require('omni/repo/build')
@@ -315,6 +298,37 @@ group "sdk"
             "%{root}/include/globals",
         }
 
+        project "NvBlastExtAuthoring"
+        link_dependents("NvBlast", "NvBlastGlobals")
+        blast_sdklib_standard_setup("extensions/authoring")
+        includedirs {
+            "%{root}/include/lowlevel",
+            "%{root}/include/globals",
+            "%{root}/include/extensions/assetutils",
+            "%{root}/include/extensions/authoringCommon",
+            "%{root}/source/sdk/extensions/authoring",
+            "%{root}/source/sdk/extensions/authoringCommon",
+            "%{root}/source/sdk/extensions/authoring/VHACD/inc",
+            "%{root}/source/sdk/extensions/authoring/VHACD/public",
+            target_deps.."/physxsdk/include",
+            target_deps.."/physxsdk/source/foundation/include",
+            target_deps.."/pxshared/include",
+            target_deps.."/BoostMultiprecision",
+        }
+        files {
+            "%{root}/source/sdk/extensions/authoringCommon/*.cpp",
+            "%{root}/source/sdk/extensions/authoring/VHACD/src/*.cpp",
+        }
+        vpaths {
+            ["VHACD/*"] = "%{root}/source/sdk/extensions/authoring/VHACD/",
+            ["authoringCommon/include/*"] = "%{root}/include/extensions/authoringCommon/",
+            ["authoringCommon/source/*"] = "%{root}/source/sdk/extensions/authoringCommon/",
+        }
+        disablewarnings {
+            "4244", -- conversion from 'type1' to 'type2', possible loss of data
+            "4267", -- conversion from 'size_t' to 'type', possible loss of data
+        }
+
     project "NvBlastExtSerialization"
         link_dependents("NvBlast", "NvBlastGlobals")
         blast_sdklib_bare_setup("extensions/serialization")
@@ -413,39 +427,8 @@ group "sdk"
             target_deps.."/pxshared/include",
         }
 
-    project "NvBlastExtAuthoring"
-        link_dependents("NvBlast", "NvBlastGlobals")
-        blast_sdklib_standard_setup("extensions/authoring")
-        includedirs {
-            "%{root}/include/lowlevel",
-            "%{root}/include/globals",
-            "%{root}/include/extensions/assetutils",
-            "%{root}/include/extensions/authoringCommon",
-            "%{root}/source/sdk/extensions/authoring",
-            "%{root}/source/sdk/extensions/authoringCommon",
-            "%{root}/source/sdk/extensions/authoring/VHACD/inc",
-            "%{root}/source/sdk/extensions/authoring/VHACD/public",
-            target_deps.."/physxsdk/include",
-            target_deps.."/physxsdk/source/foundation/include",
-            target_deps.."/pxshared/include",
-            target_deps.."/BoostMultiprecision",
-        }
-        files {
-            "%{root}/source/sdk/extensions/authoringCommon/*.cpp",
-            "%{root}/source/sdk/extensions/authoring/VHACD/src/*.cpp",
-        }
-        vpaths {
-            ["VHACD/*"] = "%{root}/source/sdk/extensions/authoring/VHACD/",
-            ["authoringCommon/include/*"] = "%{root}/include/extensions/authoringCommon/",
-            ["authoringCommon/source/*"] = "%{root}/source/sdk/extensions/authoringCommon/",
-        }
-        disablewarnings {
-            "4244", -- conversion from 'type1' to 'type2', possible loss of data
-            "4267", -- conversion from 'size_t' to 'type', possible loss of data
-        }
-
+    -- project "NvBlastExtTkSerialization"
     -- project "NvBlastExtExporter"
     -- project "NvBlastExtStress"
-    -- project "NvBlastExtTkSerialization"
     -- project "NvBlastExtPhysX"
     -- project "NvBlastExtPxSerialization"
