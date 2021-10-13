@@ -70,19 +70,31 @@ extra_premake_args = ["--python-version={}"]
 
 name = "${conf:repo.name}"
 
-root = "source"
+root = "_build/${platform}/${config}/${conf:repo.name}"
 
 files = [
-    ["../**/NvBlast*.dll", "bin"],
-    ["../**/NvBlast*.pdb", "bin"],
-    ["../**/NvBlast*.lib", "lib"],
-    ["**/sdk/common/*.*"],
-#    ["**/source/sdk/**/include/*.*", "sdk/**/include"]
+    ["**/bin/*.dll"],
+    ["**/bin/*.lib"],
+    ["**/include/**/*.*"],
+    ["**/source/**/*.*"],
+    ["**/PACKAGE-LICENSES/*.*"],
+]
+
+debug.files = [
+    ["**/*.pdb"],
+    ["**/*.exp"],
 ]
 
 files_exclude = [
     ["_build/packages/**"]
 ]
+
+label_name = false
+
+version = "${file:${root}/VERSION.md}"
+package_per_config = true
+append_config = true
+version_separator = "."
 
 
 ########################################################################################################################
