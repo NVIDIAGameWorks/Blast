@@ -350,7 +350,7 @@ group "sdk"
             "include/globals",
         }
 
-        project "NvBlastExtAuthoring"
+    project "NvBlastExtAuthoring"
         link_dependents({"NvBlast", "NvBlastGlobals"})
         blast_sdklib_standard_setup("extensions/authoring")
         includedirs {
