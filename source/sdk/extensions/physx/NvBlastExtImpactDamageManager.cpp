@@ -278,7 +278,7 @@ void ExtImpactDamageManagerImpl::onContact(const PxContactPairHeader& pairHeader
                 PxRigidBody* rigidBody = pairHeader.actors[i]->is<physx::PxRigidBody>();
                 if (rigidBody)
                 {
-                    velocities[i] = physx::PxRigidBodyExt::getVelocityAtPos(*rigidBody, position);
+                    velocities[i] = PxVec3(0.0f);//physx::PxRigidBodyExt::getVelocityAtPos(*rigidBody, position);
                 }
             }
 

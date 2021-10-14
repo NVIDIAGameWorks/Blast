@@ -54,12 +54,12 @@ public:
     
     virtual uint32_t getVerticesCount() const override
     {
-        return mVertexPositions.size();
+        return (uint32_t)mVertexPositions.size();
     }
 
     virtual uint32_t getIndicesCount() const override
     {
-        return mIndices.size();
+        return (uint32_t)mIndices.size();
     }
 
     /**
@@ -107,7 +107,7 @@ public:
     /**
         Get material count.
     */
-    int32_t     getMaterialCount() { return mMaterialNames.size(); };
+    int32_t     getMaterialCount() { return (uint32_t)mMaterialNames.size(); };
 
 private:
     std::vector<NvcVec3>    mVertexPositions;

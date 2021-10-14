@@ -156,7 +156,7 @@ ExtPxActorImpl::ExtPxActorImpl(ExtPxFamilyImpl* family, TkActor* tkActor, const 
     m_tkActor->userData = this;
 
     // update mass properties
-    PxRigidBodyExt::updateMassAndInertia(*m_rigidDynamic, m_family->m_spawnSettings.density);
+//    PxRigidBodyExt::updateMassAndInertia(*m_rigidDynamic, m_family->m_spawnSettings.density);
 
     // set initial velocities
     if (!(m_rigidDynamic->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC))

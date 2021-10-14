@@ -25,6 +25,7 @@
 //
 // Copyright (c) 2020 NVIDIA Corporation. All rights reserved.
 
+#define _CRT_SECURE_NO_WARNINGS
 
 #include "NvBlastExtExporterObjWriter.h"
 #include <foundation/PxVec3.h>
@@ -37,7 +38,7 @@
 using namespace physx;
 using namespace Nv::Blast;
 
-char* gTexPath = "";
+const char* gTexPath = "";
 
 void ObjFileWriter::release()
 {
@@ -127,7 +128,7 @@ bool ObjFileWriter::appendMesh(const AuthoringResult& aResult, const char* /*ass
 
         uint32_t first = aResult.geometryOffset[i];
         uint32_t last = aResult.geometryOffset[i + 1];
-        uint32_t firstInSorted = sorted.size();
+        uint32_t firstInSorted = (uint32_t)sorted.size();
         for (uint32_t t = first; t < last; ++t)
         {
             sorted.push_back(aResult.geometry[t]);

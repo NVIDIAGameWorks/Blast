@@ -413,15 +413,6 @@ group "sdk"
             target_deps.."/pxshared/include",
         }
 
-    -- project "NvBlastExtExporter"
-    --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtAuthoring"})
-    --     blast_sdklib_standard_setup("extensions/exporter")
-    --     includedirs {
-    --         "include/lowlevel",
-    --         "include/globals",
-    --         "source/sdk/globals",
-    --     }
-
     project "NvBlastExtStress"
         link_dependents({"NvBlast", "NvBlastGlobals"})
         blast_sdklib_standard_setup("extensions/stress")
@@ -432,23 +423,6 @@ group "sdk"
             target_deps.."/physxsdk/source/foundation/include",
             target_deps.."/pxshared/include",
         }
-
-    -- project "NvBlastExtPhysX"
-    --     link_dependents({"NvBlastTk", "NvBlastExtShaders", "NvBlastExtStress"})
-    --     blast_sdklib_standard_setup("extensions/physx")
-    --     includedirs {
-    --         "include/lowlevel",
-    --         "include/toolkit",
-    --         "include/globals",
-    --         "include/extensions/authoringCommon",
-    --         "include/extensions/shaders",
-    --         "include/extensions/stress",
-    --         target_deps.."/physxsdk/include",
-    --         target_deps.."/physxsdk/include/extensions",
-    --         target_deps.."/physxsdk/include/geometry",
-    --         target_deps.."/physxsdk/source/foundation/include",
-    --         target_deps.."/pxshared/include",
-    --     }
 
     project "NvBlastExtSerialization"
         link_dependents({"NvBlast", "NvBlastGlobals"})
@@ -540,6 +514,36 @@ group "sdk"
             ["include/*"] = "include/extensions/serialization/",
             ["source/*"] = "source/sdk/extensions/serialization/",
         }
+
+        -- requires FBX SDK.  Original SDK only defined this for Windows
+    -- project "NvBlastExtExporter"
+    --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtAuthoring"})
+    --     blast_sdklib_standard_setup("extensions/exporter")
+    --     includedirs {
+    --         "include/lowlevel",
+    --         "include/globals",
+    --         "include/extensions/authoringCommon",
+    --         "source/sdk/globals",
+    --         target_deps.."/pxshared/include",
+    --     }
+
+        -- NvBlastExtPhysX and NvBlastExtPxSerialization require linking to physx, making them physx version-dependent
+    -- project "NvBlastExtPhysX"
+    --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtShaders", "NvBlastExtStress"})
+    --     blast_sdklib_standard_setup("extensions/physx")
+    --     includedirs {
+    --         "include/lowlevel",
+    --         "include/toolkit",
+    --         "include/globals",
+    --         "include/extensions/authoringCommon",
+    --         "include/extensions/shaders",
+    --         "include/extensions/stress",
+    --         target_deps.."/physxsdk/include",
+    --         target_deps.."/physxsdk/include/extensions",
+    --         target_deps.."/physxsdk/include/geometry",
+    --         target_deps.."/physxsdk/source/foundation/include",
+    --         target_deps.."/pxshared/include",
+    --     }
 
     -- project "NvBlastExtPxSerialization"
     --     dependson("NvBlastExtSerialization", "NvBlastExtTkSerialization")
