@@ -69,6 +69,8 @@ namespace Nv
 
         int32_t VertexWelding::LocateVertexInBucketOnlyPosition(const Vertex& v, uint32_t bucket, bool& isAllDataTheSame)
         {
+            NV_UNUSED(isAllDataTheSame);
+
             // Scan through linked list of vertices at this bucket
             for (int32_t index = first[bucket]; index >= 0; index = next[index])
             {
@@ -115,7 +117,7 @@ namespace Nv
                     for (int32_t k = front; k <= back; k++)
                     {
                         uint32_t bucket = ComputeHashBucketIndex(i, j, k);
-                        // If this bucket already tested, don’t test it again
+                        // If this bucket already tested, donï¿½t test it again
                         for (int b = 0; b < numPrevBuckets; b++)
                         {
                             if (bucket == prevBucket[b]) goto skipcell;
@@ -146,7 +148,7 @@ namespace Nv
                     }
                 }
             }
-            // Couldn’t locate vertex, so add it to grid, then return vertex itself
+            // Couldn't locate vertex, so add it to grid, then return vertex itself
             int32_t x = int32_t(v->p.x * gridCellSizeInv);
             int32_t y = int32_t(v->p.y * gridCellSizeInv);
             int32_t z = int32_t(v->p.z * gridCellSizeInv);
@@ -1277,6 +1279,7 @@ namespace Nv
 
             bool operator()(uint32_t f)
             {
+                NV_UNUSED(f);
 #ifdef USE_MERGED_MESH
                 return pattern->mergedFacetToChunkMap[f].second == chunk && pattern->mergedFacetToChunkMap[f].first != pattern->mergedFacetToChunkMap[f].second;
 #else
@@ -1456,6 +1459,9 @@ namespace Nv
 
         void BooleanToolV2::retain(bool isA, BooleanToolOutputData* outputData, int32_t threadId, int32_t threadCount, const DamagePattern* pattern, int32_t chunk)
         {
+            NV_UNUSED(chunk);
+            NV_UNUSED(pattern);
+
             if (isA)
             {
 #ifdef USE_MERGED_MESH
@@ -1499,7 +1505,7 @@ namespace Nv
         //  return new MeshImpl(outputVertices, edges.data(), fct.data(), outputVerticesCount, edges.size(), fct.size());
         //}
 
-        TriangulatorV2::TriangulatorV2() : wldg(BLASTRT_MAX_VERTICES, 512, 0.001, 1e-5f, 1e-3f, &VertexWelding::LocateVertexInBucket)
+        TriangulatorV2::TriangulatorV2() : wldg(BLASTRT_MAX_VERTICES, 512, 0.001f, 1e-5f, 1e-3f, &VertexWelding::LocateVertexInBucket)
         {
             memset(visitedFlagValue, 0, sizeof(uint32_t) * 1024);
             currentFlagValue = 1;

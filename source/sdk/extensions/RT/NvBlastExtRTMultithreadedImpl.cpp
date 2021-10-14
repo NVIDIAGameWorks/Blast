@@ -25,6 +25,8 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "NvBlastExtRTMultithreadedImpl.h"
 #include "NvBlastExtRTGeometry.h"
 #include "NvBlastExtAuthoringMeshImpl.h"
@@ -257,7 +259,7 @@ void FractureRTMultithreadedImpl::processMesh(DamagePattern* pattern, const Mesh
         perThreadTd[i].outputData->reset();
     }
 
-    uint32_t finalStage = FractureRT::Stage::ALL;
+    uint32_t finalStage = (uint32_t)FractureRT::Stage::ALL;
 
 #ifdef USE_MERGED_MESH
     uint32_t threadCount = (uint32_t)threadPool.size();

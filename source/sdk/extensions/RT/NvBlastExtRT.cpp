@@ -257,6 +257,8 @@ uint32_t NvBlastExtRTDoFracture(const FractureDesc& desc, int32_t stage, int32_t
 
 uint32_t NvBlastExtRTBuildMesh(MeshDesc dsc, Nv::Blast::Vertex* outVertices, uint32_t& vCount, uint32_t* indices, PerTriangleAdditionalData* adata, uint32_t maxICount, uint32_t maxVCount)
 {
+    NV_UNUSED(maxVCount);
+
     TriangulatorV2* trg = reinterpret_cast<TriangulatorV2*>(dsc.tr);
     return trg->build(dsc.bEdges, dsc.edesCount, dsc.inVertices, outVertices, vCount, indices, adata, maxICount, dsc.meshA, dsc.meshB);
 }
@@ -317,6 +319,8 @@ FractureRT* NvBlastExtRTCreateFractureRT(uint32_t threads)
 
 bool haveCommonVertices(Vertex* vertices, uint32_t* offsets, uint32_t chunkA, uint32_t chunkB, physx::PxBounds3& bA, physx::PxBounds3& bB)
 {
+    NV_UNUSED(bA);
+
     for (uint32_t i = offsets[chunkA]; i < offsets[chunkA + 1]; ++i)
     {
         if (bB.contains(toPxShared(vertices[i].p)) == false) continue;
@@ -391,7 +395,7 @@ void ChunkGraphImpl::eraseNode(uint32_t index)
         }
     }
     std::sort(dirtyChunks, &dirtyChunks[dirtyChunksCount]);
-    dirtyChunksCount = std::unique(dirtyChunks, &dirtyChunks[dirtyChunksCount]) - dirtyChunks;
+    dirtyChunksCount = (uint32_t)(std::unique(dirtyChunks, &dirtyChunks[dirtyChunksCount]) - dirtyChunks);
 }
 
 void ChunkGraphImpl::release()
@@ -489,8 +493,8 @@ uint32_t NvBlastExtRTDetectIslands(Vertex* vertices, uint32_t* offsets, physx::P
             islandIndex[currentChunk] = islandCount;
             vstack.pop_back();
 
-            uint32_t sps = std::lower_bound(graph->links, graph->links + graph->linksCount, currentChunk) - graph->links;
-            uint32_t eps = std::upper_bound(graph->links, graph->links + graph->linksCount, currentChunk, upperBoundCmp) - graph->links;
+            uint32_t sps = (uint32_t)(std::lower_bound(graph->links, graph->links + graph->linksCount, currentChunk) - graph->links);
+            uint32_t eps = (uint32_t)(std::upper_bound(graph->links, graph->links + graph->linksCount, currentChunk, upperBoundCmp) - graph->links);
 
             for (uint32_t i = sps; i < eps; ++i)
             {
@@ -528,6 +532,7 @@ uint32_t NvBlastExtRTDetectIslands(Vertex* vertices, uint32_t* offsets, physx::P
 
 void NvBlastExtRTCookMergedMesh(DamagePattern* pattern)
 {
+    NV_UNUSED(pattern);
 #ifdef USE_MERGED_MESH
     VertexWelding wld(8192, 512, 0.001, 0.0001, 0.0001, &VertexWelding::LocateVertexInBucket);
 

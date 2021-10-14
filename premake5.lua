@@ -217,7 +217,7 @@ function blast_sdklib_bare_setup(name)
     includedirs {
         "source/sdk/common",
         "include/"..name,
-        "source/sdk"..name,
+        "source/sdk/"..name,
     }
 end
 
@@ -381,6 +381,26 @@ group "sdk"
             "4267", -- conversion from 'size_t' to 'type', possible loss of data
         }
 
+    project "NvBlastExtRT"
+        link_dependents({"NvBlast", "NvBlastGlobals"})
+        blast_sdklib_standard_setup("extensions/RT")
+        includedirs {
+            "include/lowlevel",
+            "include/globals",
+            "include/extensions/authoringCommon",
+            "source/sdk/extensions/authoringCommon",
+            target_deps.."/physxsdk/include",
+            target_deps.."/physxsdk/source/foundation/include",
+            target_deps.."/pxshared/include",
+        }
+        files {
+            "source/sdk/extensions/authoringCommon/NvBlastExtAuthoringAccelerator.cpp",
+            "source/sdk/extensions/authoringCommon/NvBlastExtAuthoringMeshImpl.cpp",
+        }
+        disablewarnings {
+            "4267", -- conversion from 'size_t' to 'type', possible loss of data
+        }
+
     project "NvBlastTk"
         link_dependents({"NvBlast", "NvBlastGlobals"})
         blast_sdklib_standard_setup("toolkit")
@@ -393,9 +413,47 @@ group "sdk"
             target_deps.."/pxshared/include",
         }
 
+    -- project "NvBlastExtExporter"
+    --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtAuthoring"})
+    --     blast_sdklib_standard_setup("extensions/exporter")
+    --     includedirs {
+    --         "include/lowlevel",
+    --         "include/globals",
+    --         "source/sdk/globals",
+    --     }
+
+    project "NvBlastExtStress"
+        link_dependents({"NvBlast", "NvBlastGlobals"})
+        blast_sdklib_standard_setup("extensions/stress")
+        includedirs {
+            "include/lowlevel",
+            "include/globals",
+            target_deps.."/physxsdk/include",
+            target_deps.."/physxsdk/source/foundation/include",
+            target_deps.."/pxshared/include",
+        }
+
+    -- project "NvBlastExtPhysX"
+    --     link_dependents({"NvBlastTk", "NvBlastExtShaders", "NvBlastExtStress"})
+    --     blast_sdklib_standard_setup("extensions/physx")
+    --     includedirs {
+    --         "include/lowlevel",
+    --         "include/toolkit",
+    --         "include/globals",
+    --         "include/extensions/authoringCommon",
+    --         "include/extensions/shaders",
+    --         "include/extensions/stress",
+    --         target_deps.."/physxsdk/include",
+    --         target_deps.."/physxsdk/include/extensions",
+    --         target_deps.."/physxsdk/include/geometry",
+    --         target_deps.."/physxsdk/source/foundation/include",
+    --         target_deps.."/pxshared/include",
+    --     }
+
     project "NvBlastExtSerialization"
         link_dependents({"NvBlast", "NvBlastGlobals"})
         blast_sdklib_bare_setup("extensions/serialization")
+        capn_proto_precompile_step({"../../source/sdk/extensions/serialization/NvBlastExtLlSerialization.capn"})
         includedirs {
             "source/sdk/extensions/serialization/DTO",
             "include/lowlevel",
@@ -435,11 +493,11 @@ group "sdk"
             ["source/*"] = "source/sdk/extensions/serialization/",
         }
 
-        capn_proto_precompile_step({"../../source/sdk/extensions/serialization/NvBlastExtLlSerialization.capn"})
-
     project "NvBlastExtTkSerialization"
-        link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastExtSerialization", "NvBlastTk"})
+        dependson({"NvBlastExtSerialization"})
+        link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk"})
         blast_sdklib_bare_setup("extensions/serialization")
+        capn_proto_precompile_step({"../../source/sdk/extensions/serialization/NvBlastExtTkSerialization.capn"})
         includedirs {
             "source/sdk/extensions/serialization/DTO",
             "include/lowlevel",
@@ -483,9 +541,68 @@ group "sdk"
             ["source/*"] = "source/sdk/extensions/serialization/",
         }
 
-        capn_proto_precompile_step({"../../source/sdk/extensions/serialization/NvBlastExtTkSerialization.capn"})
-
-    -- project "NvBlastExtExporter"
-    -- project "NvBlastExtStress"
-    -- project "NvBlastExtPhysX"
     -- project "NvBlastExtPxSerialization"
+    --     dependson("NvBlastExtSerialization", "NvBlastExtTkSerialization")
+    --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtPhysX"})
+    --     blast_sdklib_bare_setup("extensions/serialization")
+    --     capn_proto_precompile_step({"../../source/sdk/extensions/serialization/NvBlastExtPxSerialization.capn"})
+    --     includedirs {
+    --         "source/sdk/extensions/serialization/DTO",
+    --         "include/lowlevel",
+    --         "include/toolkit",
+    --         "include/extensions/physx",
+    --         "source/sdk/lowlevel",
+    --         "source/sdk/extensions/physx",
+    --         "source/sdk/extensions/serialization",
+    --         "source/shared/filebuf/include",
+    --         "include/globals",
+    --         "_build/host-deps/CapnProto/src",
+    --         capnp_gen_path,
+    --         target_deps.."/physxsdk/include",
+    --         target_deps.."/physxsdk/include/cooking",
+    --         target_deps.."/physxsdk/include/extensions",
+    --         target_deps.."/physxsdk/include/geometry",
+    --         target_deps.."/physxsdk/source/foundation/include",
+    --         target_deps.."/pxshared/include",
+    --     }
+    --     blast_sdklib_common_files()
+    --     add_files("source/sdk/extensions/serialization",
+    --         {
+    --             "NvBlastExtPxSerialization.cpp",
+    --             "NvBlastExtPxSerializerRAW.cpp",
+    --             "NvBlastExtTkSerializerRAW.cpp",
+    --             "NvBlastExtOutputStream.cpp",
+    --             "NvBlastExtInputStream.cpp",
+    --             "NvBlastExtKJPxOutputStream.cpp",
+    --             "NvBlastExtKJPxInputStream.cpp",
+    --         }
+    --     )
+    --     add_files("source/sdk/extensions/serialization/DTO",
+    --         {
+    --             "AssetDTO.cpp",
+    --             "TkAssetDTO.cpp",
+    --             "ExtPxAssetDTO.cpp",
+    --             "PxVec3DTO.cpp",
+    --             "NvBlastChunkDTO.cpp",
+    --             "NvBlastBondDTO.cpp",
+    --             "NvBlastIDDTO.cpp",
+    --             "TkAssetJointDescDTO.cpp",
+    --             "ExtPxChunkDTO.cpp",
+    --             "ExtPxSubchunkDTO.cpp",
+    --             "PxQuatDTO.cpp",
+    --             "PxTransformDTO.cpp",
+    --             "PxMeshScaleDTO.cpp",
+    --             "PxConvexMeshGeometryDTO.cpp",
+    --         }
+    --     )
+    --     add_files(capnp_gen_path,
+    --         {
+    --             "NvBlastExtLlSerialization.capn.c++",
+    --             "NvBlastExtTkSerialization.capn.c++",
+    --             "NvBlastExtPxSerialization.capn.c++",
+    --         }
+    --     )
+    --     vpaths {
+    --         ["include/*"] = "include/extensions/serialization/",
+    --         ["source/*"] = "source/sdk/extensions/serialization/",
+    --     }

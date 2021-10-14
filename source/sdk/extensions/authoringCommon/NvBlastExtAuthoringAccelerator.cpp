@@ -95,14 +95,14 @@ void Grid::setMesh(const Mesh* m)
     {
         NvcBounds3 cfc = *m->getFacetBound(fc);
 
-        int32_t is = std::max(0.f, (cfc.minimum.x - m_spos.x - ofs) * m_deltas.x);
-        int32_t ie = std::max(0.f, (cfc.maximum.x - m_spos.x + ofs) * m_deltas.x);
+        int32_t is = (int32_t)std::max(0.f, (cfc.minimum.x - m_spos.x - ofs) * m_deltas.x);
+        int32_t ie = (int32_t)std::max(0.f, (cfc.maximum.x - m_spos.x + ofs) * m_deltas.x);
 
-        int32_t js = std::max(0.f, (cfc.minimum.y - m_spos.y - ofs) * m_deltas.y);
-        int32_t je = std::max(0.f, (cfc.maximum.y - m_spos.y + ofs) * m_deltas.y);
+        int32_t js = (int32_t)std::max(0.f, (cfc.minimum.y - m_spos.y - ofs) * m_deltas.y);
+        int32_t je = (int32_t)std::max(0.f, (cfc.maximum.y - m_spos.y + ofs) * m_deltas.y);
 
-        int32_t ks = std::max(0.f, (cfc.minimum.z - m_spos.z - ofs) * m_deltas.z);
-        int32_t ke = std::max(0.f, (cfc.maximum.z - m_spos.z + ofs) * m_deltas.z);
+        int32_t ks = (int32_t)std::max(0.f, (cfc.minimum.z - m_spos.z - ofs) * m_deltas.z);
+        int32_t ke = (int32_t)std::max(0.f, (cfc.maximum.z - m_spos.z + ofs) * m_deltas.z);
 
         for (int32_t i = is; i < m_resolution && i <= ie; ++i)
         {
@@ -149,14 +149,14 @@ void GridWalker::setState(const NvcBounds3* facetBounding)
 
     NvcBounds3 cfc = *facetBounding;
 
-    int32_t is = std::max(0.f, (cfc.minimum.x - m_grid->m_spos.x - 0.001f) * m_grid->m_deltas.x);
-    int32_t ie = std::max(0.f, (cfc.maximum.x - m_grid->m_spos.x + 0.001f) * m_grid->m_deltas.x);
+    int32_t is = (int32_t)std::max(0.f, (cfc.minimum.x - m_grid->m_spos.x - 0.001f) * m_grid->m_deltas.x);
+    int32_t ie = (int32_t)std::max(0.f, (cfc.maximum.x - m_grid->m_spos.x + 0.001f) * m_grid->m_deltas.x);
 
-    int32_t js = std::max(0.f, (cfc.minimum.y - m_grid->m_spos.y - 0.001f) * m_grid->m_deltas.y);
-    int32_t je = std::max(0.f, (cfc.maximum.y - m_grid->m_spos.y + 0.001f) * m_grid->m_deltas.y);
+    int32_t js = (int32_t)std::max(0.f, (cfc.minimum.y - m_grid->m_spos.y - 0.001f) * m_grid->m_deltas.y);
+    int32_t je = (int32_t)std::max(0.f, (cfc.maximum.y - m_grid->m_spos.y + 0.001f) * m_grid->m_deltas.y);
 
-    int32_t ks = std::max(0.f, (cfc.minimum.z - m_grid->m_spos.z - 0.001f) * m_grid->m_deltas.z);
-    int32_t ke = std::max(0.f, (cfc.maximum.z - m_grid->m_spos.z + 0.001f) * m_grid->m_deltas.z);
+    int32_t ks = (int32_t)std::max(0.f, (cfc.minimum.z - m_grid->m_spos.z - 0.001f) * m_grid->m_deltas.z);
+    int32_t ke = (int32_t)std::max(0.f, (cfc.maximum.z - m_grid->m_spos.z + 0.001f) * m_grid->m_deltas.z);
 
     for (int32_t i = is; i < m_grid->m_resolution && i <= ie; ++i)
     {
@@ -195,21 +195,21 @@ void GridWalker::setState(const NvcVec3& point)
     m_iteratorFacet = -1;
     m_gotCells = 0;
     
-    int32_t is = std::max(0.f, (point.x - m_grid->m_spos.x - 0.001f) * m_grid->m_deltas.x);
-    int32_t ie = std::max(0.f, (point.x - m_grid->m_spos.x + 0.001f) * m_grid->m_deltas.x);
+    int32_t is = (int32_t)std::max(0.f, (point.x - m_grid->m_spos.x - 0.001f) * m_grid->m_deltas.x);
+    int32_t ie = (int32_t)std::max(0.f, (point.x - m_grid->m_spos.x + 0.001f) * m_grid->m_deltas.x);
 
-    int32_t js = std::max(0.f, (point.y - m_grid->m_spos.y - 0.001f) * m_grid->m_deltas.y);
-    int32_t je = std::max(0.f, (point.y - m_grid->m_spos.y + 0.001f) * m_grid->m_deltas.y);
+    int32_t js = (int32_t)std::max(0.f, (point.y - m_grid->m_spos.y - 0.001f) * m_grid->m_deltas.y);
+    int32_t je = (int32_t)std::max(0.f, (point.y - m_grid->m_spos.y + 0.001f) * m_grid->m_deltas.y);
 
     int32_t ks = 0;
     int32_t ke = m_grid->m_resolution;
     switch (m_pointCmdDir)
     {
     case 1:
-        ks = std::max(0.f, (point.z - m_grid->m_spos.z - 0.001f) * m_grid->m_deltas.z);
+        ks = (int32_t)std::max(0.f, (point.z - m_grid->m_spos.z - 0.001f) * m_grid->m_deltas.z);
         break;
     case -1:
-        ke = std::max(0.f, (point.z - m_grid->m_spos.z + 0.001f) * m_grid->m_deltas.z);
+        ke = (int32_t)std::max(0.f, (point.z - m_grid->m_spos.z + 0.001f) * m_grid->m_deltas.z);
     }
 
     for (int32_t i = is; i < m_grid->m_resolution && i <= ie; ++i)
@@ -454,7 +454,7 @@ void buildIndex(std::vector<SegmentToIndex>& segm, float offset, float mlt, std:
     uint32_t lastBlock = 0;
     for (uint32_t i = 0; i < segm.size(); ++i)
     {
-        uint32_t currentBlock = (segm[i].coord - offset) * mlt;
+        uint32_t currentBlock = (uint32_t)((segm[i].coord - offset) * mlt);
         if (currentBlock >= SWEEP_RESOLUTION) break;
         if (currentBlock != lastBlock)
         {
@@ -559,8 +559,8 @@ void SweepingAccelerator::setState(const NvcBounds3* facetBounds)
     physx::PxBounds3 bnd = *toPxShared(facetBounds);
 
     bnd.scaleFast(1.1f);
-    uint32_t start = (std::max(0.0f, bnd.minimum.x - m_minimal.x)) * m_rescale.x;
-    uint32_t end   = (std::max(0.0f, bnd.maximum.x - m_minimal.x)) * m_rescale.x;
+    uint32_t start = (uint32_t)((std::max(0.0f, bnd.minimum.x - m_minimal.x)) * m_rescale.x);
+    uint32_t end   = (uint32_t)((std::max(0.0f, bnd.maximum.x - m_minimal.x)) * m_rescale.x);
     for (uint32_t i = start; i <= end && i < SWEEP_RESOLUTION; ++i)
     {
         for (auto id : m_xSegm[i])
@@ -568,8 +568,8 @@ void SweepingAccelerator::setState(const NvcBounds3* facetBounds)
             m_foundx[id] = m_iterId;
         }
     }
-    start = (std::max(0.0f, bnd.minimum.y - m_minimal.y)) * m_rescale.y;
-    end   = (std::max(0.0f, bnd.maximum.y - m_minimal.y)) * m_rescale.y;
+    start = (uint32_t)((std::max(0.0f, bnd.minimum.y - m_minimal.y)) * m_rescale.y);
+    end   = (uint32_t)((std::max(0.0f, bnd.maximum.y - m_minimal.y)) * m_rescale.y);
     for (uint32_t i = start; i <= end && i < SWEEP_RESOLUTION; ++i)
     {
         for (auto id : m_ySegm[i])
@@ -577,8 +577,8 @@ void SweepingAccelerator::setState(const NvcBounds3* facetBounds)
             m_foundy[id] = m_iterId;
         }
     }
-    start = (std::max(0.0f, bnd.minimum.z - m_minimal.z)) * m_rescale.z;
-    end   = (std::max(0.0f, bnd.maximum.z - m_minimal.z)) * m_rescale.z;
+    start = (uint32_t)((std::max(0.0f, bnd.minimum.z - m_minimal.z)) * m_rescale.z);
+    end   = (uint32_t)((std::max(0.0f, bnd.maximum.z - m_minimal.z)) * m_rescale.z);
     for (uint32_t i = start; i <= end && i < SWEEP_RESOLUTION; ++i)
     {
         for (auto id : m_zSegm[i])
@@ -618,8 +618,8 @@ void SweepingAccelerator::setState(const NvcVec3& point) {
         indices.push_back(i);
     }*/
 
-    uint32_t xIndex = (point.x - m_minimal.x) * m_rescale.x;
-    uint32_t yIndex = (point.y - m_minimal.y) * m_rescale.y;
+    uint32_t yIndex = (uint32_t)((point.y - m_minimal.y) * m_rescale.y);
+    uint32_t xIndex = (uint32_t)((point.x - m_minimal.x) * m_rescale.x);
 
     for (uint32_t i = 0; i < m_xSegm[xIndex].size(); ++i)
     {
