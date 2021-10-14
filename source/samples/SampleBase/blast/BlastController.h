@@ -33,7 +33,7 @@
 #include "BlastFamily.h"
 #include "DebugRenderBuffer.h"
 #include "PxSimulationEventCallback.h"
-#include "NvBlastExtImpactDamageManager.h"
+#include "NvBlastExtPxImpactDamageManager.h"
 
 using namespace physx;
 

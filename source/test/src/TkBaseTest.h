@@ -39,7 +39,7 @@
 #include "NvBlastExtDamageShaders.h"
 
 #include "NvBlastIndexFns.h"
-#include "NvBlastExtCustomProfiler.h"
+#include "NvBlastExtPxCustomProfiler.h"
 #include "TestProfiler.h"
 #include "NvBlastExtPxTask.h"
 

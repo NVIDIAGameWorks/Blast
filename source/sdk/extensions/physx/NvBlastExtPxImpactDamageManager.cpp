@@ -26,7 +26,7 @@
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
 
-#include "NvBlastExtImpactDamageManager.h"
+#include "NvBlastExtPxImpactDamageManager.h"
 #include "NvBlastExtPxManager.h"
 #include "NvBlastExtPxFamily.h"
 #include "NvBlastExtPxActor.h"

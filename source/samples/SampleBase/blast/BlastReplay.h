@@ -29,7 +29,7 @@
 #ifndef BLAST_REPLAY_H
 #define BLAST_REPLAY_H
 
-#include "NvBlastExtSync.h"
+#include "NvBlastExtPxSync.h"
 #include <chrono>
 
 using namespace Nv::Blast;

@@ -28,7 +28,7 @@
 
 #include "TkBaseTest.h"
 
-#include "NvBlastExtSync.h"
+#include "NvBlastExtPxSync.h"
 #include "NvBlastTkEvent.h"
 
 #include <map>

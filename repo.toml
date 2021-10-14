@@ -86,6 +86,9 @@ debug.files = [
 ]
 
 files_exclude = [
+    ["**/include/extensions/exporter/**"],
+    ["**/include/extensions/physx/**"],
+    ["**/include/extensions/serialization/*ExtPx*.*"],
     ["_build/packages/**"]
 ]
 

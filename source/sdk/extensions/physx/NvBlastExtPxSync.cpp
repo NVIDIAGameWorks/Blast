@@ -26,7 +26,7 @@
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
 
-#include "NvBlastExtSync.h"
+#include "NvBlastExtPxSync.h"
 #include "NvBlastAssert.h"
 #include "NvBlast.h"
 #include "NvBlastExtPxManager.h"

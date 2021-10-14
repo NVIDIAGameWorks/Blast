@@ -37,7 +37,7 @@
 #include "ConvexRenderMesh.h"
 #include "RenderUtils.h"
 #include "SampleProfiler.h"
-#include "NvBlastExtCustomProfiler.h"
+#include "NvBlastExtPxCustomProfiler.h"
 #include "NvBlastPxCallbacks.h"
 
 #include "PxPhysicsVersion.h"
