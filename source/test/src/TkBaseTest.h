@@ -39,7 +39,7 @@
 #include "NvBlastExtDamageShaders.h"
 
 #include "NvBlastIndexFns.h"
-#include "NvBlastExtPxCustomProfiler.h"
+#include "NvBlastPxCustomProfiler.h"
 #include "TestProfiler.h"
 #include "NvBlastExtPxTask.h"
 
@@ -217,7 +217,7 @@ public:
 
     virtual void SetUp() override
     {
-        m_foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
+        m_foundation = PxCreateFoundation(PX_PHYSICS_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
 
         NvBlastProfilerSetCallback(&m_profiler);
         NvBlastProfilerSetDetail(Nv::Blast::ProfilerDetail::LOW);
@@ -231,7 +231,7 @@ public:
         m_cpuDispatcher = new TestCpuDispatcher(4);
 #endif
 
-        m_taskman = PxTaskManager::createTaskManager(NvBlastGetPxErrorCallback(), m_cpuDispatcher, nullptr);
+        m_taskman = PxTaskManager::createTaskManager(NvBlastGetPxErrorCallback(), m_cpuDispatcher);
         m_groupTM = ExtGroupTaskManager::create(*m_taskman);
     }
 

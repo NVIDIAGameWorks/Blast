@@ -30,6 +30,7 @@
 #define NVBLASTDEFAULTPROFILER_H
 
 #include "NvBlastProfiler.h"
+#include "PxFoundation.h"
 #include "foundation/PxProfiler.h"
 
 #if NV_NVTX  

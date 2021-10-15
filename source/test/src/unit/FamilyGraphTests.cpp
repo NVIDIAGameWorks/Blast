@@ -163,9 +163,9 @@ protected:
             IslandId islandId = islandIds[n];
             if (islandMap.find(islandId) == islandMap.end())
             {
-                IslandInfo info;
-                info.nodes.push_back(n);
-                islandMap[islandId] = info;
+                IslandInfo islandInfo;
+                islandInfo.nodes.push_back(n);
+                islandMap[islandId] = islandInfo;
             }
             else
             {

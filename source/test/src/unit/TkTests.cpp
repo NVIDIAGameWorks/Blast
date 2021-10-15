@@ -95,7 +95,7 @@ TEST_F(TkTestStrict, CreateAsset)
 #if USE_PHYSX_DISPATCHER
 TEST_F(TkTestStrict, DISABLED_MemLeak)
 {
-    PxFoundation* pxFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
+    PxFoundation* pxFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
     PxU32 affinity[] = { 1, 2, 4, 8 };
     PxDefaultCpuDispatcher* cpuDispatcher = PxDefaultCpuDispatcherCreate(4, affinity);
     cpuDispatcher->setRunProfiled(false);

@@ -37,7 +37,7 @@
 #include "ConvexRenderMesh.h"
 #include "RenderUtils.h"
 #include "SampleProfiler.h"
-#include "NvBlastExtPxCustomProfiler.h"
+#include "NvBlastPxCustomProfiler.h"
 #include "NvBlastPxCallbacks.h"
 
 #include "PxPhysicsVersion.h"
@@ -110,7 +110,7 @@ void PhysXController::onTerminate()
 
 void PhysXController::initPhysX()
 {
-    m_foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
+    m_foundation = PxCreateFoundation(PX_PHYSICS_VERSION, NvBlastGetPxAllocatorCallback(), NvBlastGetPxErrorCallback());
 
     m_pvd = PxCreatePvd(*m_foundation);
 

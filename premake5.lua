@@ -610,3 +610,100 @@ group "sdk"
     --         ["include/*"] = "include/extensions/serialization/",
     --         ["source/*"] = "source/sdk/extensions/serialization/",
     --     }
+
+group "tests"
+    project "UnitTests"
+        kind "ConsoleApp"
+        location (workspaceDir.."/%{prj.name}")
+        link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastExtAssetUtils", "NvBlastExtShaders", "NvBlastTk", "NvBlastExtSerialization", "NvBlastExtTkSerialization"})
+
+        filter { "system:windows" }
+            -- defines { "ISOLATION_AWARE_ENABLED=1" }
+        filter { "system:linux" }
+            buildoptions { "-fPIC" }
+            links { "rt" }
+        filter{}
+
+        blast_sdklib_common_files()
+
+        add_files("source/test/src/unit", {
+            "AssetTests.cpp",
+            "ActorTests.cpp",
+            "APITests.cpp",
+            "CoreTests.cpp",
+            "FamilyGraphTests.cpp",
+            "MultithreadingTests.cpp",
+            "TkCompositeTests.cpp",
+            "TkTests.cpp",
+        })
+
+        add_files("source/test/src/utils", {
+            "TestAssets.cpp",
+        })
+
+        add_files("source/sdk/lowlevel", {
+            "NvBlastActor.cpp",
+            "NvBlastFamilyGraph.cpp",
+            "NvBlastActorSerializationBlock.cpp",
+            "NvBlastAsset.cpp",
+            "NvBlastFamily.cpp",
+        })
+
+        add_files("source/shared/utils", {
+            "AssetGenerator.cpp",
+        })
+
+        add_files("source/sdk/extensions/physx", {  -- !!!
+            "NvBlastExtPxTaskImpl.cpp",
+        })
+
+        includedirs {
+            "include/globals",
+            "include/lowlevel",
+            "include/toolkit",
+            "include/extensions/assetutils",
+            "include/extensions/physx", -- !!!
+            "include/extensions/shaders",
+            "include/extensions/serialization",
+            "source/sdk/common",
+            "source/sdk/lowlevel",
+            "source/sdk/extensions/serialization",
+            "source/test/src",
+            "source/test/src/unit",
+            "source/test/src/utils",
+            "source/shared/filebuf/include",
+            "source/shared/utils",
+            target_deps.."/physxsdk/include",
+            target_deps.."/physxsdk/source/foundation/include",
+            target_deps.."/pxshared/include",
+            target_deps.."/googletest/include",
+        }
+
+    filter { "system:windows", "configurations:debug" }
+        links {
+            target_deps.."/googletest/lib/vc14win64-cmake/Debug/gtest_main.lib",
+            target_deps.."/googletest/lib/vc14win64-cmake/Debug/gtest.lib",
+            target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.lib",
+            target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXTask_static_64.lib",
+        }
+        repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.dll")
+    filter { "system:windows", "configurations:release" }
+        links {
+            target_deps.."/googletest/lib/vc14win64-cmake/Release/gtest_main.lib",
+            target_deps.."/googletest/lib/vc14win64-cmake/Release/gtest.lib",
+            target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXFoundation_64.lib",
+            target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXTask_static_64.lib",
+        }
+        repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXFoundation_64.dll")
+    filter { "system:linux" }
+    filter{}
+
+    disablewarnings {
+        "4002",
+        "4100",
+        "4127",
+        "4189",
+        "4244",
+        "4456",
+        "4996",
+    }
