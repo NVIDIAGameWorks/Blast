@@ -77,6 +77,8 @@ local capnp_gen_path = "_build/generated_capnp"
 
 local workspace_name = "blast-sdk"
 
+local root = repo_build.get_abs_path(".")
+
 -- Copy headers and licenses
 repo_build.prebuild_copy {
     { "include", "_build/%{platform}/%{config}/"..workspace_name.."/include" },
@@ -263,7 +265,7 @@ function add_files(rootpath, filenames)
     end
 end
 
-function capn_proto_precompile_step(capnp_files)
+function capn_proto_precompile_step(dirpath, capnp_files)
     add_files("_build/host-deps/CapnProto/src/capnp",
         {
             "arena.c++",
@@ -286,19 +288,17 @@ function capn_proto_precompile_step(capnp_files)
         }
     )
 
-    local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/win32")
-    local capnp_gen = get_abs_path(capnp_gen_path)
+    local capnp_bin = "_build/host-deps/CapnProto/tools/win32"
 
     filter { "system:windows" }
         capnp_bin = capnp_bin:gsub('/', '\\')
-        capnp_gen = capnp_gen:gsub('/', '\\')
-        prebuildcommands { "set PATH="..capnp_bin..";%PATH%" } -- set cap'n proto executable path
+        capnp_gen = capnp_gen_path:gsub('/', '\\')
+        prebuildcommands { "pushd "..root:gsub('/', '\\') } -- perform operations from root folder
         prebuildcommands { "if not exist "..capnp_gen.."\\ mkdir "..capnp_gen } -- make the generated source folder under _build
-        prebuildcommands { "pushd "..capnp_gen } -- push current path and go into the generated source folder
-        prebuildcommands { "del /S *" } -- clear the generated source folder
         -- capnp compile
-        for _, file in pairs(capnp_files) do
-            prebuildcommands { "capnp compile -oc++ -I ../host-deps/CapnProto/src --src-prefix=../../source/sdk/extensions/serialization/ "..file }
+        for _, filename in pairs(capnp_files) do
+            command = capnp_bin.."\\capnp.exe compile -o "..capnp_bin.."\\capnpc-c++.exe:_build/generated_capnp -I _build/host-deps/CapnProto/src --src-prefix "..dirpath.." "..dirpath.."/"..filename
+            prebuildcommands { command }
         end
         prebuildcommands { "popd" } -- return to previous folder
 
@@ -427,7 +427,7 @@ group "sdk"
     project "NvBlastExtSerialization"
         link_dependents({"NvBlast", "NvBlastGlobals"})
         blast_sdklib_bare_setup("extensions/serialization")
-        capn_proto_precompile_step({"../../source/sdk/extensions/serialization/NvBlastExtLlSerialization.capn"})
+        capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtLlSerialization.capn"})
         includedirs {
             "source/sdk/extensions/serialization/DTO",
             "include/lowlevel",
@@ -471,7 +471,7 @@ group "sdk"
         dependson({"NvBlastExtSerialization"})
         link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk"})
         blast_sdklib_bare_setup("extensions/serialization")
-        capn_proto_precompile_step({"../../source/sdk/extensions/serialization/NvBlastExtTkSerialization.capn"})
+        capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtTkSerialization.capn"})
         includedirs {
             "source/sdk/extensions/serialization/DTO",
             "include/lowlevel",
@@ -549,7 +549,7 @@ group "sdk"
     --     dependson("NvBlastExtSerialization", "NvBlastExtTkSerialization")
     --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtPhysX"})
     --     blast_sdklib_bare_setup("extensions/serialization")
-    --     capn_proto_precompile_step({"../../source/sdk/extensions/serialization/NvBlastExtPxSerialization.capn"})
+    --     capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtPxSerialization.capn"})
     --     includedirs {
     --         "source/sdk/extensions/serialization/DTO",
     --         "include/lowlevel",
