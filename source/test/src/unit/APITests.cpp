@@ -1608,11 +1608,7 @@ TEST_F(APITest,CExportsNoNameMangling)
     // tests the lib-link-free approach using unmangled names (extern "C")
     //
 
-#if NV_WIN32
-    const char* dllName = "NvBlast_x86.dll";
-#elif NV_WIN64
-    const char* dllName = "NvBlast_x64.dll";
-#endif
+    const char* dllName = "NvBlast.dll";
 
     HMODULE dllHandle = LoadLibrary(TEXT(dllName));
     DWORD error = GetLastError();
