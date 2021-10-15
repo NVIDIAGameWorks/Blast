@@ -9,8 +9,8 @@ call "%~dp0..\..\..\..\build.bat" -x
 if %errorlevel% neq 0 ( exit /b %errorlevel% )
 
 :: Docs
-call "%~dp0..\..\..\..\repo.bat" docs --config release
-if %errorlevel% neq 0 ( exit /b %errorlevel% )
+@REM call "%~dp0..\..\..\..\repo.bat" docs --config release
+@REM if %errorlevel% neq 0 ( exit /b %errorlevel% )
 
 :: Package all
 call "%~dp0..\..\..\package.bat" -a -c release
