@@ -288,19 +288,19 @@ function capn_proto_precompile_step(dirpath, capnp_files)
         }
     )
 
-    local capnp_bin = "_build/host-deps/CapnProto/tools/win32"
+    local capnp_src = get_abs_path("_build/host-deps/CapnProto/src")
+    local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/win32")
+    local abs_dir_path = get_abs_path(dirpath)
 
     filter { "system:windows" }
-        capnp_bin = capnp_bin:gsub('/', '\\')
-        capnp_gen = capnp_gen_path:gsub('/', '\\')
-        prebuildcommands { "pushd "..root:gsub('/', '\\') } -- perform operations from root folder
+        capnp_bin = get_abs_path(capnp_bin):gsub('/', '\\')
+        capnp_gen = get_abs_path(capnp_gen_path):gsub('/', '\\')
         prebuildcommands { "if not exist "..capnp_gen.."\\ mkdir "..capnp_gen } -- make the generated source folder under _build
         -- capnp compile
         for _, filename in pairs(capnp_files) do
-            command = capnp_bin.."\\capnp.exe compile -o "..capnp_bin.."\\capnpc-c++.exe:_build/generated_capnp -I _build/host-deps/CapnProto/src --src-prefix "..dirpath.." "..dirpath.."/"..filename
+            command = capnp_bin.."\\capnp.exe compile -o "..capnp_bin.."\\capnpc-c++.exe:"..capnp_gen.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
             prebuildcommands { command }
         end
-        prebuildcommands { "popd" } -- return to previous folder
 
         -- cap'n proto source produces a lot of warnings
         disablewarnings {
