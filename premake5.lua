@@ -297,10 +297,10 @@ function capn_proto_precompile_step(dirpath, capnp_files)
         capnp_gen = get_abs_path(capnp_gen_path):gsub('/', '\\')
         prebuildcommands { "if not exist "..capnp_gen.."\\ mkdir "..capnp_gen } -- make the generated source folder under _build
         -- capnp compile
-        -- for _, filename in pairs(capnp_files) do
-        --     command = capnp_bin.."\\capnp.exe compile -o "..capnp_bin.."\\capnpc-c++.exe:"..capnp_gen.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
-        --     prebuildcommands { command }
-        -- end
+        for _, filename in pairs(capnp_files) do
+            command = capnp_bin.."\\capnp.exe compile -o "..capnp_bin.."\\capnpc-c++.exe:"..capnp_gen.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
+            prebuildcommands { command }
+        end
 
         -- cap'n proto source produces a lot of warnings
         disablewarnings {
