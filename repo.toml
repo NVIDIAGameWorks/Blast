@@ -89,12 +89,36 @@ files_exclude = [
     ["**/include/extensions/exporter/**"],
     ["**/include/extensions/physx/**"],
     ["**/include/extensions/serialization/*ExtPx*.*"],
-    ["_build/packages/**"]
 ]
 
 label_name = false
 
 version = "${env:BUILD_NUMBER}"
+package_per_config = true
+append_config = true
+version_separator = "."
+
+[repo_package.packages.test_package]
+
+name = "test-${conf:repo.name}"
+
+files = [
+    ["_build/${platform}/${config}/${conf:repo.name}/bin/PhysX*.dll", ""_build/${platform}/${config}/${conf:repo.name}/bin"],
+    ["_build/${platform}/${config}/${conf:repo.name}/bin/*Tests.exe", ""_build/${platform}/${config}/${conf:repo.name}/bin"],
+]
+
+windows-x86_64.files = [
+    ["tools/ci/testing/test-windows-x86_64/gtests.bat"],
+]
+
+linux-x86_64.files = [
+    ["tools/ci/testing/test-linux-x86_64/gtests.sh"],
+]
+
+label_name = false
+
+version = "${env:BUILD_NUMBER}"
+create_package_info = false
 package_per_config = true
 append_config = true
 version_separator = "."
