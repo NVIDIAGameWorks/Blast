@@ -94,7 +94,7 @@ files_exclude = [
 
 label_name = false
 
-version = "${file:${root}/VERSION.md}.${env:BUILD_NUMBER}"
+version = "${env:BUILD_NUMBER}"
 package_per_config = true
 append_config = true
 version_separator = "."
