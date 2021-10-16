@@ -103,8 +103,8 @@ version_separator = "."
 name = "test-${conf:repo.name}"
 
 files = [
-    ["_build/${platform}/${config}/${conf:repo.name}/bin/PhysX*.dll", ""_build/${platform}/${config}/${conf:repo.name}/bin"],
-    ["_build/${platform}/${config}/${conf:repo.name}/bin/*Tests.exe", ""_build/${platform}/${config}/${conf:repo.name}/bin"],
+    ["_build/${platform}/${config}/${conf:repo.name}/bin/PhysX*.dll", "_build/${platform}/${config}/${conf:repo.name}/bin"],
+    ["_build/${platform}/${config}/${conf:repo.name}/bin/*Tests.exe", "_build/${platform}/${config}/${conf:repo.name}/bin"],
 ]
 
 windows-x86_64.files = [
