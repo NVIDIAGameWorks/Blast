@@ -86,8 +86,18 @@ repo_build.prebuild_copy {
     { "PACKAGE-LICENSES", "_build/%{platform}/%{config}/"..workspace_name.."/PACKAGE-LICENSES" }
 }
 
+-- Custom rule for .c++ files
+filter { "system:linux" }
+    rule 'c++'
+    fileExtension { ".c++"}
+    buildoutputs  { "$(OBJDIR)/%{file.objname}.o" }
+    buildmessage  '$(notdir $<)'
+    buildcommands {'$(CXX) %{premake.modules.gmake2.cpp.fileFlags(cfg, file)} $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"'}
+filter {}
+
 -- premake5.lua
 workspace (workspace_name)
+    rules { "c++" }
     configurations { "debug", "release" }
     startproject "NvBlast"
     local targetName = _ACTION
@@ -457,7 +467,7 @@ group "sdk"
     project "NvBlastExtSerialization"
         link_dependents({"NvBlast", "NvBlastGlobals"})
         blast_sdklib_bare_setup("extensions/serialization")
-        capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtLlSerialization.capn"})
+        capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtLlSerializationCapn"})
         defines { "KJ_HEADER_WARNINGS=0"}
         includedirs {
             "source/sdk/extensions/serialization/DTO",
@@ -491,18 +501,24 @@ group "sdk"
             }
         )
         add_files(capnp_gen_path,
-            { "NvBlastExtLlSerialization.capn.c++" }
+            { "NvBlastExtLlSerializationCapn.c++" }
         )
         vpaths {
             ["include/*"] = "include/extensions/serialization/",
             ["source/*"] = "source/sdk/extensions/serialization/",
         }
+        filter { "system:linux"}
+            disablewarnings {
+                "undef",
+                "sign-compare"
+            }
+        filter {}
 
     -- project "NvBlastExtTkSerialization"
     --     dependson({"NvBlastExtSerialization"})
     --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk"})
     --     blast_sdklib_bare_setup("extensions/serialization")
-    --     capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtTkSerialization.capn"})
+    --     capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtTkSerializationCapn"})
     --     defines { "KJ_HEADER_WARNINGS=0"}
     --     includedirs {
     --         "source/sdk/extensions/serialization/DTO",
@@ -538,8 +554,8 @@ group "sdk"
     --     )
     --     add_files(capnp_gen_path,
     --         {
-    --             "NvBlastExtLlSerialization.capn.c++",
-    --             "NvBlastExtTkSerialization.capn.c++",
+    --             "NvBlastExtLlSerializationCapn.c++",
+    --             "NvBlastExtTkSerializationCapn.c++",
     --         }
     --     )
     --     vpaths {
@@ -581,7 +597,7 @@ group "sdk"
     --     dependson("NvBlastExtSerialization", "NvBlastExtTkSerialization")
     --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtPhysX"})
     --     blast_sdklib_bare_setup("extensions/serialization")
-    --     capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtPxSerialization.capn"})
+    --     capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtPxSerializationCapn"})
     --     defines { "KJ_HEADER_WARNINGS=0"}
     --     includedirs {
     --         "source/sdk/extensions/serialization/DTO",
@@ -634,9 +650,9 @@ group "sdk"
     --     )
     --     add_files(capnp_gen_path,
     --         {
-    --             "NvBlastExtLlSerialization.capn.c++",
-    --             "NvBlastExtTkSerialization.capn.c++",
-    --             "NvBlastExtPxSerialization.capn.c++",
+    --             "NvBlastExtLlSerializationCapn.c++",
+    --             "NvBlastExtTkSerializationCapn.c++",
+    --             "NvBlastExtPxSerializationCapn.c++",
     --         }
     --     )
     --     vpaths {

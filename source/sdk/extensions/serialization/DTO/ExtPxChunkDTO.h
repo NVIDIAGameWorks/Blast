@@ -29,6 +29,6 @@
 #pragma once
 #include "DTOMacros.h"
 #include "NvBlastExtPxAsset.h"
-#include "NvBlastExtPxSerialization.capn.h"
+#include "NvBlastExtPxSerializationCapn.h"
 
 DTO_CLASS(ExtPxChunk, Nv::Blast::ExtPxChunk, Nv::Blast::Serialization::ExtPxChunk)

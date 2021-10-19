@@ -26,30 +26,74 @@
 # Copyright (c) 2020 NVIDIA Corporation. All rights reserved.
 
 
-@0xaffe4498f275ee58;
+@0xf4df9a42d5842b01;
 
 using Cxx = import "/capnp/c++.capnp";
 
-using LL = import "NvBlastExtLlSerialization.capn";
+using TK = import "NvBlastExtTkSerializationCapn";
 
 $Cxx.namespace("Nv::Blast::Serialization");
 
-struct TkAsset
+struct ExtPxAsset
 {
-    assetLL @0 :LL.Asset;
-    
-    jointDescs @1 :List(TkAssetJointDesc);
+    asset @0 :TK.TkAsset;
+    chunks @1 :List(ExtPxChunk);
+    subchunks @2 :List(ExtPxSubchunk);
+    uniformInitialBondHealth @3 :Float32;
+    bondHealths @4 :List(Float32);
+    uniformInitialLowerSupportChunkHealth @5 :Float32;
+    supportChunkHealths @6 :List(Float32);
 }
 
-struct TkAssetJointDesc
+struct ExtPxChunk
 {
-    nodeIndices @0 :List(UInt32);
-    attachPositions @1 :List(PxVec3);
+    firstSubchunkIndex @0 :UInt32;
+    subchunkCount @1 :UInt32;
+    isStatic @2 :Bool;
 }
 
-struct PxVec3
+struct ExtPxSubchunk
+{
+    transform @0 :PxTransform;
+    geometry @1 :PxConvexMeshGeometry;
+}
+
+struct PxConvexMeshGeometry
+{
+    scale @0 :PxMeshScale;
+    convexMesh @1 :Data;
+    meshFlags @2 :UInt8;
+
+    enum Type
+    {
+        eSPHERE @0;
+        ePLANE @1;
+        eCAPSULE @2;
+        eBOX @3;
+        eCONVEXMESH @4;
+        eTRIANGLEMESH @5;
+        eHEIGHTFIELD @6;
+    }
+
+    type @3 :Type;
+}
+
+struct PxQuat
 {
     x @0 :Float32;
     y @1 :Float32;
     z @2 :Float32;
+    w @3 :Float32;
+}
+
+struct PxMeshScale
+{
+    scale @0 :TK.PxVec3;
+    rotation @1 :PxQuat;
+}
+
+struct PxTransform
+{
+    q @0 :PxQuat;
+    p @1 :TK.PxVec3;
 }

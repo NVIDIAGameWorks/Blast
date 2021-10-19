@@ -29,7 +29,7 @@
 #pragma once
 #include "DTOMacros.h"
 #include "PxMeshScale.h"
-#include "NvBlastExtPxSerialization.capn.h"
+#include "NvBlastExtPxSerializationCapn.h"
 #include "PxCooking.h"
 
 DTO_CLASS(PxMeshScale, physx::PxMeshScale, Nv::Blast::Serialization::PxMeshScale)

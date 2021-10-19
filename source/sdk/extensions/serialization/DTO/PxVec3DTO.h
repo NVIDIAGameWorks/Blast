@@ -28,7 +28,7 @@
 
 #pragma once
 #include "DTOMacros.h"
-#include "NvBlastExtTkSerialization.capn.h"
+#include "NvBlastExtTkSerializationCapn.h"
 #include "foundation/PxVec3.h"
 
 DTO_CLASS(PxVec3, physx::PxVec3, Nv::Blast::Serialization::PxVec3)
