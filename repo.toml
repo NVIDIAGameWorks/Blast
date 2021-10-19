@@ -107,14 +107,6 @@ files = [
     ["_build/${platform}/${config}/${conf:repo.name}/bin/*Tests.exe", "_build/${platform}/${config}/${conf:repo.name}/bin"],
 ]
 
-windows-x86_64.files = [
-    ["tools/ci/testing/test-windows-x86_64/gtests.bat"],
-]
-
-linux-x86_64.files = [
-    ["tools/ci/testing/test-linux-x86_64/gtests.sh"],
-]
-
 label_name = false
 
 version = "${env:BUILD_NUMBER}"
