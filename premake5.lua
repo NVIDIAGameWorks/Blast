@@ -194,7 +194,7 @@ workspace (workspace_name)
 
     filter { "configurations:debug" }
         optimize "Off"
-        defines { "CARB_DEBUG=1" }
+        defines { "_DEBUG", "CARB_DEBUG=1" }
     filter  { "configurations:release" }
         defines { "NDEBUG", "CARB_DEBUG=0" }
     filter  { "configurations:release", "system:windows" }
