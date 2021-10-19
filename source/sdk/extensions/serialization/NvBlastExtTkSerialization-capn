@@ -30,7 +30,7 @@
 
 using Cxx = import "/capnp/c++.capnp";
 
-using LL = import "NvBlastExtLlSerializationCapn";
+using LL = import "NvBlastExtLlSerialization-capn";
 
 $Cxx.namespace("Nv::Blast::Serialization");
 

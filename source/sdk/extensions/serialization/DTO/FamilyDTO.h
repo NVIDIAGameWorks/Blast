@@ -29,6 +29,6 @@
 #pragma once
 #include "DTOMacros.h"
 #include "NvBlastFamily.h"
-#include "NvBlastExtLlSerializationCapn.h"
+#include "NvBlastExtLlSerialization-capn.h"
 
 DTO_CLASS(Family, Nv::Blast::FamilyHeader, Nv::Blast::Serialization::Family)

@@ -29,6 +29,6 @@
 #pragma once
 #include "DTOMacros.h"
 #include "NvBlastTkAsset.h"
-#include "NvBlastExtTkSerializationCapn.h"
+#include "NvBlastExtTkSerialization-capn.h"
 
 DTO_CLASS(TkAssetJointDesc, Nv::Blast::TkAssetJointDesc, Nv::Blast::Serialization::TkAssetJointDesc)

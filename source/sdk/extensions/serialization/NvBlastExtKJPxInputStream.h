@@ -31,7 +31,7 @@
 #include "capnp/common.h"
 #include "kj/io.h"
 #include <memory>
-#include "NvBlastExtPxSerializationCapn.h"
+#include "NvBlastExtPxSerialization-capn.h"
 
 
 namespace Nv

@@ -28,7 +28,7 @@
 
 #pragma once
 #include "DTOMacros.h"
-#include "NvBlastExtPxSerializationCapn.h"
+#include "NvBlastExtPxSerialization-capn.h"
 #include "PxConvexMeshGeometry.h"
 #include "PxCooking.h"
 

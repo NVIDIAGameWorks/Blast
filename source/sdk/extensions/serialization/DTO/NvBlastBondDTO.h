@@ -29,6 +29,6 @@
 #pragma once
 #include "DTOMacros.h"
 #include "NvBlastTypes.h"
-#include "NvBlastExtLlSerializationCapn.h"
+#include "NvBlastExtLlSerialization-capn.h"
 
 DTO_CLASS(NvBlastBond, NvBlastBond, Nv::Blast::Serialization::NvBlastBond)

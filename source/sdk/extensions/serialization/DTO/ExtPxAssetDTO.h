@@ -29,6 +29,6 @@
 #pragma once
 #include "NvBlastBondDTO.h"
 #include "NvBlastExtPxAsset.h"
-#include "NvBlastExtPxSerializationCapn.h"
+#include "NvBlastExtPxSerialization-capn.h"
 
 DTO_CLASS(ExtPxAsset, Nv::Blast::ExtPxAsset, Nv::Blast::Serialization::ExtPxAsset)

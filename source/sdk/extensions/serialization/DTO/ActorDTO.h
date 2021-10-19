@@ -29,6 +29,6 @@
 #pragma once
 #include "DTOMacros.h"
 #include "NvBlastActor.h"
-#include "NvBlastExtLlSerializationCapn.h"
+#include "NvBlastExtLlSerialization-capn.h"
 
 DTO_CLASS(Actor, Nv::Blast::Actor, Nv::Blast::Serialization::Actor)
