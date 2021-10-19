@@ -89,12 +89,30 @@ files_exclude = [
     ["**/include/extensions/exporter/**"],
     ["**/include/extensions/physx/**"],
     ["**/include/extensions/serialization/*ExtPx*.*"],
-    ["_build/packages/**"]
 ]
 
 label_name = false
 
 version = "${env:BUILD_NUMBER}"
+package_per_config = true
+append_config = true
+version_separator = "."
+
+[repo_package.packages.test_package]
+
+name = "test-${conf:repo.name}"
+
+root = "_build/${platform}/${config}/${conf:repo.name}"
+
+files = [
+    ["**/bin/PhysX*.dll"],
+    ["**/bin/*Tests.exe"],
+]
+
+label_name = false
+
+version = "${env:BUILD_NUMBER}"
+create_package_info = false
 package_per_config = true
 append_config = true
 version_separator = "."
