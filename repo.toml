@@ -102,9 +102,11 @@ version_separator = "."
 
 name = "test-${conf:repo.name}"
 
+root = "_build/${platform}/${config}/${conf:repo.name}"
+
 files = [
-    ["_build/${platform}/${config}/${conf:repo.name}/bin/PhysX*.dll", "_build/${platform}/${config}/${conf:repo.name}/bin"],
-    ["_build/${platform}/${config}/${conf:repo.name}/bin/*Tests.exe", "_build/${platform}/${config}/${conf:repo.name}/bin"],
+    ["**/bin/PhysX*.dll"],
+    ["**/bin/*Tests.exe"],
 ]
 
 label_name = false
