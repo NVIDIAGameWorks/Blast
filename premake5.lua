@@ -289,16 +289,17 @@ function capn_proto_precompile_step(dirpath, capnp_files)
     )
 
     local capnp_src = get_abs_path("_build/host-deps/CapnProto/src")
-    local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/win32")
+    local abs_capnp_gen_path = get_abs_path(capnp_gen_path)
     local abs_dir_path = get_abs_path(dirpath)
 
     filter { "system:windows" }
-        capnp_bin = get_abs_path(capnp_bin):gsub('/', '\\')
-        capnp_gen = get_abs_path(capnp_gen_path):gsub('/', '\\')
-        prebuildcommands { "if not exist "..capnp_gen.."\\ mkdir "..capnp_gen } -- make the generated source folder under _build
+        local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/win32")
+        capnp_bin = capnp_bin:gsub('/', '\\')
+        abs_capnp_gen_path = abs_capnp_gen_path:gsub('/', '\\')
+        prebuildcommands { "if not exist "..abs_capnp_gen_path.."\\ mkdir "..abs_capnp_gen_path } -- make the generated source folder under _build
         -- capnp compile
         for _, filename in pairs(capnp_files) do
-            command = capnp_bin.."\\capnp.exe compile -o "..capnp_bin.."\\capnpc-c++.exe:"..capnp_gen.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
+            command = capnp_bin.."\\capnp.exe compile -o "..capnp_bin.."\\capnpc-c++.exe:"..abs_capnp_gen_path.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
             prebuildcommands { command }
         end
 
@@ -315,6 +316,14 @@ function capn_proto_precompile_step(dirpath, capnp_files)
             "4702", -- unreachable code
             "4714", -- function 'function' marked as __forceinline not inlined
         }
+    filter { "system:linux" }
+        local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/ubuntu64")
+        prebuildcommands { "mkdir -p "..abs_capnp_gen_path } -- make the generated source folder under _build
+        -- capnp compile
+        for _, filename in pairs(capnp_files) do
+            command = capnp_bin.."/capnp compile -o "..capnp_bin.."/capnpc-c++:"..abs_capnp_gen_path.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
+            prebuildcommands { command }
+        end
     filter {}
 end
 
