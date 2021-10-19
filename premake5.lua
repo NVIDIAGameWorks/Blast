@@ -159,7 +159,7 @@ workspace (workspace_name)
             toolset("gcc-local_9_2_0_arch64")
         end
     filter { "system:linux" }
-        defines { "__STDC_FORMAT_MACROS" }
+        -- defines { "__STDC_FORMAT_MACROS" }
         symbols "On"
 
         buildoptions { "-pthread -fvisibility=hidden -fnon-call-exceptions -D_FILE_OFFSET_BITS=64 -fabi-version=8" }
@@ -179,7 +179,8 @@ workspace (workspace_name)
             "deprecated",
             "deprecated-declarations",
             "unknown-pragmas",
-            "multichar"
+            "multichar",
+            "parentheses"
         }
         links { "stdc++fs" }
         if repo_build.ccache_path() then
@@ -251,17 +252,15 @@ function link_dependents(names)
     libdirs { targetDir }
     for _, name in pairs(names) do
         dependson(name)
-        filter { "system:windows" }
-            links(name..".lib")
-        filter { "system:linux" }
-            links("lib"..name)
-        filter {}
+        links(name)
     end
 end
 
 function add_files(rootpath, filenames)
     for _, filename in pairs(filenames) do
-        files { rootpath.."/"..filename }
+        local file = rootpath.."/"..filename
+        print ("adding "..file)
+        files { file }
     end
 end
 
@@ -295,11 +294,11 @@ function capn_proto_precompile_step(dirpath, capnp_files)
     filter { "system:windows" }
         local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/win32")
         capnp_bin = capnp_bin:gsub('/', '\\')
-        abs_capnp_gen_path = abs_capnp_gen_path:gsub('/', '\\')
-        prebuildcommands { "if not exist "..abs_capnp_gen_path.."\\ mkdir "..abs_capnp_gen_path } -- make the generated source folder under _build
+        local abs_capnp_gen_path_win = abs_capnp_gen_path:gsub('/', '\\')
+        prebuildcommands { "if not exist "..abs_capnp_gen_path_win.."\\ mkdir "..abs_capnp_gen_path_win } -- make the generated source folder under _build
         -- capnp compile
         for _, filename in pairs(capnp_files) do
-            command = capnp_bin.."\\capnp.exe compile -o "..capnp_bin.."\\capnpc-c++.exe:"..abs_capnp_gen_path.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
+            command = capnp_bin.."\\capnp.exe compile -o "..capnp_bin.."\\capnpc-c++.exe:"..abs_capnp_gen_path_win.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
             prebuildcommands { command }
         end
 
@@ -347,9 +346,15 @@ group "sdk"
             target_deps.."/physxsdk/source/foundation/include",
             target_deps.."/pxshared/include",
         }
-        disablewarnings {
-            "4267", -- conversion from 'size_t' to 'type', possible loss of data
-        }
+        filter { "system:windows" }
+            disablewarnings {
+                "4267", -- conversion from 'size_t' to 'type', possible loss of data
+            }
+        filter { "system:linux"}
+            disablewarnings {
+                "strict-aliasing"
+            }
+        filter {}
 
     project "NvBlastExtAssetUtils"
         link_dependents({"NvBlast", "NvBlastGlobals"})
@@ -385,10 +390,19 @@ group "sdk"
             ["authoringCommon/include/*"] = "include/extensions/authoringCommon/",
             ["authoringCommon/source/*"] = "source/sdk/extensions/authoringCommon/",
         }
-        disablewarnings {
-            "4244", -- conversion from 'type1' to 'type2', possible loss of data
-            "4267", -- conversion from 'size_t' to 'type', possible loss of data
-        }
+        filter { "system:windows" }
+            disablewarnings {
+                "4244", -- conversion from 'type1' to 'type2', possible loss of data
+                "4267", -- conversion from 'size_t' to 'type', possible loss of data
+            }
+        filter { "system:linux"}
+            disablewarnings {
+                "misleading-indentation",
+                "undef",
+                "strict-aliasing",
+                "maybe-uninitialized"
+            }
+        filter {}
 
     project "NvBlastExtRT"
         link_dependents({"NvBlast", "NvBlastGlobals"})
@@ -406,9 +420,11 @@ group "sdk"
             "source/sdk/extensions/authoringCommon/NvBlastExtAuthoringAccelerator.cpp",
             "source/sdk/extensions/authoringCommon/NvBlastExtAuthoringMeshImpl.cpp",
         }
-        disablewarnings {
-            "4267", -- conversion from 'size_t' to 'type', possible loss of data
-        }
+        filter { "system:windows" }
+            disablewarnings {
+                "4267", -- conversion from 'size_t' to 'type', possible loss of data
+            }
+        filter {}
 
     project "NvBlastTk"
         link_dependents({"NvBlast", "NvBlastGlobals"})
@@ -432,11 +448,17 @@ group "sdk"
             target_deps.."/physxsdk/source/foundation/include",
             target_deps.."/pxshared/include",
         }
+        filter { "system:linux"}
+            disablewarnings {
+                "maybe-uninitialized"
+            }
+        filter {}
 
     project "NvBlastExtSerialization"
         link_dependents({"NvBlast", "NvBlastGlobals"})
         blast_sdklib_bare_setup("extensions/serialization")
         capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtLlSerialization.capn"})
+        defines { "KJ_HEADER_WARNINGS=0"}
         includedirs {
             "source/sdk/extensions/serialization/DTO",
             "include/lowlevel",
@@ -476,53 +498,54 @@ group "sdk"
             ["source/*"] = "source/sdk/extensions/serialization/",
         }
 
-    project "NvBlastExtTkSerialization"
-        dependson({"NvBlastExtSerialization"})
-        link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk"})
-        blast_sdklib_bare_setup("extensions/serialization")
-        capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtTkSerialization.capn"})
-        includedirs {
-            "source/sdk/extensions/serialization/DTO",
-            "include/lowlevel",
-            "include/toolkit",
-            "source/sdk/lowlevel",
-            "include/globals",
-            "_build/host-deps/CapnProto/src",
-            capnp_gen_path,
-            target_deps.."/physxsdk/include",
-            target_deps.."/physxsdk/source/foundation/include",
-            target_deps.."/pxshared/include",
-        }
-        blast_sdklib_common_files()
-        add_files("source/sdk/extensions/serialization",
-            {
-                "NvBlastExtTkSerialization.cpp",
-                "NvBlastExtTkSerializerRAW.cpp",
-                "NvBlastExtOutputStream.cpp",
-                "NvBlastExtInputStream.cpp",
-            }
-        )
-        add_files("source/sdk/extensions/serialization/DTO",
-            {
-                "AssetDTO.cpp",
-                "TkAssetDTO.cpp",
-                "PxVec3DTO.cpp",
-                "NvBlastChunkDTO.cpp",
-                "NvBlastBondDTO.cpp",
-                "NvBlastIDDTO.cpp",
-                "TkAssetJointDescDTO.cpp",
-            }
-        )
-        add_files(capnp_gen_path,
-            {
-                "NvBlastExtLlSerialization.capn.c++",
-                "NvBlastExtTkSerialization.capn.c++",
-            }
-        )
-        vpaths {
-            ["include/*"] = "include/extensions/serialization/",
-            ["source/*"] = "source/sdk/extensions/serialization/",
-        }
+    -- project "NvBlastExtTkSerialization"
+    --     dependson({"NvBlastExtSerialization"})
+    --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk"})
+    --     blast_sdklib_bare_setup("extensions/serialization")
+    --     capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtTkSerialization.capn"})
+    --     defines { "KJ_HEADER_WARNINGS=0"}
+    --     includedirs {
+    --         "source/sdk/extensions/serialization/DTO",
+    --         "include/lowlevel",
+    --         "include/toolkit",
+    --         "source/sdk/lowlevel",
+    --         "include/globals",
+    --         "_build/host-deps/CapnProto/src",
+    --         capnp_gen_path,
+    --         target_deps.."/physxsdk/include",
+    --         target_deps.."/physxsdk/source/foundation/include",
+    --         target_deps.."/pxshared/include",
+    --     }
+    --     blast_sdklib_common_files()
+    --     add_files("source/sdk/extensions/serialization",
+    --         {
+    --             "NvBlastExtTkSerialization.cpp",
+    --             "NvBlastExtTkSerializerRAW.cpp",
+    --             "NvBlastExtOutputStream.cpp",
+    --             "NvBlastExtInputStream.cpp",
+    --         }
+    --     )
+    --     add_files("source/sdk/extensions/serialization/DTO",
+    --         {
+    --             "AssetDTO.cpp",
+    --             "TkAssetDTO.cpp",
+    --             "PxVec3DTO.cpp",
+    --             "NvBlastChunkDTO.cpp",
+    --             "NvBlastBondDTO.cpp",
+    --             "NvBlastIDDTO.cpp",
+    --             "TkAssetJointDescDTO.cpp",
+    --         }
+    --     )
+    --     add_files(capnp_gen_path,
+    --         {
+    --             "NvBlastExtLlSerialization.capn.c++",
+    --             "NvBlastExtTkSerialization.capn.c++",
+    --         }
+    --     )
+    --     vpaths {
+    --         ["include/*"] = "include/extensions/serialization/",
+    --         ["source/*"] = "source/sdk/extensions/serialization/",
+    --     }
 
         -- requires FBX SDK.  Original SDK only defined this for Windows
     -- project "NvBlastExtExporter"
@@ -559,6 +582,7 @@ group "sdk"
     --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtPhysX"})
     --     blast_sdklib_bare_setup("extensions/serialization")
     --     capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtPxSerialization.capn"})
+    --     defines { "KJ_HEADER_WARNINGS=0"}
     --     includedirs {
     --         "source/sdk/extensions/serialization/DTO",
     --         "include/lowlevel",
@@ -620,99 +644,101 @@ group "sdk"
     --         ["source/*"] = "source/sdk/extensions/serialization/",
     --     }
 
-group "tests"
-    project "UnitTests"
-        kind "ConsoleApp"
-        location (workspaceDir.."/%{prj.name}")
-        link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastExtAssetUtils", "NvBlastExtShaders", "NvBlastTk", "NvBlastExtSerialization", "NvBlastExtTkSerialization"})
+-- group "tests"
+--     project "UnitTests"
+--         kind "ConsoleApp"
+--         location (workspaceDir.."/%{prj.name}")
+--         link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastExtAssetUtils", "NvBlastExtShaders", "NvBlastTk", "NvBlastExtSerialization", "NvBlastExtTkSerialization"})
 
-        filter { "system:windows" }
-            -- defines { "ISOLATION_AWARE_ENABLED=1" }
-        filter { "system:linux" }
-            buildoptions { "-fPIC" }
-            links { "rt" }
-        filter{}
+--         filter { "system:windows" }
+--             -- defines { "ISOLATION_AWARE_ENABLED=1" }
+--         filter { "system:linux" }
+--             buildoptions { "-fPIC" }
+--             links { "rt" }
+--         filter{}
 
-        blast_sdklib_common_files()
+--         blast_sdklib_common_files()
 
-        add_files("source/test/src/unit", {
-            "AssetTests.cpp",
-            "ActorTests.cpp",
-            "APITests.cpp",
-            "CoreTests.cpp",
-            "FamilyGraphTests.cpp",
-            "MultithreadingTests.cpp",
-            "TkCompositeTests.cpp",
-            "TkTests.cpp",
-        })
+--         add_files("source/test/src/unit", {
+--             "AssetTests.cpp",
+--             "ActorTests.cpp",
+--             "APITests.cpp",
+--             "CoreTests.cpp",
+--             "FamilyGraphTests.cpp",
+--             "MultithreadingTests.cpp",
+--             "TkCompositeTests.cpp",
+--             "TkTests.cpp",
+--         })
 
-        add_files("source/test/src/utils", {
-            "TestAssets.cpp",
-        })
+--         add_files("source/test/src/utils", {
+--             "TestAssets.cpp",
+--         })
 
-        add_files("source/sdk/lowlevel", {
-            "NvBlastActor.cpp",
-            "NvBlastFamilyGraph.cpp",
-            "NvBlastActorSerializationBlock.cpp",
-            "NvBlastAsset.cpp",
-            "NvBlastFamily.cpp",
-        })
+--         add_files("source/sdk/lowlevel", {
+--             "NvBlastActor.cpp",
+--             "NvBlastFamilyGraph.cpp",
+--             "NvBlastActorSerializationBlock.cpp",
+--             "NvBlastAsset.cpp",
+--             "NvBlastFamily.cpp",
+--         })
 
-        add_files("source/shared/utils", {
-            "AssetGenerator.cpp",
-        })
+--         add_files("source/shared/utils", {
+--             "AssetGenerator.cpp",
+--         })
 
-        add_files("source/sdk/extensions/physx", {  -- !!!
-            "NvBlastExtPxTaskImpl.cpp",
-        })
+--         add_files("source/sdk/extensions/physx", {  -- !!!
+--             "NvBlastExtPxTaskImpl.cpp",
+--         })
 
-        includedirs {
-            "include/globals",
-            "include/lowlevel",
-            "include/toolkit",
-            "include/extensions/assetutils",
-            "include/extensions/physx", -- !!!
-            "include/extensions/shaders",
-            "include/extensions/serialization",
-            "source/sdk/common",
-            "source/sdk/lowlevel",
-            "source/sdk/extensions/serialization",
-            "source/test/src",
-            "source/test/src/unit",
-            "source/test/src/utils",
-            "source/shared/filebuf/include",
-            "source/shared/utils",
-            target_deps.."/physxsdk/include",
-            target_deps.."/physxsdk/source/foundation/include",
-            target_deps.."/pxshared/include",
-            target_deps.."/googletest/include",
-        }
+--         includedirs {
+--             "include/globals",
+--             "include/lowlevel",
+--             "include/toolkit",
+--             "include/extensions/assetutils",
+--             "include/extensions/physx", -- !!!
+--             "include/extensions/shaders",
+--             "include/extensions/serialization",
+--             "source/sdk/common",
+--             "source/sdk/lowlevel",
+--             "source/sdk/extensions/serialization",
+--             "source/test/src",
+--             "source/test/src/unit",
+--             "source/test/src/utils",
+--             "source/shared/filebuf/include",
+--             "source/shared/utils",
+--             target_deps.."/physxsdk/include",
+--             target_deps.."/physxsdk/source/foundation/include",
+--             target_deps.."/pxshared/include",
+--             target_deps.."/googletest/include",
+--         }
 
-    filter { "system:windows", "configurations:debug" }
-        links {
-            target_deps.."/googletest/lib/vc14win64-cmake/Debug/gtest_main.lib",
-            target_deps.."/googletest/lib/vc14win64-cmake/Debug/gtest.lib",
-            target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.lib",
-            target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXTask_static_64.lib",
-        }
-        repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.dll")
-    filter { "system:windows", "configurations:release" }
-        links {
-            target_deps.."/googletest/lib/vc14win64-cmake/Release/gtest_main.lib",
-            target_deps.."/googletest/lib/vc14win64-cmake/Release/gtest.lib",
-            target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXFoundation_64.lib",
-            target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXTask_static_64.lib",
-        }
-        repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXFoundation_64.dll")
-    filter { "system:linux" }
-    filter{}
+--     filter { "system:windows", "configurations:debug" }
+--         links {
+--             target_deps.."/googletest/lib/vc14win64-cmake/Debug/gtest_main.lib",
+--             target_deps.."/googletest/lib/vc14win64-cmake/Debug/gtest.lib",
+--             target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.lib",
+--             target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXTask_static_64.lib",
+--         }
+--         repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.dll")
+--     filter { "system:windows", "configurations:release" }
+--         links {
+--             target_deps.."/googletest/lib/vc14win64-cmake/Release/gtest_main.lib",
+--             target_deps.."/googletest/lib/vc14win64-cmake/Release/gtest.lib",
+--             target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXFoundation_64.lib",
+--             target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXTask_static_64.lib",
+--         }
+--         repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXFoundation_64.dll")
+--     filter { "system:linux" }
+--     filter{}
 
-    disablewarnings {
-        "4002",
-        "4100",
-        "4127",
-        "4189",
-        "4244",
-        "4456",
-        "4996",
-    }
+--     filter { "system:windows" }
+--         disablewarnings {
+--             "4002", -- too many actual parameters for macro 'identifier'
+--             "4100", -- unreferenced formal parameter
+--             "4127", -- conditional expression is constant
+--             "4189", -- 'identifier' : local variable is initialized but not referenced
+--             "4244", -- conversion from 'type1' to 'type2', possible loss of data
+--             "4456", -- declaration of 'identifier' hides previous local declaration
+--             "4996", -- code uses a function, class member, variable, or typedef that's marked deprecated
+--         }
+--     filter {}

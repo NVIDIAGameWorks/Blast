@@ -85,6 +85,8 @@ namespace Nv
 
         struct BooleanToolOutputData
         {
+            virtual ~BooleanToolOutputData() {}
+
             virtual void release() = 0;
 
             //set edges, vertices and ffResult counters to 0
