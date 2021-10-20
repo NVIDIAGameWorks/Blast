@@ -86,20 +86,19 @@ repo_build.prebuild_copy {
     { "PACKAGE-LICENSES", "_build/%{platform}/%{config}/"..workspace_name.."/PACKAGE-LICENSES" }
 }
 
+
 -- Custom rule for .c++ files
--- filter { "system:linux" }
---     rule 'c++'
---     fileExtension { ".c++"}
---     buildoutputs  { "$(OBJDIR)/%{file.objname}.o" }
---     buildmessage  '$(notdir $<)'
---     buildcommands {'$(CXX) %{premake.modules.gmake2.cpp.fileFlags(cfg, file)} $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"'}
--- filter {}
+rule "c++"
+    fileExtension { ".c++" }
+    filter { "system:linux" }
+        buildoutputs  { "$(OBJDIR)/%{file.objname}.o" }
+        buildmessage  '$(notdir $<)'
+        buildcommands {'$(CXX) %{premake.modules.gmake2.cpp.fileFlags(cfg, file)} $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"'}
+    filter {}
+
 
 -- premake5.lua
 workspace (workspace_name)
-    -- filter { "system:linux" }
-    --     rules { "c++" }
-    -- filter {}
     configurations { "debug", "release" }
     startproject "NvBlast"
     local targetName = _ACTION
@@ -467,6 +466,9 @@ group "sdk"
         filter {}
 
     project "NvBlastExtSerialization"
+        filter { "system:linux"}
+            rules { "c++" }
+        filter {}
         link_dependents({"NvBlast", "NvBlastGlobals"})
         blast_sdklib_bare_setup("extensions/serialization")
         capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtLlSerialization-capn"})
