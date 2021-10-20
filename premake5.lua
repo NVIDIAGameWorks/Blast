@@ -95,7 +95,7 @@ function capn_proto_precompile_step(dirpath, capnp_files)
     if os.target() == "windows" then
         local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/win32"):gsub('/', '\\')
         local abs_capnp_gen_path = get_abs_path(capnp_gen_path):gsub('/', '\\')
-        prebuildcommands { "if not exist "..abs_capnp_gen_path_win.."\\ mkdir "..abs_capnp_gen_path_win } -- make the generated source folder
+        prebuildcommands { "if not exist "..abs_capnp_gen_path.."\\ mkdir "..abs_capnp_gen_path } -- make the generated source folder
         -- capnp compile
         for _, filename in pairs(capnp_files) do
             prebuildcommands { "if exist "..abs_capnp_gen_path.."\\"..filename..".cpp del /Q "..abs_capnp_gen_path.."\\"..filename..".cpp" }
