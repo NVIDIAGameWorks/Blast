@@ -760,11 +760,11 @@ group "tests"
         repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.dll")
     filter { "system:windows", "configurations:release" }
         libdirs { target_deps.."/googletest/lib/vc14win64-cmake/Release", target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release" }
-        repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.dll")
+        repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXFoundation_64.dll")
     filter { "system:linux", "configurations:debug" }
         libdirs { target_deps.."/googletest/lib/gcc-4.8", target_deps.."/physxsdk/bin/linux.clang/debug" }
     filter { "system:linux", "configurations:release" }
-        libdirs { target_deps.."/googletest/lib/gcc-4.8", target_deps.."/physxsdk/bin/linux.clang/debug" }
+        libdirs { target_deps.."/googletest/lib/gcc-4.8", target_deps.."/physxsdk/bin/linux.clang/release" }
     filter{}
 
     links { "gtest_main", "gtest" }
