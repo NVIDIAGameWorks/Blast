@@ -87,6 +87,41 @@ repo_build.prebuild_copy {
 }
 
 
+-- Preprocess to generate Cap'n Proto files
+function capn_proto_precompile_step(dirpath, capnp_files)
+    local capnp_src = get_abs_path("_build/host-deps/CapnProto/src")
+    local abs_dir_path = get_abs_path(dirpath)
+
+    if os.target() == "windows" then
+        local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/win32"):gsub('/', '\\')
+        local abs_capnp_gen_path = get_abs_path(capnp_gen_path):gsub('/', '\\')
+        prebuildcommands { "if not exist "..abs_capnp_gen_path_win.."\\ mkdir "..abs_capnp_gen_path_win } -- make the generated source folder
+        -- capnp compile
+        for _, filename in pairs(capnp_files) do
+            prebuildcommands { "if exist "..abs_capnp_gen_path.."\\"..filename..".cpp del /Q "..abs_capnp_gen_path.."\\"..filename..".cpp" }
+            local command = capnp_bin.."\\capnp.exe compile -o "..capnp_bin.."\\capnpc-c++.exe:"..abs_capnp_gen_path.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
+            prebuildcommands { command }
+            -- prebuildcommands { "ren "..abs_capnp_gen_path.."\\"..filename..".c++ "..filename..".cpp" }
+        end
+    elseif os.target() == "linux" then
+        local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/ubuntu64")
+        local abs_capnp_gen_path = get_abs_path(capnp_gen_path)
+        prebuildcommands { "mkdir -p "..abs_capnp_gen_path } -- make the generated source folder
+        -- capnp compile
+        for _, filename in pairs(capnp_files) do
+            local command = capnp_bin.."/capnp compile -o "..capnp_bin.."/capnpc-c++:"..abs_capnp_gen_path.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
+            prebuildcommands { command }
+            -- prebuildcommands { "mv "..abs_capnp_gen_path.."/"..filename..".c++ "..abs_capnp_gen_path.."/"..filename..".cpp" }
+        end
+    end
+end
+
+capn_proto_precompile_step("source/sdk/extensions/serialization", {
+    "NvBlastExtLlSerialization-capn",
+    "NvBlastExtTkSerialization-capn",
+})
+
+
 -- Custom rule for .c++ files
 if os.target() == "linux" then
     rule "c++"

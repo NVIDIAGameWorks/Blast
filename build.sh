@@ -1,5 +1,4 @@
 #!/bin/bash
 set -e
 SCRIPT_DIR=$(dirname ${BASH_SOURCE})
-source "$SCRIPT_DIR/tools/prebuild.sh"
 source "$SCRIPT_DIR/repo.sh" build $@ || exit $?
