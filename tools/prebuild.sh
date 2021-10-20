@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CAPNP_GEN=$(dirname ${BASH_SOURCE})/../_capnp
+CAPNP_GEN=$(dirname ${BASH_SOURCE})/../source/sdk/extensions/serialization/generated
 mkdir -p "$CAPNP_GEN"
 
 CAPNP_DIR=$(dirname ${BASH_SOURCE})/../_build/host-deps/CapnProto
