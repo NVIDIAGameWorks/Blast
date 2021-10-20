@@ -73,7 +73,7 @@ end)
 
 local hostDepsDir = "_build/host-deps"
 local targetDepsDir = "_build/target-deps"
-local capnp_gen_path = "_build/generated_capnp"
+local capnp_gen_path = "_capnp"
 
 local workspace_name = "blast-sdk"
 
@@ -85,6 +85,16 @@ repo_build.prebuild_copy {
     { "source/sdk/common", "_build/%{platform}/%{config}/"..workspace_name.."/source/sdk/common" },
     { "PACKAGE-LICENSES", "_build/%{platform}/%{config}/"..workspace_name.."/PACKAGE-LICENSES" }
 }
+
+
+-- Custom rule for .c++ files
+if os.target() == "linux" then
+    rule "c++"
+        fileExtension { ".c++" }
+        buildoutputs  { "$(OBJDIR)/%{file.objname}.o" }
+        buildmessage  '$(notdir $<)'
+        buildcommands {'$(CXX) %{premake.modules.gmake2.cpp.fileFlags(cfg, file)} $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"'}
+end
 
 -- premake5.lua
 workspace (workspace_name)
@@ -159,7 +169,7 @@ workspace (workspace_name)
             toolset("gcc-local_9_2_0_arch64")
         end
     filter { "system:linux" }
-        defines { "__STDC_FORMAT_MACROS" }
+        -- defines { "__STDC_FORMAT_MACROS" }
         symbols "On"
 
         buildoptions { "-pthread -fvisibility=hidden -fnon-call-exceptions -D_FILE_OFFSET_BITS=64 -fabi-version=8" }
@@ -179,7 +189,8 @@ workspace (workspace_name)
             "deprecated",
             "deprecated-declarations",
             "unknown-pragmas",
-            "multichar"
+            "multichar",
+            "parentheses"
         }
         links { "stdc++fs" }
         if repo_build.ccache_path() then
@@ -194,7 +205,7 @@ workspace (workspace_name)
 
     filter { "configurations:debug" }
         optimize "Off"
-        defines { "CARB_DEBUG=1" }
+        defines { "_DEBUG", "CARB_DEBUG=1" }
     filter  { "configurations:release" }
         defines { "NDEBUG", "CARB_DEBUG=0" }
     filter  { "configurations:release", "system:windows" }
@@ -250,22 +261,19 @@ end
 function link_dependents(names)
     libdirs { targetDir }
     for _, name in pairs(names) do
-        dependson(name)
-        filter { "system:windows" }
-            links(name..".lib")
-        filter { "system:linux" }
-            links("lib"..name)
-        filter {}
+        dependson {name}
+        links(name)
     end
 end
 
 function add_files(rootpath, filenames)
     for _, filename in pairs(filenames) do
-        files { rootpath.."/"..filename }
+        local file = rootpath.."/"..filename
+        files { file }
     end
 end
 
-function capn_proto_precompile_step(dirpath, capnp_files)
+function add_capn_proto_source()
     add_files("_build/host-deps/CapnProto/src/capnp",
         {
             "arena.c++",
@@ -288,21 +296,8 @@ function capn_proto_precompile_step(dirpath, capnp_files)
         }
     )
 
-    local capnp_src = get_abs_path("_build/host-deps/CapnProto/src")
-    local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/win32")
-    local abs_dir_path = get_abs_path(dirpath)
-
+    -- cap'n proto source produces a lot of warnings
     filter { "system:windows" }
-        capnp_bin = get_abs_path(capnp_bin):gsub('/', '\\')
-        capnp_gen = get_abs_path(capnp_gen_path):gsub('/', '\\')
-        prebuildcommands { "if not exist "..capnp_gen.."\\ mkdir "..capnp_gen } -- make the generated source folder under _build
-        -- capnp compile
-        for _, filename in pairs(capnp_files) do
-            command = capnp_bin.."\\capnp.exe compile -o "..capnp_bin.."\\capnpc-c++.exe:"..capnp_gen.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
-            prebuildcommands { command }
-        end
-
-        -- cap'n proto source produces a lot of warnings
         disablewarnings {
             "4018", -- 'token' : signed/unsigned mismatch
             "4100", -- unreferenced formal parameter
@@ -314,6 +309,11 @@ function capn_proto_precompile_step(dirpath, capnp_files)
             "4541", -- 'identifier' used on polymorphic type 'type' with /GR-; unpredictable behavior may result
             "4702", -- unreachable code
             "4714", -- function 'function' marked as __forceinline not inlined
+        }
+    filter { "system:linux"}
+        disablewarnings {
+            "undef",
+            "sign-compare"
         }
     filter {}
 end
@@ -338,9 +338,15 @@ group "sdk"
             target_deps.."/physxsdk/source/foundation/include",
             target_deps.."/pxshared/include",
         }
-        disablewarnings {
-            "4267", -- conversion from 'size_t' to 'type', possible loss of data
-        }
+        filter { "system:windows" }
+            disablewarnings {
+                "4267", -- conversion from 'size_t' to 'type', possible loss of data
+            }
+        filter { "system:linux"}
+            disablewarnings {
+                "strict-aliasing"
+            }
+        filter {}
 
     project "NvBlastExtAssetUtils"
         link_dependents({"NvBlast", "NvBlastGlobals"})
@@ -376,10 +382,19 @@ group "sdk"
             ["authoringCommon/include/*"] = "include/extensions/authoringCommon/",
             ["authoringCommon/source/*"] = "source/sdk/extensions/authoringCommon/",
         }
-        disablewarnings {
-            "4244", -- conversion from 'type1' to 'type2', possible loss of data
-            "4267", -- conversion from 'size_t' to 'type', possible loss of data
-        }
+        filter { "system:windows" }
+            disablewarnings {
+                "4244", -- conversion from 'type1' to 'type2', possible loss of data
+                "4267", -- conversion from 'size_t' to 'type', possible loss of data
+            }
+        filter { "system:linux"}
+            disablewarnings {
+                "misleading-indentation",
+                "undef",
+                "strict-aliasing",
+                "maybe-uninitialized"
+            }
+        filter {}
 
     project "NvBlastExtRT"
         link_dependents({"NvBlast", "NvBlastGlobals"})
@@ -397,9 +412,11 @@ group "sdk"
             "source/sdk/extensions/authoringCommon/NvBlastExtAuthoringAccelerator.cpp",
             "source/sdk/extensions/authoringCommon/NvBlastExtAuthoringMeshImpl.cpp",
         }
-        disablewarnings {
-            "4267", -- conversion from 'size_t' to 'type', possible loss of data
-        }
+        filter { "system:windows" }
+            disablewarnings {
+                "4267", -- conversion from 'size_t' to 'type', possible loss of data
+            }
+        filter {}
 
     project "NvBlastTk"
         link_dependents({"NvBlast", "NvBlastGlobals"})
@@ -423,11 +440,19 @@ group "sdk"
             target_deps.."/physxsdk/source/foundation/include",
             target_deps.."/pxshared/include",
         }
+        filter { "system:linux"}
+            disablewarnings {
+                "maybe-uninitialized"
+            }
+        filter {}
 
     project "NvBlastExtSerialization"
+        filter { "system:linux"}
+            rules { "c++" }
+        filter {}
         link_dependents({"NvBlast", "NvBlastGlobals"})
         blast_sdklib_bare_setup("extensions/serialization")
-        capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtLlSerialization.capn"})
+        defines { "KJ_HEADER_WARNINGS=0"}
         includedirs {
             "source/sdk/extensions/serialization/DTO",
             "include/lowlevel",
@@ -459,19 +484,24 @@ group "sdk"
                 "NvBlastIDDTO.cpp",
             }
         )
+        add_capn_proto_source()
         add_files(capnp_gen_path,
-            { "NvBlastExtLlSerialization.capn.c++" }
+            { "NvBlastExtLlSerialization-capn.c++" }
         )
         vpaths {
             ["include/*"] = "include/extensions/serialization/",
             ["source/*"] = "source/sdk/extensions/serialization/",
         }
+        filter {}
 
     project "NvBlastExtTkSerialization"
-        dependson({"NvBlastExtSerialization"})
+        filter { "system:linux"}
+            rules { "c++" }
+        filter {}
+        dependson {"NvBlastExtSerialization"}
         link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk"})
         blast_sdklib_bare_setup("extensions/serialization")
-        capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtTkSerialization.capn"})
+        defines { "KJ_HEADER_WARNINGS=0"}
         includedirs {
             "source/sdk/extensions/serialization/DTO",
             "include/lowlevel",
@@ -504,10 +534,11 @@ group "sdk"
                 "TkAssetJointDescDTO.cpp",
             }
         )
+        add_capn_proto_source()
         add_files(capnp_gen_path,
             {
-                "NvBlastExtLlSerialization.capn.c++",
-                "NvBlastExtTkSerialization.capn.c++",
+                "NvBlastExtLlSerialization-capn.c++",
+                "NvBlastExtTkSerialization-capn.c++",
             }
         )
         vpaths {
@@ -546,10 +577,13 @@ group "sdk"
     --     }
 
     -- project "NvBlastExtPxSerialization"
-    --     dependson("NvBlastExtSerialization", "NvBlastExtTkSerialization")
+    --     filter { "system:linux"}
+    --         rules { "c++" }
+    --     filter {}
+    --     dependson { "NvBlastExtSerialization", "NvBlastExtTkSerialization" }
     --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtPhysX"})
     --     blast_sdklib_bare_setup("extensions/serialization")
-    --     capn_proto_precompile_step("source/sdk/extensions/serialization", {"NvBlastExtPxSerialization.capn"})
+    --     defines { "KJ_HEADER_WARNINGS=0"}
     --     includedirs {
     --         "source/sdk/extensions/serialization/DTO",
     --         "include/lowlevel",
@@ -599,11 +633,12 @@ group "sdk"
     --             "PxConvexMeshGeometryDTO.cpp",
     --         }
     --     )
+    --     add_capn_proto_source()
     --     add_files(capnp_gen_path,
     --         {
-    --             "NvBlastExtLlSerialization.capn.c++",
-    --             "NvBlastExtTkSerialization.capn.c++",
-    --             "NvBlastExtPxSerialization.capn.c++",
+    --             "NvBlastExtLlSerialization-capn.cpp",
+    --             "NvBlastExtTkSerialization-capn.cpp",
+    --             "NvBlastExtPxSerialization-capn.cpp",
     --         }
     --     )
     --     vpaths {
@@ -657,6 +692,12 @@ group "tests"
             "NvBlastExtPxTaskImpl.cpp",
         })
 
+        filter { "system:linux" }
+            add_files("source/shared/task", {
+                "TaskManager.cpp"
+            })
+        filter {}
+
         includedirs {
             "include/globals",
             "include/lowlevel",
@@ -680,30 +721,34 @@ group "tests"
         }
 
     filter { "system:windows", "configurations:debug" }
-        links {
-            target_deps.."/googletest/lib/vc14win64-cmake/Debug/gtest_main.lib",
-            target_deps.."/googletest/lib/vc14win64-cmake/Debug/gtest.lib",
-            target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.lib",
-            target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXTask_static_64.lib",
-        }
+        libdirs { target_deps.."/googletest/lib/vc14win64-cmake/Debug", target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug" }
         repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.dll")
     filter { "system:windows", "configurations:release" }
-        links {
-            target_deps.."/googletest/lib/vc14win64-cmake/Release/gtest_main.lib",
-            target_deps.."/googletest/lib/vc14win64-cmake/Release/gtest.lib",
-            target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXFoundation_64.lib",
-            target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXTask_static_64.lib",
-        }
-        repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXFoundation_64.dll")
-    filter { "system:linux" }
+        libdirs { target_deps.."/googletest/lib/vc14win64-cmake/Release", target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release" }
+        repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.dll")
+    filter { "system:linux", "configurations:debug" }
+        libdirs { target_deps.."/googletest/lib/gcc-4.8", target_deps.."/physxsdk/bin/linux.clang/debug" }
+    filter { "system:linux", "configurations:release" }
+        libdirs { target_deps.."/googletest/lib/gcc-4.8", target_deps.."/physxsdk/bin/linux.clang/debug" }
     filter{}
 
-    disablewarnings {
-        "4002",
-        "4100",
-        "4127",
-        "4189",
-        "4244",
-        "4456",
-        "4996",
-    }
+    links { "gtest_main", "gtest" }
+
+    filter { "system:windows" }
+        links { "PhysXFoundation_64", "PhysXTask_static_64" }
+        disablewarnings {
+            "4002", -- too many actual parameters for macro 'identifier'
+            "4100", -- unreferenced formal parameter
+            "4127", -- conditional expression is constant
+            "4189", -- 'identifier' : local variable is initialized but not referenced
+            "4244", -- conversion from 'type1' to 'type2', possible loss of data
+            "4456", -- declaration of 'identifier' hides previous local declaration
+            "4996", -- code uses a function, class member, variable, or typedef that's marked deprecated
+        }
+    filter { "system:linux"}
+        links { "PhysXFoundation_static_64" }
+        disablewarnings {
+            "undef",
+            "sign-compare"
+        }
+    filter {}

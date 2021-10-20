@@ -73,22 +73,29 @@ name = "${conf:repo.name}"
 root = "_build/${platform}/${config}/${conf:repo.name}"
 
 files = [
-    ["**/bin/NvBlast*.dll"],
-    ["**/bin/NvBlast*.lib"],
     ["**/include/**/*.*"],
     ["**/source/**/*.*"],
     ["**/PACKAGE-LICENSES/*.*"],
-]
-
-debug.files = [
-    ["**/NvBlast*.pdb"],
-    ["**/NvBlast*.exp"],
 ]
 
 files_exclude = [
     ["**/include/extensions/exporter/**"],
     ["**/include/extensions/physx/**"],
     ["**/include/extensions/serialization/*ExtPx*.*"],
+]
+
+windows-x86_64.files = [
+    ["**/bin/NvBlast*.dll"],
+    ["**/bin/NvBlast*.lib"],
+]
+
+linux-x86_64.files = [
+    ["**/bin/*NvBlast*.so"],
+]
+
+windows-x86_64.debug.files = [
+    ["**/NvBlast*.pdb"],
+    ["**/NvBlast*.exp"],
 ]
 
 label_name = false
@@ -104,9 +111,13 @@ name = "test-${conf:repo.name}"
 
 root = "_build/${platform}/${config}/${conf:repo.name}"
 
-files = [
+windows-x86_64.files = [
     ["**/bin/PhysX*.dll"],
     ["**/bin/*Tests.exe"],
+]
+
+linux-x86_64.files = [
+    ["**/bin/*Tests"],
 ]
 
 label_name = false

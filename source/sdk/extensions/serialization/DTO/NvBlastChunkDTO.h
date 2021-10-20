@@ -29,7 +29,7 @@
 #pragma once
 #include "DTOMacros.h"
 #include "NvBlastTypes.h"
-#include "NvBlastExtLlSerialization.capn.h"
+#include "NvBlastExtLlSerialization-capn.h"
 
 
 DTO_CLASS(NvBlastChunk, NvBlastChunk, Nv::Blast::Serialization::NvBlastChunk)
