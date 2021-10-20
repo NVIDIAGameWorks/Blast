@@ -73,7 +73,7 @@ end)
 
 local hostDepsDir = "_build/host-deps"
 local targetDepsDir = "_build/target-deps"
-local capnp_gen_path = "_capnp"
+local capnp_gen_path = "source/sdk/extensions/serialization/generated"
 
 local workspace_name = "blast-sdk"
 

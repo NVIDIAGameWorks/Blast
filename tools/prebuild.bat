@@ -1,6 +1,6 @@
 @echo off
 
-set CAPNP_GEN=%~dp0..\_capnp
+set CAPNP_GEN=%~dp0..\source\sdk\extensions\serialization\generated
 if not exist "%CAPNP_GEN%" mkdir "%CAPNP_GEN%"
 
 set CAPNP_DIR=%~dp0..\_build\host-deps\CapnProto
