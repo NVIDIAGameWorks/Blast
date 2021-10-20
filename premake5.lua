@@ -88,14 +88,13 @@ repo_build.prebuild_copy {
 
 
 -- Custom rule for .c++ files
-rule "c++"
-    fileExtension { ".c++" }
-    filter { "system:linux" }
+if os.target() == "linux" then
+    rule "c++"
+        fileExtension { ".c++" }
         buildoutputs  { "$(OBJDIR)/%{file.objname}.o" }
         buildmessage  '$(notdir $<)'
         buildcommands {'$(CXX) %{premake.modules.gmake2.cpp.fileFlags(cfg, file)} $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"'}
-    filter {}
-
+end
 
 -- premake5.lua
 workspace (workspace_name)
@@ -297,8 +296,8 @@ function add_capn_proto_source()
         }
     )
 
+    -- cap'n proto source produces a lot of warnings
     filter { "system:windows" }
-        -- cap'n proto source produces a lot of warnings
         disablewarnings {
             "4018", -- 'token' : signed/unsigned mismatch
             "4100", -- unreferenced formal parameter
@@ -311,32 +310,11 @@ function add_capn_proto_source()
             "4702", -- unreachable code
             "4714", -- function 'function' marked as __forceinline not inlined
         }
-    filter {}
-end
-
-function capn_proto_precompile_step(dirpath, capnp_files)
-    local capnp_src = get_abs_path("_build/host-deps/CapnProto/src")
-    local abs_dir_path = get_abs_path(dirpath)
-
-    filter { "system:windows" }
-        local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/win32"):gsub('/', '\\')
-        local abs_capnp_gen_path = get_abs_path(capnp_gen_path):gsub('/', '\\')
-        -- capnp compile
-        for _, filename in pairs(capnp_files) do
-            prebuildcommands { "if exist "..abs_capnp_gen_path.."\\"..filename..".cpp del /Q "..abs_capnp_gen_path.."\\"..filename..".cpp" }
-            local command = capnp_bin.."\\capnp.exe compile -o "..capnp_bin.."\\capnpc-c++.exe:"..abs_capnp_gen_path.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
-            prebuildcommands { command }
-            prebuildcommands { "ren "..abs_capnp_gen_path.."\\"..filename..".c++ "..filename..".cpp" }
-        end
-    filter { "system:linux" }
-        -- local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/ubuntu64")
-        -- local abs_capnp_gen_path = get_abs_path(capnp_gen_path)
-        -- -- capnp compile
-        -- for _, filename in pairs(capnp_files) do
-        --     local command = capnp_bin.."/capnp compile -o "..capnp_bin.."/capnpc-c++:"..abs_capnp_gen_path.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
-        --     prebuildcommands { command }
-        --     prebuildcommands { "mv "..abs_capnp_gen_path.."/"..filename..".c++ "..abs_capnp_gen_path.."/"..filename..".cpp" }
-        -- end
+    filter { "system:linux"}
+        disablewarnings {
+            "undef",
+            "sign-compare"
+        }
     filter {}
 end
 
@@ -514,11 +492,6 @@ group "sdk"
             ["include/*"] = "include/extensions/serialization/",
             ["source/*"] = "source/sdk/extensions/serialization/",
         }
-        filter { "system:linux"}
-            disablewarnings {
-                "undef",
-                "sign-compare"
-            }
         filter {}
 
     project "NvBlastExtTkSerialization"
@@ -572,11 +545,6 @@ group "sdk"
             ["include/*"] = "include/extensions/serialization/",
             ["source/*"] = "source/sdk/extensions/serialization/",
         }
-        filter { "system:linux"}
-            disablewarnings {
-                "undef",
-                "sign-compare"
-            }
 
         -- requires FBX SDK.  Original SDK only defined this for Windows
     -- project "NvBlastExtExporter"
@@ -728,6 +696,7 @@ group "tests"
             add_files("source/shared/task", {
                 "TaskManager.cpp"
             })
+        filter {}
 
         includedirs {
             "include/globals",
@@ -753,8 +722,10 @@ group "tests"
 
     filter { "system:windows", "configurations:debug" }
         libdirs { target_deps.."/googletest/lib/vc14win64-cmake/Debug", target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug" }
+        repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.dll")
     filter { "system:windows", "configurations:release" }
         libdirs { target_deps.."/googletest/lib/vc14win64-cmake/Release", target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release" }
+        repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.dll")
     filter { "system:linux", "configurations:debug" }
         libdirs { target_deps.."/googletest/lib/gcc-4.8", target_deps.."/physxsdk/bin/linux.clang/debug" }
     filter { "system:linux", "configurations:release" }
@@ -765,7 +736,6 @@ group "tests"
 
     filter { "system:windows" }
         links { "PhysXFoundation_64", "PhysXTask_static_64" }
-        repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/%{config}/PhysXFoundation_64.dll")
         disablewarnings {
             "4002", -- too many actual parameters for macro 'identifier'
             "4100", -- unreferenced formal parameter
