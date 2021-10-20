@@ -270,7 +270,6 @@ end
 function add_files(rootpath, filenames)
     for _, filename in pairs(filenames) do
         local file = rootpath.."/"..filename
-        print ("adding "..file)
         files { file }
     end
 end
@@ -330,14 +329,14 @@ function capn_proto_precompile_step(dirpath, capnp_files)
             prebuildcommands { "ren "..abs_capnp_gen_path.."\\"..filename..".c++ "..filename..".cpp" }
         end
     filter { "system:linux" }
-        local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/ubuntu64")
-        local abs_capnp_gen_path = get_abs_path(capnp_gen_path)
-        -- capnp compile
-        for _, filename in pairs(capnp_files) do
-            local command = capnp_bin.."/capnp compile -o "..capnp_bin.."/capnpc-c++:"..abs_capnp_gen_path.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
-            prebuildcommands { command }
-            prebuildcommands { "mv "..abs_capnp_gen_path.."/"..filename..".c++ "..abs_capnp_gen_path.."/"..filename..".cpp" }
-        end
+        -- local capnp_bin = get_abs_path("_build/host-deps/CapnProto/tools/ubuntu64")
+        -- local abs_capnp_gen_path = get_abs_path(capnp_gen_path)
+        -- -- capnp compile
+        -- for _, filename in pairs(capnp_files) do
+        --     local command = capnp_bin.."/capnp compile -o "..capnp_bin.."/capnpc-c++:"..abs_capnp_gen_path.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
+        --     prebuildcommands { command }
+        --     prebuildcommands { "mv "..abs_capnp_gen_path.."/"..filename..".c++ "..abs_capnp_gen_path.."/"..filename..".cpp" }
+        -- end
     filter {}
 end
 
@@ -508,13 +507,8 @@ group "sdk"
             }
         )
         add_capn_proto_source()
-        capn_proto_precompile_step("source/sdk/extensions/serialization", {
-            "NvBlastExtLlSerialization-capn",
-            -- "NvBlastExtTkSerialization-capn",
-            -- "NvBlastExtPxSerialization-capn"
-        })
         add_files(capnp_gen_path,
-            { "NvBlastExtLlSerialization-capn.cpp" }
+            { "NvBlastExtLlSerialization-capn.c++" }
         )
         vpaths {
             ["include/*"] = "include/extensions/serialization/",
@@ -527,57 +521,57 @@ group "sdk"
             }
         filter {}
 
-    -- project "NvBlastExtTkSerialization"
-    --     filter { "system:linux"}
-    --         rules { "c++" }
-    --     filter {}
-    --     dependson {"NvBlastExtSerialization"}
-    --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk"})
-    --     blast_sdklib_bare_setup("extensions/serialization")
-    --     defines { "KJ_HEADER_WARNINGS=0"}
-    --     includedirs {
-    --         "source/sdk/extensions/serialization/DTO",
-    --         "include/lowlevel",
-    --         "include/toolkit",
-    --         "source/sdk/lowlevel",
-    --         "include/globals",
-    --         "_build/host-deps/CapnProto/src",
-    --         capnp_gen_path,
-    --         target_deps.."/physxsdk/include",
-    --         target_deps.."/physxsdk/source/foundation/include",
-    --         target_deps.."/pxshared/include",
-    --     }
-    --     blast_sdklib_common_files()
-    --     add_files("source/sdk/extensions/serialization",
-    --         {
-    --             "NvBlastExtTkSerialization.cpp",
-    --             "NvBlastExtTkSerializerRAW.cpp",
-    --             "NvBlastExtOutputStream.cpp",
-    --             "NvBlastExtInputStream.cpp",
-    --         }
-    --     )
-    --     add_files("source/sdk/extensions/serialization/DTO",
-    --         {
-    --             "AssetDTO.cpp",
-    --             "TkAssetDTO.cpp",
-    --             "PxVec3DTO.cpp",
-    --             "NvBlastChunkDTO.cpp",
-    --             "NvBlastBondDTO.cpp",
-    --             "NvBlastIDDTO.cpp",
-    --             "TkAssetJointDescDTO.cpp",
-    --         }
-    --     )
-    --     add_capn_proto_source()
-    --     add_files(capnp_gen_path,
-    --         {
-    --             "NvBlastExtLlSerialization-capn.cpp",
-    --             "NvBlastExtTkSerialization-capn.cpp",
-    --         }
-    --     )
-    --     vpaths {
-    --         ["include/*"] = "include/extensions/serialization/",
-    --         ["source/*"] = "source/sdk/extensions/serialization/",
-    --     }
+    project "NvBlastExtTkSerialization"
+        filter { "system:linux"}
+            rules { "c++" }
+        filter {}
+        dependson {"NvBlastExtSerialization"}
+        link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk"})
+        blast_sdklib_bare_setup("extensions/serialization")
+        defines { "KJ_HEADER_WARNINGS=0"}
+        includedirs {
+            "source/sdk/extensions/serialization/DTO",
+            "include/lowlevel",
+            "include/toolkit",
+            "source/sdk/lowlevel",
+            "include/globals",
+            "_build/host-deps/CapnProto/src",
+            capnp_gen_path,
+            target_deps.."/physxsdk/include",
+            target_deps.."/physxsdk/source/foundation/include",
+            target_deps.."/pxshared/include",
+        }
+        blast_sdklib_common_files()
+        add_files("source/sdk/extensions/serialization",
+            {
+                "NvBlastExtTkSerialization.cpp",
+                "NvBlastExtTkSerializerRAW.cpp",
+                "NvBlastExtOutputStream.cpp",
+                "NvBlastExtInputStream.cpp",
+            }
+        )
+        add_files("source/sdk/extensions/serialization/DTO",
+            {
+                "AssetDTO.cpp",
+                "TkAssetDTO.cpp",
+                "PxVec3DTO.cpp",
+                "NvBlastChunkDTO.cpp",
+                "NvBlastBondDTO.cpp",
+                "NvBlastIDDTO.cpp",
+                "TkAssetJointDescDTO.cpp",
+            }
+        )
+        add_capn_proto_source()
+        add_files(capnp_gen_path,
+            {
+                "NvBlastExtLlSerialization-capn.c++",
+                "NvBlastExtTkSerialization-capn.c++",
+            }
+        )
+        vpaths {
+            ["include/*"] = "include/extensions/serialization/",
+            ["source/*"] = "source/sdk/extensions/serialization/",
+        }
 
         -- requires FBX SDK.  Original SDK only defined this for Windows
     -- project "NvBlastExtExporter"
