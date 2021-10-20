@@ -309,8 +309,10 @@ function capn_proto_precompile_step(dirpath, capnp_files)
         prebuildcommands { "if not exist "..abs_capnp_gen_path_win.."\\ mkdir "..abs_capnp_gen_path_win } -- make the generated source folder under _build
         -- capnp compile
         for _, filename in pairs(capnp_files) do
+            prebuildcommands { "if exist "..abs_capnp_gen_path_win.."\\"..filename..".cpp del /Q "..abs_capnp_gen_path_win.."\\"..filename..".cpp" }
             command = capnp_bin.."\\capnp.exe compile -o "..capnp_bin.."\\capnpc-c++.exe:"..abs_capnp_gen_path_win.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
             prebuildcommands { command }
+            prebuildcommands { "ren "..abs_capnp_gen_path_win.."\\"..filename..".c++ "..filename..".cpp" }
         end
 
         -- cap'n proto source produces a lot of warnings
@@ -333,6 +335,7 @@ function capn_proto_precompile_step(dirpath, capnp_files)
         for _, filename in pairs(capnp_files) do
             command = capnp_bin.."/capnp compile -o "..capnp_bin.."/capnpc-c++:"..abs_capnp_gen_path.." -I "..capnp_src.." --src-prefix "..abs_dir_path.." "..abs_dir_path.."/"..filename
             prebuildcommands { command }
+            prebuildcommands { "mv "..capnp_bin.."/"..filename..".c++ "..capnp_bin.."/"..filename..".cpp"  }
         end
     filter {}
 end
@@ -505,7 +508,7 @@ group "sdk"
             }
         )
         add_files(capnp_gen_path,
-            { "NvBlastExtLlSerialization-capn.c++" }
+            { "NvBlastExtLlSerialization-capn.cpp" }
         )
         vpaths {
             ["include/*"] = "include/extensions/serialization/",
@@ -519,6 +522,9 @@ group "sdk"
         filter {}
 
     project "NvBlastExtTkSerialization"
+        filter { "system:linux"}
+            rules { "c++" }
+        filter {}
         dependson({"NvBlastExtSerialization"})
         link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk"})
         blast_sdklib_bare_setup("extensions/serialization")
@@ -558,8 +564,8 @@ group "sdk"
         )
         add_files(capnp_gen_path,
             {
-                "NvBlastExtLlSerialization-capn.c++",
-                "NvBlastExtTkSerialization-capn.c++",
+                "NvBlastExtLlSerialization-capn.cpp",
+                "NvBlastExtTkSerialization-capn.cpp",
             }
         )
         vpaths {
@@ -598,6 +604,9 @@ group "sdk"
     --     }
 
     -- project "NvBlastExtPxSerialization"
+    --     filter { "system:linux"}
+    --         rules { "c++" }
+    --     filter {}
     --     dependson("NvBlastExtSerialization", "NvBlastExtTkSerialization")
     --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtPhysX"})
     --     blast_sdklib_bare_setup("extensions/serialization")
@@ -654,9 +663,9 @@ group "sdk"
     --     )
     --     add_files(capnp_gen_path,
     --         {
-    --             "NvBlastExtLlSerialization-capn.c++",
-    --             "NvBlastExtTkSerialization-capn.c++",
-    --             "NvBlastExtPxSerialization-capn.c++",
+    --             "NvBlastExtLlSerialization-capn.cpp",
+    --             "NvBlastExtTkSerialization-capn.cpp",
+    --             "NvBlastExtPxSerialization-capn.cpp",
     --         }
     --     )
     --     vpaths {
