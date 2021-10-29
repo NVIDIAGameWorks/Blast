@@ -1333,7 +1333,6 @@ Mesh* BooleanEvaluator::createNewMesh()
                 userData = mMeshA->getFacet(lastParent)->userData;
                 materialId = mMeshA->getFacet(lastParent)->materialId;
                 smoothingGroup = mMeshA->getFacet(lastParent)->smoothingGroup;
-
             }
             else
             {

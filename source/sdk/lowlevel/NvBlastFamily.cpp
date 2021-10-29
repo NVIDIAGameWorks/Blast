@@ -278,7 +278,7 @@ void FamilyHeader::fractureNoEvents(uint32_t chunkFractureCount, const NvBlastCh
         float& health = chunkHealths[chunkHealthIndex];
         if (canTakeDamage(health) && command.health > 0.0f)
         {
-            Actor* actor = getGetChunkActor(chunkIndex);
+            Actor* actor = getChunkActor(chunkIndex);
             if (filterActor && filterActor != actor)
             {
                 NVBLASTLL_LOG_WARNING(logFn, "NvBlastActorApplyFracture: chunk fracture command corresponds to other actor, command is ignored.");
@@ -337,7 +337,7 @@ void FamilyHeader::fractureWithEvents(uint32_t chunkFractureCount, const NvBlast
         float& health = chunkHealths[chunkHealthIndex];
         if (canTakeDamage(health) && command.health > 0.0f)
         {
-            Actor* actor = getGetChunkActor(chunkIndex);
+            Actor* actor = getChunkActor(chunkIndex);
             if (filterActor && filterActor != actor)
             {
                 NVBLASTLL_LOG_WARNING(logFn, "NvBlastActorApplyFracture: chunk fracture command corresponds to other actor, command is ignored.");
@@ -409,7 +409,7 @@ void FamilyHeader::fractureInPlaceEvents(uint32_t chunkFractureCount, NvBlastChu
         float& health = chunkHealths[chunkHealthIndex];
         if (canTakeDamage(health) && command.health > 0.0f)
         {
-            Actor* actor = getGetChunkActor(chunkIndex);
+            Actor* actor = getChunkActor(chunkIndex);
             if (filterActor && filterActor != actor)
             {
                 NVBLASTLL_LOG_WARNING(logFn, "NvBlastActorApplyFracture: chunk fracture command corresponds to other actor, command is ignored.");
@@ -540,8 +540,8 @@ void FamilyHeader::applyFracture(NvBlastFractureBuffers* eventBuffers, const NvB
         uint32_t chunkIndex0 = graphChunkIndices[frac.nodeIndex0];
         uint32_t chunkIndex1 = graphChunkIndices[frac.nodeIndex1];
         NVBLAST_ASSERT(!isInvalidIndex(chunkIndex0) || !isInvalidIndex(chunkIndex1));
-        Actor* actor0 = !isInvalidIndex(chunkIndex0) ? getGetChunkActor(chunkIndex0) : nullptr;
-        Actor* actor1 = !isInvalidIndex(chunkIndex1) ? getGetChunkActor(chunkIndex1) : nullptr;
+        Actor* actor0 = !isInvalidIndex(chunkIndex0) ? getChunkActor(chunkIndex0) : nullptr;
+        Actor* actor1 = !isInvalidIndex(chunkIndex1) ? getChunkActor(chunkIndex1) : nullptr;
         NVBLAST_ASSERT(actor0 != nullptr || actor1 != nullptr);
         // If actors are not nullptr and different then bond is already broken
         // One of actor can be nullptr which probably means it's 'world' node.
@@ -736,7 +736,7 @@ NvBlastActor* NvBlastFamilyGetChunkActor(const NvBlastFamily* family, uint32_t c
     NVBLASTLL_CHECK(header->m_asset != nullptr, logFn, "NvBlastFamilyGetChunkActor: NvBlastFamily has null asset set.", return nullptr);
     NVBLASTLL_CHECK(chunkIndex < header->m_asset->m_chunkCount, logFn, "NvBlastFamilyGetChunkActor: bad value of chunkIndex for the given family's asset.", return nullptr);
 
-    return header->getGetChunkActor(chunkIndex);
+    return header->getChunkActor(chunkIndex);
 }
 
 

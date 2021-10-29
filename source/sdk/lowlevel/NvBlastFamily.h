@@ -191,7 +191,7 @@ struct FamilyHeader : public NvBlastDataBlock
 
     \return the index of associated actor in the FamilyHeader's getActors() array.
     */
-    uint32_t    getGetChunkActorIndex(uint32_t chunkIndex) const;
+    uint32_t    getChunkActorIndex(uint32_t chunkIndex) const;
 
     /**
     Retrieve the index of an actor associated with the given node.
@@ -200,7 +200,7 @@ struct FamilyHeader : public NvBlastDataBlock
 
     \return the index of associated actor in the FamilyHeader's getActors() array.
     */
-    uint32_t    getGetNodeActorIndex(uint32_t nodeIndex) const;
+    uint32_t    getNodeActorIndex(uint32_t nodeIndex) const;
 
     /**
     Retrieve an actor associated with the given chunk.
@@ -209,7 +209,7 @@ struct FamilyHeader : public NvBlastDataBlock
 
     \return    A pointer to the actor if the actor is active, nullptr otherwise.
     */
-    Actor*        getGetChunkActor(uint32_t chunkIndex) const;
+    Actor*        getChunkActor(uint32_t chunkIndex) const;
 
     /**
     Retrieve an actor associated with the given node.
@@ -218,7 +218,7 @@ struct FamilyHeader : public NvBlastDataBlock
 
     \return    A pointer to the actor if the actor is active, nullptr otherwise.
     */
-    Actor*        getGetNodeActor(uint32_t nodeIndex) const;
+    Actor*        getNodeActor(uint32_t nodeIndex) const;
 
 
     //////// Fracturing methods ////////
@@ -365,7 +365,7 @@ NV_INLINE Actor* FamilyHeader::getActorByIndex(uint32_t index) const
 }
 
 
-NV_INLINE uint32_t FamilyHeader::getGetChunkActorIndex(uint32_t chunkIndex) const
+NV_INLINE uint32_t FamilyHeader::getChunkActorIndex(uint32_t chunkIndex) const
 {
     NVBLAST_ASSERT(m_asset);
     NVBLAST_ASSERT(chunkIndex < m_asset->m_chunkCount);
@@ -380,7 +380,7 @@ NV_INLINE uint32_t FamilyHeader::getGetChunkActorIndex(uint32_t chunkIndex) cons
 }
 
 
-NV_INLINE uint32_t FamilyHeader::getGetNodeActorIndex(uint32_t nodeIndex) const
+NV_INLINE uint32_t FamilyHeader::getNodeActorIndex(uint32_t nodeIndex) const
 {
     NVBLAST_ASSERT(m_asset);
     NVBLAST_ASSERT(nodeIndex < m_asset->m_graph.m_nodeCount);
@@ -389,16 +389,16 @@ NV_INLINE uint32_t FamilyHeader::getGetNodeActorIndex(uint32_t nodeIndex) const
 }
 
 
-NV_INLINE Actor* FamilyHeader::getGetChunkActor(uint32_t chunkIndex) const
+NV_INLINE Actor* FamilyHeader::getChunkActor(uint32_t chunkIndex) const
 {
-    uint32_t actorIndex = getGetChunkActorIndex(chunkIndex);
+    uint32_t actorIndex = getChunkActorIndex(chunkIndex);
     return !isInvalidIndex(actorIndex) ? getActorByIndex(actorIndex) : nullptr;
 }
 
 
-NV_INLINE Actor* FamilyHeader::getGetNodeActor(uint32_t nodeIndex) const
+NV_INLINE Actor* FamilyHeader::getNodeActor(uint32_t nodeIndex) const
 {
-    uint32_t actorIndex = getGetNodeActorIndex(nodeIndex);
+    uint32_t actorIndex = getNodeActorIndex(nodeIndex);
     return !isInvalidIndex(actorIndex) ? getActorByIndex(actorIndex) : nullptr;
 }
 
