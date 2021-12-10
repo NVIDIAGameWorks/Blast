@@ -446,7 +446,7 @@ void insertPoint(std::vector<RVec2>& vertices, std::vector<DelTriangle>& state, 
 
 
             /**
-            Change neighboors
+            Change neighbors
             */
             int32_t nb = state[i].n[0];
             if (nb != -1)
@@ -814,7 +814,7 @@ void buildCDT(std::vector<RVec3>& vertices, std::vector<Edge>& edges, std::vecto
     {
         crt.p[i]          = edges[i].s;
         added[edges[i].s] = true;
-        crt.n[i]          = -1;  // dont have neighboors;
+        crt.n[i]          = -1;  // dont have neighbors;
     }
     state.push_back(crt);
 

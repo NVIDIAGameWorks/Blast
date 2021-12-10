@@ -952,7 +952,7 @@ Mesh* getCuttingCone(const CutoutConfiguration& conf, const std::vector<physx::P
             edges[edgeIdx + 2] = {i2, i1};
             edges[edgeIdx + 3] = {i1, i};
         }
-        facets[i] = {edgeIdx, 4, id, interiorMaterialId, sg};
+        facets[i] = {edgeIdx, 4, id++, interiorMaterialId, sg};
 
         edges[5 * pointCount + i + 1] = {i1, i2};
         edges[5 * pointCount - i - 1] = {i3, i};
