@@ -63,7 +63,6 @@
 #endif
 
 #define DEFAULT_BB_ACCELARATOR_RES 10
-#define SLICING_INDEXER_OFFSET (1ll << 32)
 
 namespace Nv
 {
@@ -109,11 +108,12 @@ struct Halfspace_partitioning : public VSA::VS3D_Halfspace_Set
 };
 
 
-void findCellBasePlanes(const std::vector<NvcVec3>& sites, std::vector<std::vector<int32_t> >& neighboors)
+int32_t findCellBasePlanes(const std::vector<NvcVec3>& sites, std::vector<std::vector<std::pair<int32_t, int32_t>>>& neighbors)
 {
     Halfspace_partitioning prt;
     std::vector<NvcPlane>& planes = prt.planes;
-    neighboors.resize(sites.size());
+    int32_t neighborGlobalIndex = 0;
+    neighbors.resize(sites.size());
     for (uint32_t cellId = 0; cellId + 1 < sites.size(); ++cellId)
     {
         planes.clear();
@@ -137,13 +137,17 @@ void findCellBasePlanes(const std::vector<NvcVec3>& sites, std::vector<std::vect
 
             if (VSA::vs3d_test(prt))
             {
-                neighboors[cellId].push_back(i + cellId + 1);
-                neighboors[i + cellId + 1].push_back(cellId);
+                const uint32_t nId = i + cellId + 1;
+                neighbors[cellId].push_back(std::pair<int32_t, int32_t>(nId, neighborGlobalIndex));
+                neighbors[nId].push_back(std::pair<int32_t, int32_t>(cellId, neighborGlobalIndex));
+                ++neighborGlobalIndex;
             };
             planes[i].n = neg(planes[i].n);
             planes[i].d = -planes[i].d;
         }
     }
+
+    return neighborGlobalIndex;
 }
 
 
@@ -151,18 +155,18 @@ void findCellBasePlanes(const std::vector<NvcVec3>& sites, std::vector<std::vect
 #define CUTTING_BOX_SIZE 40
 
 Mesh* getCellMesh(BooleanEvaluator& eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector<NvcVec3>& sites,
-                  std::vector<std::vector<int32_t> >& neighboors, int32_t interiorMaterialId, NvcVec3 origin)
+                  const std::vector<std::vector<std::pair<int32_t, int32_t>>>& neighbors, int32_t interiorMaterialId, NvcVec3 origin)
 {
     Mesh* cell        = getBigBox(toPxShared(origin), SITE_BOX_SIZE, interiorMaterialId);
     Mesh* cuttingMesh = getCuttingBox(PxVec3(0, 0, 0), PxVec3(1, 1, 1), CUTTING_BOX_SIZE, 0, interiorMaterialId);
 
-    for (uint32_t i = 0; i < neighboors[cellId].size(); ++i)
+    for (uint32_t i = 0; i < neighbors[cellId].size(); ++i)
     {
-        int32_t nCell    = neighboors[cellId][i];
+        std::pair<int32_t, int32_t> neighbor = neighbors[cellId][i];
+        int32_t nCell    = neighbor.first;
         PxVec3 midpoint  = 0.5 * toPxShared(sites[nCell] + sites[cellId]);
         PxVec3 direction = toPxShared(sites[nCell] - sites[cellId]).getNormalized();
-        int32_t planeIndex =
-            static_cast<int32_t>(sites.size()) * std::min(cellId, nCell) + std::max(cellId, nCell) + planeIndexerOffset;
+        int32_t planeIndex = neighbor.second + planeIndexerOffset;
         if (nCell < cellId)
             planeIndex = -planeIndex;
         setCuttingBox(midpoint, -direction, cuttingMesh, CUTTING_BOX_SIZE, planeIndex);
@@ -175,15 +179,6 @@ Mesh* getCellMesh(BooleanEvaluator& eval, int32_t planeIndexerOffset, int32_t ce
     }
     delete cuttingMesh;
     return cell;
-}
-
-
-bool blastBondComparator(const NvBlastBondDesc& a, const NvBlastBondDesc& b)
-{
-    if (a.chunkIndices[0] == b.chunkIndices[0])
-        return a.chunkIndices[1] < b.chunkIndices[1];
-    else
-        return a.chunkIndices[0] < b.chunkIndices[0];
 }
 
 
@@ -460,8 +455,8 @@ FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const 
 
     BBoxBasedAccelerator spAccel = BBoxBasedAccelerator(mesh, DEFAULT_BB_ACCELARATOR_RES);
 
-    std::vector<std::vector<int32_t> > neighboors;
-    findCellBasePlanes(cellPoints, neighboors);
+    std::vector<std::vector<std::pair<int32_t, int32_t>>> neighbors;
+    const int32_t neighborCount = findCellBasePlanes(cellPoints, neighbors);
 
     /**
     Fracture
@@ -471,7 +466,7 @@ FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const 
     for (uint32_t i = 0; i < cellPoints.size(); ++i)
     {
         Mesh* cell =
-            getCellMesh(eval, mPlaneIndexerOffset, i, cellPoints, neighboors, mInteriorMaterialId, cellPoints[i]);
+            getCellMesh(eval, mPlaneIndexerOffset, i, cellPoints, neighbors, mInteriorMaterialId, cellPoints[i]);
 
         if (cell == nullptr)
         {
@@ -495,7 +490,7 @@ FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const 
     {
         deleteChunkSubhierarchy(chunkId, true);
     }
-    mPlaneIndexerOffset += static_cast<int32_t>(cellPoints.size() * cellPoints.size());
+    mPlaneIndexerOffset += neighborCount;
 
     if (mRemoveIslands)
     {
@@ -747,8 +742,8 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
 
     BBoxBasedAccelerator spAccel = BBoxBasedAccelerator(mesh, DEFAULT_BB_ACCELARATOR_RES);
 
-    std::vector<std::vector<int32_t> > neighboors;
-    findCellBasePlanes(cellPoints, neighboors);
+    std::vector<std::vector<std::pair<int32_t, int32_t>>> neighbors;
+    const int32_t neighborCount = findCellBasePlanes(cellPoints, neighbors);
 
     /**
     Fracture
@@ -759,7 +754,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
     for (uint32_t i = 0; i < cellPoints.size(); ++i)
     {
         Mesh* cell =
-            getCellMesh(eval, mPlaneIndexerOffset, i, cellPoints, neighboors, mInteriorMaterialId, cellPoints[i]);
+            getCellMesh(eval, mPlaneIndexerOffset, i, cellPoints, neighbors, mInteriorMaterialId, cellPoints[i]);
 
         if (cell == nullptr)
         {
@@ -792,7 +787,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
     {
         deleteChunkSubhierarchy(chunkId, true);
     }
-    mPlaneIndexerOffset += static_cast<int32_t>(cellPoints.size() * cellPoints.size());
+    mPlaneIndexerOffset += neighborCount;
 
     if (mRemoveIslands)
     {
@@ -870,7 +865,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
             PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
         PxVec3 lDir = dir + randVect * conf.angle_variations;
 
-        setCuttingBox(center, -lDir, slBox, 20, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET);
+        setCuttingBox(center, -lDir, slBox, 20, mPlaneIndexerOffset);
         bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_INTERSECION());
         setChunkInfoMesh(ch, bTool.createNewMesh());
 
@@ -911,7 +906,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
             PxVec3 lDir = dir + randVect * conf.angle_variations;
 
 
-            setCuttingBox(center, -lDir, slBox, 20, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET);
+            setCuttingBox(center, -lDir, slBox, 20, mPlaneIndexerOffset);
             bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_INTERSECION());
             setChunkInfoMesh(ch, bTool.createNewMesh());
             if (ch.getMesh() != 0)
@@ -950,7 +945,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
             PxVec3 randVect =
                 PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
             PxVec3 lDir = dir + randVect * conf.angle_variations;
-            setCuttingBox(center, -lDir, slBox, 20, mPlaneIndexerOffset + SLICING_INDEXER_OFFSET);
+            setCuttingBox(center, -lDir, slBox, 20, mPlaneIndexerOffset);
             bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_INTERSECION());
             setChunkInfoMesh(ch, bTool.createNewMesh());
             if (ch.getMesh() != 0)
@@ -1068,7 +1063,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
             PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
         PxVec3 lDir = dir + randVect * conf.angle_variations;
         slBox        = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, resolution,
-                                       mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude,
+                                       mPlaneIndexerOffset, conf.noise.amplitude,
                                        conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(),
                                        mInteriorMaterialId);
         //  DummyAccelerator accel(mesh->getFacetCount());
@@ -1114,7 +1109,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
             PxVec3 lDir = dir + randVect * conf.angle_variations;
 
             slBox = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, resolution,
-                                           mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude,
+                                           mPlaneIndexerOffset, conf.noise.amplitude,
                                            conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(),
                                            mInteriorMaterialId);
             //  DummyAccelerator accel(mesh->getFacetCount());
@@ -1159,7 +1154,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
                 PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
             PxVec3 lDir = dir + randVect * conf.angle_variations;
             slBox        = getNoisyCuttingBoxPair(center, lDir, 40, noisyPartSize, resolution,
-                                           mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, conf.noise.amplitude,
+                                           mPlaneIndexerOffset, conf.noise.amplitude,
                                            conf.noise.frequency, conf.noise.octaveNumber, rnd->getRandomValue(),
                                            mInteriorMaterialId);
             //      DummyAccelerator accel(mesh->getFacetCount());
@@ -1253,7 +1248,7 @@ int32_t FractureToolImpl::cut(uint32_t chunkId, const NvcVec3& normal, const Nvc
     Mesh* slBox = getNoisyCuttingBoxPair(toPxShared(tm.invTransformPos(point)),
                                          toPxShared(normal),    // tm doesn't change normals (up to normalization)
                                          40, noisyPartSize, resolution,
-                                         mPlaneIndexerOffset + SLICING_INDEXER_OFFSET, noise.amplitude, noise.frequency,
+                                         mPlaneIndexerOffset, noise.amplitude, noise.frequency,
                                          noise.octaveNumber, rnd->getRandomValue(), mInteriorMaterialId);
     SweepingAccelerator accel(mesh);
     SweepingAccelerator dummy(slBox);
@@ -1670,20 +1665,11 @@ int32_t FractureToolImpl::setChunkMesh(const Mesh* meshInput, int32_t parentId, 
         mChunkData[parentInfoIndex].isLeaf = false;
     }
 
-    if (parentId == -1)  // We are setting root mesh. Set all facets as boundary.
+    // Make sure our fracturing surface ID base is greater than any existing ID
+    for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
     {
-        for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
-        {
-            mesh->getFacetWritable(i)->userData = 0;  // Mark facet as initial boundary facet
-        }
-    }
-    else    // Setting a child mesh.  Make sure our fracturing surface ID base is greater than any existing ID
-    {
-        for (uint32_t i = 0; i < mesh->getFacetCount(); ++i)
-        {
-            const int64_t splitId = mesh->getFacet(i)->userData;
-            mPlaneIndexerOffset = std::max(mPlaneIndexerOffset, splitId + 1);
-        }
+        const int64_t splitId = std::abs(mesh->getFacet(i)->userData);
+        mPlaneIndexerOffset = std::max(mPlaneIndexerOffset, splitId + 1);
     }
 
     return chunk.chunkId;
@@ -2275,8 +2261,9 @@ uint32_t FractureToolImpl::stretchGroup(const std::vector<uint32_t>& grp, std::v
     }
     for (uint32_t i = 0; i < nFacets.size(); ++i)
     {
-        if (nFacets[i].userData == 0 || (hasCutting.find(-nFacets[i].userData) == hasCutting.end()) ||
-            std::abs(nFacets[i].userData) >= SLICING_INDEXER_OFFSET)
+        // N.B. This can lead to open meshes for non-voronoi fracturing.
+        // We need to check if the opposing faces match exactly, or even better reconstruct parts that stick out.
+        if (nFacets[i].userData == 0 || (hasCutting.find(-nFacets[i].userData) == hasCutting.end()))
         {
             finalFacets.push_back(nFacets[i]);
         }

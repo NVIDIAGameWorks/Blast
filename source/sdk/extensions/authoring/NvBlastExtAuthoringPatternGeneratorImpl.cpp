@@ -96,8 +96,8 @@ DamagePattern* PatternGeneratorImpl::generateVoronoiPatternInternal(uint32_t cel
     }
     orig = orig / cellCount;
 
-    std::vector<std::vector<int32_t> > neighboors;
-    findCellBasePlanes(points, neighboors);
+    std::vector<std::vector<std::pair<int32_t, int32_t>>> neighbors;
+    findCellBasePlanes(points, neighbors);
 
     Mesh** patterns = (Mesh**)NVBLAST_ALLOC(sizeof(Mesh*) * cellCount);
 
@@ -106,7 +106,7 @@ DamagePattern* PatternGeneratorImpl::generateVoronoiPatternInternal(uint32_t cel
     BooleanEvaluator evl;
     for (uint32_t i = 0; i < cellCount; ++i)
     {
-        patterns[i] = getCellMesh(evl, 0, i, points, neighboors, interiorMaterialId, orig);
+        patterns[i] = getCellMesh(evl, 0, i, points, neighbors, interiorMaterialId, orig);
         if (patterns[i] == nullptr)
         {
             continue;

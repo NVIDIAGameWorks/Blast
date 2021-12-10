@@ -39,7 +39,7 @@ namespace Nv
         class SimplexNoise;
 
         /**
-        Structure used on tesselation stage. Maps edge to two neighboor triangles
+        Structure used on tesselation stage. Maps edge to two neighbor triangles
         */
         struct EdgeToTriangles
         {

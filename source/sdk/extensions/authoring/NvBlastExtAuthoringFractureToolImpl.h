@@ -441,8 +441,8 @@ protected:
     int32_t                             mInteriorMaterialId;
 };
 
-void findCellBasePlanes(const std::vector<NvcVec3>& sites, std::vector<std::vector<int32_t> >& neighboors);
-Mesh* getCellMesh(class BooleanEvaluator& eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector<NvcVec3>& sites, std::vector < std::vector<int32_t> >& neighboors, int32_t interiorMaterialId, NvcVec3 origin);
+int32_t findCellBasePlanes(const std::vector<NvcVec3>& sites, std::vector<std::vector<std::pair<int32_t, int32_t>>>& neighbors);
+Mesh* getCellMesh(class BooleanEvaluator& eval, int32_t planeIndexerOffset, int32_t cellId, const std::vector<NvcVec3>& sites, const std::vector<std::vector<std::pair<int32_t, int32_t>>>& neighbors, int32_t interiorMaterialId, NvcVec3 origin);
 
 } // namespace Blast
 } // namespace Nv

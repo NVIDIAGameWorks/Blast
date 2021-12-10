@@ -552,7 +552,7 @@ void MeshNoiser::collapseEdge(int32_t id)
 
     std::set<int32_t> connectedToBegin;
     std::set<int32_t> connectedToEnd;
-    std::set<int32_t> neighboorTriangles;
+    std::set<int32_t> neighborTriangles;
 
     int32_t trWithEdge[2] = { -1, -1 };
     int32_t cntr          = 0;
@@ -560,7 +560,7 @@ void MeshNoiser::collapseEdge(int32_t id)
     {
         if (mTriangles[mVertexToTriangleMap[from][i]].ea == kNotValidVertexIndex)
             continue;
-        if (neighboorTriangles.insert(mVertexToTriangleMap[from][i]).second &&
+        if (neighborTriangles.insert(mVertexToTriangleMap[from][i]).second &&
             isContainEdge(mTriangles[mVertexToTriangleMap[from][i]] , from, to))
         {
             trWithEdge[cntr] = mVertexToTriangleMap[from][i];
@@ -571,7 +571,7 @@ void MeshNoiser::collapseEdge(int32_t id)
     {
         if (mTriangles[mVertexToTriangleMap[to][i]].ea == kNotValidVertexIndex)
             continue;
-        if (neighboorTriangles.insert(mVertexToTriangleMap[to][i]).second &&
+        if (neighborTriangles.insert(mVertexToTriangleMap[to][i]).second &&
             isContainEdge(mTriangles[mVertexToTriangleMap[to][i]], from, to))
         {
             trWithEdge[cntr] = mVertexToTriangleMap[to][i];
@@ -588,7 +588,7 @@ void MeshNoiser::collapseEdge(int32_t id)
         return;
     }
 
-    for (uint32_t i : neighboorTriangles)
+    for (uint32_t i : neighborTriangles)
     {
         if (mTriangles[i].ea == from || mTriangles[i].eb == from || mTriangles[i].ec == from)
         {
@@ -617,7 +617,7 @@ void MeshNoiser::collapseEdge(int32_t id)
         if (connectedToEnd.find(currV) == connectedToEnd.end())
             continue;
         bool found = false;
-        for (int32_t tr : neighboorTriangles)
+        for (int32_t tr : neighborTriangles)
         {
             if ((mTriangles[tr].ea == from || mTriangles[tr].eb == from || mTriangles[tr].ec == from) &&
                 (mTriangles[tr].ea == to || mTriangles[tr].eb == to || mTriangles[tr].ec == to) &&
@@ -635,7 +635,7 @@ void MeshNoiser::collapseEdge(int32_t id)
     }
     if (canBeCollapsed)
     {
-        for (int32_t i : neighboorTriangles)
+        for (int32_t i : neighborTriangles)
         {
             if (trWithEdge[0] == i)
                 continue;
@@ -674,7 +674,7 @@ void MeshNoiser::collapseEdge(int32_t id)
         if (cntr == 2)
             mTriangles[trWithEdge[1]].ea = kNotValidVertexIndex;
 
-        for (int32_t i : neighboorTriangles)
+        for (int32_t i : neighborTriangles)
         {
             if (mTriangles[i].ea == kNotValidVertexIndex)
                 continue;
