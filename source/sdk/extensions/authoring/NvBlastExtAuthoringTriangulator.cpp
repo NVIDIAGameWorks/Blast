@@ -40,7 +40,7 @@
 #include <algorithm>
 #include <vector>
 #include <set>
-#include "NvBlastExtAuthoringBooleanTool.h"
+#include "NvBlastExtAuthoringBooleanToolImpl.h"
 #include <queue>
 #include <NvBlastAssert.h>
 #include <NvBlastPxSharedHelpers.h>

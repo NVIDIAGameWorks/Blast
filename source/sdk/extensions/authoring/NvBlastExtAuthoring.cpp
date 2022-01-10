@@ -33,7 +33,8 @@
 #include "NvBlastGlobals.h"
 #include "NvBlastExtAssetUtils.h"
 #include "NvBlastExtAuthoringPatternGeneratorImpl.h"
-#include "NvBlastExtAuthoringAccelerator.h"
+#include "NvBlastExtAuthoringBooleanToolImpl.h"
+#include "NvBlastExtAuthoringAcceleratorImpl.h"
 #include "NvBlastExtAuthoringMeshImpl.h"
 #include "NvBlastExtAuthoringMeshCleanerImpl.h"
 #include "NvBlastExtAuthoringFractureToolImpl.h"
@@ -600,15 +601,29 @@ PatternGenerator* NvBlastExtAuthoringCreatePatternGenerator()
     return NVBLAST_NEW(PatternGeneratorImpl);
 }
 
-Grid* NvBlastExtAuthoringCreateGridAccelerator(uint32_t resolution, const Mesh* m)
+SpatialGrid* NvBlastExtAuthoringCreateSpatialGrid(uint32_t resolution, const Mesh* m)
 {
     Grid* g = NVBLAST_NEW(Grid)(resolution);
     g->setMesh(m);
     return g;
 }
 
-GridWalker* NvBlastExtAuthoringCreateGridWalker(Grid* parentGrid)
+SpatialAccelerator* NvBlastExtAuthoringCreateGridAccelerator(SpatialGrid* parentGrid)
 {
-    return NVBLAST_NEW(GridWalker)(parentGrid);
+    return NVBLAST_NEW(GridAccelerator)((Grid*)parentGrid);
 }
 
+SpatialAccelerator* NvBlastExtAuthoringCreateSweepingAccelerator(const Mesh* m)
+{
+    return NVBLAST_NEW(SweepingAccelerator)(m);
+}
+
+SpatialAccelerator* NvBlastExtAuthoringCreateBBoxBasedAccelerator(uint32_t resolution, const Mesh* m)
+{
+    return NVBLAST_NEW(BBoxBasedAccelerator)(m, resolution);
+}
+
+BooleanTool* NvBlastExtAuthoringCreateBooleanTool()
+{
+    return new BooleanToolImpl;
+}

@@ -444,7 +444,7 @@ group "sdk"
             target_deps.."/pxshared/include",
         }
         files {
-            "source/sdk/extensions/authoringCommon/NvBlastExtAuthoringAccelerator.cpp",
+            "source/sdk/extensions/authoringCommon/NvBlastExtAuthoringAcceleratorImpl.cpp",
             "source/sdk/extensions/authoringCommon/NvBlastExtAuthoringMeshImpl.cpp",
         }
         filter { "system:windows" }

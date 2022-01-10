@@ -26,11 +26,12 @@
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
 
-#ifndef NVBLASTEXTAUTHORINGBOOLEANTOOL_H
-#define NVBLASTEXTAUTHORINGBOOLEANTOOL_H
+#ifndef NVBLASTEXTAUTHORINGBOOLEANTOOLIMPL_H
+#define NVBLASTEXTAUTHORINGBOOLEANTOOLIMPL_H
 
 #include "NvBlastExtAuthoringTypes.h"
 #include "NvBlastExtAuthoringInternalCommon.h"
+#include "NvBlastExtAuthoringBooleanTool.h"
 #include <vector>
 #include "NvBlastTypes.h"
 
@@ -205,8 +206,27 @@ private:
     std::vector<std::vector<EdgeFacetIntersectionData> >    mEdgeFacetIntersectionData21;
 };
 
+
+/// BooleanTool
+
+class BooleanToolImpl : public BooleanTool
+{
+public:
+    /**
+     *  Release BooleanTool memory
+     */
+    virtual void    release() override;
+
+    virtual Mesh*   performBoolean(const Mesh* meshA, SpatialAccelerator* accelA, const Mesh* meshB, SpatialAccelerator* accelB, BooleanTool::Op op) override;
+
+    virtual bool    pointInMesh(const Mesh* mesh, SpatialAccelerator* accel, const NvcVec3& point) override;
+
+private:
+    BooleanEvaluator m_evaluator;
+};
+
 } // namespace Blast
 } // namespace Nv
 
 
-#endif // ifndef NVBLASTEXTAUTHORINGBOOLEANTOOL_H
+#endif // ifndef NVBLASTEXTAUTHORINGBOOLEANTOOLIMPL_H
