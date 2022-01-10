@@ -30,7 +30,7 @@
 #include "NvBlastExtRTImpl.h"
 #include "NvBlastExtRTGeometry.h"
 #include "NvBlastExtAuthoringMeshImpl.h"
-#include "NvBlastExtAuthoringAccelerator.h"
+#include "NvBlastExtAuthoringAcceleratorImpl.h"
 #include "NvBlastExtAuthoringPatternGenerator.h"
 #include "NvBlastPxSharedHelpers.h"
 
@@ -226,7 +226,7 @@ void FractureRTImpl::processMesh(Nv::Blast::DamagePattern* pattern, const Mesh* 
     
     Grid grd(3);
     grd.setMesh(meshToFracture);
-    GridWalker accel(&grd);
+    GridAccelerator accel(&grd);
     
     btool->mAccelA = &accel;
     btool->mMeshA = meshToFracture;

@@ -222,18 +222,25 @@ Alloc/Free macros that use global AllocatorCallback.  Thus allocated memory is 1
 #define NVBLAST_FREE(_mem)                  NvBlastGlobalGetAllocatorCallback()->deallocate(_mem)
 
 /**
-Placement new with ExtContext allocation.
-Example: Foo* foo = NVBLAST_NEW(Foo, context) (params);
+Placement new.
+Example: Foo* foo = NVBLAST_NEW(Foo) (params);
 */
 #define NVBLAST_NEW(T) new (NvBlastGlobalGetAllocatorCallback()->allocate(sizeof(T), #T, __FILE__, __LINE__)) T
 
 /**
 Respective delete to NVBLAST_NEW
-Example: NVBLAST_DELETE(foo, Foo, context);
+The obj pointer may be NULL (to match the behavior of standard C++ delete)
+Example: NVBLAST_DELETE(foo, Foo);
 */
-#define NVBLAST_DELETE(obj, T)                  \
-    (obj)->~T();                                \
-    NvBlastGlobalGetAllocatorCallback()->deallocate(obj)
+#define NVBLAST_DELETE(obj, T)                                      \
+    do                                                              \
+    {                                                               \
+        if (obj)                                                    \
+        {                                                           \
+            (obj)->~T();                                            \
+            NvBlastGlobalGetAllocatorCallback()->deallocate(obj);   \
+        }                                                           \
+    } while (false)
 
 
 

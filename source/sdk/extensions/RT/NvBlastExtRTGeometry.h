@@ -1,7 +1,7 @@
 #pragma once
 #include "NvBlastExtAuthoringTypes.h"
 #include "NvBlastExtAuthoringInternalCommon.h"
-#include "NvBlastExtAuthoringAccelerator.h"
+#include "NvBlastExtAuthoringAcceleratorImpl.h"
 #include "NvBlastExtRT.h"
 #include <map>
 

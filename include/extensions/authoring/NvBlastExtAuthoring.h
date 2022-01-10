@@ -44,8 +44,9 @@ class ConvexMeshBuilder;
 class BlastBondGenerator;
 class MeshCleaner;
 class PatternGenerator;
-class Grid;
-class GridWalker;
+class SpatialGrid;
+class SpatialAccelerator;
+class BooleanTool;
 }  // namespace Blast
 }  // namespace Nv
 
@@ -296,12 +297,35 @@ NVBLAST_API Nv::Blast::PatternGenerator* NvBlastExtAuthoringCreatePatternGenerat
 
 /**
 Create spatial grid for mesh.
+Release using Nv::Blast::SpatialGrid::release()
 */
-NVBLAST_API Nv::Blast::Grid* NvBlastExtAuthoringCreateGridAccelerator(uint32_t resolution, const Nv::Blast::Mesh* m);
+NVBLAST_API Nv::Blast::SpatialGrid* NvBlastExtAuthoringCreateSpatialGrid(uint32_t resolution, const Nv::Blast::Mesh* m);
 
 /**
-Create GridWalker - SpatialAccelerator which use Grid for faster mesh sampling.
+Create GridAccelerator - SpatialAccelerator which use Grid for faster mesh sampling.
+Release using Nv::Blast::SpatialAccelerator::release()
 */
-NVBLAST_API Nv::Blast::GridWalker* NvBlastExtAuthoringCreateGridWalker(Nv::Blast::Grid* parent);
+NVBLAST_API Nv::Blast::SpatialAccelerator* NvBlastExtAuthoringCreateGridAccelerator(Nv::Blast::SpatialGrid* parent);
+
+/**
+Create SweepingAccelerator - SpatialAccelerator which uses a sweep algorithm.
+Release using Nv::Blast::SpatialAccelerator::release()
+*/
+NVBLAST_API Nv::Blast::SpatialAccelerator* NvBlastExtAuthoringCreateSweepingAccelerator(const Nv::Blast::Mesh* m);
+
+/**
+Create BBoxBasedAccelerator - SpatialAccelerator which uses a bbox/grid algorithm.
+Release using Nv::Blast::SpatialAccelerator::release()
+*/
+NVBLAST_API Nv::Blast::SpatialAccelerator* NvBlastExtAuthoringCreateBBoxBasedAccelerator(uint32_t resolution, const Nv::Blast::Mesh* m);
+
+#define kBBoxBasedAcceleratorDefaultResolution 10
+
+/**
+Create BooleanTool object.
+\return Pointer to created BooleanTool. User's code should release it after usage.
+*/
+NVBLAST_API Nv::Blast::BooleanTool* NvBlastExtAuthoringCreateBooleanTool();
+
 
 #endif  // ifndef NVBLASTAUTHORING_H

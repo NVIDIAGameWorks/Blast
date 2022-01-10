@@ -30,7 +30,7 @@
 #include "NvBlastExtRTMultithreadedImpl.h"
 #include "NvBlastExtRTGeometry.h"
 #include "NvBlastExtAuthoringMeshImpl.h"
-#include "NvBlastExtAuthoringAccelerator.h"
+#include "NvBlastExtAuthoringAcceleratorImpl.h"
 #include "NvBlastExtAuthoringPatternGenerator.h"
 #include "NvBlastPxSharedHelpers.h"
 
@@ -239,12 +239,12 @@ void FractureRTMultithreadedImpl::processMesh(DamagePattern* pattern, const Mesh
     std::shared_ptr<Grid> meshGrid(NVBLAST_NEW(Grid)(5), [](Grid* d) {NVBLAST_DELETE(d, Grid); });
     meshGrid->setMesh(msh);
 
-    std::vector<std::shared_ptr<GridWalker>> perThreadAccels;
+    std::vector<std::shared_ptr<GridAccelerator>> perThreadAccels;
     perThreadAccels.reserve(threadPool.size());
     for (uint32_t i = 0; i < threadPool.size(); ++i)
     {
-        std::shared_ptr<GridWalker> wlk(NVBLAST_NEW(GridWalker)(meshGrid.get()), [](GridWalker* d) {
-            NVBLAST_DELETE(d, GridWalker); 
+        std::shared_ptr<GridAccelerator> wlk(NVBLAST_NEW(GridAccelerator)(meshGrid.get()), [](GridAccelerator* d) {
+            NVBLAST_DELETE(d, GridAccelerator); 
         });
         perThreadAccels.push_back(wlk);
         perThreadTd[i].accel = perThreadAccels[i].get();

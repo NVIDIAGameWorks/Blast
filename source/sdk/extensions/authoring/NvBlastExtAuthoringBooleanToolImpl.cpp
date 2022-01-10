@@ -27,9 +27,10 @@
 
 
 #include "NvBlastGlobals.h"
+#include "NvBlastExtAuthoringBooleanToolImpl.h"
 #include "NvBlastExtAuthoringBooleanTool.h"
 #include "NvBlastExtAuthoringMeshImpl.h"
-#include "NvBlastExtAuthoringAccelerator.h"
+#include "NvBlastExtAuthoringAcceleratorImpl.h"
 #include <NvBlastPxSharedHelpers.h>
 
 #include <math.h>
@@ -1376,6 +1377,57 @@ void BooleanEvaluator::reset()
     mVerticesAggregate.clear();
     mEdgeFacetIntersectionData12.clear();
     mEdgeFacetIntersectionData21.clear();
+}
+
+
+/// BooleanTool
+
+void BooleanToolImpl::release()
+{
+    delete this;
+}
+
+Mesh* BooleanToolImpl::performBoolean(const Mesh* meshA, SpatialAccelerator* accelA, const Mesh* meshB, SpatialAccelerator* accelB, BooleanTool::Op op)
+{
+    const BooleanConf modes[] =
+    {
+        BooleanConfigurations::BOOLEAN_INTERSECION(),
+        BooleanConfigurations::BOOLEAN_UNION(),
+        BooleanConfigurations::BOOLEAN_DIFFERENCE(),
+    };
+    constexpr size_t modeCount = sizeof(modes)/sizeof(modes[0]);
+
+    if (op < 0 || op >= modeCount)
+    {
+        NVBLAST_LOG_ERROR("Illegal mode passed into BooleanToolImpl::performBoolean.");
+        return nullptr;
+    }
+
+    if (!meshA || !meshB)
+    {
+        NVBLAST_LOG_ERROR("Null mesh pointer passed into BooleanToolImpl::performBoolean.");
+        return nullptr;
+    }
+
+    DummyAccelerator dmAccelA(meshA->getFacetCount());
+    DummyAccelerator dmAccelB(meshA->getFacetCount());
+
+    m_evaluator.performBoolean(meshA, meshB, accelA ? accelA : &dmAccelA, accelB ? accelB : &dmAccelB, modes[op]);
+
+    return m_evaluator.createNewMesh();
+}
+
+bool BooleanToolImpl::pointInMesh(const Mesh* mesh, SpatialAccelerator* accel, const NvcVec3& point)
+{
+    if (!mesh)
+    {
+        NVBLAST_LOG_ERROR("Null mesh pointer passed into BooleanToolImpl::pointInMesh.");
+        return nullptr;
+    }
+
+    DummyAccelerator dmAccel(mesh->getFacetCount());
+
+    return m_evaluator.isPointContainedInMesh(mesh, accel ? accel : &dmAccel, point);
 }
 
 } // namespace Blast

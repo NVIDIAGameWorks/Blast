@@ -26,7 +26,7 @@
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
 
-#include "NvBlastExtAuthoringAccelerator.h"
+#include "NvBlastExtAuthoringAcceleratorImpl.h"
 #include "NvBlastExtAuthoringMesh.h"
 #include "NvBlastExtAuthoringInternalCommon.h"
 #include "NvBlastGlobals.h"
@@ -41,6 +41,12 @@ DummyAccelerator::DummyAccelerator(int32_t count) : m_count(count)
 {
     m_current = 0;
 }
+
+void DummyAccelerator::release()
+{
+    NVBLAST_DELETE(this, DummyAccelerator);
+}
+
 void DummyAccelerator::setState(const Vertex* pos, const Edge* ed, const Facet& fc)
 {
     m_current = 0;
@@ -48,6 +54,7 @@ void DummyAccelerator::setState(const Vertex* pos, const Edge* ed, const Facet& 
     NV_UNUSED(ed);
     NV_UNUSED(fc);
 }
+
 void DummyAccelerator::setState(const NvcBounds3* bound) {
     m_current = 0;
     NV_UNUSED(bound);
@@ -57,6 +64,7 @@ void DummyAccelerator::setState(const NvcVec3& point) {
     m_current = 0;
     NV_UNUSED(point);
 }
+
 int32_t DummyAccelerator::getNextFacet()
 {
     if (m_current < m_count)
@@ -68,6 +76,7 @@ int32_t DummyAccelerator::getNextFacet()
         return -1;
 }
 
+
 Grid::Grid(int32_t resolution) : m_resolution(resolution)
 {
     /**
@@ -75,6 +84,11 @@ Grid::Grid(int32_t resolution) : m_resolution(resolution)
     */
     m_r3 = resolution * resolution * resolution;
     m_spatialMap.resize(resolution * resolution * resolution);
+}
+
+void Grid::release()
+{
+    NVBLAST_DELETE(this, Grid);
 }
 
 void Grid::setMesh(const Mesh* m)
@@ -118,7 +132,7 @@ void Grid::setMesh(const Mesh* m)
 }
 
 
-GridWalker::GridWalker(Grid* grd)
+GridAccelerator::GridAccelerator(Grid* grd)
 {
     m_grid = grd;
     m_alreadyGotValue = 0;
@@ -127,7 +141,12 @@ GridWalker::GridWalker(Grid* grd)
     m_pointCmdDir = 0;
 }
 
-void GridWalker::setState(const Vertex* pos, const Edge* ed, const Facet& fc)
+void GridAccelerator::release()
+{
+    NVBLAST_DELETE(this, GridAccelerator);
+}
+
+void GridAccelerator::setState(const Vertex* pos, const Edge* ed, const Facet& fc)
 {
     
     physx::PxBounds3 cfc(physx::PxBounds3::empty());
@@ -140,7 +159,7 @@ void GridWalker::setState(const Vertex* pos, const Edge* ed, const Facet& fc)
     setState(&fromPxShared(cfc));
 }
 
-void GridWalker::setState(const NvcBounds3* facetBounding)
+void GridAccelerator::setState(const NvcBounds3* facetBounding)
 {
     m_alreadyGotValue++;
     m_iteratorCell = -1;
@@ -181,14 +200,12 @@ void GridWalker::setState(const NvcBounds3* facetBounding)
     }
 }
 
-
-void GridWalker::setPointCmpDirection(int32_t d)
+void GridAccelerator::setPointCmpDirection(int32_t d)
 {
     m_pointCmdDir = d;
 }
 
-
-void GridWalker::setState(const NvcVec3& point)
+void GridAccelerator::setState(const NvcVec3& point)
 {
     m_alreadyGotValue++;
     m_iteratorCell = -1;
@@ -234,7 +251,8 @@ void GridWalker::setState(const NvcVec3& point)
         m_gotCells--;
     }
 }
-int32_t GridWalker::getNextFacet()
+
+int32_t GridAccelerator::getNextFacet()
 {
     int32_t facetId = -1;
 
@@ -273,7 +291,6 @@ int32_t GridWalker::getNextFacet()
 }
 
 
-
 BBoxBasedAccelerator::BBoxBasedAccelerator(const Mesh* mesh, int32_t resolution) : m_resolution(resolution), m_alreadyGotValue(1)
 {
     m_bounds = mesh->getBoundingBox();
@@ -304,6 +321,10 @@ BBoxBasedAccelerator::BBoxBasedAccelerator(const Mesh* mesh, int32_t resolution)
     buildAccelStructure(mesh->getVertices(), mesh->getEdges(), mesh->getFacetsBuffer(), mesh->getFacetCount());
 }
 
+void BBoxBasedAccelerator::release()
+{
+    NVBLAST_DELETE(this, BBoxBasedAccelerator);
+}
 
 BBoxBasedAccelerator::~BBoxBasedAccelerator()
 {
@@ -352,7 +373,6 @@ int32_t BBoxBasedAccelerator::getNextFacet()
     return facetId;
 }
 
-
 void BBoxBasedAccelerator::setState(const Vertex* pos, const Edge* ed, const Facet& fc)
 {
 
@@ -389,7 +409,6 @@ void BBoxBasedAccelerator::setState(const NvcBounds3* facetBox)
     }
 }
 
-
 void BBoxBasedAccelerator::setState(const NvcVec3& p)
 {
     m_alreadyGotValue++;
@@ -418,7 +437,6 @@ void BBoxBasedAccelerator::setState(const NvcVec3& p)
     }
 }
 
-
 void BBoxBasedAccelerator::buildAccelStructure(const Vertex* pos, const Edge* edges, const Facet* fc, int32_t facetCount)
 {
     for (int32_t facet = 0; facet < facetCount; ++facet)
@@ -445,6 +463,7 @@ void BBoxBasedAccelerator::buildAccelStructure(const Vertex* pos, const Edge* ed
     }
     m_alreadyGotFlag.resize(facetCount, 0);
 }
+
 
 #define SWEEP_RESOLUTION 2048
 
@@ -478,8 +497,7 @@ void buildIndex(std::vector<SegmentToIndex>& segm, float offset, float mlt, std:
     
 }
 
-
-SweepingAccelerator::SweepingAccelerator(Nv::Blast::Mesh* in)
+SweepingAccelerator::SweepingAccelerator(const Nv::Blast::Mesh* in)
 {
     physx::PxBounds3 bnd;
 
@@ -551,6 +569,11 @@ SweepingAccelerator::SweepingAccelerator(Nv::Blast::Mesh* in)
     m_current = 0;
 }
 
+void SweepingAccelerator::release()
+{
+    NVBLAST_DELETE(this, SweepingAccelerator);
+}
+
 void SweepingAccelerator::setState(const NvcBounds3* facetBounds)
 {
     m_current = 0;
@@ -608,7 +631,6 @@ void SweepingAccelerator::setState(const Vertex* pos, const Edge* ed, const Face
     setState(&fromPxShared(cfc));
 }
 
-
 void SweepingAccelerator::setState(const NvcVec3& point) {
     
     m_indices.clear();
@@ -636,6 +658,7 @@ void SweepingAccelerator::setState(const NvcVec3& point) {
     m_current = 0;
     NV_UNUSED(point);
 }
+
 int32_t SweepingAccelerator::getNextFacet()
 {
     if (static_cast<uint32_t>(m_current) < m_indices.size())

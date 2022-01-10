@@ -41,9 +41,10 @@
 #include <functional>
 #include "NvBlastExtAuthoringVSA.h"
 #include <float.h>
+#include "NvBlastExtAuthoring.h"
 #include "NvBlastExtAuthoringTriangulator.h"
-#include "NvBlastExtAuthoringBooleanTool.h"
-#include "NvBlastExtAuthoringAccelerator.h"
+#include "NvBlastExtAuthoringBooleanToolImpl.h"
+#include "NvBlastExtAuthoringAcceleratorImpl.h"
 #include "NvBlastExtAuthoringCutout.h"
 #include "NvBlast.h"
 #include "NvBlastGlobals.h"
@@ -61,8 +62,6 @@
         }                                                                                                              \
     }
 #endif
-
-#define DEFAULT_BB_ACCELARATOR_RES 10
 
 namespace Nv
 {
@@ -188,7 +187,7 @@ VoronoiSitesGeneratorImpl::VoronoiSitesGeneratorImpl(const Mesh* mesh, RandomGen
 {
     mMesh        = mesh;
     mRnd         = rnd;
-    mAccelerator = new BBoxBasedAccelerator(mMesh, DEFAULT_BB_ACCELARATOR_RES);
+    mAccelerator = new BBoxBasedAccelerator(mMesh, kBBoxBasedAcceleratorDefaultResolution);
     mStencil     = nullptr;
 }
 
@@ -197,7 +196,7 @@ void VoronoiSitesGeneratorImpl::setBaseMesh(const Mesh* m)
     mGeneratedSites.clear();
     delete mAccelerator;
     mMesh        = m;
-    mAccelerator = new BBoxBasedAccelerator(mMesh, DEFAULT_BB_ACCELARATOR_RES);
+    mAccelerator = new BBoxBasedAccelerator(mMesh, kBBoxBasedAcceleratorDefaultResolution);
 }
 
 VoronoiSitesGeneratorImpl::~VoronoiSitesGeneratorImpl()
@@ -453,7 +452,7 @@ FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const 
     BooleanEvaluator eval;
     BooleanEvaluator voronoiMeshEval;
 
-    BBoxBasedAccelerator spAccel = BBoxBasedAccelerator(mesh, DEFAULT_BB_ACCELARATOR_RES);
+    BBoxBasedAccelerator spAccel = BBoxBasedAccelerator(mesh, kBBoxBasedAcceleratorDefaultResolution);
 
     std::vector<std::vector<std::pair<int32_t, int32_t>>> neighbors;
     const int32_t neighborCount = findCellBasePlanes(cellPoints, neighbors);
@@ -740,7 +739,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
     BooleanEvaluator eval;
     BooleanEvaluator voronoiMeshEval;
 
-    BBoxBasedAccelerator spAccel = BBoxBasedAccelerator(mesh, DEFAULT_BB_ACCELARATOR_RES);
+    BBoxBasedAccelerator spAccel = BBoxBasedAccelerator(mesh, kBBoxBasedAcceleratorDefaultResolution);
 
     std::vector<std::vector<std::pair<int32_t, int32_t>>> neighbors;
     const int32_t neighborCount = findCellBasePlanes(cellPoints, neighbors);

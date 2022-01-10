@@ -34,7 +34,7 @@
 #include "NvBlastExtAuthoringMeshUtils.h"
 #include "NvBlastExtAuthoringMeshImpl.h"
 #include "NvBlastExtAuthoringFractureToolImpl.h"
-#include "NvBlastExtAuthoringBooleanTool.h"
+#include "NvBlastExtAuthoringBooleanToolImpl.h"
 #include "NvBlastExtAuthoringTriangulator.h"
 #include "NvBlastExtAuthoringPerlinNoise.h"
 #include <NvBlastPxSharedHelpers.h>

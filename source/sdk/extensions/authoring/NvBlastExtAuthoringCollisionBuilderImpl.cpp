@@ -30,7 +30,7 @@
 #include <NvBlastExtApexSharedParts.h>
 #include <NvBlastExtAuthoringInternalCommon.h>
 
-#include <NvBlastExtAuthoringBooleanTool.h>
+#include <NvBlastExtAuthoringBooleanToolImpl.h>
 #include <NvBlastExtAuthoringMeshImpl.h>
 #include <NvBlastExtAuthoringMeshUtils.h>
 #include <NvBlastPxSharedHelpers.h>
