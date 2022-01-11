@@ -1422,7 +1422,7 @@ bool BooleanToolImpl::pointInMesh(const Mesh* mesh, SpatialAccelerator* accel, c
     if (!mesh)
     {
         NVBLAST_LOG_ERROR("Null mesh pointer passed into BooleanToolImpl::pointInMesh.");
-        return nullptr;
+        return false;
     }
 
     DummyAccelerator dmAccel(mesh->getFacetCount());
