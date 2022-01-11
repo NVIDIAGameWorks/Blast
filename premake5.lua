@@ -225,7 +225,8 @@ workspace (workspace_name)
             "deprecated-declarations",
             "unknown-pragmas",
             "multichar",
-            "parentheses"
+            "parentheses",
+            "nonnull-compare"
         }
         links { "stdc++fs" }
         if repo_build.ccache_path() then
