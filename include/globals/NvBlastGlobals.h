@@ -235,7 +235,7 @@ Example: NVBLAST_DELETE(foo, Foo);
 #define NVBLAST_DELETE(obj, T)                                      \
     do                                                              \
     {                                                               \
-        if (obj)                                                    \
+        if ((obj) != nullptr)                                       \
         {                                                           \
             (obj)->~T();                                            \
             NvBlastGlobalGetAllocatorCallback()->deallocate(obj);   \
