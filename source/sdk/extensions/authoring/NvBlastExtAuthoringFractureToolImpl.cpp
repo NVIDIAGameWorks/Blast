@@ -125,13 +125,13 @@ int32_t findCellBasePlanes(const std::vector<NvcVec3>& sites, std::vector<std::v
             NvcVec3 midpoint     = 0.5 * (sites[i] + sites[cellId]);
             NvcVec3 direction    = fromPxShared(toPxShared(sites[i] - sites[cellId]).getNormalized());
             planes[collected].n  = direction;
-            planes[collected].d  = -dot(direction, midpoint);
+            planes[collected].d  = -(direction | midpoint);
             midpoints[collected] = midpoint;
             ++collected;
         }
         for (uint32_t i = 0; i < planes.size(); ++i)
         {
-            planes[i].n = neg(planes[i].n);
+            planes[i].n = -planes[i].n;
             planes[i].d = -planes[i].d;
 
             if (VSA::vs3d_test(prt))
@@ -141,7 +141,7 @@ int32_t findCellBasePlanes(const std::vector<NvcVec3>& sites, std::vector<std::v
                 neighbors[nId].push_back(std::pair<int32_t, int32_t>(cellId, neighborGlobalIndex));
                 ++neighborGlobalIndex;
             };
-            planes[i].n = neg(planes[i].n);
+            planes[i].n = -planes[i].n;
             planes[i].d = -planes[i].d;
         }
     }

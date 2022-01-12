@@ -31,6 +31,7 @@
 #include "NvBlastExtAuthoringInternalCommon.h"
 #include "NvBlastGlobals.h"
 #include "NvBlastPxSharedHelpers.h"
+#include "NvCMath.h"
 
 namespace Nv
 {

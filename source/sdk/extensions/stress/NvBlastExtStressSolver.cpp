@@ -38,6 +38,7 @@
 #include <PsVecMath.h>
 #include "PsFPU.h"
 #include "NvBlastPxSharedHelpers.h"
+#include "NvCMath.h"
 
 #include <algorithm>
 

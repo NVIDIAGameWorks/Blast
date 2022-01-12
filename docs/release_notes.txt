@@ -2,15 +2,24 @@
 \verbatim
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Blast(tm) SDK 3.1.1 (12-Jan-2022)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Changes
+-------
+* Exposing NvcVec2 and NvcVec3 operators in new file include/globals/NvCMath.h.
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Blast(tm) SDK 3.1.0 (10-Jan-2022)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Changes
 -------
 * Exposing boolean tool API, along with spatial accelerators used with the tool.
-  * include\extensions\authoring\NvBlastExtAuthoringBooleanTool.h contains virtual API class Nv::Blast::BooleanTool.
-  * include\extensions\authoringCommon\NvBlastExtAuthoringAccelerator.h contains virtual API classes Nv::Blast::SpatialAccelerator and SpatialGrid.
-  * include\extensions\authoring\NvBlastExtAuthoring.h has global functions:
+  * include/extensions/authoring/NvBlastExtAuthoringBooleanTool.h contains virtual API class Nv::Blast::BooleanTool.
+  * include/extensions/authoringCommon/NvBlastExtAuthoringAccelerator.h contains virtual API classes Nv::Blast::SpatialAccelerator and SpatialGrid.
+  * include/extensions/authoring/NvBlastExtAuthoring.h has global functions:
     * NvBlastExtAuthoringCreateBooleanTool()
     * NvBlastExtAuthoringCreateSpatialGrid(...)
     * NvBlastExtAuthoringCreateGridAccelerator(...)

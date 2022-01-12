@@ -30,6 +30,7 @@
 #define NVBLASTVOLUMEINTEGRALS_H
 
 #include "NvBlastPxSharedHelpers.h"
+#include "NvCMath.h"
 #include "NvBlastAssert.h"
 
 

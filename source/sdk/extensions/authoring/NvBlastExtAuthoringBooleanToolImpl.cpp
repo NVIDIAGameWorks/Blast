@@ -697,7 +697,7 @@ struct VertexComparator
     NvcVec3 basePoint;
     bool operator()(const Vertex& a, const Vertex& b)
     {
-        return dot(b.p - a.p, basePoint) > 0.0;
+        return ((b.p - a.p) | basePoint) > 0.0;
     }
 };
 
@@ -707,7 +707,7 @@ struct VertexPairComparator
     NvcVec3 basePoint;
     bool operator()(const std::pair<Vertex, Vertex>& a, const std::pair<Vertex, Vertex>& b)
     {
-        return dot(b.first.p - a.first.p, basePoint) > 0.0;
+        return ((b.first.p - a.first.p) | basePoint) > 0.0;
     }
 };
 
