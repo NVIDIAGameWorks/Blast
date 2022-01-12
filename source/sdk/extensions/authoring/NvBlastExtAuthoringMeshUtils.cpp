@@ -3,6 +3,7 @@
 #include "NvBlastExtAuthoringPerlinNoise.h"
 #include "NvBlastExtAuthoringFractureTool.h"
 #include <NvBlastPxSharedHelpers.h>
+#include <NvCMath.h>
 #include <algorithm>
 
 
