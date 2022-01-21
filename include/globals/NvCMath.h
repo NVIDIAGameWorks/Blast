@@ -196,7 +196,7 @@ inline float operator | (const NvcVec3& v, const NvcVec3& w)
 // Cross product
 inline NvcVec3 operator ^ (const NvcVec3& v, const NvcVec3& w)
 {
-    return { v.x * w.y - v.y * w.x, v.z * w.x - v.x * w.z, v.y * w.z - v.z * w.y };
+    return { v.y * w.z - v.z * w.y, v.z * w.x - v.x * w.z, v.x * w.y - v.y * w.x };
 }
 
 // Vector negation
