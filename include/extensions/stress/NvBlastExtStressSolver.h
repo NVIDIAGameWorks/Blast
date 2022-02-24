@@ -114,7 +114,7 @@ public:
 
     \return the new ExtStressSolver if successful, NULL otherwise.
     */
-    static ExtStressSolver*                 create(NvBlastFamily& family, ExtStressSolverSettings settings = ExtStressSolverSettings());
+    static ExtStressSolver*                 create(const NvBlastFamily& family, const ExtStressSolverSettings& settings = ExtStressSolverSettings());
 
 
     //////// interface ////////
