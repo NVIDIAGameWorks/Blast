@@ -57,10 +57,10 @@ struct BooleanConf
 
 namespace BooleanConfigurations
 {
-    /**
-        Creates boolean tool configuration to perform intersection of meshes A and B.
-    */
-inline BooleanConf BOOLEAN_INTERSECION()
+/**
+    Creates boolean tool configuration to perform intersection of meshes A and B.
+*/
+inline BooleanConf BOOLEAN_INTERSECTION()
 {
     return BooleanConf(0, 0, 1);
 }
@@ -121,7 +121,7 @@ public:
         \param[in] spAccelB Acceleration structure for mesh B
         \param[in] mode     Boolean operation type
     */
-    void    performBoolean(const Mesh* meshA, const Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode);
+    void    performBoolean(const Mesh* meshA, const Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, const BooleanConf& mode);
 
     /**
         Perform boolean operation on two polygonal meshes (A and B).
@@ -129,7 +129,7 @@ public:
         \param[in] meshB    Mesh B
         \param[in] mode     Boolean operation type
     */
-    void    performBoolean(const Mesh* meshA, const Mesh* meshB, BooleanConf mode);
+    void    performBoolean(const Mesh* meshA, const Mesh* meshB, const BooleanConf& mode);
 
     /**
         Perform cutting of mesh with some large box, which represents cutting plane. This method skips part of intersetion computations, so
@@ -140,7 +140,7 @@ public:
         \param[in] spAccelB Acceleration structure for cutting box
         \param[in] mode     Boolean operation type
     */
-    void    performFastCutting(const Mesh* meshA, const Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, BooleanConf mode);
+    void    performFastCutting(const Mesh* meshA, const Mesh* meshB, SpatialAccelerator* spAccelA, SpatialAccelerator* spAccelB, const BooleanConf& mode);
 
     /**
         Perform cutting of mesh with some large box, which represents cutting plane. This method skips part of intersetion computations, so
@@ -149,7 +149,7 @@ public:
         \param[in] meshB    Cutting box
         \param[in] mode     Boolean operation type
     */
-    void    performFastCutting(const Mesh* meshA, const Mesh* meshB, BooleanConf mode);
+    void    performFastCutting(const Mesh* meshA, const Mesh* meshB, const BooleanConf& mode);
 
     /**
         Test whether point contained in mesh.
@@ -181,13 +181,13 @@ public:
 
 private:
 
-    void    buildFaceFaceIntersections(BooleanConf);
-    void    buildFastFaceFaceIntersection(BooleanConf);
-    void    collectRetainedPartsFromA(BooleanConf mode);
-    void    collectRetainedPartsFromB(BooleanConf mode);
+    void    buildFaceFaceIntersections(const BooleanConf& mode);
+    void    buildFastFaceFaceIntersection(const BooleanConf& mode);
+    void    collectRetainedPartsFromA(const BooleanConf& mode);
+    void    collectRetainedPartsFromB(const BooleanConf& mode);
 
-    int32_t addIfNotExist(Vertex& p);
-    void    addEdgeIfValid(EdgeWithParent& ed);
+    int32_t addIfNotExist(const Vertex& p);
+    void    addEdgeIfValid(const EdgeWithParent& ed);
 private:
 
     int32_t vertexMeshStatus03(const NvcVec3& p, const Mesh* mesh);

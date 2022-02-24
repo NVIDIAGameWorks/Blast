@@ -97,6 +97,9 @@ enum ProjectionDirections
     XY_PLANE = 1 << 2,
     ZX_PLANE = 1 << 3,
 
+    // This is set when the dominant axis of the normal is negative
+    // because when flattening to 2D the facet is viewed from the positive direction.
+    // As a result, the winding order appears to flip if the normal is in the negative direction.
     OPPOSITE_WINDING = 1 << 4
 };
 

@@ -175,14 +175,14 @@ public:
         }
     }
 
-    void calcError(float& linear, float& angular)
+    void calcError(float& linear, float& angular) const
     {
         linear = 0.0f;
         angular = 0.0f;
-        for (BondData& bond : m_bondsData)
+        for (const BondData& bond : m_bondsData)
         {
-            NodeData* node0 = &m_nodesData[bond.node0];
-            NodeData* node1 = &m_nodesData[bond.node1];
+            const NodeData* node0 = &m_nodesData[bond.node0];
+            const NodeData* node1 = &m_nodesData[bond.node1];
 
             const PxVec3 vA = node0->velocityLinear - node0->velocityAngular.cross(bond.offset0);
             const PxVec3 vB = node1->velocityLinear + node1->velocityAngular.cross(bond.offset0);
@@ -435,14 +435,29 @@ public:
         return m_overstressedBondCount;
     }
 
-    float getSolverBondStressHealth(uint32_t bond, const ExtStressSolverSettings& settings) const
+    float calcSolverBondStress(uint32_t bond, const ExtStressSolverSettings& settings) const
     {
         const auto& solverBond = getSolverInternalBondData(bond);
-        const float impulse = solverBond.impulseLinear.magnitude() * settings.stressLinearFactor + solverBond.impulseAngular.magnitude() * settings.stressAngularFactor;
-        // We then divide uniformly across bonds, which is obviously rough estimate.
-        // Potentially we can add bond area there and norm across area sum
+        const float impulseLinear = solverBond.impulseLinear.magnitude() * settings.stressLinearFactor;
+        const float impulseAngular = solverBond.impulseAngular.magnitude() * settings.stressAngularFactor;
+        const float impulse = impulseLinear + impulseAngular;
+        return (std::isfinite(impulse) ? (impulse / settings.hardness) : FLT_MAX);
+    }
+
+    float getSolverBondStressPct(uint32_t bond, const float* bondHealths) const
+    {
+        // sum up the health and stress of all underlying bonds involved in this stress solver bond
+        float stress = 0.0f;
+        float health = 0.0f;
         const auto& blastBondIndices = m_solverBondsData[bond].blastBondIndices;
-        return blastBondIndices.empty() ? 0.0f : impulse / (blastBondIndices.size() * settings.hardness);
+        for (const auto blastBondIndex : blastBondIndices)
+        {
+            stress += getBondStress(blastBondIndex);
+            health += bondHealths[blastBondIndex];
+        }
+
+        // return a value < 0.0f for broken bonds 
+        return (health == 0.0f ? -1.0f : (stress / health));
     }
 
     void setNodeInfo(uint32_t node, float mass, float volume, PxVec3 localPos, bool isStatic)
@@ -563,7 +578,7 @@ public:
         return m_graphReductionLevel;
     }
 
-    void solve(const ExtStressSolverSettings& settings, const float* bondHealth, bool warmStart = true)
+    void solve(const ExtStressSolverSettings& settings, const float* bondHealth, const NvBlastBond* bonds, bool warmStart = true)
     {
         sync();
 
@@ -580,15 +595,15 @@ public:
 
         resetImpulses();
 
-        updateBondStress(settings, bondHealth);
+        updateBondStress(settings, bondHealth, bonds);
     }
 
-    void calcError(float& linear, float& angular)
+    void calcError(float& linear, float& angular) const
     {
         m_solver.calcError(linear, angular);
     }
 
-    float getBondStress(uint32_t blastBondIndex)
+    float getBondStress(uint32_t blastBondIndex) const
     {
         const uint32_t bondIndex = m_blastBondIndexMap[blastBondIndex];
         return isInvalidIndex(bondIndex) ? 0.0f : m_bondsData[bondIndex].stress;
@@ -604,26 +619,43 @@ private:
         }
     }
 
-    void updateBondStress(const ExtStressSolverSettings& settings, const float* bondHealth)
+    void updateBondStress(const ExtStressSolverSettings& settings, const float* bondHealth, const NvBlastBond* bonds)
     {
         m_overstressedBondCount = 0;
 
+        Array<uint32_t>::type bondIndicesToRemove;
+        bondIndicesToRemove.reserve(getBondCount());
         for (uint32_t i = 0; i < m_solverBondsData.size(); ++i)
         {
-            const float stress = getSolverBondStressHealth(i, settings);
+            // calculate the total area of all bonds involved so stress can be proportionately distributed
+            float totalArea = 0.0f;
             const auto& blastBondIndices = m_solverBondsData[i].blastBondIndices;
-            const float stressPerBond = blastBondIndices.size() > 0 ? stress / blastBondIndices.size() : 0.0f;
+            for (auto blastBondIndex : blastBondIndices)
+            {
+                if (bondHealth[blastBondIndex] > 0.0f)
+                {
+                    totalArea += bonds[blastBondIndex].area;
+                }
+                else
+                {
+                    // if the bond is broken, try to remove it after processing is complete
+                    bondIndicesToRemove.pushBack(blastBondIndex);
+                }
+            }
+
+            const float stress = calcSolverBondStress(i, settings);
             for (auto blastBondIndex : blastBondIndices)
             {
                 const uint32_t bondIndex = m_blastBondIndexMap[blastBondIndex];
-                if (!isInvalidIndex(bondIndex))
+                if (!isInvalidIndex(bondIndex) && bondHealth[blastBondIndex] > 0.0f)
                 {
                     BondData& bond = m_bondsData[bondIndex];
 
                     NVBLAST_ASSERT(getNodeData(bond.node0).solverNode != getNodeData(bond.node1).solverNode);
                     NVBLAST_ASSERT(bond.blastBondIndex == blastBondIndex);
                     
-                    bond.stress = stressPerBond;
+                    bond.stress = stress * bonds[blastBondIndex].area / totalArea;
+                    NVBLAST_ASSERT(!std::isnan(bond.stress));
 
                     if (stress > bondHealth[blastBondIndex])
                     {
@@ -631,6 +663,12 @@ private:
                     }
                 }
             }
+        }
+
+        // now that processing is done, remove any dead bonds
+        for (uint32_t bondIndex : bondIndicesToRemove)
+        {
+            removeBondIfExists(bondIndex);
         }
     }
 
@@ -944,7 +982,7 @@ class ExtStressSolverImpl final : public ExtStressSolver
     NV_NOCOPY(ExtStressSolverImpl)
 
 public:
-    ExtStressSolverImpl(NvBlastFamily& family, ExtStressSolverSettings settings);
+    ExtStressSolverImpl(const NvBlastFamily& family, const ExtStressSolverSettings& settings);
     virtual void                            release() override;
 
 
@@ -1045,13 +1083,14 @@ private:
         physx::PxVec3 impulse;
     };
 
-    NvBlastFamily&                                                      m_family;
+    const NvBlastFamily&                                                m_family;
     HashSet<const NvBlastActor*>::type                                  m_activeActors;
     ExtStressSolverSettings                                             m_settings;
     NvBlastSupportGraph                                                 m_graph;
     bool                                                                m_isDirty;
     bool                                                                m_reset;
     const float*                                                        m_bondHealths;
+    const NvBlastBond*                                                  m_bonds;
     SupportGraphProcessor*                                              m_graphProcessor;
     float                                                               m_errorAngular;
     float                                                               m_errorLinear;
@@ -1078,7 +1117,7 @@ NV_INLINE T* ExtStressSolverImpl::getScratchArray(uint32_t size)
 //                                                  Creation
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-ExtStressSolverImpl::ExtStressSolverImpl(NvBlastFamily& family, ExtStressSolverSettings settings)
+ExtStressSolverImpl::ExtStressSolverImpl(const NvBlastFamily& family, const ExtStressSolverSettings& settings)
     : m_family(family), m_settings(settings), m_isDirty(false), m_reset(false), 
     m_errorAngular(std::numeric_limits<float>::max()), m_errorLinear(std::numeric_limits<float>::max()), m_framesCount(0)
 {
@@ -1094,6 +1133,7 @@ ExtStressSolverImpl::ExtStressSolverImpl(NvBlastFamily& family, ExtStressSolverS
         NvBlastActor* actor;
         NvBlastFamilyGetActors(&actor, 1, &family, logLL);
         m_bondHealths = NvBlastActorGetBondHealths(actor, logLL);
+        m_bonds = NvBlastAssetGetBonds(asset, logLL);
     }
 
     m_graphProcessor = NVBLAST_NEW(SupportGraphProcessor)(m_graph.nodeCount, bondCount);
@@ -1121,7 +1161,7 @@ ExtStressSolverImpl::~ExtStressSolverImpl()
     NVBLAST_DELETE(m_graphProcessor, SupportGraphProcessor);
 }
 
-ExtStressSolver* ExtStressSolver::create(NvBlastFamily& family, ExtStressSolverSettings settings)
+ExtStressSolver* ExtStressSolver::create(const NvBlastFamily& family, const ExtStressSolverSettings& settings)
 {
     return NVBLAST_NEW(ExtStressSolverImpl) (family, settings);
 }
@@ -1354,7 +1394,7 @@ void ExtStressSolverImpl::solve()
 {
     PX_SIMD_GUARD;
 
-    m_graphProcessor->solve(m_settings, m_bondHealths, WARM_START && !m_reset);
+    m_graphProcessor->solve(m_settings, m_bondHealths, m_bonds, WARM_START && !m_reset);
     m_reset = false;
 
     m_graphProcessor->calcError(m_errorLinear, m_errorAngular);
@@ -1471,12 +1511,10 @@ uint32_t ExtStressSolverImpl::generateFractureCommandsPerActor(const NvBlastActo
 
 static PxU32 PxVec4ToU32Color(const PxVec4& color)
 {
-    PxU32 c = 0;
-    c |= (int)(color.w * 255); c <<= 8;
-    c |= (int)(color.z * 255); c <<= 8;
-    c |= (int)(color.y * 255); c <<= 8;
-    c |= (int)(color.x * 255);
-    return c;
+    return ((PxU32)(color.w * 255) << 24) | // A
+           ((PxU32)(color.x * 255) << 16) | // R
+           ((PxU32)(color.y * 255) << 8)  | // G
+           ((PxU32)(color.z * 255));        // B
 }
 
 static PxVec4 PxVec4Lerp(const PxVec4 v0, const PxVec4 v1, float val)
@@ -1495,21 +1533,21 @@ inline float clamp01(float v)
     return v < 0.0f ? 0.0f : (v > 1.0f ? 1.0f : v);
 }
 
-inline PxVec4 bondHealthColor(float healthFraction)
+inline uint32_t bondHealthColor(float stressPct)
 {
-    healthFraction = clamp01(healthFraction);
+    stressPct = clamp01(stressPct);
 
-    const PxVec4 BOND_HEALTHY_COLOR(0.0f, 1.0f, 1.0f, 1.0f);
+    const PxVec4 BOND_HEALTHY_COLOR(0.0f, 1.0f, 0.0f, 1.0f);
     const PxVec4 BOND_MID_COLOR(1.0f, 1.0f, 0.0f, 1.0f);
-    const PxVec4 BOND_BROKEN_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
+    const PxVec4 BOND_STRESSED_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
 
-    return healthFraction < 0.5 ? PxVec4Lerp(BOND_BROKEN_COLOR, BOND_MID_COLOR, 2.0f * healthFraction) : PxVec4Lerp(BOND_MID_COLOR, BOND_HEALTHY_COLOR, 2.0f * healthFraction - 1.0f);
+    return PxVec4ToU32Color(stressPct < 0.5 ? PxVec4Lerp(BOND_HEALTHY_COLOR, BOND_MID_COLOR, 2.0f * stressPct) : PxVec4Lerp(BOND_MID_COLOR, BOND_STRESSED_COLOR, 2.0f * stressPct - 1.0f));
 }
 
 const ExtStressSolver::DebugBuffer ExtStressSolverImpl::fillDebugRender(const uint32_t* nodes, uint32_t nodeCount, DebugRenderMode mode, float scale)
 {
-    const PxVec4 BOND_IMPULSE_LINEAR_COLOR(0.0f, 1.0f, 0.0f, 1.0f);
-    const PxVec4 BOND_IMPULSE_ANGULAR_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
+    const uint32_t BOND_IMPULSE_LINEAR_COLOR = PxVec4ToU32Color(PxVec4(0.0f, 1.0f, 0.0f, 1.0f));
+    const uint32_t BOND_IMPULSE_ANGULAR_COLOR = PxVec4ToU32Color(PxVec4(1.0f, 0.0f, 0.0f, 1.0f));
 
     ExtStressSolver::DebugBuffer debugBuffer = { nullptr, 0 };
 
@@ -1535,33 +1573,33 @@ const ExtStressSolver::DebugBuffer ExtStressSolverImpl::fillDebugRender(const ui
         if (nodesSet[solverInternalBondData.node0] != 0)
         {
             //NVBLAST_ASSERT(nodesSet[solverInternalBondData.node1] != 0);
-            const auto& solverInternalNode0 = m_graphProcessor->getSolverInternalNodeData(solverInternalBondData.node0);
-            const auto& solverInternalNode1 = m_graphProcessor->getSolverInternalNodeData(solverInternalBondData.node1);
             const auto& solverNode0 = m_graphProcessor->getSolverNodeData(solverInternalBondData.node0);
             const auto& solverNode1 = m_graphProcessor->getSolverNodeData(solverInternalBondData.node1);
+            const NvcVec3 p0 = fromPxShared(solverNode0.localPos);
+            const NvcVec3 p1 = fromPxShared(solverNode1.localPos);
 
-            NvcVec3 p0 = fromPxShared(solverNode0.localPos);
-            NvcVec3 p1 = fromPxShared(solverNode1.localPos);
-            NvcVec3 center = (p0 + p1) * 0.5f;
-
-            const float stress = std::min<float>(m_graphProcessor->getSolverBondStressHealth(i, m_settings), 1.0f);
-            PxVec4 color = bondHealthColor(1.0f - stress);
-
-            m_debugLineBuffer.pushBack(DebugLine(p0, p1, PxVec4ToU32Color(color)));
-
-            float impulseScale = scale;
+            // don't render lines for broken bonds
+            const float stressPct = m_graphProcessor->getSolverBondStressPct(i, m_bondHealths);
+            if (stressPct >= 0.0f)
+            {
+                const uint32_t color = bondHealthColor(stressPct);
+                m_debugLineBuffer.pushBack(DebugLine(p0, p1, color));
+            }
 
             if (mode == DebugRenderMode::STRESS_GRAPH_NODES_IMPULSES)
             {
-                m_debugLineBuffer.pushBack(DebugLine(p0, p0 + fromPxShared(solverInternalNode0.velocityLinear) * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_LINEAR_COLOR)));
-                m_debugLineBuffer.pushBack(DebugLine(p0, p0 + fromPxShared(solverInternalNode0.velocityAngular) * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_ANGULAR_COLOR)));
-                m_debugLineBuffer.pushBack(DebugLine(p1, p1 + fromPxShared(solverInternalNode1.velocityLinear) * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_LINEAR_COLOR)));
-                m_debugLineBuffer.pushBack(DebugLine(p1, p1 + fromPxShared(solverInternalNode1.velocityAngular) * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_ANGULAR_COLOR)));
+                const auto& solverInternalNode0 = m_graphProcessor->getSolverInternalNodeData(solverInternalBondData.node0);
+                const auto& solverInternalNode1 = m_graphProcessor->getSolverInternalNodeData(solverInternalBondData.node1);
+                m_debugLineBuffer.pushBack(DebugLine(p0, p0 + fromPxShared(solverInternalNode0.velocityLinear) * scale, BOND_IMPULSE_LINEAR_COLOR));
+                m_debugLineBuffer.pushBack(DebugLine(p0, p0 + fromPxShared(solverInternalNode0.velocityAngular) * scale, BOND_IMPULSE_ANGULAR_COLOR));
+                m_debugLineBuffer.pushBack(DebugLine(p1, p1 + fromPxShared(solverInternalNode1.velocityLinear) * scale, BOND_IMPULSE_LINEAR_COLOR));
+                m_debugLineBuffer.pushBack(DebugLine(p1, p1 + fromPxShared(solverInternalNode1.velocityAngular) * scale, BOND_IMPULSE_ANGULAR_COLOR));
             }
             else if (mode == DebugRenderMode::STRESS_GRAPH_BONDS_IMPULSES)
             {
-                m_debugLineBuffer.pushBack(DebugLine(center, center + fromPxShared(solverInternalBondData.impulseLinear) * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_LINEAR_COLOR)));
-                m_debugLineBuffer.pushBack(DebugLine(center, center + fromPxShared(solverInternalBondData.impulseAngular) * impulseScale, PxVec4ToU32Color(BOND_IMPULSE_ANGULAR_COLOR)));
+                const NvcVec3 center = (p0 + p1) * 0.5f;
+                m_debugLineBuffer.pushBack(DebugLine(center, center + fromPxShared(solverInternalBondData.impulseLinear) * scale, BOND_IMPULSE_LINEAR_COLOR));
+                m_debugLineBuffer.pushBack(DebugLine(center, center + fromPxShared(solverInternalBondData.impulseAngular) * scale, BOND_IMPULSE_ANGULAR_COLOR));
             }
         }
     }

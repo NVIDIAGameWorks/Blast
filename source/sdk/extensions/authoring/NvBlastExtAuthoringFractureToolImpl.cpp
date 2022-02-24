@@ -169,7 +169,7 @@ Mesh* getCellMesh(BooleanEvaluator& eval, int32_t planeIndexerOffset, int32_t ce
         if (nCell < cellId)
             planeIndex = -planeIndex;
         setCuttingBox(midpoint, -direction, cuttingMesh, CUTTING_BOX_SIZE, planeIndex);
-        eval.performFastCutting(cell, cuttingMesh, BooleanConfigurations::BOOLEAN_INTERSECION());
+        eval.performFastCutting(cell, cuttingMesh, BooleanConfigurations::BOOLEAN_INTERSECTION());
         Mesh* newCell = eval.createNewMesh();
         delete cell;
         cell = newCell;
@@ -472,7 +472,7 @@ FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount, const 
             continue;
         }
         DummyAccelerator dmAccel(cell->getFacetCount());
-        voronoiMeshEval.performBoolean(mesh, cell, &spAccel, &dmAccel, BooleanConfigurations::BOOLEAN_INTERSECION());
+        voronoiMeshEval.performBoolean(mesh, cell, &spAccel, &dmAccel, BooleanConfigurations::BOOLEAN_INTERSECTION());
         Mesh* resultMesh = voronoiMeshEval.createNewMesh();
         if (resultMesh)
         {
@@ -769,7 +769,7 @@ int32_t FractureToolImpl::voronoiFracturing(uint32_t chunkId, uint32_t cellCount
         }
         cell->recalculateBoundingBox();
         DummyAccelerator dmAccel(cell->getFacetCount());
-        voronoiMeshEval.performBoolean(mesh, cell, &spAccel, &dmAccel, BooleanConfigurations::BOOLEAN_INTERSECION());
+        voronoiMeshEval.performBoolean(mesh, cell, &spAccel, &dmAccel, BooleanConfigurations::BOOLEAN_INTERSECTION());
         Mesh* resultMesh = voronoiMeshEval.createNewMesh();
         if (resultMesh)
         {
@@ -865,7 +865,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
         PxVec3 lDir = dir + randVect * conf.angle_variations;
 
         setCuttingBox(center, -lDir, slBox, 20, mPlaneIndexerOffset);
-        bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_INTERSECION());
+        bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_INTERSECTION());
         setChunkInfoMesh(ch, bTool.createNewMesh());
 
         if (ch.getMesh() != 0)
@@ -906,7 +906,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
 
 
             setCuttingBox(center, -lDir, slBox, 20, mPlaneIndexerOffset);
-            bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_INTERSECION());
+            bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_INTERSECTION());
             setChunkInfoMesh(ch, bTool.createNewMesh());
             if (ch.getMesh() != 0)
             {
@@ -945,7 +945,7 @@ int32_t FractureToolImpl::slicing(uint32_t chunkId, const SlicingConfiguration& 
                 PxVec3(2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1, 2 * rnd->getRandomValue() - 1);
             PxVec3 lDir = dir + randVect * conf.angle_variations;
             setCuttingBox(center, -lDir, slBox, 20, mPlaneIndexerOffset);
-            bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_INTERSECION());
+            bTool.performFastCutting(mesh, slBox, BooleanConfigurations::BOOLEAN_INTERSECTION());
             setChunkInfoMesh(ch, bTool.createNewMesh());
             if (ch.getMesh() != 0)
             {
@@ -1076,7 +1076,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
         }
         inverseNormalAndIndices(slBox);
         ++mPlaneIndexerOffset;
-        bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
+        bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECTION());
         Mesh* result = bTool.createNewMesh();
         delete slBox;
         delete mesh;
@@ -1122,7 +1122,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
             }
             inverseNormalAndIndices(slBox);
             ++mPlaneIndexerOffset;
-            bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
+            bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECTION());
             Mesh* result = bTool.createNewMesh();
             delete slBox;
             delete mesh;
@@ -1169,7 +1169,7 @@ int32_t FractureToolImpl::slicingNoisy(uint32_t chunkId, const SlicingConfigurat
             }
             inverseNormalAndIndices(slBox);
             ++mPlaneIndexerOffset;
-            bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
+            bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECTION());
             Mesh* result = bTool.createNewMesh();
             delete mesh;
             delete slBox;
@@ -1255,7 +1255,7 @@ int32_t FractureToolImpl::cut(uint32_t chunkId, const NvcVec3& normal, const Nvc
     setChunkInfoMesh(ch, bTool.createNewMesh());
     inverseNormalAndIndices(slBox);
     ++mPlaneIndexerOffset;
-    bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
+    bTool.performBoolean(mesh, slBox, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECTION());
     Mesh* result = bTool.createNewMesh();
     delete slBox;
     delete mesh;
@@ -1475,7 +1475,7 @@ int32_t FractureToolImpl::cutout(uint32_t chunkId, CutoutConfiguration conf, boo
                 {
                     SweepingAccelerator accel(mesh);
                     SweepingAccelerator dummy(cutoutMesh);
-                    bTool.performBoolean(mesh, cutoutMesh, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECION());
+                    bTool.performBoolean(mesh, cutoutMesh, &accel, &dummy, BooleanConfigurations::BOOLEAN_INTERSECTION());
 
                     setChunkInfoMesh(ch, bTool.createNewMesh());
                 }
@@ -1902,7 +1902,7 @@ float getVolume(std::vector<Triangle>& triangles)
 float FractureToolImpl::getMeshOverlap(const Mesh& meshA, const Mesh& meshB)
 {
     BooleanEvaluator bTool;
-    bTool.performBoolean(&meshA, &meshB, BooleanConfigurations::BOOLEAN_INTERSECION());
+    bTool.performBoolean(&meshA, &meshB, BooleanConfigurations::BOOLEAN_INTERSECTION());
     Mesh* result = bTool.createNewMesh();
     if (result == nullptr)
     {

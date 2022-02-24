@@ -70,28 +70,28 @@ NV_FORCE_INLINE float getRotation(const PxVec2& a, const PxVec2& b)
     return a.x * b.y - a.y * b.x;
 }
 
-NV_FORCE_INLINE bool pointInside(PxVec2 a, PxVec2 b, PxVec2 c, PxVec2 pnt)
-{
+NV_FORCE_INLINE bool pointInside(
+    const PxVec2& ba, const PxVec2& cb, const PxVec2& ac,
+    const PxVec2& a, const PxVec2& b, const PxVec2& c,
+    const PxVec2& pnt
+) {
+    // Co-positional verts are not considered inside because that would break the exterior of the facet
     if (compareTwoVertices(a, pnt) || compareTwoVertices(b, pnt) || compareTwoVertices(c, pnt))
     {
         return false;
     }
-    float v1 = (getRotation((b - a), (pnt - a)));
-    float v2 = (getRotation((c - b), (pnt - b)));
-    float v3 = (getRotation((a - c), (pnt - c)));
+    const float v1 = getRotation(ba, (pnt - a).getNormalized());
+    const float v2 = getRotation(cb, (pnt - b).getNormalized());
+    const float v3 = getRotation(ac, (pnt - c).getNormalized());
 
+    // If the sign of all angles match, then the point is inside
+    // A 0 angle is considered inside because otherwise verts would get dropped during triangulation
     return (v1 >= 0.0f && v2 >= 0.0f && v3 >= 0.0f) || (v1 <= 0.0f && v2 <= 0.0f && v3 <= 0.0f);
 }
+
 void Triangulator::triangulatePolygonWithEarClipping(std::vector<uint32_t>& inputPolygon, Vertex* vert,
-                                                     ProjectionDirections dir)
+                                                     const ProjectionDirections& dir)
 {
-    //  return;
-    // for (uint32_t i = 0; i < inputPolygon.size(); ++i)
-    //{
-    //  mBaseMeshTriangles.push_back(TriangleIndexed(inputPolygon[i], inputPolygon[i], inputPolygon[(i + 1) %
-    //inputPolygon.size()]));
-    //}
-    // return;
     int32_t vCount = static_cast<int32_t>(inputPolygon.size());
 
     if (vCount < 3)
@@ -103,31 +103,44 @@ void Triangulator::triangulatePolygonWithEarClipping(std::vector<uint32_t>& inpu
         int32_t prev = (curr == 0) ? vCount - 1 : curr - 1;
         int32_t next = (curr == vCount - 1) ? 0 : curr + 1;
 
-        Vertex cV = vert[inputPolygon[curr]];
-        Vertex nV = vert[inputPolygon[prev]];
-        Vertex pV = vert[inputPolygon[next]];
+        const Vertex cV = vert[inputPolygon[curr]];
+        const Vertex pV = vert[inputPolygon[prev]];
+        const Vertex nV = vert[inputPolygon[next]];
 
-        PxVec2 cVp = getProjectedPoint(cV.p, dir);
-        PxVec2 nVp = getProjectedPoint(nV.p, dir);
-        PxVec2 pVp = getProjectedPoint(pV.p, dir);
+        const PxVec2 cVp = getProjectedPoint(cV.p, dir);
+        const PxVec2 pVp = getProjectedPoint(pV.p, dir);
+        const PxVec2 nVp = getProjectedPoint(nV.p, dir);
 
-        // Check wheather curr is ear-tip
-        float rot = getRotation((pVp - nVp).getNormalized(), (cVp - nVp).getNormalized());
-        if (!(dir & OPPOSITE_WINDING))
+        // Check whether curr is ear-tip
+        // This rot condition needs to match what is done in pointInside()
+        const PxVec2 ac = (cVp - pVp).getNormalized();
+        const PxVec2 ba = (nVp - cVp).getNormalized();
+        float rot = getRotation(ac, ba);
+        if (dir & OPPOSITE_WINDING)
             rot = -rot;
-        if (rot > 0.0001)
+
+        // Make sure the verts form a valid triangle with positive area that is not co-linear
+        if (rot > 0.0f)
         {
             bool good = true;
-            for (int vrt = 0; vrt < vCount; ++vrt)
+            if (vCount > 3)
             {
-                if (vrt == curr || vrt == prev || vrt == next)
-                    continue;
-                if (pointInside(cVp, nVp, pVp, getProjectedPoint(vert[inputPolygon[vrt]].p, dir)))
+                // calculate these once and use them to test all the points not involved in the triangle
+                const PxVec2 cb = (pVp - nVp).getNormalized();
+                for (int vrt = 0; vrt < vCount; ++vrt)
                 {
-                    good = false;
-                    break;
+                    if (vrt == curr || vrt == prev || vrt == next)
+                        continue;
+
+                    const PxVec2 pnt = getProjectedPoint(vert[inputPolygon[vrt]].p, dir);
+                    if (pointInside(ba, cb, ac, cVp, nVp, pVp, pnt))
+                    {
+                        good = false;
+                        break;
+                    }
                 }
             }
+
             if (good)
             {
                 mBaseMeshTriangles.push_back(TriangleIndexed(inputPolygon[curr], inputPolygon[prev], inputPolygon[next]));
@@ -137,6 +150,7 @@ void Triangulator::triangulatePolygonWithEarClipping(std::vector<uint32_t>& inpu
             }
         }
     }
+    NVBLAST_ASSERT_WITH_MESSAGE(vCount < 3, "Not all verts were used");
 }
 
 
@@ -157,7 +171,7 @@ struct LoopInfo
 };
 
 int32_t unitePolygons(std::vector<uint32_t>& externalLoop, std::vector<uint32_t>& internalLoop, Vertex* vrx,
-                      ProjectionDirections dir)
+                      const ProjectionDirections& dir)
 {
     if (externalLoop.size() < 3 || internalLoop.size() < 3)
         return 1;
@@ -248,22 +262,25 @@ int32_t unitePolygons(std::vector<uint32_t>& externalLoop, std::vector<uint32_t>
         }
         /* Check if some point is inside triangle */
         bool notFound = true;
+        const PxVec2 ba = (ex1 - holePoint).getNormalized();
+        const PxVec2 cb = (computedPoint - ex1).getNormalized();
+        const PxVec2 ac = (holePoint - computedPoint).getNormalized();
         for (int32_t i = 0; i < (int32_t)externalLoop.size(); ++i)
         {
-            PxVec2 tempPoint = getProjectedPoint(vrx[externalLoop[i]].p, dir);
-            if (pointInside(holePoint, ex1, computedPoint, tempPoint))
+            const PxVec2 tempPoint = getProjectedPoint(vrx[externalLoop[i]].p, dir);
+            if (pointInside(ba, cb, ac, holePoint, ex1, computedPoint, tempPoint))
             {
                 notFound   = false;
-                PxVec2 cVp = getProjectedPoint(vrx[externalLoop[i]].p, dir);
-                PxVec2 pVp =
+                const PxVec2 cVp = getProjectedPoint(vrx[externalLoop[i]].p, dir);
+                const PxVec2 pVp =
                     getProjectedPoint(vrx[externalLoop[(i - 1 + externalLoop.size()) % externalLoop.size()]].p, dir);
-                PxVec2 nVp = getProjectedPoint(vrx[externalLoop[(i + 1) % externalLoop.size()]].p, dir);
-                float rt   = getRotation((cVp - pVp).getNormalized(), (nVp - pVp).getNormalized());
-                if ((dir & OPPOSITE_WINDING))
+                const PxVec2 nVp = getProjectedPoint(vrx[externalLoop[(i + 1) % externalLoop.size()]].p, dir);
+                float rt = getRotation((cVp - pVp).getNormalized(), (nVp - pVp).getNormalized());
+                if (dir & OPPOSITE_WINDING)
                     rt = -rt;
-                if (rt < 0.000001)
+                if (rt < 0.0f)
                     continue;
-                float tempAngle = PxVec2(1, 0).dot((tempPoint - holePoint).getNormalized());
+                const float tempAngle = PxVec2(1, 0).dot((tempPoint - holePoint).getNormalized());
                 if (bestAngle < tempAngle)
                 {
                     bestAngle   = tempAngle;
@@ -392,7 +409,7 @@ void Triangulator::buildPolygonAndTriangulate(std::vector<Edge>& edges, Vertex* 
     for (uint32_t loop = 0; loop < serializedLoops.size(); ++loop)
     {
         PxVec3 loopNormal(0, 0, 0);
-        std::vector<uint32_t>& pos = serializedLoops[loop];
+        const std::vector<uint32_t>& pos = serializedLoops[loop];
         for (uint32_t vrt = 1; vrt + 1 < serializedLoops[loop].size(); ++vrt)
         {
             loopNormal += toPxShared(vertices[pos[vrt]].p - vertices[pos[0]].p)
@@ -412,7 +429,7 @@ void Triangulator::buildPolygonAndTriangulate(std::vector<Edge>& edges, Vertex* 
             loopsInfo[loop].area = -loopsInfo[loop].area;
         }
     }
-    ProjectionDirections dir = getProjectionDirection(wholeFacetNormal);
+    const ProjectionDirections dir = getProjectionDirection(wholeFacetNormal);
     std::sort(loopsInfo.begin(), loopsInfo.end());
 
     std::vector<PxVec3> tempPositions;
