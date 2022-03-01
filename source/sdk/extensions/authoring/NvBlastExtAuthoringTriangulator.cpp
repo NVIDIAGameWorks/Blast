@@ -35,15 +35,17 @@
 #include "NvBlastExtAuthoringTriangulator.h"
 #include "NvBlastExtAuthoringMesh.h"
 #include "NvBlastExtAuthoringTypes.h"
-#include <math.h>
 #include "NvPreprocessor.h"
-#include <algorithm>
-#include <vector>
-#include <set>
 #include "NvBlastExtAuthoringBooleanToolImpl.h"
-#include <queue>
 #include <NvBlastAssert.h>
 #include <NvBlastPxSharedHelpers.h>
+
+#include <math.h>
+#include <algorithm>
+#include <list>
+#include <queue>
+#include <set>
+#include <vector>
 
 using physx::PxVec2;
 using physx::PxVec3;
@@ -52,6 +54,21 @@ namespace Nv
 {
 namespace Blast
 {
+
+// used with ear clipping algorithm to deal with floating point precision artifacts for nearly co-linear points
+#define MIN_ANGLE (0.0001f)
+
+// helper for ear clipping algorithm
+// holds the vertex indices for the previous and next vertex in the facet
+// along with the scaled area of the triangle defined by the 3 vertices
+struct AdjVertInfo
+{
+    uint32_t prev;
+    uint32_t next;
+
+    float scaledArea;
+};
+
 NV_FORCE_INLINE bool compareTwoFloats(float a, float b)
 {
     return std::abs(b - a) <= FLT_EPSILON * std::abs(b + a);
@@ -86,71 +103,208 @@ NV_FORCE_INLINE bool pointInside(
 
     // If the sign of all angles match, then the point is inside
     // A 0 angle is considered inside because otherwise verts would get dropped during triangulation
-    return (v1 >= 0.0f && v2 >= 0.0f && v3 >= 0.0f) || (v1 <= 0.0f && v2 <= 0.0f && v3 <= 0.0f);
+    return (v1 >= -MIN_ANGLE && v2 >= -MIN_ANGLE && v3 >= -MIN_ANGLE) || 
+           (v1 <= MIN_ANGLE && v2 <= MIN_ANGLE && v3 <= MIN_ANGLE);
 }
 
-void Triangulator::triangulatePolygonWithEarClipping(std::vector<uint32_t>& inputPolygon, Vertex* vert,
-                                                     const ProjectionDirections& dir)
-{
-    int32_t vCount = static_cast<int32_t>(inputPolygon.size());
+static void updatePotentialEar(
+    uint32_t curr,
+    const Vertex* vert,
+    const ProjectionDirections& dir,
+    const std::map<uint32_t, AdjVertInfo>& adjVertInfoMap,
+    const std::list<uint32_t>& reflexVerts,
+    std::list<uint32_t>& potentialEars
+) {
+    // remove from potential list if it exists already
+    // it will be added back if it is still a valid potential ear
+    const auto itr = std::find(potentialEars.begin(), potentialEars.end(), curr);
+    if (itr != potentialEars.end())
+    {
+        potentialEars.erase(itr);
+    }
 
-    if (vCount < 3)
+    // doing it this way so the map can be passed as a const reference, but it should always be fully populated
+    const auto mapItr = adjVertInfoMap.find(curr);
+    if (mapItr == adjVertInfoMap.end())
+    {
+        NVBLAST_ASSERT_WITH_MESSAGE(false, "this should never happen");
+        return;
+    }
+
+    // only convex verts need to be considered for potential ears
+    const AdjVertInfo& adjVertInfo = mapItr->second;
+    if (adjVertInfo.scaledArea <= 0.0f)
     {
         return;
     }
-    for (int32_t curr = 0; curr < vCount && vCount > 2; ++curr)
-    {
-        int32_t prev = (curr == 0) ? vCount - 1 : curr - 1;
-        int32_t next = (curr == vCount - 1) ? 0 : curr + 1;
 
-        const Vertex cV = vert[inputPolygon[curr]];
-        const Vertex pV = vert[inputPolygon[prev]];
-        const Vertex nV = vert[inputPolygon[next]];
+    // only need to check against reflex verts to see if they are inside potential ears
+    // convex verts can't be inside potential ears
+    if (reflexVerts.size())
+    {
+        const Vertex cV = vert[curr];
+        const Vertex pV = vert[adjVertInfo.prev];
+        const Vertex nV = vert[adjVertInfo.next];
 
         const PxVec2 cVp = getProjectedPoint(cV.p, dir);
         const PxVec2 pVp = getProjectedPoint(pV.p, dir);
         const PxVec2 nVp = getProjectedPoint(nV.p, dir);
 
-        // Check whether curr is ear-tip
-        // This rot condition needs to match what is done in pointInside()
-        const PxVec2 ac = (cVp - pVp).getNormalized();
+        // if there are no other verts inside, then it is a potential ear
         const PxVec2 ba = (nVp - cVp).getNormalized();
-        float rot = getRotation(ac, ba);
-        if (dir & OPPOSITE_WINDING)
-            rot = -rot;
-
-        // Make sure the verts form a valid triangle with positive area that is not co-linear
-        if (rot > 0.0f)
+        const PxVec2 cb = (pVp - nVp).getNormalized();
+        const PxVec2 ac = (cVp - pVp).getNormalized();
+        for (uint32_t vrt : reflexVerts)
         {
-            bool good = true;
-            if (vCount > 3)
+            // ignore reflex verts that are part of the tri being tested
+            if (vrt == adjVertInfo.prev || vrt == adjVertInfo.next)
             {
-                // calculate these once and use them to test all the points not involved in the triangle
-                const PxVec2 cb = (pVp - nVp).getNormalized();
-                for (int vrt = 0; vrt < vCount; ++vrt)
-                {
-                    if (vrt == curr || vrt == prev || vrt == next)
-                        continue;
-
-                    const PxVec2 pnt = getProjectedPoint(vert[inputPolygon[vrt]].p, dir);
-                    if (pointInside(ba, cb, ac, cVp, nVp, pVp, pnt))
-                    {
-                        good = false;
-                        break;
-                    }
-                }
+                continue;
             }
 
-            if (good)
+            const PxVec2 pnt = getProjectedPoint(vert[vrt].p, dir);
+            if (pointInside(ba, cb, ac, cVp, nVp, pVp, pnt))
             {
-                mBaseMeshTriangles.push_back(TriangleIndexed(inputPolygon[curr], inputPolygon[prev], inputPolygon[next]));
-                vCount--;
-                inputPolygon.erase(inputPolygon.begin() + curr);
-                curr = -1;
+                return;
             }
         }
     }
-    NVBLAST_ASSERT_WITH_MESSAGE(vCount < 3, "Not all verts were used");
+
+    potentialEars.push_back(curr);
+}
+
+static void updateVertData(
+    uint32_t curr,
+    uint32_t prev,
+    uint32_t next,
+    const Vertex* vert,
+    const ProjectionDirections& dir,
+    std::map<uint32_t, AdjVertInfo>& adjVertInfoMap,
+    std::list<uint32_t>& reflexVerts
+) {
+    // remove the index from the reflex list if there is already an entry for it
+    // it will be added back if it is still a reflex vertex
+    const auto reflexItr = std::find(reflexVerts.begin(), reflexVerts.end(), curr);
+    if (reflexItr != reflexVerts.end())
+    {
+        reflexVerts.erase(reflexItr);
+    }
+
+    // if next == prev it isn't a valid triangle
+    // this will happen when the facet has less than 3 verts in it
+    // no need to add them as reflex verts at that point, the algorithm is finishing up the final pass
+    float scaledArea = 0.0f;
+    if (prev != next)
+    {
+        const Vertex cV = vert[curr];
+        const Vertex pV = vert[prev];
+        const Vertex nV = vert[next];
+
+        const PxVec2 cVp = getProjectedPoint(cV.p, dir);
+        const PxVec2 pVp = getProjectedPoint(pV.p, dir);
+        const PxVec2 nVp = getProjectedPoint(nV.p, dir);
+
+        const PxVec2 prevEdge = (cVp - pVp);
+        const PxVec2 nextEdge = (nVp - cVp);
+
+        // use normalized vectors to get a better calc for the angle between them
+        float rot = getRotation(prevEdge.getNormalized(), nextEdge.getNormalized());
+        if (dir & OPPOSITE_WINDING)
+            rot = -rot;
+        if (rot > MIN_ANGLE)
+        {
+            // this is a valid convex vertex, calculate 2 * area (used for sorting later)
+            // actual area isn't needed because it is only used to compare with other ears, so relative numbers are fine
+            scaledArea = getRotation(prevEdge, nextEdge);
+            if (dir & OPPOSITE_WINDING)
+                scaledArea = -scaledArea;
+        }
+        else
+        {
+            // the angle is roughly 180 or greater, consider it a reflex vertex
+            reflexVerts.push_back(curr);
+        }
+    }
+
+    // the scaled area will be used to sort potential ears later
+    adjVertInfoMap[curr] = {prev, next, scaledArea};
+}
+
+void Triangulator::triangulatePolygonWithEarClipping(const std::vector<uint32_t>& inputPolygon, const Vertex* vert,
+                                                     const ProjectionDirections& dir)
+{
+    uint32_t vCount = static_cast<uint32_t>(inputPolygon.size());
+    if (vCount < 3)
+    {
+        return;
+    }
+
+    // High level of ear clipping algorithm:
+    // 
+    // - find potential ears (3 consecutive verts that form a triangle fully inside the facet with no other points from the facet inside or on an edge)
+    // while (potential ears)
+    //    - sort the potential ears by area
+    //    - add tri formed by largest ear to output and remove vert from the tip of the ear from the facet
+    //    - update potential ears for remaining 2 verts in the tri
+    // 
+    // This will ensure that no sliver triangles are created
+
+    // start by building up vertex data and a list of reflex (interior angle >= 180) verts
+    std::list<uint32_t> reflexVerts;
+    std::list<uint32_t> potentialEars;
+    std::map<uint32_t, AdjVertInfo> adjVertInfoMap;
+    for (uint32_t curr = 0; curr < vCount; curr++)
+    {
+        const uint32_t prev = (curr == 0) ? vCount - 1 : curr - 1;
+        const uint32_t next = (curr == vCount - 1) ? 0 : curr + 1;
+
+        const uint32_t currIdx = inputPolygon[curr];
+        const uint32_t prevIdx = inputPolygon[prev];
+        const uint32_t nextIdx = inputPolygon[next];
+
+        updateVertData(currIdx, prevIdx, nextIdx, vert, dir, adjVertInfoMap, reflexVerts);
+    }
+
+    // build the list of potential ears defined by convex verts by checking any reflex vert is inside
+    for (auto pair : adjVertInfoMap)
+    {
+        // if a vert is not a reflex, it must be convex and should be considered as an ear
+        const uint32_t currIdx = pair.first;
+        if (std::find(reflexVerts.begin(), reflexVerts.end(), currIdx) == reflexVerts.end())
+        {
+            updatePotentialEar(currIdx, vert, dir, adjVertInfoMap, reflexVerts, potentialEars);
+        }
+    }
+
+    // descending sort by scaled area
+    auto compArea = [&adjVertInfoMap](const uint32_t& a, const uint32_t& b) -> bool
+    {
+        return (adjVertInfoMap[a].scaledArea > adjVertInfoMap[b].scaledArea);
+    };
+
+    while (potentialEars.size())
+    {
+        // sort the potential ear list based on the area of the triangles they form
+        potentialEars.sort(compArea);
+
+        // add the largest triangle to the output
+        const uint32_t curr = potentialEars.front();
+        const AdjVertInfo& adjVertInfo = adjVertInfoMap[curr];
+        mBaseMeshTriangles.push_back(TriangleIndexed(curr, adjVertInfo.prev, adjVertInfo.next));
+
+        // remove the ear tip from the potential ear list
+        potentialEars.pop_front();
+
+        // update data for the other 2 verts involved
+        const uint32_t prevPrev = adjVertInfoMap[adjVertInfo.prev].prev;
+        const uint32_t nextNext = adjVertInfoMap[adjVertInfo.next].next;
+        // vert data must be updated first for both
+        updateVertData(adjVertInfo.prev, prevPrev, adjVertInfo.next, vert, dir, adjVertInfoMap, reflexVerts);
+        updateVertData(adjVertInfo.next, adjVertInfo.prev, nextNext, vert, dir, adjVertInfoMap, reflexVerts);
+        // then potential ear list
+        updatePotentialEar(adjVertInfo.prev, vert, dir, adjVertInfoMap, reflexVerts, potentialEars);
+        updatePotentialEar(adjVertInfo.next, vert, dir, adjVertInfoMap, reflexVerts, potentialEars);
+    }
 }
 
 
@@ -278,7 +432,7 @@ int32_t unitePolygons(std::vector<uint32_t>& externalLoop, std::vector<uint32_t>
                 float rt = getRotation((cVp - pVp).getNormalized(), (nVp - pVp).getNormalized());
                 if (dir & OPPOSITE_WINDING)
                     rt = -rt;
-                if (rt < 0.0f)
+                if (rt < MIN_ANGLE)
                     continue;
                 const float tempAngle = PxVec2(1, 0).dot((tempPoint - holePoint).getNormalized());
                 if (bestAngle < tempAngle)
