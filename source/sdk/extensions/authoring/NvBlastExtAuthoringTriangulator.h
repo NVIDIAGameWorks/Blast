@@ -129,7 +129,7 @@ private:
 
         
             
-    void                            triangulatePolygonWithEarClipping(std::vector<uint32_t>& inputPolygon, Vertex* vert, const ProjectionDirections& dir);
+    void                            triangulatePolygonWithEarClipping(const std::vector<uint32_t>& inputPolygon, const Vertex* vert, const ProjectionDirections& dir);
     void                            buildPolygonAndTriangulate(std::vector<Edge>& edges, Vertex* vertices, int32_t userData, int32_t materialId, int32_t smoothingGroup);
     void                            computePositionedMapping();
     
