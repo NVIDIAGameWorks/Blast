@@ -52,7 +52,7 @@ object GitlabMasterOmniverseKitExtensionsKitTemplate : GitVcsRoot({
     checkoutPolicy = GitVcsRoot.AgentCheckoutPolicy.USE_MIRRORS
     authMethod = uploadedKey {
         userName = "git"
-        uploadedKey = "Blast-SDK gitlab key"
+        uploadedKey = "Teamcity Omniverse RO Key (PCI)"
     }
     param("secure:password", "")
 })
