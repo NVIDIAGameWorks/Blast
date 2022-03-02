@@ -410,7 +410,7 @@ object Master_Testing_TestLinuxX8664 : BuildType({
 
     steps {
         script {
-            scriptContent = "./tools/ci/testing/test-linux-x86_64/step.sh"
+            scriptContent = "./tools/ci/testing/test-linux-x86_64/gtests.sh"
             param("org.jfrog.artifactory.selectedDeployableServer.downloadSpecSource", "Job configuration")
             param("org.jfrog.artifactory.selectedDeployableServer.useSpecs", "false")
             param("org.jfrog.artifactory.selectedDeployableServer.uploadSpecSource", "Job configuration")
@@ -450,7 +450,7 @@ object Master_Testing_TestWindowsX8664 : BuildType({
 
     steps {
         script {
-            scriptContent = """call tools\ci\testing\test-windows-x86_64\step.bat"""
+            scriptContent = """call tools\ci\testing\test-windows-x86_64\gtests.bat"""
             param("org.jfrog.artifactory.selectedDeployableServer.downloadSpecSource", "Job configuration")
             param("org.jfrog.artifactory.selectedDeployableServer.useSpecs", "false")
             param("org.jfrog.artifactory.selectedDeployableServer.uploadSpecSource", "Job configuration")
