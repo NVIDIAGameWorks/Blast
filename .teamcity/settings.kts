@@ -425,8 +425,7 @@ object Master_Testing_TestLinuxX8664 : BuildType({
             }
 
             artifacts {
-                cleanDestination = true
-                artifactRules = "*.7z => _build/packages"
+                artifactRules = "*.7z!** => _build/linux-x86_64/release/blast-sdk"
             }
         }
     }
@@ -465,8 +464,7 @@ object Master_Testing_TestWindowsX8664 : BuildType({
             }
 
             artifacts {
-                cleanDestination = true
-                artifactRules = "*.7z => _build/packages"
+                artifactRules = "*.7z!** => _build/windows-x86_64/release/blast-sdk"
             }
         }
     }
