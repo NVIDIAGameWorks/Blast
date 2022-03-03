@@ -291,7 +291,7 @@ object Master_Publish : BuildType({
 
     steps {
         script {
-            scriptContent = "tools/ci/publish/step.bat"
+            scriptContent = "tools/ci/publishing/publish/step.bat"
             param("org.jfrog.artifactory.selectedDeployableServer.downloadSpecSource", "Job configuration")
             param("org.jfrog.artifactory.selectedDeployableServer.useSpecs", "false")
             param("org.jfrog.artifactory.selectedDeployableServer.uploadSpecSource", "Job configuration")
