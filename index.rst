@@ -1,7 +1,7 @@
 Blast SDK Documentation
 =======================
 
-.. image:: docs/api/images/blast.png
+.. image:: docs/images/blast.png
     :width: 100%
     :alt: Blast Intro
 
@@ -56,56 +56,56 @@ Gallery
 Tower Explosion
 ####################################
 
-.. image:: docs/api/images/tower_explode.png
+.. image:: docs/images/tower_explode.png
     :width: 100%
     :alt: Blast Intro
 
 Bunny Impact Damage
 ####################################
 
-.. image:: docs/api/images/bunny_impact.png
+.. image:: docs/images/bunny_impact.png
     :width: 100%
     :alt: Blast Sample: tower explode
 
 Layered Cube Explosion
 ####################################
 
-.. image:: docs/api/images/cube_explode.png
+.. image:: docs/images/cube_explode.png
     :width: 100%
     :alt: Blast Sample: bunny impact
 
 Table Impact Damage
 ####################################
 
-.. image:: docs/api/images/table_impact_wireframe.png
+.. image:: docs/images/table_impact_wireframe.png
     :width: 100%
     :alt: Blast Sample: cube explode
 
 Tower Slice
 ####################################
 
-.. image:: docs/api/images/tower_slice.png
+.. image:: docs/images/tower_slice.png
     :width: 100%
     :alt: Blast Sample: table impact
 
 Wall Impact Damage
 ####################################
 
-.. image:: docs/api/images/wall_impact.png
+.. image:: docs/images/wall_impact.png
     :width: 100%
     :alt: Blast Sample: tower slice
 
 Stress Solver
 ####################################
 
-.. image:: docs/api/images/stress.png
+.. image:: docs/images/stress.png
     :width: 100%
     :alt: Blast Sample: wall impact
 
 Joints
 ####################################
 
-.. image:: docs/api/images/joints.png
+.. image:: docs/images/joints.png
     :width: 100%
     :alt: Blast Sample: joints
 
