@@ -342,12 +342,12 @@ object Master_Publishing_PublishDocs : BuildType({
         showDependenciesChanges = true
     }
 
-    triggers {
-        finishBuildTrigger {
-            buildType = "${Master_BuildAndValidation.id}"
-            successfulOnly = true
-        }
-    }
+//    triggers {
+//        finishBuildTrigger {
+//            buildType = "${Master_BuildAndValidation.id}"
+//            successfulOnly = true
+//        }
+//    }
 
     steps {
         script {
