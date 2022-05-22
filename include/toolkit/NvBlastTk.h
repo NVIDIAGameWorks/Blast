@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Single include file to bring in headers for the blast sdk toolkit (tk) library
 
 #ifndef NVBLASTTK_H
 #define NVBLASTTK_H

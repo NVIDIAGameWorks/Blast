@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Allocator utility API in the NvBlastGlobals library
 
 #ifndef NVBLASTALLOCATOR_H
 #define NVBLASTALLOCATOR_H

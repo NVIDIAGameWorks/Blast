@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the Mesh API used by the authoring tools
 
 #ifndef NVBLASTAUTHORINGMESH_H
 #define NVBLASTAUTHORINGMESH_H

@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Basic preprocessor definitions the blast sdk APIs
 
 #ifndef NVBLASTPREPROCESSOR_H
 #define NVBLASTPREPROCESSOR_H

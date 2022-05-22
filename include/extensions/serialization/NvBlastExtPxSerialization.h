@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines blast physx (Px) serialization support for the NvBlastExtSerialization blast extension
 
 #pragma once
 

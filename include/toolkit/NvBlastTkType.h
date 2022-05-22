@@ -31,7 +31,9 @@
 
 #include "NvBlastTypes.h"
 
-
+//! @file
+//!
+//! @brief Defines the API for the NvBlastExtTkType class
 
 namespace Nv
 {

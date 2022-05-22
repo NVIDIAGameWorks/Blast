@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the API for the NvBlastExtPxDamageManager class, which processes impact damage from physx
 
 #ifndef NVBLASTEXTIMPACTDAMAGEMANAGER_H
 #define NVBLASTEXTIMPACTDAMAGEMANAGER_H

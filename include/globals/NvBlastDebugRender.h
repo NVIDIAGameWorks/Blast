@@ -25,6 +25,10 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Debug render utility API in the NvBlastGlobals library
+
 #pragma once
 
 #include <NvCTypes.h>

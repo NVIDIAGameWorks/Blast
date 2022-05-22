@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the API for the NvBlastExtTkActor class
 
 #ifndef NVBLASTTKACTOR_H
 #define NVBLASTTKACTOR_H

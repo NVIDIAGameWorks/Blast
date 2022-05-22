@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines an API to serialize collision geometry to JSON format. 
 
 #ifndef NVBLASTEXTEXPORTERJSONCOLLISION_H
 #define NVBLASTEXTEXPORTERJSONCOLLISION_H

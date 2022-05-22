@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Profiler utility API in the NvBlastGlobals library
 
 #ifndef NVBLASTPROFILER_H
 #define NVBLASTPROFILER_H

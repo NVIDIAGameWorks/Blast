@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the API for the low-level blast library.
 
 #ifndef NVBLAST_H
 #define NVBLAST_H

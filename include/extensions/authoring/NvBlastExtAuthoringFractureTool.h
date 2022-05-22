@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the API for the NvBlastExtAuthoring blast sdk extension's FractureTool
 
 #ifndef NVBLASTAUTHORINGFRACTURETOOL_H
 #define NVBLASTAUTHORINGFRACTURETOOL_H

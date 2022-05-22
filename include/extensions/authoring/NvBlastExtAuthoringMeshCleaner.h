@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the API for the NvBlastExtAuthoring blast sdk extension's MeshCleaner utility
 
 #ifndef NVBLASTEXTAUTHORINGMESHCLEANER_H
 #define NVBLASTEXTAUTHORINGMESHCLEANER_H
