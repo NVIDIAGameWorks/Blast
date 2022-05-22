@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the API for the NvBlastExtPxFamily class
 
 #ifndef NVBLASTEXTPXFAMILY_H
 #define NVBLASTEXTPXFAMILY_H

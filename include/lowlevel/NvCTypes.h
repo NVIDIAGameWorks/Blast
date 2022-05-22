@@ -27,6 +27,9 @@
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines simple C vector types
 
 #ifndef NV_C_TYPES_H
 #define NV_C_TYPES_H
@@ -119,7 +122,5 @@ typedef struct
 {
     int32_t x, y, z, w;
 } NvcVec4i;
-
-/** @} */
 
 #endif // NV_C_TYPES_H

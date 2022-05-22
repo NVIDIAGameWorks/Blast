@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief NvBlastExtDamageShaders blast extension, provides damage shaders for applying damage to destructibles
 
 #ifndef NVBLASTEXTDAMAGESHADERS_H
 #define NVBLASTEXTDAMAGESHADERS_H

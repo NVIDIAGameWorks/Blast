@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the ConvexMeshBuilder API used by the authoring tools, allowing the user to specify a convex hull description for a chunk
 
 #ifndef NVBLASTEXTAUTHORINGCONVEXMESHBUILDER_H
 #define NVBLASTEXTAUTHORINGCONVEXMESHBUILDER_H

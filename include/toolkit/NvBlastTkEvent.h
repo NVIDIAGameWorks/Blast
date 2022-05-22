@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the API for the NvBlastExtTkEvent class
 
 #ifndef NVBLASTTKEVENT_H
 #define NVBLASTTKEVENT_H

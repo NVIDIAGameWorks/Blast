@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines an API to export blast meshes and data in common formats
 
 #ifndef NVBLASTEXTEXPORTER_H
 #define NVBLASTEXTEXPORTER_H

@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines a task manager API for multithreading ExtPx oerations
 
 #ifndef NVBLASTEXTPXTASK_H
 #define NVBLASTEXTPXTASK_H

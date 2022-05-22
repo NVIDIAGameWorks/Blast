@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Vector math utility functions
 
 #ifndef NVCMATH_H
 #define NVCMATH_H

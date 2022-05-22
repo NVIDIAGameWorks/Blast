@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines basic types for the NvBlastExtSerialization blast extension, which handles versioned serialization of blast objects in different formats
 
 #pragma once
 

@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the API for the NvBlastExtAuthoring blast sdk extension's BlastBondGenerator
 
 #ifndef NVBLASTEXTAUTHORINGBONDGENERATOR_H
 #define NVBLASTEXTAUTHORINGBONDGENERATOR_H

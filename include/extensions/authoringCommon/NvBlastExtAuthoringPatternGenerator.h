@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the PatternGenerator API used by the authoring tools, allowing the user to create fracture patterns
 
 #ifndef NVBLASTEXTAUTHORINGPATTERNGENERATOR_H
 #define NVBLASTEXTAUTHORINGPATTERNGENERATOR_H

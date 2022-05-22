@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines allocator and error callbacks for ExtPx
 
 #ifndef NVBLASTPXCALLBACKS_H
 #define NVBLASTPXCALLBACKS_H

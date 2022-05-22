@@ -32,6 +32,9 @@
 #include <new>
 #include "NvBlastTypes.h"
 
+//! @file
+//!
+//! @brief API for the NvBlastGlobals library
 
 namespace Nv
 {

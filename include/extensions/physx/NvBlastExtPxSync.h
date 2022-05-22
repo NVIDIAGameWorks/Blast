@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the API for synchronization of damage and fracture events between two clients via an intermediate buffer
 
 #ifndef NVBLASTEXTSYNC_H
 #define NVBLASTEXTSYNC_H
@@ -96,10 +99,12 @@ struct ExtSyncEventInstance : public ExtSyncEvent
 
     static const ExtSyncEventType::Enum EVENT_TYPE = eventType;
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS    // Removes doxygen errors from CRTP
     ExtSyncEvent* clone() const override
     {
         return NVBLAST_NEW (T) (*(T*)this);
     }
+#endif
 };
 
 

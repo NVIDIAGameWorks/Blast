@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the API for the ExtPxStressSolver, which wraps the basic stress solver (NvBlastExtStress) for use with physx
 
 #ifndef NVBLASTEXTPXSTRESSSOLVER_H
 #define NVBLASTEXTPXSTRESSSOLVER_H

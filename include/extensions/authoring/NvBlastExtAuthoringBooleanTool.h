@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2021 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines the API for the NvBlastExtAuthoring blast sdk extension's BooleanTool
 
 #ifndef NVBLASTAUTHORINGBOOLEANTOOL_H
 #define NVBLASTAUTHORINGBOOLEANTOOL_H

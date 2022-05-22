@@ -25,6 +25,9 @@
 //
 // Copyright (c) 2016-2020 NVIDIA Corporation. All rights reserved.
 
+//! @file
+//!
+//! @brief Defines basic types used by NvBlastExtAuthoring
 
 #ifndef NVBLASTAUTHORINGTYPES_H
 #define NVBLASTAUTHORINGTYPES_H

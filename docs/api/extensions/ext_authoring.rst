@@ -1,0 +1,97 @@
+.. _pageextauthoring:
+
+Asset Authoring (NvBlastExtAuthoring)
+-------------------------------------
+
+The Authoring extension provides tools for creation of a Blast asset from a provided mesh.
+
+There are four tools for creation of Blast assets.
+
+
+.. _fracturetool:
+
+FractureTool
+============
+Nv::Blast::FractureTool (see NvBlastExtAuthoringFractureTool.h) is used to fracture an input mesh.  It supports Voronoi fracturing, slicing, and "cutout" fracture (slicing based upon an image).  Internal surfaces of output chunks can be tesselated and noise can be applied to them.  The slicing method supports slicing with a noisy slicing surface, which allows the creation of a jagged slicing line.  Noisy slicing is switched on by setting a non-zero noise amplitude in slicing parameters (Nv::Blast::SlicingConfiguration).
+
+FractureTool supports two types of output:
+
+1) Array of triangles - the tool fills provided array with triangles of chunk, ID of chunk should be provided.
+
+2) Buffered output - the tool fills provided array with vertices, and another array of arrays with indices. Indices form triplets of vertices of triangle.
+
+.. _fracturemeshrestrictions:
+
+Mesh Restrictions
+=================
+
+At the core of the fracturing tools is a geometric boolean algorithm based upon the paper, ***A topologically robust algorithm for Boolean operations on polyhedral shapes using approximate arithmetic*** by Smith and Dodgson, Computer-Aided Design 39 (2007) 149�163, Elsevier.
+The constraints for a valid input mesh are given in the paper.  Practically, the restrictions may be summarized as follows.
+
+Input meshes
+* must be closed with CCW-oriented surfaces,
+* must not have self-intersection,
+* must not have T-junctions,
+* *may* have multiple disconnected components.
+
+Failure to meet the constraints (first three items) above will lead to unpredictable fracturing results.
+
+.. _convexmeshbuilder:
+
+ConvexMeshBuilder
+=================
+Nv::Blast::ConvexMeshBuilder is a tool for creation of collision geometry for physics engine. It recieves mesh vertices, and returns the convex hull of those vertices. If creation of a convex hull fails, the
+tool creates collision geometry as a bounding box of provided vertices.
+
+The tool provides a method to trim convex hulls against each other. It can be used along with noisy slicing to avoid "explosive" behavior due to penetration of neighboring collision hulls into each other.
+As a drawback, penetration of render meshes into each other is possible due to trimmed collision geometry. 
+
+
+.. _bondgenerator:
+
+BondGenerator
+=============
+Nv::Blast::BlastBondGenerator is a tool for creation of Blast Bond descriptors from provided geometry data. 
+It has separate a method which is optimized for working FractureTool. 
+.. code-block:: text
+
+    int32_t Nv::Blast::BlastBondGenerator::buildDescFromInternalFracture(FractureTool* tool, const std::vector<bool>& chunkIsSupport, std::vector<NvBlastBondDesc>& resultBondDescs, std::vector<NvBlastChunkDesc>& resultChunkDescriptors);
+
+
+Other methods can work with prefractured meshes created in Third party tools, and can be used for converting prefractured models to Blast assets.
+
+Nv::Blast::BlastBondGenerator supports two modes of NvBlastBond data generation:
+
+1) Exact - in this mode exact common surface between chunks is found and considered as interface between them. Exact normal, area and centroid are computed.
+
+2) Average - this mode uses approximations of the interface, and can be used for gathering NvBlastBond data for assets, where chunks penetrate each other, e.g. chunks with noise.
+
+.. _meshcleaner:
+
+MeshCleaner
+===========
+Nv::Blast::MeshCleaner can be used to remove self intersections and open edges in the interior of a mesh, making it more likely to fracture well.
+
+To use it, create a MeshCleaner using
+
+.. code-block:: text
+
+    Nv::Blast::MeshCleaner* cleaner = NvBlastExtAuthoringCreateMeshCleaner();
+
+
+Given an Nv::Blast::Mesh called "mesh", simply call
+
+.. code-block:: text
+
+    Nv::Blast::Mesh* newMesh = cleaner->cleanMesh(mesh);
+
+
+If successful, newMesh will be a valid pointer to the cleaned mesh.  Otherwise, newMesh will be NULL.
+
+When done, release using
+.. code-block:: text
+
+    cleaner->release();
+
+
+
