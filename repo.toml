@@ -128,6 +128,12 @@ package_per_config = true
 append_config = true
 version_separator = "."
 
+[repo_package.packages."platform:windows-x86_64".docs]
+omniverse_flow_version_scheme = true
+files = [
+    ["_build/docs"]
+]
+
 
 ########################################################################################################################
 # Build Number 
