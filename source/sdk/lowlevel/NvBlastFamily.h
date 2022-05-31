@@ -124,6 +124,13 @@ struct FamilyHeader : public NvBlastDataBlock
     NvBlastBlockArrayData(float, m_graphBondHealthsOffset, getBondHealths, m_asset->getBondCount());
 
     /**
+    Bond health for the interfaces between two chunks, of type float.  Since the bond is shared by two chunks, the same bond health is used for chunk[i] -> chunk[j] as for chunk[j] -> chunk[i].
+
+    getCachedBondHealths returns the array of manually cached healths associated with all bonds in the support graph.
+    */
+    NvBlastBlockArrayData(float, m_graphCachedBondHealthsOffset, getCachedBondHealths, m_asset->getBondCount());
+
+    /**
     The instance graph for islands searching, of type FamilyGraph.
 
     Return the dynamic data generated for the support graph.  (See FamilyGraph.)

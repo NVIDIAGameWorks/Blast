@@ -41,35 +41,45 @@ namespace Nv
 namespace Blast
 {
 
-
 /**
 Stress Solver Settings
 
-Stress on every bond is calculated as 
-stress = (bond.linearStress * stressLinearFactor + bond.angularStress * stressAngularFactor) / hardness;
-where:
-bond.linearStress = the linear stress force on particular bond
-bond.angularStress = the angular stress force on particular bond
-stressLinearFactor, stressAngularFactor, hardness = multiplier parameters set by this struct
+Stress on every bond is calculated with these components:
+    compression/tension (parallel to bond normal)
+    shear (perpendicular to bond normal)
+Damage is done based on the limits defined in this structure to simulate micro bonds in the material breaking
+Units for all limits are in pascals
 
 Support graph reduction:
 graphReductionLevel is the number of node merge passes.  The resulting graph will be
 roughly 2^graphReductionLevel times smaller than the original.
+NOTE: the reduction is currently fairly random and can lead to interlocked actors when solver bonds break.
+If we are going to keep the feature, the algorithm for combining bonds should be revisited to take locality into account.
 */
 struct ExtStressSolverSettings
 {
-    float       hardness;                   //!<    hardness of bond's material
-    float       stressLinearFactor;         //!<    linear stress on bond multiplier
-    float       stressAngularFactor;        //!<    angular stress on bond multiplier
-    uint32_t    bondIterationsPerFrame;     //!<    number of bond iterations to perform per frame, @see getIterationsPerFrame() below
+    uint32_t    maxSolverIterationsPerFrame;//!<    the maximum number of iterations to perform per frame, @see getIterationsPerFrame() below
     uint32_t    graphReductionLevel;        //!<    graph reduction level
 
+    // stress force limits
+    float       compressionElasticLimit;    //!<    below this compression pressure no damage is done to bonds.  Also used as the default for shear and tension if they aren't provided.
+    float       compressionFatalLimit;      //!<    above this compression pressure the bond is immediately broken.  Also used as the default for shear and tension if they aren't provided.
+    float       tensionElasticLimit;        //!<    below this tension pressure no damage is done to bonds.  Use a negative value to fall back on compression limit.
+    float       tensionFatalLimit;          //!<    above this tension pressure the bond is immediately broken.  Use a negative value to fall back on compression limit.
+    float       shearElasticLimit;          //!<    below this shear pressure no damage is done to bonds.  Use a negative value to fall back on compression limit.
+    float       shearFatalLimit;            //!<    above this shear pressure the bond is immediately broken.  Use a negative value to fall back on compression limit.
+
     ExtStressSolverSettings() :
-        hardness(1000.0f),
-        stressLinearFactor(0.25f),
-        stressAngularFactor(0.75f),
-        bondIterationsPerFrame(18000),
-        graphReductionLevel(3)
+        maxSolverIterationsPerFrame(10),
+        graphReductionLevel(3),
+
+        // stress force limits
+        compressionElasticLimit(1.0f),
+        compressionFatalLimit(2.0f),
+        shearElasticLimit(-1.0f),
+        shearFatalLimit(-1.0f),
+        tensionElasticLimit(-1.0f),
+        tensionFatalLimit(-1.0f)
     {}
 };
 
@@ -92,14 +102,14 @@ struct ExtForceMode
 /**
 Stress Solver.
 
-Uses NvBlastFamily, allocates and prepares its graph once when it's created. Then it's being quickly updated on every 
-actor split. 
-It uses NvBlastAsset support graph, you can apply forces on nodes and stress on bonds will be calculated as the result. 
+Uses NvBlastFamily, allocates and prepares its graph once when it's created. Then it's being quickly updated on every
+actor split.
+It uses NvBlastAsset support graph, you can apply forces on nodes and stress on bonds will be calculated as the result.
 When stress on bond exceeds it's health bond is considered broken (overstressed).
 Basic usage:
 1. Create it with create function once for family
 2. Fill node info for every node in support graph or use setAllNodesInfoFromLL() function.
-3. Use notifyActorCreated / notifyActorDestroyed whenever actors are created and destroyed in family. 
+3. Use notifyActorCreated / notifyActorDestroyed whenever actors are created and destroyed in family.
 4. Every frame: Apply forces (there are different functions for it see @addForce)
 5. Every frame: Call update() for actual solver to process.
 6. If getOverstressedBondCount() > 0 use generateFractureCommands() functions to get FractureCommands with bonds fractured
@@ -128,21 +138,20 @@ public:
     virtual void                            release() = 0;
 
     /**
-    Set node info. 
+    Set node info.
 
     All the required info per node for stress solver is set with this function. Call it for every node in graph or use setAllNodesInfoFromLL().
 
     \param[in]  graphNodeIndex  Index of the node in support graph. see NvBlastSupportGraph.
-    \param[in]  mass            Node mass. For static node it is irrelevant.
+    \param[in]  mass            Node mass. For static node it is must be zero.
     \param[in]  volume          Node volume. For static node it is irrelevant.
     \param[in]  localPosition   Node local position.
-    \param[in]  isStatic        Is node static.
     */
-    virtual void                            setNodeInfo(uint32_t graphNodeIndex, float mass, float volume, NvcVec3 localPosition, bool isStatic) = 0;
+    virtual void                            setNodeInfo(uint32_t graphNodeIndex, float mass, float volume, NvcVec3 localPosition) = 0;
 
     /**
     Set all nodes info using low level NvBlastAsset data.
-    Uses NvBlastChunk's centroid and volume. 
+    Uses NvBlastChunk's centroid and volume.
     Uses 'external' node to mark nodes as static.
 
     \param[in]  density         Density. Used to convert volume to mass.
@@ -235,8 +244,8 @@ public:
     virtual void                            update() = 0;
 
     /**
-    Get overstressed/broken bonds count. 
-    
+    Get overstressed/broken bonds count.
+
     This count is updated after every update() call. Number of overstressed bond directly hints if any bond fracture is recommended by stress solver.
 
     \return the overstressed bonds count.
@@ -249,7 +258,7 @@ public:
     Calling this function if getOverstressedBondCount() == 0 or actor has no bond doesn't make sense, bondFractureCount will be '0'.
     Filled fracture commands buffer can be passed directly to NvBlastActorApplyFracture.
 
-    IMPORTANT: NvBlastFractureBuffers::bondFractures will point to internal stress solver memory which will be valid till next call 
+    IMPORTANT: NvBlastFractureBuffers::bondFractures will point to internal stress solver memory which will be valid till next call
     of any of generateFractureCommands() functions or stress solver release() call.
 
     \param[in]  actor                   The actor to fill fracture commands for.
@@ -258,20 +267,8 @@ public:
     virtual void                            generateFractureCommands(const NvBlastActor& actor, NvBlastFractureBuffers& commands) = 0;
 
     /**
-    Generate fracture commands for whole family. A bit faster way to get all fractured bonds than calling generateFractureCommands() for every actor.
+    Generate fracture commands for every actor in family.
 
-    Calling this function if getOverstressedBondCount() == 0 or actor has no bond doesn't make sense, bondFractureCount will be '0'.
-
-    IMPORTANT: NvBlastFractureBuffers::bondFractures will point to internal stress solver memory which will be valid till next call
-    of any of generateFractureCommands() functions or stress solver release() call.
-
-    \param[in]  commands                Pointer to command buffer to fill.
-    */
-    virtual void                            generateFractureCommands(NvBlastFractureBuffers& commands) = 0;
-
-    /**
-    Generate fracture commands for every actor in family. 
-    
     Actors and commands buffer must be passed in order to be filled. It's recommended for bufferSize to be the count of actor with more then one bond in family.
 
     Calling this function if getOverstressedBondCount() == 0 or actor has no bond doesn't make sense, '0' will be returned.
@@ -291,7 +288,7 @@ public:
     Reset stress solver.
 
     Stress solver uses warm start internally, calling this function will flush all previous data calculated and also zeros frame count.
-    This function is to be used for debug purposes. 
+    This function is to be used for debug purposes.
     */
     virtual void                            reset() = 0;
 
@@ -323,15 +320,26 @@ public:
     */
     virtual uint32_t                        getBondCount() const = 0;
 
+    /**
+    Get stress solver excess force related to broken bonds for the given actor.
+    This is intended to be called after damage is applied to bonds and actors are split, but before the next call to 'update()'.
+    Force is intended to be applied to the center of mass, torque due to linear forces that happen away from the COM are converted
+    to torque as part of this function.
+
+    \return true if data was gathered, false otherwise.
+    */
+    virtual bool                            getExcessForces(uint32_t actorIndex, const NvcVec3& com, NvcVec3& force, NvcVec3& torque) = 0;
+
 
     /**
     Debug Render Mode
     */
     enum DebugRenderMode
     {
-        STRESS_GRAPH = 0,                   //!<    render only stress graph
-        STRESS_GRAPH_NODES_IMPULSES = 1,    //!<    render stress graph + nodes impulses after solving stress
-        STRESS_GRAPH_BONDS_IMPULSES = 2     //!<    render stress graph + bonds impulses after solving stress
+        STRESS_PCT_MAX = 0,         //!<    render the maximum of the compression, tension, and shear stress percentages
+        STRESS_PCT_COMPRESSION = 1, //!<    render the compression stress percentage
+        STRESS_PCT_TENSION = 2,     //!<    render the tension stress percentage
+        STRESS_PCT_SHEAR = 3,       //!<    render the shear stress percentage
     };
 
     /**
@@ -358,8 +366,8 @@ public:
     };
 
     /**
-    Fill debug render for passed array of support graph nodes. 
-    
+    Fill debug render for passed array of support graph nodes.
+
     NOTE: Returned DebugBuffer points into internal memory which is valid till next fillDebugRender() call.
 
     \param[in]  nodes           Node indices of support graph to debug render for.
@@ -370,39 +378,6 @@ public:
     \return debug buffer with array of lines
     */
     virtual const DebugBuffer               fillDebugRender(const uint32_t* nodes, uint32_t nodeCount, DebugRenderMode mode, float scale = 1.0f) = 0;
-
-
-    //////// helpers ////////
-
-    /**
-    Get solver iteration per frame (update() call) for particular settings and bondCount.
-
-    Helper method to know how many solver iterations are made per frame.
-    This function made so transparent to make it clear how ExtStressSolverSettings::bondIterationsPerFrame is used.
-
-    \param[in]  settings        Debug render mode.
-    \param[in]  bondCount       Scale to be applied on impulses.
-
-    \return the iterations per frame count.
-    */
-    static uint32_t                         getIterationsPerFrame(const ExtStressSolverSettings& settings, uint32_t bondCount)
-    {
-        uint32_t perFrame = settings.bondIterationsPerFrame / (bondCount + 1);
-        return perFrame > 0 ? perFrame : 1;
-    }
-
-    /**
-    Get iteration per frame (update() call).
-
-    Helper method to know how many solver iterations are made per frame.
-
-    \return the iterations per frame count.
-    */
-    uint32_t                                getIterationsPerFrame() const
-    {
-        return getIterationsPerFrame(getSettings(), getBondCount());
-    }
-
 };
 
 } // namespace Blast

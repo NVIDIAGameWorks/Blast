@@ -40,6 +40,9 @@
 #include "NvBlastPxSharedHelpers.h"
 #include "NvCMath.h"
 
+#include "stress.h"
+#include "simd/simd_device_query.h"
+
 #include <algorithm>
 
 #define USE_SCALAR_IMPL 0
@@ -58,258 +61,139 @@ namespace Blast
 
 using namespace physx;
 
+static_assert(sizeof(PxVec3) == sizeof(NvcVec3), "sizeof(PxVec3) must equal sizeof(NvcVec3).");
+static_assert(offsetof(PxVec3, x) == offsetof(NvcVec3, x) &&
+              offsetof(PxVec3, y) == offsetof(NvcVec3, y) &&
+              offsetof(PxVec3, z) == offsetof(NvcVec3, z),
+              "Elements of PxVec3 and NvcVec3 must have the same struct offset.");
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//                                                   Solver
+//                                           Conjugate Gradient Solver
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class SequentialImpulseSolver
+class ConjugateGradientImpulseSolver
 {
 public:
-    PX_ALIGN_PREFIX(16)
-    struct BondData
+    ConjugateGradientImpulseSolver(uint32_t nodeCount, uint32_t maxBondCount)
     {
-        physx::PxVec3 impulseLinear;
-        uint32_t node0;
-        physx::PxVec3 impulseAngular;
-        uint32_t node1;
-        physx::PxVec3 offset0;
-        float invOffsetSqrLength;
-    }
-    PX_ALIGN_SUFFIX(16);
-
-    PX_ALIGN_PREFIX(16)
-    struct NodeData
-    {
-        physx::PxVec3 velocityLinear;
-        float invI;
-        physx::PxVec3 velocityAngular;
-        float invMass;
-    }
-    PX_ALIGN_SUFFIX(16);
-
-    SequentialImpulseSolver(uint32_t nodeCount, uint32_t maxBondCount)
-    {
-        m_nodesData.resize(nodeCount);
-        m_bondsData.reserve(maxBondCount);
+        m_bonds.reserve(maxBondCount);
+        m_impulses.reserve(maxBondCount);
+        reset(nodeCount);
     }
 
-    const NodeData& getNodeData(uint32_t node) const
+    void getBondImpulses(uint32_t bond, PxVec3& impulseLinear, PxVec3& impulseAngular) const
     {
-        return m_nodesData[node];
+        NVBLAST_ASSERT(bond < m_impulses.size());
+        const AngLin6& f = m_impulses[bond];
+        *(NvcVec3*)&impulseAngular = f.ang;
+        *(NvcVec3*)&impulseLinear = f.lin;
     }
 
-    const BondData& getBondData(uint32_t bond) const
+    void getBondNodes(uint32_t bond, uint32_t& node0, uint32_t& node1) const
     {
-        return m_bondsData[bond];
+        NVBLAST_ASSERT(bond < m_bonds.size());
+        const SolverBond& b = m_bonds[bond];
+        node0 = b.nodes[0];
+        node1 = b.nodes[1];
     }
 
     uint32_t getBondCount() const
     {
-        return m_bondsData.size();
+        return m_bonds.size();
     }
 
     uint32_t getNodeCount() const
     {
-        return m_nodesData.size();;
+        return m_nodes.size();
     }
 
-    void setNodeMassInfo(uint32_t node, float invMass, float invI)
+    void setNodeMassInfo(uint32_t node, const PxVec3& CoM, float mass, float inertia)
     {
-        m_nodesData[node].invMass = invMass;
-        m_nodesData[node].invI = invI;
+        NVBLAST_ASSERT(node < m_nodes.size());
+        SolverNodeS& n = m_nodes[node];
+        *(PxVec3*)&n.CoM = CoM;
+        n.mass = std::max(mass, 0.0f);  // No negative masses, but 0 is meaningful (== infinite)
+        n.inertia = std::max(inertia, 0.0f);    // Ditto for inertia
+        m_forceColdStart = true;
     }
 
     void initialize()
     {
-        for (auto& node : m_nodesData)
-        {
-            node.velocityLinear = PxVec3(PxZero);
-            node.velocityAngular = PxVec3(PxZero);
-        }
+        StressProcessor::DataParams params;
+        params.centerBonds = true;
+        params.equalizeMasses = true;
+        m_stressProcessor.prepare(m_nodes.begin(), m_nodes.size(), m_bonds.begin(), m_bonds.size(), params);
     }
 
     void setNodeVelocities(uint32_t node, const PxVec3& velocityLinear, const PxVec3& velocityAngular)
     {
-        m_nodesData[node].velocityLinear = velocityLinear;
-        m_nodesData[node].velocityAngular = velocityAngular;
+        NVBLAST_ASSERT(node < m_velocities.size());
+        AngLin6& v = m_velocities[node];
+        *(PxVec3*)&v.ang = velocityAngular;
+        *(PxVec3*)&v.lin = velocityLinear;
     }
 
-    uint32_t addBond(uint32_t node0, uint32_t node1, const PxVec3& offset)
+    uint32_t addBond(uint32_t node0, uint32_t node1, const PxVec3& bondCentroid)
     {
-        const BondData data = {
-            PxVec3(PxZero), 
-            node0, 
-            PxVec3(PxZero), 
-            node1, 
-            offset, 
-            1.0f / offset.magnitudeSquared() 
-        };
-        m_bondsData.pushBack(data);
-        return m_bondsData.size() - 1;
+        SolverBond b;
+        b.nodes[0] = node0;
+        b.nodes[1] = node1;
+        *(PxVec3*)&b.centroid = bondCentroid;
+        m_bonds.pushBack(b);
+        m_impulses.pushBack({{0,0,0},{0,0,0}});
+        m_forceColdStart = true;
+        return m_bonds.size() - 1;
     }
 
     void replaceWithLast(uint32_t bondIndex)
     {
-        m_bondsData.replaceWithLast(bondIndex);
+        m_bonds.replaceWithLast(bondIndex);
+        m_impulses.replaceWithLast(bondIndex);
+        m_stressProcessor.removeBond(bondIndex);
     }
 
     void reset(uint32_t nodeCount)
     {
-        m_bondsData.clear();
-        m_nodesData.resize(nodeCount);
+        m_nodes.resize(nodeCount);
+        memset(m_nodes.begin(), 0, sizeof(SolverNodeS)*nodeCount);
+        m_velocities.resize(nodeCount);
+        memset(m_velocities.begin(), 0, sizeof(AngLin6)*nodeCount);
+        clearBonds();
+        m_error_sq = {FLT_MAX, FLT_MAX};
+        m_forceColdStart = true;
     }
 
     void clearBonds()
     {
-        m_bondsData.clear();
+        m_bonds.clear();
+        m_impulses.clear();
     }
 
     void solve(uint32_t iterationCount, bool warmStart = true)
     {
-        solveInit(warmStart);
-
-        for (uint32_t i = 0; i < iterationCount; ++i)
-        {
-            iterate();
-        }
+        StressProcessor::SolverParams params;
+        params.maxIter = iterationCount;
+        params.solverTol = 0.001f;
+        params.warmStart = warmStart && !m_forceColdStart;
+        m_forceColdStart = false;
+        m_stressProcessor.solve(m_impulses.begin(), m_velocities.begin(), params, &m_error_sq);
     }
 
     void calcError(float& linear, float& angular) const
     {
-        linear = 0.0f;
-        angular = 0.0f;
-        for (const BondData& bond : m_bondsData)
-        {
-            const NodeData* node0 = &m_nodesData[bond.node0];
-            const NodeData* node1 = &m_nodesData[bond.node1];
-
-            const PxVec3 vA = node0->velocityLinear - node0->velocityAngular.cross(bond.offset0);
-            const PxVec3 vB = node1->velocityLinear + node1->velocityAngular.cross(bond.offset0);
-
-            const PxVec3 vErrorLinear = vA - vB;
-            const PxVec3 vErrorAngular = node0->velocityAngular - node1->velocityAngular;
-
-            linear += vErrorLinear.magnitude();
-            angular += vErrorAngular.magnitude();
-        }
+        linear = sqrtf(m_error_sq.lin);
+        angular = sqrtf(m_error_sq.ang);
     }
 
 private:
-    void solveInit(bool warmStart = false)
-    {
-        if (warmStart)
-        {
-            for (BondData& bond : m_bondsData)
-            {
-                NodeData* node0 = &m_nodesData[bond.node0];
-                NodeData* node1 = &m_nodesData[bond.node1];
-
-                const PxVec3 velocityLinearCorr0 = bond.impulseLinear * node0->invMass;
-                const PxVec3 velocityLinearCorr1 = bond.impulseLinear * node1->invMass;
-
-                const PxVec3 velocityAngularCorr0 = bond.impulseAngular * node0->invI - bond.offset0.cross(velocityLinearCorr0) * bond.invOffsetSqrLength;
-                const PxVec3 velocityAngularCorr1 = bond.impulseAngular * node1->invI + bond.offset0.cross(velocityLinearCorr1) * bond.invOffsetSqrLength;
-
-                node0->velocityLinear += velocityLinearCorr0;
-                node1->velocityLinear -= velocityLinearCorr1;
-
-                node0->velocityAngular += velocityAngularCorr0;
-                node1->velocityAngular -= velocityAngularCorr1;
-            }
-        }
-        else
-        {
-            for (BondData& bond : m_bondsData)
-            {
-                bond.impulseLinear = PxVec3(PxZero);
-                bond.impulseAngular = PxVec3(PxZero);
-            }
-        }
-    }
-
-
-    void iterate()
-    {
-        using namespace physx::shdfnd::aos;
-
-        for (BondData& bond : m_bondsData)
-        {
-            NodeData* node0 = &m_nodesData[bond.node0];
-            NodeData* node1 = &m_nodesData[bond.node1];
-
-#if USE_SCALAR_IMPL
-            const PxVec3 vA = node0->velocityLinear - node0->velocityAngular.cross(bond.offset0);
-            const PxVec3 vB = node1->velocityLinear + node1->velocityAngular.cross(bond.offset0);
-
-            const PxVec3 vErrorLinear = vA - vB;
-            const PxVec3 vErrorAngular = node0->velocityAngular - node1->velocityAngular;
-
-            const float weightedMass = 1.0f / (node0->invMass + node1->invMass);
-            const float weightedInertia = 1.0f / (node0->invI + node1->invI);
-
-            const PxVec3 outImpulseLinear = -vErrorLinear * weightedMass * 0.5f;
-            const PxVec3 outImpulseAngular = -vErrorAngular * weightedInertia * 0.5f;
-
-            bond.impulseLinear += outImpulseLinear;
-            bond.impulseAngular += outImpulseAngular;
-
-            const PxVec3 velocityLinearCorr0 = outImpulseLinear * node0->invMass;
-            const PxVec3 velocityLinearCorr1 = outImpulseLinear * node1->invMass;
-
-            const PxVec3 velocityAngularCorr0 = outImpulseAngular * node0->invI - bond.offset0.cross(velocityLinearCorr0) * bond.invOffsetSqrLength;
-            const PxVec3 velocityAngularCorr1 = outImpulseAngular * node1->invI + bond.offset0.cross(velocityLinearCorr1) * bond.invOffsetSqrLength;
-
-            node0->velocityLinear += velocityLinearCorr0;
-            node1->velocityLinear -= velocityLinearCorr1;
-
-            node0->velocityAngular += velocityAngularCorr0;
-            node1->velocityAngular -= velocityAngularCorr1;
-#else
-            const Vec3V velocityLinear0 = V3LoadUnsafeA(node0->velocityLinear);
-            const Vec3V velocityLinear1 = V3LoadUnsafeA(node1->velocityLinear);
-            const Vec3V velocityAngular0 = V3LoadUnsafeA(node0->velocityAngular);
-            const Vec3V velocityAngular1 = V3LoadUnsafeA(node1->velocityAngular);
-
-            const Vec3V offset = V3LoadUnsafeA(bond.offset0);
-            const Vec3V vA = V3Add(velocityLinear0, V3Neg(V3Cross(velocityAngular0, offset)));
-            const Vec3V vB = V3Add(velocityLinear1, V3Cross(velocityAngular1, offset));
-
-            const Vec3V vErrorLinear = V3Sub(vA, vB);
-            const Vec3V vErrorAngular = V3Sub(velocityAngular0, velocityAngular1);
-
-            const FloatV invM0 = FLoad(node0->invMass);
-            const FloatV invM1 = FLoad(node1->invMass);
-            const FloatV invI0 = FLoad(node0->invI);
-            const FloatV invI1 = FLoad(node1->invI);
-            const FloatV invOffsetSqrLength = FLoad(bond.invOffsetSqrLength);
-
-            const FloatV weightedMass = FLoad(-0.5f / (node0->invMass + node1->invMass));
-            const FloatV weightedInertia = FLoad(-0.5f / (node0->invI + node1->invI));
-
-            const Vec3V outImpulseLinear = V3Scale(vErrorLinear, weightedMass);
-            const Vec3V outImpulseAngular = V3Scale(vErrorAngular, weightedInertia);
-
-            V3StoreA(V3Add(V3LoadUnsafeA(bond.impulseLinear), outImpulseLinear), bond.impulseLinear);
-            V3StoreA(V3Add(V3LoadUnsafeA(bond.impulseAngular), outImpulseAngular), bond.impulseAngular);
-
-            const Vec3V velocityLinearCorr0 = V3Scale(outImpulseLinear, invM0);
-            const Vec3V velocityLinearCorr1 = V3Scale(outImpulseLinear, invM1);
-
-            const Vec3V velocityAngularCorr0 = V3Sub(V3Scale(outImpulseAngular, invI0), V3Scale(V3Cross(offset, velocityLinearCorr0), invOffsetSqrLength));
-            const Vec3V velocityAngularCorr1 = V3Add(V3Scale(outImpulseAngular, invI1), V3Scale(V3Cross(offset, velocityLinearCorr1), invOffsetSqrLength));
-
-            V3StoreA(V3Add(velocityLinear0, velocityLinearCorr0), node0->velocityLinear);
-            V3StoreA(V3Sub(velocityLinear1, velocityLinearCorr1), node1->velocityLinear);
-
-            V3StoreA(V3Add(velocityAngular0, velocityAngularCorr0), node0->velocityAngular);
-            V3StoreA(V3Sub(velocityAngular1, velocityAngularCorr1), node1->velocityAngular);
-#endif
-        }
-    }
-
-    Array<BondData>::type       m_bondsData;
-    Array<NodeData>::type       m_nodesData;
+    Array<SolverNodeS>::type    m_nodes;
+    Array<SolverBond>::type     m_bonds;
+    StressProcessor             m_stressProcessor;
+    Array<AngLin6>::type        m_velocities;
+    Array<AngLin6>::type        m_impulses;
+    SolverError                 m_error_sq;
+    bool                        m_forceColdStart;
 };
 
 
@@ -332,7 +216,18 @@ public:
         uint32_t node0;
         uint32_t node1;
         uint32_t blastBondIndex;
-        float    stress;
+        // linear stresses
+        float    stressNormal;  // negative values represent compression pressure, positive represent tension
+        float    stressShear;
+
+        // The normal used to compute stress values
+        // Can be different than the bond normal if graph reduction is used
+        // and multiple bonds are grouped together
+        physx::PxVec3 normal;
+
+        // Centroid used to compute node offsets, instead of assuming the bond is halfway between node positions.
+        // This also allows the bonds to the world node to be drawn
+        physx::PxVec3 centroid;
     };
 
     struct NodeData
@@ -340,10 +235,9 @@ public:
         float mass;
         float volume;
         PxVec3 localPos;
-        bool isStatic;
         uint32_t solverNode;
         uint32_t neighborsCount;
-        PxVec3 impulse;
+        PxVec3 deltaV;
     };
 
     struct SolverNodeData
@@ -356,7 +250,6 @@ public:
             int32_t indexShift;
         };
         float volume;
-        bool isStatic;
     };
 
     struct SolverBondData
@@ -364,7 +257,8 @@ public:
         InlineArray<uint32_t, 8>::type blastBondIndices;
     };
 
-    SupportGraphProcessor(uint32_t nodeCount, uint32_t maxBondCount) : m_solver(nodeCount, maxBondCount), m_nodesDirty(true)
+    SupportGraphProcessor(uint32_t nodeCount, uint32_t maxBondCount) :
+        m_solver(nodeCount, maxBondCount), m_nodesDirty(true), m_bondsDirty(true)
     {
         m_nodesData.resize(nodeCount);
         m_bondsData.reserve(maxBondCount);
@@ -377,7 +271,7 @@ public:
         m_blastBondIndexMap.resize(maxBondCount);
         memset(m_blastBondIndexMap.begin(), 0xFF, m_blastBondIndexMap.size() * sizeof(uint32_t));
 
-        resetImpulses();
+        resetVelocities();
     }
 
     const NodeData& getNodeData(uint32_t node) const
@@ -400,14 +294,14 @@ public:
         return m_solverBondsData[bond];
     }
 
-    const SequentialImpulseSolver::BondData& getSolverInternalBondData(uint32_t bond) const
+    void getSolverInternalBondImpulses(uint32_t bond, PxVec3& impulseLinear, PxVec3& impulseAngular) const
     {
-        return m_solver.getBondData(bond);
+        m_solver.getBondImpulses(bond, impulseLinear, impulseAngular);
     }
 
-    const SequentialImpulseSolver::NodeData& getSolverInternalNodeData(uint32_t node) const
+    void getSolverInternalBondNodes(uint32_t bond, uint32_t& node0, uint32_t& node1) const
     {
-        return m_solver.getNodeData(node);
+        m_solver.getBondNodes(bond, node0, node1);
     }
 
     uint32_t getBondCount() const
@@ -435,37 +329,96 @@ public:
         return m_overstressedBondCount;
     }
 
-    float calcSolverBondStress(uint32_t bond, const ExtStressSolverSettings& settings) const
+    void calcSolverBondStresses(
+        uint32_t bondIdx, float bondArea, const physx::PxVec3& bondNormal,
+        float& compression, float& shear) const
     {
-        const auto& solverBond = getSolverInternalBondData(bond);
-        const float impulseLinear = solverBond.impulseLinear.magnitude() * settings.stressLinearFactor;
-        const float impulseAngular = solverBond.impulseAngular.magnitude() * settings.stressAngularFactor;
-        const float impulse = impulseLinear + impulseAngular;
-        return (std::isfinite(impulse) ? (impulse / settings.hardness) : FLT_MAX);
-    }
-
-    float getSolverBondStressPct(uint32_t bond, const float* bondHealths) const
-    {
-        // sum up the health and stress of all underlying bonds involved in this stress solver bond
-        float stress = 0.0f;
-        float health = 0.0f;
-        const auto& blastBondIndices = m_solverBondsData[bond].blastBondIndices;
-        for (const auto blastBondIndex : blastBondIndices)
+        if (!canTakeDamage(bondArea))
         {
-            stress += getBondStress(blastBondIndex);
-            health += bondHealths[blastBondIndex];
+            compression = shear = 0.0f;
+            return;
         }
 
-        // return a value < 0.0f for broken bonds 
-        return (health == 0.0f ? -1.0f : (stress / health));
+        // impulseLinear in the direction of the bond normal is compression, perpendicular is shear
+        // ignore impulseAngular for now, not sure how to account for that
+        // convert to pressure to factor out area
+        PxVec3 impulseLinear, impulseAngular;
+        getSolverInternalBondImpulses(bondIdx, impulseLinear, impulseAngular);
+        const float normalComponentLinear = impulseLinear.dot(bondNormal);
+        compression = normalComponentLinear / bondArea;
+        const float impulseLinearMagSqr = impulseLinear.magnitudeSquared();
+        shear = sqrtf(impulseLinearMagSqr - normalComponentLinear * normalComponentLinear) / bondArea;
+
+        // impulseAngular in the direction of the bond normal is twist, perpendicular is bend
+        // take abs() of the dot product because only the magnitude of the twist matters, not direction
+        const float normalComponentAngular = abs(impulseAngular.dot(bondNormal));
+        const float twist = normalComponentAngular / bondArea;
+        const float impulseAngularMagSqr = impulseAngular.magnitudeSquared();
+        const float bend = sqrtf(impulseAngularMagSqr - normalComponentAngular * normalComponentAngular) / bondArea;
+
+        // interpret angular pressure as a composition of linear pressures
+        const float R = sqrtf(bondArea / 3.14159265f);  // using a simple disk model
+        const float twistContribution = twist * 1.5f / R;
+        shear += twistContribution;
+        const float bendContribution = bend * 2.35619449f / R;  // * (3*pi/4)/R
+        compression += copysignf(bendContribution, compression);
     }
 
-    void setNodeInfo(uint32_t node, float mass, float volume, PxVec3 localPos, bool isStatic)
+    float mapStressToRange(float stress, float elasticLimit, float fatalLimit) const
+    {
+        if (stress < elasticLimit)
+        {
+            return 0.5f * stress / elasticLimit;
+        }
+        else
+        {
+            return fatalLimit > elasticLimit ? 0.5f + 0.5f * (stress - elasticLimit) / (fatalLimit - elasticLimit) : 1.0f;
+        }
+    }
+
+    float getSolverBondStressPct(uint32_t bondIdx, const float* bondHealths, const ExtStressSolverSettings& settings, ExtStressSolver::DebugRenderMode mode) const
+    {
+        // sum up the stress of all underlying bonds involved in this stress solver bond
+        float compressionStress, tensionStress, shearStress;
+        float stress = -1.0f;
+        const auto& blastBondIndices = m_solverBondsData[bondIdx].blastBondIndices;
+        for (const auto blastBondIndex : blastBondIndices)
+        {
+            // only consider the stress values on bonds that are intact
+            if (bondHealths[blastBondIndex] > 0.0f && getBondStress(blastBondIndex, compressionStress, tensionStress, shearStress))
+            {
+                if (mode == ExtStressSolver::STRESS_PCT_COMPRESSION || mode == ExtStressSolver::STRESS_PCT_MAX)
+                {
+                    compressionStress = mapStressToRange(compressionStress, settings.compressionElasticLimit, settings.compressionFatalLimit);
+                    stress = std::max(compressionStress, stress);
+                }
+
+                if (mode == ExtStressSolver::STRESS_PCT_TENSION || mode == ExtStressSolver::STRESS_PCT_MAX)
+                {
+                    tensionStress = mapStressToRange(tensionStress, settings.tensionElasticLimit, settings.tensionFatalLimit);
+                    stress = std::max(tensionStress, stress);
+                }
+
+                if (mode == ExtStressSolver::STRESS_PCT_SHEAR || mode == ExtStressSolver::STRESS_PCT_MAX)
+                {
+                    shearStress = mapStressToRange(shearStress, settings.shearElasticLimit, settings.shearFatalLimit);
+                    stress = std::max(shearStress, stress);
+                }
+
+                // all bonds in the group share the same stress values, no need to keep iterating
+                break;
+            }
+        }
+
+        // return a value < 0.0f if all bonds are broken
+        return stress;
+    }
+
+    void setNodeInfo(uint32_t node, float mass, float volume, PxVec3 localPos)
     {
         m_nodesData[node].mass = mass;
         m_nodesData[node].volume = volume;
         m_nodesData[node].localPos = localPos;
-        m_nodesData[node].isStatic = isStatic;
         m_nodesDirty = true;
     }
 
@@ -483,8 +436,11 @@ public:
 
     void addNodeForce(uint32_t node, const PxVec3& force, ExtForceMode::Enum mode)
     {
-        const PxVec3 impuse = (mode == ExtForceMode::IMPULSE) ? force : force * m_nodesData[node].mass;
-        m_nodesData[node].impulse += impuse;
+        const float mass = m_nodesData[node].mass;
+        if (mass > 0)
+        {
+            m_nodesData[node].deltaV += (mode == ExtForceMode::IMPULSE) ? force/mass : force;
+        }
     }
 
     void addNodeVelocity(uint32_t node, const PxVec3& velocity)
@@ -549,8 +505,9 @@ public:
                         if (m_solver.getBondCount() > 0)
                         {
                             // update 'previously last' solver bond mapping
-                            const auto& solverBond = m_solver.getBondData(solverBondIndex);
-                            m_solverBondsMap[BondKey(solverBond.node0, solverBond.node1)] = solverBondIndex;
+                            uint32_t node0, node1;
+                            m_solver.getBondNodes(solverBondIndex, node0, node1);
+                            m_solverBondsMap[BondKey(node0, node1)] = solverBondIndex;
                         }
 
                         m_solverBondsMap.erase(solverBondKey);
@@ -580,20 +537,18 @@ public:
 
     void solve(const ExtStressSolverSettings& settings, const float* bondHealth, const NvBlastBond* bonds, bool warmStart = true)
     {
-        sync();
+        sync(bonds);
 
         m_solver.initialize();
 
         for (const NodeData& node : m_nodesData)
         {
-            const SequentialImpulseSolver::NodeData& solverNode = m_solver.getNodeData(node.solverNode);
-            m_solver.setNodeVelocities(node.solverNode, solverNode.velocityLinear + node.impulse * solverNode.invMass, PxVec3(PxZero));
+            m_solver.setNodeVelocities(node.solverNode, node.deltaV, PxVec3(PxZero));
         }
 
-        uint32_t iterationCount = ExtStressSolver::getIterationsPerFrame(settings, getSolverBondCount());
-        m_solver.solve(iterationCount, warmStart);
+        m_solver.solve(settings.maxSolverIterationsPerFrame, warmStart);
 
-        resetImpulses();
+        resetVelocities();
 
         updateBondStress(settings, bondHealth, bonds);
     }
@@ -603,19 +558,49 @@ public:
         m_solver.calcError(linear, angular);
     }
 
-    float getBondStress(uint32_t blastBondIndex) const
+    bool getBondStress(uint32_t blastBondIndex, float& compression, float& tension, float& shear) const
     {
         const uint32_t bondIndex = m_blastBondIndexMap[blastBondIndex];
-        return isInvalidIndex(bondIndex) ? 0.0f : m_bondsData[bondIndex].stress;
+        if (isInvalidIndex(bondIndex))
+        {
+            return false;
+        }
+
+        // compression and tension are mutually exclusive since they operate in opposite directions
+        // they both measure stress parallel to the bond normal direction
+        // compression is the force resisting two nodes being pushed together (it pushes them apart)
+        // tension is the force resisting two nodes being pulled apart (it pulls them together)
+        if (m_bondsData[bondIndex].stressNormal <= 0.0f)
+        {
+            compression = -m_bondsData[bondIndex].stressNormal;
+            tension = 0.0f;
+        }
+        else
+        {
+            compression = 0.0f;
+            tension = m_bondsData[bondIndex].stressNormal;
+        }
+
+        // shear is independent and can co-exist with compression and tension
+        shear = m_bondsData[bondIndex].stressShear;         // the force perpendicular to the bond normal direction
+
+        return true;
+    }
+
+    // Convert from Blast bond index to internal stress solver bond index
+    // Will be InvalidIndex if the internal bond was removed from the stress solver
+    uint32_t getInternalBondIndex(uint32_t blastBondIndex)
+    {
+        return m_blastBondIndexMap[blastBondIndex];
     }
 
 private:
 
-    void resetImpulses()
+    void resetVelocities()
     {
         for (auto& node : m_nodesData)
         {
-            node.impulse = PxVec3(PxZero);
+            node.deltaV = PxVec3(PxZero);
         }
     }
 
@@ -627,14 +612,42 @@ private:
         bondIndicesToRemove.reserve(getBondCount());
         for (uint32_t i = 0; i < m_solverBondsData.size(); ++i)
         {
-            // calculate the total area of all bonds involved so stress can be proportionately distributed
+            // calculate the total area of all bonds involved so pressure can be calculated
             float totalArea = 0.0f;
+            // calculate an average normal and centroid for all bonds as well, weighted by their area
+            physx::PxVec3 bondNormal(PxZero);
+            physx::PxVec3 bondCentroid(PxZero);
             const auto& blastBondIndices = m_solverBondsData[i].blastBondIndices;
             for (auto blastBondIndex : blastBondIndices)
             {
                 if (bondHealth[blastBondIndex] > 0.0f)
                 {
-                    totalArea += bonds[blastBondIndex].area;
+                    const uint32_t bondIndex = m_blastBondIndexMap[blastBondIndex];
+                    const BondData& bond = m_bondsData[bondIndex];
+                    const physx::PxVec3 nodeDisp = m_nodesData[bond.node1].localPos - m_nodesData[bond.node0].localPos;
+
+                    // the current health of a bond is the effective area remaining
+                    const float remainingArea = bondHealth[blastBondIndex];
+                    const NvBlastBond& blastBond = bonds[blastBondIndex];
+
+                    // Align normal(s) with node displacement, so that compressive/tensile distinction is correct
+                    const physx::PxVec3 assetBondNormal(blastBond.normal[0], blastBond.normal[1], blastBond.normal[2]);
+                    const physx::PxVec3 blastBondNormal = std::copysignf(1.0f, assetBondNormal.dot(nodeDisp))*assetBondNormal;
+
+                    const physx::PxVec3 blastBondCentroid(blastBond.centroid[0], blastBond.centroid[1], blastBond.centroid[2]);
+
+                    if (!canTakeDamage(remainingArea))  // Check unbreakable limit
+                    {
+                        totalArea = kUnbreakableLimit;  // Don't add this in, in case of overflow
+                        bondNormal = blastBondNormal;
+                        bondCentroid = blastBondCentroid;
+                        break;
+                    }
+
+                    bondNormal += blastBondNormal*remainingArea;
+                    bondCentroid += blastBondCentroid*remainingArea;
+
+                    totalArea += remainingArea;
                 }
                 else
                 {
@@ -643,7 +656,35 @@ private:
                 }
             }
 
-            const float stress = calcSolverBondStress(i, settings);
+            if (totalArea == 0.0f)
+            {
+                continue;
+            }
+
+            // normalized the aggregate normal now that all contributing bonds have been combined
+            bondNormal.normalizeSafe();
+
+            // divide by total area for the weighted position, if the area is valid
+            if (canTakeDamage(totalArea))
+            {
+                bondCentroid /= totalArea;
+            }
+
+            // bonds are looked at as a whole group,
+            // so regardless of the current health of an individual one they are either all over stressed or none are
+            float stressNormal, stressShear;
+            calcSolverBondStresses(i, totalArea, bondNormal, stressNormal, stressShear);
+            NVBLAST_ASSERT(!std::isnan(stressNormal) && !std::isnan(stressShear));
+            if (
+                -stressNormal > settings.compressionElasticLimit ||
+                stressNormal > settings.tensionElasticLimit ||
+                stressShear > settings.shearElasticLimit
+            )
+            {
+                m_overstressedBondCount += blastBondIndices.size();
+            }
+
+            // store the stress values for all the bonds involved
             for (auto blastBondIndex : blastBondIndices)
             {
                 const uint32_t bondIndex = m_blastBondIndexMap[blastBondIndex];
@@ -653,14 +694,15 @@ private:
 
                     NVBLAST_ASSERT(getNodeData(bond.node0).solverNode != getNodeData(bond.node1).solverNode);
                     NVBLAST_ASSERT(bond.blastBondIndex == blastBondIndex);
-                    
-                    bond.stress = stress * bonds[blastBondIndex].area / totalArea;
-                    NVBLAST_ASSERT(!std::isnan(bond.stress));
 
-                    if (stress > bondHealth[blastBondIndex])
-                    {
-                        m_overstressedBondCount++;
-                    }
+                    bond.stressNormal = stressNormal;
+                    bond.stressShear = stressShear;
+
+                    // store the normal used to calc stresses so it can be used later to determine forces
+                    bond.normal = bondNormal;
+
+                    // store the bond centroid
+                    bond.centroid = bondCentroid;
                 }
             }
         }
@@ -672,21 +714,21 @@ private:
         }
     }
 
-    void sync()
+    void sync(const NvBlastBond* bonds)
     {
         if (m_nodesDirty)
         {
-            syncNodes();
+            syncNodes(bonds);
         }
         if (m_bondsDirty)
         {
-            syncBonds();
+            syncBonds(bonds);
         }
 
         CHECK_GRAPH_INTEGRITY;
     }
 
-    void syncNodes()
+    void syncNodes(const NvBlastBond* bonds)
     {
         // init with 1<->1 blast nodes to solver nodes mapping
         m_solverNodesData.resize(m_nodesData.size());
@@ -703,9 +745,9 @@ private:
 
         // reducing graph by aggregating nodes level by level
         // NOTE (@anovoselov):  Recently, I found a flow in the algorithm below. In very rare situations aggregate (solver node)
-        // can contain more then one connected component. I didn't notice it to produce any visual artifacts and it's 
+        // can contain more then one connected component. I didn't notice it to produce any visual artifacts and it's
         // unlikely to influence stress solvement a lot. Possible solution is to merge *whole* solver nodes, that
-        // will raise complexity a bit (at least will add another loop on nodes for every reduction level. 
+        // will raise complexity a bit (at least will add another loop on nodes for every reduction level.
         for (uint32_t k = 0; k < m_graphReductionLevel; k++)
         {
             const uint32_t maxAggregateSize = 1 << (k + 1);
@@ -715,16 +757,13 @@ private:
                 NodeData& node0 = m_nodesData[bond.node0];
                 NodeData& node1 = m_nodesData[bond.node1];
 
-                if (node0.isStatic != node1.isStatic)
-                    continue;
-
                 if (node0.solverNode == node1.solverNode)
                     continue;
 
                 SolverNodeData& solverNode0 = m_solverNodesData[node0.solverNode];
                 SolverNodeData& solverNode1 = m_solverNodesData[node1.solverNode];
-                
-                const int countPenalty = node0.isStatic ? STATIC_NODES_COUNT_PENALTY : 1;
+
+                const int countPenalty = 1;   // This was being set to STATIC_NODES_COUNT_PENALTY for static nodes, may want to revisit
                 const uint32_t aggregateSize = std::min<uint32_t>(maxAggregateSize, node0.neighborsCount / 2);
 
                 if (solverNode0.supportNodesCount * countPenalty >= aggregateSize)
@@ -794,7 +833,6 @@ private:
             solverNode.localPos = PxVec3(PxZero);
             solverNode.mass = 0.0f;
             solverNode.volume = 0.0f;
-            solverNode.isStatic = false;
         }
 
         for (NodeData& node : m_nodesData)
@@ -804,7 +842,6 @@ private:
             solverNode.localPos += node.localPos;
             solverNode.mass += node.mass;
             solverNode.volume += node.volume;
-            solverNode.isStatic |= node.isStatic;
         }
 
         for (SolverNodeData& solverNode : m_solverNodesData)
@@ -817,18 +854,17 @@ private:
         {
             const SolverNodeData& solverNode = m_solverNodesData[nodeIndex];
 
-            const float invMass = solverNode.isStatic ? 0.0f : 1.0f / solverNode.mass;
             const float R = PxPow(solverNode.volume * 3.0f * PxInvPi / 4.0f, 1.0f / 3.0f); // sphere volume approximation
-            const float invI = invMass / (R * R * 0.4f); // sphere inertia tensor approximation: I = 2/5 * M * R^2 ; invI = 1 / I;
-            m_solver.setNodeMassInfo(nodeIndex, invMass, invI);
+            const float inertia = solverNode.mass * (R * R * 0.4f); // sphere inertia tensor approximation: I = 2/5 * M * R^2 ; invI = 1 / I;
+            m_solver.setNodeMassInfo(nodeIndex, solverNode.localPos, solverNode.mass, inertia);
         }
 
         m_nodesDirty = false;
 
-        syncBonds();
+        syncBonds(bonds);
     }
 
-    void syncBonds()
+    void syncBonds(const NvBlastBond* bonds)
     {
         // traverse all blast bonds and aggregate
         m_solver.clearBonds();
@@ -840,13 +876,18 @@ private:
             const NodeData& node1 = m_nodesData[bond.node1];
 
             // reset stress, bond structure changed and internal bonds stress won't be updated during updateBondStress()
-            bond.stress = 0.0f;
+            bond.stressNormal = 0.0f;
+            bond.stressShear = 0.0f;
+
+            // initialize normal and centroid using blast values
+            bond.normal = *(PxVec3*)bonds[bond.blastBondIndex].normal;
+            bond.centroid = *(PxVec3*)bonds[bond.blastBondIndex].centroid;
+
+            // fix normal direction to point from node0 to node1
+            bond.normal *= std::copysignf(1.0f, bond.normal.dot(node1.localPos - node1.localPos));
 
             if (node0.solverNode == node1.solverNode)
                 continue; // skip (internal)
-
-            if (node0.isStatic && node1.isStatic)
-                continue;
 
             BondKey key(node0.solverNode, node1.solverNode);
             auto entry = m_solverBondsMap.find(key);
@@ -857,9 +898,7 @@ private:
                 data = &m_solverBondsData.back();
                 m_solverBondsMap[key] = m_solverBondsData.size() - 1;
 
-                SolverNodeData& solverNode0 = m_solverNodesData[node0.solverNode];
-                SolverNodeData& solverNode1 = m_solverNodesData[node1.solverNode];
-                m_solver.addBond(node0.solverNode, node1.solverNode, (solverNode1.localPos - solverNode0.localPos) * 0.5f);
+                m_solver.addBond(node0.solverNode, node1.solverNode, bond.centroid);
             }
             else
             {
@@ -928,19 +967,16 @@ private:
         uint32_t node0;
         uint32_t node1;
 
-        BondKey(uint32_t n0, uint32_t n1)
-        {
-            node0 = n0 < n1 ? n0 : n1;
-            node1 = n0 < n1 ? n1 : n0;
-        }
+        BondKey(uint32_t n0, uint32_t n1) : node0(n0), node1(n1) {}
 
         operator uint64_t() const
         {
-            return static_cast<uint64_t>(node0) + (static_cast<uint64_t>(node1) << 32);
+            // Szudzik's function
+            return node0 >= node1 ? (uint64_t)node0 * node0 + node0 + node1 : (uint64_t)node1 * node1 + node0;
         }
     };
 
-    SequentialImpulseSolver             m_solver;
+    ConjugateGradientImpulseSolver      m_solver;
     Array<SolverNodeData>::type         m_solverNodesData;
     Array<SolverBondData>::type         m_solverBondsData;
 
@@ -963,18 +999,6 @@ private:
 //                                           ExtStressSolver
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct ExtStressNodeCachedData
-{
-    physx::PxVec3 localPos;
-    bool isStatic;
-};
-
-
-struct ExtStressBondCachedData
-{
-    uint32_t bondIndex;
-};
-
 /**
 */
 class ExtStressSolverImpl final : public ExtStressSolver
@@ -990,11 +1014,12 @@ public:
 
     virtual void                            setAllNodesInfoFromLL(float density = 1.0f) override;
 
-    virtual void                            setNodeInfo(uint32_t graphNode, float mass, float volume, NvcVec3 localPos, bool isStatic) override;
+    virtual void                            setNodeInfo(uint32_t graphNode, float mass, float volume, NvcVec3 localPos) override;
 
     virtual void                            setSettings(const ExtStressSolverSettings& settings) override
     {
         m_settings = settings;
+        inheritSettingsLimits();
     }
 
     virtual const ExtStressSolverSettings&  getSettings() const override
@@ -1019,7 +1044,6 @@ public:
     }
 
     virtual void                            generateFractureCommands(const NvBlastActor& actor, NvBlastFractureBuffers& commands) override;
-    virtual void                            generateFractureCommands(NvBlastFractureBuffers& commands) override;
     virtual uint32_t                        generateFractureCommandsPerActor(const NvBlastActor** actorBuffer, NvBlastFractureBuffers* commandsBuffer, uint32_t bufferSize) override;
 
 
@@ -1048,6 +1072,8 @@ public:
         return m_graphProcessor->getSolverBondCount();
     }
 
+    virtual bool                            getExcessForces(uint32_t actorIndex, const NvcVec3& com, NvcVec3& force, NvcVec3& torque) override;
+
     virtual bool                            notifyActorCreated(const NvBlastActor& actor) override;
 
     virtual void                            notifyActorDestroyed(const NvBlastActor& actor) override;
@@ -1069,10 +1095,35 @@ private:
 
     void                                    iterate();
 
-    void                                    syncSolver();
+    void                                    removeBrokenBonds();
 
     template<class T>
     T*                                      getScratchArray(uint32_t size);
+
+    bool                                    generateStressDamage(const NvBlastActor& actor, uint32_t bondIndex, uint32_t node0, uint32_t node1);
+    void                                    inheritSettingsLimits()
+    {
+        NVBLAST_ASSERT(m_settings.compressionElasticLimit >= 0.0f && m_settings.compressionFatalLimit >= 0.0f);
+
+        // check if any optional limits need to inherit from the compression values
+        if (m_settings.tensionElasticLimit < 0.0f)
+        {
+            m_settings.tensionElasticLimit = m_settings.compressionElasticLimit;
+        }
+        if (m_settings.tensionFatalLimit < 0.0f)
+        {
+            m_settings.tensionFatalLimit = m_settings.compressionFatalLimit;
+        }
+
+        if (m_settings.shearElasticLimit < 0.0f)
+        {
+            m_settings.shearElasticLimit = m_settings.compressionElasticLimit;
+        }
+        if (m_settings.shearFatalLimit < 0.0f)
+        {
+            m_settings.shearFatalLimit = m_settings.compressionFatalLimit;
+        }
+    }
 
 
     //////// data ////////
@@ -1090,6 +1141,7 @@ private:
     bool                                                                m_isDirty;
     bool                                                                m_reset;
     const float*                                                        m_bondHealths;
+    const float*                                                        m_cachedBondHealths;
     const NvBlastBond*                                                  m_bonds;
     SupportGraphProcessor*                                              m_graphProcessor;
     float                                                               m_errorAngular;
@@ -1118,9 +1170,12 @@ NV_INLINE T* ExtStressSolverImpl::getScratchArray(uint32_t size)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ExtStressSolverImpl::ExtStressSolverImpl(const NvBlastFamily& family, const ExtStressSolverSettings& settings)
-    : m_family(family), m_settings(settings), m_isDirty(false), m_reset(false), 
+    : m_family(family), m_settings(settings), m_isDirty(false), m_reset(false),
     m_errorAngular(std::numeric_limits<float>::max()), m_errorLinear(std::numeric_limits<float>::max()), m_framesCount(0)
 {
+    // this needs to be called any time settings change, including when they are first set
+    inheritSettingsLimits();
+
     const NvBlastAsset* asset = NvBlastFamilyGetAsset(&m_family, logLL);
     NVBLAST_ASSERT(asset);
 
@@ -1133,6 +1188,7 @@ ExtStressSolverImpl::ExtStressSolverImpl(const NvBlastFamily& family, const ExtS
         NvBlastActor* actor;
         NvBlastFamilyGetActors(&actor, 1, &family, logLL);
         m_bondHealths = NvBlastActorGetBondHealths(actor, logLL);
+        m_cachedBondHealths = NvBlastActorGetCachedBondHeaths(actor, logLL);
         m_bonds = NvBlastAssetGetBonds(asset, logLL);
     }
 
@@ -1191,40 +1247,134 @@ void ExtStressSolverImpl::setAllNodesInfoFromLL(float density)
         if (chunkIndex0 >= chunkCount)
         {
             // chunkIndex is invalid means it is static node (represents world)
-            m_graphProcessor->setNodeInfo(node0, 0.0f, 0.0f, PxVec3(), true);
+            m_graphProcessor->setNodeInfo(node0, 0.0f, 0.0f, PxVec3());
         }
         else
         {
-            // Check if node is static. There is at maximum only one static node in LL that represents world, but we consider all nodes 
-            // connected to it directly to be static too. It's better for general stress solver quality to have more then 1 static node.
-            bool isNodeConnectedToStatic = false;
-            for (uint32_t adjacencyIndex = m_graph.adjacencyPartition[node0]; adjacencyIndex < m_graph.adjacencyPartition[node0 + 1]; adjacencyIndex++)
-            {
-                uint32_t bondIndex = m_graph.adjacentBondIndices[adjacencyIndex];
-                if (m_bondHealths[bondIndex] <= 0.0f)
-                    continue;
-                uint32_t node1 = m_graph.adjacentNodeIndices[adjacencyIndex];
-                uint32_t chunkIndex1 = m_graph.chunkIndices[node1];
-                if (chunkIndex1 >= chunkCount)
-                {
-                    isNodeConnectedToStatic = true;
-                    break;
-                }
-            }
-
             // fill node info
             const NvBlastChunk& chunk = chunks[chunkIndex0];
             const float volume = chunk.volume;
             const float mass = volume * density;
             const PxVec3 localPos = *reinterpret_cast<const PxVec3*>(chunk.centroid);
-            m_graphProcessor->setNodeInfo(node0, mass, volume, localPos, isNodeConnectedToStatic);
+            m_graphProcessor->setNodeInfo(node0, mass, volume, localPos);
         }
     }
 }
 
-void ExtStressSolverImpl::setNodeInfo(uint32_t graphNode, float mass, float volume, NvcVec3 localPos, bool isStatic)
+void ExtStressSolverImpl::setNodeInfo(uint32_t graphNode, float mass, float volume, NvcVec3 localPos)
 {
-    m_graphProcessor->setNodeInfo(graphNode, mass, volume, toPxShared(localPos), isStatic);
+    m_graphProcessor->setNodeInfo(graphNode, mass, volume, toPxShared(localPos));
+}
+
+bool ExtStressSolverImpl::getExcessForces(uint32_t actorIndex, const NvcVec3& com, NvcVec3& force, NvcVec3& torque)
+{
+    // otherwise allocate enough space and query the Blast SDK
+    const NvBlastActor* actor = NvBlastFamilyGetActorByIndex(&m_family, actorIndex, logLL);
+    if (actor == nullptr)
+    {
+        return false;
+    }
+
+    const uint32_t nodeCount = NvBlastActorGetGraphNodeCount(actor, logLL);
+    uint32_t* scratch = getScratchArray<uint32_t>(nodeCount);
+    const uint32_t retCount = NvBlastActorGetGraphNodeIndices(scratch, nodeCount, actor, logLL);
+    NVBLAST_ASSERT(retCount == nodeCount);
+
+    // get the mapping between support chunks and actor indices
+    // this is the fastest way to tell if two node/chunks are part of the same actor
+    const uint32_t* actorIndices = NvBlastFamilyGetChunkActorIndices(&m_family, logLL);
+    if (actorIndices == nullptr)
+    {
+        return false;
+    }
+
+    // walk the visible nodes for the actor looking for bonds that broke this frame
+    physx::PxVec3 totalForce(0.0f);
+    physx::PxVec3 totalTorque(0.0f);
+    for (uint32_t n = 0; n < nodeCount; n++)
+    {
+        // find bonds that broke this frame (health <= 0 but internal stress bond index is still valid)
+        const uint32_t nodeIdx = scratch[n];
+        for (uint32_t i = m_graph.adjacencyPartition[nodeIdx]; i < m_graph.adjacencyPartition[nodeIdx + 1]; i++)
+        {
+            // check if the bond is broken first of all
+            const uint32_t blastBondIndex = m_graph.adjacentBondIndices[i];
+            if (m_bondHealths[blastBondIndex] > 0.0f)
+            {
+                continue;
+            }
+
+            // broken bonds that have invalid internal indices broke before this frame
+            const uint32_t internalBondIndex = m_graphProcessor->getInternalBondIndex(blastBondIndex);
+            if (isInvalidIndex(internalBondIndex))
+            {
+                continue;
+            }
+
+            // make sure the other node in the bond isn't part of the same actor
+            // forces should only be applied due to bonds breaking between actors, not within
+            const uint32_t chunkIdx = m_graph.chunkIndices[nodeIdx];
+            const uint32_t otherNodeIdx = m_graph.adjacentNodeIndices[i];
+            const uint32_t otherChunkIdx = m_graph.chunkIndices[otherNodeIdx];
+            if (!isInvalidIndex(chunkIdx) && !isInvalidIndex(otherChunkIdx) && actorIndices[chunkIdx] == actorIndices[otherChunkIdx])
+            {
+                continue;
+            }
+
+            // this bond should contribute forces to the output
+            const auto bondData = m_graphProcessor->getBondData(internalBondIndex);
+            NVBLAST_ASSERT(blastBondIndex == bondData.blastBondIndex);
+            uint32_t node0, node1;
+            m_graphProcessor->getSolverInternalBondNodes(internalBondIndex, node0, node1);
+            NVBLAST_ASSERT(bondData.node0 == internalBondData.node0 && bondData.node1 == internalBondData.node1);
+            PxVec3 impulseLinear, impulseAngular;
+            m_graphProcessor->getSolverInternalBondImpulses(internalBondIndex, impulseLinear, impulseAngular);
+
+            // accumulators for forces just from this bond
+            physx::PxVec3 pxForce(0.0f);
+            physx::PxVec3 pxTorque(0.0f);
+
+            // deal with linear forces
+            const float excessCompression = bondData.stressNormal + m_settings.compressionFatalLimit;
+            const float excessTension = bondData.stressNormal - m_settings.tensionFatalLimit;
+            if (excessCompression < 0.0f)
+            {
+                pxForce += excessCompression * bondData.normal;
+            }
+            else if (excessTension > 0.0f)
+            {
+                // tension is in the negative direction of the linear impulse
+                pxForce += excessTension * bondData.normal;
+            }
+
+            const float excessShear = bondData.stressShear - m_settings.shearFatalLimit;
+            if (excessShear > 0.0f)
+            {
+                const physx::PxVec3 shearDir = impulseLinear - impulseLinear.dot(bondData.normal)*bondData.normal;
+                pxForce += excessShear * shearDir.getNormalized();
+            }
+
+            if (pxForce.magnitudeSquared() > FLT_EPSILON)
+            {
+                const float* bondCenter = m_bonds[blastBondIndex].centroid;
+                const physx::PxVec3 forceOffset = physx::PxVec3(bondCenter[0], bondCenter[1], bondCenter[3]) - toPxShared(com);
+                const physx::PxVec3 torqueFromForce = forceOffset.cross(pxForce);
+                pxTorque += torqueFromForce;
+            }
+
+            // add the contributions from this bond to the total forces for the actor
+            // multiply by the area to convert back to force from pressure
+            const float bondRemainingArea = m_cachedBondHealths[blastBondIndex];
+            NVBLAST_ASSERT(bondRemainingArea <= m_bonds[blastBondIndex].area);
+            totalForce += pxForce * bondRemainingArea;
+            totalTorque += pxTorque * bondRemainingArea;
+        }
+    }
+
+    // convert to the output format and return true if non-zero forces were accumulated
+    force = fromPxShared(totalForce);
+    torque = fromPxShared(totalTorque);
+    return (totalForce.magnitudeSquared() + totalTorque.magnitudeSquared()) > 0.0f;
 }
 
 bool ExtStressSolverImpl::notifyActorCreated(const NvBlastActor& actor)
@@ -1257,7 +1407,7 @@ void ExtStressSolverImpl::notifyActorDestroyed(const NvBlastActor& actor)
     }
 }
 
-void ExtStressSolverImpl::syncSolver()
+void ExtStressSolverImpl::removeBrokenBonds()
 {
     // traverse graph and remove dead bonds
     for (uint32_t node0 = 0; node0 < m_graph.nodeCount; ++node0)
@@ -1268,7 +1418,6 @@ void ExtStressSolverImpl::syncSolver()
             if (node0 < node1)
             {
                 uint32_t bondIndex = m_graph.adjacentBondIndices[adjacencyIndex];
-
                 if (m_bondHealths[bondIndex] <= 0.0f)
                 {
                     m_graphProcessor->removeBondIfExists(bondIndex);
@@ -1289,7 +1438,7 @@ void ExtStressSolverImpl::initialize()
 
     if (m_isDirty)
     {
-        syncSolver();
+        removeBrokenBonds();
     }
 
     if (m_settings.graphReductionLevel != m_graphProcessor->getGraphReductionLevel())
@@ -1405,6 +1554,61 @@ void ExtStressSolverImpl::solve()
 //                                                  Damage
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// check if this bond is over stressed in any way and generate a fracture command if it is
+bool ExtStressSolverImpl::generateStressDamage(const NvBlastActor& actor, uint32_t bondIndex, uint32_t node0, uint32_t node1)
+{
+    const float bondHealth = m_bondHealths[bondIndex];
+    float stressCompression, stressTension, stressShear;
+    if (bondHealth > 0.0f && m_graphProcessor->getBondStress(bondIndex, stressCompression, stressTension, stressShear))
+    {
+        // compression and tension are mutually exclusive, only one can be positive at a time since they act in opposite directions
+        float stressMultiplier = 0.0f;
+        if (stressCompression > m_settings.compressionElasticLimit)
+        {
+            const float excessStress = stressCompression - m_settings.compressionElasticLimit;
+            const float compressionDenom = m_settings.compressionFatalLimit - m_settings.compressionElasticLimit;
+            const float compressionMultiplier = excessStress / (compressionDenom > 0.0f ? compressionDenom : 1.0f);
+            stressMultiplier += compressionMultiplier;
+        }
+        else if (stressTension > m_settings.tensionElasticLimit)
+        {
+            const float excessStress = stressTension - m_settings.tensionElasticLimit;
+            const float tensionDenom = m_settings.tensionFatalLimit - m_settings.tensionElasticLimit;
+            const float tensionMultiplier = excessStress / (tensionDenom > 0.0f ? tensionDenom : 1.0f);
+            stressMultiplier += tensionMultiplier;
+        }
+
+        // shear can co-exist with either compression or tension so must be accounted for independently of them
+        if (stressShear > m_settings.shearElasticLimit)
+        {
+            const float excessStress = stressShear - m_settings.shearElasticLimit;
+            const float shearDenom = m_settings.shearFatalLimit - m_settings.shearElasticLimit;
+            const float shearMultiplier = excessStress / (shearDenom > 0.0f ? shearDenom : 1.0f);
+            stressMultiplier += shearMultiplier;
+        }
+
+        if (stressMultiplier > 0.0f)
+        {
+            // bond health/area is reduced by excess pressure to approximate micro bonds in the material breaking
+            const float bondDamage = bondHealth * stressMultiplier;
+            const NvBlastBondFractureData data = {
+                0,
+                node0,
+                node1,
+                bondDamage
+            };
+            m_bondFractureBuffer.pushBack(data);
+
+            // cache off the current health value for this bond
+            // so it can be used to calculate forces to apply if it breaks later
+            NvBlastActorCacheBondHeath(&actor, bondIndex, logLL);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void ExtStressSolverImpl::fillFractureCommands(const NvBlastActor& actor, NvBlastFractureBuffers& commands)
 {
     const uint32_t graphNodeCount = NvBlastActorGetGraphNodeCount(&actor, logLL);
@@ -1420,22 +1624,12 @@ void ExtStressSolverImpl::fillFractureCommands(const NvBlastActor& actor, NvBlas
             const uint32_t node0 = graphNodeIndices[i];
             for (uint32_t adjacencyIndex = m_graph.adjacencyPartition[node0]; adjacencyIndex < m_graph.adjacencyPartition[node0 + 1]; adjacencyIndex++)
             {
-                uint32_t node1 = m_graph.adjacentNodeIndices[adjacencyIndex];
+                const uint32_t node1 = m_graph.adjacentNodeIndices[adjacencyIndex];
                 if (node0 < node1)
                 {
-                    uint32_t bondIndex = m_graph.adjacentBondIndices[adjacencyIndex];
-                    const float bondHealth = m_bondHealths[bondIndex];
-                    const float bondStress = m_graphProcessor->getBondStress(bondIndex);
-
-                    if (bondHealth > 0.0f && bondStress > bondHealth)
+                    const uint32_t bondIndex = m_graph.adjacentBondIndices[adjacencyIndex];
+                    if (generateStressDamage(actor, bondIndex, node0, node1))
                     {
-                        const NvBlastBondFractureData data = {
-                            0,
-                            node0,
-                            node1,
-                            bondHealth
-                        };
-                        m_bondFractureBuffer.pushBack(data);
                         commandCount++;
                     }
                 }
@@ -1455,35 +1649,7 @@ void ExtStressSolverImpl::generateFractureCommands(const NvBlastActor& actor, Nv
     fillFractureCommands(actor, commands);
 }
 
-void ExtStressSolverImpl::generateFractureCommands(NvBlastFractureBuffers& commands)
-{
-    m_bondFractureBuffer.clear();
-
-    const uint32_t bondCount = m_graphProcessor->getBondCount();
-    const uint32_t overstressedBondCount = m_graphProcessor->getOverstressedBondCount();
-    for (uint32_t i = 0; i < bondCount && m_bondFractureBuffer.size() < overstressedBondCount; i++)
-    {
-        const auto& bondData = m_graphProcessor->getBondData(i);
-        const float bondHealth = m_bondHealths[bondData.blastBondIndex];
-        if (bondHealth > 0.0f && bondData.stress > bondHealth)
-        {
-            const NvBlastBondFractureData data = {
-                0,
-                bondData.node0,
-                bondData.node1,
-                bondHealth
-            };
-            m_bondFractureBuffer.pushBack(data);
-        }
-    }
-
-    commands.chunkFractureCount = 0;
-    commands.chunkFractures = nullptr;
-    commands.bondFractureCount = m_bondFractureBuffer.size();
-    commands.bondFractures = m_bondFractureBuffer.size() > 0 ? m_bondFractureBuffer.begin() : nullptr;
-}
-
-uint32_t ExtStressSolverImpl::generateFractureCommandsPerActor(const NvBlastActor**  actorBuffer, NvBlastFractureBuffers* commandsBuffer, uint32_t bufferSize)
+uint32_t ExtStressSolverImpl::generateFractureCommandsPerActor(const NvBlastActor** actorBuffer, NvBlastFractureBuffers* commandsBuffer, uint32_t bufferSize)
 {
     if (m_graphProcessor->getOverstressedBondCount() == 0)
         return 0;
@@ -1517,15 +1683,9 @@ static PxU32 PxVec4ToU32Color(const PxVec4& color)
            ((PxU32)(color.z * 255));        // B
 }
 
-static PxVec4 PxVec4Lerp(const PxVec4 v0, const PxVec4 v1, float val)
+static float Lerp(float v0, float v1, float val)
 {
-    PxVec4 v(
-        v0.x * (1 - val) + v1.x * val,
-        v0.y * (1 - val) + v1.y * val,
-        v0.z * (1 - val) + v1.z * val,
-        v0.w * (1 - val) + v1.w * val
-    );
-    return v;
+    return v0 * (1 - val) + v1 * val;
 }
 
 inline float clamp01(float v)
@@ -1533,21 +1693,36 @@ inline float clamp01(float v)
     return v < 0.0f ? 0.0f : (v > 1.0f ? 1.0f : v);
 }
 
+inline PxVec4 colorConvertHSVAtoRGBA(float h, float s, float v, float a)
+{
+    const float t = 6.0f * (h - std::floor(h));
+    const int n = (int)t;
+    const float m = t - (float)n;
+    const float c = 1.0f - s;
+    const float b[6] = { 1.0f, 1.0f - s * m, c, c, 1.0f - s * (1.0f - m), 1.0f };
+    return PxVec4(v * b[n % 6], v * b[(n + 4) % 6], v * b[(n + 2) % 6], a); // n % 6 protects against roundoff errors
+}
+
 inline uint32_t bondHealthColor(float stressPct)
 {
     stressPct = clamp01(stressPct);
 
-    const PxVec4 BOND_HEALTHY_COLOR(0.0f, 1.0f, 0.0f, 1.0f);
-    const PxVec4 BOND_MID_COLOR(1.0f, 1.0f, 0.0f, 1.0f);
-    const PxVec4 BOND_STRESSED_COLOR(1.0f, 0.0f, 0.0f, 1.0f);
+    constexpr float BOND_HEALTHY_HUE = 1.0f/3.0f;   // Green
+    constexpr float BOND_ELASTIC_HUE = 0.0f;        // Red
+    constexpr float BOND_STRESSED_HUE = 2.0f/3.0f;  // Blue
+    constexpr float BOND_FATAL_HUE = 5.0f/6.0f;     // Magenta
 
-    return PxVec4ToU32Color(stressPct < 0.5 ? PxVec4Lerp(BOND_HEALTHY_COLOR, BOND_MID_COLOR, 2.0f * stressPct) : PxVec4Lerp(BOND_MID_COLOR, BOND_STRESSED_COLOR, 2.0f * stressPct - 1.0f));
+    const float hue = stressPct < 0.5f ?
+        Lerp(BOND_HEALTHY_HUE, BOND_ELASTIC_HUE, 2.0f * stressPct) : Lerp(BOND_STRESSED_HUE, BOND_FATAL_HUE, 2.0f * stressPct - 1.0f);
+
+    return PxVec4ToU32Color(colorConvertHSVAtoRGBA(hue, 1.0f, 1.0f, 1.0f));
 }
 
 const ExtStressSolver::DebugBuffer ExtStressSolverImpl::fillDebugRender(const uint32_t* nodes, uint32_t nodeCount, DebugRenderMode mode, float scale)
 {
-    const uint32_t BOND_IMPULSE_LINEAR_COLOR = PxVec4ToU32Color(PxVec4(0.0f, 1.0f, 0.0f, 1.0f));
-    const uint32_t BOND_IMPULSE_ANGULAR_COLOR = PxVec4ToU32Color(PxVec4(1.0f, 0.0f, 0.0f, 1.0f));
+    NV_UNUSED(scale);
+
+    const uint32_t BOND_UNBREAKABLE_COLOR = PxVec4ToU32Color(PxVec4(0.0f, 0.682f, 1.0f, 1.0f));
 
     ExtStressSolver::DebugBuffer debugBuffer = { nullptr, 0 };
 
@@ -1569,37 +1744,23 @@ const ExtStressSolver::DebugBuffer ExtStressSolverImpl::fillDebugRender(const ui
     const uint32_t bondCount = m_graphProcessor->getSolverBondCount();
     for (uint32_t i = 0; i < bondCount; ++i)
     {
-        const auto& solverInternalBondData = m_graphProcessor->getSolverInternalBondData(i);
-        if (nodesSet[solverInternalBondData.node0] != 0)
+        const auto& bondData = m_graphProcessor->getBondData(i);
+        uint32_t node0, node1;
+        m_graphProcessor->getSolverInternalBondNodes(i, node0, node1);
+        if (nodesSet[node0] != 0)
         {
-            //NVBLAST_ASSERT(nodesSet[solverInternalBondData.node1] != 0);
-            const auto& solverNode0 = m_graphProcessor->getSolverNodeData(solverInternalBondData.node0);
-            const auto& solverNode1 = m_graphProcessor->getSolverNodeData(solverInternalBondData.node1);
-            const NvcVec3 p0 = fromPxShared(solverNode0.localPos);
-            const NvcVec3 p1 = fromPxShared(solverNode1.localPos);
+            //NVBLAST_ASSERT(nodesSet[node1] != 0);
+            const auto& solverNode0 = m_graphProcessor->getSolverNodeData(node0);
+            const auto& solverNode1 = m_graphProcessor->getSolverNodeData(node1);
+            const NvcVec3 p0 = fromPxShared(solverNode0.mass > 0.0f ? solverNode0.localPos : bondData.centroid);
+            const NvcVec3 p1 = fromPxShared(solverNode1.mass > 0.0f ? solverNode1.localPos : bondData.centroid);
 
             // don't render lines for broken bonds
-            const float stressPct = m_graphProcessor->getSolverBondStressPct(i, m_bondHealths);
+            const float stressPct = m_graphProcessor->getSolverBondStressPct(i, m_bondHealths, m_settings, mode);
             if (stressPct >= 0.0f)
             {
-                const uint32_t color = bondHealthColor(stressPct);
+                const uint32_t color = canTakeDamage(m_bondHealths[bondData.blastBondIndex]) ? bondHealthColor(stressPct) : BOND_UNBREAKABLE_COLOR;
                 m_debugLineBuffer.pushBack(DebugLine(p0, p1, color));
-            }
-
-            if (mode == DebugRenderMode::STRESS_GRAPH_NODES_IMPULSES)
-            {
-                const auto& solverInternalNode0 = m_graphProcessor->getSolverInternalNodeData(solverInternalBondData.node0);
-                const auto& solverInternalNode1 = m_graphProcessor->getSolverInternalNodeData(solverInternalBondData.node1);
-                m_debugLineBuffer.pushBack(DebugLine(p0, p0 + fromPxShared(solverInternalNode0.velocityLinear) * scale, BOND_IMPULSE_LINEAR_COLOR));
-                m_debugLineBuffer.pushBack(DebugLine(p0, p0 + fromPxShared(solverInternalNode0.velocityAngular) * scale, BOND_IMPULSE_ANGULAR_COLOR));
-                m_debugLineBuffer.pushBack(DebugLine(p1, p1 + fromPxShared(solverInternalNode1.velocityLinear) * scale, BOND_IMPULSE_LINEAR_COLOR));
-                m_debugLineBuffer.pushBack(DebugLine(p1, p1 + fromPxShared(solverInternalNode1.velocityAngular) * scale, BOND_IMPULSE_ANGULAR_COLOR));
-            }
-            else if (mode == DebugRenderMode::STRESS_GRAPH_BONDS_IMPULSES)
-            {
-                const NvcVec3 center = (p0 + p1) * 0.5f;
-                m_debugLineBuffer.pushBack(DebugLine(center, center + fromPxShared(solverInternalBondData.impulseLinear) * scale, BOND_IMPULSE_LINEAR_COLOR));
-                m_debugLineBuffer.pushBack(DebugLine(center, center + fromPxShared(solverInternalBondData.impulseAngular) * scale, BOND_IMPULSE_ANGULAR_COLOR));
             }
         }
     }
