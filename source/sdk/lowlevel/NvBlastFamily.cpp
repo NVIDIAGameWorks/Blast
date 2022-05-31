@@ -49,6 +49,7 @@ struct FamilyDataOffsets
     size_t m_graphNodeIndexLinks;
     size_t m_lowerSupportChunkHealths;
     size_t m_graphBondHealths;
+    size_t m_graphCachedBondHealths;
     size_t m_familyGraph;
 };
 
@@ -62,6 +63,7 @@ static size_t createFamilyDataOffsets(FamilyDataOffsets& offsets, const NvBlastA
     NvBlastCreateOffsetAlign16(offsets.m_graphNodeIndexLinks, sizeData.nodeCount * sizeof(uint32_t));
     NvBlastCreateOffsetAlign16(offsets.m_lowerSupportChunkHealths, sizeData.lowerSupportChunkCount * sizeof(float));
     NvBlastCreateOffsetAlign16(offsets.m_graphBondHealths, sizeData.bondCount * sizeof(float));
+    NvBlastCreateOffsetAlign16(offsets.m_graphCachedBondHealths, sizeData.bondCount * sizeof(float));
     NvBlastCreateOffsetAlign16(offsets.m_familyGraph, static_cast<size_t>(FamilyGraph::requiredMemorySize(sizeData.nodeCount, sizeData.bondCount)));
     return NvBlastCreateOffsetEndAlign16();
 }
@@ -136,6 +138,7 @@ static NvBlastFamily* createFamily(void* mem, const NvBlastAssetMemSizeData& siz
     header->m_graphNodeIndexLinksOffset = (uint32_t)offsets.m_graphNodeIndexLinks;
     header->m_lowerSupportChunkHealthsOffset = (uint32_t)offsets.m_lowerSupportChunkHealths;
     header->m_graphBondHealthsOffset = (uint32_t)offsets.m_graphBondHealths;
+    header->m_graphCachedBondHealthsOffset = (uint32_t)offsets.m_graphCachedBondHealths;
     header->m_familyGraphOffset = (uint32_t)offsets.m_familyGraph;
 
     // Initialize family header data:
@@ -737,6 +740,18 @@ NvBlastActor* NvBlastFamilyGetChunkActor(const NvBlastFamily* family, uint32_t c
     NVBLASTLL_CHECK(chunkIndex < header->m_asset->m_chunkCount, logFn, "NvBlastFamilyGetChunkActor: bad value of chunkIndex for the given family's asset.", return nullptr);
 
     return header->getChunkActor(chunkIndex);
+}
+
+
+uint32_t* NvBlastFamilyGetChunkActorIndices(const NvBlastFamily* family, NvBlastLog logFn)
+{
+    NVBLASTLL_CHECK(family != nullptr, logFn, "NvBlastFamilyGetChunkActorIndices: NULL family pointer input.", return nullptr);
+
+    const Nv::Blast::FamilyHeader* header = reinterpret_cast<const Nv::Blast::FamilyHeader*>(family);
+
+    NVBLASTLL_CHECK(header->m_asset != nullptr, logFn, "NvBlastFamilyGetChunkActorIndices: NvBlastFamily has null asset set.", return nullptr);
+
+    return header->getChunkActorIndices();
 }
 
 

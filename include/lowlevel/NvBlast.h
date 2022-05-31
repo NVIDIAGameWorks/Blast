@@ -617,6 +617,18 @@ NVBLAST_API NvBlastActor* NvBlastFamilyGetChunkActor(const NvBlastFamily* family
 
 
 /**
+Retrieve the actor indices associated with chunks.
+NOTE: the returned array size equals the number of support chunks in the asset.
+
+\param[in] family       The family.
+\param[in] logFn        User-supplied message function (see NvBlastLog definition).  May be NULL.
+
+\return pointer to actor associated with given chunk.  NULL if there is no such actor.
+*/
+NVBLAST_API uint32_t* NvBlastFamilyGetChunkActorIndices(const NvBlastFamily* family, NvBlastLog logFn);
+
+
+/**
 Retrieve the max active actor count family could have.
 
 \param[in] family       The family.
@@ -703,6 +715,41 @@ If the input actor is invalid, NULL will be returned.
 \return the array of bond healths for the actor's instance family, or NULL if the actor is invalid.
 */
 NVBLAST_API const float* NvBlastActorGetBondHealths(const NvBlastActor* actor, NvBlastLog logFn);
+
+
+/**
+Access the cached bond health data for an actor.  It is intended to be populated with pre-damage health values.
+
+This function returns a pointer to the head of an array of bond healths (floats).  This array is the same for any actor that
+has been created from repeated fracturing of the same original instance of an asset (in the same instance family).
+
+The indices obtained from NvBlastSupportGraph::adjacentBondIndices in the asset may be used to access this array.
+
+The size of the array returned is NvBlastAssetGetBondCount(asset, logFn), where 'asset' is the NvBlastAsset
+that was used to create the actor.
+
+This array is valid as long as any actor in the instance family for the input actor exists.
+
+If the input actor is invalid, NULL will be returned.
+
+\param[in] actor    The actor.
+\param[in] logFn    User-supplied message function (see NvBlastLog definition).  May be NULL.
+
+\return the array of bond healths for the actor's instance family, or NULL if the actor is invalid.
+*/
+NVBLAST_API const float* NvBlastActorGetCachedBondHeaths(const NvBlastActor* actor, NvBlastLog logFn);
+
+
+/**
+Tell the system to cache the bond health for the given bond index.
+
+\param[in] actor        The actor.
+\param[in] bondIndex    The bond to cache the health value.
+\param[in] logFn        User-supplied message function (see NvBlastLog definition).  May be NULL.
+
+\return true if value was cached, false otherwise
+ */
+NVBLAST_API bool NvBlastActorCacheBondHeath(const NvBlastActor* actor, uint32_t bondIndex, NvBlastLog logFn);
 
 
 /**

@@ -324,7 +324,6 @@ void CommonUIController::drawUI()
                 "Health Graph + Centroids",      // DEBUG_RENDER_HEALTH_GRAPH_CENTROIDS
                 "Joints",                        // DEBUG_RENDER_JOINTS
                 "Stress Graph",                  // DEBUG_RENDER_STRESS_GRAPH
-                "Stress Graph + Nodes Impulses", // DEBUG_RENDER_STRESS_GRAPH_NODES_IMPULSES 
                 "Stress Graph + Bonds Impulses"  // DEBUG_RENDER_STRESS_GRAPH_BONDS_IMPULSES
             };
             ImGui::Combo("Blast Debug Render Mode (I)", (int*)&getBlastController().debugRenderMode, debugRenderItems, IM_ARRAYSIZE(debugRenderItems), -1);

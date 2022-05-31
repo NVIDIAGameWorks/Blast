@@ -181,7 +181,7 @@ uint32_t Actor::damageBond(const NvBlastBondFractureData& cmd)
 }
 
 
-void Actor::generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBlastDamageProgram& program, const void* programParams, 
+void Actor::generateFracture(NvBlastFractureBuffers* commandBuffers, const NvBlastDamageProgram& program, const void* programParams,
     NvBlastLog logFn, NvBlastTimers* timers) const
 {
     NVBLASTLL_CHECK(commandBuffers != nullptr, logFn, "Actor::generateFracture: NULL commandBuffers pointer input.", return);
@@ -361,7 +361,7 @@ uint32_t Actor::split(NvBlastActorSplitEvent* result, uint32_t newActorsMaxCount
             }
 #endif
 
-            // Get various pointers and values to iterate 
+            // Get various pointers and values to iterate
             const Asset* asset = getAsset();
             Actor* actors = header->getActors();
             IndexDLink<uint32_t>* visibleChunkIndexLinks = header->getVisibleChunkIndexLinks();
@@ -701,7 +701,7 @@ NvBlastActor* NvBlastFamilyCreateFirstActor(NvBlastFamily* family, const NvBlast
 size_t NvBlastFamilyGetRequiredScratchForCreateFirstActor(const NvBlastFamily* family, NvBlastLog logFn)
 {
     NVBLASTLL_CHECK(family != nullptr, logFn, "NvBlastFamilyGetRequiredScratchForCreateFirstActor: NULL family input.", return 0);
-    NVBLASTLL_CHECK(reinterpret_cast<const Nv::Blast::FamilyHeader*>(family)->m_asset != nullptr, 
+    NVBLASTLL_CHECK(reinterpret_cast<const Nv::Blast::FamilyHeader*>(family)->m_asset != nullptr,
         logFn, "NvBlastFamilyGetRequiredScratchForCreateFirstActor: family has NULL asset.", return 0);
 
     return Nv::Blast::Actor::createRequiredScratch(family, logFn);
@@ -823,6 +823,42 @@ const float* NvBlastActorGetBondHealths(const NvBlastActor* actor, NvBlastLog lo
     return a.getFamilyHeader()->getBondHealths();
 }
 
+
+const float* NvBlastActorGetCachedBondHeaths(const NvBlastActor* actor, NvBlastLog logFn)
+{
+    NVBLASTLL_CHECK(actor != nullptr, logFn, "NvBlastActorGetCachedBondHeaths: NULL actor pointer input.", return nullptr);
+
+    const Nv::Blast::Actor& a = *static_cast<const Nv::Blast::Actor*>(actor);
+
+    if (!a.isActive())
+    {
+        NVBLASTLL_LOG_ERROR(logFn, "NvBlastActorGetCachedBondHeaths: inactive actor pointer input.");
+        return nullptr;
+    }
+
+    return a.getFamilyHeader()->getCachedBondHealths();
+}
+
+
+bool NvBlastActorCacheBondHeath(const NvBlastActor* actor, uint32_t bondIndex, NvBlastLog logFn)
+{
+    NVBLASTLL_CHECK(actor != nullptr, logFn, "NvBlastActorCacheBondHeath: NULL actor pointer input.", return nullptr);
+
+    const Nv::Blast::Actor& a = *static_cast<const Nv::Blast::Actor*>(actor);
+
+    if (!a.isActive())
+    {
+        NVBLASTLL_LOG_ERROR(logFn, "NvBlastActorCacheBondHeath: inactive actor pointer input.");
+        return false;
+    }
+
+    // copy the value over from the current bond health
+    Nv::Blast::FamilyHeader* familyHeader = a.getFamilyHeader();
+    const float curHealth = familyHeader->getBondHealths()[bondIndex];
+    familyHeader->getCachedBondHealths()[bondIndex] = curHealth;
+
+    return true;
+}
 
 NvBlastFamily* NvBlastActorGetFamily(const NvBlastActor* actor, NvBlastLog logFn)
 {

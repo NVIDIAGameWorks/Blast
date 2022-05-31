@@ -472,13 +472,23 @@ group "sdk"
         includedirs {
             "include/lowlevel",
             "include/globals",
+            "source/shared/stress_solver",
             target_deps.."/physxsdk/include",
             target_deps.."/physxsdk/source/foundation/include",
             target_deps.."/pxshared/include",
         }
+        files {
+            "source/shared/stress_solver/stress.cpp",
+        }
+        filter { "system:windows" }
+            disablewarnings {
+                "4324", -- structure was padded due to alignment specifier
+                "4505", -- unreferenced local function has been removed
+            }
         filter { "system:linux"}
             disablewarnings {
-                "maybe-uninitialized"
+                "maybe-uninitialized",
+                "padded",
             }
         filter {}
 

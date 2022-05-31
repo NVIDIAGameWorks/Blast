@@ -1,6 +1,11 @@
 # Changelog
 
+## [4.0.0] - 27-May-2022
+
 ### New Features
+- Fully integrated stress-damage system.  A stress solver is used to determine how bond forces react to impacts and other externally-supplied accelerations.
+Stress limits (elastic and fatal) determine how bond health (area) deteriorates with bond force.  When bonds break and new actors are generated,
+excess forces are applied to the previously joined bodies.  Using a new stress solver with better convergence properties.
 - Documentation publishing.
 
 
