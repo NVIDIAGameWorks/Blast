@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.0.0] - 27-May-2022
+## [4.0.0] - 31-May-2022
 
 ### New Features
 - Fully integrated stress-damage system.  A stress solver is used to determine how bond forces react to impacts and other externally-supplied accelerations.

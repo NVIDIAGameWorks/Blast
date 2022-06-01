@@ -30,7 +30,7 @@
 #include "coupling.h"
 #include "inertia.h"
 
-#include "NvcMath.h"
+#include "NvCMath.h"
 
 
 template<typename Scalar = Float_Scalar>
