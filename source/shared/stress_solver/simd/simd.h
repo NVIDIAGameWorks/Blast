@@ -27,36 +27,51 @@
 
 #pragma once
 
+#include <xmmintrin.h>
 #include <emmintrin.h>
 #include <immintrin.h>
+
+#if defined(__GNUC__)   // missing with gcc
+#define _mm256_set_m128(vh, vl) _mm256_insertf128_ps(_mm256_castps128_ps256(vl), (vh), 1)
+#endif
 
 
 #define SIMD_ALIGN_16(code) NV_ALIGN_PREFIX(16) code NV_ALIGN_SUFFIX(16)
 #define SIMD_ALIGN_32(code) NV_ALIGN_PREFIX(32) code NV_ALIGN_SUFFIX(32)
 
+inline __m128   add(const __m128& a, const __m128& b)   { return _mm_add_ps(a, b); }
+inline __m128   add(float a, const __m128& b)           { return _mm_add_ps(_mm_load1_ps(&a), b); }
+inline __m128   add(const __m128& a, float b)           { return _mm_add_ps(a, _mm_load1_ps(&b)); }
+inline float    add(float a, float b)                   { return a + b; }
 
-inline __m128   operator +  (const __m128& a, const __m128& b)  { return _mm_add_ps(a, b); }
-inline __m128   operator +  (float a, const __m128& b)          { return _mm_add_ps(_mm_load1_ps(&a), b); }
-inline __m128   operator +  (const __m128& a, float b)          { return _mm_add_ps(a, _mm_load1_ps(&b)); }
+inline __m128   sub(const __m128& a, const __m128& b)   { return _mm_sub_ps(a, b); }
+inline __m128   sub(float a, const __m128& b)           { return _mm_sub_ps(_mm_load1_ps(&a), b); }
+inline __m128   sub(const __m128& a, float b)           { return _mm_sub_ps(a, _mm_load1_ps(&b)); }
+inline float    sub(float a, float b)                   { return a - b; }
 
-inline __m128   operator -  (const __m128& a, const __m128& b)  { return _mm_sub_ps(a, b); }
-inline __m128   operator -  (float a, const __m128& b)          { return _mm_sub_ps(_mm_load1_ps(&a), b); }
-inline __m128   operator -  (const __m128& a, float b)          { return _mm_sub_ps(a, _mm_load1_ps(&b)); }
+inline __m128   mul(const __m128& a, const __m128& b)   { return _mm_mul_ps(a, b); }
+inline __m128   mul(float a, const __m128& b)           { return _mm_mul_ps(_mm_load1_ps(&a), b); }
+inline __m128   mul(const __m128& a, float b)           { return _mm_mul_ps(a, _mm_load1_ps(&b)); }
+inline float    mul(float a, float b)                   { return a * b; }
 
-inline __m128   operator *  (const __m128& a, const __m128& b)  { return _mm_mul_ps(a, b); }
-inline __m128   operator *  (float a, const __m128& b)          { return _mm_mul_ps(_mm_load1_ps(&a), b); }
-inline __m128   operator *  (const __m128& a, float b)          { return _mm_mul_ps(a, _mm_load1_ps(&b)); }
+inline __m128   div(const __m128& a, const __m128& b)   { return _mm_div_ps(a, b); }
+inline __m128   div(float a, const __m128& b)           { return _mm_div_ps(_mm_load1_ps(&a), b); }
+inline __m128   div(const __m128& a, float b)           { return _mm_div_ps(a, _mm_load1_ps(&b)); }
+inline float    div(float a, float b)                   { return a / b; }
 
-inline __m128   operator /  (const __m128& a, const __m128& b)  { return _mm_div_ps(a, b); }
-inline __m128   operator /  (float a, const __m128& b)          { return _mm_div_ps(_mm_load1_ps(&a), b); }
-inline __m128   operator /  (const __m128& a, float b)          { return _mm_div_ps(a, _mm_load1_ps(&b)); }
+inline bool     lt(const __m128& a, const __m128& b)    { return !!_mm_comilt_ss(a, b); }
+inline bool     gt(const __m128& a, const __m128& b)    { return !!_mm_comigt_ss(a, b); }
+inline bool     le(const __m128& a, const __m128& b)    { return !!_mm_comile_ss(a, b); }
+inline bool     ge(const __m128& a, const __m128& b)    { return !!_mm_comige_ss(a, b); }
+inline bool     eq(const __m128& a, const __m128& b)    { return !!_mm_comieq_ss(a, b); }
+inline bool     ne(const __m128& a, const __m128& b)    { return !!_mm_comineq_ss(a, b); }
 
-inline bool     operator <  (const __m128& a, const __m128& b)  { return !!_mm_comilt_ss(a, b); }
-inline bool     operator >  (const __m128& a, const __m128& b)  { return !!_mm_comigt_ss(a, b); }
-inline bool     operator <= (const __m128& a, const __m128& b)  { return !!_mm_comile_ss(a, b); }
-inline bool     operator >= (const __m128& a, const __m128& b)  { return !!_mm_comige_ss(a, b); }
-inline bool     operator == (const __m128& a, const __m128& b)  { return !!_mm_comieq_ss(a, b); }
-inline bool     operator != (const __m128& a, const __m128& b)  { return !!_mm_comineq_ss(a, b); }
+inline bool     lt(const float a, const float b)        { return a < b; }
+inline bool     gt(const float a, const float b)        { return a > b; }
+inline bool     le(const float a, const float b)        { return a <= b; }
+inline bool     ge(const float a, const float b)        { return a >= b; }
+inline bool     eq(const float a, const float b)        { return a == b; }
+inline bool     ne(const float a, const float b)        { return a != b; }
 
 inline float to_float(const __m128& x) { float f; _mm_store_ss(&f, x); return f; }
 inline float to_float(float x) { return x; }

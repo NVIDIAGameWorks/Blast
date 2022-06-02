@@ -27,6 +27,9 @@
 
 #pragma once
 
+#include "simd/simd.h"
+
+
 /**
  * Holds the angular and linear components of the calculated error.
  */
@@ -36,5 +39,4 @@ typedef struct { float ang, lin; } SolverError;
 /**
  * Sets the solver cache state such that a cold start is forced.
  */
-inline void clear_solver_cache(void* cache) { *(float*)cache = 0.0f; }
-
+inline void clear_solver_cache(void* cache) { store_float((float*)cache, 0.0f); }

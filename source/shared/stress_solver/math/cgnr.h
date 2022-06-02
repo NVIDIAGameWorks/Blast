@@ -28,10 +28,9 @@
 #pragma once
 
 #include <stdint.h>
-#include <string>   // for memcpy, memset
+#include <cstring>  // for memcpy, memset
 
 #include "solver_common.h"
-#include "simd/simd.h"
 
 
 template<typename Elem, typename ElemOps, typename Mat, typename MatOps, typename Scalar = float>
@@ -97,29 +96,27 @@ struct CGNR
         Elem* r = (Elem*)cache; cache = r + M;  // Array of length M
         Elem* s = (Elem*)cache;                 // Array of length M
 
-        Scalar z_last_sq;
+        Scalar z_last_sq, delta_sq;
         load_float(z_last_sq, z_last_sq_mem);
+        load_float(delta_sq, delta_sq_mem);
         const bool cache_clear = *z_last_sq_mem == 0.0f;
 
         Scalar z_ang_sq, z_lin_sq;
         set_zero(z_ang_sq); // Zeroing of these is not needed, it just keeps the compiler from fretting
         set_zero(z_lin_sq);
 
-        Scalar delta_sq;
-
-        if (warm && !cache_clear) load_float(delta_sq, delta_sq_mem);   // Load delta_sq from cache and we're good to go
-        else
+        if (!warm || cache_clear)                               // Cold start conditions
         {
-            delta_sq = (tol*tol)*ElemOps().length_sq(b, M); // Calculate allowed residual length squared and cache it
+            delta_sq = mul(tol*tol, ElemOps().length_sq(b, M)); // Calculate allowed residual length squared and cache it
             store_float(delta_sq_mem, delta_sq);
-            memcpy(r, b, sizeof(Elem)*M);                   // Initialize residual r = b
-            if (warm)                                       // Warm start, r = b - A*x
+            memcpy(r, b, sizeof(Elem)*M);                       // Initialize residual r = b
+            if (warm)                                           // Warm start, r = b - A*x
             {
                 MatOps().rmul(s, A, x, M, N);
-                for (uint32_t i = 0; i < M; ++i) ElemOps().sub(r[i], r[i], s[i]);
+                ElemOps().vsub(r, r, s, M);
             }
-            else memset(x, 0, sizeof(Elem)*N);              // Cold start, x = 0 so r = b
-            warm = false;                                   // This lets p be initialized in the loop below
+            else memset(x, 0, sizeof(Elem)*N);                  // Cold start, x = 0 so r = b
+            warm = false;                                       // This lets p be initialized in the loop below
         }
 
         // Iterate
@@ -129,20 +126,19 @@ struct CGNR
         {
             MatOps().lmul(z, r, A, M, N);                                           // Set z = (A^T)*r
             ElemOps().split_length_sq(z_ang_sq, z_lin_sq, z, N);                    // Calculate residual (of modified equation) length squared
-            const Scalar z_sq = z_ang_sq + z_lin_sq;
-            if (z_sq <= delta_sq) break;                                            // Terminate (convergence) if within tolerance
-            if (!warm)                                                              // On the first (cold) iteration set p = z
+            const Scalar z_sq = add(z_ang_sq, z_lin_sq);
+            if (le(z_sq, delta_sq)) break;                                          // Terminate (convergence) if within tolerance
+            if (warm) ElemOps().vmadd(p, div(z_sq, z_last_sq), p, z, N);            // If warm set p = z + (|z|^2/|z_last|^2)*p
+            else                                                                    // If cold set p = z
             {
                 memcpy(p, z, sizeof(Elem)*N);
                 warm = true;
             }
-            else                                                                    // After that, p = z + (|z|^2/|z_last|^2)*p
-                for (uint32_t i = 0; i < N; ++i) ElemOps().madd(p[i], z_sq/z_last_sq, p[i], z[i]);
             z_last_sq = z_sq;
             MatOps().rmul(s, A, p, M, N);                                           // Calculate s = A*p
-            const Scalar mu = z_sq/ElemOps().length_sq(s, M);                       // mu = |z|^2 / |A*p|^2
-            for (uint32_t i = 0; i < N; ++i) ElemOps().madd(x[i], mu, p[i], x[i]);  // x += mu*p
-            for (uint32_t i = 0; i < M; ++i) ElemOps().nmadd(r[i], mu, s[i], r[i]); // r -= mu*s
+            const Scalar mu = div(z_sq, ElemOps().length_sq(s, M));                 // mu = |z|^2 / |A*p|^2
+            ElemOps().vmadd(x, mu, p, x, N);                                        // x += mu*p
+            ElemOps().vnmadd(r, mu, s, r, M);                                       // r -= mu*s
         }
 
         // Store off remainder of state (the rest was maintained in memory with array operations)

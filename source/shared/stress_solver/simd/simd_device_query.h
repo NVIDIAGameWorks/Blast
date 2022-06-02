@@ -27,6 +27,9 @@
 
 #pragma once
 
+#include <utility>
+#include <stdio.h>
+
 
 inline static constexpr uint32_t
 instSetCode(uint8_t fn, uint8_t bitset, uint8_t bit)

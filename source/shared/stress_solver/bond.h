@@ -48,6 +48,18 @@ struct AngLin6Ops
     /** r = -c*x + y */
     inline  void nmadd(AngLin6& r, float c, const AngLin6& x, const AngLin6& y) { r.ang = y.ang - c*x.ang; r.lin = y.lin - c*x.lin; }
 
+    /** Vector add */
+    inline  void vadd(AngLin6* r, const AngLin6* x, const AngLin6* y, uint32_t N)               { while (N--) add(*r++, *x++, *y++); }
+
+    /** Vector sub */
+    inline  void vsub(AngLin6* r, const AngLin6* x, const AngLin6* y, uint32_t N)               { while (N--) sub(*r++, *x++, *y++); }
+
+    /** Vector madd */
+    inline  void vmadd(AngLin6* r, float c, const AngLin6* x, const AngLin6* y, uint32_t N)     { while (N--) madd(*r++, c, *x++, *y++); }
+
+    /** Vector nmadd */
+    inline  void vnmadd(AngLin6* r, float c, const AngLin6* x, const AngLin6* y, uint32_t N)    { while (N--) nmadd(*r++, c, *x++, *y++); }
+
     /**
      * Vector-of-vectors dot product.
      * 
@@ -158,6 +170,18 @@ struct AngLin6Ops<SIMD_Scalar>
         __m256 _r = _mm256_fnmadd_ps(_c, _x, _y);
         _mm256_store_ps(&r.ang.x, _r);
     }
+
+    /** Vector add */
+    inline  void vadd(AngLin6* r, const AngLin6* x, const AngLin6* y, uint32_t N)               { while (N--) add(*r++, *x++, *y++); }
+
+    /** Vector sub */
+    inline  void vsub(AngLin6* r, const AngLin6* x, const AngLin6* y, uint32_t N)               { while (N--) sub(*r++, *x++, *y++); }
+
+    /** Vector madd */
+    inline  void vmadd(AngLin6* r, __m128 c, const AngLin6* x, const AngLin6* y, uint32_t N)    { while (N--) madd(*r++, c, *x++, *y++); }
+
+    /** Vector nmadd */
+    inline  void vnmadd(AngLin6* r, __m128 c, const AngLin6* x, const AngLin6* y, uint32_t N)   { while (N--) nmadd(*r++, c, *x++, *y++); }
 
     /**
      * Vector-of-vectors dot product.

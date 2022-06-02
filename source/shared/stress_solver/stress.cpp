@@ -30,6 +30,7 @@
 #include "simd/simd_device_query.h"
 
 #include <algorithm>
+#include <cmath>
 
 #define MASS_AND_LENGTH_SCALING 1
 

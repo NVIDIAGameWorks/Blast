@@ -76,10 +76,10 @@ struct ExtStressSolverSettings
         // stress force limits
         compressionElasticLimit(1.0f),
         compressionFatalLimit(2.0f),
-        shearElasticLimit(-1.0f),
-        shearFatalLimit(-1.0f),
         tensionElasticLimit(-1.0f),
-        tensionFatalLimit(-1.0f)
+        tensionFatalLimit(-1.0f),
+        shearElasticLimit(-1.0f),
+        shearFatalLimit(-1.0f)
     {}
 };
 
