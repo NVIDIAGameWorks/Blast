@@ -467,6 +467,7 @@ group "sdk"
         }
 
     project "NvBlastExtStress"
+        buildoptions { "-march=haswell" }
         link_dependents({"NvBlast", "NvBlastGlobals"})
         blast_sdklib_standard_setup("extensions/stress")
         includedirs {
@@ -489,7 +490,9 @@ group "sdk"
             disablewarnings {
                 "maybe-uninitialized",
                 "padded",
-            }
+                "ignored-attributes",
+                "unused-function"
+                }
         filter {}
 
     project "NvBlastExtSerialization"

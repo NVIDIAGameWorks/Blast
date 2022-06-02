@@ -112,7 +112,7 @@ public:
     {
         NVBLAST_ASSERT(node < m_nodes.size());
         SolverNodeS& n = m_nodes[node];
-        *(PxVec3*)&n.CoM = CoM;
+        n.CoM = { CoM.x, CoM.y, CoM.z };
         n.mass = std::max(mass, 0.0f);  // No negative masses, but 0 is meaningful (== infinite)
         n.inertia = std::max(inertia, 0.0f);    // Ditto for inertia
         m_forceColdStart = true;
@@ -130,8 +130,8 @@ public:
     {
         NVBLAST_ASSERT(node < m_velocities.size());
         AngLin6& v = m_velocities[node];
-        *(PxVec3*)&v.ang = velocityAngular;
-        *(PxVec3*)&v.lin = velocityLinear;
+        v.ang = { velocityAngular.x, velocityAngular.y, velocityAngular.z };
+        v.lin = { velocityLinear.x, velocityLinear.y, velocityLinear.z };
     }
 
     uint32_t addBond(uint32_t node0, uint32_t node1, const PxVec3& bondCentroid)
@@ -139,7 +139,7 @@ public:
         SolverBond b;
         b.nodes[0] = node0;
         b.nodes[1] = node1;
-        *(PxVec3*)&b.centroid = bondCentroid;
+        b.centroid = { bondCentroid.x, bondCentroid.y, bondCentroid.z };
         m_bonds.pushBack(b);
         m_impulses.pushBack({{0,0,0},{0,0,0}});
         m_forceColdStart = true;
