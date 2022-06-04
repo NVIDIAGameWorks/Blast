@@ -42,18 +42,6 @@ typedef float   Float_Scalar;
 
 
 /**
- * Holds an angular and linear component, for angular and linear accelerations, torques and forces, etc.
- */
-SIMD_ALIGN_32(
-struct AngLin6
-{
-    SIMD_ALIGN_16(NvcVec3 ang);
-    SIMD_ALIGN_16(NvcVec3 lin);
-}
-);
-
-
-/**
  * Holds the components of a rigid body description that are necessary for the stress solver.
  */
 template<typename InertiaType>

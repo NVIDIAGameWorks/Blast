@@ -28,6 +28,7 @@
 #pragma once
 
 #include "solver_types.h"
+#include "anglin6.h"
 
 #include "NvCMath.h"
 

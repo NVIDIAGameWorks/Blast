@@ -192,7 +192,7 @@ private:
     StressProcessor             m_stressProcessor;
     Array<AngLin6>::type        m_velocities;
     Array<AngLin6>::type        m_impulses;
-    SolverError                 m_error_sq;
+    AngLin6ErrorSq              m_error_sq;
     bool                        m_forceColdStart;
 };
 

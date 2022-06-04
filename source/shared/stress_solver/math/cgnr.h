@@ -30,10 +30,10 @@
 #include <stdint.h>
 #include <cstring>  // for memcpy, memset
 
-#include "solver_common.h"
+#include "simd/simd.h"
 
 
-template<typename Elem, typename ElemOps, typename Mat, typename MatOps, typename Scalar = float>
+template<typename Elem, typename ElemOps, typename Mat, typename MatOps, typename Scalar = float, typename Error = float>
 struct CGNR
 {
     /**
@@ -63,12 +63,15 @@ struct CGNR
      * \param[in]   b           Right hand side of equation to be solved, an Elem vector of length M.
      * \param[in]   M           The number of rows in A and elements in b.
      * \param[in]   N           The number of columns in A and elements in x.
-     * \param[in]   cache       Cache memory provided by the user, must be at least 2*(M+N+1)*sizeof(Elem) bytes, and 16-byte aligned.
-     * \param[out]  error_sq    If not null, returns the square magnitude of the angular (error_sq.ang) and linear (error_sq.lin) parts of the residual.
+     * \param[in]   cache       Cache memory provided by the user, must be at least required_cache_size(M, N) bytes, and sizeof(Elem)-byte aligned.
+     * \param[out]  error_ptr   If not null, returns the square magnitude error calculated from residual.
      * \param[in]   tol         (Optional) relative convergence threshold for |Ax-b|/|b|.  Default value is 10^-6.
      * \param[in]   max_it      (Optional) the maximum number of internal iterations.  If set to 0, the maximum is N.  Default value is 0.
-     * \param[in]   warm        (Optional) if true, use the data in x as an initial trial solution.  Default value is false.
-     *                          N.B. if warm == true, then the cache *MUST* be untouched since the last call to this function or cleared using clear_solver_cache(...).
+     * \param[in]   warmth      (Optional) valid values are 0, 1, and 2.  0 => cold, clears the x vector and ignores the cache.
+     *                          1 => warm, uses the x vector as a starting solution, but still ignores the cache.  2 => hot, uses the x
+     *                          vector as a starting solution, along with the cached state.  Default value is 0.
+     *                          N.B. if warmth == 2, then this function must have been called previously, and the cache must be untouched
+     *                          since the last call.
      * 
      * return the number of iterations taken to converge, if it converges.  Otherwise, returns minus the number of iterations before exiting.
      */
@@ -81,10 +84,10 @@ struct CGNR
         uint32_t M,
         uint32_t N,
         void* cache,
-        SolverError* error_sq = nullptr,
+        Error* error_ptr = nullptr,
         float tol = 1.e-6f,
         uint32_t max_it = 0,
-        bool warm = false
+        unsigned warmth = 0
     )
     {
         // Cache and temporary storage
@@ -99,54 +102,47 @@ struct CGNR
         Scalar z_last_sq, delta_sq;
         load_float(z_last_sq, z_last_sq_mem);
         load_float(delta_sq, delta_sq_mem);
-        const bool cache_clear = *z_last_sq_mem == 0.0f;
 
-        Scalar z_ang_sq, z_lin_sq;
-        set_zero(z_ang_sq); // Zeroing of these is not needed, it just keeps the compiler from fretting
-        set_zero(z_lin_sq);
-
-        if (!warm || cache_clear)                               // Cold start conditions
+        if (warmth < 2)                                     // Not hot
         {
             delta_sq = mul(tol*tol, ElemOps().length_sq(b, M)); // Calculate allowed residual length squared and cache it
             store_float(delta_sq_mem, delta_sq);
-            memcpy(r, b, sizeof(Elem)*M);                       // Initialize residual r = b
-            if (warm)                                           // Warm start, r = b - A*x
+            memcpy(r, b, sizeof(Elem)*M);                   // Initialize residual r = b
+            if (warmth)                                     // Warm start, r = b - A*x
             {
                 MatOps().rmul(s, A, x, M, N);
                 ElemOps().vsub(r, r, s, M);
             }
-            else memset(x, 0, sizeof(Elem)*N);                  // Cold start, x = 0 so r = b
-            warm = false;                                       // This lets p be initialized in the loop below
+            else memset(x, 0, sizeof(Elem)*N);              // Cold start, x = 0 so r = b
+            warmth = 0;                                     // This lets p be initialized in the loop below
         }
 
+        Error error;
+
         // Iterate
-        if (!max_it) max_it = N + (uint32_t)!N;                                     // Ensure max_it > 0
+        if (!max_it) max_it = N;                                                        // Default to a maximum of N iterations
         uint32_t it = 0;
-        for (; it < max_it; ++it)
+        do
         {
-            MatOps().lmul(z, r, A, M, N);                                           // Set z = (A^T)*r
-            ElemOps().split_length_sq(z_ang_sq, z_lin_sq, z, N);                    // Calculate residual (of modified equation) length squared
-            const Scalar z_sq = add(z_ang_sq, z_lin_sq);
-            if (le(z_sq, delta_sq)) break;                                          // Terminate (convergence) if within tolerance
-            if (warm) ElemOps().vmadd(p, div(z_sq, z_last_sq), p, z, N);            // If warm set p = z + (|z|^2/|z_last|^2)*p
-            else                                                                    // If cold set p = z
-            {
-                memcpy(p, z, sizeof(Elem)*N);
-                warm = true;
-            }
+            MatOps().lmul(z, r, A, M, N);                                               // Set z = (A^T)*r
+            const Scalar z_sq = ElemOps().calculate_error(error, z, N);                 // Calculate residual (of modified equation) length squared
+            if (le(z_sq, delta_sq)) break;                                              // Terminate (convergence) if within tolerance
+            if (warmth || warmth++) ElemOps().vmadd(p, div(z_sq, z_last_sq), p, z, N);  // If not cold set p = z + (|z|^2/|z_last|^2)*p, and make warm hereafter
+            else memcpy(p, z, sizeof(Elem)*N);                                          // If cold set p = z
             z_last_sq = z_sq;
-            MatOps().rmul(s, A, p, M, N);                                           // Calculate s = A*p
-            const Scalar mu = div(z_sq, ElemOps().length_sq(s, M));                 // mu = |z|^2 / |A*p|^2
-            ElemOps().vmadd(x, mu, p, x, N);                                        // x += mu*p
-            ElemOps().vnmadd(r, mu, s, r, M);                                       // r -= mu*s
-        }
+            MatOps().rmul(s, A, p, M, N);                                               // Calculate s = A*p
+            const Scalar mu = div(z_sq, ElemOps().length_sq(s, M));                     // mu = |z|^2 / |A*p|^2
+            ElemOps().vmadd(x, mu, p, x, N);                                            // x += mu*p
+            ElemOps().vnmadd(r, mu, s, r, M);                                           // r -= mu*s
+        } while (++it < max_it);
 
         // Store off remainder of state (the rest was maintained in memory with array operations)
         store_float(z_last_sq_mem, z_last_sq);
 
         // Store off the error if requested
-        if (error_sq) *error_sq = { to_float(z_ang_sq), to_float(z_lin_sq) };
+        if (error_ptr) *error_ptr = error;
 
+        // Return the number of iterations used if successful.  Otherwise return minus the number of iterations performed
         return it < max_it ? (int)it : -(int)it;
     }
 
@@ -156,5 +152,5 @@ struct CGNR
 
      * \return the required cache size (in bytes) for the given values of M and N.
      */
-    size_t required_cache_size(uint32_t M, uint32_t N) { return 2*(M+N+1)*sizeof(Elem); }
+    size_t  required_cache_size(uint32_t M, uint32_t N) { return 2*(M+N+1)*sizeof(Elem); }
 };

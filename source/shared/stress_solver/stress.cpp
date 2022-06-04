@@ -1,30 +1,3 @@
-// This code contains NVIDIA Confidential Information and is disclosed to you
-// under a form of NVIDIA software license agreement provided separately to you.
-//
-// Notice
-// NVIDIA Corporation and its licensors retain all intellectual property and
-// proprietary rights in and to this software and related documentation and
-// any modifications thereto. Any use, reproduction, disclosure, or
-// distribution of this software and related documentation without an express
-// license agreement from NVIDIA Corporation is strictly prohibited.
-//
-// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
-// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
-// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
-// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
-//
-// Information and code furnished is believed to be accurate and reliable.
-// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
-// information or for any infringement of patents or other rights of third parties that may
-// result from its use. No license is granted by implication or otherwise under any patent
-// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
-// This code supersedes and replaces all information previously supplied.
-// NVIDIA Corporation products are not authorized for use as critical
-// components in life support devices or systems without express written approval of
-// NVIDIA Corporation.
-//
-// Copyright (c) 2022 NVIDIA Corporation. All rights reserved.
-
 #include "stress.h"
 #include "math/cgnr.h"
 #include "simd/simd_device_query.h"
@@ -35,8 +8,8 @@
 #define MASS_AND_LENGTH_SCALING 1
 
 
-typedef CGNR<AngLin6, AngLin6Ops<Float_Scalar>, BondMatrixS, BondMatrixOpsS<Float_Scalar>, Float_Scalar>    CGNR_SISD;
-typedef CGNR<AngLin6, AngLin6Ops<SIMD_Scalar>, BondMatrixS, BondMatrixOpsS<SIMD_Scalar>, SIMD_Scalar>       CGNR_SIMD;
+typedef CGNR<AngLin6, AngLin6Ops<Float_Scalar>, BondMatrixS, BondMatrixOpsS<Float_Scalar>, Float_Scalar, AngLin6ErrorSq>    CGNR_SISD;
+typedef CGNR<AngLin6, AngLin6Ops<SIMD_Scalar>, BondMatrixS, BondMatrixOpsS<SIMD_Scalar>, SIMD_Scalar, AngLin6ErrorSq>       CGNR_SIMD;
 
 
 /**
@@ -63,7 +36,7 @@ StressProcessor::prepare(const SolverNodeS* nodes, uint32_t N_nodes, const Solve
     m_rhs.resize(N_nodes);
     m_B_scratch.resize(N_nodes);
     m_solver_cache.resize(s_use_simd ? CGNR_SIMD().required_cache_size(N_nodes, N_bonds) : CGNR_SISD().required_cache_size(N_nodes, N_bonds));
-    clear_solver_cache(m_solver_cache.data());
+    m_can_hot_start = false;
 
     // Calculate bond offsets and length scale
     uint32_t offsets_to_scale = 0;
@@ -185,7 +158,7 @@ StressProcessor::prepare(const SolverNodeS* nodes, uint32_t N_nodes, const Solve
 
 
 int
-StressProcessor::solve(AngLin6* forces, const AngLin6* ext_accel, const SolverParams& params, SolverError* error_sq /* = nullptr */)
+StressProcessor::solve(AngLin6* forces, const AngLin6* ext_accel, const SolverParams& params, AngLin6ErrorSq* error_sq /* = nullptr */)
 {
     const InertiaS* sqrt_m_inv = m_recip_sqrt_m.data();
     const uint32_t N_nodes = getNodeCount();
@@ -223,10 +196,13 @@ StressProcessor::solve(AngLin6* forces, const AngLin6* ext_accel, const SolverPa
     // (C^T)*(m^-1)*C*F = -(C^T)*a_e for F, which is the equation we really wanted to solve.
     const uint32_t maxIter = params.maxIter ? params.maxIter : 6*std::max(N_nodes, N_bonds);
 
+    // Set solver warmth
+    const unsigned warmth = params.warmStart ? (m_can_hot_start ? 2 : 1) : 0;
+
     // Choose solver based on parameters
     const int result = s_use_simd ?
-        CGNR_SIMD().solve(forces, m_B, b, N_nodes, N_bonds, cache, error_sq, params.solverTol, maxIter, params.warmStart) :
-        CGNR_SISD().solve(forces, m_B, b, N_nodes, N_bonds, cache, error_sq, params.solverTol, maxIter, params.warmStart);
+        CGNR_SIMD().solve(forces, m_B, b, N_nodes, N_bonds, cache, error_sq, params.solverTol, maxIter, warmth) :
+        CGNR_SISD().solve(forces, m_B, b, N_nodes, N_bonds, cache, error_sq, params.solverTol, maxIter, warmth);
 
     // Undo length and mass scaling
     const float force_scale = m_length_scale*m_mass_scale;
@@ -236,6 +212,8 @@ StressProcessor::solve(AngLin6* forces, const AngLin6* ext_accel, const SolverPa
         forces[j].lin *= force_scale;
         forces[j].ang *= torque_scale;
     }
+
+    m_can_hot_start = true;
 
     return result;
 }
@@ -249,7 +227,7 @@ StressProcessor::removeBond(uint32_t bondIndex)
     m_couplings[bondIndex] = m_couplings.back();
     m_couplings.pop_back();
     --m_B.N;
-    clear_solver_cache(m_solver_cache.data());
+    m_can_hot_start = false;
 
     return true;
 }

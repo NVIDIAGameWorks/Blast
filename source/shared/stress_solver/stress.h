@@ -28,7 +28,6 @@
 #pragma once
 
 #include "bond.h"
-#include "math/solver_common.h"
 #include <vector>
 
 
@@ -77,7 +76,7 @@ public:
      * 
      * \return the number of iterations taken to converge, if it converges.  Otherwise, returns minus the number of iterations before exiting.
      */
-    int         solve(AngLin6* forces, const AngLin6* ext_accel, const SolverParams& params, SolverError* error_sq = nullptr);
+    int         solve(AngLin6* forces, const AngLin6* ext_accel, const SolverParams& params, AngLin6ErrorSq* error_sq = nullptr);
 
     /**
      * Removes the indexed bond from the solver.
@@ -99,6 +98,11 @@ public:
     uint32_t    getBondCount() const { return (uint32_t)m_couplings.size(); }
 
     /**
+     * Effectively clear the solver cache, so that a hot start will not be taken on the next call to solve(...).
+     */
+    void        clearCache() { m_can_hot_start = false; }
+
+    /**
      * \return whether or not the solver uses SIMD.  If the device supports SSE, AVX, and FMA instruction sets, SIMD is used. 
      */
     static bool usingSIMD() { return s_use_simd; }
@@ -112,6 +116,7 @@ protected:
     std::vector<AngLin6>    m_rhs;
     std::vector<AngLin6>    m_B_scratch;
     std::vector<AngLin6>    m_solver_cache;
+    bool                    m_can_hot_start;
 
     static const bool       s_use_simd;
 };
