@@ -32,7 +32,7 @@
 
 
 /**
- * Holds an angular and linear component, for angular and linear accelerations, torques and forces, etc.
+ * Holds an angular and linear component, for angular and linear velocities, accelerations, impulses, torques and forces, etc.
  */
 SIMD_ALIGN_32(
 struct AngLin6

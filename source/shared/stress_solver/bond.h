@@ -35,9 +35,8 @@
 /**
  * BondMatrix
  * 
- * When this matrix is applied to a vector of bond forces and torques, the result is a vector
- * of the differences between the the resulting linear and angular accelerations of the nodes
- * joined by each bond.
+ * When this matrix is applied to a vector of bond impulses, the result is a vector of the
+ * differences between the the resulting velocities of the nodes joined by each bond.
  * 
  * This is done in block form, so a vector is composed of vector elements.  Each element
  * is a 6-dimensional vector, composed of a linear part followed by an angular part.
@@ -53,14 +52,11 @@
  *    Except for possibly I_i, each "element" in m_ii is a multiple of the 3x3 unit matrix.  I_i is a
  *    3x3 symmetric inertia tensor.  See the definition of Inertia<TensorType> for its representation.
  * 
- *    Whatever TensorType is, it must have a multiplication operator '*' that takes an TensorType
- *    on the left and a NvcVec3 on the right, and produces an NvcVec3 result.
- * 
  *    The second component is the coupling matrix C, see documentation for Coupling.
  * 
  * The matrix represented by this object is (m^-1/2)*C, an M x N matrix.
  * 
- * NOTE: m, and C are not stored as described above, for efficiency.
+ * NOTE: m, and C are _not_ stored as described above, for efficiency.
  */
 template <typename TensorType>
 struct BondMatrix

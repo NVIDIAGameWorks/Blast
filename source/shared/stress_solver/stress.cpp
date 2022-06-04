@@ -1,3 +1,30 @@
+// This code contains NVIDIA Confidential Information and is disclosed to you
+// under a form of NVIDIA software license agreement provided separately to you.
+//
+// Notice
+// NVIDIA Corporation and its licensors retain all intellectual property and
+// proprietary rights in and to this software and related documentation and
+// any modifications thereto. Any use, reproduction, disclosure, or
+// distribution of this software and related documentation without an express
+// license agreement from NVIDIA Corporation is strictly prohibited.
+//
+// ALL NVIDIA DESIGN SPECIFICATIONS, CODE ARE PROVIDED "AS IS.". NVIDIA MAKES
+// NO WARRANTIES, EXPRESSED, IMPLIED, STATUTORY, OR OTHERWISE WITH RESPECT TO
+// THE MATERIALS, AND EXPRESSLY DISCLAIMS ALL IMPLIED WARRANTIES OF NONINFRINGEMENT,
+// MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.
+//
+// Information and code furnished is believed to be accurate and reliable.
+// However, NVIDIA Corporation assumes no responsibility for the consequences of use of such
+// information or for any infringement of patents or other rights of third parties that may
+// result from its use. No license is granted by implication or otherwise under any patent
+// or patent rights of NVIDIA Corporation. Details are subject to change without notice.
+// This code supersedes and replaces all information previously supplied.
+// NVIDIA Corporation products are not authorized for use as critical
+// components in life support devices or systems without express written approval of
+// NVIDIA Corporation.
+//
+// Copyright (c) 2022 NVIDIA Corporation. All rights reserved.
+
 #include "stress.h"
 #include "math/cgnr.h"
 #include "simd/simd_device_query.h"
@@ -19,9 +46,11 @@ typedef CGNR<AngLin6, AngLin6Ops<SIMD_Scalar>, BondMatrixS, BondMatrixOpsS<SIMD_
 // Check for SSE, AVX, and FMA
 const bool
 StressProcessor::s_use_simd =
-    device_supports_instruction_set(InstructionSet::SSE) &&
-    device_supports_instruction_set(InstructionSet::AVX) &&
-    device_supports_instruction_set(InstructionSet::FMA);
+    device_supports_instruction_set(InstructionSet::SSE) &&     // Basic SSE
+    device_supports_instruction_set(InstructionSet::OSXSAVE) && // OS uses XSAVE and XRSTORE instructions allowing saving YMM registers on context switch
+    device_supports_instruction_set(InstructionSet::AVX) &&     // Advanced Vector Extensions (256 bit operations)
+    device_supports_instruction_set(InstructionSet::FMA3) &&    // Fused Multiply-Add instructions
+    os_supports_avx_restore();                                  // OS has enabled the required extended state for AVX
 
 
 /**
@@ -158,7 +187,7 @@ StressProcessor::prepare(const SolverNodeS* nodes, uint32_t N_nodes, const Solve
 
 
 int
-StressProcessor::solve(AngLin6* forces, const AngLin6* ext_accel, const SolverParams& params, AngLin6ErrorSq* error_sq /* = nullptr */)
+StressProcessor::solve(AngLin6* impulses, const AngLin6* velocities, const SolverParams& params, AngLin6ErrorSq* error_sq /* = nullptr */)
 {
     const InertiaS* sqrt_m_inv = m_recip_sqrt_m.data();
     const uint32_t N_nodes = getNodeCount();
@@ -167,33 +196,33 @@ StressProcessor::solve(AngLin6* forces, const AngLin6* ext_accel, const SolverPa
 
     const float recip_length_scale = 1.0f/m_length_scale;
 
-    // Apply length and mass scaling to forces if warm-starting
+    // Apply length and mass scaling to impulses if warm-starting
     if (params.warmStart)
     {
         const float recip_mass_scale = 1.0f/m_mass_scale;
-        const float recip_force_scale = recip_length_scale*recip_mass_scale;
-        const float recip_torque_scale = recip_length_scale*recip_force_scale;
+        const float recip_linear_impulse_scale = recip_length_scale*recip_mass_scale;
+        const float recip_angular_impulse_scale = recip_length_scale*recip_linear_impulse_scale;
         for (uint32_t j = 0; j < N_bonds; ++j)
         {
-            forces[j].lin *= recip_force_scale;
-            forces[j].ang *= recip_torque_scale;
+            impulses[j].ang *= recip_angular_impulse_scale;
+            impulses[j].lin *= recip_linear_impulse_scale;
         }
     }
 
-    // Calculate r.h.s. vector b = -(m^1/2)*a_e
+    // Calculate r.h.s. vector b = -(m^1/2)*velocities
     AngLin6* b = m_rhs.data();
     for (uint32_t i = 0; i < N_nodes; ++i)
     {
         const InertiaS& m_i = sqrt_m_inv[i];
-        const AngLin6& a_i = ext_accel[i];
+        const AngLin6& v_i = velocities[i];
         AngLin6& b_i = b[i];
-        b_i.lin = (-recip_length_scale/(m_i.m > 0 ? m_i.m : 1.0f))*a_i.lin;
-        b_i.ang = a_i.ang/(-(m_i.I > 0 ? m_i.I : 1.0f));
+        b_i.ang = v_i.ang/(-(m_i.I > 0 ? m_i.I : 1.0f));
+        b_i.lin = (-recip_length_scale/(m_i.m > 0 ? m_i.m : 1.0f))*v_i.lin;
     }
 
-    // Solve B*F = b for F, where B = (m^-1/2)*C.
-    // Since CGNR does this by solving (B^T)*B*F = (B^T)*b, this actually solves
-    // (C^T)*(m^-1)*C*F = -(C^T)*a_e for F, which is the equation we really wanted to solve.
+    // Solve B*J = b for J, where B = (m^-1/2)*C.
+    // Since CGNR does this by solving (B^T)*B*J = (B^T)*b, this actually solves
+    // (C^T)*(m^-1)*C*J = -(C^T)*v for J, which is the equation we really wanted to solve.
     const uint32_t maxIter = params.maxIter ? params.maxIter : 6*std::max(N_nodes, N_bonds);
 
     // Set solver warmth
@@ -201,16 +230,16 @@ StressProcessor::solve(AngLin6* forces, const AngLin6* ext_accel, const SolverPa
 
     // Choose solver based on parameters
     const int result = s_use_simd ?
-        CGNR_SIMD().solve(forces, m_B, b, N_nodes, N_bonds, cache, error_sq, params.solverTol, maxIter, warmth) :
-        CGNR_SISD().solve(forces, m_B, b, N_nodes, N_bonds, cache, error_sq, params.solverTol, maxIter, warmth);
+        CGNR_SIMD().solve(impulses, m_B, b, N_nodes, N_bonds, cache, error_sq, params.solverTol, maxIter, warmth) :
+        CGNR_SISD().solve(impulses, m_B, b, N_nodes, N_bonds, cache, error_sq, params.solverTol, maxIter, warmth);
 
     // Undo length and mass scaling
-    const float force_scale = m_length_scale*m_mass_scale;
-    const float torque_scale = m_length_scale*force_scale;
+    const float linear_impulse_scale = m_length_scale*m_mass_scale;
+    const float angular_impulse_scale = m_length_scale*linear_impulse_scale;
     for (uint32_t j = 0; j < N_bonds; ++j)
     {
-        forces[j].lin *= force_scale;
-        forces[j].ang *= torque_scale;
+        impulses[j].ang *= angular_impulse_scale;
+        impulses[j].lin *= linear_impulse_scale;
     }
 
     m_can_hot_start = true;

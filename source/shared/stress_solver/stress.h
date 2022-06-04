@@ -46,7 +46,7 @@ public:
     {
         uint32_t    maxIter         = 0;        // The maximum number of iterations.  If 0, use CGNR for default value.
         float       solverTol       = 1.e-6f;   // The relative tolerance threshold for convergence.  Iteration will stop when this is reached.
-        bool        warmStart       = false;    // Whether or not to use the solve function's 'forces' parameter as a starting input vector.
+        bool        warmStart       = false;    // Whether or not to use the solve function's 'impulses' parameter as a starting input vector.
     };
 
     /**
@@ -62,21 +62,20 @@ public:
     void        prepare(const SolverNodeS* nodes, uint32_t N_nodes, const SolverBond* bonds, uint32_t N_bonds, const DataParams& params);
 
     /**
-     * Solve for the bond forces given the external accelerations on each node.  The function prepare(...) must be called
+     * Solve for the bond impulses given the velocities of each node.  The function prepare(...) must be called
      * before this can be used, but then solve(...) may be called multiple times.
      * 
-     * The vector elements hold linear and angular parts.  For the ext_accel array, those correspond to linear and angular accelerations.
-     * For the forces array, those correspond to forces and torques.
+     * The vector elements (impulses and velocities) hold linear and angular parts.
      * 
-     * \param[out]  forces      Output array of forces exerted by each bond.  For a warm start, this is also used as an input.
+     * \param[out]  impulses    Output array of impulses exerted by each bond.  For a warm or hot start, this is also used as an input.
      *                          Must be of length N_bonds passed into the prepare(...) function.
-     * \param[in]   ext_accel   Input array of external accelerations on each node.  Must be of length N_nodes passed into the prepare(...) function.
+     * \param[in]   velocities  Input array of external velocities on each node.  Must be of length N_nodes passed into the prepare(...) function.
      * \param[in]   params      Parameters affecting the solver characteristics (see SolverParams).
      * \param[out]  error_sq    (Optional) If not NULL, *error_sq will be filled with the angular and linear square errors (solver residuals).
      * 
      * \return the number of iterations taken to converge, if it converges.  Otherwise, returns minus the number of iterations before exiting.
      */
-    int         solve(AngLin6* forces, const AngLin6* ext_accel, const SolverParams& params, AngLin6ErrorSq* error_sq = nullptr);
+    int         solve(AngLin6* impulses, const AngLin6* velocities, const SolverParams& params, AngLin6ErrorSq* error_sq = nullptr);
 
     /**
      * Removes the indexed bond from the solver.

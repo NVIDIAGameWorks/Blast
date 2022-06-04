@@ -56,9 +56,10 @@ struct InstructionSet
         SSSE3 = instSetCode(1, 2, 9),
         SSE4_1 = instSetCode(1, 2, 19),
         SSE4_2 = instSetCode(1, 2, 20),
+        OSXSAVE = instSetCode(1, 2, 27),
         AVX = instSetCode(1, 2, 28),
         AVX2 = instSetCode(7, 1, 5),
-        FMA = instSetCode(1, 2, 12),
+        FMA3 = instSetCode(1, 2, 12),
         AVX512F = instSetCode(7, 1, 16),
         AVX512PF = instSetCode(7, 1, 26),
         AVX512ER = instSetCode(7, 1, 27),
@@ -78,7 +79,7 @@ constexpr std::pair<const char*, uint32_t> sInstructionSetLookup[] =
     InstructionSetEntry(SSE4_2),
     InstructionSetEntry(AVX),
     InstructionSetEntry(AVX2),
-    InstructionSetEntry(FMA),
+    InstructionSetEntry(FMA3),
     InstructionSetEntry(AVX512F),
     InstructionSetEntry(AVX512PF),
     InstructionSetEntry(AVX512ER),
@@ -87,13 +88,20 @@ constexpr std::pair<const char*, uint32_t> sInstructionSetLookup[] =
 
 
 #if NV_WINDOWS_FAMILY
-#include <intrin.h>
+#include <intrin.h> // for __cpuidex
+#include <immintrin.h> // for _xgetbv
 inline void cpuid(int cpui[4], int fn) { __cpuidex(cpui, fn, 0); }
 #else
-#include <cpuid.h>
+#include <cpuid.h> // for __cpuid_count
+#include <xsaveintrin.h> // for _xgetbv
 inline void cpuid(int cpui[4], int fn) { __cpuid_count(fn, 0, cpui[0], cpui[1], cpui[2], cpui[3]); }
 #endif
 
+static bool
+os_supports_avx_restore()
+{
+    return ((uint32_t)_xgetbv(0) & 6) == 6;
+}
 
 static bool
 device_supports_instruction_set(uint32_t inst_set)
