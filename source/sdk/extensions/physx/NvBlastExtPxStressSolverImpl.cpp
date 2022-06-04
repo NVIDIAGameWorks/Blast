@@ -184,13 +184,13 @@ void ExtPxStressSolverImpl::update(bool doDamage)
             PxVec3 gravity = rigidDynamic.getScene()->getGravity();
             PxVec3 localGravity = rigidDynamic.getGlobalPose().rotateInv(gravity);
 
-            m_solver->addGravityForce(*actor->getTkActor().getActorLL(), fromPxShared(localGravity));
+            m_solver->addGravity(*actor->getTkActor().getActorLL(), fromPxShared(localGravity));
         }
         else
         {
             PxVec3 localCenterMass = rigidDynamic.getCMassLocalPose().p;
             PxVec3 localAngularVelocity = rigidDynamic.getGlobalPose().rotateInv(rigidDynamic.getAngularVelocity());
-            m_solver->addAngularVelocity(*actor->getTkActor().getActorLL(), fromPxShared(localCenterMass), fromPxShared(localAngularVelocity));
+            m_solver->addCentrifugalAcceleration(*actor->getTkActor().getActorLL(), fromPxShared(localCenterMass), fromPxShared(localAngularVelocity));
         }
     }
 

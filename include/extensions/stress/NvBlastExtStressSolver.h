@@ -61,7 +61,7 @@ struct ExtStressSolverSettings
     uint32_t    maxSolverIterationsPerFrame;//!<    the maximum number of iterations to perform per frame, @see getIterationsPerFrame() below
     uint32_t    graphReductionLevel;        //!<    graph reduction level
 
-    // stress force limits
+    // stress pressure limits
     float       compressionElasticLimit;    //!<    below this compression pressure no damage is done to bonds.  Also used as the default for shear and tension if they aren't provided.
     float       compressionFatalLimit;      //!<    above this compression pressure the bond is immediately broken.  Also used as the default for shear and tension if they aren't provided.
     float       tensionElasticLimit;        //!<    below this tension pressure no damage is done to bonds.  Use a negative value to fall back on compression limit.
@@ -73,7 +73,7 @@ struct ExtStressSolverSettings
         maxSolverIterationsPerFrame(10),
         graphReductionLevel(3),
 
-        // stress force limits
+        // stress pressure limits
         compressionElasticLimit(1.0f),
         compressionFatalLimit(2.0f),
         tensionElasticLimit(-1.0f),
@@ -93,8 +93,8 @@ struct ExtForceMode
 {
     enum Enum
     {
-        IMPULSE,    //!< parameter has unit of mass * distance /time
-        VELOCITY,   //!< parameter has unit of distance / time, i.e. the effect is mass independent: a velocity change.
+        FORCE,          //!< parameter has unit of mass * distance / time^2
+        ACCELERATION,   //!< parameter has unit of distance / time^2, i.e. the effect is mass independent
     };
 };
 
@@ -204,7 +204,7 @@ public:
 
     \return true iff node was found and force applied.
     */
-    virtual bool                            addForce(const NvBlastActor& actor, NvcVec3 localPosition, NvcVec3 localForce, ExtForceMode::Enum mode = ExtForceMode::IMPULSE) = 0;
+    virtual bool                            addForce(const NvBlastActor& actor, NvcVec3 localPosition, NvcVec3 localForce, ExtForceMode::Enum mode = ExtForceMode::FORCE) = 0;
 
     /**
     Apply external impulse on particular node.
@@ -213,20 +213,20 @@ public:
     \param[in]  localForce      Force to apply in local actor's coordinates.
     \param[in]  mode            The mode to use when applying the force/impulse(see #ExtForceMode)
     */
-    virtual void                            addForce(uint32_t graphNodeIndex, NvcVec3 localForce, ExtForceMode::Enum mode = ExtForceMode::IMPULSE) = 0;
+    virtual void                            addForce(uint32_t graphNodeIndex, NvcVec3 localForce, ExtForceMode::Enum mode = ExtForceMode::FORCE) = 0;
 
     /**
     Apply external gravity on particular actor of family. This function applies gravity on every node withing actor, so it makes sense only for static actors.
 
-    \param[in]  actor           The actor to apply impulse on.
-    \param[in]  localGravity    Gravity to apply in local actor's coordinates. ExtForceMode::VELOCITY is used.
+    \param[in]  actor           The actor to apply gravitational acceleration on.
+    \param[in]  localGravity    Gravity to apply in local actor's coordinates. ExtForceMode::ACCELERATION is used.
 
-    \return true iff force was applied on at least one node.
+    \return true iff acceleration was applied on at least one node.
     */
-    virtual bool                            addGravityForce(const NvBlastActor& actor, NvcVec3 localGravity) = 0;
+    virtual bool                            addGravity(const NvBlastActor& actor, NvcVec3 localGravity) = 0;
 
     /**
-    Apply centrifugal force produced by actor's angular movement.
+    Apply centrifugal acceleration produced by actor's angular movement.
 
     \param[in]  actor                   The actor to apply impulse on.
     \param[in]  localCenterMass         Actor's local center of mass.
@@ -234,12 +234,12 @@ public:
 
     \return true iff force was applied on at least one node.
     */
-    virtual bool                            addAngularVelocity(const NvBlastActor& actor, NvcVec3 localCenterMass, NvcVec3 localAngularVelocity) = 0;
+    virtual bool                            addCentrifugalAcceleration(const NvBlastActor& actor, NvcVec3 localCenterMass, NvcVec3 localAngularVelocity) = 0;
 
     /**
     Update stress solver.
 
-    Actual performance heavy stress calculation happens there. Call it after all relevant forces were applied, usually every frame.
+    Actual performance of stress calculation happens there. Call it after all relevant forces were applied, usually every frame.
     */
     virtual void                            update() = 0;
 

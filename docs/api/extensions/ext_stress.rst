@@ -61,7 +61,7 @@ Stress solver needs to keep track for actor create/destroy events in order to up
 A typical update loop looks like this:
 
 -# If split happened, call relevant stressSolver->notifyActorCreated(actor) and stressSolver->notifyActorDestroyed(actor)
--# Apply all forces, use \a stressSolver->addForce(...), stressSolver->addGravityForce(...), \a stressSolver->addAngularVelocity(...)
+-# Apply all forces, use \a stressSolver->addForce(...), stressSolver->addGravity(...), \a stressSolver->addCentrifugalAcceleration(...)
 -# Call \a stressSolver->update(). This is where all expensive computation takes place.
 -# If \a stressSolver->getOverstressedBondCount() > 0, use one of \a stressSolver->generateFractureCommands() methods to get bond fracture commands and apply them on actors.
 
@@ -96,13 +96,13 @@ Example code from ExtPxStressSolverImpl:
     			PxVec3 gravity = rigidDynamic.getScene()->getGravity();
     			PxVec3 localGravity = rigidDynamic.getGlobalPose().rotateInv(gravity);
     
-    			m_solver->addGravityForce(*actor->getTkActor().getActorLL(), localGravity);
+    			m_solver->addGravity(*actor->getTkActor().getActorLL(), localGravity);
     		}
     		else
     		{
     			PxVec3 localCenterMass = rigidDynamic.getCMassLocalPose().p;
     			PxVec3 localAngularVelocity = rigidDynamic.getGlobalPose().rotateInv(rigidDynamic.getAngularVelocity());
-    			m_solver->addAngularVelocity(*actor->getTkActor().getActorLL(), localCenterMass, localAngularVelocity);
+    			m_solver->addCentrifugalAcceleration(*actor->getTkActor().getActorLL(), localCenterMass, localAngularVelocity);
     		}
     	}
     

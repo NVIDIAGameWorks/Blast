@@ -235,9 +235,9 @@ public:
         float mass;
         float volume;
         PxVec3 localPos;
+        PxVec3 localVel;
         uint32_t solverNode;
         uint32_t neighborsCount;
-        PxVec3 deltaV;
     };
 
     struct SolverNodeData
@@ -439,18 +439,9 @@ public:
         const float mass = m_nodesData[node].mass;
         if (mass > 0)
         {
-            m_nodesData[node].deltaV += (mode == ExtForceMode::IMPULSE) ? force/mass : force;
+            // NOTE - passing in acceleration as velocity.  The impulse solver's output will be interpreted as force.
+            m_nodesData[node].localVel += (mode == ExtForceMode::FORCE) ? force/mass : force;
         }
-    }
-
-    void addNodeVelocity(uint32_t node, const PxVec3& velocity)
-    {
-        addNodeForce(node, velocity, ExtForceMode::VELOCITY);
-    }
-
-    void addNodeImpulse(uint32_t node, const PxVec3& impulse)
-    {
-        addNodeForce(node, impulse, ExtForceMode::IMPULSE);
     }
 
     void addBond(uint32_t node0, uint32_t node1, uint32_t blastBondIndex)
@@ -543,7 +534,7 @@ public:
 
         for (const NodeData& node : m_nodesData)
         {
-            m_solver.setNodeVelocities(node.solverNode, node.deltaV, PxVec3(PxZero));
+            m_solver.setNodeVelocities(node.solverNode, node.localVel, PxVec3(PxZero));
         }
 
         m_solver.solve(settings.maxSolverIterationsPerFrame, warmStart);
@@ -600,7 +591,7 @@ private:
     {
         for (auto& node : m_nodesData)
         {
-            node.deltaV = PxVec3(PxZero);
+            node.localVel = PxVec3(PxZero);
         }
     }
 
@@ -1027,14 +1018,12 @@ public:
         return m_settings;
     }
 
-    virtual bool
-    addForce(const NvBlastActor& actor, NvcVec3 localPosition, NvcVec3 localForce,
-                          ExtForceMode::Enum mode) override;
+    virtual bool                            addForce(const NvBlastActor& actor, NvcVec3 localPosition, NvcVec3 localForce, ExtForceMode::Enum mode) override;
 
-    virtual void addForce(uint32_t graphNode, NvcVec3 localForce, ExtForceMode::Enum mode) override;
+    virtual void                            addForce(uint32_t graphNode, NvcVec3 localForce, ExtForceMode::Enum mode) override;
 
-    virtual bool                            addGravityForce(const NvBlastActor& actor, NvcVec3 localGravity) override;
-    virtual bool                            addAngularVelocity(const NvBlastActor& actor, NvcVec3 localCenterMass, NvcVec3 localAngularVelocity) override;
+    virtual bool                            addGravity(const NvBlastActor& actor, NvcVec3 localGravity) override;
+    virtual bool                            addCentrifugalAcceleration(const NvBlastActor& actor, NvcVec3 localCenterMass, NvcVec3 localAngularVelocity) override;
 
     virtual void                            update() override;
 
@@ -1483,7 +1472,7 @@ void ExtStressSolverImpl::addForce(uint32_t graphNode, NvcVec3 localForce, ExtFo
     m_graphProcessor->addNodeForce(graphNode, toPxShared(localForce), mode);
 }
 
-bool ExtStressSolverImpl::addGravityForce(const NvBlastActor& actor, NvcVec3 localGravity)
+bool ExtStressSolverImpl::addGravity(const NvBlastActor& actor, NvcVec3 localGravity)
 {
     const uint32_t graphNodeCount = NvBlastActorGetGraphNodeCount(&actor, logLL);
     if (graphNodeCount > 1)
@@ -1494,14 +1483,14 @@ bool ExtStressSolverImpl::addGravityForce(const NvBlastActor& actor, NvcVec3 loc
         for (uint32_t i = 0; i < nodeCount; ++i)
         {
             const uint32_t node = graphNodeIndices[i];
-            m_graphProcessor->addNodeVelocity(node, toPxShared(localGravity));
+            m_graphProcessor->addNodeForce(node, toPxShared(localGravity), ExtForceMode::ACCELERATION);
         }
         return true;
     }
     return false;
 }
 
-bool ExtStressSolverImpl::addAngularVelocity(const NvBlastActor& actor, NvcVec3 localCenterMass, NvcVec3 localAngularVelocity)
+bool ExtStressSolverImpl::addCentrifugalAcceleration(const NvBlastActor& actor, NvcVec3 localCenterMass, NvcVec3 localAngularVelocity)
 {
     const uint32_t graphNodeCount = NvBlastActorGetGraphNodeCount(&actor, logLL);
     if (graphNodeCount > 1)
@@ -1518,7 +1507,7 @@ bool ExtStressSolverImpl::addAngularVelocity(const NvBlastActor& actor, NvcVec3 
             const PxVec3 centrifugalAcceleration =
                 toPxShared(localAngularVelocity)
                     .cross(toPxShared(localAngularVelocity).cross(localPos - toPxShared(localCenterMass)));
-            m_graphProcessor->addNodeVelocity(node, centrifugalAcceleration);
+            m_graphProcessor->addNodeForce(node, centrifugalAcceleration, ExtForceMode::ACCELERATION);
         }
         return true;
     }

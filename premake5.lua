@@ -467,7 +467,9 @@ group "sdk"
         }
 
     project "NvBlastExtStress"
-        buildoptions { "-march=haswell" }
+        filter { "system:linux"}
+            buildoptions { "-march=haswell" }
+        filter {}
         link_dependents({"NvBlast", "NvBlastGlobals"})
         blast_sdklib_standard_setup("extensions/stress")
         includedirs {
