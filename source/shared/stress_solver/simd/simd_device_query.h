@@ -89,19 +89,18 @@ constexpr std::pair<const char*, uint32_t> sInstructionSetLookup[] =
 
 #if NV_WINDOWS_FAMILY
 #include <intrin.h> // for __cpuidex
-#include <immintrin.h> // for _xgetbv
 inline void cpuid(int cpui[4], int fn) { __cpuidex(cpui, fn, 0); }
+inline bool os_supports_avx_restore() { return ((uint32_t)_xgetbv(0) & 6) == 6; }
 #else
 #include <cpuid.h> // for __cpuid_count
-#include <xsaveintrin.h> // for _xgetbv
 inline void cpuid(int cpui[4], int fn) { __cpuid_count(fn, 0, cpui[0], cpui[1], cpui[2], cpui[3]); }
-#endif
-
-static bool
-os_supports_avx_restore()
+inline bool os_supports_avx_restore()
 {
-    return ((uint32_t)_xgetbv(0) & 6) == 6;
+    uint32_t xcr0;
+    __asm__("xgetbv" : "=a" (xcr0) : "c" (0) : "%edx");
+    return (xcr0 & 6) == 6;
 }
+#endif
 
 static bool
 device_supports_instruction_set(uint32_t inst_set)
