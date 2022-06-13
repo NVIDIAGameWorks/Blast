@@ -123,6 +123,7 @@ public:
         StressProcessor::DataParams params;
         params.centerBonds = true;
         params.equalizeMasses = true;
+        params.timeScale = 1.0f/3600.f; // Using in (1/60)^2 since we are passing in acceleration instead of velocity
         m_stressProcessor.prepare(m_nodes.begin(), m_nodes.size(), m_bonds.begin(), m_bonds.size(), params);
     }
 
@@ -132,6 +133,7 @@ public:
         AngLin6& v = m_velocities[node];
         v.ang = { velocityAngular.x, velocityAngular.y, velocityAngular.z };
         v.lin = { velocityLinear.x, velocityLinear.y, velocityLinear.z };
+        m_inputsChanged = true;
     }
 
     uint32_t addBond(uint32_t node0, uint32_t node1, const PxVec3& bondCentroid)
@@ -161,29 +163,34 @@ public:
         memset(m_velocities.begin(), 0, sizeof(AngLin6)*nodeCount);
         clearBonds();
         m_error_sq = {FLT_MAX, FLT_MAX};
+        m_converged = false;
         m_forceColdStart = true;
+        m_inputsChanged = true;
     }
 
     void clearBonds()
     {
         m_bonds.clear();
         m_impulses.clear();
+        m_forceColdStart = true;
     }
 
     void solve(uint32_t iterationCount, bool warmStart = true)
     {
         StressProcessor::SolverParams params;
         params.maxIter = iterationCount;
-        params.solverTol = 0.001f;
+        params.tolerance = 0.001f;
         params.warmStart = warmStart && !m_forceColdStart;
+        m_converged = (m_stressProcessor.solve(m_impulses.begin(), m_velocities.begin(), params, &m_error_sq) >= 0);
         m_forceColdStart = false;
-        m_stressProcessor.solve(m_impulses.begin(), m_velocities.begin(), params, &m_error_sq);
+        m_inputsChanged = false;
     }
 
-    void calcError(float& linear, float& angular) const
+    bool calcError(float& linear, float& angular) const
     {
         linear = sqrtf(m_error_sq.lin);
         angular = sqrtf(m_error_sq.ang);
+        return m_converged;
     }
 
 private:
@@ -193,7 +200,9 @@ private:
     Array<AngLin6>::type        m_velocities;
     Array<AngLin6>::type        m_impulses;
     AngLin6ErrorSq              m_error_sq;
+    bool                        m_converged;
     bool                        m_forceColdStart;
+    bool                        m_inputsChanged;
 };
 
 
@@ -530,8 +539,6 @@ public:
     {
         sync(bonds);
 
-        m_solver.initialize();
-
         for (const NodeData& node : m_nodesData)
         {
             m_solver.setNodeVelocities(node.solverNode, node.localVel, PxVec3(PxZero));
@@ -544,9 +551,9 @@ public:
         updateBondStress(settings, bondHealth, bonds);
     }
 
-    void calcError(float& linear, float& angular) const
+    bool calcError(float& linear, float& angular) const
     {
-        m_solver.calcError(linear, angular);
+        return m_solver.calcError(linear, angular);
     }
 
     bool getBondStress(uint32_t blastBondIndex, float& compression, float& tension, float& shear) const
@@ -710,6 +717,7 @@ private:
         if (m_nodesDirty)
         {
             syncNodes(bonds);
+            m_solver.initialize();
         }
         if (m_bondsDirty)
         {
@@ -1051,6 +1059,11 @@ public:
         return m_errorAngular;
     }
 
+    virtual bool                            converged() const override
+    {
+        return m_converged;
+    }
+
     virtual uint32_t                        getFrameCount() const override
     {
         return m_framesCount;
@@ -1135,6 +1148,7 @@ private:
     SupportGraphProcessor*                                              m_graphProcessor;
     float                                                               m_errorAngular;
     float                                                               m_errorLinear;
+    bool                                                                m_converged;
     uint32_t                                                            m_framesCount;
     Array<NvBlastBondFractureData>::type                                m_bondFractureBuffer;
     Array<uint8_t>::type                                                m_scratch;
@@ -1160,7 +1174,8 @@ NV_INLINE T* ExtStressSolverImpl::getScratchArray(uint32_t size)
 
 ExtStressSolverImpl::ExtStressSolverImpl(const NvBlastFamily& family, const ExtStressSolverSettings& settings)
     : m_family(family), m_settings(settings), m_isDirty(false), m_reset(false),
-    m_errorAngular(std::numeric_limits<float>::max()), m_errorLinear(std::numeric_limits<float>::max()), m_framesCount(0)
+    m_errorAngular(std::numeric_limits<float>::max()), m_errorLinear(std::numeric_limits<float>::max()),
+    m_converged(false), m_framesCount(0)
 {
     // this needs to be called any time settings change, including when they are first set
     inheritSettingsLimits();
@@ -1535,7 +1550,7 @@ void ExtStressSolverImpl::solve()
     m_graphProcessor->solve(m_settings, m_bondHealths, m_bonds, WARM_START && !m_reset);
     m_reset = false;
 
-    m_graphProcessor->calcError(m_errorLinear, m_errorAngular);
+    m_converged = m_graphProcessor->calcError(m_errorLinear, m_errorAngular);
 }
 
 

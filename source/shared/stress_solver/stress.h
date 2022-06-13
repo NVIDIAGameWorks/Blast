@@ -34,18 +34,22 @@
 class StressProcessor
 {
 public:
-    /** Parameters controling the data preparation. */
+    /** Constructor clears member data. */
+    StressProcessor() : m_mass_scale(0.0f), m_length_scale(0.0f), m_time_scale(0.0f), m_can_resume(false) {}
+
+    /** Parameters controlling the data preparation. */
     struct DataParams
     {
-        bool        equalizeMasses  = false;    // Use the geometric mean of the nodes' masses instead of the individual masses.
-        bool        centerBonds     = false;    // Place the bond position halfway between adjoining nodes' CoMs.
+        bool        equalizeMasses  = false;        // Use the geometric mean of the nodes' masses instead of the individual masses.
+        bool        centerBonds     = false;        // Place the bond position halfway between adjoining nodes' CoMs.
+        float       timeScale       = 1.0f/60.0f;   // Used to calculate a velocity scale for convergence testing.
     };
 
-    /** Parameters controling the solver behavior. */
+    /** Parameters controlling the solver behavior. */
     struct SolverParams
     {
         uint32_t    maxIter         = 0;        // The maximum number of iterations.  If 0, use CGNR for default value.
-        float       solverTol       = 1.e-6f;   // The relative tolerance threshold for convergence.  Iteration will stop when this is reached.
+        float       tolerance       = 1.e-6f;   // The relative tolerance threshold for convergence.  Iteration will stop when this is reached.
         bool        warmStart       = false;    // Whether or not to use the solve function's 'impulses' parameter as a starting input vector.
     };
 
@@ -71,11 +75,12 @@ public:
      *                          Must be of length N_bonds passed into the prepare(...) function.
      * \param[in]   velocities  Input array of external velocities on each node.  Must be of length N_nodes passed into the prepare(...) function.
      * \param[in]   params      Parameters affecting the solver characteristics (see SolverParams).
-     * \param[out]  error_sq    (Optional) If not NULL, *error_sq will be filled with the angular and linear square errors (solver residuals).
+     * \param[out]  error_sq    (Optional) If not NULL, *error_sq will be filled with the angular and linear square errors (solver residuals).  Default = NULL.
+     * \param[in]   resume      (Optional) Set to true if impulses and velocities have not changed since last call, to resume solving.  Default = false.
      * 
      * \return the number of iterations taken to converge, if it converges.  Otherwise, returns minus the number of iterations before exiting.
      */
-    int         solve(AngLin6* impulses, const AngLin6* velocities, const SolverParams& params, AngLin6ErrorSq* error_sq = nullptr);
+    int         solve(AngLin6* impulses, const AngLin6* velocities, const SolverParams& params, AngLin6ErrorSq* error_sq = nullptr, bool resume = false);
 
     /**
      * Removes the indexed bond from the solver.
@@ -97,25 +102,21 @@ public:
     uint32_t    getBondCount() const { return (uint32_t)m_couplings.size(); }
 
     /**
-     * Effectively clear the solver cache, so that a hot start will not be taken on the next call to solve(...).
-     */
-    void        clearCache() { m_can_hot_start = false; }
-
-    /**
-     * \return whether or not the solver uses SIMD.  If the device supports SSE, AVX, and FMA instruction sets, SIMD is used. 
+     * \return whether or not the solver uses SIMD.  If the device and OS support SSE, AVX, and FMA instruction sets, SIMD is used. 
      */
     static bool usingSIMD() { return s_use_simd; }
 
 protected:
-    float                   m_length_scale;
     float                   m_mass_scale;
+    float                   m_length_scale;
+    float                   m_time_scale;
     std::vector<InertiaS>   m_recip_sqrt_m;
     std::vector<Coupling>   m_couplings;
     BondMatrixS             m_B;
     std::vector<AngLin6>    m_rhs;
     std::vector<AngLin6>    m_B_scratch;
     std::vector<AngLin6>    m_solver_cache;
-    bool                    m_can_hot_start;
+    bool                    m_can_resume;
 
     static const bool       s_use_simd;
 };

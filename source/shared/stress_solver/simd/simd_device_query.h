@@ -77,6 +77,7 @@ constexpr std::pair<const char*, uint32_t> sInstructionSetLookup[] =
     InstructionSetEntry(SSSE3),
     InstructionSetEntry(SSE4_1),
     InstructionSetEntry(SSE4_2),
+    InstructionSetEntry(OSXSAVE),
     InstructionSetEntry(AVX),
     InstructionSetEntry(AVX2),
     InstructionSetEntry(FMA3),

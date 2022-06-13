@@ -58,7 +58,7 @@ If we are going to keep the feature, the algorithm for combining bonds should be
 */
 struct ExtStressSolverSettings
 {
-    uint32_t    maxSolverIterationsPerFrame;//!<    the maximum number of iterations to perform per frame, @see getIterationsPerFrame() below
+    uint32_t    maxSolverIterationsPerFrame;//!<    the maximum number of iterations to perform per frame
     uint32_t    graphReductionLevel;        //!<    graph reduction level
 
     // stress pressure limits
@@ -70,8 +70,8 @@ struct ExtStressSolverSettings
     float       shearFatalLimit;            //!<    above this shear pressure the bond is immediately broken.  Use a negative value to fall back on compression limit.
 
     ExtStressSolverSettings() :
-        maxSolverIterationsPerFrame(10),
-        graphReductionLevel(3),
+        maxSolverIterationsPerFrame(25),
+        graphReductionLevel(0),
 
         // stress pressure limits
         compressionElasticLimit(1.0f),
@@ -305,6 +305,13 @@ public:
     \return the total angular error of stress calculation.
     */
     virtual float                           getStressErrorAngular() const = 0;
+
+    /**
+    Whether or not the solver converged to a solution within the desired error.
+
+    \return true iff the solver converged.
+    */
+    virtual bool                            converged() const = 0;
 
     /**
     Get stress solver total frames count (update() calls) since it was created (or reset).

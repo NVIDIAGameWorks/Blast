@@ -43,13 +43,13 @@ typedef CGNR<AngLin6, AngLin6Ops<SIMD_Scalar>, BondMatrixS, BondMatrixOpsS<SIMD_
  * StressProcessor static members
  */
 
-// Check for SSE, AVX, and FMA
+// Check for SSE, FMA3, and AVX support
 const bool
 StressProcessor::s_use_simd =
     device_supports_instruction_set(InstructionSet::SSE) &&     // Basic SSE
+    device_supports_instruction_set(InstructionSet::FMA3) &&    // Fused Multiply-Add instructions
     device_supports_instruction_set(InstructionSet::OSXSAVE) && // OS uses XSAVE and XRSTORE instructions allowing saving YMM registers on context switch
     device_supports_instruction_set(InstructionSet::AVX) &&     // Advanced Vector Extensions (256 bit operations)
-    device_supports_instruction_set(InstructionSet::FMA3) &&    // Fused Multiply-Add instructions
     os_supports_avx_restore();                                  // OS has enabled the required extended state for AVX
 
 
@@ -65,7 +65,8 @@ StressProcessor::prepare(const SolverNodeS* nodes, uint32_t N_nodes, const Solve
     m_rhs.resize(N_nodes);
     m_B_scratch.resize(N_nodes);
     m_solver_cache.resize(s_use_simd ? CGNR_SIMD().required_cache_size(N_nodes, N_bonds) : CGNR_SISD().required_cache_size(N_nodes, N_bonds));
-    m_can_hot_start = false;
+    m_time_scale = params.timeScale;
+    m_can_resume = false;
 
     // Calculate bond offsets and length scale
     uint32_t offsets_to_scale = 0;
@@ -187,7 +188,7 @@ StressProcessor::prepare(const SolverNodeS* nodes, uint32_t N_nodes, const Solve
 
 
 int
-StressProcessor::solve(AngLin6* impulses, const AngLin6* velocities, const SolverParams& params, AngLin6ErrorSq* error_sq /* = nullptr */)
+StressProcessor::solve(AngLin6* impulses, const AngLin6* velocities, const SolverParams& params, AngLin6ErrorSq* error_sq /* = nullptr */, bool resume /* = false */)
 {
     const InertiaS* sqrt_m_inv = m_recip_sqrt_m.data();
     const uint32_t N_nodes = getNodeCount();
@@ -220,18 +221,21 @@ StressProcessor::solve(AngLin6* impulses, const AngLin6* velocities, const Solve
         b_i.lin = (-recip_length_scale/(m_i.m > 0 ? m_i.m : 1.0f))*v_i.lin;
     }
 
-    // Solve B*J = b for J, where B = (m^-1/2)*C.
+    // Solve B*J = b for J, where B = (m^-1/2)*C and b = -(m^1/2)*v.
     // Since CGNR does this by solving (B^T)*B*J = (B^T)*b, this actually solves
     // (C^T)*(m^-1)*C*J = -(C^T)*v for J, which is the equation we really wanted to solve.
     const uint32_t maxIter = params.maxIter ? params.maxIter : 6*std::max(N_nodes, N_bonds);
 
     // Set solver warmth
-    const unsigned warmth = params.warmStart ? (m_can_hot_start ? 2 : 1) : 0;
+    const unsigned warmth = params.warmStart ? (m_can_resume && resume ? 2 : 1) : 0;
+
+    // Set tolerance
+    const float tol = params.tolerance/m_time_scale;
 
     // Choose solver based on parameters
     const int result = s_use_simd ?
-        CGNR_SIMD().solve(impulses, m_B, b, N_nodes, N_bonds, cache, error_sq, params.solverTol, maxIter, warmth) :
-        CGNR_SISD().solve(impulses, m_B, b, N_nodes, N_bonds, cache, error_sq, params.solverTol, maxIter, warmth);
+        CGNR_SIMD().solve(impulses, m_B, b, N_nodes, N_bonds, cache, error_sq, tol, maxIter, warmth) :
+        CGNR_SISD().solve(impulses, m_B, b, N_nodes, N_bonds, cache, error_sq, tol, maxIter, warmth);
 
     // Undo length and mass scaling
     const float linear_impulse_scale = m_length_scale*m_mass_scale;
@@ -242,7 +246,7 @@ StressProcessor::solve(AngLin6* impulses, const AngLin6* velocities, const Solve
         impulses[j].lin *= linear_impulse_scale;
     }
 
-    m_can_hot_start = true;
+    m_can_resume = true;
 
     return result;
 }
@@ -256,7 +260,7 @@ StressProcessor::removeBond(uint32_t bondIndex)
     m_couplings[bondIndex] = m_couplings.back();
     m_couplings.pop_back();
     --m_B.N;
-    m_can_hot_start = false;
+    m_can_resume = false;
 
     return true;
 }

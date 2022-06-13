@@ -61,6 +61,9 @@
 template <typename TensorType>
 struct BondMatrix
 {
+    /** Constructor clears member data. */
+    BondMatrix() : C(nullptr), sqrt_m_inv(nullptr), scratch(nullptr), M(0), N(0) {}
+
     /**
      * Set fields (shallow pointer copy).
      * 
