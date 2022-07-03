@@ -123,7 +123,6 @@ public:
         StressProcessor::DataParams params;
         params.centerBonds = true;
         params.equalizeMasses = true;
-        params.timeScale = 1.0f/3600.f; // Using in (1/60)^2 since we are passing in acceleration instead of velocity
         m_stressProcessor.prepare(m_nodes.begin(), m_nodes.size(), m_bonds.begin(), m_bonds.size(), params);
     }
 
@@ -339,24 +338,24 @@ public:
     }
 
     void calcSolverBondStresses(
-        uint32_t bondIdx, float bondArea, const physx::PxVec3& bondNormal,
-        float& compression, float& shear) const
+        uint32_t bondIdx, float bondArea, float nodeDist, const physx::PxVec3& bondNormal,
+        float& stressNormal, float& stressShear) const
     {
         if (!canTakeDamage(bondArea))
         {
-            compression = shear = 0.0f;
+            stressNormal = stressShear = 0.0f;
             return;
         }
 
-        // impulseLinear in the direction of the bond normal is compression, perpendicular is shear
+        // impulseLinear in the direction of the bond normal is stressNormal, perpendicular is stressShear
         // ignore impulseAngular for now, not sure how to account for that
         // convert to pressure to factor out area
         PxVec3 impulseLinear, impulseAngular;
         getSolverInternalBondImpulses(bondIdx, impulseLinear, impulseAngular);
         const float normalComponentLinear = impulseLinear.dot(bondNormal);
-        compression = normalComponentLinear / bondArea;
+        stressNormal = normalComponentLinear / bondArea;
         const float impulseLinearMagSqr = impulseLinear.magnitudeSquared();
-        shear = sqrtf(impulseLinearMagSqr - normalComponentLinear * normalComponentLinear) / bondArea;
+        stressShear = sqrtf(impulseLinearMagSqr - normalComponentLinear * normalComponentLinear) / bondArea;
 
         // impulseAngular in the direction of the bond normal is twist, perpendicular is bend
         // take abs() of the dot product because only the magnitude of the twist matters, not direction
@@ -366,11 +365,11 @@ public:
         const float bend = sqrtf(impulseAngularMagSqr - normalComponentAngular * normalComponentAngular) / bondArea;
 
         // interpret angular pressure as a composition of linear pressures
-        const float R = sqrtf(bondArea / 3.14159265f);  // using a simple disk model
-        const float twistContribution = twist * 1.5f / R;
-        shear += twistContribution;
-        const float bendContribution = bend * 2.35619449f / R;  // * (3*pi/4)/R
-        compression += copysignf(bendContribution, compression);
+        // dividing by nodeDist for scaling
+        const float twistContribution = twist * 2.0f / nodeDist;
+        stressShear += twistContribution;
+        const float bendContribution = bend * 2.0f / nodeDist;
+        stressNormal += copysignf(bendContribution, stressNormal);
     }
 
     float mapStressToRange(float stress, float elasticLimit, float fatalLimit) const
@@ -615,6 +614,7 @@ private:
             // calculate an average normal and centroid for all bonds as well, weighted by their area
             physx::PxVec3 bondNormal(PxZero);
             physx::PxVec3 bondCentroid(PxZero);
+            physx::PxVec3 averageNodeDisp(PxZero);
             const auto& blastBondIndices = m_solverBondsData[i].blastBondIndices;
             for (auto blastBondIndex : blastBondIndices)
             {
@@ -639,11 +639,13 @@ private:
                         totalArea = kUnbreakableLimit;  // Don't add this in, in case of overflow
                         bondNormal = blastBondNormal;
                         bondCentroid = blastBondCentroid;
+                        averageNodeDisp = nodeDisp;
                         break;
                     }
 
                     bondNormal += blastBondNormal*remainingArea;
                     bondCentroid += blastBondCentroid*remainingArea;
+                    averageNodeDisp += nodeDisp*remainingArea;
 
                     totalArea += remainingArea;
                 }
@@ -666,12 +668,13 @@ private:
             if (canTakeDamage(totalArea))
             {
                 bondCentroid /= totalArea;
+                averageNodeDisp /= totalArea;
             }
 
             // bonds are looked at as a whole group,
             // so regardless of the current health of an individual one they are either all over stressed or none are
             float stressNormal, stressShear;
-            calcSolverBondStresses(i, totalArea, bondNormal, stressNormal, stressShear);
+            calcSolverBondStresses(i, totalArea, averageNodeDisp.magnitude(), bondNormal, stressNormal, stressShear);
             NVBLAST_ASSERT(!std::isnan(stressNormal) && !std::isnan(stressShear));
             if (
                 -stressNormal > settings.compressionElasticLimit ||
@@ -1130,12 +1133,6 @@ private:
 
     //////// data ////////
 
-    struct ImpulseData
-    {
-        physx::PxVec3 position;
-        physx::PxVec3 impulse;
-    };
-
     const NvBlastFamily&                                                m_family;
     HashSet<const NvBlastActor*>::type                                  m_activeActors;
     ExtStressSolverSettings                                             m_settings;
@@ -1280,8 +1277,8 @@ bool ExtStressSolverImpl::getExcessForces(uint32_t actorIndex, const NvcVec3& co
     }
 
     const uint32_t nodeCount = NvBlastActorGetGraphNodeCount(actor, logLL);
-    uint32_t* scratch = getScratchArray<uint32_t>(nodeCount);
-    const uint32_t retCount = NvBlastActorGetGraphNodeIndices(scratch, nodeCount, actor, logLL);
+    uint32_t* nodeIndices = getScratchArray<uint32_t>(nodeCount);
+    const uint32_t retCount = NvBlastActorGetGraphNodeIndices(nodeIndices, nodeCount, actor, logLL);
     NVBLAST_ASSERT(retCount == nodeCount);
 
     // get the mapping between support chunks and actor indices
@@ -1298,7 +1295,7 @@ bool ExtStressSolverImpl::getExcessForces(uint32_t actorIndex, const NvcVec3& co
     for (uint32_t n = 0; n < nodeCount; n++)
     {
         // find bonds that broke this frame (health <= 0 but internal stress bond index is still valid)
-        const uint32_t nodeIdx = scratch[n];
+        const uint32_t nodeIdx = nodeIndices[n];
         for (uint32_t i = m_graph.adjacencyPartition[nodeIdx]; i < m_graph.adjacencyPartition[nodeIdx + 1]; i++)
         {
             // check if the bond is broken first of all
@@ -1331,47 +1328,50 @@ bool ExtStressSolverImpl::getExcessForces(uint32_t actorIndex, const NvcVec3& co
             uint32_t node0, node1;
             m_graphProcessor->getSolverInternalBondNodes(internalBondIndex, node0, node1);
             NVBLAST_ASSERT(bondData.node0 == internalBondData.node0 && bondData.node1 == internalBondData.node1);
-            PxVec3 impulseLinear, impulseAngular;
-            m_graphProcessor->getSolverInternalBondImpulses(internalBondIndex, impulseLinear, impulseAngular);
 
             // accumulators for forces just from this bond
-            physx::PxVec3 pxForce(0.0f);
-            physx::PxVec3 pxTorque(0.0f);
+            physx::PxVec3 pxLinearPressure(0.0f);
+            physx::PxVec3 pxAngularPressure(0.0f);
 
             // deal with linear forces
             const float excessCompression = bondData.stressNormal + m_settings.compressionFatalLimit;
             const float excessTension = bondData.stressNormal - m_settings.tensionFatalLimit;
             if (excessCompression < 0.0f)
             {
-                pxForce += excessCompression * bondData.normal;
+                pxLinearPressure += excessCompression * bondData.normal;
             }
             else if (excessTension > 0.0f)
             {
                 // tension is in the negative direction of the linear impulse
-                pxForce += excessTension * bondData.normal;
+                pxLinearPressure += excessTension * bondData.normal;
             }
 
             const float excessShear = bondData.stressShear - m_settings.shearFatalLimit;
             if (excessShear > 0.0f)
             {
+                PxVec3 impulseLinear, impulseAngular;
+                m_graphProcessor->getSolverInternalBondImpulses(internalBondIndex, impulseLinear, impulseAngular);
                 const physx::PxVec3 shearDir = impulseLinear - impulseLinear.dot(bondData.normal)*bondData.normal;
-                pxForce += excessShear * shearDir.getNormalized();
+                pxLinearPressure += excessShear * shearDir.getNormalized();
             }
 
-            if (pxForce.magnitudeSquared() > FLT_EPSILON)
+            if (pxLinearPressure.magnitudeSquared() > FLT_EPSILON)
             {
                 const float* bondCenter = m_bonds[blastBondIndex].centroid;
                 const physx::PxVec3 forceOffset = physx::PxVec3(bondCenter[0], bondCenter[1], bondCenter[3]) - toPxShared(com);
-                const physx::PxVec3 torqueFromForce = forceOffset.cross(pxForce);
-                pxTorque += torqueFromForce;
+                const physx::PxVec3 torqueFromForce = forceOffset.cross(pxLinearPressure);
+                pxAngularPressure += torqueFromForce;
             }
 
             // add the contributions from this bond to the total forces for the actor
             // multiply by the area to convert back to force from pressure
             const float bondRemainingArea = m_cachedBondHealths[blastBondIndex];
             NVBLAST_ASSERT(bondRemainingArea <= m_bonds[blastBondIndex].area);
-            totalForce += pxForce * bondRemainingArea;
-            totalTorque += pxTorque * bondRemainingArea;
+
+            const float sign = otherNodeIdx > nodeIdx ? 1.0f : -1.0f;
+
+            totalForce += pxLinearPressure * (sign*bondRemainingArea);
+            totalTorque += pxAngularPressure * (sign*bondRemainingArea);
         }
     }
 

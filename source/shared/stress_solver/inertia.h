@@ -107,10 +107,10 @@ struct InertiaMatrixOps<SIMD_Scalar>
             AngLin6& y_i = y[i];
 
             __m256 _x = _mm256_load_ps(&x_i.ang.x);
-            __m128 _ml = _mm_load1_ps(&I_i.I);
-            __m128 _mh = _mm_load1_ps(&I_i.m);
-            __m256 _m = _mm256_set_m128(_mh,_ml);
-            __m256 _y = _mm256_mul_ps(_m, _x);
+            __m128 _Il = _mm_load1_ps(&I_i.I);
+            __m128 _Ih = _mm_load1_ps(&I_i.m);
+            __m256 _I = _mm256_set_m128(_Ih,_Il);
+            __m256 _y = _mm256_mul_ps(_I, _x);
             _mm256_store_ps(&y_i.ang.x, _y);
         }
     }

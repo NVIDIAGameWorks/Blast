@@ -35,40 +35,41 @@
 /**
  * BondMatrix
  * 
- * When this matrix is applied to a vector of bond impulses, the result is a vector of the
- * differences between the the resulting velocities of the nodes joined by each bond.
+ * Given a BondMatrix B, when (B^T)*B is applied to a vector of bond impulses, the result
+ * is a vector of the differences between the the resulting accelerations of the nodes
+ * joined by each bond.
  * 
  * This is done in block form, so a vector is composed of vector elements.  Each element
  * is a 6-dimensional vector, composed of a linear part followed by an angular part.
  * Matrix blocks are likewise 6x6.
  * 
  * This matrix is composed of two sparse matrices:
- *    An M x M block diagonal matrix m, where the i^th diagonal block is the 6x6 matrix:
+ *    An M x M block diagonal matrix I, where the i^th diagonal block is the 6x6 matrix:
  * 
  *             / I_i  0  \
- *      m_ii = |         |
+ *      I_ii = |         |
  *             \  0  m_i /
  * 
- *    Except for possibly I_i, each "element" in m_ii is a multiple of the 3x3 unit matrix.  I_i is a
+ *    Except for possibly I_i, each "element" in I_ii is a multiple of the 3x3 unit matrix.  I_i is a
  *    3x3 symmetric inertia tensor.  See the definition of Inertia<TensorType> for its representation.
  * 
  *    The second component is the coupling matrix C, see documentation for Coupling.
  * 
- * The matrix represented by this object is (m^-1/2)*C, an M x N matrix.
+ * The matrix represented by this object is (I^-1/2)*C, an M x N matrix.
  * 
- * NOTE: m, and C are _not_ stored as described above, for efficiency.
+ * NOTE: I and C are _not_ stored as described above, for efficiency.
  */
 template <typename TensorType>
 struct BondMatrix
 {
     /** Constructor clears member data. */
-    BondMatrix() : C(nullptr), sqrt_m_inv(nullptr), scratch(nullptr), M(0), N(0) {}
+    BondMatrix() : C(nullptr), sqrt_I_inv(nullptr), scratch(nullptr), M(0), N(0) {}
 
     /**
      * Set fields (shallow pointer copy).
      * 
      * \param[in]   _C          Coupling matrix, see the documentation for Coupling.
-     * \param[in]   _sqrt_m_inv The inverse of the square root of the diagonal mass and inertia tensor, represented by a
+     * \param[in]   _sqrt_I_inv The inverse of the square root of the diagonal mass and inertia tensor, represented by a
      *                          vector of _M Inertia structs for the diagonal values.  The i^th element is the reciprocal
      *                          of the square root of the mass and inertia tensor of node i.
      * \param[in]   _scratch    Scratch memory required to carry out a multiply.  Must be at least _M*sizeof(AngLin6) bytes.
@@ -76,17 +77,17 @@ struct BondMatrix
      * \param[in]   _N          The number of bonds.
      */
     void
-    set(const Coupling* _C, const Inertia<TensorType>* _sqrt_m_inv, void* _scratch, uint32_t _M, uint32_t _N)
+    set(const Coupling* _C, const Inertia<TensorType>* _sqrt_I_inv, void* _scratch, uint32_t _M, uint32_t _N)
     {
         C = _C;
-        sqrt_m_inv = _sqrt_m_inv;
+        sqrt_I_inv = _sqrt_I_inv;
         scratch = _scratch;
         M = _M;
         N = _N;
     }
 
     const Coupling* C;
-    const Inertia<TensorType>* sqrt_m_inv;
+    const Inertia<TensorType>* sqrt_I_inv;
     void* scratch;
     uint32_t M, N;
 };
@@ -117,8 +118,8 @@ struct BondMatrixOps
         // Calculate y = C*x (apply C)
         CouplingMatrixOps<AngLin6, Scalar>().rmul(y, B.C, x, B.M, B.N);
 
-        // Calculate y = (m^-1/2)*C*x (apply m^-1/2)
-        InertiaMatrixOps<Scalar>().mul(y, B.sqrt_m_inv, y, B.M);
+        // Calculate y = (I^-1/2)*C*x (apply I^-1/2)
+        InertiaMatrixOps<Scalar>().mul(y, B.sqrt_I_inv, y, B.M);
     }
 
     /**
@@ -138,10 +139,10 @@ struct BondMatrixOps
 
         AngLin6* s = (AngLin6*)B.scratch; // M-sized scratch s
 
-        // Calculate s = (m^-1/2)*x (apply m^-1/2)
-        InertiaMatrixOps<Scalar>().mul(s, B.sqrt_m_inv, x, B.M);
+        // Calculate s = (I^-1/2)*x (apply I^-1/2)
+        InertiaMatrixOps<Scalar>().mul(s, B.sqrt_I_inv, x, B.M);
 
-        // Calculate y = (C^T)*(m^-1/2)*x (apply C^T)
+        // Calculate y = (C^T)*(I^-1/2)*x (apply C^T)
         CouplingMatrixOps<AngLin6, Scalar>().lmul(y, s, B.C, B.M, B.N);
     }
 };

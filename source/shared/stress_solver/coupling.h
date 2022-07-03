@@ -36,7 +36,6 @@
 /**
  * Bond coupling data used as a representation of a block column of a "coupling matrix" C,
  * which has exactly two non-zero blocks.  The non-zero blocks are of the form
- * The non-zero blocks of R are of the form
  * 
  *               /   1  ~r_ij \
  *   C_ij = s_ij |            |.

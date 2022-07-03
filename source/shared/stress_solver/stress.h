@@ -35,14 +35,13 @@ class StressProcessor
 {
 public:
     /** Constructor clears member data. */
-    StressProcessor() : m_mass_scale(0.0f), m_length_scale(0.0f), m_time_scale(0.0f), m_can_resume(false) {}
+    StressProcessor() : m_mass_scale(0.0f), m_length_scale(0.0f), m_can_resume(false) {}
 
     /** Parameters controlling the data preparation. */
     struct DataParams
     {
         bool        equalizeMasses  = false;        // Use the geometric mean of the nodes' masses instead of the individual masses.
         bool        centerBonds     = false;        // Place the bond position halfway between adjoining nodes' CoMs.
-        float       timeScale       = 1.0f/60.0f;   // Used to calculate a velocity scale for convergence testing.
     };
 
     /** Parameters controlling the solver behavior. */
@@ -94,7 +93,7 @@ public:
     /**
      * \return the number of nodes in the stress network.  (Set by prepare(...).)
      */
-    uint32_t    getNodeCount() const { return (uint32_t)m_recip_sqrt_m.size(); }
+    uint32_t    getNodeCount() const { return (uint32_t)m_recip_sqrt_I.size(); }
 
     /**
      * \return the number of bonds in the stress network.  (Set by prepare(...), possibly reduced by removeBond(...).)
@@ -109,8 +108,7 @@ public:
 protected:
     float                   m_mass_scale;
     float                   m_length_scale;
-    float                   m_time_scale;
-    std::vector<InertiaS>   m_recip_sqrt_m;
+    std::vector<InertiaS>   m_recip_sqrt_I;
     std::vector<Coupling>   m_couplings;
     BondMatrixS             m_B;
     std::vector<AngLin6>    m_rhs;

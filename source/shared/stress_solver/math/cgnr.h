@@ -65,7 +65,7 @@ struct CGNR
      * \param[in]   N           The number of columns in A and elements in x.
      * \param[in]   cache       Cache memory provided by the user, must be at least required_cache_size(M, N) bytes, and sizeof(Elem)-byte aligned.
      * \param[out]  error_ptr   If not null, returns the square magnitude error calculated from residual.
-     * \param[in]   tol         (Optional) convergence threshold for |(A^T)*(A*x-b)|.  Default value is 10^-6.
+     * \param[in]   tol         (Optional) relative convergence threshold for |(A^T)*(A*x-b)|/|b|.  Default value is 10^-6.
      * \param[in]   max_it      (Optional) the maximum number of internal iterations.  If set to 0, the maximum is N.  Default value is 0.
      * \param[in]   warmth      (Optional) valid values are 0, 1, and 2.  0 => cold, clears the x vector and ignores the cache.
      *                          1 => warm, uses the x vector as a starting solution, but still ignores the cache.  2 => hot, uses the x
@@ -93,29 +93,31 @@ struct CGNR
         // Cache and temporary storage
         static_assert(sizeof(Elem) >= sizeof(Scalar), "sizeof(Elem) must be at least as great as sizeof(Scalar).");
         float* z_last_sq_mem = (float*)cache; cache = (Elem*)z_last_sq_mem + 1; // Elem-sized storage
+        float* delta_sq_mem = (float*)cache; cache = (Elem*)delta_sq_mem + 1;   // Elem-sized storage
         Elem* z = (Elem*)cache; cache = z + N;  // Array of length N
         Elem* p = (Elem*)cache; cache = p + N;  // Array of length N
         Elem* r = (Elem*)cache; cache = r + M;  // Array of length M
         Elem* s = (Elem*)cache;                 // Array of length M
 
-        Scalar z_last_sq;
+        Scalar z_last_sq, delta_sq;
         load_float(z_last_sq, z_last_sq_mem);
+        load_float(delta_sq, delta_sq_mem);
 
-        if (warmth < 2)                         // Not hot
+        if (warmth < 2)                                         // Not hot
         {
-            memcpy(r, b, sizeof(Elem)*M);       // Initialize residual r = b
-            if (warmth)                         // Warm start, r = b - A*x
+            delta_sq = mul(tol*tol, ElemOps().length_sq(b, M)); // Calculate allowed residual length squared and cache it
+            store_float(delta_sq_mem, delta_sq);
+            memcpy(r, b, sizeof(Elem)*M);                       // Initialize residual r = b
+            if (warmth)                                         // Warm start, r = b - A*x
             {
                 MatOps().rmul(s, A, x, M, N);
                 ElemOps().vsub(r, r, s, M);
             }
-            else memset(x, 0, sizeof(Elem)*N);  // Cold start, x = 0 so r = b
-            warmth = 0;                         // This lets p be initialized in the loop below
+            else memset(x, 0, sizeof(Elem)*N);                  // Cold start, x = 0 so r = b
+            warmth = 0;                                         // This lets p be initialized in the loop below
         }
 
         Error error;
-        Scalar tol_sq;
-        from_float(tol_sq, tol*tol);
 
         // Iterate
         if (!max_it) max_it = N;                                                        // Default to a maximum of N iterations
@@ -124,7 +126,7 @@ struct CGNR
         {
             MatOps().lmul(z, r, A, M, N);                                               // Set z = (A^T)*r
             const Scalar z_sq = ElemOps().calculate_error(error, z, N);                 // Calculate residual (of modified equation) length squared
-            if (le(z_sq, tol_sq)) break;                                                // Terminate (convergence) if within tolerance
+            if (le(z_sq, delta_sq)) break;                                              // Terminate (convergence) if within tolerance
             if (warmth || warmth++) ElemOps().vmadd(p, div(z_sq, z_last_sq), p, z, N);  // If not cold set p = z + (|z|^2/|z_last|^2)*p, and make warm hereafter
             else memcpy(p, z, sizeof(Elem)*N);                                          // If cold set p = z
             z_last_sq = z_sq;
@@ -150,5 +152,5 @@ struct CGNR
      * 
      * \return the required cache size (in bytes) for the given values of M and N.
      */
-    size_t  required_cache_size(uint32_t M, uint32_t N) { return (2*(M+N)+1)*sizeof(Elem); }
+    size_t  required_cache_size(uint32_t M, uint32_t N) { return 2*(M+N+1)*sizeof(Elem); }
 };
