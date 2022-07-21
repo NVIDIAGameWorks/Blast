@@ -3,12 +3,12 @@
     <package name="repo_man" version="0.4.10" />
   </dependency>
   <dependency name="repo_build" linkPath="../_repo/deps/repo_build" tags="non-redist">
-    <package name="repo_build" version="0.17.21" />
+    <package name="repo_build" version="0.25.1" />
   </dependency>
   <dependency name="repo_package" linkPath="../_repo/deps/repo_package" tags="non-redist">
-    <package name="repo_package" version="5.4.0" />
+    <package name="repo_package" version="5.6.1" />
   </dependency>
   <dependency name="repo_docs" linkPath="../_repo/deps/repo_docs">
-    <package name="repo_docs" version="0.9.17" />
+    <package name="repo_docs" version="0.9.18" />
   </dependency>
 </project>
