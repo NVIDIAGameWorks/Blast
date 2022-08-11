@@ -143,4 +143,5 @@ def install_package(package_path, install_path):
     print(f"Package successfully installed to {install_path}")
 
 
-install_package(sys.argv[1], sys.argv[2])
+if __name__ == "__main__":
+    install_package(sys.argv[1], sys.argv[2])
