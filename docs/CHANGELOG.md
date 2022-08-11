@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.0.1] - 10-Aug-2022
+
+### Bugfixes
+- Stress solver fixes:
+  - More robust conversion from angular pressures to linear pressures.
+  - Better error tolerance checking.
+  - Force sign consistency.
+
+
 ## [4.0.0] - 31-May-2022
 
 ### New Features
