@@ -28,7 +28,7 @@
 #pragma once
 
 #include "bond.h"
-#include <vector>
+#include "buffer.h"
 
 
 class StressProcessor
@@ -108,12 +108,12 @@ public:
 protected:
     float                   m_mass_scale;
     float                   m_length_scale;
-    std::vector<InertiaS>   m_recip_sqrt_I;
-    std::vector<Coupling>   m_couplings;
+    POD_Buffer<InertiaS>    m_recip_sqrt_I;
+    POD_Buffer<Coupling>    m_couplings;
     BondMatrixS             m_B;
-    std::vector<AngLin6>    m_rhs;
-    std::vector<AngLin6>    m_B_scratch;
-    std::vector<AngLin6>    m_solver_cache;
+    POD_Buffer<AngLin6>     m_rhs;
+    POD_Buffer<AngLin6>     m_B_scratch;
+    POD_Buffer<AngLin6>     m_solver_cache;
     bool                    m_can_resume;
 
     static const bool       s_use_simd;

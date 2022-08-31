@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 #define MASS_AND_LENGTH_SCALING 1
 

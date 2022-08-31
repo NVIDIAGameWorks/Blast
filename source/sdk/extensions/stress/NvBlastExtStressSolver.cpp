@@ -41,6 +41,7 @@
 #include "NvCMath.h"
 
 #include "stress.h"
+#include "buffer.h"
 #include "simd/simd_device_query.h"
 
 #include <algorithm>
@@ -142,7 +143,7 @@ public:
         b.nodes[1] = node1;
         b.centroid = { bondCentroid.x, bondCentroid.y, bondCentroid.z };
         m_bonds.pushBack(b);
-        m_impulses.pushBack({{0,0,0},{0,0,0}});
+        m_impulses.push_back({{0,0,0},{0,0,0}});
         m_forceColdStart = true;
         return m_bonds.size() - 1;
     }
@@ -150,7 +151,11 @@ public:
     void replaceWithLast(uint32_t bondIndex)
     {
         m_bonds.replaceWithLast(bondIndex);
-        m_impulses.replaceWithLast(bondIndex);
+        if ((size_t)bondIndex + 2 < m_impulses.size())
+        {
+            m_impulses[bondIndex] = m_impulses.back();
+            m_impulses.resize(m_impulses.size() - 1);
+        }
         m_stressProcessor.removeBond(bondIndex);
     }
 
@@ -159,7 +164,7 @@ public:
         m_nodes.resize(nodeCount);
         memset(m_nodes.begin(), 0, sizeof(SolverNodeS)*nodeCount);
         m_velocities.resize(nodeCount);
-        memset(m_velocities.begin(), 0, sizeof(AngLin6)*nodeCount);
+        memset(m_velocities.data(), 0, sizeof(AngLin6)*nodeCount);
         clearBonds();
         m_error_sq = {FLT_MAX, FLT_MAX};
         m_converged = false;
@@ -170,7 +175,7 @@ public:
     void clearBonds()
     {
         m_bonds.clear();
-        m_impulses.clear();
+        m_impulses.resize(0);
         m_forceColdStart = true;
     }
 
@@ -180,7 +185,7 @@ public:
         params.maxIter = iterationCount;
         params.tolerance = 0.001f;
         params.warmStart = warmStart && !m_forceColdStart;
-        m_converged = (m_stressProcessor.solve(m_impulses.begin(), m_velocities.begin(), params, &m_error_sq) >= 0);
+        m_converged = (m_stressProcessor.solve(m_impulses.data(), m_velocities.data(), params, &m_error_sq) >= 0);
         m_forceColdStart = false;
         m_inputsChanged = false;
     }
@@ -196,8 +201,8 @@ private:
     Array<SolverNodeS>::type    m_nodes;
     Array<SolverBond>::type     m_bonds;
     StressProcessor             m_stressProcessor;
-    Array<AngLin6>::type        m_velocities;
-    Array<AngLin6>::type        m_impulses;
+    POD_Buffer<AngLin6>         m_velocities;
+    POD_Buffer<AngLin6>         m_impulses;
     AngLin6ErrorSq              m_error_sq;
     bool                        m_converged;
     bool                        m_forceColdStart;
