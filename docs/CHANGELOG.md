@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.0.2] - 31-Aug-2022
+
+### Bugfixes
+- Stress solver Linux crash fix.  Explicitly allocating aligned data buffers for use with simd data.
+
+
 ## [4.0.1] - 10-Aug-2022
 
 ### Bugfixes
