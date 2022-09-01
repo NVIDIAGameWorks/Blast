@@ -30,8 +30,12 @@
 #include "NvPreprocessor.h"
 #include <assert.h>
 #include <stdio.h>
+#include <vector>
 
 
+#if NV_WINDOWS_FAMILY
+#define POD_Buffer std::vector
+#else
 template<typename T, int Alignment = sizeof(T)>
 class POD_Buffer
 {
@@ -122,3 +126,4 @@ private:
     size_t  _capacity;
     T*      _data;
 };
+#endif
