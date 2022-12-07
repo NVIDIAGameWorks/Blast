@@ -119,13 +119,15 @@ Joints
    docs/api/api_globals_users_guide.rst
    docs/api/api_hl_users_guide.rst
    docs/api/extensions/index.rst
-   docs/api/tools/index.rst
-   docs/api/samples/index.rst
    docs/api/definitions.rst
    docs/api/copyrights.rst
    docs/CHANGELOG
    API Documentation<_build/docs/blast-sdk/latest/blast-sdk_api.rst>
-   
+
+..
+   docs/api/tools/index.rst
+   docs/api/samples/index.rst
+
 Index
 =====
 

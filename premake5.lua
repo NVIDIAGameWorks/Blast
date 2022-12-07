@@ -432,6 +432,7 @@ group "sdk"
             }
         filter {}
 
+    -- PUBLIC_EXCLUDE_BEGIN
     project "NvBlastExtRT"
         link_dependents({"NvBlast", "NvBlastGlobals"})
         blast_sdklib_standard_setup("extensions/RT")
@@ -453,6 +454,7 @@ group "sdk"
                 "4267", -- conversion from 'size_t' to 'type', possible loss of data
             }
         filter {}
+    -- PUBLIC_EXCLUDE_END
 
     project "NvBlastTk"
         link_dependents({"NvBlast", "NvBlastGlobals"})
@@ -597,6 +599,7 @@ group "sdk"
             ["source/*"] = "source/sdk/extensions/serialization/",
         }
 
+    -- PUBLIC_EXCLUDE_BEGIN
         -- requires FBX SDK.  Original SDK only defined this for Windows
     -- project "NvBlastExtExporter"
     --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtAuthoring"})
@@ -696,6 +699,7 @@ group "sdk"
     --         ["include/*"] = "include/extensions/serialization/",
     --         ["source/*"] = "source/sdk/extensions/serialization/",
     --     }
+    -- PUBLIC_EXCLUDE_END
 
 group "tests"
     project "UnitTests"

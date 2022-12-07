@@ -65,62 +65,63 @@ A typical update loop looks like this:
 -# Call \a stressSolver->update(). This is where all expensive computation takes place.
 -# If \a stressSolver->getOverstressedBondCount() > 0, use one of \a stressSolver->generateFractureCommands() methods to get bond fracture commands and apply them on actors.
 
-Example code from ExtPxStressSolverImpl:
-
-.. code-block:: text
-
-    void ExtPxStressSolverImpl::onActorCreated(ExtPxFamily& /*family*/, ExtPxActor& actor)
-    {
-    	if (m_solver->notifyActorCreated(*actor.getTkActor().getActorLL()))
-    	{
-    		m_actors.insert(&actor);
-    	}
-    }
-    
-    void ExtPxStressSolverImpl::onActorDestroyed(ExtPxFamily& /*family*/, ExtPxActor& actor)
-    {
-    	m_solver->notifyActorDestroyed(*actor.getTkActor().getActorLL());
-    	m_actors.erase(&actor);
-    }
-    
-    void ExtPxStressSolverImpl::update(bool doDamage)
-    {
-    	for (auto it = m_actors.getIterator(); !it.done(); ++it)
-    	{
-    		const ExtPxActor* actor = *it;
-    
-    		PxRigidDynamic& rigidDynamic = actor->getPhysXActor();
-    		const bool isStatic = rigidDynamic.getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC;
-    		if (isStatic)
-    		{
-    			PxVec3 gravity = rigidDynamic.getScene()->getGravity();
-    			PxVec3 localGravity = rigidDynamic.getGlobalPose().rotateInv(gravity);
-    
-    			m_solver->addGravity(*actor->getTkActor().getActorLL(), localGravity);
-    		}
-    		else
-    		{
-    			PxVec3 localCenterMass = rigidDynamic.getCMassLocalPose().p;
-    			PxVec3 localAngularVelocity = rigidDynamic.getGlobalPose().rotateInv(rigidDynamic.getAngularVelocity());
-    			m_solver->addCentrifugalAcceleration(*actor->getTkActor().getActorLL(), localCenterMass, localAngularVelocity);
-    		}
-    	}
-    
-    	m_solver->update();
-    
-    	if (doDamage && m_solver->getOverstressedBondCount() > 0)
-    	{
-    		NvBlastFractureBuffers commands;
-    		m_solver->generateFractureCommands(commands);
-    		if (commands.bondFractureCount > 0)
-    		{
-    			m_family.getTkFamily().applyFracture(&commands);
-    		}
-    	}
-    }
-
-
-Have a look at \a ExtPxStressSolver implementation code, which is basically a high level wrapper on \a NvBlastExtStress to couple it with PhysXand \a NvBlastExtPx extension (see :ref:`extpxstresssolver`).
-
+..
+   Example code from ExtPxStressSolverImpl:
+   
+   .. code-block:: text
+   
+       void ExtPxStressSolverImpl::onActorCreated(ExtPxFamily& /*family*/, ExtPxActor& actor)
+       {
+       	if (m_solver->notifyActorCreated(*actor.getTkActor().getActorLL()))
+       	{
+       		m_actors.insert(&actor);
+       	}
+       }
+       
+       void ExtPxStressSolverImpl::onActorDestroyed(ExtPxFamily& /*family*/, ExtPxActor& actor)
+       {
+       	m_solver->notifyActorDestroyed(*actor.getTkActor().getActorLL());
+       	m_actors.erase(&actor);
+       }
+       
+       void ExtPxStressSolverImpl::update(bool doDamage)
+       {
+       	for (auto it = m_actors.getIterator(); !it.done(); ++it)
+       	{
+       		const ExtPxActor* actor = *it;
+       
+       		PxRigidDynamic& rigidDynamic = actor->getPhysXActor();
+       		const bool isStatic = rigidDynamic.getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC;
+       		if (isStatic)
+       		{
+       			PxVec3 gravity = rigidDynamic.getScene()->getGravity();
+       			PxVec3 localGravity = rigidDynamic.getGlobalPose().rotateInv(gravity);
+       
+       			m_solver->addGravity(*actor->getTkActor().getActorLL(), localGravity);
+       		}
+       		else
+       		{
+       			PxVec3 localCenterMass = rigidDynamic.getCMassLocalPose().p;
+       			PxVec3 localAngularVelocity = rigidDynamic.getGlobalPose().rotateInv(rigidDynamic.getAngularVelocity());
+       			m_solver->addCentrifugalAcceleration(*actor->getTkActor().getActorLL(), localCenterMass, localAngularVelocity);
+       		}
+       	}
+       
+       	m_solver->update();
+       
+       	if (doDamage && m_solver->getOverstressedBondCount() > 0)
+       	{
+       		NvBlastFractureBuffers commands;
+       		m_solver->generateFractureCommands(commands);
+       		if (commands.bondFractureCount > 0)
+       		{
+       			m_family.getTkFamily().applyFracture(&commands);
+       		}
+       	}
+       }
+   
+   
+   Have a look at \a ExtPxStressSolver implementation code, which is basically a high level wrapper on \a NvBlastExtStress to couple it with PhysXand \a NvBlastExtPx extension (see :ref:`extpxstresssolver`).
+   
 
 

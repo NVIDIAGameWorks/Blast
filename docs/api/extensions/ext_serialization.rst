@@ -8,7 +8,7 @@ Serialization (NvBlastExtSerialization)
 Introduction
 ============
 This extension defines the Nv::Blast::ExtSerialization class, a modular serialization manager which can be extended to handle data types from different Blast modules
-(such as low-level, Tk, and ExtPhysX).
+(such as low-level and Tk).
 
 An ExtSerialization manager is created using the global function NvBlastExtSerializationCreate:
 
@@ -24,8 +24,10 @@ with types enumerated in the header **NvBlastExtLlSerialization.h**.
 
 **The low-level serializers are automatically loaded into an ExtSerialization when it is created.**
 
-To load serializers for Tk and ExtPhysX assets, you must also load the extensions :ref:`pageexttkserialization` and :ref:`pageextpxserialization`, respectively.  See the documentation for
-those modules.
+To load serializers for ExtTk assets, you must also load the extension :ref:`pageexttkserialization`.  See the documentation for that module.
+
+..
+   To load serializers for ExtPhysX assets, you must also load the extension :ref:`pageextpxserialization`.  See the documentation for that module.
 
 Each serializer is capable of reading (and writing, if it is not read-only) a single data type in a single encoding (format).  Some serializers are read-only, in order to read legacy
 formats.
@@ -33,7 +35,7 @@ formats.
 The encodings available are enumerated in ExtSerialization::EncodingID.  They are currently:
 
 * CapnProtoBinary - Uses Cap'n Proto's binary serialization format
-* Raw - For low-level NvBlastAsset and NvBlastFamily types, this is simply a memory copy.  For Tk and ExtPx assets, this is the deprecated serialization format from Blast 1.0.
+* Raw - For low-level NvBlastAsset and NvBlastFamily types, this is simply a memory copy.
 
 .. _serialization_ser:
 

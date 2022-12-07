@@ -289,7 +289,9 @@ with families with actors in the group.
 
 A convenience function, TkGroup::process(), is provided which uses one worker to perform all jobs sequentially on the calling thread.  This is useful shortcut to
 get BlastTk up and running quickly.  A multithreaded group processing implementation is given by Nv::Blast::ExtGroupTaskManager (in NvBlastExtPxTask.h).
-This resides in :ref:`pageextphysx`, because it uses physx::PxTask.
+
+..
+   This resides in :ref:`pageextphysx`, because it uses physx::PxTask.
 
 Actors resulting from the split of a "parent" actor will be placed automatically into the group that the parent belonged to.  This is similar to the assigment of
 families from a split, except that unlike families, the user then has the option to move the new actors to other groups, or no group at all.
