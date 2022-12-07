@@ -62,6 +62,7 @@ extra_premake_args = ["--python-version={}"]
 [repo_format]
 
 
+# PUBLIC_EXCLUDE_BEGIN
 ########################################################################################################################
 # Packaging
 ########################################################################################################################
@@ -254,3 +255,5 @@ doxygen_predefined = [
 protocol = "s3"
 bucket_name = "omniverse-docs"
 bucket_dir = "${project}/${version}"
+
+# PUBLIC_EXCLUDE_END
