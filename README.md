@@ -1,6 +1,6 @@
 # Blast SDK Repo
 
-Online documentation may be found here: [Blast SDK Documentation](http://omniverse-docs.s3-website-us-east-1.amazonaws.com/blast-sdk).
+Online documentation may be found here: [Blast SDK Documentation](https://nvidia-omniverse.github.io/PhysX/blast/index.html).
 
 ## Building the SDK
 
