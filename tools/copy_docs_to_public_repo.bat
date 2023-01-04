@@ -1,5 +1,10 @@
 @echo off
 
+if "%1"=="" (
+echo Missing argument: must give public repo root path as the argument.
+exit /b
+)
+
 set src=%~dp0..\_build\docs\blast-sdk\latest
 set dst=%1\blast
 

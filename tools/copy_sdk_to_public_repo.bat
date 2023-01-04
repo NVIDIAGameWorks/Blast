@@ -1,5 +1,10 @@
 @echo off
 
+if "%1"=="" (
+echo Missing argument: must give public repo root path as the argument.
+exit /b
+)
+
 set dst=%1\blast
 
 RD /S /Q %dst%
@@ -15,3 +20,4 @@ robocopy %~dp0..\tools\repoman %dst%\tools\repoman /s /ns /nc /ndl /np /xd "_*"
 
 call "%~dp0..\tools\packman\python" %~dp0edit_public_repo.py %dst%\premake5.lua
 call "%~dp0..\tools\packman\python" %~dp0edit_public_repo.py %dst%\deps\repo-deps.packman.xml
+call "%~dp0..\tools\packman\python" %~dp0edit_public_repo.py %dst%\repo.toml
