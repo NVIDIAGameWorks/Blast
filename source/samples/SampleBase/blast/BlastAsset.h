@@ -29,7 +29,7 @@
 #define BLAST_ASSET_H
 
 #include <memory>
-#include "foundation/PxTransform.h"
+#include "PxTransform.h"
 #include "NvBlastTypes.h"
 
 

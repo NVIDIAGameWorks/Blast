@@ -225,47 +225,47 @@ namespace Nv
 /**
 Create real time (RT) fracture. By default creates single thread. For threads > 1 multithreaded implementation based on std lib is used.
 */
-NVBLAST_API Nv::Blast::FractureRT* NvBlastExtRTCreateFractureRT(uint32_t threads = 1);
+NV_C_API Nv::Blast::FractureRT* NvBlastExtRTCreateFractureRT(uint32_t threads = 1);
 
 /**
 Create RT boolean tool fracturer
 */
-NVBLAST_API Nv::Blast::Fracturer* NvBlastExtRTCreateFracturer();
+NV_C_API Nv::Blast::Fracturer* NvBlastExtRTCreateFracturer();
 
 /**
 Perform fracture.
 */
-NVBLAST_API uint32_t NvBlastExtRTDoFracture(const Nv::Blast::FractureDesc& desc, int32_t stage = Nv::Blast::FractureRT::Stage::ALL, int32_t threadId = 0, int32_t threadCount = 1);
+NV_C_API uint32_t NvBlastExtRTDoFracture(const Nv::Blast::FractureDesc& desc, int32_t stage = Nv::Blast::FractureRT::Stage::ALL, int32_t threadId = 0, int32_t threadCount = 1);
 
 /**
 Create mesh generator
 */
-NVBLAST_API Nv::Blast::MeshGenerator* NvBlastExtRTCreateMeshGenerator();
+NV_C_API Nv::Blast::MeshGenerator* NvBlastExtRTCreateMeshGenerator();
 
 /**
 Build mesh from output of RT fracture
 */
-NVBLAST_API uint32_t NvBlastExtRTBuildMesh(Nv::Blast::MeshDesc dsc, Nv::Blast::Vertex* outVertices, uint32_t& vCount, uint32_t* indices, Nv::Blast::PerTriangleAdditionalData* adata, uint32_t maxICount, uint32_t maxVCount);
+NV_C_API uint32_t NvBlastExtRTBuildMesh(Nv::Blast::MeshDesc dsc, Nv::Blast::Vertex* outVertices, uint32_t& vCount, uint32_t* indices, Nv::Blast::PerTriangleAdditionalData* adata, uint32_t maxICount, uint32_t maxVCount);
 
 /**
 TODO
 */
-NVBLAST_API uint32_t NvBlastExtRTGetChunksToUnite(Nv::Blast::DamagePattern* pattern, const Nv::Blast::Vertex* vertices, const uint32_t* voffsets, uint32_t chunksCount, uint32_t* chunksToUnite);
+NV_C_API uint32_t NvBlastExtRTGetChunksToUnite(Nv::Blast::DamagePattern* pattern, const Nv::Blast::Vertex* vertices, const uint32_t* voffsets, uint32_t chunksCount, uint32_t* chunksToUnite);
 
 /**
 TODO
 */
-NVBLAST_API uint32_t NvBlastExtRTDetectIslands(Nv::Blast::Vertex* vertices, uint32_t* offsets, NvcBounds3* bounds, uint32_t chunkCount, Nv::Blast::ChunkGraph* graph, uint32_t* islandChunks, uint32_t* islandOffsets);
+NV_C_API uint32_t NvBlastExtRTDetectIslands(Nv::Blast::Vertex* vertices, uint32_t* offsets, NvcBounds3* bounds, uint32_t chunkCount, Nv::Blast::ChunkGraph* graph, uint32_t* islandChunks, uint32_t* islandOffsets);
 
 /**
 TODO
 */
-NVBLAST_API Nv::Blast::ChunkGraph* NvBlastExtRTCreateChunkGraph(uint32_t maxLinksCount = 4096);
+NV_C_API Nv::Blast::ChunkGraph* NvBlastExtRTCreateChunkGraph(uint32_t maxLinksCount = 4096);
 
 /**
 TODO
 */
-NVBLAST_API void NvBlastExtRTCookMergedMesh(Nv::Blast::DamagePattern* pattern);
+NV_C_API void NvBlastExtRTCookMergedMesh(Nv::Blast::DamagePattern* pattern);
 
 
 

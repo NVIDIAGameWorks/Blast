@@ -32,8 +32,8 @@
 #include "NvBlastTypes.h"
 #include <DirectXMath.h>
 #include <functional>
-#include "foundation/PxVec2.h"
-#include "foundation/PxVec3.h"
+#include "PxVec2.h"
+#include "PxVec3.h"
 
 
 class Renderable;

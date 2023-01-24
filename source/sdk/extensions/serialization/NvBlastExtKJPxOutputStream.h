@@ -26,7 +26,7 @@
 
 
 #pragma once
-#include "foundation/PxIO.h"
+#include "NvIO.h"
 #include "kj/common.h"
 #include <memory>
 #include "kj/io.h"
@@ -37,7 +37,7 @@ namespace Nv
 namespace Blast
 {
 
-class ExtKJPxOutputStream : public physx::PxOutputStream
+class ExtKJPxOutputStream : public nvidia::NvOutputStream
 {
 public:
     ExtKJPxOutputStream(kj::ArrayPtr<unsigned char> inBuffer);

@@ -1070,7 +1070,7 @@ void CompositeSceneAsset::spawn(PxVec3 shift)
 //                                              PackmanConfigParser
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class PackmanConfigParser : public physx::shdfnd::FastXml::Callback
+class PackmanConfigParser : public nvidia::shdfnd::FastXml::Callback
 {
 public:
     std::vector<std::pair<std::string, std::string>> dependencies;
@@ -1091,7 +1091,7 @@ protected:
     // return true to continue processing the XML document, false to skip.
     virtual bool processElement(const char* elementName, // name of the element
         const char* elementData, // element data, null if none
-        const physx::shdfnd::FastXml::AttributePairs& attr,
+        const nvidia::shdfnd::FastXml::AttributePairs& attr,
         int /*lineno*/) // line number in the source XML file
     {
         if (::strcmp(elementName, "dependency") == 0)

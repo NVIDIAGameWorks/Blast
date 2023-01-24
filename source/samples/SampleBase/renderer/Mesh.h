@@ -29,8 +29,8 @@
 #define MESH_H
 
 #include <vector>
-#include "foundation/PxVec2.h"
-#include "foundation/PxVec3.h"
+#include "PxVec2.h"
+#include "PxVec3.h"
 
 
 class Mesh

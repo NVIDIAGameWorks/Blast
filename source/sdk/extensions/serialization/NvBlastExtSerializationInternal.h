@@ -48,7 +48,7 @@ virtual uint64_t    serializeIntoBuffer                                         
     uint64_t offset = 0                                                                             \
 ) override                                                                                          \
 {                                                                                                   \
-    NVBLAST_LOG_WARNING(#_name "::serializeIntoBuffer: ExtPxAsset_RAW serializer is read-only.");   \
+    NVBLAST_LOG_WARNING(#_name "::serializeIntoBuffer: serializer is read-only.");                  \
     NV_UNUSED(buffer);                                                                              \
     NV_UNUSED(bufferProvider);                                                                      \
     NV_UNUSED(object);                                                                              \

@@ -74,8 +74,16 @@ name = "${conf:repo.name}"
 root = "_build/${platform}/${config}/${conf:repo.name}"
 
 files = [
-    ["**/include/**/*.*"],
-    ["**/source/**/*.*"],
+    ["**/include/extensions/**/*.*"],
+    ["**/include/globals/**/*.*"],
+    ["**/include/lowlevel/**/*.*"],
+    ["**/include/shared/NvFoundation/*.*"],
+    ["**/include/toolkit/**/*.*"],
+    ["**/source/apps/**/*.*"],
+    ["**/source/samples/**/*.*"],
+    ["**/source/sdk/**/*.*"],
+    ["**/source/test/**/*.*"],
+    ["**/source/shared/NsFoundation/include/*.*"],
     ["**/PACKAGE-LICENSES/*.*"],
 ]
 
@@ -86,11 +94,15 @@ files_exclude = [
 ]
 
 windows-x86_64.files = [
+    ["**/include/shared/NvFoundation/platform/windows/*.*"],
+    ["**/source/shared/NsFoundation/include/platform/windows/*.*"],
     ["**/bin/NvBlast*.dll"],
     ["**/bin/NvBlast*.lib"],
 ]
 
 linux-x86_64.files = [
+    ["**/include/shared/NvFoundation/platform/unix/*.*"],
+    ["**/source/shared/NsFoundation/include/platform/unix/*.*"],
     ["**/bin/*NvBlast*.so"],
 ]
 
@@ -225,7 +237,6 @@ doxygen_input = [
     "include/globals/NvBlastAllocator.h",
     "include/globals/NvBlastDebugRender.h",
     "include/globals/NvBlastGlobals.h",
-    "include/globals/NvBlastProfiler.h",
     "include/globals/NvCMath.h",
     "include/lowlevel/NvBlast.h",
     "include/lowlevel/NvBlastTypes.h",
@@ -245,7 +256,7 @@ doxygen_input = [
 ]
 
 doxygen_predefined = [
-    "NVBLAST_API=",
+    "NV_C_API=",
     "NV_INLINE=inline",
     "NV_COMPILE_TIME_ASSERT(arg)=",
 ]

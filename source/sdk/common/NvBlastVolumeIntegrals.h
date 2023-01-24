@@ -28,7 +28,7 @@
 #ifndef NVBLASTVOLUMEINTEGRALS_H
 #define NVBLASTVOLUMEINTEGRALS_H
 
-#include "NvBlastPxSharedHelpers.h"
+#include "NvBlastNvSharedHelpers.h"
 #include "NvCMath.h"
 #include "NvBlastAssert.h"
 

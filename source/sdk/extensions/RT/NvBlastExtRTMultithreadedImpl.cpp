@@ -31,11 +31,11 @@
 #include "NvBlastExtAuthoringMeshImpl.h"
 #include "NvBlastExtAuthoringAcceleratorImpl.h"
 #include "NvBlastExtAuthoringPatternGenerator.h"
-#include "NvBlastPxSharedHelpers.h"
+#include "NvBlastNvSharedHelpers.h"
 
 #include "NvBlastGlobals.h"
 #include "NvBlastAssert.h"
-//#include "PxPhysicsAPI.h"
+//#include "NvPhysicsAPI.h"
 
 using namespace Nv::Blast;
 
@@ -202,10 +202,10 @@ void FractureRTMultithreadedImpl::waitForJob(const int32_t threadIndex)
                 /**
                     Check if generated mesh bounding box is valid.
                 */
-                physx::PxBounds3 bds(physx::PxBounds3::empty());
+                nvidia::NvBounds3 bds(nvidia::NvBounds3::empty());
                 for (uint32_t i = 0; i < newTriangles * 3; ++i)
                 {
-                    bds.include(toPxShared(vtp[vic[i]].p));
+                    bds.include(toNvShared(vtp[vic[i]].p));
                 }
                 if (bds.isValid())
                 {

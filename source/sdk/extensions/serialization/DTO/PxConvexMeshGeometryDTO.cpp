@@ -32,7 +32,7 @@
 #include "NvBlastExtKJPxOutputStream.h"
 #include "PxConvexMeshDesc.h"
 #include "NvBlastExtSerialization.h"
-#include "foundation/PxVec3.h"
+#include "PxVec3.h"
 #include <algorithm>
 #include <vector>
 #include "PxPhysics.h"

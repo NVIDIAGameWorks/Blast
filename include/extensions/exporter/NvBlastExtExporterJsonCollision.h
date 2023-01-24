@@ -68,7 +68,7 @@ public:
 /**
 Creates an instance of IMeshFileWriter for writing obj file.
 */
-NVBLAST_API Nv::Blast::IJsonCollisionExporter* NvBlastExtExporterCreateJsonCollisionExporter();
+NV_C_API Nv::Blast::IJsonCollisionExporter* NvBlastExtExporterCreateJsonCollisionExporter();
 
 
 #endif //NVBLASTEXTEXPORTERJSONCOLLISION_H

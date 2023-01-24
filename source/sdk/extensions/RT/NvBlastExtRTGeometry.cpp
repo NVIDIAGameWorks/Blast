@@ -1,20 +1,20 @@
 #include "NvBlastExtRTGeometry.h"
 #include "NvBlastExtAuthoringMesh.h"
 #include "NvBlastGlobals.h"
-#include <NvBlastAssert.h>
-#include "PsVecMath.h"
+#include "NvBlastAssert.h"
+#include "NsVecMath.h"
 #include "NvBlastExtAuthoringMeshImpl.h"
 #include <map>
 #include "NvBlastExtRT.h"
-#include "NvBlastPxSharedHelpers.h"
+#include "NvBlastNvSharedHelpers.h"
 
 #define USE_PREP_MESH 0
 
 #define SAFE_RELEASE(x) if (x) {(x)->release(); (x) = nullptr;}
 #define SAFE_FREE(x) if (x) {NVBLAST_FREE(x); (x) = nullptr;}
 
-using namespace physx;
-using namespace physx::shdfnd;
+using namespace nvidia;
+using namespace nvidia::shdfnd;
 
 namespace Nv
 {
@@ -57,10 +57,10 @@ namespace Nv
             for (int32_t index = first[bucket]; index >= 0; index = next[index]) 
             {
                 // Weld this vertex to existing vertex if within given distance tolerance
-                if (toPxShared(vertex[index].p - v.p).magnitudeSquared() < weldEpsilon * weldEpsilon)
+                if (toNvShared(vertex[index].p - v.p).magnitudeSquared() < weldEpsilon * weldEpsilon)
                 {
-                    isAllDataTheSame = (toPxShared(vertex[index].n - v.n).magnitudeSquared() < auxEpsilon * auxEpsilon
-                        && toPxShared(vertex[index].uv[0] - v.uv[0]).magnitudeSquared() < auxEpsilon * auxEpsilon);
+                    isAllDataTheSame = (toNvShared(vertex[index].n - v.n).magnitudeSquared() < auxEpsilon * auxEpsilon
+                        && toNvShared(vertex[index].uv[0] - v.uv[0]).magnitudeSquared() < auxEpsilon * auxEpsilon);
                     return index;
                 }
             }
@@ -75,7 +75,7 @@ namespace Nv
             for (int32_t index = first[bucket]; index >= 0; index = next[index])
             {
                 // Weld this vertex to existing vertex if within given distance tolerance
-                if (toPxShared(vertex[index].p - v.p).magnitudeSquared() < weldEpsilon * weldEpsilon)
+                if (toNvShared(vertex[index].p - v.p).magnitudeSquared() < weldEpsilon * weldEpsilon)
                 {
                     return index;
                 }
@@ -196,17 +196,17 @@ namespace Nv
             return conf.cb + conf.ci * xValue;
         }
 
-        NV_FORCE_INLINE int32_t vertexShadowing(const PxVec3& a, const PxVec3& b)
+        NV_FORCE_INLINE int32_t vertexShadowing(const NvVec3& a, const NvVec3& b)
         {
             return (b.x >= a.x) ? 1 : 0;
         }
 
-        NV_FORCE_INLINE int32_t veStatus01(const PxVec3& sEdge, const PxVec3& eEdge, const PxVec3& p)
+        NV_FORCE_INLINE int32_t veStatus01(const NvVec3& sEdge, const NvVec3& eEdge, const NvVec3& p)
         {
             return vertexShadowing(p, eEdge) - vertexShadowing(p, sEdge);
         }
 
-        NV_FORCE_INLINE int32_t veStatus10(const PxVec3& sEdge, const PxVec3& eEdge, const PxVec3& p)
+        NV_FORCE_INLINE int32_t veStatus10(const NvVec3& sEdge, const NvVec3& eEdge, const NvVec3& p)
         {
             return -vertexShadowing(eEdge, p) + vertexShadowing(sEdge, p);
         }
@@ -334,7 +334,7 @@ namespace Nv
             float x, y, z, w; // added w to omit warning
 
             V3al() {};
-            V3al(const physx::PxVec3& in)
+            V3al(const nvidia::NvVec3& in)
             {
                 memcpy(this, &in, sizeof(float) * 3);
             }
@@ -409,7 +409,7 @@ namespace Nv
 #endif
 
 
-                PxBounds3 facetBBounds = *toPxShared(mMeshB->getFacetBound(facetBIndex));
+                NvBounds3 facetBBounds = *toNvShared(mMeshB->getFacetBound(facetBIndex));
                 facetBBounds.scaleFast(1.001f);
 
                 while (facetAIndex != -1)
@@ -418,7 +418,7 @@ namespace Nv
                     uint32_t CNT = 0;
                     auto fca = maFacets + facetAIndex;
 
-                    if (facetBBounds.intersects(*toPxShared(mMeshA->getFacetBound(facetAIndex))) == false)
+                    if (facetBBounds.intersects(*toNvShared(mMeshA->getFacetBound(facetAIndex))) == false)
                     {
                         facetAIndex = mAccelA->getNextFacet();
                         continue;
@@ -712,7 +712,7 @@ namespace Nv
                         {
                             auto& p = vrtA[vas];
                             float t = (p.p.y - ymin1) / (ymax1 - ymin1);
-                            t = PxClamp(t, 0.0f, 1.0f);
+                            t = NvClamp(t, 0.0f, 1.0f);
 
                             Vertex v1, v2, np;
                             computeInterpolatedPoint(&v2, &vrtB[edgesB[bestEdgeAbove1].s], &vrtB[edgesB[bestEdgeAbove1].e], pt2[bestCNTAbove1]);
@@ -741,7 +741,7 @@ namespace Nv
                         {
                             auto& p = vrtA[vae];
                             float t = (p.p.y - ymin2) / (ymax2 - ymin2);
-                            t = PxClamp(t, 0.0f, 1.0f);
+                            t = NvClamp(t, 0.0f, 1.0f);
 
                             Vertex v1, v2, np;
                             computeInterpolatedPoint(&v2, &vrtB[edgesB[bestEdgeAbove2].s], &vrtB[edgesB[bestEdgeAbove2].e], pt2[bestCNTAbove2]);
@@ -907,7 +907,7 @@ namespace Nv
                         {
                             auto& p = vrtB[vbs];
                             float t = (p.p.y - ymin1) / (ymax1 - ymin1);
-                            t = PxClamp(t, 0.0f, 1.0f);
+                            t = NvClamp(t, 0.0f, 1.0f);
                             Vertex p1, p2, np;
                             computeInterpolatedPoint(&p2, &vrtA[edgesA[bestEdgeAbove1].s], &vrtA[edgesA[bestEdgeAbove1].e], pt1[bestCNTAbove1]);
                             computeInterpolatedPoint(&p1, &vrtA[edgesA[bestEdgeBelow1].s], &vrtA[edgesA[bestEdgeBelow1].e], pt1[bestCNTBelow1]);
@@ -935,7 +935,7 @@ namespace Nv
                         {
                             auto& p = vrtB[vbe];
                             float t = (p.p.y - ymin2) / (ymax2 - ymin2);
-                            t = PxClamp(t, 0.0f, 1.0f);
+                            t = NvClamp(t, 0.0f, 1.0f);
                             Vertex p1, p2, np;
                             computeInterpolatedPoint(&p2, &vrtA[edgesA[bestEdgeAbove2].s], &vrtA[edgesA[bestEdgeAbove2].e], pt1[bestCNTAbove2]);
                             computeInterpolatedPoint(&p1, &vrtA[edgesA[bestEdgeBelow2].s], &vrtA[edgesA[bestEdgeBelow2].e], pt1[bestCNTBelow2]);
@@ -1077,10 +1077,10 @@ namespace Nv
             NVBLAST_DELETE(this, BooleanToolV2);
         }
 
-        int32_t BooleanToolV2::computeV03(const PxVec3& point)
+        int32_t BooleanToolV2::computeV03(const NvVec3& point)
         {
             int32_t status = 0;
-            mAccelB->setState(fromPxShared(point));
+            mAccelB->setState(fromNvShared(point));
             int32_t facet = mAccelB->getNextFacet();
 
             const Facet* facetsBuffer = mMeshB->getFacetsBuffer();
@@ -1135,7 +1135,7 @@ namespace Nv
 
 
                 float t = (point.y - ymin) / (ymax - ymin);
-                t = PxClamp(t, 0.0f, 1.0f);
+                t = NvClamp(t, 0.0f, 1.0f);
 
                 float z1s = vertexBuffer[(tempEdge + yminidx)->s].p.z;
                 float z1e = vertexBuffer[(tempEdge + yminidx)->e].p.z;
@@ -1160,10 +1160,10 @@ namespace Nv
             return status;
         }
 
-        int32_t BooleanToolV2::computeV30(const PxVec3& point)
+        int32_t BooleanToolV2::computeV30(const NvVec3& point)
         {
             int32_t status = 0;
-            mAccelA->setState(fromPxShared(point));
+            mAccelA->setState(fromNvShared(point));
             int32_t facet = mAccelA->getNextFacet();
 
 
@@ -1219,7 +1219,7 @@ namespace Nv
 
 
                 float t = (point.y - ymin) / (ymax - ymin);
-                t = PxClamp(t, 0.0f, 1.0f);
+                t = NvClamp(t, 0.0f, 1.0f);
 
                 float z1s = vertexBuffer[(tempEdge + yminidx)->s].p.z;
                 float z1e = vertexBuffer[(tempEdge + yminidx)->e].p.z;
@@ -1247,12 +1247,12 @@ namespace Nv
 
         struct VertexComparatorRT
         {
-            VertexComparatorRT(PxVec3 base = PxVec3()) : basePoint(base) {};
-            PxVec3 basePoint;
+            VertexComparatorRT(NvVec3 base = NvVec3()) : basePoint(base) {};
+            NvVec3 basePoint;
             const Vertex* vertices;
             bool operator()(uint32_t a, uint32_t b)
             {
-                return toPxShared(vertices[b].p - vertices[a].p).dot(basePoint) > 0.0;
+                return toNvShared(vertices[b].p - vertices[a].p).dot(basePoint) > 0.0;
             }
         };
 
@@ -1288,7 +1288,7 @@ namespace Nv
             }
         };
 
-        void BooleanToolV2::computeRetained(const Mesh* mesh, const PxBounds3& bMeshBoudning, int32_t(BooleanToolV2::*computeV3)(const PxVec3&), int32_t btC, int32_t btCI, int32_t parentFacetOffset,
+        void BooleanToolV2::computeRetained(const Mesh* mesh, const NvBounds3& bMeshBoudning, int32_t(BooleanToolV2::*computeV3)(const NvVec3&), int32_t btC, int32_t btCI, int32_t parentFacetOffset,
             BooleanToolOutputData* outputData, int32_t threadId, int32_t threadCount, FaceOrientation* fo, const std::vector<bool>* validAdjacentFacet)
         {
             const Vertex* vertices = mesh->getVertices();
@@ -1300,8 +1300,8 @@ namespace Nv
             uint32_t retainedEnds[255];
             uint32_t rtsCount = 0;
             uint32_t rteCount = 0;
-            PxVec3 compositeStart(0, 0, 0);
-            PxVec3 compositeEnd(0, 0, 0);
+            NvVec3 compositeStart(0, 0, 0);
+            NvVec3 compositeEnd(0, 0, 0);
             VertexComparatorRT comp;
             comp.vertices = outputData->vertices;
 
@@ -1326,12 +1326,12 @@ namespace Nv
                     auto& vertE = vertices[ted->e];
                     rtsCount = 0;
                     rteCount = 0;
-                    if (bMeshBoudning.contains(toPxShared(vertS.p)))
+                    if (bMeshBoudning.contains(toNvShared(vertS.p)))
                     {
                         auto it = vertexToValueTest.find(vertS.p);
                         if (it == vertexToValueTest.end())
                         {
-                            statusValue = (this->*computeV3)(toPxShared(vertS.p));
+                            statusValue = (this->*computeV3)(toNvShared(vertS.p));
                             vertexToValueTest[vertS.p] = statusValue;
                         }
                         else
@@ -1346,7 +1346,7 @@ namespace Nv
                             for (int32_t ic = 0; ic < inclusionValue; ++ic)
                             {
                                 retainedEnds[rteCount++] = outputData->addVertex(vertS);
-                                compositeEnd += toPxShared(vertS.p);
+                                compositeEnd += toNvShared(vertS.p);
                             }
                         }
                         else
@@ -1356,17 +1356,17 @@ namespace Nv
                                 for (int32_t ic = 0; ic < -inclusionValue; ++ic)
                                 {
                                     retainedStarts[rtsCount++] = outputData->addVertex(vertS);
-                                    compositeStart += toPxShared(vertS.p);
+                                    compositeStart += toNvShared(vertS.p);
                                 }
                             }
                         }
                     }
-                    if (bMeshBoudning.contains(toPxShared(vertE.p)))
+                    if (bMeshBoudning.contains(toNvShared(vertE.p)))
                     {
                         auto it = vertexToValueTest.find(vertE.p);
                         if (it == vertexToValueTest.end())
                         {
-                            statusValue = (this->*computeV3)(toPxShared(vertE.p));
+                            statusValue = (this->*computeV3)(toNvShared(vertE.p));
                             vertexToValueTest[vertE.p] = statusValue;
                         }
 
@@ -1382,7 +1382,7 @@ namespace Nv
                             for (int32_t ic = 0; ic < inclusionValue; ++ic)
                             {
                                 retainedEnds[rteCount++] = outputData->addVertex(vertE);
-                                compositeEnd += toPxShared(vertE.p);
+                                compositeEnd += toNvShared(vertE.p);
                             }
                         }
                         else
@@ -1392,7 +1392,7 @@ namespace Nv
                                 for (int32_t ic = 0; ic < -inclusionValue; ++ic)
                                 {
                                     retainedStarts[rtsCount++] = outputData->addVertex(vertE);
-                                    compositeStart += toPxShared(vertE.p);
+                                    compositeStart += toNvShared(vertE.p);
                                 }
                             }
                         }
@@ -1417,7 +1417,7 @@ namespace Nv
                             for (int32_t ic = 0; ic < inclusionValue; ++ic)
                             {
                                 retainedEnds[rteCount++] = fResult->pIdx;
-                                compositeEnd += toPxShared(outputData->vertices[fResult->pIdx].p);
+                                compositeEnd += toNvShared(outputData->vertices[fResult->pIdx].p);
                             }
                         }
                         else
@@ -1427,7 +1427,7 @@ namespace Nv
                                 for (int32_t ic = 0; ic < -inclusionValue; ++ic)
                                 {
                                     retainedStarts[rtsCount++] = fResult->pIdx;
-                                    compositeStart += toPxShared(outputData->vertices[fResult->pIdx].p);
+                                    compositeStart += toNvShared(outputData->vertices[fResult->pIdx].p);
                                 }
                             }
                         }
@@ -1471,11 +1471,11 @@ namespace Nv
                     computeRetained(mMeshA, mMeshB->getBoundingBox(), &BooleanToolV2::computeV03, mToolMode.ca, mToolMode.ci, 0, outputData, threadId, threadCount, &fo, &(pattern->validFacetsForChunk[chunk]));
                 }
 #endif
-                computeRetained(mMeshA, toPxShared(mMeshB->getBoundingBox()), &BooleanToolV2::computeV03, mToolMode.ca, mToolMode.ci, 0, outputData, threadId, threadCount);
+                computeRetained(mMeshA, toNvShared(mMeshB->getBoundingBox()), &BooleanToolV2::computeV03, mToolMode.ca, mToolMode.ci, 0, outputData, threadId, threadCount);
             }
             else
             {
-                computeRetained(mMeshB, toPxShared(mMeshA->getBoundingBox()), &BooleanToolV2::computeV30, mToolMode.cb, mToolMode.ci, mMeshA->getFacetCount(), outputData, threadId, threadCount);
+                computeRetained(mMeshB, toNvShared(mMeshA->getBoundingBox()), &BooleanToolV2::computeV30, mToolMode.cb, mToolMode.ci, mMeshA->getFacetCount(), outputData, threadId, threadCount);
             }
         }
 
@@ -1523,21 +1523,21 @@ namespace Nv
         {
             return std::abs(b - a) <= FLT_EPSILON * std::abs(b + a);
         }
-        NV_FORCE_INLINE bool compareTwoVertices(const PxVec3& a, const PxVec3& b)
+        NV_FORCE_INLINE bool compareTwoVertices(const NvVec3& a, const NvVec3& b)
         {
             return compareTwoFloats(a.x, b.x) && compareTwoFloats(a.y, b.y) && compareTwoFloats(a.z, b.z);
         }
-        NV_FORCE_INLINE bool compareTwoVertices(const PxVec2& a, const PxVec2& b)
+        NV_FORCE_INLINE bool compareTwoVertices(const NvVec2& a, const NvVec2& b)
         {
             return compareTwoFloats(a.x, b.x) && compareTwoFloats(a.y, b.y);
         }
 
-        NV_FORCE_INLINE float getRotation(const PxVec2& a, const PxVec2& b)
+        NV_FORCE_INLINE float getRotation(const NvVec2& a, const NvVec2& b)
         {
             return a.x * b.y - a.y * b.x;
         }
 
-        NV_FORCE_INLINE bool pointInside(PxVec2 a, PxVec2 b, PxVec2 c, PxVec2 pnt)
+        NV_FORCE_INLINE bool pointInside(NvVec2 a, NvVec2 b, NvVec2 c, NvVec2 pnt)
         {
             if (compareTwoVertices(a, pnt) || compareTwoVertices(b, pnt) || compareTwoVertices(c, pnt))
             {
@@ -1583,9 +1583,9 @@ namespace Nv
                         continue;
                     }
 
-                    PxVec2& cVp = projectedPointList[cPoint];
-                    PxVec2& nVp = projectedPointList[facetList[cPoint].nextPoint];
-                    PxVec2& pVp = projectedPointList[facetList[cPoint].prevPoint];
+                    NvVec2& cVp = projectedPointList[cPoint];
+                    NvVec2& nVp = projectedPointList[facetList[cPoint].nextPoint];
+                    NvVec2& pVp = projectedPointList[facetList[cPoint].prevPoint];
                     // Check wheather curr is ear-tip
                     float rot = getRotation((pVp - nVp).getNormalized(), (cVp - nVp).getNormalized());
 
@@ -1709,7 +1709,7 @@ namespace Nv
                     }
                     if (pointCount > 2)
                     {
-                        PxVec3 normal(0, 0, 0);
+                        NvVec3 normal(0, 0, 0);
                         bool badLoop = false;
                         for (uint32_t i = 0; i < facetListSize; ++i)
                         {
@@ -1718,9 +1718,9 @@ namespace Nv
                                 badLoop = true;
                                 break;
                             }
-                            PxVec3 base = toPxShared(weldedVertices[facetList[facetList[i].prevPoint].point].p);
-                            PxVec3 p1 = toPxShared(weldedVertices[facetList[i].point].p);
-                            PxVec3 p2 = toPxShared(weldedVertices[facetList[facetList[i].nextPoint].point].p);
+                            NvVec3 base = toNvShared(weldedVertices[facetList[facetList[i].prevPoint].point].p);
+                            NvVec3 p1 = toNvShared(weldedVertices[facetList[i].point].p);
+                            NvVec3 p2 = toNvShared(weldedVertices[facetList[facetList[i].nextPoint].point].p);
                             normal += (p1 - base).cross(p2 - base);
                         }
 

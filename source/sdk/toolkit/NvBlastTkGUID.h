@@ -37,7 +37,7 @@
 #include "NvBlastTime.h"
 #endif
 
-#include "PsHash.h"
+#include "NsHash.h"
 
 namespace Nv
 {
@@ -117,7 +117,7 @@ NV_INLINE bool TkGUIDIsZero(const NvBlastID* id)
 } // namespace Nv
 
 
-namespace physx
+namespace nvidia
 {
 namespace shdfnd
 {
@@ -141,7 +141,7 @@ struct Hash<NvBlastID>
 };
 
 } // namespace shdfnd
-} // namespace physx
+} // namespace nvidia
 
 
 #endif // #ifndef NVBLASTTKGUID_H

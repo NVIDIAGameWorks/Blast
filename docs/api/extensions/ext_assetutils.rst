@@ -17,8 +17,8 @@ For example, given an asset called *oldAsset*,
 
 .. code-block:: text
 
-    const uint32_t worldBoundChunks[3] = { 1, 2, 3 };	// Chunks to bind to the world.  These must be support chunks.
-    const NvcVec3 bondDirections[3] = { { -1, 0, 1 }, { 0, 0, -1}, { 1, 0, 0 } };	// Normal directions for the new bonds.
+    const uint32_t worldBoundChunks[3] = { 1, 2, 3 };   // Chunks to bind to the world.  These must be support chunks.
+    const NvcVec3 bondDirections[3] = { { -1, 0, 1 }, { 0, 0, -1}, { 1, 0, 0 } };   // Normal directions for the new bonds.
     
     // Create a new asset
     NvBlastAsset* newAsset = NvBlastExtAssetUtilsAddWorldBonds(oldAsset, worldBoundChunks, 3, bondDirections, NULL);
@@ -46,24 +46,24 @@ For example, if one wants to merge two wall assets together, with a relative tra
 
 .. code-block:: text
 
-    const NvBlastAsset* components[2] = { asset0, asset1 };	// asset0 and asset1 are already created
-    const NvcVec3 translations[2] = { { -5, 0, 0 }, { 5, 0, 0 } };	// Translate asset0 -5 in x, and asset1 +5 in x
+    const NvBlastAsset* components[2] = { asset0, asset1 }; // asset0 and asset1 are already created
+    const NvcVec3 translations[2] = { { -5, 0, 0 }, { 5, 0, 0 } };  // Translate asset0 -5 in x, and asset1 +5 in x
     
     // New bonds:
-    const uint32_t newBondCount = ...	// Some number of new bonds
+    const uint32_t newBondCount = ...   // Some number of new bonds
     const NvBlastExtAssetUtilsBondDesc newBondDescs[newBondCount];
-    newBondDesc[0].bond.normal.x = 1;	// Normal in the +x direction, pointing from asset0 to asset1
+    newBondDesc[0].bond.normal.x = 1;   // Normal in the +x direction, pointing from asset0 to asset1
     newBondDesc[0].bond.normal.y = 0;
     newBondDesc[0].bond.normal.z = 0;
     newBondDesc[0].bond.area = 1;
     newBondDesc[0].bond.centroid.x = 0;
     newBondDesc[0].bond.centroid.y = 0;
-    newBondDesc[0].bond.centroid.z = 2.5;	// Position is in the middle, off the ground
+    newBondDesc[0].bond.centroid.z = 2.5;   // Position is in the middle, off the ground
     newBondDesc[0].bond.userData = 0;
-    newBondDesc[0].chunkIndices[0] = 5;		// Connect from chunk[5] in components[componentIndices[0]]
-    newBondDesc[0].chunkIndices[1] = 13;	// .. to chunk[13] in  components[componentIndices[1]]
-    newBondDesc[0].componentIndices[0] = 0;	// Connect asset in components[0]
-    newBondDesc[0].componentIndices[1] = 1;	// .. to the asset in components[1]
+    newBondDesc[0].chunkIndices[0] = 5;     // Connect from chunk[5] in components[componentIndices[0]]
+    newBondDesc[0].chunkIndices[1] = 13;    // .. to chunk[13] in  components[componentIndices[1]]
+    newBondDesc[0].componentIndices[0] = 0; // Connect asset in components[0]
+    newBondDesc[0].componentIndices[1] = 1; // .. to the asset in components[1]
     
     // Create merged asset descriptor
     NvBlastAssetDesc mergedDesc = NvBlastExtAssetUtilsMergeAssets(components, NULL, translations, 2, newBondDescs, newBondCount);

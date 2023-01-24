@@ -29,7 +29,7 @@
 #define UI_HELPERS_H
 
 #include "imgui.h"
-#include "foundation/PxVec3.h"
+#include "PxVec3.h"
 
 
 static void ImGui_DragFloat3Dir(const char* label, float v[3])

@@ -28,7 +28,7 @@
 #ifndef SAMPLE_H
 #define SAMPLE_H
 
-#include "foundation/PxTransform.h"
+#include "PxTransform.h"
 #include <string>
 #include <vector>
 

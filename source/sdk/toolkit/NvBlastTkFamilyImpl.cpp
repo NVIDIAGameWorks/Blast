@@ -513,9 +513,12 @@ bool TkFamilyImpl::deleteExternalJointHandle(TkJointImpl*& joint, const NvBlastI
     if (jointSetIndexEntry != nullptr)
     {
         const uint32_t jointSetIndex = jointSetIndexEntry->second;
-        HashMap<ExternalJointKey, TkJointImpl*>::type::Entry e;
-        if (m_jointSets[jointSetIndex]->m_joints.erase(ExternalJointKey(chunkIndex0, chunkIndex1), e))
+        ExternalJointKey jointKey = ExternalJointKey(chunkIndex0, chunkIndex1);
+        const HashMap<ExternalJointKey, TkJointImpl*>::type::Entry* e = m_jointSets[jointSetIndex]->m_joints.find(jointKey);
+        if (e != nullptr)
         {
+            joint = e->second;  // Return value that was stored
+            m_jointSets[jointSetIndex]->m_joints.erase(jointKey);
             // Delete the joint set if it is empty
             if (m_jointSets[jointSetIndex]->m_joints.size() == 0)
             {
@@ -527,9 +530,6 @@ bool TkFamilyImpl::deleteExternalJointHandle(TkJointImpl*& joint, const NvBlastI
                     m_familyIDMap[m_jointSets[jointSetIndex]->m_familyID] = jointSetIndex;
                 }
             }
-
-            // Return value that was stored
-            joint = e.second;
             return true;
         }
     }

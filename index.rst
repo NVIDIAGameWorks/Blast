@@ -45,10 +45,15 @@ Current Blast extensions:
 * ExtAssetUtils - NvBlastAsset utility functions. Add external bonds, merge assets, and transform geometric data. 
 * ExtAuthoring - a set of geometric tools which can split a mesh hierarchically and create a Blast asset, along with collision geometry and chunk graphics meshes in a separate files.
 * ExtExporter - standard mesh and collision writer tools in fbx, obj, and json formats. 
-* ExtPhysX - a physics manager using PhysX which keeps PxActors and PxJoints updated in a user-supplied PxScene.  It handles impact damage (through the contact callback), includes a stress solver wrapper, and provides a listener that enables multiple clients to keep their state synchronized.
-* ExtSerialization, ExtTkSerialization, ExtPxSerialization - serialization extensions for low-level, Tk and Px layers. Uses Cap'n Proto to provide robust serialization across different platforms.
+* ExtSerialization and ExtTkSerialization - serialization extensions for low-level and Tk layers. Uses Cap'n Proto to provide robust serialization across different platforms.
 * ExtShaders - sample damage shaders to pass to both the low-level and Tk actor damage functions.
 * ExtStress - a toolkit for performing stress calculations on low-level Blast actors, using a minimal API to assign masses and apply forces. Does not use any external physics library. 
+
+..
+    Additional Blast extensions.  These depend on PhysX:
+
+    * ExtPhysX - a physics manager using PhysX which keeps PxActors and PxJoints updated in a user-supplied PxScene.  It handles impact damage (through the contact callback), includes a stress solver wrapper, and provides a listener that enables multiple clients to keep their state synchronized.
+    * ExtPxSerialization - serialization extensions for ExtPhysX.  Uses Cap'n Proto to provide robust serialization across different platforms.
 
 Gallery
 -------

@@ -51,8 +51,8 @@
 #include "PxRigidDynamic.h"
 #include "PxRigidStatic.h"
 #include "PxMaterial.h"
-#include "foundation/PxFoundationVersion.h"
-#include "foundation/PxMath.h"
+#include "PxFoundationVersion.h"
+#include "PxMath.h"
 
 #include <imgui.h>
 #include <chrono>
@@ -113,6 +113,7 @@ void PhysXController::initPhysX()
 
     m_pvd = PxCreatePvd(*m_foundation);
 
+    // Note - set NvProfilerCallback using NvBlastGlobalSetProfilerCallback
     static Nv::Blast::ExtCustomProfiler gBlastProfiler;
     NvBlastProfilerSetCallback(&gBlastProfiler);
     NvBlastProfilerSetDetail(Nv::Blast::ProfilerDetail::LOW);

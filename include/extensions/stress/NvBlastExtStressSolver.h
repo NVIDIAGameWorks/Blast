@@ -121,7 +121,7 @@ public:
     /**
     Create a new ExtStressSolver.
 
-    \param[in]  family          The ExtPxFamily instance to calculate stress on.
+    \param[in]  family          The NvBlastFamily instance to calculate stress on.
     \param[in]  settings        The settings to be set on ExtStressSolver.
 
     \return the new ExtStressSolver if successful, NULL otherwise.

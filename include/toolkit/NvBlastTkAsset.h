@@ -33,7 +33,7 @@
 
 #include "NvBlastTkIdentifiable.h"
 #include "NvBlastTypes.h"
-#include "foundation/PxVec3.h"
+#include "NvVec3.h"
 
 // Forward declarations
 struct NvBlastAsset;
@@ -50,7 +50,7 @@ A descriptor stored by a TkAsset for an internal joint.  Internal joints are cre
 struct TkAssetJointDesc
 {
     uint32_t        nodeIndices[2];     //!< The graph node indices corresponding to the support chunks joined by a joint
-    physx::PxVec3   attachPositions[2]; //!< The joint's attachment positions in asset-local space
+    nvidia::NvVec3  attachPositions[2]; //!< The joint's attachment positions in asset-local space
 };
 
 

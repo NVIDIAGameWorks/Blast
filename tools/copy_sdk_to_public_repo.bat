@@ -18,6 +18,8 @@ robocopy %~dp0..\source\sdk\extensions\physx %dst%\source\sdk\extensions\physx N
 robocopy %~dp0..\tools\packman %dst%\tools\packman /s /ns /nc /ndl /np
 robocopy %~dp0..\tools\repoman %dst%\tools\repoman /s /ns /nc /ndl /np /xd "_*"
 
-call "%~dp0..\tools\packman\python" %~dp0edit_public_repo.py %dst%\premake5.lua
-call "%~dp0..\tools\packman\python" %~dp0edit_public_repo.py %dst%\deps\repo-deps.packman.xml
-call "%~dp0..\tools\packman\python" %~dp0edit_public_repo.py %dst%\repo.toml
+set edit_file_list=(premake5.lua repo.toml deps\repo-deps.packman.xml deps\target-deps.packman.xml)
+
+for %file in (%edit_file_list%) do (
+    call "%~dp0..\tools\packman\python" %~dp0edit_public_repo.py %dst%\%file%
+)

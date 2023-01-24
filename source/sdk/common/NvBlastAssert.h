@@ -29,7 +29,7 @@
 #define NVBLASTASSERT_H
 
 
-#include "NvBlastPreprocessor.h"
+#include "NvPreprocessor.h"
 
 
 #if !NV_ENABLE_ASSERTS
@@ -72,7 +72,7 @@
 extern "C"
 {
 
-NVBLAST_API void NvBlastAssertHandler(const char* expr, const char* file, int line, bool& ignore);
+NV_C_API void NvBlastAssertHandler(const char* expr, const char* file, int line, bool& ignore);
 
 } // extern "C"
 

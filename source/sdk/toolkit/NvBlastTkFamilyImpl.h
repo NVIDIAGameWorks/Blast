@@ -118,7 +118,7 @@ public:
 
     TkActorImpl*                    getActorByChunk(uint32_t chunkIndex);
 
-    typedef physx::shdfnd::Pair<uint32_t, uint32_t> ExternalJointKey;   //!< The chunk indices within the TkFamily objects joined by the joint.  These chunks will be support chunks.
+    typedef nvidia::shdfnd::Pair<uint32_t, uint32_t> ExternalJointKey;   //!< The chunk indices within the TkFamily objects joined by the joint.  These chunks will be support chunks.
 
     TkJointImpl*                    findExternalJoint(const TkFamilyImpl* otherFamily, ExternalJointKey key) const;
 

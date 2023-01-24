@@ -29,7 +29,7 @@
 #define NVBLASTTKFRAMEWORKIMPL_H
 
 #include "NvBlastTkFramework.h"
-#include "NvBlastProfilerInternal.h"
+#include "NvBlastInternalProfiler.h"
 
 #include "NvBlastTkCommon.h"
 

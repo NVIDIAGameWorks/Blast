@@ -41,7 +41,7 @@
 #undef min
 #include <algorithm>
 
-using namespace physx;
+using namespace nvidia;
 
 
 namespace Nv

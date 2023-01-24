@@ -28,7 +28,7 @@
 #include "SampleAssetListParser.h"
 #include <PsFastXml.h>
 #include "Sample.h"
-#include "foundation/PxVec4.h"
+#include "PxVec4.h"
 #include "PxInputDataFromPxFileBuf.h"
 #include <bitset>
 
@@ -38,7 +38,7 @@ using namespace physx;
 
 const float DEGREE_TO_RAD = acos(-1.0) / 180.0;
 
-class AssetListParser : public physx::shdfnd::FastXml::Callback
+class AssetListParser : public nvidia::shdfnd::FastXml::Callback
 {
 public:
     AssetListParser(AssetList& assetList): m_assetList(assetList){}
@@ -68,7 +68,7 @@ protected:
     // return true to continue processing the XML document, false to skip.
     virtual bool processElement(const char* elementName, // name of the element
         const char* elementData, // element data, null if none
-        const physx::shdfnd::FastXml::AttributePairs& attr,
+        const nvidia::shdfnd::FastXml::AttributePairs& attr,
         int /*lineno*/) // line number in the source XML file
     {
         if (::strcmp(elementName, "Model") == 0)
@@ -238,7 +238,7 @@ protected:
     }
 
 private:
-    PxTransform parseTransform(const physx::shdfnd::FastXml::AttributePairs& attr)
+    PxTransform parseTransform(const nvidia::shdfnd::FastXml::AttributePairs& attr)
     {
         PxTransform transform(PxIdentity);
         for (int i = 0; i < attr.getNbAttr(); ++i)
@@ -285,7 +285,7 @@ void parseAssetList(AssetList& assetList, std::string filepath)
     }
     PxInputDataFromPxFileBuf inputData(fileBuffer);
     AssetListParser parser(assetList);
-    physx::shdfnd::FastXml* xml = physx::shdfnd::createFastXml(&parser);
+    nvidia::shdfnd::FastXml* xml = nvidia::shdfnd::createFastXml(&parser);
     xml->processXml(inputData, false);
     xml->release();
 }

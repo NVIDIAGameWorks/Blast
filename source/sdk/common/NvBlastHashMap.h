@@ -30,7 +30,7 @@
 
 
 #include "NvBlastAllocator.h"
-#include "PsHashMap.h"
+#include "NsHashMap.h"
 
 
 namespace Nv
@@ -39,12 +39,12 @@ namespace Blast
 {
 
 /**
-Wrapped PxShared HashMap that uses NvBlastGlobals AllocatorCalllback.
+Wrapped NvShared HashMap that uses NvBlastGlobals AllocatorCallback.
 */
-template <class Key, class Value, class HashFn = physx::shdfnd::Hash<Key>>
+template <class Key, class Value, class HashFn = nvidia::shdfnd::Hash<Key>>
 struct HashMap
 {
-    typedef physx::shdfnd::HashMap<Key, Value, HashFn, Allocator> type;
+    typedef nvidia::shdfnd::HashMap<Key, Value, HashFn, Allocator> type;
 };
 
 } // namespace Blast

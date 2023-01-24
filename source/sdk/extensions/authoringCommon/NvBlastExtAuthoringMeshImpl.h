@@ -28,7 +28,7 @@
 #define NVBLASTAUTHORINGMESHIMPL_H
 
 #include "NvBlastExtAuthoringMesh.h"
-#include <foundation/PxBounds3.h>
+#include "NvBounds3.h"
 #include <vector>
 #include <map>
 #include <set>
@@ -185,8 +185,8 @@ private:
     std::vector<Vertex> mVertices;
     std::vector<Edge>   mEdges;
     std::vector<Facet>  mFacets;
-    physx::PxBounds3 mBounds;
-    std::vector<physx::PxBounds3> mPerFacetBounds;
+    nvidia::NvBounds3 mBounds;
+    std::vector<nvidia::NvBounds3> mPerFacetBounds;
 };
 
 } // namespace Blast

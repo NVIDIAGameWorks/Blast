@@ -36,10 +36,10 @@
 
 #include "NvBlastExtAuthoringMesh.h"
 #include "NvBlastExtAuthoringBondGenerator.h"
-#include "NvBlastPxSharedHelpers.h"
+#include "NvBlastNvSharedHelpers.h"
 
-using physx::PxVec3;
-using physx::PxVec2;
+using nvidia::NvVec3;
+using nvidia::NvVec2;
 
 using namespace Nv::Blast;
 
@@ -430,7 +430,7 @@ bool FbxFileReader::getCollisionInternal()
         chull.points = new NvcVec3[uniqueCPValues.size()];
         chull.pointsCount = uint32_t(uniqueCPValues.size());
     
-        physx::PxVec3 hullCentroid(0.0f);
+        nvidia::NvVec3 hullCentroid(0.0f);
 
         for (uint32_t i = 0; i < chull.pointsCount; ++i)
         {
@@ -438,7 +438,7 @@ bool FbxFileReader::getCollisionInternal()
             chull.points[i].x = (float)worldVPos[0];
             chull.points[i].y = (float)worldVPos[1];
             chull.points[i].z = (float)worldVPos[2];
-            hullCentroid += toPxShared(chull.points[i]);
+            hullCentroid += toNvShared(chull.points[i]);
         }
 
         if (chull.pointsCount)
@@ -469,13 +469,13 @@ bool FbxFileReader::getCollisionInternal()
             curIndexCount += vInPolyCount;
 
             //Don't depend on the normals to create the plane normal, they could be wrong
-            PxVec3 lastThreeVerts[3] = {
-                toPxShared(chull.points[chull.indices[curIndexCount - 1]]),
-                toPxShared(chull.points[chull.indices[curIndexCount - 2]]),
-                toPxShared(chull.points[chull.indices[curIndexCount - 3]])
+            NvVec3 lastThreeVerts[3] = {
+                toNvShared(chull.points[chull.indices[curIndexCount - 1]]),
+                toNvShared(chull.points[chull.indices[curIndexCount - 2]]),
+                toNvShared(chull.points[chull.indices[curIndexCount - 3]])
             };
 
-            physx::PxPlane plane(lastThreeVerts[0], lastThreeVerts[1], lastThreeVerts[2]);
+            nvidia::NvPlane plane(lastThreeVerts[0], lastThreeVerts[1], lastThreeVerts[2]);
             plane.normalize();
 
             const float s = plane.n.dot(lastThreeVerts[0] - hullCentroid) >= 0.0f ? 1.0f : -1.0f;

@@ -25,7 +25,7 @@
 // Copyright (c) 2016-2022 NVIDIA Corporation. All rights reserved.
 
 
-#include "NvBlastPreprocessor.h"
+#include "NvPreprocessor.h"
 
 #include "NvBlastTkFrameworkImpl.h"
 #include "NvBlastTkActorImpl.h"

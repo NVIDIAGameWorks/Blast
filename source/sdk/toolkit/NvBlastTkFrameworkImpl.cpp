@@ -40,8 +40,8 @@
 #include <algorithm>
 
 
-using namespace physx;
-using namespace physx::shdfnd;
+using namespace nvidia;
+using namespace nvidia::shdfnd;
 
 
 NV_INLINE bool operator < (const NvBlastID& id1, const NvBlastID& id2)
