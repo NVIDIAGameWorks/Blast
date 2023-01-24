@@ -119,7 +119,7 @@ namespace Nv
             virtual void release() = 0;
         };
 
-        NVBLAST_API void savePatternToObj(DamagePattern* pattern);
+        NV_C_API void savePatternToObj(DamagePattern* pattern);
         
     } // namespace Blast
 } // namespace Nv

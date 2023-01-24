@@ -34,7 +34,7 @@
 #include "NvBlastExtRTGeometry.h"
 #include "NvBlastGlobals.h"
 #include "NvBlastExtAuthoringPatternGenerator.h"
-#include "NvBlastPxSharedHelpers.h"
+#include "NvBlastNvSharedHelpers.h"
 
 #include <map>
 #include <set>
@@ -286,14 +286,14 @@ uint32_t NvBlastExtRTGetChunksToUnite(DamagePattern* pattern, const Vertex* vert
         for (uint32_t k = 0; k < tc; ++k)
         {
 
-            float dd = toPxShared(vertices[k + ofs].p).magnitudeSquared();
+            float dd = toNvShared(vertices[k + ofs].p).magnitudeSquared();
             if (pattern->activationType == DamagePattern::Line)
             {
                 dd -= vertices[k + ofs].p.z *  vertices[k + ofs].p.z;
             }
             if (pattern->activationType == DamagePattern::Cone)
             {
-                float adz = physx::PxAbs(vertices[k + ofs].p.z) * physx::PxTan(pattern->angle * physx::PxPi / 180.f); // angle correction
+                float adz = nvidia::NvAbs(vertices[k + ofs].p.z) * nvidia::NvTan(pattern->angle * nvidia::NvPi / 180.f); // angle correction
 
                 dd -= vertices[k + ofs].p.z *  vertices[k + ofs].p.z + adz * adz;
             }
@@ -316,16 +316,16 @@ FractureRT* NvBlastExtRTCreateFractureRT(uint32_t threads)
     return NVBLAST_NEW(FractureRTMultithreadedImpl)(threads);
 };
 
-bool haveCommonVertices(Vertex* vertices, uint32_t* offsets, uint32_t chunkA, uint32_t chunkB, physx::PxBounds3& bA, physx::PxBounds3& bB)
+bool haveCommonVertices(Vertex* vertices, uint32_t* offsets, uint32_t chunkA, uint32_t chunkB, nvidia::NvBounds3& bA, nvidia::NvBounds3& bB)
 {
     NV_UNUSED(bA);
 
     for (uint32_t i = offsets[chunkA]; i < offsets[chunkA + 1]; ++i)
     {
-        if (bB.contains(toPxShared(vertices[i].p)) == false) continue;
+        if (bB.contains(toNvShared(vertices[i].p)) == false) continue;
         for (uint32_t j = offsets[chunkB]; j < offsets[chunkB + 1]; ++j)
         {
-            if (physx::PxAbs(vertices[i].p.x - vertices[j].p.x) < 1e-3f && physx::PxAbs(vertices[i].p.y - vertices[j].p.y) < 1e-3f && physx::PxAbs(vertices[i].p.z - vertices[j].p.z) < 1e-3f)
+            if (nvidia::NvAbs(vertices[i].p.x - vertices[j].p.x) < 1e-3f && nvidia::NvAbs(vertices[i].p.y - vertices[j].p.y) < 1e-3f && nvidia::NvAbs(vertices[i].p.z - vertices[j].p.z) < 1e-3f)
                 return true;
         }
     }
@@ -338,7 +338,7 @@ bool haveCommonVertices(Vertex* vertices, uint32_t* offsets, uint32_t chunkA, ui
     {
         for (uint32_t j = offsets[chunkB]; j < offsets[chunkB + 1]; ++j)
         {
-            if (physx::PxAbs(vertices[i].p.x - vertices[j].p.x) < 1e-3f && physx::PxAbs(vertices[i].p.y - vertices[j].p.y) < 1e-3f && physx::PxAbs(vertices[i].p.z - vertices[j].p.z) < 1e-3f)
+            if (nvidia::NvAbs(vertices[i].p.x - vertices[j].p.x) < 1e-3f && nvidia::NvAbs(vertices[i].p.y - vertices[j].p.y) < 1e-3f && nvidia::NvAbs(vertices[i].p.z - vertices[j].p.z) < 1e-3f)
                 return true;
         }
     }
@@ -436,7 +436,7 @@ bool upperBoundCmp(uint32_t left, const ChunkGraphLink& lk)
     return left < lk.l1;
 }
 
-uint32_t NvBlastExtRTDetectIslands(Vertex* vertices, uint32_t* offsets, physx::PxBounds3* bounds, uint32_t chunkCount, ChunkGraph* graph, uint32_t* islandChunks, uint32_t* islandOffsets)
+uint32_t NvBlastExtRTDetectIslands(Vertex* vertices, uint32_t* offsets, nvidia::NvBounds3* bounds, uint32_t chunkCount, ChunkGraph* graph, uint32_t* islandChunks, uint32_t* islandOffsets)
 {
     uint32_t firstNewChunk = chunkCount - graph->newlyAddedCount;
     for (uint32_t i = firstNewChunk; i < chunkCount; ++i)

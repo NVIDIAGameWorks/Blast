@@ -27,6 +27,7 @@
 
 #include "NvBlastExtSerialization.h"
 #include "NvBlastExtLlSerialization.h"
+#include "NvBlastArray.h"
 #include "NvBlastHashMap.h"
 #include "NvBlastExtSerializationInternal.h"
 
@@ -165,10 +166,16 @@ ExtSerializationImpl::ExtSerializationImpl() : m_serializationEncoding(EncodingI
 ExtSerializationImpl::~ExtSerializationImpl()
 {
     // Release and remove all registered serializers
-    auto it = m_serializers.getEraseIterator();
-    while (auto entry = it.eraseCurrentGetNext(true))
+    Array<ExtSerializer*>::type registeredSerializers;
+    registeredSerializers.reserve(m_serializers.size());
+    for (auto it = m_serializers.getIterator(); !it.done(); ++it)
     {
-        entry->second->release();
+        registeredSerializers.pushBack(it->second);
+    }
+    m_serializers.clear();
+    for (uint32_t i = 0; i < registeredSerializers.size(); ++i)
+    {
+        registeredSerializers[i]->release();
     }
 }
 

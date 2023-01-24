@@ -31,8 +31,8 @@
 #include "NvBlastExtExporter.h"
 #include <memory>
 #include <vector>
-#include <foundation/PxVec2.h>
-#include <foundation/PxVec3.h>
+#include "NvVec2.h"
+#include "NvVec3.h"
 #include <string>
 struct NvBlastAsset;
 

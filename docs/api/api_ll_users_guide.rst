@@ -90,22 +90,22 @@ signature of NvBlastLog.  In all cases, the log function is optional, and NULL m
 
     // Create chunk descriptors
     std::vector<NvBlastChunkDesc> chunkDescs;
-    chunkDescs.resize( chunkCount );	// chunkCount > 0
+    chunkDescs.resize( chunkCount );    // chunkCount > 0
     
-    chunkDescs[0].parentChunkIndex = UINT32_MAX;	// invalid index denotes a chunk hierarchy root
-    chunkDescs[0].centroid[0] = 0.0f;	// centroid position in asset-local space
+    chunkDescs[0].parentChunkIndex = UINT32_MAX;    // invalid index denotes a chunk hierarchy root
+    chunkDescs[0].centroid[0] = 0.0f;   // centroid position in asset-local space
     chunkDescs[0].centroid[1] = 0.0f;
     chunkDescs[0].centroid[2] = 0.0f;
-    chunkDescs[0].volume = 1.0f;	// Unit volume
+    chunkDescs[0].volume = 1.0f;    // Unit volume
     chunkDescs[0].flags = NvBlastChunkDesc::NoFlags;
-    chunkDescs[0].userData = 0;	// User-supplied ID.  For example, this can be the index of the chunkDesc.
+    chunkDescs[0].userData = 0; // User-supplied ID.  For example, this can be the index of the chunkDesc.
                                 // The userData can be left undefined.
     
-    chunkDescs[1].parentChunkIndex = 0;	// child of chunk described by chunkDescs[0]
-    chunkDescs[1].centroid[0] = 2.0f;	// centroid position in asset-local space
+    chunkDescs[1].parentChunkIndex = 0; // child of chunk described by chunkDescs[0]
+    chunkDescs[1].centroid[0] = 2.0f;   // centroid position in asset-local space
     chunkDescs[1].centroid[1] = 4.0f;
     chunkDescs[1].centroid[2] = 6.0f;
-    chunkDescs[1].volume = 1.0f;	// Unit volume
+    chunkDescs[1].volume = 1.0f;    // Unit volume
     chunkDescs[1].flags = NvBlastChunkDesc::SupportFlag; // This chunk should be represented in the support graph
     chunkDescs[1].userData = 1;
     
@@ -113,22 +113,22 @@ signature of NvBlastLog.  In all cases, the log function is optional, and NULL m
     
     // Create bond descriptors
     std::vector<NvBlastBondDesc> bondDescs;
-    bondDescs.resize( bondCount );	// bondCount > 0
+    bondDescs.resize( bondCount );  // bondCount > 0
     
-    bondDescs[0].chunkIndices[0] = 1;	// chunkIndices refer to chunk descriptor indices for support chunks
+    bondDescs[0].chunkIndices[0] = 1;   // chunkIndices refer to chunk descriptor indices for support chunks
     bondDescs[0].chunkIndices[1] = 2;
-    bondDescs[0].bond.normal[0] = 1.0f;	// normal in the +x direction
+    bondDescs[0].bond.normal[0] = 1.0f; // normal in the +x direction
     bondDescs[0].bond.normal[1] = 0.0f;
     bondDescs[0].bond.normal[2] = 0.0f;
-    bondDescs[0].bond.area = 1.0f;	// unit area
-    bondDescs[0].bond.centroid[0] = 1.0f;	// centroid position in asset-local space
+    bondDescs[0].bond.area = 1.0f;  // unit area
+    bondDescs[0].bond.centroid[0] = 1.0f;   // centroid position in asset-local space
     bondDescs[0].bond.centroid[1] = 2.0f;
     bondDescs[0].bond.centroid[2] = 3.0f;
-    bondDescs[0].userData = 0;	// this can be used to tell the user more information about this
-    								// bond for example to create a joint when this bond breaks
+    bondDescs[0].userData = 0;  // this can be used to tell the user more information about this
+                                    // bond for example to create a joint when this bond breaks
     
     bondDescs[1].chunkIndices[0] = 1;
-    bondDescs[1].chunkIndices[1] = ~0;	// ~0 (UINT32_MAX) is the "invalid index."  This creates a world bond
+    bondDescs[1].chunkIndices[1] = ~0;  // ~0 (UINT32_MAX) is the "invalid index."  This creates a world bond
     // ... etc. for bondDescs[1], all other fields are filled in as usual
     
     // ... etc. for all bonds
@@ -141,14 +141,14 @@ signature of NvBlastLog.  In all cases, the log function is optional, and NULL m
     assetDesc.bondDescs = bondDescs.data();
     
     // Now ensure the support coverage in the chunk descriptors is exact, and the chunks are correctly ordered
-    std::vector<char> scratch( chunkCount * sizeof(NvBlastChunkDesc) );	// This is enough scratch for both NvBlastEnsureAssetExactSupportCoverage and NvBlastReorderAssetDescChunks
+    std::vector<char> scratch( chunkCount * sizeof(NvBlastChunkDesc) ); // This is enough scratch for both NvBlastEnsureAssetExactSupportCoverage and NvBlastReorderAssetDescChunks
     NvBlastEnsureAssetExactSupportCoverage( chunkDescs.data(), chunkCount, scratch.data(), logFn );
-    std::vector<uint32_t> map(chunkCount);	// Will be filled with a map from the original chunk descriptor order to the new one
+    std::vector<uint32_t> map(chunkCount);  // Will be filled with a map from the original chunk descriptor order to the new one
     NvBlastReorderAssetDescChunks( chunkDescs.data(), chunkCount, bondDescs.data(), bondCount, map, true, scratch.data(), logFn );
     
     // Create the asset
-    scratch.resize( NvBlastGetRequiredScratchForCreateAsset( &assetDesc ) );	// Provide scratch memory for asset creation
-    void* mem = malloc( NvBlastGetAssetMemorySize( &assetDesc ) );		// Allocate memory for the asset object
+    scratch.resize( NvBlastGetRequiredScratchForCreateAsset( &assetDesc ) );    // Provide scratch memory for asset creation
+    void* mem = malloc( NvBlastGetAssetMemorySize( &assetDesc ) );      // Allocate memory for the asset object
     NvBlastAsset* asset = NvBlastCreateAsset( mem, &assetDesc, scratch.data(), logFn );
 
 
@@ -168,8 +168,8 @@ To clone an asset, one only needs to copy the memory associated with the NvBlast
 
     uint32_t assetSize = NvBlastAssetGetSize( asset );
     
-    NvBlastAsset* newAsset = (NvBlastAsset*)malloc(assetSize);	// NOTE: the memory buffer MUST be 16-byte aligned!
-    memcpy( newAsset, asset, assetSize );	// this data may be copied into a buffer, stored to a file, etc.
+    NvBlastAsset* newAsset = (NvBlastAsset*)malloc(assetSize);  // NOTE: the memory buffer MUST be 16-byte aligned!
+    memcpy( newAsset, asset, assetSize );   // this data may be copied into a buffer, stored to a file, etc.
 
 
 N.B. the comment after the malloc call above.  NvBlastAsset memory **must** be 16-byte aligned.
@@ -211,7 +211,7 @@ When an actor is first created from an asset, it represents the root of the chun
 
     // Set the fields of the descriptor
     NvBlastActorDesc actorDesc;
-    actorDesc.asset = asset;	// point to a valid asset
+    actorDesc.asset = asset;    // point to a valid asset
     actorDesc.initialBondHealth = 1.0f;  // this health value will be given to all bonds
     actorDesc.initialChunkHealth = 1.0f; // this health value will be given to all lower-support chunks
     
@@ -219,7 +219,7 @@ When an actor is first created from an asset, it represents the root of the chun
     std::vector<char> scratch( NvBlastFamilyGetRequiredScratchForCreateFirstActor( &actorDesc ) );
     
     // Create the first actor
-    NvBlastActor* actor = NvBlastFamilyCreateFirstActor( family, &actorDesc, scratch.data(), logFn );	// ready to be associated with physics and graphics by the user
+    NvBlastActor* actor = NvBlastFamilyCreateFirstActor( family, &actorDesc, scratch.data(), logFn );   // ready to be associated with physics and graphics by the user
 
 
 .. _actor_copying:

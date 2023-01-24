@@ -243,23 +243,23 @@ public:
 /**
     Creates an instance of IMeshFileReader for reading obj file.
 */
-NVBLAST_API Nv::Blast::IMeshFileReader* NvBlastExtExporterCreateObjFileReader();
+NV_C_API Nv::Blast::IMeshFileReader* NvBlastExtExporterCreateObjFileReader();
 
 /**
     Creates an instance of IFbxFileReader for reading fbx file.
 */
-NVBLAST_API Nv::Blast::IFbxFileReader* NvBlastExtExporterCreateFbxFileReader();
+NV_C_API Nv::Blast::IFbxFileReader* NvBlastExtExporterCreateFbxFileReader();
 
 /**
     Creates an instance of IMeshFileWriter for writing obj file.
 */
-NVBLAST_API Nv::Blast::IMeshFileWriter* NvBlastExtExporterCreateObjFileWriter();
+NV_C_API Nv::Blast::IMeshFileWriter* NvBlastExtExporterCreateObjFileWriter();
 
 /**
     Creates an instance of IMeshFileWriter for writing fbx file.
 
     \param[in] outputFBXAscii   If true writes fbx in ascii format otherwise write in binary.
 */
-NVBLAST_API Nv::Blast::IMeshFileWriter* NvBlastExtExporterCreateFbxFileWriter(bool outputFBXAscii = false);
+NV_C_API Nv::Blast::IMeshFileWriter* NvBlastExtExporterCreateFbxFileWriter(bool outputFBXAscii = false);
 
 #endif //NVBLASTEXTEXPORTER_H

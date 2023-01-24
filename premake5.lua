@@ -83,6 +83,7 @@ local root = repo_build.get_abs_path(".")
 repo_build.prebuild_copy {
     { "include", "_build/%{platform}/%{config}/"..workspace_name.."/include" },
     { "source/sdk/common", "_build/%{platform}/%{config}/"..workspace_name.."/source/sdk/common" },
+    { "source/shared/NsFoundation", "_build/%{platform}/%{config}/"..workspace_name.."/source/shared/NsFoundation" },
     { "PACKAGE-LICENSES", "_build/%{platform}/%{config}/"..workspace_name.."/PACKAGE-LICENSES" }
 }
 
@@ -357,11 +358,16 @@ end
 group "sdk"
     project "NvBlast"
         blast_sdklib_standard_setup("lowlevel")
+        includedirs {
+            "include/shared/NvFoundation",
+        }
 
     project "NvBlastGlobals"
         blast_sdklib_standard_setup("globals")
         includedirs {
             "include/lowlevel",
+            "source/shared/NsFoundation/include",
+            "include/shared/NvFoundation",
         }
 
     project "NvBlastExtShaders"
@@ -370,9 +376,8 @@ group "sdk"
         includedirs {
             "include/lowlevel",
             "include/globals",
-            target_deps.."/physxsdk/include",
-            target_deps.."/physxsdk/source/foundation/include",
-            target_deps.."/pxshared/include",
+            "include/shared/NvFoundation",
+            "source/shared/NsFoundation/include",
         }
         filter { "system:windows" }
             disablewarnings {
@@ -390,6 +395,7 @@ group "sdk"
         includedirs {
             "include/lowlevel",
             "include/globals",
+            "include/shared/NvFoundation",
         }
 
     project "NvBlastExtAuthoring"
@@ -404,9 +410,8 @@ group "sdk"
             "source/sdk/extensions/authoringCommon",
             "source/sdk/extensions/authoring/VHACD/inc",
             "source/sdk/extensions/authoring/VHACD/public",
-            target_deps.."/physxsdk/include",
-            target_deps.."/physxsdk/source/foundation/include",
-            target_deps.."/pxshared/include",
+            "include/shared/NvFoundation",
+            "source/shared/NsFoundation/include",
             target_deps.."/BoostMultiprecision",
         }
         files {
@@ -441,9 +446,8 @@ group "sdk"
             "include/globals",
             "include/extensions/authoringCommon",
             "source/sdk/extensions/authoringCommon",
-            target_deps.."/physxsdk/include",
-            target_deps.."/physxsdk/source/foundation/include",
-            target_deps.."/pxshared/include",
+            "include/shared/NvFoundation",
+            "source/shared/NsFoundation/include",
         }
         files {
             "source/sdk/extensions/authoringCommon/NvBlastExtAuthoringAcceleratorImpl.cpp",
@@ -463,9 +467,10 @@ group "sdk"
             "include/lowlevel",
             "include/globals",
             "source/sdk/globals",
-            target_deps.."/physxsdk/include",
-            target_deps.."/physxsdk/source/foundation/include",
-            target_deps.."/pxshared/include",
+            "include/shared/NvFoundation",
+            "source/shared/NsFoundation/include",
+            "source/shared/NsFileBuffer/include",
+            "source/shared/NvTask/include",
         }
 
     project "NvBlastExtStress"
@@ -477,10 +482,9 @@ group "sdk"
         includedirs {
             "include/lowlevel",
             "include/globals",
+            "include/shared/NvFoundation",
+            "source/shared/NsFoundation/include",
             "source/shared/stress_solver",
-            target_deps.."/physxsdk/include",
-            target_deps.."/physxsdk/source/foundation/include",
-            target_deps.."/pxshared/include",
         }
         files {
             "source/shared/stress_solver/stress.cpp",
@@ -513,9 +517,10 @@ group "sdk"
             "include/globals",
             "_build/host-deps/CapnProto/src",
             capnp_gen_path,
-            target_deps.."/physxsdk/include",
-            target_deps.."/physxsdk/source/foundation/include",
-            target_deps.."/pxshared/include",
+            "include/shared/NvFoundation",
+            "source/shared/NsFoundation/include",
+            "source/shared/NsFileBuffer/include",
+            "source/shared/NvTask/include",
         }
         blast_sdklib_common_files()
         add_files("source/sdk/extensions/serialization",
@@ -563,9 +568,10 @@ group "sdk"
             "include/globals",
             "_build/host-deps/CapnProto/src",
             capnp_gen_path,
-            target_deps.."/physxsdk/include",
-            target_deps.."/physxsdk/source/foundation/include",
-            target_deps.."/pxshared/include",
+            "include/shared/NvFoundation",
+            "source/shared/NsFoundation/include",
+            "source/shared/NsFileBuffer/include",
+            "source/shared/NvTask/include",
         }
         blast_sdklib_common_files()
         add_files("source/sdk/extensions/serialization",
@@ -580,7 +586,7 @@ group "sdk"
             {
                 "AssetDTO.cpp",
                 "TkAssetDTO.cpp",
-                "PxVec3DTO.cpp",
+                "NvVec3DTO.cpp",
                 "NvBlastChunkDTO.cpp",
                 "NvBlastBondDTO.cpp",
                 "NvBlastIDDTO.cpp",
@@ -609,7 +615,6 @@ group "sdk"
     --         "include/globals",
     --         "include/extensions/authoringCommon",
     --         "source/sdk/globals",
-    --         target_deps.."/pxshared/include",
     --     }
 
         -- NvBlastExtPhysX and NvBlastExtPxSerialization require linking to physx, making them physx version-dependent
@@ -626,8 +631,7 @@ group "sdk"
     --         target_deps.."/physxsdk/include",
     --         target_deps.."/physxsdk/include/extensions",
     --         target_deps.."/physxsdk/include/geometry",
-    --         target_deps.."/physxsdk/source/foundation/include",
-    --         target_deps.."/pxshared/include",
+    --         target_deps.."/physxsdk/source/include/foundation",
     --     }
 
     -- project "NvBlastExtPxSerialization"
@@ -654,8 +658,7 @@ group "sdk"
     --         target_deps.."/physxsdk/include/cooking",
     --         target_deps.."/physxsdk/include/extensions",
     --         target_deps.."/physxsdk/include/geometry",
-    --         target_deps.."/physxsdk/source/foundation/include",
-    --         target_deps.."/pxshared/include",
+    --         target_deps.."/physxsdk/source/include/foundation",
     --     }
     --     blast_sdklib_common_files()
     --     add_files("source/sdk/extensions/serialization",
@@ -739,29 +742,23 @@ group "tests"
             "NvBlastFamily.cpp",
         })
 
+        add_files("source/sdk/toolkit", {
+            "NvBlastTkTaskManager.cpp",
+        })
+
         add_files("source/shared/utils", {
             "AssetGenerator.cpp",
         })
-
-        add_files("source/sdk/extensions/physx", {  -- !!!
-            "NvBlastExtPxTaskImpl.cpp",
-        })
-
-        filter { "system:linux" }
-            add_files("source/shared/task", {
-                "TaskManager.cpp"
-            })
-        filter {}
 
         includedirs {
             "include/globals",
             "include/lowlevel",
             "include/toolkit",
             "include/extensions/assetutils",
-            "include/extensions/physx", -- !!!
             "include/extensions/shaders",
             "include/extensions/serialization",
             "source/sdk/common",
+            "source/sdk/globals",
             "source/sdk/lowlevel",
             "source/sdk/extensions/serialization",
             "source/test/src",
@@ -769,28 +766,25 @@ group "tests"
             "source/test/src/utils",
             "source/shared/filebuf/include",
             "source/shared/utils",
-            target_deps.."/physxsdk/include",
-            target_deps.."/physxsdk/source/foundation/include",
-            target_deps.."/pxshared/include",
+            "include/shared/NvFoundation",
+            "source/shared/NsFoundation/include",
+            "source/shared/NsFileBuffer/include",
+            "source/shared/NvTask/include",
             target_deps.."/googletest/include",
         }
 
     filter { "system:windows", "configurations:debug" }
-        libdirs { target_deps.."/googletest/lib/vc14win64-cmake/Debug", target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug" }
-        repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/debug/PhysXFoundation_64.dll")
+        libdirs { target_deps.."/googletest/lib/vc14win64-cmake/Debug" }
     filter { "system:windows", "configurations:release" }
-        libdirs { target_deps.."/googletest/lib/vc14win64-cmake/Release", target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release" }
-        repo_build.copy_to_targetdir(target_deps.."/physxsdk/bin/win.x86_64.vc141.md/release/PhysXFoundation_64.dll")
-    filter { "system:linux", "configurations:debug" }
-        libdirs { target_deps.."/googletest/lib/gcc-4.8", target_deps.."/physxsdk/bin/linux.clang/debug" }
-    filter { "system:linux", "configurations:release" }
-        libdirs { target_deps.."/googletest/lib/gcc-4.8", target_deps.."/physxsdk/bin/linux.clang/release" }
+        libdirs { target_deps.."/googletest/lib/vc14win64-cmake/Release" }
+    filter { "system:linux" }
+        libdirs { target_deps.."/googletest/lib/gcc-4.8" }
     filter{}
 
     links { "gtest_main", "gtest" }
 
     filter { "system:windows" }
-        links { "PhysXFoundation_64", "PhysXTask_static_64" }
+        -- links { "PhysXFoundation_64", "PhysXTask_static_64" }
         disablewarnings {
             "4002", -- too many actual parameters for macro 'identifier'
             "4100", -- unreferenced formal parameter
@@ -801,7 +795,7 @@ group "tests"
             "4996", -- code uses a function, class member, variable, or typedef that's marked deprecated
         }
     filter { "system:linux"}
-        links { "PhysXFoundation_static_64" }
+        -- links { "PhysXFoundation_static_64" }
         disablewarnings {
             "undef",
             "sign-compare"

@@ -27,7 +27,8 @@ with types enumerated in the header **NvBlastExtLlSerialization.h**.
 To load serializers for ExtTk assets, you must also load the extension :ref:`pageexttkserialization`.  See the documentation for that module.
 
 ..
-   To load serializers for ExtPhysX assets, you must also load the extension :ref:`pageextpxserialization`.  See the documentation for that module.
+    To load serializers for ExtPhysX assets, you must also load the extension :ref:`pageextpxserialization`.  See the documentation for that module.
+
 
 Each serializer is capable of reading (and writing, if it is not read-only) a single data type in a single encoding (format).  Some serializers are read-only, in order to read legacy
 formats.
@@ -100,19 +101,19 @@ For example:
     class MyBufferProvider : public Nv::Blast::ExtSerialization::BufferProvider
     {
     public:
-    	MyBufferProvider(std::vector<char>& growableBuffer) : m_growableBuffer(growableBuffer) {}
+        MyBufferProvider(std::vector<char>& growableBuffer) : m_growableBuffer(growableBuffer) {}
     
-    	virtual void*   requestBuffer(size_t size) override
-    	{
-    		if (m_growableBuffer.size() < size)
-    		{
-    			m_growableBuffer.resize(size);
-    		}
-    		return m_growableBuffer.data();
-    	}
+        virtual void*   requestBuffer(size_t size) override
+        {
+            if (m_growableBuffer.size() < size)
+            {
+                m_growableBuffer.resize(size);
+            }
+            return m_growableBuffer.data();
+        }
     
     private:
-    	std::vector<char>&	m_growableBuffer;
+        std::vector<char>&  m_growableBuffer;
     } myBufferProvider(growableBuffer);
     
     ser->setBufferProvider(&myBufferProvider);
@@ -162,13 +163,13 @@ If you don't know the object type in the buffer, you may use the last (optional)
     switch (objTypeID)
     {
     case LlObjectTypeID::Asset:
-    	handleAssetLoad(static_cast<NvBlastAsset*>(obj));
-    	break;
+        handleAssetLoad(static_cast<NvBlastAsset*>(obj));
+        break;
     case LlObjectTypeID::Family:
-    	handleFamilyLoad(static_cast<NvBlastFamily*>(obj));
-    	break;
+        handleFamilyLoad(static_cast<NvBlastFamily*>(obj));
+        break;
     default:
-    	NVBLAST_LOG_ERROR("Unknown object type ");
+        NVBLAST_LOG_ERROR("Unknown object type ");
     }
 
 .. _peeking_and_skipping:
@@ -186,20 +187,20 @@ the next object in the buffer (whether or not you have chosen to read the curren
     
     while (size)
     {
-    	uint64_t objTypeID;
-    	if (!ser->peekHeader(&objTypeID, NULL, NULL, buffer, size))	// Only reading the object type ID; may pass in NULL for the other header value pointers
-    	{
-    		break;	// Read error, stop
-    	}
+        uint64_t objTypeID;
+        if (!ser->peekHeader(&objTypeID, NULL, NULL, buffer, size)) // Only reading the object type ID; may pass in NULL for the other header value pointers
+        {
+            break;  // Read error, stop
+        }
     
-    	if (objectShouldBeLoaded(objTypeID))	// Some function to determine whether or not we want this object
-    	{
-    		void* obj = ser->deserializeFromBuffer(buffer, size);
-    		// Handle loaded object ...
-    	}
+        if (objectShouldBeLoaded(objTypeID))    // Some function to determine whether or not we want this object
+        {
+            void* obj = ser->deserializeFromBuffer(buffer, size);
+            // Handle loaded object ...
+        }
     
-    	// Jump to next object:
-    	buffer = ser->skipObject(size, buffer);	// Updates size as well
+        // Jump to next object:
+        buffer = ser->skipObject(size, buffer); // Updates size as well
     }
 
 .. _serialization_term:

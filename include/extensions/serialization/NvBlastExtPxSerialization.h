@@ -81,7 +81,7 @@ It does no harm to call this function more than once; serializers already loaded
 
 \return the number of serializers loaded.
 */
-NVBLAST_API size_t      NvBlastExtPxSerializerLoadSet(Nv::Blast::TkFramework& framework, physx::PxPhysics& physics, physx::PxCooking& cooking, Nv::Blast::ExtSerialization& serialization);
+NV_C_API size_t      NvBlastExtPxSerializerLoadSet(Nv::Blast::TkFramework& framework, physx::PxPhysics& physics, physx::PxCooking& cooking, Nv::Blast::ExtSerialization& serialization);
 
 
 /**
@@ -98,4 +98,4 @@ Equivalent to:
 
 \return the number of bytes serialized into the buffer (zero if unsuccessful).
 */
-NVBLAST_API uint64_t    NvBlastExtSerializationSerializeExtPxAssetIntoBuffer(void*& buffer, Nv::Blast::ExtSerialization& serialization, const Nv::Blast::ExtPxAsset* asset);
+NV_C_API uint64_t    NvBlastExtSerializationSerializeExtPxAssetIntoBuffer(void*& buffer, Nv::Blast::ExtSerialization& serialization, const Nv::Blast::ExtPxAsset* asset);

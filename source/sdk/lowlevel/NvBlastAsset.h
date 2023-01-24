@@ -303,7 +303,7 @@ NV_INLINE uint32_t Asset::getContiguousLowerSupportIndex(uint32_t chunkIndex) co
 
 
 //JDM: Expose this so serialization layer can use it.
-NVBLAST_API Asset* initializeAsset(void* mem, uint32_t chunkCount, uint32_t graphNodeCount, uint32_t leafChunkCount, uint32_t firstSubsupportChunkIndex, uint32_t bondCount, NvBlastLog logFn);
+NV_C_API Asset* initializeAsset(void* mem, uint32_t chunkCount, uint32_t graphNodeCount, uint32_t leafChunkCount, uint32_t firstSubsupportChunkIndex, uint32_t bondCount, NvBlastLog logFn);
 
 } // namespace Blast
 } // namespace Nv

@@ -31,11 +31,11 @@
 #include "NvBlastExtAuthoringMeshImpl.h"
 #include "NvBlastExtAuthoringAcceleratorImpl.h"
 #include "NvBlastExtAuthoringPatternGenerator.h"
-#include "NvBlastPxSharedHelpers.h"
+#include "NvBlastNvSharedHelpers.h"
 
 #include "NvBlastGlobals.h"
 #include "NvBlastAssert.h"
-//#include "PxPhysicsAPI.h"
+//#include "NvPhysicsAPI.h"
 
 #define SAFE_RELEASE(x) if (x) {(x)->release(); (x) = nullptr;}
 #define SAFE_FREE(x) if (x) {NVBLAST_FREE(x); (x) = nullptr;}
@@ -193,8 +193,8 @@ static bool compareEdge(const BooleanResultEdge& e1, const BooleanResultEdge& e2
 //Debug code
 //struct TmpE
 //{
-//  physx::PxVec3 v1;
-//  physx::PxVec3 v2;
+//  nvidia::NvVec3 v1;
+//  nvidia::NvVec3 v2;
 //  int f;
 //};
 //struct CmpTmpE
@@ -300,10 +300,10 @@ void FractureRTImpl::processMesh(Nv::Blast::DamagePattern* pattern, const Mesh* 
             /**
             Check if generated mesh bounding box is valid. 
             */
-            physx::PxBounds3 bds(physx::PxBounds3::empty());
+            nvidia::NvBounds3 bds(nvidia::NvBounds3::empty());
             for (uint32_t i = 0; i < newTriangles * 3; ++i)
             {
-                bds.include(toPxShared(outputData->vertices[outputIndexBuffer[i]].p));
+                bds.include(toNvShared(outputData->vertices[outputIndexBuffer[i]].p));
             }
             if (bds.isValid())
             {

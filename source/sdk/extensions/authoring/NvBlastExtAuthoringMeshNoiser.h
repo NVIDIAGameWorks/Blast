@@ -134,7 +134,7 @@ namespace Nv
             std::vector<Triangle>           getMesh();
 
         private:
-            physx::PxVec3                       mOffset;
+            nvidia::NvVec3                       mOffset;
             float                               mScale;
             bool                                isTesselated;
             /**
@@ -176,7 +176,7 @@ namespace Nv
 
 
             std::vector<float>                          mVerticesDistances;
-            std::vector<physx::PxVec3>                  mVerticesNormalsSmoothed;
+            std::vector<nvidia::NvVec3>                  mVerticesNormalsSmoothed;
             std::vector<uint32_t>                       mPositionMappedVrt;
             std::vector<std::vector<int32_t> >          mGeometryGraph;
 

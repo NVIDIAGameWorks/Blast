@@ -98,15 +98,15 @@ A typical update loop looks like this:
                 const bool isStatic = rigidDynamic.getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC;
                 if (isStatic)
                 {
-                    NvcVec3 gravity = fromPxShared(rigidDynamic.getScene()->getGravity());
-                    NvcVec3 localGravity = fromPxShared(rigidDynamic.getGlobalPose().rotateInv(gravity));
+                    NvcVec3 gravity = fromNvShared(rigidDynamic.getScene()->getGravity());
+                    NvcVec3 localGravity = fromNvShared(rigidDynamic.getGlobalPose().rotateInv(gravity));
         
                     m_solver->addGravity(*actor, localGravity);
                 }
                 else
                 {
-                    NvcVec3 localCenterMass = fromPxShared(rigidDynamic.getCMassLocalPose().p);
-                    NvcVec3 localAngularVelocity = fromPxShared(rigidDynamic.getGlobalPose().rotateInv(rigidDynamic.getAngularVelocity()));
+                    NvcVec3 localCenterMass = fromNvShared(rigidDynamic.getCMassLocalPose().p);
+                    NvcVec3 localAngularVelocity = fromNvShared(rigidDynamic.getGlobalPose().rotateInv(rigidDynamic.getAngularVelocity()));
                     m_solver->addCentrifugalAcceleration(*actor, localCenterMass, localAngularVelocity);
                 }
             }

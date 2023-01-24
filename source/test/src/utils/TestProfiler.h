@@ -28,6 +28,8 @@
 #ifndef TESTPROFILER_H
 #define TESTPROFILER_H
 
+#include "NvBlastInternalProfiler.h"
+
 #define TEST_ZONE_BEGIN(name)   platformZoneStart(name)
 #define TEST_ZONE_END(name)     platformZoneEnd()
 

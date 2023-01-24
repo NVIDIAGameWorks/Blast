@@ -36,12 +36,12 @@
 
 
 #include <iostream>
-#include "foundation/PxVec3.h"
-#include "foundation/PxVec2.h"
+#include "NvVec3.h"
+#include "NvVec2.h"
 #include "NvBlastExtAuthoringMesh.h"
 
-using physx::PxVec3;
-using physx::PxVec2;
+using nvidia::NvVec3;
+using nvidia::NvVec2;
 using namespace Nv::Blast;
 
 ObjFileReader::ObjFileReader()

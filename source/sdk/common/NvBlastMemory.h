@@ -128,7 +128,4 @@ align16(_lastOffset + _lastSize)
 #define NvBlastAlloca(x) alloca(x)
 #endif
 
-#define NvBlastAllocaAligned16(x) (void*)(((uintptr_t)PxAlloca(x + 0xF) + 0xF) & ~(uintptr_t)0xF)
-
-
 #endif // #ifndef NVBLASTMEMORY_H

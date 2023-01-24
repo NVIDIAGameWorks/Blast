@@ -30,7 +30,7 @@
 
 #ifndef _WINDOWS_ // windows already included if this is defined
 
-#include "NvBlastPreprocessor.h"
+#include "NvPreprocessor.h"
 
 #ifndef _WIN32
 #error "This file should only be included by Windows builds!!"

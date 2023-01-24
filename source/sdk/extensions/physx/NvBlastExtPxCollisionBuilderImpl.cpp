@@ -31,7 +31,7 @@
 #include <PxConvexMesh.h>
 #include "PxPhysics.h"
 #include "cooking/PxCooking.h"
-#include <NvBlastPxSharedHelpers.h>
+#include <NvBlasPxSharedHelpers.h>
 #include <vector>
 #include <set>
 
@@ -212,7 +212,7 @@ void ExtPxCollisionBuilderImpl::buildPhysicsChunks(uint32_t chunkCount, uint32_t
         int32_t end = hullOffsets[i + 1];
         for (int32_t subhull = beg; subhull < end; ++subhull)
         {
-            physicsSubchunks[subhull].transform = physx::PxTransform(physx::PxIdentity);
+            physicsSubchunks[subhull].transform = physx::PxTransform(physx::);
             physicsSubchunks[subhull].geometry  = physx::PxConvexMeshGeometry(
                 reinterpret_cast<physx::PxConvexMesh*>(buildConvexMesh(*hulls[subhull])));
         }

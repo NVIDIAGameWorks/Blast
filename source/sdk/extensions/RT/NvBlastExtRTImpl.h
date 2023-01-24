@@ -34,7 +34,7 @@
 #include <condition_variable>
 #include <atomic>
 
-namespace physx
+namespace nvidia
 {
     class PxCooking;
 };

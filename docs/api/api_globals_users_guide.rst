@@ -18,7 +18,7 @@ A global allocator with interface
 
 .. code-block:: text
 
-    Nv::Blast::AllocatorCallback
+    nvidia::NvAllocatorCallback
 
 
 may be set by the user with the function
@@ -51,7 +51,7 @@ A global error message callback with interface
 
 .. code-block:: text
 
-    Nv::Blast::ErrorCallback
+    nvidia::NvErrorCallback
 
 
 may be set by the user with the function
@@ -87,30 +87,27 @@ This function may be passed into any NvBlast function's log parameter.
 Profiler API
 ============
 
-**Include NvBlastProfiler.h**
+**Include NvBlastGlobals.h**
 
 BlastTk contains many profiling zones which use the global profiler which can be accessed in this library.  The user may implement
 the interface
 
+
 .. code-block:: text
 
-    Nv::Blast::ProfilerCallback
+    nvidia::NvProfilerCallback
 
 
 and pass it to the globals library using
 
 .. code-block:: text
 
-    NvBlastProfilerSetCallback
+    NvBlastGlobalSetProfilerCallback
 
-
-A NULL pointer may be passed in, disabling profiling.  Profiler features are only active in checked, debug and profile builds.
-
-The granularity of events reported can be selected with
+The profiler callback may be retrieved with
 
 .. code-block:: text
 
-    NvBlastProfilerSetDetail
+    NvBlastGlobalGetProfilerCallback
 
-
-
+A NULL pointer may be passed in, disabling profiling.

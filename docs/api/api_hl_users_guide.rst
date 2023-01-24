@@ -146,20 +146,20 @@ See (:ref:`tkjoints`) for more on joints in BlastTk.
 
     TkAssetDesc desc;
     
-    myFunctionToFillInLowLevelAssetFields(desc);	// Fill in the low-level (NvBlastAssetDesc) fields as usual
+    myFunctionToFillInLowLevelAssetFields(desc);    // Fill in the low-level (NvBlastAssetDesc) fields as usual
     
-    std::vector<uint8_t*> bondFlags(desc.bondCount, 0);	// Clear all flags
+    std::vector<uint8_t*> bondFlags(desc.bondCount, 0); // Clear all flags
     
     // Set BondJointed flags corresponding to joints selected by the user (assumes a myBondIsJointedFunction to make this selection)
     for (uint32_t i = 0; i < desc.bondCount; ++i)
     {
-    	if (myBondIsJointedFunction(i))	// User-authored
-    	{
-    		bondFlags[i] |= TkAssetDesc::BondJointed;
-    	}
+        if (myBondIsJointedFunction(i)) // User-authored
+        {
+            bondFlags[i] |= TkAssetDesc::BondJointed;
+        }
     }
     
-    TkAsset* asset = framework->createAsset(desc);	// Create a new TkAsset
+    TkAsset* asset = framework->createAsset(desc);  // Create a new TkAsset
 
 
 The createAsset function used above creates a low-level NvBlastAsset from the base fields of the descriptor, and then adds internal joint descriptors based
@@ -190,11 +190,11 @@ An example of initialization of the joint descriptors is given below.
 
 .. code-block:: text
 
-    std::vector<TkAssetJointDesc> jointDescs(jointCount);	// Assume jointCount = the number of joints to add
-    jointDescs[0].nodeIndices[0] = 0;	// Attach node 0 to node 1
+    std::vector<TkAssetJointDesc> jointDescs(jointCount);   // Assume jointCount = the number of joints to add
+    jointDescs[0].nodeIndices[0] = 0;   // Attach node 0 to node 1
     jointDescs[0].nodeIndices[1] = 1;
-    jointDescs[0].attachPoistions[0] = physx::PxVec3( 1.0f, 2.0f, 3.0f );	// Attachment positions are often the same within an asset, but they don't have to be
-    jointDescs[0].attachPoistions[1] = physx::PxVec3( 1.0f, 2.0f, 3.0f );
+    jointDescs[0].attachPoistions[0] = nvidia::NvVec3( 1.0f, 2.0f, 3.0f );  // Attachment positions are often the same within an asset, but they don't have to be
+    jointDescs[0].attachPoistions[1] = nvidia::NvVec3( 1.0f, 2.0f, 3.0f );
     // ... etc.
     
     TkAsset* asset = framework->createAsset(llAsset, jointDescs.data(), jointDescs.size());
@@ -250,8 +250,8 @@ the TkAsset being instanced.  An example of TkActor creation is given below, giv
 
 .. code-block:: text
 
-    TkActorDesc desc;	// The TkActorDesc constructor sets sane default values for the base (NvBlastActorDesc) fields, giving uniform chunk and bond healths of 1.0.
-    desc.asset = asset;	// This field of TkActorDesc must be set to a valid asset pointer.
+    TkActorDesc desc;   // The TkActorDesc constructor sets sane default values for the base (NvBlastActorDesc) fields, giving uniform chunk and bond healths of 1.0.
+    desc.asset = asset; // This field of TkActorDesc must be set to a valid asset pointer.
     
     TkActor* actor = framework->createActor(desc);
 
@@ -288,10 +288,10 @@ by the group's actors.  After all jobs have been run, the user must call TkGroup
 with families with actors in the group.
 
 A convenience function, TkGroup::process(), is provided which uses one worker to perform all jobs sequentially on the calling thread.  This is useful shortcut to
-get BlastTk up and running quickly.  A multithreaded group processing implementation is given by Nv::Blast::ExtGroupTaskManager (in NvBlastExtPxTask.h).
+get BlastTk up and running quickly.  A multithreaded group processing implementation is given by TkGroupTaskManager (in NvBlastTkGroupTaskManager.h).
 
 ..
-   This resides in :ref:`pageextphysx`, because it uses physx::PxTask.
+   This resides in :ref:`pageextphysx`, because it uses nvidia::NvTask.
 
 Actors resulting from the split of a "parent" actor will be placed automatically into the group that the parent belonged to.  This is similar to the assigment of
 families from a split, except that unlike families, the user then has the option to move the new actors to other groups, or no group at all.
@@ -305,7 +305,7 @@ A typical usage is outlined below.  See :ref:`damage_in_tk` for methods of apply
 
     // Create actors from descriptors desc1, desc2, ... etc., and attach a listener to each new family created
     TkActor* actor1 = framework->createActor(desc1);
-    actor1->getFamily().addListener(gMyReceiver);		// gMyReceiver is a TkEventListener-derived object.  More on events in a subsequent section.
+    actor1->getFamily().addListener(gMyReceiver);       // gMyReceiver is a TkEventListener-derived object.  More on events in a subsequent section.
     TkActor* actor2 = framework->createActor(desc2);
     actor2->getFamily().addListener(gMyReceiver);
     TkActor* actor3 = framework->createActor(desc3);
@@ -314,7 +314,7 @@ A typical usage is outlined below.  See :ref:`damage_in_tk` for methods of apply
     
     // Let's create two groups.  First, create a group descriptor.  This may be used to create both groups.
     TkGroupDesc groupDesc;
-    groupDesc.workerCount = 1;	// this example processes groups on the calling thread only
+    groupDesc.workerCount = 1;  // this example processes groups on the calling thread only
     
     // Now create the groups
     TkGroup* group1 = framework->createGroup(groupDesc);
@@ -387,8 +387,8 @@ least until the TkGroup::endProcess call for the actor.**
 
     NvBlastDamageProgram program =
     {
-    	myGraphShaderFunction,		// A function with the NvBlastGraphShaderFunction signature
-    	mySubgraphShaderFunction	// A function with the NvBlastSubgraphShaderFunction signature
+        myGraphShaderFunction,      // A function with the NvBlastGraphShaderFunction signature
+        mySubgraphShaderFunction    // A function with the NvBlastSubgraphShaderFunction signature
     };
     
     // The example struct "RadialDamageDesc" is modeled after NvBlastExtRadialDamageDesc in the NvBlastExtShaders extension
@@ -419,7 +419,7 @@ least until the TkGroup::endProcess call for the actor.**
     NvBlastProgramParams params = { damageDescs, 2, &material };
     
     // Apply damage
-    actor->damage(program, &params);	// params must be kept around until TkGroup::endProcess is called!
+    actor->damage(program, &params);    // params must be kept around until TkGroup::endProcess is called!
 
 .. _single_damage_desc_default_material:
 
@@ -452,8 +452,8 @@ Then to apply damage, use:
 
     NvBlastDamageProgram program =
     {
-    	myGraphShaderFunction,		// A function with the NvBlastGraphShaderFunction signature
-    	mySubgraphShaderFunction	// A function with the NvBlastSubgraphShaderFunction signature
+        myGraphShaderFunction,      // A function with the NvBlastGraphShaderFunction signature
+        mySubgraphShaderFunction    // A function with the NvBlastSubgraphShaderFunction signature
     };
     
     // The example struct "RadialDamageDesc" is modeled after NvBlastExtRadialDamageDesc in the NvBlastExtShaders extension
@@ -513,23 +513,23 @@ given below.
 .. code-block:: text
 
     TkJointDesc desc;
-    desc.families[0] = &actor0->getFamily();	// Assume we have a valid actor0 pointer
-    desc.chunkIndices[0] = 1;	// This chunk *must* be a support chunk in the asset that created desc.families[0]
-    desc.attachPositions[0] = physx::PxVec3(1.0f, 2.0f; 3.0f);	// The attach position is in asset space
-    desc.families[1] = &actor1->getFamily();	// Assume we have a valid actor1 pointer... note, actor0 and actor1 could have the same family
-    desc.chunkIndices[1] = 10;	// This chunk *must* be a support chunk in the asset that created desc.families[1]
-    desc.attachPositions[1] = physx::PxVec3(4.0f, 5.0f; 6.0f);	// The attach position is in asset space
+    desc.families[0] = &actor0->getFamily();    // Assume we have a valid actor0 pointer
+    desc.chunkIndices[0] = 1;   // This chunk *must* be a support chunk in the asset that created desc.families[0]
+    desc.attachPositions[0] = nvidia::NvVec3(1.0f, 2.0f; 3.0f); // The attach position is in asset space
+    desc.families[1] = &actor1->getFamily();    // Assume we have a valid actor1 pointer... note, actor0 and actor1 could have the same family
+    desc.chunkIndices[1] = 10;  // This chunk *must* be a support chunk in the asset that created desc.families[1]
+    desc.attachPositions[1] = nvidia::NvVec3(4.0f, 5.0f; 6.0f); // The attach position is in asset space
     
     // Create the external joint from the descriptor, which joins actor0 and actor1
     TkJoint* joint = framework->createJoint(desc);
     
     // Now join actor0 to the NRF
     // desc.families[0] already contains actor0's family
-    desc.chunkIndices[0] = 2;	// Again, this chunk must be a support chunk in the asset that created desc.families[0]
-    desc.attachPositions[0] = physx::PxVec3(0.0f, 0.0f; 0.0f);	// The attach position is in asset space
-    desc.families[1] = nullptr;	// Setting the family to NULL designates the world (NRF)
+    desc.chunkIndices[0] = 2;   // Again, this chunk must be a support chunk in the asset that created desc.families[0]
+    desc.attachPositions[0] = nvidia::NvVec3(0.0f, 0.0f; 0.0f); // The attach position is in asset space
+    desc.families[1] = nullptr; // Setting the family to NULL designates the world (NRF)
     // The value of desc.chunkIndices[1] is not used, since desc.families[1] is NULL
-    desc.attachPositions[1] = physx::PxVec3(0.0f, 0.0f, 10.0f);	// Attach position in the world
+    desc.attachPositions[1] = nvidia::NvVec3(0.0f, 0.0f, 10.0f);    // Attach position in the world
     
     // Create the external joint which joins actor0 to the world
     TkJoint* jointNRF = framework->createJoint(desc);
@@ -583,61 +583,61 @@ A typical user's receiver implementation might take on the form shown below.
 
     class MyActorAndJointListener : public TkEventListener
     {
-    	// TkEventListener interface
-    	void receive(const TkEvent* events, uint32_t eventCount) override
-    	{
-    		// Events are batched into an event buffer.  Loop over all events:
-    		for (uint32_t i = 0; i < eventCount; ++i)
-    		{
-    			const TkEvent& event = events[i];
+        // TkEventListener interface
+        void receive(const TkEvent* events, uint32_t eventCount) override
+        {
+            // Events are batched into an event buffer.  Loop over all events:
+            for (uint32_t i = 0; i < eventCount; ++i)
+            {
+                const TkEvent& event = events[i];
     
-    			// See TkEvent documentation for event types
-    			switch (event.type)
-    			{
-    			case TkSplitEvent::EVENT_TYPE:	// A TkActor has split into smaller actors
-    			{
-    				const TkSplitEvent* splitEvent = event.getPayload<TkSplitEvent>();	// Split event payload
+                // See TkEvent documentation for event types
+                switch (event.type)
+                {
+                case TkSplitEvent::EVENT_TYPE:  // A TkActor has split into smaller actors
+                {
+                    const TkSplitEvent* splitEvent = event.getPayload<TkSplitEvent>();  // Split event payload
     
-    				// The parent actor may no longer be valid.  Instead, we receive the information it held
-    				// which we need to update our app's representation (e.g. removal of the corresponding physics actor)
-    				myRemoveActorFunction(splitEvent->parentData.family, splitEvent->parentData.index, splitEvent->parentData.userData);
+                    // The parent actor may no longer be valid.  Instead, we receive the information it held
+                    // which we need to update our app's representation (e.g. removal of the corresponding physics actor)
+                    myRemoveActorFunction(splitEvent->parentData.family, splitEvent->parentData.index, splitEvent->parentData.userData);
     
-    				// The split event contains an array of "child" actors that came from the parent.  These are valid
-    				// TkActor pointers and may be used to create physics and graphics representations in our application
-    				for (uint32_t j = 0; j < splitEvent->numChildren; ++j)
-    				{
-    					myCreateActorFunction(splitEvent->children[j]);
-    				}
-    			}
-    			break;
+                    // The split event contains an array of "child" actors that came from the parent.  These are valid
+                    // TkActor pointers and may be used to create physics and graphics representations in our application
+                    for (uint32_t j = 0; j < splitEvent->numChildren; ++j)
+                    {
+                        myCreateActorFunction(splitEvent->children[j]);
+                    }
+                }
+                break;
     
-    			case TkJointUpdateEvent::EVENT_TYPE:
-    			{
-    				const TkJointUpdateEvent* jointEvent = event.getPayload<TkJointUpdateEvent>();	// Joint update event payload
+                case TkJointUpdateEvent::EVENT_TYPE:
+                {
+                    const TkJointUpdateEvent* jointEvent = event.getPayload<TkJointUpdateEvent>();  // Joint update event payload
     
-    				// Joint events have three subtypes, see which one we have
-    				switch (jointEvent->subtype)
-    				{
-    				case TkJointUpdateEvent::External:
-    					myCreateJointFunction(jointEvent->joint);	// An internal joint has been "exposed" (now joins two different actors).  Create a physics joint.
-    					break;
-    				case TkJointUpdateEvent::Changed:
-    					myUpdatejointFunction(jointEvent->joint);	// A joint's actors have changed, so we need to update its corresponding physics joint.
-    					break;
-    				case TkJointUpdateEvent::Unreferenced:
-    					myDestroyJointFunction(jointEvent->joint);	// This joint is no longer referenced, so we may delete the corresponding physics joint.
-    					break;
-    				}
-    			}
+                    // Joint events have three subtypes, see which one we have
+                    switch (jointEvent->subtype)
+                    {
+                    case TkJointUpdateEvent::External:
+                        myCreateJointFunction(jointEvent->joint);   // An internal joint has been "exposed" (now joins two different actors).  Create a physics joint.
+                        break;
+                    case TkJointUpdateEvent::Changed:
+                        myUpdatejointFunction(jointEvent->joint);   // A joint's actors have changed, so we need to update its corresponding physics joint.
+                        break;
+                    case TkJointUpdateEvent::Unreferenced:
+                        myDestroyJointFunction(jointEvent->joint);  // This joint is no longer referenced, so we may delete the corresponding physics joint.
+                        break;
+                    }
+                }
     
-    			// Unhandled:
-    			case TkFractureCommands::EVENT_TYPE:
-    			case TkFractureEvents::EVENT_TYPE:
-    			default:
-    			break;
-    			}
-    		}
-    	}
+                // Unhandled:
+                case TkFractureCommands::EVENT_TYPE:
+                case TkFractureEvents::EVENT_TYPE:
+                default:
+                break;
+                }
+            }
+        }
     };
 
 
@@ -648,7 +648,7 @@ be given whatever listeners the user wishes to attach.  For example,
 
     TkActor* actor = framework->createActor(actorDesc);
     
-    actor->getFamily().addListener(myListener);	//	myListener is an object which implements TkEventListener (see MyActorAndJointListener above, for example)
+    actor->getFamily().addListener(myListener); //  myListener is an object which implements TkEventListener (see MyActorAndJointListener above, for example)
 
 
 Listeners may also be removed from families at any time.
@@ -669,7 +669,7 @@ With an object's GUID, one may look up the object using the TkFramework function
 
 .. code-block:: text
 
-    TkIdentifiable* object = framework->findObjectByID(id);	// id = an NvBlastID GUID
+    TkIdentifiable* object = framework->findObjectByID(id); // id = an NvBlastID GUID
 
 
 If the object is found, a non-NULL pointer will be returned.
@@ -713,13 +713,13 @@ user to write to a (potentially) smaller buffer, iteratively.  For example:
     uint32_t totalFamilyCount = 0;
     do
     {
-    	// Write to a fixed-size buffer
-    	TkIdentifiable* familyBuffer[16];
-    	familiesFound = framework->getObjects(familyBuffer, 16, familyType, totalFamilyCount);
-    	totalFamilyCount += familiesFound;
+        // Write to a fixed-size buffer
+        TkIdentifiable* familyBuffer[16];
+        familiesFound = framework->getObjects(familyBuffer, 16, familyType, totalFamilyCount);
+        totalFamilyCount += familiesFound;
     
-    	// Process the families found so far
-    	myProcessFamiliesFunction(familyBuffer, familiesFound);
+        // Process the families found so far
+        myProcessFamiliesFunction(familyBuffer, familiesFound);
     } while (familiesFound == 16);
 
 
@@ -735,16 +735,16 @@ To use the type interface to identify a class, perhaps after serialization or lo
     
     if (object->getType() == *assetType)
     {
-    	TkAsset* asset = static_cast<TkAsset*>(object);
+        TkAsset* asset = static_cast<TkAsset*>(object);
     
-    	// Process the object as a TkAsset
+        // Process the object as a TkAsset
     }
     if (object->getType() == *familyType)
     else
     {
-    	TkFamily* family = static_cast<TkFamily*>(object);
+        TkFamily* family = static_cast<TkFamily*>(object);
     
-    	// Process the object as a TkFamily
+        // Process the object as a TkFamily
     }
 
 

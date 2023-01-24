@@ -34,7 +34,7 @@
 #include "NvBlastTkFramework.h"
 #include "PxConvexMeshGeometry.h"
 #include "foundation/PxTransform.h"
-#include "NvBlastPreprocessor.h"
+#include "NvPreprocessor.h"
 
 
 // Forward declarations

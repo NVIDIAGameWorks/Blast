@@ -33,7 +33,7 @@
 
 #include "NvBlastTkObject.h"
 
-#include "foundation/PxVec3.h"
+#include "NvVec3.h"
 
 
 namespace Nv
@@ -48,7 +48,7 @@ struct TkJointData
 {
     TkActor*        actors[2];          //!< The TkActor objects joined by the joint
     uint32_t        chunkIndices[2];    //!< The chunk indices within the corresponding TkActor objects joined by the joint.  The indexed chunks will be support chunks.
-    physx::PxVec3   attachPositions[2]; //!< The position of the joint relative to each TkActor
+    nvidia::NvVec3  attachPositions[2]; //!< The position of the joint relative to each TkActor
 };
 
 

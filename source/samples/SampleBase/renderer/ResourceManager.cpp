@@ -26,7 +26,7 @@
 
 
 #include "ResourceManager.h"
-#include "foundation/PxAssert.h"
+#include "PxAssert.h"
 #include "PsString.h"
 #include "Utils.h"
 
@@ -201,7 +201,7 @@ bool ResourceManager::findFile(std::string fileName, const std::vector<const cha
             const uint32_t fileMaxLen = 128;
             char fileNameFull[fileMaxLen] = { 0 };
 
-            physx::shdfnd::snprintf(fileNameFull, fileMaxLen, "%s.%s", fileNameOnly.c_str(), ext);
+            nvidia::shdfnd::snprintf(fileNameFull, fileMaxLen, "%s.%s", fileNameOnly.c_str(), ext);
             if(findFileInDir(fileNameFull, searchDir.path.c_str(), searchDir.recursive, foundPath))
                 return true;
         }

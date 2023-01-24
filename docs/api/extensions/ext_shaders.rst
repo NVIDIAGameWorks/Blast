@@ -11,22 +11,22 @@ For example, one may construct a damage program using the "shear" damage shaders
 
 .. code-block:: text
 
-    	NvBlastDamageProgram damageProgram = { NvBlastExtShearGraphShader, NvBlastExtShearSubgraphShader };
+        NvBlastDamageProgram damageProgram = { NvBlastExtShearGraphShader, NvBlastExtShearSubgraphShader };
 
 
 The appropriate shader ("graph" or "subgraph") will be called for an Actor being processed, along with the Actor's necessary geometry and program parameters. 
 The parameters (NvBlastProgramParams) are set to contain
 
 1. Material, something that describes an Actor properties (e.g. mass, stiffness, fragility) which are not expected to be changed often.
-	
+    
 2. Damage description, something that describes a particular damage event (e.g. position, radius and force of explosion).
 
 For example:
 
 .. code-block:: text
 
-    	NvBlastExtMaterial material = { health, minDamageThreshold, maxDamageThreshold };
-    	NvBlastExtRadialDamageDesc damageDesc = { compressive, posX, posY, posZ, minR, maxR };
+        NvBlastExtMaterial material = { health, minDamageThreshold, maxDamageThreshold };
+        NvBlastExtRadialDamageDesc damageDesc = { compressive, posX, posY, posZ, minR, maxR };
 
 
 When used with TkActor::damage() functions, TkActor will cache the necessary data for deferred processing through TkGroup. This includes accumulating damage requests for
@@ -36,17 +36,17 @@ A Tk layer example follows.
 
 .. code-block:: text
 
-    	tkGroup->addActor(*tkActor);
-    	tkActor->damage(damageProgram, damageDesc0, sizeof(NvBlastExtRadialDamageDesc), &material);
-    	tkActor->damage(damageProgram, damageDesc1, sizeof(NvBlastExtRadialDamageDesc), &material);
-    	tkGroup->process();
+        tkGroup->addActor(*tkActor);
+        tkActor->damage(damageProgram, damageDesc0, sizeof(NvBlastExtRadialDamageDesc), &material);
+        tkActor->damage(damageProgram, damageDesc1, sizeof(NvBlastExtRadialDamageDesc), &material);
+        tkGroup->process();
 
 
 In contrast, the user is responsible for providing all the damage descriptions persisting through the low-level NvBlastActorGenerateFracture call when not using the Tk layer:
 
 .. code-block:: text
 
-    	NvBlastProgramParams programParams = { damageDescs, 2, &material };
-    	NvBlastActorGenerateFracture(commandBuffers, actor, damageProgram, &programParams, nullptr, nullptr);
+        NvBlastProgramParams programParams = { damageDescs, 2, &material };
+        NvBlastActorGenerateFracture(commandBuffers, actor, damageProgram, &programParams, nullptr, nullptr);
 
 

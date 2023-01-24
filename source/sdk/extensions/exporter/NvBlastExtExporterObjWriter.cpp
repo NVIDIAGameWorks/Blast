@@ -27,14 +27,14 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "NvBlastExtExporterObjWriter.h"
-#include <foundation/PxVec3.h>
+#include "NvVec3.h"
 #include <sstream>
 #include "NvBlastExtAuthoringTypes.h"
 #include "NvBlastExtAuthoringMesh.h"
 #include <algorithm>
 
 
-using namespace physx;
+using namespace nvidia;
 using namespace Nv::Blast;
 
 const char* gTexPath = "";

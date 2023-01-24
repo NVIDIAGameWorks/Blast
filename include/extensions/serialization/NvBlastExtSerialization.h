@@ -155,4 +155,4 @@ This uses the global allocator set in NvBlastGlobals.h.
 
 \return a new serialization manager.
 */
-NVBLAST_API Nv::Blast::ExtSerialization*    NvBlastExtSerializationCreate();
+NV_C_API Nv::Blast::ExtSerialization*    NvBlastExtSerializationCreate();

@@ -5,8 +5,8 @@
 #include "NvBlastExtRT.h"
 #include <map>
 
-using physx::PxVec3;
-using physx::PxVec2;
+using nvidia::NvVec3;
+using nvidia::NvVec2;
 
 
 namespace Nv
@@ -123,15 +123,15 @@ namespace Nv
 
         private:
 
-            int32_t computeV03(const PxVec3& point);
-            int32_t computeV30(const PxVec3& point);
+            int32_t computeV03(const NvVec3& point);
+            int32_t computeV30(const NvVec3& point);
 
 
             /**
                 Boolean sub-operations.
             */
-            void computeRetained(const Mesh* mesh, const physx::PxBounds3& bMeshBoudning,
-                int32_t(BooleanToolV2::*computeV3)(const physx::PxVec3&), int32_t btC, int32_t btCI, int32_t parentFacetOffset,
+            void computeRetained(const Mesh* mesh, const nvidia::NvBounds3& bMeshBoudning,
+                int32_t(BooleanToolV2::*computeV3)(const nvidia::NvVec3&), int32_t btC, int32_t btCI, int32_t parentFacetOffset,
                 BooleanToolOutputData* outputData, int32_t threadId, int32_t threadCount,
                 struct FaceOrientation* fo = nullptr, const std::vector<bool>* validAdjacentFacet = nullptr);
 
@@ -207,7 +207,7 @@ namespace Nv
             uint32_t pointIndicesList[1024];
             uint32_t pointCount;
 
-            physx::PxVec2 projectedPointList[1024];
+            nvidia::NvVec2 projectedPointList[1024];
             uint32_t projectedPointCount;
 
             uint32_t visitedFlagValue[1024];

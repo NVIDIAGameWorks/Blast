@@ -30,7 +30,7 @@
 
 
 #include "NvBlastAsset.h"
-#include "NvBlastPreprocessor.h"
+#include "NvPreprocessor.h"
 #include "NvBlastDLink.h"
 #include "NvBlastAtomic.h"
 #include "NvBlastMemory.h"

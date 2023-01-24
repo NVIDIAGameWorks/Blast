@@ -55,7 +55,7 @@ PX_INLINE bool isNull(const ScopedResource<Releasable,Releaser>& p) { return !p;
 
 PX_INLINE bool isNullString(const char* pString)
 {
-    return (nullptr == pString || pString[0] == '\0' || physx::shdfnd::strcmp(pString, "null") == 0);
+    return (nullptr == pString || pString[0] == '\0' || nvidia::shdfnd::strcmp(pString, "null") == 0);
 }
 
 template<class T>
