@@ -98,17 +98,14 @@ windows-x86_64.files = [
     ["**/source/shared/NsFoundation/include/platform/windows/*.*"],
     ["**/bin/NvBlast*.dll"],
     ["**/bin/NvBlast*.lib"],
+    ["**/bin/NvBlast*.pdb"],
+    ["**/bin/NvBlast*.exp"],
 ]
 
 linux-x86_64.files = [
     ["**/include/shared/NvFoundation/platform/unix/*.*"],
     ["**/source/shared/NsFoundation/include/platform/unix/*.*"],
     ["**/bin/*NvBlast*.so"],
-]
-
-windows-x86_64.debug.files = [
-    ["**/NvBlast*.pdb"],
-    ["**/NvBlast*.exp"],
 ]
 
 label_name = false
