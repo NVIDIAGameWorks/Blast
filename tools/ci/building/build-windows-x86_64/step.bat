@@ -5,7 +5,7 @@
 @REM if %errorlevel% neq 0 ( exit /b %errorlevel% )
 
 :: Full rebuild (both debug and release)
-call "%~dp0..\..\..\..\build.bat" -x
+call "%~dp0..\..\..\..\build.bat" -x -rd
 if %errorlevel% neq 0 ( exit /b %errorlevel% )
 
 :: Docs
