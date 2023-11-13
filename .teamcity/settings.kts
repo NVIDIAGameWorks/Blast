@@ -285,6 +285,8 @@ object Master_Publish : BuildType({
 
     buildNumberPattern = "${Master_Building_GenerateBuildNumber.depParamRefs.buildNumber}"
 
+    templates(AbsoluteId("KitExtensionsPublishing"))
+
     vcs {
         root(GitlabMasterOmniverseKitExtensionsKitTemplate)
     }
