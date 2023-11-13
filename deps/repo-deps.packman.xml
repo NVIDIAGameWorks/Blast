@@ -1,16 +1,16 @@
 <project toolsVersion="5.0">
   <dependency name="repo_man" linkPath="../_repo/deps/repo_man">
-    <package name="repo_man" version="1.37.0" />
+    <package name="repo_man" version="1.48.1" />
   </dependency>
   <dependency name="repo_build" linkPath="../_repo/deps/repo_build" tags="non-redist">
-    <package name="repo_build" version="0.44.4" />
+    <package name="repo_build" version="0.55.3" />
   </dependency>
   <!-- PUBLIC_EXCLUDE_BEGIN -->
   <dependency name="repo_package" linkPath="../_repo/deps/repo_package" tags="non-redist">
-    <package name="repo_package" version="5.8.9" />
+    <package name="repo_package" version="5.9.3" />
   </dependency>
   <dependency name="repo_docs" linkPath="../_repo/deps/repo_docs">
-    <package name="repo_docs" version="0.20.3" />
+    <package name="repo_docs" version="0.40.2" />
   </dependency>
   <!-- PUBLIC_EXCLUDE_END -->
 </project>
