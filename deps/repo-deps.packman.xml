@@ -21,8 +21,5 @@
   <dependency name="repo_changelog" linkPath="../_repo/deps/repo_changelog">
     <package name="repo_changelog" version="0.3.21" />
   </dependency>
-  <dependency name="repo_ci" linkPath="../_repo/deps/repo_ci">
-    <package name="repo_ci" version="0.6.1" />
-  </dependency>
   <!-- PUBLIC_EXCLUDE_END -->
 </project>
