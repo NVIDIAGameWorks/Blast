@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.0.6] - 29-May-2024
+
+### Changes
+- Copyright updates.
+
+
 ## [5.0.5] - 10-May-2024
 
 ### Bugfixes
