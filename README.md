@@ -120,3 +120,8 @@ Gallery
 ![Alt text](/images/stress.png?raw=true "Blast Sample: stress solver")
 ### Joints
 ![Alt text](/images/joints.png?raw=true "Blast Sample: joints")
+
+Contributing
+------------
+
+We welcome contributions to the project! Please see the `CONTRIBUTING.md` file for guidelines on how to contribute, including information on the code of conduct, setting up the development environment, submitting pull requests, and reporting issues or requesting features.

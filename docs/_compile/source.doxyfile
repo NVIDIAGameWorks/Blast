@@ -29,3 +29,22 @@ EXTRACT_ALL            = YES
 SORT_MEMBER_DOCS       = YES
 SORT_BRIEF_DOCS        = YES
 SORT_MEMBERS_CTORS_1ST = YES
+
+# Add more detailed documentation for the various components and modules in the repository
+# Ensure that the documentation is up-to-date with the latest changes in the codebase
+# Add usage examples and detailed explanations of the API
+
+# Detailed documentation for components and modules
+# - Low-level API (NvBlast)
+# - High-level API (NvBlastTk)
+# - Extensions (NvBlastExt)
+
+# Usage examples and detailed explanations of the API
+# - How to create and use NvBlast assets
+# - How to apply damage and fracture actors
+# - How to use the toolkit API (NvBlastTk)
+# - How to use the extensions (NvBlastExt)
+
+# Ensure that the documentation is up-to-date with the latest changes in the codebase
+# - Review and update the documentation for all components and modules
+# - Add new documentation for any new features or changes in the codebase
