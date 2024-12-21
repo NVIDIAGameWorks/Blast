@@ -14,7 +14,8 @@
 )
 
 ::Need linux libs, but windows tools, run us again to get the path
-@call "%~dp0buildtools\packman\packman.cmd" pull "%~dp0target_platform_deps.xml" --platform linux --postscript "%~dp0buildtools\cmake_projects_linux_ue4_crosscompile.bat"
+@call "%~dp0buildtools\packman\packman.cmd" pull "%~dp0target_platform_deps.xml" --platform linux
+@call "%~dp0buildtools\cmake_projects_linux_ue4_crosscompile.bat"
 @if %ERRORLEVEL% neq 0 (
     @exit /b %errorlevel%
 ) else (

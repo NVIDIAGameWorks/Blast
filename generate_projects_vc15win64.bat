@@ -11,7 +11,9 @@
 @if %ERRORLEVEL% neq 0 exit /b %errorlevel%
 
 @echo Getting target platform dependencies for win.x86_64.vc150 ...
-@call "%~dp0buildtools\packman\packman.cmd" pull "%~dp0target_platform_deps.xml" --platform win.x86_64.vc150 --postscript "%~dp0buildtools\cmake_projects_vc15win64.bat"
+@call "%~dp0buildtools\packman\packman.cmd" pull "%~dp0target_platform_deps.xml" --platform win.x86_64.vc150
+@call "%~dp0buildtools\cmake_projects_vc15win64.bat"
+
 @if %ERRORLEVEL% neq 0 (
     @exit /b %errorlevel%
 ) else (
