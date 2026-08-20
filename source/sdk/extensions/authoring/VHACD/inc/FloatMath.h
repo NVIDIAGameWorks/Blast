@@ -100,11 +100,11 @@ void  fm_eulerToQuat(const double euler[3],double quat[4]); // convert euler ang
 void  fm_scale(float x,float y,float z,float matrix[16]); // apply scale to the matrix.
 void  fm_scale(double x,double y,double z,double matrix[16]); // apply scale to the matrix.
 
-void  fm_eulerToQuatDX(float x,float y,float z,float quat[4]); // convert euler angles to quaternion using the fucked up DirectX method
-void  fm_eulerToQuatDX(double x,double y,double z,double quat[4]); // convert euler angles to quaternion using the fucked up DirectX method
+void  fm_eulerToQuatDX(float x,float y,float z,float quat[4]); // convert euler angles to quaternion using the DirectX method
+void  fm_eulerToQuatDX(double x,double y,double z,double quat[4]); // convert euler angles to quaternion using the DirectX method
 
-void  fm_eulerToMatrixDX(float x,float y,float z,float matrix[16]); // convert euler angles to quaternion using the fucked up DirectX method.
-void  fm_eulerToMatrixDX(double x,double y,double z,double matrix[16]); // convert euler angles to quaternion using the fucked up DirectX method.
+void  fm_eulerToMatrixDX(float x,float y,float z,float matrix[16]); // convert euler angles to quaternion using the DirectX method.
+void  fm_eulerToMatrixDX(double x,double y,double z,double matrix[16]); // convert euler angles to quaternion using the DirectX method.
 
 void  fm_quatToMatrix(const float quat[4],float matrix[16]); // convert quaterinion rotation to matrix, translation set to zero.
 void  fm_quatToMatrix(const double quat[4],double matrix[16]); // convert quaterinion rotation to matrix, translation set to zero.

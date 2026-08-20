@@ -623,7 +623,7 @@ void  fm_matrixMultiply(const REAL *pA,const REAL *pB,REAL *pM)
 }
 
 
-void  fm_eulerToQuatDX(REAL x,REAL y,REAL z,REAL *quat) // convert euler angles to quaternion using the fucked up DirectX method
+void  fm_eulerToQuatDX(REAL x,REAL y,REAL z,REAL *quat) // convert euler angles to quaternion using the DirectX method
 {
   REAL matrix[16];
   fm_eulerToMatrix(x,y,z,matrix);
@@ -631,7 +631,7 @@ void  fm_eulerToQuatDX(REAL x,REAL y,REAL z,REAL *quat) // convert euler angles 
 }
 
 // implementation copied from: http://blogs.msdn.com/mikepelton/archive/2004/10/29/249501.aspx
-void  fm_eulerToMatrixDX(REAL x,REAL y,REAL z,REAL *matrix) // convert euler angles to quaternion using the fucked up DirectX method.
+void  fm_eulerToMatrixDX(REAL x,REAL y,REAL z,REAL *matrix) // convert euler angles to quaternion using the DirectX method.
 {
   fm_identity(matrix);
   matrix[0*4+0] = (REAL)(cos(z)*cos(y) + sin(z)*sin(x)*sin(y));

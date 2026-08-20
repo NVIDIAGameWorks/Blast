@@ -50,7 +50,7 @@ bool AssetDTO::serialize(Nv::Blast::Serialization::Asset::Builder builder, const
 
     builder.setChunkCount(poco->m_chunkCount);
 
-    NVBLAST_ASSERT_WITH_MESSAGE(builder.getChunkCount() == poco->m_chunkCount, "WTF");
+    NVBLAST_ASSERT_WITH_MESSAGE(builder.getChunkCount() == poco->m_chunkCount, "Inconsistent chunk count!");
 
     for (uint32_t i = 0; i < poco->m_chunkCount; i++)
     {
@@ -59,7 +59,7 @@ bool AssetDTO::serialize(Nv::Blast::Serialization::Asset::Builder builder, const
         NvBlastChunkDTO::serialize(chunks[i], &chunk);
     }
 
-    NVBLAST_ASSERT_WITH_MESSAGE(builder.getChunkCount() == poco->m_chunkCount, "WTF");
+    NVBLAST_ASSERT_WITH_MESSAGE(builder.getChunkCount() == poco->m_chunkCount, "WTInconsistent chunk count!F");
 
     capnp::List<Nv::Blast::Serialization::NvBlastBond>::Builder bonds = builder.initBonds(poco->m_bondCount);
 
