@@ -27,8 +27,11 @@
 
 #include "BlastModel.h"
 
+#pragma warning(push)
+#pragma warning(disable:4706)
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
+#pragma warning(pop)
 #include "NvBlastExtExporter.h"
 #include "NvBlastGlobals.h"
 
@@ -190,23 +193,16 @@ BlastModelPtr BlastModel::loadFromFileTinyLoader(const char* path)
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> mats;
     std::string err;
-    std::string mtlPath;
-    for (size_t i = strnlen(path, 255) - 1; i >= 0; --i)
-    {
-        if (path[i] == '\\')
-        {
-            mtlPath.resize(i + 2, 0);
-            strncpy(&mtlPath[0], path, i + 1);
-            break;
-        }
-    }
+    const std::string filename(path);
+    const size_t separator = filename.find_last_of("\\/");
+    const std::string mtlPath = separator == std::string::npos ? std::string() : filename.substr(0, separator + 1);
 
 
     bool ret = tinyobj::LoadObj(shapes, mats, err, path, mtlPath.data());
 
     // can't load?
     if (!ret)
-        return false;
+        return nullptr;
 
     // one submodel per material
     uint32_t materialsCount = (uint32_t)mats.size();

@@ -87,12 +87,12 @@ struct PxQuat
 
 struct PxMeshScale
 {
-    scale @0 :TK.PxVec3;
+    scale @0 :TK.NvVec3;
     rotation @1 :PxQuat;
 }
 
 struct PxTransform
 {
     q @0 :PxQuat;
-    p @1 :TK.PxVec3;
+    p @1 :TK.NvVec3;
 }

@@ -65,7 +65,7 @@ public:
         return PxMat44(m_transform) * PxMat44(PxVec4(m_scale, 1));
     }
 
-    void setTransform(PxTransform& transform)
+    void setTransform(const PxTransform& transform)
     {
         m_transform = transform;
     }

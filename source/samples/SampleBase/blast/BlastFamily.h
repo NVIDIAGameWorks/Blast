@@ -32,6 +32,7 @@
 #include "NvBlastExtPxListener.h"
 #include "NvBlastExtPxStressSolver.h"
 #include "NvBlastExtDamageShaders.h"
+#include "foundation/PxTransform.h"
 #include <functional>
 #include <set>
 
@@ -50,7 +51,6 @@ class ExtPxManager;
 namespace physx
 {
 class PxGeometry;
-class PxTransform;
 }
 
 

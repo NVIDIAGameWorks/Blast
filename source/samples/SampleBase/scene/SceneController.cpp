@@ -46,7 +46,6 @@
 
 #include "PxRigidDynamic.h"
 #include <PsFastXml.h>
-#include "PxInputDataFromPxFileBuf.h"
 
 #include <algorithm>
 #include <imgui.h>
@@ -192,7 +191,7 @@ public:
                 ImVec4 color = m_assets[i]->getUIColor();
                 color.w = color.w * (m_assets[i]->isLoaded() ? 1.0f : 0.5f);
                 ImGui::PushStyleColor(ImGuiCol_Text, color);
-                if (ImGui::Selectable(m_assets[i]->getName(), m_lastSpawnedAsset == i))
+                if (ImGui::Selectable(m_assets[i]->getName(), m_lastSpawnedAsset == static_cast<int>(i)))
                 {
                     m_lastSpawnedAsset = i;
                     if (mode == 0)
@@ -759,7 +758,7 @@ public:
         spawn();
     }
 
-    SingleSceneActor::~SingleSceneActor()
+    ~SingleSceneActor()
     {
         remove();
     }
@@ -849,7 +848,7 @@ public:
         spawn();
     }
 
-    CompositeSceneActor::~CompositeSceneActor()
+    ~CompositeSceneActor()
     {
         remove();
     }
@@ -979,7 +978,8 @@ private:
             TkJointDesc jointDesc;
             for (char k = 0; k < 2; ++k)
             {
-                jointDesc.attachPositions[k] = joint.attachPositions[k];
+                const PxVec3& position = joint.attachPositions[k];
+                jointDesc.attachPositions[k] = nvidia::NvVec3(position.x, position.y, position.z);
                 jointDesc.chunkIndices[k] = joint.chunkIndices[k];
                 jointDesc.families[k] = (joint.assetIndices[k] < 0) ? nullptr :  &m_actors[joint.assetIndices[k]].actor->getFamily()->getTkFamily();
             }
@@ -1020,7 +1020,7 @@ public:
     {
     }
 
-    PhysXSceneActor::~PhysXSceneActor()
+    ~PhysXSceneActor()
     {
         m_physXController.removePhysXPrimitive(m_actor);
     }
@@ -1070,7 +1070,7 @@ void CompositeSceneAsset::spawn(PxVec3 shift)
 //                                              PackmanConfigParser
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class PackmanConfigParser : public nvidia::shdfnd::FastXml::Callback
+class PackmanConfigParser : public physx::shdfnd::FastXml::Callback
 {
 public:
     std::vector<std::pair<std::string, std::string>> dependencies;
@@ -1091,7 +1091,7 @@ protected:
     // return true to continue processing the XML document, false to skip.
     virtual bool processElement(const char* elementName, // name of the element
         const char* elementData, // element data, null if none
-        const nvidia::shdfnd::FastXml::AttributePairs& attr,
+        const physx::shdfnd::FastXml::AttributePairs& attr,
         int /*lineno*/) // line number in the source XML file
     {
         if (::strcmp(elementName, "dependency") == 0)

@@ -33,6 +33,7 @@
 #if NV_VC && NV_VC < 14
 #pragma warning(disable : 4702)
 #endif
+#include <cmath>
 #include <queue>
 #include <vector>
 #include <map>

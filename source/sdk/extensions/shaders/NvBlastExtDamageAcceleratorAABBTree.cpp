@@ -29,6 +29,7 @@
 #include "NvBlastAssert.h"
 #include "NvVec4.h"
 #include <algorithm>
+#include <cmath>
 
 using namespace nvidia;
 

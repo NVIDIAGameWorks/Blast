@@ -27,9 +27,10 @@
 
 #include "ResourceManager.h"
 #include "PxAssert.h"
-#include "PsString.h"
 #include "Utils.h"
 
+#include <cstdio>
+#include <cstring>
 #include <windows.h>
 
 
@@ -154,7 +155,7 @@ bool ResourceManager::findFileInDir(std::string fileNameFull, const char* path, 
 {
     WIN32_FIND_DATAA ffd;
     char tmp[PATH_MAX_LEN];
-    shdfnd::snprintf(tmp, sizeof(tmp), "%s\\*", path);
+    std::snprintf(tmp, sizeof(tmp), "%s\\*", path);
     HANDLE hFind = FindFirstFileA(tmp, &ffd);
 
     if(INVALID_HANDLE_VALUE == hFind)
@@ -164,18 +165,18 @@ bool ResourceManager::findFileInDir(std::string fileNameFull, const char* path, 
 
     do
     {
-        if (0 == shdfnd::strcmp(".", ffd.cFileName) || 0 == shdfnd::strcmp("..", ffd.cFileName))
+        if (0 == std::strcmp(".", ffd.cFileName) || 0 == std::strcmp("..", ffd.cFileName))
             continue;
 
         if(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
         {
-            shdfnd::snprintf(tmp, sizeof(tmp), "%s\\%s", path, ffd.cFileName);
+            std::snprintf(tmp, sizeof(tmp), "%s\\%s", path, ffd.cFileName);
             if(findFileInDir(fileNameFull, tmp, recursive, foundPath))
                 return true;
         }
-        else if (shdfnd::stricmp(ffd.cFileName, fileNameFull.c_str()) == 0)
+        else if (_stricmp(ffd.cFileName, fileNameFull.c_str()) == 0)
         {
-            shdfnd::snprintf(foundPath, PATH_MAX_LEN, "%s\\%s", path, ffd.cFileName);
+            std::snprintf(foundPath, PATH_MAX_LEN, "%s\\%s", path, ffd.cFileName);
             return true;
         }
     } while(FindNextFileA(hFind, &ffd) != 0);
@@ -201,7 +202,7 @@ bool ResourceManager::findFile(std::string fileName, const std::vector<const cha
             const uint32_t fileMaxLen = 128;
             char fileNameFull[fileMaxLen] = { 0 };
 
-            nvidia::shdfnd::snprintf(fileNameFull, fileMaxLen, "%s.%s", fileNameOnly.c_str(), ext);
+            std::snprintf(fileNameFull, fileMaxLen, "%s.%s", fileNameOnly.c_str(), ext);
             if(findFileInDir(fileNameFull, searchDir.path.c_str(), searchDir.recursive, foundPath))
                 return true;
         }

@@ -131,7 +131,11 @@ ExtPxStressSolverImpl::ExtPxStressSolverImpl(ExtPxFamily& family, ExtStressSolve
             localPos = PxVec3(PxZero);
             isChunkStatic = true;
         }
-        m_solver->setNodeInfo(node0, mass, volume, fromPxShared(localPos), isChunkStatic);
+        if (isChunkStatic)
+        {
+            mass = 0.0f;
+        }
+        m_solver->setNodeInfo(node0, mass, volume, fromPxShared(localPos));
     }
 #else
     m_solver->setAllNodesInfoFromLL();
@@ -197,11 +201,15 @@ void ExtPxStressSolverImpl::update(bool doDamage)
 
     if (doDamage && m_solver->getOverstressedBondCount() > 0)
     {
-        NvBlastFractureBuffers commands;
-        m_solver->generateFractureCommands(commands);
-        if (commands.bondFractureCount > 0)
+        for (auto it = m_actors.getIterator(); !it.done(); ++it)
         {
-            m_family.getTkFamily().applyFracture(&commands);
+            const ExtPxActor* actor = *it;
+            NvBlastFractureBuffers commands;
+            m_solver->generateFractureCommands(*actor->getTkActor().getActorLL(), commands);
+            if (commands.bondFractureCount > 0)
+            {
+                m_family.getTkFamily().applyFracture(&commands);
+            }
         }
     }
 }

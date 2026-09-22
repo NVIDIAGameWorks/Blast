@@ -32,7 +32,7 @@
 #include <Windows.h>
 
 
-#define DEFAULT_ASSET_LIST "assets.xml"
+#define DEFAULT_ASSET_LIST "resources/configs/assets.xml"
 
 struct TCLAPvec3
 {
@@ -106,9 +106,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     cmd.add(positionArg);
 
 
-    PxVec3 transform;
-    bool addedExternalAsset = false;
-
     std::vector<string> argsVect;
     if (argc > 1)
     {
@@ -123,7 +120,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     LocalFree(argv);
 
     SampleConfig config;
-    config.assetsFile = inpXmlArg.getValue();
     config.sampleName = L"Blast Sample: Asset Viewer";
 
     config.assetsFile = inpXmlArg.getValue();

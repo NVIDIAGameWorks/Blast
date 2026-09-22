@@ -29,13 +29,12 @@
 #include "NvBlastExtTkSerializerRAW.h"
 #include "NvBlastExtPxAsset.h"
 #include "NvBlastTkAsset.h"
-#include "physics/NvBlastExtPxAssetImpl.h"
+#include "NvBlastExtPxAssetImpl.h"
 #include "NvBlastIndexFns.h"
 #include "NvBlastAssert.h"
 #include "NvBlastExtSerializationInternal.h"
 
 #include "PxPhysics.h"
-#include "PsMemoryBuffer.h"
 #include "PxIO.h"
 
 
@@ -77,37 +76,21 @@ struct ExtPxSerializationLegacyAssetVersion
 //                                          Helpers/Wrappers
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class FileBufToPxInputStream final : public PxInputStream
+class ExtIStreamToPxInputStream final : public PxInputStream
 {
 public:
-    FileBufToPxInputStream(PxFileBuf& filebuf) : m_filebuf(filebuf) {}
+    ExtIStreamToPxInputStream(ExtIStream& stream) : m_stream(stream) {}
 
-    virtual uint32_t read(void* dest, uint32_t count)
+    virtual uint32_t read(void* dest, uint32_t count) override
     {
-        return m_filebuf.read(dest, count);
+        const size_t bytesToRead = m_stream.left() < count ? m_stream.left() : count;
+        return m_stream.read(dest, bytesToRead) ? static_cast<uint32_t>(bytesToRead) : 0;
     }
 
 private:
-    FileBufToPxInputStream& operator=(const FileBufToPxInputStream&);
+    ExtIStreamToPxInputStream& operator=(const ExtIStreamToPxInputStream&);
 
-    PxFileBuf& m_filebuf;
-};
-
-
-class FileBufToPxOutputStream final : public PxOutputStream
-{
-public:
-    FileBufToPxOutputStream(PxFileBuf& filebuf) : m_filebuf(filebuf) {}
-
-    virtual uint32_t write(const void* src, uint32_t count) override
-    {
-        return m_filebuf.write(src, count);
-    }
-
-private:
-    FileBufToPxOutputStream& operator=(const FileBufToPxOutputStream&);
-
-    PxFileBuf& m_filebuf;
+    ExtIStream& m_stream;
 };
 
 
@@ -167,10 +150,8 @@ ExtPxAsset* deserializeExtPxAsset(ExtIStream& stream, TkFramework& framework, ph
         stream >> convexReuseIndex;
         if (isInvalidIndex(convexReuseIndex))
         {
-            physx::PsMemoryBuffer memBuf(stream.view(), stream.left());
-            FileBufToPxInputStream inputStream(memBuf);
+            ExtIStreamToPxInputStream inputStream(stream);
             subchunk.geometry.convexMesh = physics.createConvexMesh(inputStream);
-            stream.advance(memBuf.tellRead());
         }
         else
         {

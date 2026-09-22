@@ -31,7 +31,7 @@
 #include <PxConvexMesh.h>
 #include "PxPhysics.h"
 #include "cooking/PxCooking.h"
-#include <NvBlasPxSharedHelpers.h>
+#include "NvBlastPxSharedHelpers.h"
 #include <vector>
 #include <set>
 
@@ -140,7 +140,7 @@ CollisionHull* ExtPxCollisionBuilderImpl::buildCollisionGeometry(uint32_t vertic
         pd.plane[1] /= scale;
         pd.plane[2] /= scale;
         pd.plane[3] -= (pd.plane[0] * bbCenter.x + pd.plane[1] * bbCenter.y + pd.plane[2] * bbCenter.z);
-        float length = sqrt(pd.plane[0] * pd.plane[0] + pd.plane[1] * pd.plane[1] + pd.plane[2] * pd.plane[2]);
+        float length = PxSqrt(pd.plane[0] * pd.plane[0] + pd.plane[1] * pd.plane[1] + pd.plane[2] * pd.plane[2]);
         pd.plane[0] /= length;
         pd.plane[1] /= length;
         pd.plane[2] /= length;
@@ -212,7 +212,7 @@ void ExtPxCollisionBuilderImpl::buildPhysicsChunks(uint32_t chunkCount, uint32_t
         int32_t end = hullOffsets[i + 1];
         for (int32_t subhull = beg; subhull < end; ++subhull)
         {
-            physicsSubchunks[subhull].transform = physx::PxTransform(physx::);
+            physicsSubchunks[subhull].transform = physx::PxTransform(physx::PxIdentity);
             physicsSubchunks[subhull].geometry  = physx::PxConvexMeshGeometry(
                 reinterpret_cast<physx::PxConvexMesh*>(buildConvexMesh(*hulls[subhull])));
         }

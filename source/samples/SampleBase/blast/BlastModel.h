@@ -31,6 +31,7 @@
 #include "Mesh.h"
 #include <vector>
 #include <memory>
+#include <string>
 
 
 class BlastModel;

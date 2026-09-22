@@ -42,25 +42,61 @@ class DebugRenderBuffer : public PxRenderBuffer
 public:
     ~DebugRenderBuffer() {}
 
-    virtual PxU32 getNbPoints() const { return 0; }
-    virtual const PxDebugPoint* getPoints() const { return nullptr; }
+    virtual PxU32 getNbPoints() const { return static_cast<PxU32>(m_points.size()); }
+    virtual const PxDebugPoint* getPoints() const { return m_points.data(); }
+    virtual void addPoint(const PxDebugPoint& point) { m_points.push_back(point); }
 
     virtual PxU32 getNbLines() const { return static_cast<PxU32>(m_lines.size()); }
     virtual const PxDebugLine* getLines() const { return m_lines.data(); }
-
-    virtual PxU32 getNbTriangles() const { return 0; }
-    virtual const PxDebugTriangle* getTriangles() const { return nullptr; }
-
-    virtual PxU32 getNbTexts() const { return 0; }
-    virtual const PxDebugText* getTexts() const { return nullptr; }
-
-    virtual void append(const PxRenderBuffer& other) {}
-    virtual void clear()
+    virtual void addLine(const PxDebugLine& line) { m_lines.push_back(line); }
+    virtual PxDebugLine* reserveLines(const PxU32 count)
     {
-        m_lines.clear();
+        const size_t offset = m_lines.size();
+        m_lines.resize(offset + count, PxDebugLine(PxVec3(PxZero), PxVec3(PxZero), 0));
+        return count == 0 ? nullptr : m_lines.data() + offset;
+    }
+    virtual PxDebugPoint* reservePoints(const PxU32 count)
+    {
+        const size_t offset = m_points.size();
+        m_points.resize(offset + count, PxDebugPoint(PxVec3(PxZero), 0));
+        return count == 0 ? nullptr : m_points.data() + offset;
     }
 
+    virtual PxU32 getNbTriangles() const { return static_cast<PxU32>(m_triangles.size()); }
+    virtual const PxDebugTriangle* getTriangles() const { return m_triangles.data(); }
+    virtual void addTriangle(const PxDebugTriangle& triangle) { m_triangles.push_back(triangle); }
+
+    virtual void append(const PxRenderBuffer& other)
+    {
+        if (other.getNbPoints() != 0)
+            m_points.insert(m_points.end(), other.getPoints(), other.getPoints() + other.getNbPoints());
+        if (other.getNbLines() != 0)
+            m_lines.insert(m_lines.end(), other.getLines(), other.getLines() + other.getNbLines());
+        if (other.getNbTriangles() != 0)
+            m_triangles.insert(m_triangles.end(), other.getTriangles(), other.getTriangles() + other.getNbTriangles());
+    }
+    virtual void clear()
+    {
+        m_points.clear();
+        m_lines.clear();
+        m_triangles.clear();
+    }
+    virtual void shift(const PxVec3& delta)
+    {
+        for (PxDebugPoint& point : m_points) point.pos += delta;
+        for (PxDebugLine& line : m_lines) { line.pos0 += delta; line.pos1 += delta; }
+        for (PxDebugTriangle& triangle : m_triangles)
+        {
+            triangle.pos0 += delta;
+            triangle.pos1 += delta;
+            triangle.pos2 += delta;
+        }
+    }
+    virtual bool empty() const { return m_points.empty() && m_lines.empty() && m_triangles.empty(); }
+
+    std::vector<PxDebugPoint> m_points;
     std::vector<PxDebugLine> m_lines;
+    std::vector<PxDebugTriangle> m_triangles;
 };
 
 

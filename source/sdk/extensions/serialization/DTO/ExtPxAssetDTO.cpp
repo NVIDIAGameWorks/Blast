@@ -29,7 +29,7 @@
 #include "TkAssetDTO.h"
 #include "ExtPxChunkDTO.h"
 #include "ExtPxSubchunkDTO.h"
-#include "physics/NvBlastExtPxAssetImpl.h"
+#include "NvBlastExtPxAssetImpl.h"
 #include "NvBlastAssert.h"
 #include "NvBlast.h"
 

@@ -38,7 +38,7 @@ using namespace physx;
 
 const float DEGREE_TO_RAD = acos(-1.0) / 180.0;
 
-class AssetListParser : public nvidia::shdfnd::FastXml::Callback
+class AssetListParser : public physx::shdfnd::FastXml::Callback
 {
 public:
     AssetListParser(AssetList& assetList): m_assetList(assetList){}
@@ -68,7 +68,7 @@ protected:
     // return true to continue processing the XML document, false to skip.
     virtual bool processElement(const char* elementName, // name of the element
         const char* elementData, // element data, null if none
-        const nvidia::shdfnd::FastXml::AttributePairs& attr,
+        const physx::shdfnd::FastXml::AttributePairs& attr,
         int /*lineno*/) // line number in the source XML file
     {
         if (::strcmp(elementName, "Model") == 0)
@@ -238,7 +238,7 @@ protected:
     }
 
 private:
-    PxTransform parseTransform(const nvidia::shdfnd::FastXml::AttributePairs& attr)
+    PxTransform parseTransform(const physx::shdfnd::FastXml::AttributePairs& attr)
     {
         PxTransform transform(PxIdentity);
         for (int i = 0; i < attr.getNbAttr(); ++i)
@@ -278,14 +278,13 @@ private:
 
 void parseAssetList(AssetList& assetList, std::string filepath)
 {
-    physx::PsFileBuffer fileBuffer(filepath.c_str(), physx::general_PxIOStream2::PxFileBuf::OPEN_READ_ONLY);
-    if (!fileBuffer.isOpen())
+    PxInputDataFromPxFileBuf inputData(filepath.c_str());
+    if (!inputData.isOpen())
     {
         return;
     }
-    PxInputDataFromPxFileBuf inputData(fileBuffer);
     AssetListParser parser(assetList);
-    nvidia::shdfnd::FastXml* xml = nvidia::shdfnd::createFastXml(&parser);
+    physx::shdfnd::FastXml* xml = physx::shdfnd::createFastXml(&parser);
     xml->processXml(inputData, false);
     xml->release();
 }

@@ -49,7 +49,6 @@
 
 #include "NvBlastTkFramework.h"
 
-#include "PsString.h"
 #include "task/PxTaskManager.h"
 #include "PxDefaultCpuDispatcher.h"
 #include "PxRigidBody.h"
@@ -128,7 +127,7 @@ void BlastController::onSampleStart()
     m_replay = new BlastReplay();
 
     m_taskManager =
-        PxTaskManager::createTaskManager(NvBlastGetPxErrorCallback(), getPhysXController().getCPUDispatcher(), 0);
+        PxTaskManager::createTaskManager(NvBlastGetPxErrorCallback(), getPhysXController().getCPUDispatcher());
 
     TkGroupDesc gdesc;
     gdesc.workerCount = m_taskManager->getCpuDispatcher()->getWorkerCount();
@@ -271,8 +270,10 @@ bool BlastController::stressDamage(ExtPxActor* actor, physx::PxVec3 position, ph
         if (userData)
         {
             ExtPxStressSolver* solver = reinterpret_cast<ExtPxStressSolver*>(userData);
-            solver->getSolver().addForce(*actor->getTkActor().getActorLL(), reinterpret_cast<const NvcVec3&>(position),
-                                         reinterpret_cast<const NvcVec3&>(force * m_impactDamageToStressFactor));
+            const PxVec3 scaledForce = force * m_impactDamageToStressFactor;
+            const NvcVec3 localPosition = { position.x, position.y, position.z };
+            const NvcVec3 localForce = { scaledForce.x, scaledForce.y, scaledForce.z };
+            solver->getSolver().addForce(*actor->getTkActor().getActorLL(), localPosition, localForce);
             return true;
         }
     }
@@ -310,9 +311,12 @@ void BlastController::updateDraggingStress()
                 PxTransform t(pxActor->getPhysXActor().getGlobalPose().getInverse());
                 PxVec3 dragVector  = t.rotate(physxController.getDragVector());
                 const float factor = dragVector.magnitudeSquared() * m_draggingToStressFactor;
+                const PxVec3 normalizedForce = dragVector.getNormalized() * factor;
+                const PxVec3& hookPosition = physxController.getDragActorHookLocalPoint();
+                const NvcVec3 localPosition = { hookPosition.x, hookPosition.y, hookPosition.z };
+                const NvcVec3 localForce = { normalizedForce.x, normalizedForce.y, normalizedForce.z };
                 solver->getSolver().addForce(*pxActor->getTkActor().getActorLL(),
-                                             reinterpret_cast<const NvcVec3&>(physxController.getDragActorHookLocalPoint()),
-                                             reinterpret_cast<const NvcVec3&>(dragVector.getNormalized() * factor));
+                                             localPosition, localForce);
             }
         }
     }

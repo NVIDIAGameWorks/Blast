@@ -32,6 +32,8 @@
 #include "NvCMath.h"
 #include "NvBlastAssert.h"
 
+#include <cmath>
+
 
 namespace Nv {
 namespace Blast{

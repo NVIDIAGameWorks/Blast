@@ -183,8 +183,12 @@ void ExtImpactDamageManagerImpl::onContact(const PxContactPairHeader& pairHeader
         return;
     }
 
-    PxRigidActor* rigidActor0 = pairHeader.actors[0];
-    PxRigidActor* rigidActor1 = pairHeader.actors[1];
+    PxRigidActor* rigidActor0 = pairHeader.actors[0]->is<PxRigidActor>();
+    PxRigidActor* rigidActor1 = pairHeader.actors[1]->is<PxRigidActor>();
+    if (rigidActor0 == nullptr || rigidActor1 == nullptr)
+    {
+        return;
+    }
 
     ExtPxActor* actors[2];
 

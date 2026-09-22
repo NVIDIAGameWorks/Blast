@@ -32,6 +32,7 @@
 #define NVBLASTEXTIMPACTDAMAGEMANAGER_H
 
 #include "PxFiltering.h"
+#include "foundation/PxVec3.h"
 #include "NvPreprocessor.h"
 
 // Forward declarations

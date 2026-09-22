@@ -30,4 +30,4 @@
 #include "NvBlastExtTkSerialization-capn.h"
 #include "PxVec3.h"
 
-DTO_CLASS(PxVec3, physx::PxVec3, Nv::Blast::Serialization::PxVec3)
+DTO_CLASS(PxVec3, physx::PxVec3, Nv::Blast::Serialization::NvVec3)

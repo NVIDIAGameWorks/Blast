@@ -43,6 +43,7 @@
 #include "simd/simd_device_query.h"
 
 #include <algorithm>
+#include <cmath>
 
 #define USE_SCALAR_IMPL 0
 #define WARM_START 1

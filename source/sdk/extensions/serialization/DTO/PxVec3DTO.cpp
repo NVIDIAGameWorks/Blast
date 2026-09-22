@@ -33,7 +33,7 @@ namespace Nv
 namespace Blast
 {
 
-bool PxVec3DTO::serialize(Nv::Blast::Serialization::PxVec3::Builder builder, const physx::PxVec3 * poco)
+bool PxVec3DTO::serialize(Nv::Blast::Serialization::NvVec3::Builder builder, const physx::PxVec3 * poco)
 {
     NVBLAST_ASSERT(poco != nullptr);
 
@@ -44,14 +44,14 @@ bool PxVec3DTO::serialize(Nv::Blast::Serialization::PxVec3::Builder builder, con
     return true;
 }
 
-physx::PxVec3* PxVec3DTO::deserialize(Nv::Blast::Serialization::PxVec3::Reader reader)
+physx::PxVec3* PxVec3DTO::deserialize(Nv::Blast::Serialization::NvVec3::Reader reader)
 {
     //TODO: Allocate using ExtContext and return
     NV_UNUSED(reader);
     return nullptr;
 }
 
-bool PxVec3DTO::deserializeInto(Nv::Blast::Serialization::PxVec3::Reader reader, physx::PxVec3* target)
+bool PxVec3DTO::deserializeInto(Nv::Blast::Serialization::NvVec3::Reader reader, physx::PxVec3* target)
 {
     target->x = reader.getX();
     target->y = reader.getY();

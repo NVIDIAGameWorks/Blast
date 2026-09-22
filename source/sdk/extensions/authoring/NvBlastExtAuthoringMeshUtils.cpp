@@ -5,6 +5,7 @@
 #include <NvBlastNvSharedHelpers.h>
 #include <NvCMath.h>
 #include <algorithm>
+#include <cmath>
 
 
 using namespace nvidia;

@@ -1,13 +1,97 @@
 newoption {
     trigger     = "platform-host",
-    description = "(Optional) Specify host platform for cross-compilation"
+    description = "Host platform supplied by repo_build"
+}
+
+newoption {
+    trigger     = "physx-path",
+    value       = "PATH",
+    description = "Path to an unpacked PhysX SDK binary distribution"
+}
+
+newoption {
+    trigger     = "physx-lib-path",
+    value       = "PATH",
+    description = "Path to the PhysX binary directory containing debug and release subdirectories"
+}
+
+newoption {
+    trigger     = "samples",
+    value       = "BOOL",
+    description = "Build the Windows SampleAssetViewer (requires --physx-path)"
 }
 
 -- Include omni.repo.build premake tools
 local repo_build = require('omni/repo/build')
+repo_build.setup_options()
 
 -- Path defines
 local target_deps = "_build/target-deps"
+
+local physxRoot = _OPTIONS["physx-path"]
+local physxLibRoot = _OPTIONS["physx-lib-path"]
+local physxLibraries = {}
+local physxUsesStaticLibraries = false
+local buildSamples = _OPTIONS["samples"] == "1"
+
+if physxRoot then
+    physxRoot = path.getabsolute(physxRoot)
+    if not os.isfile(path.join(physxRoot, "include/PxPhysicsAPI.h")) then
+        error("--physx-path must point to a PhysX SDK distribution containing include/PxPhysicsAPI.h")
+    end
+
+    if physxLibRoot then
+        physxLibRoot = path.getabsolute(physxLibRoot)
+    else
+        local candidates = os.matchdirs(path.join(physxRoot, "bin/*"))
+        if #candidates ~= 1 then
+            error("Unable to select the PhysX binary directory; pass --physx-lib-path explicitly")
+        end
+        physxLibRoot = candidates[1]
+    end
+
+    if not os.isdir(path.join(physxLibRoot, "release")) and not os.isdir(path.join(physxLibRoot, "debug")) then
+        error("The PhysX binary directory must contain a debug or release subdirectory: "..physxLibRoot)
+    end
+
+    local probeDir = path.join(physxLibRoot, "release")
+    if not os.isdir(probeDir) then
+        probeDir = path.join(physxLibRoot, "debug")
+    end
+    local staticLibrary = path.join(probeDir, "PhysX_static_64.lib")
+    if os.target() ~= "windows" then
+        staticLibrary = path.join(probeDir, "libPhysX_static_64.a")
+    end
+
+    if os.isfile(staticLibrary) then
+        physxUsesStaticLibraries = true
+        physxLibraries = {
+            "PhysX_static_64",
+            "PhysXCommon_static_64",
+            "PhysXCooking_static_64",
+            "PhysXExtensions_static_64",
+            "PhysXFoundation_static_64",
+            "PhysXPvdSDK_static_64",
+        }
+    else
+        physxLibraries = {
+            "PhysX_64",
+            "PhysXCommon_64",
+            "PhysXCooking_64",
+            "PhysXExtensions_static_64",
+            "PhysXFoundation_64",
+        }
+    end
+
+    print("PhysX-dependent projects enabled from "..physxRoot)
+end
+
+if buildSamples and not physxRoot then
+    error("--samples requires --physx-path")
+end
+if buildSamples and os.target() ~= "windows" then
+    error("--samples is currently supported only on Windows")
+end
 
 -- Enable /sourcelink flag for VS
 repo_build.enable_vstudio_sourcelink()
@@ -27,6 +111,7 @@ end
 
 function copy_to_file(filePath, newPath)
     local filePathAbs = get_abs_path(filePath)
+    newPath = get_abs_path(newPath)
     local dir = newPath:match("(.*[\\/])")
     if os.target() == "windows" then
         if dir ~= "" then
@@ -71,7 +156,6 @@ premake.override(premake.vstudio.vc2010, "projectReferences", function(base, prj
    end
 end)
 
-local hostDepsDir = "_build/host-deps"
 local targetDepsDir = "_build/target-deps"
 local capnp_gen_path = "source/sdk/extensions/serialization/generated"
 
@@ -79,13 +163,18 @@ local workspace_name = "blast-sdk"
 
 local root = repo_build.get_abs_path(".")
 
--- Copy headers and licenses
-repo_build.prebuild_copy {
+-- Copy headers, licenses, and optional sample resources.
+local prebuildCopies = {
     { "include", "_build/%{platform}/%{config}/"..workspace_name.."/include" },
     { "source/sdk/common", "_build/%{platform}/%{config}/"..workspace_name.."/source/sdk/common" },
     { "source/shared/NsFoundation", "_build/%{platform}/%{config}/"..workspace_name.."/source/shared/NsFoundation" },
     { "PACKAGE-LICENSES", "_build/%{platform}/%{config}/"..workspace_name.."/PACKAGE-LICENSES" }
 }
+if buildSamples then
+    table.insert(prebuildCopies,
+        { "source/samples/resources", "_build/%{platform}/%{config}/"..workspace_name.."/bin/resources" })
+end
+repo_build.prebuild_copy(prebuildCopies)
 
 
 -- Preprocess to generate Cap'n Proto files
@@ -117,12 +206,6 @@ function capn_proto_precompile_step(dirpath, capnp_files)
     end
 end
 
-capn_proto_precompile_step("source/sdk/extensions/serialization", {
-    "NvBlastExtLlSerialization-capn",
-    "NvBlastExtTkSerialization-capn",
-})
-
-
 -- Custom rule for .c++ files
 if os.target() == "linux" then
     rule "c++"
@@ -140,16 +223,8 @@ workspace (workspace_name)
     local workspaceDir = "_compiler/"..targetName
     -- common dir name to store platform specific files
     local platform = "%{cfg.system}-%{cfg.platform}"
-    local targetDependencyPlatform = "%{cfg.system}-%{cfg.platform}";
-    local hostDependencyPlatform = _OPTIONS["platform-host"] or targetDependencyPlatform;
     local sdkTargetDir = "_build/"..platform.."/%{cfg.buildcfg}/%{wks.name}"
     local targetDir = sdkTargetDir.."/bin"
-    -- defining anything related to the VS or SDK version here because they will most likely be changed in the future..
-    local msvcInclude = hostDepsDir.."/msvc/VC/Tools/MSVC/14.16.27023/include"
-    local msvcLibs = hostDepsDir.."/msvc/VC/Tools/MSVC/14.16.27023/lib/onecore/x64"
-    local sdkInclude = { hostDepsDir.."/winsdk/include/winrt", hostDepsDir.."/winsdk/include/um", hostDepsDir.."/winsdk/include/ucrt", hostDepsDir.."/winsdk/include/shared" }
-    local sdkLibs = { hostDepsDir.."/winsdk/lib/ucrt/x64", hostDepsDir.."/winsdk/lib/um/x64" }
-
     location (workspaceDir)
     targetdir (targetDir)
     -- symbolspath ("_build/"..targetName.."/symbols/%{cfg_buildcfg}/%{prj.name}.pdb")
@@ -165,7 +240,7 @@ workspace (workspace_name)
 
     defines { "LOG_COMPONENT=\"%{prj.name}\"" }
 
-    sysincludedirs { targetDepsDir }
+    externalincludedirs { targetDepsDir }
 
     filter { "system:windows" }
         platforms { "x86_64" }
@@ -173,11 +248,6 @@ workspace (workspace_name)
         -- add .editorconfig to all projects so that VS 2017 automatically picks it up
         files {".editorconfig"}
         editandcontinue "Off"
-        bindirs { hostDepsDir.."/msvc/VC/Tools/MSVC/14.16.27023/bin/HostX64/x64", hostDepsDir.."/msvc/MSBuild/15.0/bin", hostDepsDir.."/winsdk/bin/x64" }
-        systemversion "10.0.17763.0"
-        -- this is for the include and libs from the SDK.
-        syslibdirs { msvcLibs, sdkLibs }
-        sysincludedirs { msvcInclude, sdkInclude }
         -- all of our source strings and executable strings are utf8
         buildoptions {"/utf-8", "/bigobj"}
         buildoptions {"/permissive-"}
@@ -195,15 +265,6 @@ workspace (workspace_name)
     filter { "system:linux", "platforms:aarch64" }
         defines { "_GLIBCXX_USE_CXX11_ABI=1" }
         architecture "ARM"
-        local hostDependencyPlatform = _OPTIONS["platform-host"]
-        print(hostDependencyPlatform)
-        -- If cross-compiling, set the toolset explicitly
-        if (localDependencyPlatform and localDependencyPlatform == "linux-x86_64") then
-            local toolchain_path = "_build/host-deps/gcc-x86_64"
-            local toolchain = dofile(toolchain_path .. "/toolchain.lua")
-            use_gcc_local_toolchain(toolchain_path)
-            toolset("gcc-local_9_2_0_arch64")
-        end
     filter { "system:linux" }
         -- defines { "__STDC_FORMAT_MACROS" }
         symbols "On"
@@ -355,6 +416,26 @@ function add_capn_proto_source()
     filter {}
 end
 
+function use_physx()
+    externalincludedirs {
+        path.join(physxRoot, "include"),
+        path.join(physxRoot, "include/common"),
+        path.join(physxRoot, "include/cooking"),
+        path.join(physxRoot, "include/extensions"),
+        path.join(physxRoot, "include/foundation"),
+        path.join(physxRoot, "include/geometry"),
+    }
+    filter { "configurations:debug" }
+        libdirs { path.join(physxLibRoot, "debug") }
+    filter { "configurations:release" }
+        libdirs { path.join(physxLibRoot, "release") }
+    filter {}
+    if physxUsesStaticLibraries then
+        defines { "PX_PHYSX_STATIC_LIB" }
+    end
+    links(physxLibraries)
+end
+
 group "sdk"
     project "NvBlast"
         blast_sdklib_standard_setup("lowlevel")
@@ -437,7 +518,6 @@ group "sdk"
             }
         filter {}
 
-    -- PUBLIC_EXCLUDE_BEGIN
     project "NvBlastExtRT"
         link_dependents({"NvBlast", "NvBlastGlobals"})
         blast_sdklib_standard_setup("extensions/RT")
@@ -458,7 +538,6 @@ group "sdk"
                 "4267", -- conversion from 'size_t' to 'type', possible loss of data
             }
         filter {}
-    -- PUBLIC_EXCLUDE_END
 
     project "NvBlastTk"
         link_dependents({"NvBlast", "NvBlastGlobals"})
@@ -472,6 +551,9 @@ group "sdk"
             "source/shared/NsFileBuffer/include",
             "source/shared/NvTask/include",
         }
+        filter { "system:windows" }
+            links { "Rpcrt4" }
+        filter {}
 
     project "NvBlastExtStress"
         filter { "system:linux"}
@@ -605,7 +687,6 @@ group "sdk"
             ["source/*"] = "source/sdk/extensions/serialization/",
         }
 
-    -- PUBLIC_EXCLUDE_BEGIN
         -- requires FBX SDK.  Original SDK only defined this for Windows
     -- project "NvBlastExtExporter"
     --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtAuthoring"})
@@ -617,92 +698,253 @@ group "sdk"
     --         "source/sdk/globals",
     --     }
 
-        -- NvBlastExtPhysX and NvBlastExtPxSerialization require linking to physx, making them physx version-dependent
-    -- project "NvBlastExtPhysX"
-    --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtShaders", "NvBlastExtStress"})
-    --     blast_sdklib_standard_setup("extensions/physx")
-    --     includedirs {
-    --         "include/lowlevel",
-    --         "include/toolkit",
-    --         "include/globals",
-    --         "include/extensions/authoringCommon",
-    --         "include/extensions/shaders",
-    --         "include/extensions/stress",
-    --         target_deps.."/physxsdk/include",
-    --         target_deps.."/physxsdk/include/extensions",
-    --         target_deps.."/physxsdk/include/geometry",
-    --         target_deps.."/physxsdk/source/include/foundation",
-    --     }
+    if physxRoot then
+        project "NvBlastExtPhysX"
+            link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtShaders", "NvBlastExtStress"})
+            blast_sdklib_standard_setup("extensions/physx")
+            includedirs {
+                "include/lowlevel",
+                "include/toolkit",
+                "include/globals",
+                "include/extensions/authoringCommon",
+                "include/extensions/shaders",
+                "include/extensions/stress",
+                "include/shared/NvFoundation",
+                "source/shared/NsFoundation/include",
+                "source/shared/NvTask/include",
+            }
+            use_physx()
 
-    -- project "NvBlastExtPxSerialization"
-    --     filter { "system:linux"}
-    --         rules { "c++" }
-    --     filter {}
-    --     dependson { "NvBlastExtSerialization", "NvBlastExtTkSerialization" }
-    --     link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtPhysX"})
-    --     blast_sdklib_bare_setup("extensions/serialization")
-    --     defines { "KJ_HEADER_WARNINGS=0"}
-    --     includedirs {
-    --         "source/sdk/extensions/serialization/DTO",
-    --         "include/lowlevel",
-    --         "include/toolkit",
-    --         "include/extensions/physx",
-    --         "source/sdk/lowlevel",
-    --         "source/sdk/extensions/physx",
-    --         "source/sdk/extensions/serialization",
-    --         "source/shared/filebuf/include",
-    --         "include/globals",
-    --         "_build/host-deps/CapnProto/src",
-    --         capnp_gen_path,
-    --         target_deps.."/physxsdk/include",
-    --         target_deps.."/physxsdk/include/cooking",
-    --         target_deps.."/physxsdk/include/extensions",
-    --         target_deps.."/physxsdk/include/geometry",
-    --         target_deps.."/physxsdk/source/include/foundation",
-    --     }
-    --     blast_sdklib_common_files()
-    --     add_files("source/sdk/extensions/serialization",
-    --         {
-    --             "NvBlastExtPxSerialization.cpp",
-    --             "NvBlastExtPxSerializerRAW.cpp",
-    --             "NvBlastExtTkSerializerRAW.cpp",
-    --             "NvBlastExtOutputStream.cpp",
-    --             "NvBlastExtInputStream.cpp",
-    --             "NvBlastExtKJPxOutputStream.cpp",
-    --             "NvBlastExtKJPxInputStream.cpp",
-    --         }
-    --     )
-    --     add_files("source/sdk/extensions/serialization/DTO",
-    --         {
-    --             "AssetDTO.cpp",
-    --             "TkAssetDTO.cpp",
-    --             "ExtPxAssetDTO.cpp",
-    --             "PxVec3DTO.cpp",
-    --             "NvBlastChunkDTO.cpp",
-    --             "NvBlastBondDTO.cpp",
-    --             "NvBlastIDDTO.cpp",
-    --             "TkAssetJointDescDTO.cpp",
-    --             "ExtPxChunkDTO.cpp",
-    --             "ExtPxSubchunkDTO.cpp",
-    --             "PxQuatDTO.cpp",
-    --             "PxTransformDTO.cpp",
-    --             "PxMeshScaleDTO.cpp",
-    --             "PxConvexMeshGeometryDTO.cpp",
-    --         }
-    --     )
-    --     add_capn_proto_source()
-    --     add_files(capnp_gen_path,
-    --         {
-    --             "NvBlastExtLlSerialization-capn.cpp",
-    --             "NvBlastExtTkSerialization-capn.cpp",
-    --             "NvBlastExtPxSerialization-capn.cpp",
-    --         }
-    --     )
-    --     vpaths {
-    --         ["include/*"] = "include/extensions/serialization/",
-    --         ["source/*"] = "source/sdk/extensions/serialization/",
-    --     }
-    -- PUBLIC_EXCLUDE_END
+        project "NvBlastExtPxSerialization"
+            filter { "system:linux"}
+                rules { "c++" }
+            filter {}
+            dependson { "NvBlastExtSerialization", "NvBlastExtTkSerialization" }
+            link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtPhysX"})
+            blast_sdklib_bare_setup("extensions/serialization")
+            defines { "KJ_HEADER_WARNINGS=0"}
+            includedirs {
+                "source/sdk/extensions/serialization/DTO",
+                "include/lowlevel",
+                "include/toolkit",
+                "include/extensions/physx",
+                "source/sdk/lowlevel",
+                "source/sdk/extensions/physx",
+                "source/sdk/extensions/serialization",
+                "include/globals",
+                "_build/host-deps/CapnProto/src",
+                capnp_gen_path,
+                "include/shared/NvFoundation",
+                "source/shared/NsFoundation/include",
+                "source/shared/NsFileBuffer/include",
+                "source/shared/NvTask/include",
+            }
+            blast_sdklib_common_files()
+            add_files("source/sdk/extensions/serialization",
+                {
+                    "NvBlastExtPxSerialization.cpp",
+                    "NvBlastExtPxSerializerRAW.cpp",
+                    "NvBlastExtTkSerializerRAW.cpp",
+                    "NvBlastExtOutputStream.cpp",
+                    "NvBlastExtInputStream.cpp",
+                    "NvBlastExtKJPxOutputStream.cpp",
+                    "NvBlastExtKJPxInputStream.cpp",
+                }
+            )
+            add_files("source/sdk/extensions/serialization/DTO",
+                {
+                    "AssetDTO.cpp",
+                    "TkAssetDTO.cpp",
+                    "ExtPxAssetDTO.cpp",
+                    "PxVec3DTO.cpp",
+                    "NvVec3DTO.cpp",
+                    "NvBlastChunkDTO.cpp",
+                    "NvBlastBondDTO.cpp",
+                    "NvBlastIDDTO.cpp",
+                    "TkAssetJointDescDTO.cpp",
+                    "ExtPxChunkDTO.cpp",
+                    "ExtPxSubchunkDTO.cpp",
+                    "PxQuatDTO.cpp",
+                    "PxTransformDTO.cpp",
+                    "PxMeshScaleDTO.cpp",
+                    "PxConvexMeshGeometryDTO.cpp",
+                }
+            )
+            add_capn_proto_source()
+            add_files(capnp_gen_path,
+                {
+                    "NvBlastExtLlSerialization-capn.c++",
+                    "NvBlastExtTkSerialization-capn.c++",
+                    "NvBlastExtPxSerialization-capn.c++",
+                }
+            )
+            vpaths {
+                ["include/*"] = "include/extensions/serialization/",
+                ["source/*"] = "source/sdk/extensions/serialization/",
+            }
+            use_physx()
+
+        if buildSamples then
+            group "samples"
+
+            project "NvBlastExtExporter"
+                link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtAuthoring"})
+                blast_sdklib_standard_setup("extensions/exporter")
+                includedirs {
+                    "include/lowlevel",
+                    "include/toolkit",
+                    "include/globals",
+                    "include/extensions/authoring",
+                    "include/extensions/authoringCommon",
+                    "source/sdk/extensions/authoringCommon",
+                    "include/shared/NvFoundation",
+                    "source/shared/NsFoundation/include",
+                    targetDepsDir.."/FBXSDK/include",
+                    targetDepsDir.."/tinyObjLoader",
+                }
+                filter { "configurations:debug" }
+                    libdirs { targetDepsDir.."/FBXSDK/lib/vs2015/x64/debug" }
+                filter { "configurations:release" }
+                    libdirs { targetDepsDir.."/FBXSDK/lib/vs2015/x64/release" }
+                filter {}
+                links { "libfbxsdk-md" }
+                filter { "system:windows" }
+                    disablewarnings { "4100", "4244", "4267", "4456", "4706", "4996" }
+                filter {}
+
+            project "SampleBase"
+                kind "StaticLib"
+                location (workspaceDir.."/%{prj.name}")
+                link_dependents({
+                    "NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtShaders",
+                    "NvBlastExtAssetUtils", "NvBlastExtAuthoring", "NvBlastExtExporter",
+                    "NvBlastExtSerialization", "NvBlastExtTkSerialization",
+                    "NvBlastExtPhysX", "NvBlastExtPxSerialization"
+                })
+                files {
+                    "source/samples/SampleBase/**.h",
+                    "source/samples/SampleBase/**.cpp",
+                    "source/shared/utils/AssetGenerator.h",
+                    "source/shared/utils/AssetGenerator.cpp",
+                    targetDepsDir.."/imgui/imgui.cpp",
+                    targetDepsDir.."/imgui/imgui_demo.cpp",
+                    targetDepsDir.."/imgui/imgui_draw.cpp",
+                }
+                includedirs {
+                    "source/samples/SampleBase",
+                    "source/samples/SampleBase/blast",
+                    "source/samples/SampleBase/core",
+                    "source/samples/SampleBase/physx",
+                    "source/samples/SampleBase/renderer",
+                    "source/samples/SampleBase/scene",
+                    "source/samples/SampleBase/ui",
+                    "source/samples/SampleBase/utils",
+                    "source/shared/utils",
+                    "source/sdk/common",
+                    "include/lowlevel",
+                    "include/toolkit",
+                    "include/globals",
+                    "include/extensions/assetutils",
+                    "include/extensions/authoring",
+                    "include/extensions/authoringCommon",
+                    "include/extensions/exporter",
+                    "include/extensions/physx",
+                    "include/extensions/serialization",
+                    "include/extensions/shaders",
+                    "include/extensions/stress",
+                    "include/shared/NvFoundation",
+                    "source/shared/NsFoundation/include",
+                    "source/shared/NsFileBuffer/include",
+                    "source/shared/NvTask/include",
+                    targetDepsDir.."/DXUT/Core",
+                    targetDepsDir.."/DXUT/Optional",
+                    targetDepsDir.."/DirectXTex/include",
+                    targetDepsDir.."/imgui",
+                    targetDepsDir.."/tclap/include",
+                    targetDepsDir.."/tinyObjLoader",
+                    targetDepsDir.."/hbao_plus/include",
+                    targetDepsDir.."/shadow_lib/include",
+                    targetDepsDir.."/FBXSDK/include",
+                    path.join(physxRoot, "source/fastxml/include"),
+                }
+                defines {
+                    "_UNICODE", "UNICODE", "WIN32", "WIN64", "__GFSDK_DX11__",
+                    "_CRT_SECURE_NO_DEPRECATE", "_CRT_NONSTDC_NO_DEPRECATE",
+                    "_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH", "_ALLOW_RUNTIME_LIBRARY_MISMATCH",
+                }
+                disablewarnings {
+                    "4005", "4100", "4127", "4189", "4244", "4245", "4267",
+                    "4305", "4456", "4702", "4996",
+                }
+                use_physx()
+
+            project "SampleAssetViewer"
+                kind "WindowedApp"
+                location (workspaceDir.."/%{prj.name}")
+                debugdir (targetDir)
+                files { "source/samples/SampleAssetViewer/Main.cpp" }
+                includedirs {
+                    "source/samples/SampleBase",
+                    "include/shared/NvFoundation",
+                    targetDepsDir.."/tclap/include",
+                }
+                defines {
+                    "_UNICODE", "UNICODE", "WIN32", "WIN64",
+                    "_CRT_SECURE_NO_DEPRECATE", "_CRT_NONSTDC_NO_DEPRECATE",
+                }
+                link_dependents({
+                    "SampleBase", "NvBlast", "NvBlastGlobals", "NvBlastTk", "NvBlastExtShaders",
+                    "NvBlastExtAssetUtils", "NvBlastExtAuthoring", "NvBlastExtExporter",
+                    "NvBlastExtSerialization", "NvBlastExtTkSerialization",
+                    "NvBlastExtPhysX", "NvBlastExtPxSerialization"
+                })
+                filter { "configurations:debug" }
+                    libdirs {
+                        targetDepsDir.."/DXUT/Core/Bin/dynamiccrt/vs2015/x64/Debug",
+                        targetDepsDir.."/DXUT/Optional/Bin/dynamiccrt/vs2015/x64/Debug",
+                        targetDepsDir.."/DirectXTex/bin/dynamiccrt/vs2015/x64/Debug",
+                        targetDepsDir.."/FBXSDK/lib/vs2015/x64/debug",
+                    }
+                filter { "configurations:release" }
+                    libdirs {
+                        targetDepsDir.."/DXUT/Core/Bin/dynamiccrt/vs2015/x64/Release",
+                        targetDepsDir.."/DXUT/Optional/Bin/dynamiccrt/vs2015/x64/Release",
+                        targetDepsDir.."/DirectXTex/bin/dynamiccrt/vs2015/x64/Release",
+                        targetDepsDir.."/FBXSDK/lib/vs2015/x64/release",
+                    }
+                filter {}
+                libdirs {
+                    targetDepsDir.."/hbao_plus/lib/win64",
+                    targetDepsDir.."/shadow_lib/lib/win64",
+                }
+                links {
+                    "DXUT", "DXUTOpt", "DirectXTex", "libfbxsdk-md",
+                    "GFSDK_SSAO_D3D11.win64", "GFSDK_ShadowLib_DX11.win64",
+                    "d3dcompiler", "d3d11", "dxgi", "comctl32", "xinput9_1_0",
+                    "dinput8", "dxguid", "windowscodecs",
+                }
+                disablewarnings { "4005", "4244", "4267", "4996" }
+                use_physx()
+
+                copy_to_file(targetDepsDir.."/hbao_plus/bin/win64/GFSDK_SSAO_D3D11.win64.dll",
+                    targetDir.."/GFSDK_SSAO_D3D11.win64.dll")
+                copy_to_file(targetDepsDir.."/shadow_lib/bin/win64/GFSDK_ShadowLib_DX11.win64.dll",
+                    targetDir.."/GFSDK_ShadowLib_DX11.win64.dll")
+                filter { "configurations:debug" }
+                    copy_to_file(targetDepsDir.."/FBXSDK/lib/vs2015/x64/debug/libfbxsdk.dll",
+                        targetDir.."/libfbxsdk.dll")
+                    for _, dllPath in ipairs(os.matchfiles(path.join(physxLibRoot, "debug/*.dll"))) do
+                        copy_to_file(dllPath, targetDir.."/"..path.getname(dllPath))
+                    end
+                filter { "configurations:release" }
+                    copy_to_file(targetDepsDir.."/FBXSDK/lib/vs2015/x64/release/libfbxsdk.dll",
+                        targetDir.."/libfbxsdk.dll")
+                    for _, dllPath in ipairs(os.matchfiles(path.join(physxLibRoot, "release/*.dll"))) do
+                        copy_to_file(dllPath, targetDir.."/"..path.getname(dllPath))
+                    end
+                filter {}
+        end
+    end
 
 group "tests"
     project "UnitTests"

@@ -29,6 +29,7 @@
 #define NVBLASTEXTEXPORTERFBXREADER_H
 
 #include <memory>
+#include <string>
 #include "fbxsdk.h"
 #include <vector>
 #include <map>

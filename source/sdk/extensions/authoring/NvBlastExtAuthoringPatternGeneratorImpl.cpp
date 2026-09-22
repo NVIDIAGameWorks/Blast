@@ -38,6 +38,7 @@
 #include "NvBlastExtAuthoringPerlinNoise.h"
 #include <NvBlastNvSharedHelpers.h>
 
+#include <cmath>
 #include <vector>
 
 using namespace Nv::Blast;

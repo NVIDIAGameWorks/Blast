@@ -35,7 +35,6 @@
 
 #include "foundation/PxIO.h"
 #include "PxPhysics.h"
-#include "filebuf/PxFileBuf.h"
 #include "cooking/PxCooking.h"
 
 #include <algorithm>

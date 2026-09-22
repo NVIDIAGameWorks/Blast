@@ -32,7 +32,7 @@
 #include "PxVec3.h"
 
 
-static void ImGui_DragFloat3Dir(const char* label, float v[3])
+inline void ImGui_DragFloat3Dir(const char* label, float v[3])
 {
     if (ImGui::Button("Normalize"))
     {

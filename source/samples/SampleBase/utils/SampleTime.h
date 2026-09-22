@@ -35,19 +35,19 @@ class Time
 public:
     Time() : m_lastTickCount(getTimeTicks()) {}
 
-    double Time::getElapsedSeconds()
+    double getElapsedSeconds()
     {
         const int64_t lastTickCount = m_lastTickCount;
         m_lastTickCount = getTimeTicks();
         return (m_lastTickCount - lastTickCount) * s_secondsPerTick;
     }
 
-    double Time::peekElapsedSeconds() const
+    double peekElapsedSeconds() const
     {
         return (getTimeTicks() - m_lastTickCount) * s_secondsPerTick;
     }
 
-    double Time::getLastTime() const
+    double getLastTime() const
     {
         return m_lastTickCount * s_secondsPerTick;
     }

@@ -36,7 +36,6 @@
 #include "ConvexRenderMesh.h"
 #include "RenderUtils.h"
 #include "SampleProfiler.h"
-#include "NvBlastPxCustomProfiler.h"
 #include "NvBlastPxCallbacks.h"
 
 #include "PxPhysicsVersion.h"
@@ -45,13 +44,12 @@
 #include "PxPhysics.h"
 #include "PxScene.h"
 #include "PxCooking.h"
-#include "PxGpu.h"
+#include "gpu/PxGpu.h"
 #include "PxSimpleFactory.h"
 #include "PxRigidBodyExt.h"
 #include "PxRigidDynamic.h"
 #include "PxRigidStatic.h"
 #include "PxMaterial.h"
-#include "PxFoundationVersion.h"
 #include "PxMath.h"
 
 #include <imgui.h>
@@ -113,12 +111,6 @@ void PhysXController::initPhysX()
 
     m_pvd = PxCreatePvd(*m_foundation);
 
-    // Note - set NvProfilerCallback using NvBlastGlobalSetProfilerCallback
-    static Nv::Blast::ExtCustomProfiler gBlastProfiler;
-    NvBlastProfilerSetCallback(&gBlastProfiler);
-    NvBlastProfilerSetDetail(Nv::Blast::ProfilerDetail::LOW);
-    gBlastProfiler.setPlatformEnabled(false);
-
     PxTolerancesScale scale;
 
     m_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_foundation, scale, true, m_pvd);
@@ -139,11 +131,11 @@ void PhysXController::initPhysX()
     sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
     m_dispatcher = PxDefaultCpuDispatcherCreate(4);
     sceneDesc.cpuDispatcher = m_dispatcher;
-    sceneDesc.gpuDispatcher = m_cudaContext != NULL ? m_cudaContext->getGpuDispatcher() : NULL;
+    sceneDesc.cudaContextManager = m_cudaContext;
     sceneDesc.filterShader = m_filterShader;
     sceneDesc.flags |= PxSceneFlag::eENABLE_STABILIZATION;
     sceneDesc.flags |= PxSceneFlag::eENABLE_PCM;
-    if (sceneDesc.gpuDispatcher == nullptr)
+    if (sceneDesc.cudaContextManager == nullptr)
     {
         m_gpuPhysicsAvailable = false;
         m_useGPUPhysics = false;
@@ -153,12 +145,10 @@ void PhysXController::initPhysX()
         sceneDesc.flags |= PxSceneFlag::eENABLE_GPU_DYNAMICS;
         sceneDesc.broadPhaseType = PxBroadPhaseType::eGPU;
 
-        sceneDesc.gpuDynamicsConfig.constraintBufferCapacity *= 4;
-        sceneDesc.gpuDynamicsConfig.contactBufferCapacity *= 4;
-        sceneDesc.gpuDynamicsConfig.contactStreamSize *= 4;
-        sceneDesc.gpuDynamicsConfig.forceStreamCapacity *= 4;
+        sceneDesc.gpuDynamicsConfig.maxRigidContactCount *= 4;
+        sceneDesc.gpuDynamicsConfig.maxRigidPatchCount *= 4;
+        sceneDesc.gpuDynamicsConfig.heapCapacity *= 4;
         sceneDesc.gpuDynamicsConfig.foundLostPairsCapacity *= 4;
-        sceneDesc.gpuDynamicsConfig.patchStreamSize *= 4;
         sceneDesc.gpuDynamicsConfig.tempBufferCapacity *= 4;
 
     }

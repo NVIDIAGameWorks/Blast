@@ -31,6 +31,7 @@
 #include "SampleManager.h"
 #include <DirectXMath.h>
 #include "DebugRenderBuffer.h"
+#include "PxPhysicsAPI.h"
 #include "PxFiltering.h"
 #include <set>
 #include <map>

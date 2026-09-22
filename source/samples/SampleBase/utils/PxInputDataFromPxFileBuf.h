@@ -28,40 +28,80 @@
 #ifndef PXINPUTDATAFROMPXFILEBUF_H
 #define PXINPUTDATAFROMPXFILEBUF_H
 
-#include <PsFileBuffer.h>
+#include "foundation/PxIO.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <cstring>
+#include <fstream>
+#include <limits>
+#include <vector>
 
 
-// Copied from APEX 
+// In-memory file input compatible with PhysX's public PxInputData API.
 class PxInputDataFromPxFileBuf : public physx::PxInputData
 {
 public:
-    PxInputDataFromPxFileBuf(physx::PxFileBuf& fileBuf) : mFileBuf(fileBuf) {}
+    explicit PxInputDataFromPxFileBuf(const char* path) : mReadPosition(0)
+    {
+        std::ifstream stream(path, std::ios::binary | std::ios::ate);
+        if (!stream)
+        {
+            return;
+        }
+
+        const std::streamoff length = stream.tellg();
+        if (length < 0 || static_cast<uint64_t>(length) > std::numeric_limits<uint32_t>::max())
+        {
+            return;
+        }
+
+        mData.resize(static_cast<size_t>(length));
+        stream.seekg(0, std::ios::beg);
+        if (!mData.empty() && !stream.read(reinterpret_cast<char*>(mData.data()), length))
+        {
+            mData.clear();
+        }
+    }
+
+    bool isOpen() const
+    {
+        return !mData.empty();
+    }
 
     // physx::PxInputData interface
     virtual uint32_t    getLength() const
     {
-        return mFileBuf.getFileLength();
+        return static_cast<uint32_t>(mData.size());
     }
 
     virtual void    seek(uint32_t offset)
     {
-        mFileBuf.seekRead(offset);
+        mReadPosition = std::min(offset, getLength());
     }
 
     virtual uint32_t    tell() const
     {
-        return mFileBuf.tellRead();
+        return mReadPosition;
     }
 
     // physx::PxInputStream interface
     virtual uint32_t read(void* dest, uint32_t count)
     {
-        return mFileBuf.read(dest, count);
+        const uint32_t available = getLength() - mReadPosition;
+        const uint32_t bytesToRead = std::min(count, available);
+        if (bytesToRead != 0)
+        {
+            std::memcpy(dest, mData.data() + mReadPosition, bytesToRead);
+            mReadPosition += bytesToRead;
+        }
+        return bytesToRead;
     }
 
     PX_NOCOPY(PxInputDataFromPxFileBuf)
 private:
-    physx::PxFileBuf& mFileBuf;
+    std::vector<uint8_t> mData;
+    uint32_t mReadPosition;
 };
 
 

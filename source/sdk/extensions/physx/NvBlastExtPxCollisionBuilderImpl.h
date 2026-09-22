@@ -34,7 +34,7 @@
 namespace physx
 {
     class PxCooking;
-    class PxPhysicsInsertionCallback;
+    class PxInsertionCallback;
 }
 namespace Nv
 {
@@ -52,7 +52,7 @@ namespace Nv
         {
         public:
             ExtPxCollisionBuilderImpl(physx::PxCooking* cooking,
-                physx::PxPhysicsInsertionCallback* insertionCallback) : mCooking(cooking), mInsertionCallback(insertionCallback) {}
+                physx::PxInsertionCallback* insertionCallback) : mCooking(cooking), mInsertionCallback(insertionCallback) {}
             virtual ~ExtPxCollisionBuilderImpl() {};
             void release() override;
             CollisionHull* buildCollisionGeometry(uint32_t verticesCount, const NvcVec3* vertexData) override;
@@ -63,7 +63,7 @@ namespace Nv
                 ExtPxChunk* physicsChunks, ExtPxSubchunk* physicsSubchunks) override;
         private:
             physx::PxCooking* mCooking;
-            physx::PxPhysicsInsertionCallback* mInsertionCallback;
+            physx::PxInsertionCallback* mInsertionCallback;
         };
 
     }  // namespace Blast

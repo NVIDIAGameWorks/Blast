@@ -46,7 +46,7 @@ NV_INLINE physx::PxErrorCallback& NvBlastGetPxErrorCallback()
     {
         virtual void reportError(physx::PxErrorCode::Enum code, const char* message, const char* file, int line) override
         {
-            NvBlastGlobalGetErrorCallback()->reportError((Nv::Blast::ErrorCode::Enum)code, message, file, line);
+            NvBlastGlobalGetErrorCallback()->reportError((nvidia::NvErrorCode::Enum)code, message, file, line);
         }
     };
     static PxErrorCallbackWrapper wrapper;

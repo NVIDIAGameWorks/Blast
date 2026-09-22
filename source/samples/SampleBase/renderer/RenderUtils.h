@@ -34,44 +34,44 @@
 #include "PxVec3.h"
 #include "PxVec4.h"
 
-static DirectX::XMFLOAT4 getRandomPastelColor()
+inline DirectX::XMFLOAT4 getRandomPastelColor()
 {
-    float r = ((double)rand() / (RAND_MAX)) * 0.5f + 0.5f;
-    float g = ((double)rand() / (RAND_MAX)) * 0.5f + 0.5f;
-    float b = ((double)rand() / (RAND_MAX)) * 0.5f + 0.5f;
+    float r = static_cast<float>(rand()) / RAND_MAX * 0.5f + 0.5f;
+    float g = static_cast<float>(rand()) / RAND_MAX * 0.5f + 0.5f;
+    float b = static_cast<float>(rand()) / RAND_MAX * 0.5f + 0.5f;
     return DirectX::XMFLOAT4(r, g, b, 1.0f);
 }
 
-static physx::PxMat44 XMMATRIXToPxMat44(const DirectX::XMMATRIX& mat)
+inline physx::PxMat44 XMMATRIXToPxMat44(const DirectX::XMMATRIX& mat)
 {
     physx::PxMat44 m;
     memcpy(const_cast<float*>(m.front()), &mat.r[0], 4 * 4 * sizeof(float));
     return m;
 }
 
-static DirectX::XMMATRIX PxMat44ToXMMATRIX(const physx::PxMat44& mat)
+inline DirectX::XMMATRIX PxMat44ToXMMATRIX(const physx::PxMat44& mat)
 {
     return DirectX::XMMATRIX(mat.front());
 }
 
-static physx::PxVec4 XMVECTORToPxVec4(const DirectX::XMVECTOR& vec)
+inline physx::PxVec4 XMVECTORToPxVec4(const DirectX::XMVECTOR& vec)
 {
     DirectX::XMFLOAT4 f;
     DirectX::XMStoreFloat4(&f, vec);
     return physx::PxVec4(f.x, f.y, f.z, f.w);
 }
 
-static physx::PxVec3 XMFLOAT3ToPxVec3(const DirectX::XMFLOAT3& vec)
+inline physx::PxVec3 XMFLOAT3ToPxVec3(const DirectX::XMFLOAT3& vec)
 {
     return physx::PxVec3(vec.x, vec.y, vec.z);
 }
 
-static physx::PxVec4 XMFLOAT4ToPxVec4(const DirectX::XMFLOAT4& vec)
+inline physx::PxVec4 XMFLOAT4ToPxVec4(const DirectX::XMFLOAT4& vec)
 {
     return physx::PxVec4(vec.x, vec.y, vec.z, vec.w);
 }
 
-static uint32_t XMFLOAT4ToU32Color(const DirectX::XMFLOAT4& color)
+inline uint32_t XMFLOAT4ToU32Color(const DirectX::XMFLOAT4& color)
 {
     uint32_t c = 0;
     c |= (int)(color.w * 255); c <<= 8;
@@ -81,7 +81,7 @@ static uint32_t XMFLOAT4ToU32Color(const DirectX::XMFLOAT4& color)
     return c;
 }
 
-static DirectX::XMFLOAT4 XMFLOAT4Lerp(const DirectX::XMFLOAT4 v0, const DirectX::XMFLOAT4 v1, float val)
+inline DirectX::XMFLOAT4 XMFLOAT4Lerp(const DirectX::XMFLOAT4 v0, const DirectX::XMFLOAT4 v1, float val)
 {
     DirectX::XMFLOAT4 v(
         v0.x * (1 - val) + v1.x * val,

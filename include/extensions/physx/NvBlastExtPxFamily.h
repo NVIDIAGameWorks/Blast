@@ -32,6 +32,8 @@
 #define NVBLASTEXTPXFAMILY_H
 
 #include "PxFiltering.h"
+#include "foundation/PxTransform.h"
+#include "foundation/PxVec3.h"
 
 
 // Forward declarations
@@ -40,7 +42,6 @@ namespace physx
 class PxRigidDynamic;
 class PxMaterial;
 class PxScene;
-class PxTransform;
 }
 
 struct NvBlastExtMaterial;

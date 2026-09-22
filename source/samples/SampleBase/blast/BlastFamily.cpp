@@ -229,10 +229,9 @@ void BlastFamily::drawUI()
         // Settings
         bool changed = false;
         
-        changed |= ImGui::DragInt("Bond Iterations Per Frame", (int*)&m_settings.stressSolverSettings.bondIterationsPerFrame, 100, 0, 500000);
-        changed |= ImGui::DragFloat("Material Hardness", &m_settings.stressSolverSettings.hardness, 10.0f, 0.01f, 100000.0f, "%.2f");
-        changed |= ImGui::DragFloat("Stress Linear Factor", &m_settings.stressSolverSettings.stressLinearFactor, 0.01f, 0.0f, 100.0f, "%.2f");
-        changed |= ImGui::DragFloat("Stress Angular Factor", &m_settings.stressSolverSettings.stressAngularFactor, 0.01f, 0.0f, 100.0f, "%.2f");
+        changed |= ImGui::DragInt("Max Solver Iterations Per Frame", (int*)&m_settings.stressSolverSettings.maxSolverIterationsPerFrame, 1, 1, 500000);
+        changed |= ImGui::DragFloat("Compression Elastic Limit", &m_settings.stressSolverSettings.compressionElasticLimit, 0.01f, 0.0f, 100000.0f, "%.2f");
+        changed |= ImGui::DragFloat("Compression Fatal Limit", &m_settings.stressSolverSettings.compressionFatalLimit, 0.01f, 0.0f, 100000.0f, "%.2f");
         changed |= ImGui::SliderInt("Graph Reduction Level", (int*)&m_settings.stressSolverSettings.graphReductionLevel, 0, 32);
         if (changed)
         {
@@ -258,7 +257,7 @@ void BlastFamily::drawStatsUI()
         const float errorAngular = stressSolver.getStressErrorAngular();
 
         ImGui::Text("Stress Bond Count:               %d", stressSolver.getBondCount());
-        ImGui::Text("Stress Frame Iter:               %d", stressSolver.getIterationsPerFrame());
+        ImGui::Text("Stress Max Iter/Frame:            %d", stressSolver.getSettings().maxSolverIterationsPerFrame);
         ImGui::Text("Stress Frames:                   %d", stressSolver.getFrameCount());
         ImGui::Text("Stress Error Lin / Ang:          %.4f / %.4f", errorLinear, errorAngular);
         ImGui::Text("Stress Solve Time:               %.3f ms", m_stressSolveTime * 1000);

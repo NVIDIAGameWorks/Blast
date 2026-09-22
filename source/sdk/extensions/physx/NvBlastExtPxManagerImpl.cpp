@@ -107,8 +107,8 @@ bool ExtPxManagerImpl::createJoint(TkJoint& joint)
             }
             return false;
         }
-        PxTransform lf0(data.attachPositions[0]);
-        PxTransform lf1(data.attachPositions[1]);
+        PxTransform lf0(PxVec3(data.attachPositions[0].x, data.attachPositions[0].y, data.attachPositions[0].z));
+        PxTransform lf1(PxVec3(data.attachPositions[1].x, data.attachPositions[1].y, data.attachPositions[1].z));
         PxJoint* pxJoint = m_createJointFn(pxActor0,  lf0, pxActor1, lf1, m_physics, joint);
         if (pxJoint)
         {
@@ -151,8 +151,8 @@ void ExtPxManagerImpl::updateJoint(TkJoint& joint)
     {
         ExtPxActorImpl* pxActor0 = data.actors[0] != nullptr ? reinterpret_cast<ExtPxActorImpl*>(data.actors[0]->userData) : nullptr;
         ExtPxActorImpl* pxActor1 = data.actors[1] != nullptr ? reinterpret_cast<ExtPxActorImpl*>(data.actors[1]->userData) : nullptr;
-        PxTransform lf0(data.attachPositions[0]);
-        PxTransform lf1(data.attachPositions[1]);
+        PxTransform lf0(PxVec3(data.attachPositions[0].x, data.attachPositions[0].y, data.attachPositions[0].z));
+        PxTransform lf1(PxVec3(data.attachPositions[1].x, data.attachPositions[1].y, data.attachPositions[1].z));
         PxJoint* pxJoint = m_createJointFn(pxActor0, lf0, pxActor1, lf1, m_physics, joint);
         if (pxJoint)
         {
