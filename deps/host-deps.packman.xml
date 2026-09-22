@@ -1,6 +1,8 @@
 <project toolsVersion="6.11">
   <dependency name="premake" linkPath="../_build/host-deps/premake">
-    <package name="premake" version="5.0.0-beta2+nv1-${platform}" platforms="windows-x86_64 linux-x86_64 linux-aarch64" />
+    <package name="premake" version="5.0.0-beta4-utf8-fix-1-windows-x86_64-release" platforms="windows-x86_64" />
+    <package name="premake" version="5.0.0-beta4-utf8-fix-1-manylinux_2_35_x86_64-release" platforms="linux-x86_64" />
+    <package name="premake" version="5.0.0-beta4-utf8-fix-1-manylinux_2_35_aarch64-release" platforms="linux-aarch64" />
   </dependency>
   <dependency name="CapnProto" linkPath="../_build/host-deps/CapnProto">
     <package name="CapnProto" version="0.6.1.4" platforms="windows-x86_64 linux-x86_64" />
