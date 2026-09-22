@@ -31,6 +31,7 @@
 #include "Renderer.h"
 #include "PhysXController.h"
 #include "SampleProfiler.h"
+#include "PxAssert.h"
 
 #include <imgui.h>
 

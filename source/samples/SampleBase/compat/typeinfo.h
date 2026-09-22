@@ -22,45 +22,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2024 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2026 NVIDIA Corporation. All rights reserved.
 
+#ifndef NVBLAST_SAMPLE_TYPEINFO_COMPAT_H
+#define NVBLAST_SAMPLE_TYPEINFO_COMPAT_H
 
-#include "Renderable.h"
-#include "Renderer.h"
-#include "RenderUtils.h"
-#include "PxAssert.h"
+// Legacy PhysX 4.1 headers include the pre-standard Microsoft header
+// <typeinfo.h>. Modern MSVC provides the standard C++ header instead.
+#include <typeinfo>
 
-const DirectX::XMFLOAT4 DEFAULT_COLOR(0.5f, 0.5f, 0.5f, 1.0f);
-
-Renderable::Renderable(IRenderMesh& mesh, RenderMaterial& material) : m_mesh(mesh), m_scale(1, 1, 1), m_color(DEFAULT_COLOR), m_hidden(false), m_transform(PxIdentity)
-{
-    setMaterial(material);
-}
-
-void Renderable::setMaterial(RenderMaterial& material)
-{
-    m_materialInstance = material.getMaterialInstance(&m_mesh);
-}
-
-void Renderable::render(Renderer& renderer, bool depthStencilOnly) const
-{
-    if (!m_materialInstance->isValid())
-    {
-        PX_ALWAYS_ASSERT();
-        return;
-    }
-
-    m_materialInstance->bind(*renderer.m_context, 0, depthStencilOnly);
-
-    // setup object CB
-    {
-        D3D11_MAPPED_SUBRESOURCE mappedResource;
-        renderer.m_context->Map(renderer.m_objectCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-        Renderer::CBObject* objectBuffer = (Renderer::CBObject*)mappedResource.pData;
-        objectBuffer->world = PxMat44ToXMMATRIX(getModelMatrix());
-        objectBuffer->color = getColor();
-        renderer.m_context->Unmap(renderer.m_objectCB, 0);
-    }
-
-    m_mesh.render(*renderer.m_context);
-}
+#endif // NVBLAST_SAMPLE_TYPEINFO_COMPAT_H

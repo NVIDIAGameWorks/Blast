@@ -39,6 +39,7 @@
 #include "NvBlastPxCallbacks.h"
 
 #include "PxPhysicsVersion.h"
+#include "PxAssert.h"
 #include "pvd/PxPvdTransport.h"
 #include "PxDefaultCpuDispatcher.h"
 #include "PxPhysics.h"
@@ -145,8 +146,16 @@ void PhysXController::initPhysX()
         sceneDesc.flags |= PxSceneFlag::eENABLE_GPU_DYNAMICS;
         sceneDesc.broadPhaseType = PxBroadPhaseType::eGPU;
 
+#if PX_PHYSICS_VERSION_MAJOR < 5
+        sceneDesc.gpuDynamicsConfig.constraintBufferCapacity *= 4;
+        sceneDesc.gpuDynamicsConfig.contactBufferCapacity *= 4;
+        sceneDesc.gpuDynamicsConfig.contactStreamSize *= 4;
+        sceneDesc.gpuDynamicsConfig.forceStreamCapacity *= 4;
+        sceneDesc.gpuDynamicsConfig.patchStreamSize *= 4;
+#else
         sceneDesc.gpuDynamicsConfig.maxRigidContactCount *= 4;
         sceneDesc.gpuDynamicsConfig.maxRigidPatchCount *= 4;
+#endif
         sceneDesc.gpuDynamicsConfig.heapCapacity *= 4;
         sceneDesc.gpuDynamicsConfig.foundLostPairsCapacity *= 4;
         sceneDesc.gpuDynamicsConfig.tempBufferCapacity *= 4;

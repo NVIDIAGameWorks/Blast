@@ -54,6 +54,16 @@ one explicitly:
 repo.bat build -r --physx-path C:\path\to\physx --physx-lib-path C:\path\to\physx\bin\win.x86_64.vc141.md
 ```
 
+Legacy PhysX distributions may keep their foundation headers in a separate
+PxShared package. Pass the root of that package as well:
+
+```bat
+repo.bat build -r --physx-path C:\path\to\physx --pxshared-path C:\path\to\pxshared
+```
+
+`--pxshared-path` must contain `include\foundation\PxTransform.h`. It is not
+needed when that header is already present below the PhysX root.
+
 Without `--physx-path`, `NvBlastExtPhysX` and
 `NvBlastExtPxSerialization` are intentionally omitted.
 

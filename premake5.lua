@@ -16,6 +16,12 @@ newoption {
 }
 
 newoption {
+    trigger     = "pxshared-path",
+    value       = "PATH",
+    description = "Optional path to a separate PxShared distribution required by legacy PhysX SDKs"
+}
+
+newoption {
     trigger     = "samples",
     value       = "BOOL",
     description = "Build the Windows SampleAssetViewer (requires --physx-path)"
@@ -30,6 +36,7 @@ local target_deps = "_build/target-deps"
 
 local physxRoot = _OPTIONS["physx-path"]
 local physxLibRoot = _OPTIONS["physx-lib-path"]
+local pxsharedRoot = _OPTIONS["pxshared-path"]
 local physxLibraries = {}
 local physxUsesStaticLibraries = false
 local buildSamples = _OPTIONS["samples"] == "1"
@@ -38,6 +45,15 @@ if physxRoot then
     physxRoot = path.getabsolute(physxRoot)
     if not os.isfile(path.join(physxRoot, "include/PxPhysicsAPI.h")) then
         error("--physx-path must point to a PhysX SDK distribution containing include/PxPhysicsAPI.h")
+    end
+
+    if pxsharedRoot then
+        pxsharedRoot = path.getabsolute(pxsharedRoot)
+        if not os.isfile(path.join(pxsharedRoot, "include/foundation/PxTransform.h")) then
+            error("--pxshared-path must point to a PxShared distribution containing include/foundation/PxTransform.h")
+        end
+    elseif not os.isfile(path.join(physxRoot, "include/foundation/PxTransform.h")) then
+        error("This PhysX SDK uses separate PxShared headers; pass --pxshared-path")
     end
 
     if physxLibRoot then
@@ -83,7 +99,26 @@ if physxRoot then
         }
     end
 
+    local function addPhysxLibraryIfPresent(library)
+        local filename = library..".lib"
+        if os.target() ~= "windows" then
+            filename = "lib"..library..".a"
+        end
+        if os.isfile(path.join(probeDir, filename)) then
+            table.insert(physxLibraries, library)
+        end
+    end
+
+    addPhysxLibraryIfPresent("PhysXTask_static_64")
+    if not physxUsesStaticLibraries then
+        addPhysxLibraryIfPresent("PhysXPvdSDK_static_64")
+    end
+
     print("PhysX-dependent projects enabled from "..physxRoot)
+end
+
+if pxsharedRoot and not physxRoot then
+    error("--pxshared-path requires --physx-path")
 end
 
 if buildSamples and not physxRoot then
@@ -417,7 +452,7 @@ function add_capn_proto_source()
 end
 
 function use_physx()
-    externalincludedirs {
+    local physxIncludeDirs = {
         path.join(physxRoot, "include"),
         path.join(physxRoot, "include/common"),
         path.join(physxRoot, "include/cooking"),
@@ -425,6 +460,15 @@ function use_physx()
         path.join(physxRoot, "include/foundation"),
         path.join(physxRoot, "include/geometry"),
     }
+    local legacyFoundationInclude = path.join(physxRoot, "source/foundation/include")
+    if os.isdir(legacyFoundationInclude) then
+        table.insert(physxIncludeDirs, legacyFoundationInclude)
+    end
+    if pxsharedRoot then
+        table.insert(physxIncludeDirs, path.join(pxsharedRoot, "include"))
+        table.insert(physxIncludeDirs, path.join(pxsharedRoot, "include/foundation"))
+    end
+    includedirs(physxIncludeDirs)
     filter { "configurations:debug" }
         libdirs { path.join(physxLibRoot, "debug") }
     filter { "configurations:release" }
@@ -832,6 +876,7 @@ group "sdk"
                 }
                 includedirs {
                     "source/samples/SampleBase",
+                    "source/samples/SampleBase/compat",
                     "source/samples/SampleBase/blast",
                     "source/samples/SampleBase/core",
                     "source/samples/SampleBase/physx",

@@ -47,6 +47,13 @@ kwargs.nargs = 1
 extra_premake_args = ["--physx-lib-path={}"]
 
 [[repo_build.argument]]
+name = "--pxshared-path"
+help = "Optional path to a separate PxShared distribution required by legacy PhysX SDKs."
+kwargs.required = false
+kwargs.nargs = 1
+extra_premake_args = ["--pxshared-path={}"]
+
+[[repo_build.argument]]
 name = "--samples"
 help = "Build the Windows SampleAssetViewer. Requires --physx-path."
 kwargs.required = false

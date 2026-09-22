@@ -34,6 +34,7 @@
 #include "SampleProfiler.h"
 #include "Utils.h"
 #include "Renderer.h"
+#include "PxAssert.h"
 
 #include "NvBlastExtPxTask.h"
 

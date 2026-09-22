@@ -27,6 +27,7 @@
 
 #include "SkinnedRenderMesh.h"
 #include "Renderer.h"
+#include "PxAssert.h"
 
 SkinnedRenderMesh::SkinnedRenderMesh(const std::vector<const SimpleMesh*>& meshes)
 {

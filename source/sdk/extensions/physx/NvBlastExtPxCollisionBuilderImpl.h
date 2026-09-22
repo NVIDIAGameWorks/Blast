@@ -30,16 +30,27 @@
 
 #include "NvBlastExtPxCollisionBuilder.h"
 #include "NvBlastExtAuthoringTypes.h"
+#include "PxPhysicsVersion.h"
 
 namespace physx
 {
     class PxCooking;
+#if PX_PHYSICS_VERSION_MAJOR < 5
+    class PxPhysicsInsertionCallback;
+#else
     class PxInsertionCallback;
+#endif
 }
 namespace Nv
 {
     namespace Blast
     {
+
+#if PX_PHYSICS_VERSION_MAJOR < 5
+        using ExtPxInsertionCallback = physx::PxPhysicsInsertionCallback;
+#else
+        using ExtPxInsertionCallback = physx::PxInsertionCallback;
+#endif
 
         struct CollisionHullImpl : public CollisionHull
         {
@@ -52,7 +63,7 @@ namespace Nv
         {
         public:
             ExtPxCollisionBuilderImpl(physx::PxCooking* cooking,
-                physx::PxInsertionCallback* insertionCallback) : mCooking(cooking), mInsertionCallback(insertionCallback) {}
+                ExtPxInsertionCallback* insertionCallback) : mCooking(cooking), mInsertionCallback(insertionCallback) {}
             virtual ~ExtPxCollisionBuilderImpl() {};
             void release() override;
             CollisionHull* buildCollisionGeometry(uint32_t verticesCount, const NvcVec3* vertexData) override;
@@ -63,7 +74,7 @@ namespace Nv
                 ExtPxChunk* physicsChunks, ExtPxSubchunk* physicsSubchunks) override;
         private:
             physx::PxCooking* mCooking;
-            physx::PxInsertionCallback* mInsertionCallback;
+            ExtPxInsertionCallback* mInsertionCallback;
         };
 
     }  // namespace Blast

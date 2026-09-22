@@ -29,6 +29,7 @@
 #define DEBUGRENDERBUFFER_H
 
 #include "PxRenderBuffer.h"
+#include "PxPhysicsVersion.h"
 #include <vector>
 
 using namespace physx;
@@ -65,6 +66,11 @@ public:
     virtual PxU32 getNbTriangles() const { return static_cast<PxU32>(m_triangles.size()); }
     virtual const PxDebugTriangle* getTriangles() const { return m_triangles.data(); }
     virtual void addTriangle(const PxDebugTriangle& triangle) { m_triangles.push_back(triangle); }
+
+#if PX_PHYSICS_VERSION_MAJOR < 5
+    virtual PxU32 getNbTexts() const { return 0; }
+    virtual const PxDebugText* getTexts() const { return nullptr; }
+#endif
 
     virtual void append(const PxRenderBuffer& other)
     {
