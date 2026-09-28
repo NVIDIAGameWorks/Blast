@@ -334,6 +334,22 @@ excess forces are applied to the previously joined bodies.  Using a new stress s
 - Fixed asset joint serialization, an out-of-bounds index, and an exception in TkGroupImpl.
 
 
+## [1.1.7] - 2020-11-12
+
+### Changes
+- Updated to PhysX 4.1 with a separate PxShared package and configuration-specific library directories.
+- Updated Linux and UE4 cross-compilation builds and packaging for PhysX 4.x.
+
+
+## [1.1.6] - 2020-10-08
+
+### Changes
+- Updated the license and copyright dates, and removed ArtistTool.
+
+### Bug Fixes
+- Fixed Blast bond generation and invalid pointer access in authoring tools.
+
+
 ## [1.1.5] - 2019-09-16
 
 ### Changes
