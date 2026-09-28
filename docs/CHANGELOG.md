@@ -115,6 +115,13 @@ excess forces are applied to the previously joined bodies.  Using a new stress s
 - Rearranged folder layout.  Public include files are now under a top-level "include" folder.
 
 
+## [2.2.0] - 2021-10-12
+
+### Changes
+- Rearranged the repository, moving toolapps to apps and code into a top-level source folder.
+- Reworked CMake projects and build files for the new layout, including low-level Cap'n Proto serialization.
+
+
 ## [2.1.7] - 2021-07-18
 
 ### Bug Fixes
@@ -237,6 +244,55 @@ excess forces are applied to the previously joined bodies.  Using a new stress s
 - Deprecate 'world' versions, should be removed on next major version bump
 
 
+## [1.4.0] - 2020-06-25
+
+### New Features
+- Added an optional splitUVs parameter to FractureTool::createChunkMesh() to control whether UV coordinates are considered when welding output vertices. The default is true.
+
+
+## [1.3.1] - 2020-06-16
+
+### New Features
+- Added FractureTool::setSourceMeshes() to fracture multiple source meshes as separate root chunks.
+
+
+## [1.3.0] - 2020-06-15
+
+### New Features
+- Added NvBlastExtAssetUtilsCreateDesc() to create an asset descriptor from an existing asset.
+
+### Changes
+- Calculate chunk centroids and volumes from collision hulls, falling back to geometry when needed. Replaced Mesh::getMeshVolume() with getMeshVolumeAndCentroid().
+- Updated Linux and Windows build and packaging scripts for TeamCity, and changed PxShared includes to use relative paths.
+
+
+## [1.2.3] - 2020-05-20
+
+### Changes
+- Updated the impact spread graph shader to scale bond damage by the requested damage amount and stop generating chunk fracture commands.
+
+
+## [1.2.2] - 2020-05-19
+
+### New Features
+- Added NvBlastFamilyGetActorByIndex() to retrieve an active actor by its index in a family.
+
+
+## [1.2.1] - 2020-05-14
+
+### Changes
+- Changed FractureTool::createChunkMesh() to take a chunk index and create a polygonal mesh directly from the chunk, without triangulation.
+- Updated mesh volume calculation to support closed meshes with non-triangular faces.
+- Generate asset IDs from asset contents.
+- Removed remaining APEX, PS4, and Xbox One files and references. Renamed tools to toolapps and buildtools to tools.
+- Added packaging and publishing tools, Linux build support, and configuration-specific build output directories.
+
+### Bug Fixes
+- Corrected UV handling for interior faces in created chunk meshes.
+- Allocate buffers returned by getBufferedBaseMeshes() so callers can release them with NVBLAST_FREE.
+- Fixed build and packaging paths, DLL dependency copying, and missing license files in the Blast SDK package.
+
+
 ## [1.2.0] - 2020-01-23
 
 ### Changes
@@ -250,6 +306,24 @@ excess forces are applied to the previously joined bodies.  Using a new stress s
 ### Known Issues
 - Damage shaders in extensions can miss bonds if the damage volume is too small.
 - Authoring code does not use the user-defined allocator (NvBlastGlobals) exclusively.
+
+
+## [1.1.10] - 2024-12-20
+
+### Bug Fixes
+- Fixed Linux project generation after updating Packman and making python.sh executable.
+
+
+## [1.1.9] - 2024-03-22
+
+### Changes
+- Updated the license and removed a reference to the deprecated documentation server.
+
+
+## [1.1.8] - 2021-04-05
+
+### Bug Fixes
+- Fixed asset joint serialization, an out-of-bounds index, and an exception in TkGroupImpl.
 
 
 ## [1.1.5] - 2019-09-16
