@@ -3,8 +3,8 @@
 Introduction
 ------------
 
-Blast is an NVIDIA GameWorksBlast destruction library.  It consists of a :ref:`pagellapi`, a :ref:`pagehlapi` (Blast Toolkit
-or BlastTk), and :ref:`pageextapi` (Blast Extensions or BlastExt).  This layered API is designed to allow short ramp-up time for
+Blast is an NVIDIA GameWorksBlast destruction library.  It consists of a `Low Level API (NvBlast) <api_ll_users_guide.rst>`_, a `High Level (Toolkit) API (NvBlastTk) <api_hl_users_guide.rst>`_ (Blast Toolkit
+or BlastTk), and `Extensions (NvBlastExt) <extensions/index.rst>`_ (Blast Extensions or BlastExt).  This layered API is designed to allow short ramp-up time for
 first usage (through the Ext and Tk APIs) while also allowing for customization and optimization by experienced users through the
 low-level API.
 
@@ -24,12 +24,12 @@ be damaged and fractured.  When fractured, actors are broken into pieces called 
 belong to new actors.  The grouping of chunks into actors is determined by the support graph in the asset.
 
 Chunks are defined hierarchically, so that when a chunk is fractured its child chunks are created.  The user may tag any
-chunk in this hierarchy as a *support* chunk.  This is covered in more detail in the :ref:`support_model` section.  The user
+chunk in this hierarchy as a *support* chunk.  This is covered in more detail in the `Support Model`_ section.  The user
 also supplies a description of the connections between support chunks.  A *bond* represents the surface joining neighboring
 chunks.  A bond is represented by a surface centroid, an average surface normal, and the surface area.  These quantities don't
 need to be exact for Blast to operate effectively.
 
-Multiple chunk hierarchies may exist in a single asset.  The *root chunks* (see :ref:`pagedefinitions`) will be visible when the
+Multiple chunk hierarchies may exist in a single asset.  The *root chunks* (see `Definitions <definitions.rst>`_) will be visible when the
 asset is initially instanced.  Subsequent fracturing has the effect of breaking the root chunks into their hierarchical descendants.
 
 .. _support_model:
@@ -37,7 +37,7 @@ asset is initially instanced.  Subsequent fracturing has the effect of breaking 
 Support Model
 =============
 
-Blast requires that support chunks form an *exact cover* (see the definition of exact coverage in :ref:`pagedefinitions`).
+Blast requires that support chunks form an *exact cover* (see the definition of exact coverage in `Definitions <definitions.rst>`_).
 The geometric interpretation of exact coverage is that the support chunks fill the space of the root (unfractured) chunk, without
 any volume being covered by more than one chunk.  A helper function is provided to modify a set of chunk descriptors so that they
 have exact coverage.  This function fills in missing coverage by assigning support to chunks at the highest place possible (closest
@@ -50,13 +50,13 @@ represents a connection between the chunk and its external environment.  All chu
 will be put into the same actor.  An expected use case is to make this actor static (or kinematic).  Actors may be queried to
 determine if they are "world-bound."
 
-In order to take advantage of the chunk hieararchy to reduce the number of chunks which represent an actor physically and
+In order to take advantage of the chunk hierarchy to reduce the number of chunks which represent an actor physically and
 graphically, Blast calculates a list of *visible chunks* from the support chunks in an actor.  These may be the support
 chunks, or they may be ancestors of support chunks if all descendant support chunks are in the actor.
 
 Support chunks do not have to be leaves in the chunk hierarchy, nor do they have to be at the same depth in the hierarchy.  Children
 of support chunks will always be the sole chunk in their actor, since there are no bonds defined between them.  If an actor consists
-of a *subsupport chunk* (see :ref:`pagedefinitions`), the visible chunk is the same chunk.  The same is true if an actor consists
+of a *subsupport chunk* (see `Definitions <definitions.rst>`_), the visible chunk is the same chunk.  The same is true if an actor consists
 of a *single* support chunk.
 
 .. _damage_model:
@@ -75,7 +75,7 @@ that are connected by unbroken bonds, and any new islands found result in new ac
 
 If an actor is composed of a single support or subsupport chunk with subsupport descendants, then there is no bond structure to model
 damage.  Instead, such a chunk is considered to have its own health value, which may be decreased by damage.  When such a lower-support
-(see :ref:`pagedefinitions`) chunk's health is non-positive, its associated actor is deleted and replaced by actors that represent its child
+(see `Definitions <definitions.rst>`_) chunk's health is non-positive, its associated actor is deleted and replaced by actors that represent its child
 chunks, if any.
 
 The effect of damage on leaf chunks depends upon which API is used.  The low-level API does not delete leaf chunks.  It is up to the

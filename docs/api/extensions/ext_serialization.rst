@@ -24,7 +24,7 @@ with types enumerated in the header **NvBlastExtLlSerialization.h**.
 
 **The low-level serializers are automatically loaded into an ExtSerialization when it is created.**
 
-To load serializers for ExtTk assets, you must also load the extension :ref:`pageexttkserialization`.  See the documentation for that module.
+To load serializers for ExtTk assets, you must also load the extension `BlastTk Serialization (NvBlastExtTkSerialization) <ext_tkserialization.rst>`_.  See the documentation for that module.
 
 ..
     To load serializers for ExtPhysX assets, you must also load the extension :ref:`pageextpxserialization`.  See the documentation for that module.

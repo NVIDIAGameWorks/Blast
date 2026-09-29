@@ -40,7 +40,7 @@ Copyrights
 
 Boost
 =====
-Blast :ref:`pageextauthoring` uses Boost (boost.org).  This is licensed as follows.
+Blast `Asset Authoring (NvBlastExtAuthoring) <extensions/ext_authoring.rst>`_ uses Boost (boost.org).  This is licensed as follows.
 
 .. code-block:: text
 
@@ -74,7 +74,7 @@ Blast :ref:`pageextauthoring` uses Boost (boost.org).  This is licensed as follo
 
 V-HACD
 ======
-Blast :ref:`pageextauthoring` uses V-HACD (by Khaled Mamou).  This is licensed as follows.
+Blast `Asset Authoring (NvBlastExtAuthoring) <extensions/ext_authoring.rst>`_ uses V-HACD (by Khaled Mamou).  This is licensed as follows.
 
 .. code-block:: text
 

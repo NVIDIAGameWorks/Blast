@@ -3,9 +3,9 @@
 BlastTk Serialization (NvBlastExtTkSerialization)
 -------------------------------------------------
 
-This extension contains serializers which can be loaded into the ExtSerialization manager defined in :ref:`pageextserialization`.
+This extension contains serializers which can be loaded into the ExtSerialization manager defined in `Serialization (NvBlastExtSerialization) <ext_serialization.rst>`_.
 
-To use this extension, you must also load the ExtSerialization extension and create a serialization manager as described in :ref:`pageextserialization`.
+To use this extension, you must also load the ExtSerialization extension and create a serialization manager as described in `Serialization (NvBlastExtSerialization) <ext_serialization.rst>`_.
 
 We repeat this here (again, assuming we are in the Nv::Blast namespace):
 

@@ -24,7 +24,7 @@ For example, given an asset called *oldAsset*,
     NvBlastAsset* newAsset = NvBlastExtAssetUtilsAddWorldBonds(oldAsset, worldBoundChunks, 3, bondDirections, NULL);
 
 
-Memory for the new asset is allocated using the allocator available through NvBlastGlobals (:ref:`pageglobalsapi`).  Therefore the new asset may be freed using
+Memory for the new asset is allocated using the allocator available through NvBlastGlobals (`Globals API (NvBlastGlobals) <../api_globals_users_guide.rst>`_).  Therefore the new asset may be freed using
 
 .. code-block:: text
 

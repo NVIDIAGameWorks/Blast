@@ -1,7 +1,7 @@
 Blast SDK Documentation
 =======================
 
-.. image:: docs/images/blast.png
+.. image:: images/blast.png
     :width: 100%
     :alt: Blast Intro
 
@@ -61,80 +61,69 @@ Gallery
 Tower Explosion
 ####################################
 
-.. image:: docs/images/tower_explode.png
+.. image:: images/tower_explode.png
     :width: 100%
     :alt: Blast Intro
 
 Bunny Impact Damage
 ####################################
 
-.. image:: docs/images/bunny_impact.png
+.. image:: images/bunny_impact.png
     :width: 100%
     :alt: Blast Sample: tower explode
 
 Layered Cube Explosion
 ####################################
 
-.. image:: docs/images/cube_explode.png
+.. image:: images/cube_explode.png
     :width: 100%
     :alt: Blast Sample: bunny impact
 
 Table Impact Damage
 ####################################
 
-.. image:: docs/images/table_impact_wireframe.png
+.. image:: images/table_impact_wireframe.png
     :width: 100%
     :alt: Blast Sample: cube explode
 
 Tower Slice
 ####################################
 
-.. image:: docs/images/tower_slice.png
+.. image:: images/tower_slice.png
     :width: 100%
     :alt: Blast Sample: table impact
 
 Wall Impact Damage
 ####################################
 
-.. image:: docs/images/wall_impact.png
+.. image:: images/wall_impact.png
     :width: 100%
     :alt: Blast Sample: tower slice
 
 Stress Solver
 ####################################
 
-.. image:: docs/images/stress.png
+.. image:: images/stress.png
     :width: 100%
     :alt: Blast Sample: wall impact
 
 Joints
 ####################################
 
-.. image:: docs/images/joints.png
+.. image:: images/joints.png
     :width: 100%
     :alt: Blast Sample: joints
 
-.. toctree::
-   :maxdepth: 4
-   :caption: Contents
-   :glob:
+Contents
+--------
 
-   docs/api/introduction.rst
-   docs/api/api_ll_users_guide.rst
-   docs/api/api_globals_users_guide.rst
-   docs/api/api_hl_users_guide.rst
-   docs/api/extensions/index.rst
-   docs/api/definitions.rst
-   docs/api/copyrights.rst
-   docs/CHANGELOG
-   API Documentation<_build/docs/blast-sdk/latest/blast-sdk_api.rst>
+* `Introduction <api/introduction.rst>`_
+* `Low Level API (NvBlast) <api/api_ll_users_guide.rst>`_
+* `Globals API (NvBlastGlobals) <api/api_globals_users_guide.rst>`_
+* `High Level API (NvBlastTk) <api/api_hl_users_guide.rst>`_
+* `Extensions (NvBlastExt) <api/extensions/index.rst>`_
+* `Definitions <api/definitions.rst>`_
+* `Copyrights <api/copyrights.rst>`_
+* `C++ API headers <../include/>`_
 
-..
-   docs/api/tools/index.rst
-   docs/api/samples/index.rst
-
-Index
-=====
-
-* :ref:`genindex`
-* :ref:`search`
+Current version and release notes: `Changelog <CHANGELOG.md>`_.

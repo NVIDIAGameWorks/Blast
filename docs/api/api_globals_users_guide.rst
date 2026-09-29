@@ -3,7 +3,7 @@
 Globals API (NvBlastGlobals)
 ----------------------------
 
-The NvBlastGlobals library is a utility library which is used by NvBlastTk (see :ref:`pagehlapi`) and some extensions (see :ref:`pageextapi`) and samples.
+The NvBlastGlobals library is a utility library which is used by NvBlastTk (see `High Level (Toolkit) API (NvBlastTk) <api_hl_users_guide.rst>`_) and some extensions (see `Extensions (NvBlastExt) <extensions/index.rst>`_) and samples.
 
 It provides a global allocator, error callback, and profiler API.
 

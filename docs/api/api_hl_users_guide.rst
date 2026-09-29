@@ -5,27 +5,17 @@ High Level (Toolkit) API (NvBlastTk)
 
 **Table of Contents**
 
-:ref:`tkintroduction`
-
-:ref:`tk_class_hierarchy`
-
-:ref:`tk_include_and_library`
-
-:ref:`framework_init`
-
-:ref:`tkasset_creation`
-
-:ref:`tkasset_instancing`
-
-:ref:`tkgroups`
-
-:ref:`damage_in_tk`
-
-:ref:`tkjoints`
-
-:ref:`tkevents`
-
-:ref:`tktypes`
+* `Introduction to NvBlastTk`_
+* `NvBlastTk Class Hierarchy`_
+* `Linking and Header Files`_
+* `Creating the TkFramework`_
+* `Creating a TkAsset`_
+* `Instancing a TkAsset: Creation of a TkActor and a TkFamily`_
+* `Groups`_
+* `Applying Damage to Actors and Families`_
+* `Joints`_
+* `Events`_
+* `Object and Type Identification`_
 
 .. _tkintroduction:
 
@@ -55,7 +45,7 @@ Every object in Tk is prefixed with 'Tk'.  For example, the Tk framework interfa
 
 BlastTk adds:
 
-* An object class hierarchy (see :ref:`tk_class_hierarchy`, below).
+* An object class hierarchy (see `NvBlastTk Class Hierarchy`_, below).
 * A global framework, **TkFramework** (a singleton).  This keeps track of **TkIdentifiable** objects and allows the user to query them based upon either GUID or **TkIdentifiable** subclass type, and also provides a number of functions to create the various objects in BlastTk.
 * Processing groups with a task interface (see **TkGroup**).
 * Event dispatching for actor families (see **TkFamily**).
@@ -69,19 +59,19 @@ NvBlastTk Class Hierarchy
 
 * There are two abstract interfaces, one of which deriving from the other: **TkObject <- TkIdentifiable**.
   * Lightweight objects are derived from **TkObject**.
-  * Objects which use a GUID and class identification are derieved from **TkIdentifiable**.
+  * Objects which use a GUID and class identification are derived from **TkIdentifiable**.
 * **TkAsset** derives from **TkIdentifiable**.  This is mostly a wrapper for NvBlastAsset, however it also stores extra data associated with the asset such as internal joint descriptors.
 * **TkFamily** derives from **TkIdentifiable**.  One of these objects is made when a **TkActor** is instanced from a **TkAsset**.  All actors that are created by splitting the family's original actor remain within the same family.  Actor and joint events are dispatched from the **TkFamily**.
-* **TkGroup** derives from **TkIdentifiable**.  Groups are processing units.  The user may create as many groups as they please, and add or remove actors as they please from groups.  The group provides a worker (TkGroupWorker) interface which allows the user to process multiple jobs in the group asynchoronously.  These jobs, along with a call to TkGroup::endProcess(), perform the tasks of generating fracture commands, applying fracture commands, and actor splitting at the low-level.  The user is informed of splitting through listeners given to TkFamily objects.
+* **TkGroup** derives from **TkIdentifiable**.  Groups are processing units.  The user may create as many groups as they please, and add or remove actors as they please from groups.  The group provides a worker (TkGroupWorker) interface which allows the user to process multiple jobs in the group asynchronously.  These jobs, along with a call to TkGroup::endProcess(), perform the tasks of generating fracture commands, applying fracture commands, and actor splitting at the low-level.  The user is informed of splitting through listeners given to TkFamily objects.
 * **TkActor** derives from **TkObject**.  It is mostly a wrapper for NvBlastActor, but it also provides a number of damage functions to the user.
-* **TkJoint** derives from **TkObject**.  **TkAsset** descriptors, cause internal **TkJoint** obejcts to be created within an actor (joining chunks within the same actor).  Alternatively, the TkFramework provides a function which allows the user to create an external joint between any two different actors.  As actors split, internal joints may become external.  The user gets notification whenever joints become external, or when actors joined by joints change or are deleted, through listeners attached to the associated TkFamily objects.
+* **TkJoint** derives from **TkObject**.  **TkAsset** descriptors cause internal **TkJoint** objects to be created within an actor (joining chunks within the same actor).  Alternatively, the TkFramework provides a function which allows the user to create an external joint between any two different actors.  As actors split, internal joints may become external.  The user gets notification whenever joints become external, or when actors joined by joints change or are deleted, through listeners attached to the associated TkFamily objects.
 
 .. _tk_include_and_library:
 
 Linking and Header Files
 ========================
 
-To use the BlastTk library, the application need only inlclude the header NvBlastTk.h, found in the **include/toolkit** folder, and link
+To use the BlastTk library, the application need only include the header NvBlastTk.h, found in the **include/toolkit** folder, and link
 against the appropriate version of the NvBlastTk library.  Depending on the platform and configuration, various suffixes will be added to the library
 name.  The general naming scheme is
 
@@ -137,10 +127,10 @@ This will release all assets, families, actors, joints, and groups.
 Creating a TkAsset
 ==================
 
-The TkAsset object is a high-level wrapper for the low-level NvBlastAsset (see :ref:`assets`).  The descriptor used to create a TkAsset, a TkAssetDesc, is derived from
-NvBlastAssetDesc.  The base fields should be filled in as described in (:ref:`assets`).  The new field is an optional array of flags to be associated with each bond in
+The TkAsset object is a high-level wrapper for the low-level NvBlastAsset (see `Creating an Asset from a Descriptor (Authoring) <api_ll_users_guide.rst>`_).  The descriptor used to create a TkAsset, a TkAssetDesc, is derived from
+NvBlastAssetDesc.  The base fields should be filled in as described in (`Creating an Asset from a Descriptor (Authoring) <api_ll_users_guide.rst>`_).  The new field is an optional array of flags to be associated with each bond in
 the base descriptor.  Currently the only flag is "BondJointed," and if set will cause an "internal joint" to be created in actors (TkActor type) created from the asset.
-See (:ref:`tkjoints`) for more on joints in BlastTk.
+See (`Joints`_) for more on joints in BlastTk.
 
 .. code-block:: text
 
@@ -181,7 +171,7 @@ TkAsset using all of the default parameters of the createAsset function:
 
 
 The last parameter sets ownership.  N.B.: in order for the TkAsset to own the underlying llAsset, and therefore release it when the TkAsset is released,
-the memory for the llAsset must be allocated using the allocator accessed through NvBlastGlobals (see :ref:`pageglobalsapi`).
+the memory for the llAsset must be allocated using the allocator accessed through NvBlastGlobals (see `Globals API (NvBlastGlobals) <api_globals_users_guide.rst>`_).
 
 If one wants to author internal joints in a TkAsset using this second createAsset method, one must pass in a valid array of joint descriptors of type
 TkAssetJointDesc.  Each joint descriptor takes two positions and two node indices.  The positions are the joint's attachment positions in asset space, and
@@ -230,21 +220,21 @@ Finally, to release a TkAsset, as with any TkObject-derived object, use the rele
 Instancing a TkAsset: Creation of a TkActor and a TkFamily
 ==========================================================
 
-Whereas with the Blast low-level (:ref:`pagellapi`), one must explicitly create a family (NvBlastFamily) from an asset (NvBlastAsset) before creating
+Whereas with the Blast low-level (`Low Level API (NvBlast) <api_ll_users_guide.rst>`_), one must explicitly create a family (NvBlastFamily) from an asset (NvBlastAsset) before creating
 the first actor (NvBlastActor) in the family, NvBlastTk creates a TkFamily automatically when an unfractured TkActor is instanced from a TkAsset using
 the framework's createActor function.  This family is accessible through the actor and any actor that is created from splitting it.  The family is
 *not* released automatically when all actors within it have been released.  The user must use the TkFamily's release() method (see TkObject base
 API) to do so.  (Or wait until the framework is released.)  If a family is released that contains actors, the actors within will be released as well.
 
-The TkFamily has a special role in NvBlastTk, holding user-supplied event listeners (:ref:`tkevents`).  All *internal* actor creation and destruction
+The TkFamily has a special role in NvBlastTk, holding user-supplied event listeners (`Events`_).  All *internal* actor creation and destruction
 events are broadcast to listeners through split events (TkSplitEvent).  These signal when a fracturing operation has destroyed an actor and created
 child actors from it.  TkActor creation or release that occurs from an explicit API call do not produce events.  For example when creating a first unfractured
 instance of an asset using createAsset, or when calling the release() method on a TkActor.  TkJoint events are similarly broadcast to
 receivers (TkJointEvent).  These signal when the actors which are joined by the joints change, so that the user may update a corresponding physical joint.
 They also signal when a joint no longer attaches actors and is therefore unreferenced.  The user may invalidate or release the joint using the TkObject
-release() method when this occurs (more on joint ownership in :ref:`tkjoints`).
+release() method when this occurs (more on joint ownership in `Joints`_).
 
-To create an unfractured TkActor instance from a TkAsset, one first fills in a descriptor (:ref:`tkasset_instancing`) and passes it to the framework's createActor function.
+To create an unfractured TkActor instance from a TkAsset, one first fills in a descriptor (`Instancing a TkAsset: Creation of a TkActor and a TkFamily`_) and passes it to the framework's createActor function.
 As with the TkAssetDesc, the TkActorDesc is derived from its low-level counterpart, the NvBlastActorDesc.  In addition the TkActorDesc holds a pointer to
 the TkAsset being instanced.  An example of TkActor creation is given below, given a TkAsset pointer **asset**.
 
@@ -267,7 +257,7 @@ The returned value is a reference since a TkActor's family can never be NULL.  A
 parent's family.
 
 For most applications, the user will need to create a listener object to pass to every family created, in order to keep their physics and graphics representations
-in sync with the splitting of the TkActor.  For more on this, see :ref:`tkevents`.
+in sync with the splitting of the TkActor.  For more on this, see `Events`_.
 
 .. _tkgroups:
 
@@ -299,7 +289,7 @@ families from a split, except that unlike families, the user then has the option
 Also similar to families, groups are not automatically released when the last actor is removed from it.  Unlike families, when a group is released, the actors which
 belong to the group are *not* released.  They will, however, be removed from the group before the release is complete.
 
-A typical usage is outlined below.  See :ref:`damage_in_tk` for methods of applying damage to actors.
+A typical usage is outlined below.  See `Applying Damage to Actors and Families`_ for methods of applying damage to actors.
 
 .. code-block:: text
 
@@ -363,7 +353,7 @@ At any point in time, no more than the set workerCount amount of workers may hav
 Applying Damage to Actors and Families
 ======================================
 
-Damage in NvBlastTk uses the same damage program scheme as the low-level SDK (see :ref:`splitting`).  One passes the program
+Damage in NvBlastTk uses the same damage program scheme as the low-level SDK (see `Damage and Fracturing <api_ll_users_guide.rst>`_).  One passes the program
 (NvBlastDamageProgram), damage descriptor (program-dependent), and material (also program-dependent) to a TkActor::damage
 function.  Ultimately, the damage descriptor and material data are all parameters used by the damage program.  The distinction
 is that the damage descriptor should describe properties of the thing doing the damage, while the material should
@@ -494,9 +484,9 @@ Joints
 
 Joints in NvBlastTk are abstract representations of physical joints.  When joints become active, change the actors they join,
 or become unreferenced (the actors they join disappear), the user will receive notification via a TkJointUpdateEvent
-(see :ref:`tkevents`).
+(see `Events`_).
 
-Joints may be defined as a part of a TkAsset, in which case they are consisdered "internal" joints.  (See :ref:`tkasset_creation`.)
+Joints may be defined as a part of a TkAsset, in which case they are considered "internal" joints.  (See `Creating a TkAsset`_.)
 Since the first instance of a TkAsset is a single TkActor, internal joints are defined between chunks within the same actor.
 Therefore they are not active (there is no point in joining two locations in a single rigid body).  Upon splitting into multiple
 actors, however, an internal joint's chunks may now belong to two different TkActors.  When this happens, the user will receive a
@@ -507,7 +497,7 @@ Joints may also be created externally at runtime, using the TkFramework::createJ
 be between two different TkActors.  Because of this, the joint is immediately considered active, and so no TkJointUpdateEvent
 is generated from its creation.  The user should create a physical joint to correspond to the joint returned by createJoint.
 An externally created joint of this type has another distinguishing characteristic: it may join an actor to "the world," or
-"Newtonial Reference Frame" (NRF).  To do this, one TkFamily pointer in the joint descriptor is set to NULL.  Examples are
+"Newtonian Reference Frame" (NRF).  To do this, one TkFamily pointer in the joint descriptor is set to NULL.  Examples are
 given below.
 
 .. code-block:: text
@@ -574,7 +564,7 @@ NvBlastTk uses events to communicate the results of actor splitting, joint updat
 that can be used to synchronize fracturing between multiple clients.
 
 Events are broadcast to listeners which implement the TkEventListener interface.  Listeners are held by TkFamily objects.  During
-a TkGroup::endProcess call (see :ref:`tkgroups`), relevant events are broadcast to the listeners in the families associated with the actors
+a TkGroup::endProcess call (see `Groups`_), relevant events are broadcast to the listeners in the families associated with the actors
 in the group.
 
 A typical user's receiver implementation might take on the form shown below.
@@ -641,7 +631,7 @@ A typical user's receiver implementation might take on the form shown below.
     };
 
 
-Whenever a new TkActor is created by the user (via TkFramework::createActor, see :ref:`tkasset_instancing`), its newly-made family should
+Whenever a new TkActor is created by the user (via TkFramework::createActor, see `Instancing a TkAsset: Creation of a TkActor and a TkFamily`_), its newly-made family should
 be given whatever listeners the user wishes to attach.  For example,
 
 .. code-block:: text
@@ -752,4 +742,3 @@ A TkIdentifiable-derived class may be queried for its name using the TkType inte
 This function returns a const char pointer to a string.
 
 Finally, one may query the class for its current format version number using TkType::getVersion().
-

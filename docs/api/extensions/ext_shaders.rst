@@ -3,7 +3,7 @@
 Damage Shaders (NvBlastExtShaders)
 ----------------------------------
 
-The Blast damage shader extension provides basic implementations of programs generating fracture commands, the first step in breaking a Blast Actor, see :ref:`splitting`.
+The Blast damage shader extension provides basic implementations of programs generating fracture commands, the first step in breaking a Blast Actor, see `Damage and Fracturing <../api_ll_users_guide.rst>`_.
 These programs come as two shader functions (callbacks): one for Actors with a support graph, and one for Actors with just one chunk, respectively.
 The NvBlastDamageProgram containing both shaders can be used for low-level directly (NvBlastActorGenerateFracture) or for TkActor's damage and fracture functions.
 

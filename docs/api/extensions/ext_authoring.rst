@@ -12,7 +12,7 @@ There are four tools for creation of Blast assets.
 
 FractureTool
 ============
-Nv::Blast::FractureTool (see NvBlastExtAuthoringFractureTool.h) is used to fracture an input mesh.  It supports Voronoi fracturing, slicing, and "cutout" fracture (slicing based upon an image).  Internal surfaces of output chunks can be tesselated and noise can be applied to them.  The slicing method supports slicing with a noisy slicing surface, which allows the creation of a jagged slicing line.  Noisy slicing is switched on by setting a non-zero noise amplitude in slicing parameters (Nv::Blast::SlicingConfiguration).
+Nv::Blast::FractureTool (see NvBlastExtAuthoringFractureTool.h) is used to fracture an input mesh.  It supports Voronoi fracturing, slicing, and "cutout" fracture (slicing based upon an image).  Internal surfaces of output chunks can be tessellated and noise can be applied to them.  The slicing method supports slicing with a noisy slicing surface, which allows the creation of a jagged slicing line.  Noisy slicing is switched on by setting a non-zero noise amplitude in slicing parameters (Nv::Blast::SlicingConfiguration).
 
 FractureTool supports two types of output:
 
@@ -40,7 +40,7 @@ Failure to meet the constraints (first three items) above will lead to unpredict
 
 ConvexMeshBuilder
 =================
-Nv::Blast::ConvexMeshBuilder is a tool for creation of collision geometry for physics engine. It recieves mesh vertices, and returns the convex hull of those vertices. If creation of a convex hull fails, the
+Nv::Blast::ConvexMeshBuilder is a tool for creation of collision geometry for physics engine. It receives mesh vertices, and returns the convex hull of those vertices. If creation of a convex hull fails, the
 tool creates collision geometry as a bounding box of provided vertices.
 
 The tool provides a method to trim convex hulls against each other. It can be used along with noisy slicing to avoid "explosive" behavior due to penetration of neighboring collision hulls into each other.
@@ -52,7 +52,7 @@ As a drawback, penetration of render meshes into each other is possible due to t
 BondGenerator
 =============
 Nv::Blast::BlastBondGenerator is a tool for creation of Blast Bond descriptors from provided geometry data. 
-It has separate a method which is optimized for working FractureTool. 
+It has a separate method which is optimized for working with FractureTool.
 .. code-block:: text
 
     int32_t Nv::Blast::BlastBondGenerator::buildDescFromInternalFracture(FractureTool* tool, const std::vector<bool>& chunkIsSupport, std::vector<NvBlastBondDesc>& resultBondDescs, std::vector<NvBlastChunkDesc>& resultChunkDescriptors);

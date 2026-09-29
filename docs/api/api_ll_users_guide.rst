@@ -5,15 +5,11 @@ Low Level API (NvBlast)
 
 **Table of Contents**
 
-:ref:`llintroduction`
-
-:ref:`include_and_library`
-
-:ref:`assets`
-
-:ref:`actors_and_families`
-
-:ref:`splitting`
+* `Introduction`_
+* `Linking and Header Files`_
+* `Creating an Asset from a Descriptor (Authoring)`_
+* `Creating Actors and Families`_
+* `Damage and Fracturing`_
 
 .. _llintroduction:
 
@@ -39,7 +35,7 @@ into their application.  Summarizing what the low-level API has, and *doesn't* h
   storage needed by a function is always handled via user-supplied scratch space.  For scratch, there is always a corresponding "RequiredScratch"
   function or documentation which lets the user know how much scratch space is needed based upon the function arguments.
 * Backwards-compatible, versioned, device-independent serialization is not handled by Blast.  There *is* however a Blast extension
-  which does, see :ref:`pageextserialization`.  However, a simple form of serialization may be performed on assets and familes (see :ref:`pagedefinitions`)
+  which does, see `Serialization (NvBlastExtSerialization) <extensions/ext_serialization.rst>`_.  However, a simple form of serialization may be performed on assets and families (see `Definitions <definitions.rst>`_)
   via simple memory copy.  The data associated with these objects is available to the user, and may be copied and stored by the user.
   Simply casting a pointer to such a block of memory to the correct object type will produce a usable object for Blast.  (The only restriction is
   that the block must be 16-byte aligned.)  Families contain a number of actors and so this form of deserialization recreates all actors in the family.
@@ -54,7 +50,7 @@ into their application.  Summarizing what the low-level API has, and *doesn't* h
 Linking and Header Files
 ========================
 
-To use the low-level Blast SDK, the application need only inlclude the header NvBlast.h, found in the top-level **include** folder, and link
+To use the low-level Blast SDK, the application need only include the header NvBlast.h, found in the top-level **include** folder, and link
 against the appropriate version of the NvBlast library.  Depending on the platform and configuration, various suffixes will be added to the library
 name.  The general naming scheme is
 
@@ -72,7 +68,7 @@ Creating an Asset from a Descriptor (Authoring)
 ===============================================
 
 The NvBlastAsset is an opaque type pointing to an object constructed by Blast in memory allocated by the user.
-To create an asset from a descriptor, use the function **NvBlastCreateAsset** (:ref:`assets`).  See the function documentation for a
+To create an asset from a descriptor, use the function **NvBlastCreateAsset** (`Creating an Asset from a Descriptor (Authoring)`_).  See the function documentation for a
 description of its parameters.
 
 **N.B., there are strict rules for the ordering of chunks with an asset, and also conditions on the chunks marked as "support"
@@ -154,7 +150,7 @@ signature of NvBlastLog.  In all cases, the log function is optional, and NULL m
 
 
 It should be noted that the geometric information (centroid, volume, area, normal) in chunks and bonds is only used by damage
-shader functions (see :ref:`pageextshaders`).  Depending on the shader, some, all, or none of the geometric information will be needed.
+shader functions (see `Damage Shaders (NvBlastExtShaders) <extensions/ext_shaders.rst>`_).  Depending on the shader, some, all, or none of the geometric information will be needed.
 The user may write damage shader functions that interpret this data in any way they wish.
 
 .. _asset_copying:
@@ -379,7 +375,7 @@ NvBlastDamagePrograms are composed of a **NvBlastGraphShaderFunction** and a
 **NvBlastSubgraphShaderFunction** operating on support graphs (support chunks and bonds) and disconnected subsupport chunks respectively.
 An implementer can freely define the shader functions and parameters.
 Different functions can have the effect of emulating different physical materials.<br>
-Blast provides reference implementations of such functions in :ref:`pageextshaders`, see also NvBlastExtDamageShaders.h.
+Blast provides reference implementations of such functions in `Damage Shaders (NvBlastExtShaders) <extensions/ext_shaders.rst>`_, see also NvBlastExtDamageShaders.h.
 The NvBlastDamageProgram is used through **BlastActorGenerateFracture** that will provide the necessary internal data for the NvBlastActor being processed.
 The shader functions see the internal data as **BlastGraphShaderActor** and **BlastSubgraphShaderActor** respectively.
 
@@ -433,6 +429,3 @@ The following example illustrates the process:
     // New actors created are reported in splitEvent.newActors.
     // If newActorCount != 0, then the old actor is deleted and is reported in splitEvent.deletedActor.
     size_t newActorCount = NvBlastActorSplit( &splitEvent, actor, maxNewActorCount, scratch.data(), logFn, &timers );
-
-
-
