@@ -1,6 +1,7 @@
 # Blast SDK Repo
 
 Documentation: [Blast SDK Documentation](docs/index.rst).
+Release notes: [Changelog](docs/CHANGELOG.md).
 
 ## Building with repo tools
 

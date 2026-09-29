@@ -125,5 +125,3 @@ Contents
 * `Definitions <api/definitions.rst>`_
 * `Copyrights <api/copyrights.rst>`_
 * `C++ API headers <../include/>`_
-
-Current version and release notes: `Changelog <CHANGELOG.md>`_.
