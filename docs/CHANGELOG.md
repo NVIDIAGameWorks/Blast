@@ -1,12 +1,12 @@
 # Changelog
 
-## [5.1.0] - 27-Sep-2026
+## [5.1.0] - 28-Sep-2026
 
 ### Changes
 - Build Blast without PhysX by default; use --physx-path to enable PhysX extensions and --samples to build the Windows SampleAssetViewer.
 - Updated PhysX integration and the sample for the public PhysX 5.1 SDK, with continued support for PhysX 4.x and separate PxShared headers.
 - Updated dependencies, build tooling, and distribution files for OSS compliance.
-
+- Documentation is now in-repository, with landing page docs/index.rst linked in README.md.
 
 ## [5.0.6] - 29-May-2024
 
