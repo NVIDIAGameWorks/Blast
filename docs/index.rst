@@ -55,6 +55,18 @@ Current Blast extensions:
     * ExtPhysX - a physics manager using PhysX which keeps PxActors and PxJoints updated in a user-supplied PxScene.  It handles impact damage (through the contact callback), includes a stress solver wrapper, and provides a listener that enables multiple clients to keep their state synchronized.
     * ExtPxSerialization - serialization extensions for ExtPhysX.  Uses Cap'n Proto to provide robust serialization across different platforms.
 
+Contents
+--------
+
+* `Introduction <api/introduction.rst>`_
+* `Low Level API (NvBlast) <api/api_ll_users_guide.rst>`_
+* `Globals API (NvBlastGlobals) <api/api_globals_users_guide.rst>`_
+* `High Level API (NvBlastTk) <api/api_hl_users_guide.rst>`_
+* `Extensions (NvBlastExt) <api/extensions/index.rst>`_
+* `Definitions <api/definitions.rst>`_
+* `Copyrights <api/copyrights.rst>`_
+* `C++ API headers <../include/>`_
+
 Gallery
 -------
 
@@ -113,15 +125,3 @@ Joints
 .. image:: images/joints.png
     :width: 100%
     :alt: Blast Sample: joints
-
-Contents
---------
-
-* `Introduction <api/introduction.rst>`_
-* `Low Level API (NvBlast) <api/api_ll_users_guide.rst>`_
-* `Globals API (NvBlastGlobals) <api/api_globals_users_guide.rst>`_
-* `High Level API (NvBlastTk) <api/api_hl_users_guide.rst>`_
-* `Extensions (NvBlastExt) <api/extensions/index.rst>`_
-* `Definitions <api/definitions.rst>`_
-* `Copyrights <api/copyrights.rst>`_
-* `C++ API headers <../include/>`_
